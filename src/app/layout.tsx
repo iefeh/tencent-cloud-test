@@ -20,9 +20,9 @@ export default function RootLayout({
         <main className="flex w-full h-screen flex-col items-center justify-between relative">
           <section className="header absolute left-0 top-0 w-full h-12">Header</section>
 
-          <section className="container w-full h-full">{children}</section>
+          <section className="page-container w-full h-full">{children}</section>
 
-          <section className="container-mask fixed z-10"></section>
+          <section className="page-container-mask fixed z-10"></section>
         </main>
       </body>
     </html>
