@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "./styles/BasicButton.scss";
 
 :root {
   --foreground-rgb: 255, 255, 255;
@@ -20,20 +21,20 @@ body {
 
 @font-face {
   font-family: semakin;
-  src: url('/fonts/Semakin.woff2');
+  src: url("/fonts/Semakin.woff2");
 }
 
 @font-face {
   font-family: semakin;
-  src: url('/fonts/Semakin.ttf');
+  src: url("/fonts/Semakin.ttf");
 }
 
 @font-face {
   font-family: decima;
-  src: url('/fonts/Decima-Mono-W01-Regular.woff2');
+  src: url("/fonts/Decima-Mono-W01-Regular.woff2");
 }
 
 @font-face {
   font-family: decima;
-  src: url('/fonts/Decima-Mono-W01-Regular.ttf');
+  src: url("/fonts/Decima-Mono-W01-Regular.ttf");
 }

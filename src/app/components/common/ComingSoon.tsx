@@ -4,10 +4,10 @@ export default function ComingSoon() {
   return (
     <div className="bg-coming-soon w-full h-screen">
       <Image
+        className="object-cover"
         src="/img/bg_coming_soon.jpg"
         alt=""
-        layout="fill"
-        objectFit="cover"
+        fill
       ></Image>
     </div>
   );

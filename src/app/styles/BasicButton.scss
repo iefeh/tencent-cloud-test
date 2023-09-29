@@ -1,0 +1,10 @@
+.basic-button {
+  color: #fff;
+  border-color: #f7f7f7;
+
+  &:hover {
+    color: #f6c799;
+    border-color: #f8dfc4;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
+}
