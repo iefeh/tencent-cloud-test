@@ -16,6 +16,9 @@ const config: Config = {
       fontFamily: {
         semakin: ['semakin'],
         decima: ['decima']
+      },
+      colors: {
+        'basic-yellow': '#f6c799'
       }
     },
   },
