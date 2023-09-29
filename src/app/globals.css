@@ -13,7 +13,16 @@
   }
 }
 
+@font-face{
+  font-family: 'Semakin';
+  src : url('../../public/fonts/Semakin.ttf');
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
+}
+
+.font-Semakin {
+  font-family: 'Semakin';
 }
