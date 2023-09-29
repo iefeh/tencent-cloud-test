@@ -1,6 +1,8 @@
 import BasicButton from "./BasicButton";
+import Belt from "./Belt";
 
 interface Props {
+  hasBelt?: boolean;
   title?: string;
   subtitle?: string;
   buttonLabel?: string;
@@ -10,6 +12,8 @@ interface Props {
 export default function PageDesc(props: Props) {
   return (
     <div className="page-desc text-center z-10">
+      {props.hasBelt && <Belt /> }
+
       {props.title && (
         <div
           className="title text-4xl uppercase font-semakin mb-4"

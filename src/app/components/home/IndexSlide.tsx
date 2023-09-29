@@ -16,6 +16,7 @@ export default function IndexSlide() {
       </div>
 
       <PageDesc
+        hasBelt
         title="800 Exclusive<br>Destiny TETRA NFTs Awaits"
         subtitle="Get ready for the Moonveil Destiny TETRA NFT Free Mint Event beginning on October 1st!<br>Click to join our whitelist tasks and secure your spot now."
         buttonLabel="click to explore"
