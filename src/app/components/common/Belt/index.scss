@@ -1,0 +1,34 @@
+$dotScale: 2.5;
+
+@keyframes belt {
+  0% {
+    transform: translateX(-50%) scaleX($dotScale);
+  }
+
+  100% {
+    transform: translateX(0%) scaleX($dotScale);
+  }
+}
+
+.belt {
+  margin-bottom: 2.625rem;
+
+  .belt-cube {
+    width: 0.1875rem;
+    height: 0.1875rem;
+    background-color: #fff;
+  }
+
+  .dotted-wrapper {
+    width: 11.5rem;
+    overflow: hidden;
+
+    .dotted-line {
+      width: 200%;
+      height: 0;
+      border-top: 1px dotted hsla(0, 0%, 100%, 0.3);
+      animation: 10s linear infinite belt;
+      transform: scaleX($dotScale);
+    }
+  }
+}
