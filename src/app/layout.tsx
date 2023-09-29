@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Header from "./components/common/Header";
+import Header from "./components/home/Header";
+import LineBorder from "./components/home/LineBorder/index";
 import "./globals.scss";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <LineBorder />
         <main className="flex w-full h-screen flex-col items-center justify-between relative">
           <Header />
 
