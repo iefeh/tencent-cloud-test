@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import SwiperScreen from "./components/home/SwiperScreen";
 
 export default function Home() {

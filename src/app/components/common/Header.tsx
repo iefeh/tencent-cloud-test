@@ -1,7 +1,7 @@
+import React from 'react';
 import Image from 'next/image';
 import Link from "next/link";
 import logo from "img/header/logo.png";
-import { Router } from "next/router";
 
 const routeText = ['Home', 'About', 'NFT', 'AstrArk', 'Loyalty Program', 'Maketplace'];
 
