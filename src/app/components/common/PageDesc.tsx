@@ -16,7 +16,7 @@ export default function PageDesc(props: Props) {
 
       {props.title && (
         <div
-          className="title text-4xl uppercase font-semakin mb-4"
+          className="title text-5xl uppercase font-semakin mb-4"
           dangerouslySetInnerHTML={{ __html: props.title }}
         ></div>
       )}
