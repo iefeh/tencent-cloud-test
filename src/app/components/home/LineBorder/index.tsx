@@ -1,8 +1,4 @@
 import React from 'react';
-import borderToplr from "img/border_toplr.png";
-import borderBottomrl from "img/border_bottomrl.png";
-import borderLeft from "img/border_left.png";
-import borderBottom from "img/border_bottom.png";
 import './index.scss'
 
 export default function LineBorder() {

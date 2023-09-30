@@ -37,7 +37,7 @@ export default function Header() {
                         <Component key={index} className='hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-5 h-5 mr-4' />
                     )
                 })}
-                <BasicButton class="text-xs px-2" label='login' />
+                <BasicButton label='login' />
             </div>
         </section>
     )
