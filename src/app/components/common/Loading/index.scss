@@ -1,0 +1,36 @@
+$basic-yellow: #f6c799;
+
+@keyframes text-belt {
+  0% {
+    background-position-x: 100%;
+  }
+
+  100% {
+    background-position-x: 0%;
+  }
+}
+
+.loading {
+  .text-wrapper {
+    .text {
+      background-image: linear-gradient(to right, $basic-yellow 0%, $basic-yellow 50%, white 50%, white 100%);
+      background-size: 200%;
+      animation: text-belt 1.5s linear;
+    }
+  }
+}
+
+.media-svgs {
+  svg {
+    path {
+      fill: rgba(255,255,255,0.3) !important;
+      transition: fill 0.3s ease-in;  
+    }
+
+    &:hover {
+      path {
+        fill: #fff !important;
+      }
+    }
+  }
+}

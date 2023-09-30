@@ -20,6 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "svg/*": ["./public/svg/*"],
       "img/*": ["./public/img/*"],
       "video/*": ["./public/video/*"]
     }
