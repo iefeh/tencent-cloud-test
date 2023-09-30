@@ -1,11 +1,7 @@
 import Image from "next/image";
 import moonBg from "img/loading/bg_moon.png";
 import "./index.scss";
-import XSvg from 'svg/x.svg';
-import MediumSvg from 'svg/medium.svg';
-import DiscordSvg from 'svg/discord.svg';
-import TelegramSvg from 'svg/telegram.svg';
-import YoutubeSvg from 'svg/Youtube.svg';
+import MediaIconBar from "../MediaIconBar";
 
 export default function Loading() {
   return (
@@ -27,13 +23,7 @@ export default function Loading() {
         </span>
       </div>
       
-      <div className="media-svgs absolute left-1/2 bottom-12 -translate-x-1/2 flex">
-        <XSvg className="w-8 h-8" />
-        <MediumSvg className="w-8 h-8 ml-6" />
-        <DiscordSvg className="w-8 h-8 ml-6" />
-        <TelegramSvg className="w-8 h-8 ml-6" />
-        <YoutubeSvg className="w-8 h-8 ml-6" />
-      </div>
+      <MediaIconBar className="absolute left-1/2 bottom-12 -translate-x-1/2" />
     </div>
   );
 }
