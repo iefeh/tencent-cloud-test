@@ -5,6 +5,7 @@ import Header from "./components/home/Header";
 import LineBorder from "./components/home/LineBorder/index";
 import { Suspense } from "react";
 import Loading from "./components/common/Loading";
+import './globals.scss';
 
 const inter = Inter({ subsets: ["latin"] });
 
