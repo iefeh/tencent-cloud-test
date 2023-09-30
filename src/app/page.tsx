@@ -7,7 +7,7 @@ import MouseWheel from "@better-scroll/mouse-wheel";
 
 import SloganScreen from "./components/home/SloganScreen";
 import SwiperScreen from "./components/home/SwiperScreen";
-import ContactInfo from "./components/home/ContactInfo";
+import Footer from "./components/home/Footer";
 
 BScroll.use(MouseWheel);
 BScroll.use(ScrollBar);
@@ -33,7 +33,7 @@ export default function Home() {
 
         <SloganScreen />
 
-        <ContactInfo />
+        <Footer />
       </div>
     </section>
   );
