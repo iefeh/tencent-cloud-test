@@ -1,6 +1,7 @@
 "use client"
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
+import './about.scss'
 
 import MJ from "img/about/1@2x.png";
 import JW from "img/about/2@2x.png";
@@ -24,24 +25,29 @@ export default function About({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   return (
-    <div className="About relative w-full h-full scroll-wrapper">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-semakin text-9xl text-[#17100A]">
+    <div className="about relative w-full h-full">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-semakin text-8xl text-[#17100A]">
         OUR TEAM
       </div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64" >
+      <div className="swiper-screen w-full h-screen relative" >
         <Swiper
+          className="w-full h-full"
+          slidesPerView={3}
+          centeredSlides={true}
+          grabCursor={true}
           onSlideChange={() => console.log("slide change")}
           onSwiper={(swiper) => console.log(swiper)}
         >
           {figureArray.map((figureData, index) => {
             return (
-              <SwiperSlide key={figureData.name} >
-                <Image className="w-64 h-64" src={figureData.img} alt={figureData.name} />
+              <SwiperSlide className="flex items-center justify-center w-[25rem]" key={figureData.name} >
+                <Image loading='lazy' className="w-[20rem] h-[23rem]" src={figureData.img} alt={figureData.name} />
               </SwiperSlide>
             )
           })}
         </Swiper>
       </div>
+
     </div>
   );
 }
