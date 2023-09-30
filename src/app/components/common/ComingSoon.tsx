@@ -8,6 +8,7 @@ export default function ComingSoon() {
         src="/img/bg_coming_soon.jpg"
         alt=""
         fill
+        sizes="100%"
       ></Image>
     </div>
   );

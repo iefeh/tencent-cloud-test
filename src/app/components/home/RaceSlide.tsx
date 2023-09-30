@@ -8,6 +8,7 @@ export default function RaceSlide() {
         src="/img/bg_home_swiper_race.png"
         alt=""
         fill
+        sizes="100%"
       ></Image>
     </div>
   );

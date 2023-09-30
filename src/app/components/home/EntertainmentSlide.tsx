@@ -8,6 +8,7 @@ export default function EntertainmentSlide() {
         src="/img/bg_home_swiper_entertainment.jpg"
         alt=""
         fill
+        sizes="100%"
       ></Image>
     </div>
   );
