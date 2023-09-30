@@ -5,14 +5,15 @@ export default function IndexSlide() {
     <div className="bg-video w-full h-screen relative flex justify-center items-center">
       <div className="video-container absolute inset-0">
         <video
-          className="w-full h-full object-cover"
+          className="w-full object-cover"
+          style={{ height: 'calc(100% - 2px)' }}
           src="/video/ntfbg.webm"
           autoPlay
           muted
           loop
         ></video>
 
-        <div className="video-mask absolute inset-0 z-10 bg-black/70"></div>
+        <div className="video-mask absolute left-0 top-0 w-full h-full z-10 bg-black/70"></div>
       </div>
 
       <PageDesc
