@@ -6,7 +6,7 @@ import EntertainmentSlide from "./EntertainmentSlide";
 import ComingSoon from "../common/ComingSoon";
 import YellowCircle from "../common/YellowCircle";
 
-export default async function SwiperScreen() {
+export default function SwiperScreen() {
   // TODO 添加资源优先加载方法
 
   return (
