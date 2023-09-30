@@ -1,6 +1,6 @@
 "use client";
 
-import { createRef, useEffect } from "react";
+import { createRef, useState, useEffect } from "react";
 import BScroll from "@better-scroll/core";
 import ScrollBar from "@better-scroll/scroll-bar";
 import MouseWheel from "@better-scroll/mouse-wheel";
@@ -18,7 +18,6 @@ export default function Home() {
     const bs = new BScroll(scrollWrapper.current!, {
       scrollY: true,
       bounce: false,
-      scrollbar: true,
       mouseWheel: true,
     });
   });
