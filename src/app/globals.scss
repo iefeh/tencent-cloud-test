@@ -5,6 +5,7 @@
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
+  --basic-yellow: #f6c799;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,4 +37,24 @@ body {
 @font-face {
   font-family: decima;
   src: url("/fonts/Decima-Mono-W01-Regular.ttf");
+}
+
+@font-face {
+  font-family: poppins;
+  src: url("/fonts/Poppins-Regular.woff2");
+}
+
+@font-face {
+  font-family: poppins;
+  src: url("/fonts/Poppins-Regular.ttf");
+}
+
+@font-face {
+  font-family: poppins-medium;
+  src: url("/fonts/Poppins-Medium.woff2");
+}
+
+@font-face {
+  font-family: poppins-medium;
+  src: url("/fonts/Poppins-Medium.ttf");
 }
