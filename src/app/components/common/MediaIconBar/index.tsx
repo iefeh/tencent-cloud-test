@@ -8,11 +8,14 @@ import "./index.scss";
 interface Props {
   type?: "white" | "yellow";
   gutter?: "default" | "lg";
+  size?: "default" | "lg";
   className?: string;
 }
 
 export default function MediaIconBar(props: Props) {
   const gutterClass = `gutter-${props.gutter || "default"}`;
+  const sizeClass = props.size === 'default' ? 'w-8 h-8' : 'w-[3.25rem] h-[3.25rem]';
+  const svgClass = [gutterClass, sizeClass].join(' ');
 
   return (
     <div
@@ -22,11 +25,11 @@ export default function MediaIconBar(props: Props) {
         "color-" + (props.type || "white"),
       ].join(" ")}
     >
-      <XSvg className="w-8 h-8" />
-      <MediumSvg className={"w-8 h-8 " + gutterClass} />
-      <DiscordSvg className={"w-8 h-8 " + gutterClass} />
-      <TelegramSvg className={"w-8 h-8 " + gutterClass} />
-      <YoutubeSvg className={"w-8 h-8 " + gutterClass} />
+      <XSvg className={sizeClass} />
+      <MediumSvg className={svgClass} />
+      <DiscordSvg className={svgClass} />
+      <TelegramSvg className={svgClass} />
+      <YoutubeSvg className={svgClass} />
     </div>
   );
 }
