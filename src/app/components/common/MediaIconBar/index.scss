@@ -1,0 +1,36 @@
+.media-icon-bar {
+  svg {
+    path {
+      fill: rgba(255, 255, 255, 0.3) !important;
+      transition: fill 0.3s ease-in;
+    }
+  }
+
+  &.color-white {
+    svg {
+      &:hover {
+        path {
+          fill: #fff !important;
+        }
+      }
+    }
+  }
+
+  &.color-yellow {
+    svg {
+      &:hover {
+        path {
+          fill: var(--basic-yellow) !important;
+        }
+      }
+    }
+  }
+
+  > .gutter-default {
+    margin-left: 1.5rem;
+  }
+
+  > .gutter-lg {
+    margin-left: 1.875rem;
+  }
+}
