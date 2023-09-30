@@ -1,3 +1,5 @@
+import NftHome from './components/home'
+
 export default function Page({
     params,
     searchParams,
@@ -5,5 +7,9 @@ export default function Page({
     params: { slug: string }
     searchParams: { [key: string]: string | string[] | undefined }
   }) {
-    return <h1>NFT</h1>
+    return (
+      <section>
+        <NftHome></NftHome>
+      </section>
+    )
   }
