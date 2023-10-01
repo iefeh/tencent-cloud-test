@@ -6,6 +6,7 @@ import ScrollBar from "@better-scroll/scroll-bar";
 import MouseWheel from "@better-scroll/mouse-wheel";
 import AstrarkHome from "./components/home";
 import AstrArkSchool from "./components/school";
+import AstrArkSchoolDesc from './components/schoolDesc';
 
 BScroll.use(MouseWheel);
 BScroll.use(ScrollBar);
@@ -30,6 +31,8 @@ export default function Home() {
         <AstrarkHome />
 
         <AstrArkSchool />
+
+        <AstrArkSchoolDesc />
       </div>
     </section>
   );
