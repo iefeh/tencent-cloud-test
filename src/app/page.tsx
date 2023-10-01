@@ -33,7 +33,8 @@ export default function Home() {
     bscroll.on("scroll", ({ y }: { y: number }) => {
       const screenHeight = window.innerHeight;
 
-      if (-y >= screenHeight && -y <= screenHeight * 3) {
+      // TODO 高度判断
+      if (-y >= screenHeight && -y <= screenHeight * 2) {
         setSloganFixed(true);
       } else {
         setSloganFixed(false);
