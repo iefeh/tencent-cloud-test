@@ -5,7 +5,7 @@ import Header from "./components/home/Header";
 import LineBorder from "./components/home/LineBorder/index";
 import { Suspense } from "react";
 import Loading from "./components/common/Loading";
-import './globals.scss';
+import "./globals.scss";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +20,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html className="sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl" lang="en">
+    <html
+      className="sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl"
+      lang="en"
+    >
       <head>
         <link rel="icon" href="./favicon.ico" sizes="any" />
       </head>
       <body className={inter.className}>
         <LineBorder />
-        <main className="flex w-full h-screen flex-col items-center justify-between relative">
+        <main
+          className="flex w-full h-screen flex-col items-center justify-between relative"
+          id="main-layout"
+        >
           <Suspense fallback={<Loading />}>
             <Header />
 
