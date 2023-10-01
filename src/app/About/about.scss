@@ -2,4 +2,24 @@
     .swiper-slide {
         display: flex;
     }
+    .bg-aboutBg {
+        background-image: url("../../../public/img/about/img_1.jpg");
+    }
+    .slideInAnim {
+        animation: slideInAnim 1.2s ease;
+        animation-fill-mode: both;
+    }
+    // .bg-center {
+    //     background-position: 50%;
+    // }
+
+    @keyframes slideInAnim {
+        0% {
+            transform: translateY(5vw);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
 }
