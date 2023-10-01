@@ -3,7 +3,7 @@ import './index.scss'
 
 export default function LineBorder() {
     return (
-        <div className='absolute w-full h-full opacity-20 z-10' >
+        <div className='absolute w-full h-full opacity-20' >
             <div className='absolute left-5 top-20 bg-line-tlf bg-size-100 h-28 w-1' ></div>
             <div className='absolute left-5 bottom-5 ba-line-brl bg-size-100 h-32 w-32' ></div>
             <div className='absolute left-5 top-1/2 -translate-y-1/2 bg-repeat bg-line-lr h-[9.4rem] w-[0.4rem] bg-[length:100%_.5rem] bg-gradient-to-t from-white from-15% to-transparent to-0%' ></div>
