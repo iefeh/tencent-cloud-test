@@ -7,14 +7,13 @@ import BasicButton from "@/app/components/common/BasicButton";
 import logo from "img/header/logo.png";
 import Discord from "img/header/discord.svg";
 import Youtube from "img/header/Youtube.svg";
-import Github from "img/header/github.svg";
 import Medium from "img/header/medium.svg";
 import Telegram from "img/header/telegram.svg";
 import X from "img/header/x.svg";
 import LoginDialog from '../common/LoginDialog';
 
 const routeText = ['Home', 'About', 'NFT', 'AstrArk', 'Loyalty Program', 'Maketplace'];
-const mediaIcon = [X, Discord, Telegram, Medium, Youtube, Github];
+const mediaIcon = [X, Discord, Telegram, Medium, Youtube];
 
 export default function Header() {
     const [loginVisible, setLoginVisible] = useState(false);
@@ -26,7 +25,7 @@ export default function Header() {
                     <Image className='w-20 h-11' src={logo} alt="Picture of the author" />
                 </Link>
             </div>
-            <div className='font-semakin transition-all'>
+            <div className='font-semakin transition-all duration-500 delay-75'>
                 {routeText.map((value, index) => (
                     <Link className='m-2 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799]' key={index} href={`/${value}`} >
                         {value}
