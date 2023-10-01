@@ -16,8 +16,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  auth
 }: {
   children: React.ReactNode;
+  auth: React.ReactNode
 }) {
   return (
     <html className="sm:text-fz-12 md:text-fz-14 2xl:text-fz-16" lang="en">
@@ -31,7 +33,7 @@ export default function RootLayout({
           id="main-layout"
         >
           <Suspense fallback={<Loading />}>
-            <Header />
+            <Header auth={auth} />
 
             <section className="page-container w-full h-full">
               {children}

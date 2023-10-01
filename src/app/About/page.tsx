@@ -105,7 +105,7 @@ export default function About({
 }) {
   const containerRef = useRef(null);
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
-  const [curFigure, setCurFigure] = useState<Figure>();
+  const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
   const [open, setOpen] = useState(false);
   // const scrollWrapper = createRef<HTMLDivElement>();
 
@@ -186,7 +186,6 @@ export default function About({
                     className="transition-transform transform group"
                   >
                     <Image
-                      loading="lazy"
                       className="w-[20rem] h-[23rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
                       src={figureData.img}
                       alt={figureData.name}
