@@ -5,13 +5,14 @@
     .bg-aboutBg {
         background-image: url("../../../public/img/about/img_1.jpg");
     }
+    // .lineYellow {
+    //     box-shadow: 2px 4px 90px 10px rgba(242,208,177,0.5);
+    //     color: #fff;
+    // }
     .slideInAnim {
         animation: slideInAnim 1.2s ease;
         animation-fill-mode: both;
     }
-    // .bg-center {
-    //     background-position: 50%;
-    // }
 
     @keyframes slideInAnim {
         0% {
