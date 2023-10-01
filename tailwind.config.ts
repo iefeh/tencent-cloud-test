@@ -27,6 +27,13 @@ const config: Config = {
       animation: {
         spin5: "spin 5s linear infinite",
       },
+      fontSize: {
+        'fz-12': '12px',
+        'fz-14': '14px',
+        'fz-16': '16px',
+        'fz-18': '18px',
+        'fz-20': '20px',
+      }
     },
   },
   plugins: [],

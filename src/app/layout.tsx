@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html className="sm:text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl" lang="en">
+    <html className="sm:text-fz-12 md:text-fz-14 2xl:text-fz-16" lang="en">
       <head>
         <link rel="icon" href="./favicon.ico" sizes="any" />
       </head>
