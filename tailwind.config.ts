@@ -21,6 +21,8 @@ const config: Config = {
       },
       colors: {
         "basic-yellow": "#f6c799",
+        "basic-gray": "#1D1D1D",
+        "deep-yellow": '#96775A',
       },
       animation: {
         spin5: "spin 5s linear infinite",

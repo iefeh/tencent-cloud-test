@@ -1,0 +1,15 @@
+.character-warp {
+  --skew-deg: -22deg;
+  --skew-re-deg: 22deg;
+
+  position: relative;
+  width: 25vw;
+  height: 90vh;
+  // transform: skewX(var(--skew-deg));
+  z-index: 20;
+  background-size: 'cover';
+}
+
+.character-img {
+  position: absolute;
+}
