@@ -5,6 +5,8 @@ import BScroll from "@better-scroll/core";
 import ScrollBar from "@better-scroll/scroll-bar";
 import MouseWheel from "@better-scroll/mouse-wheel";
 import AstrarkHome from "./components/home";
+import AstrArkSchool from "./components/school";
+import AstrArkSchoolDesc from './components/schoolDesc';
 import WorldView from "./components/worldView";
 
 BScroll.use(MouseWheel);
@@ -27,6 +29,10 @@ export default function Home() {
     >
       <div className="w-full flex h-screen relative text-center items-center">
         <AstrarkHome />
+
+        <AstrArkSchool />
+
+        <AstrArkSchoolDesc />
       </div>
 
       <div className="w-full h-screen relative flex justify-center items-center overflow-hidden">

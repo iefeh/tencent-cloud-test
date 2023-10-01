@@ -1,0 +1,43 @@
+.school-icons {
+  .school-icon {
+    > .img {
+      width: 6.375rem;
+      height: 6.375rem;
+      background-repeat: no-repeat;
+      background-size: contain;
+      transition: background-image 0.2s linear;
+
+      &.img-mechanoid {
+        background-image: url("/img/astrark/school/mechanoid.png");
+
+        &.active {
+          background-image: url("/img/astrark/school/mechanoid_active.png");
+        }
+      }
+
+      &.img-genetic {
+        background-image: url("/img/astrark/school/genetic.png");
+
+        &.active {
+          background-image: url("/img/astrark/school/genetic_active.png");
+        }
+      }
+
+      &.img-spiritual {
+        background-image: url("/img/astrark/school/spiritual.png");
+
+        &.active {
+          background-image: url("/img/astrark/school/spiritual_active.png");
+        }
+      }
+
+      &.img-natural {
+        background-image: url("/img/astrark/school/natural.png");
+
+        &.active {
+          background-image: url("/img/astrark/school/natural_active.png");
+        }
+      }
+    }
+  }
+}

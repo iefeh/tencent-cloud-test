@@ -19,7 +19,7 @@ export default function Header() {
     const [loginVisible, setLoginVisible] = useState(false);
 
     return (
-        <section className="header absolute left-0 top-0 w-full h-11 flex justify-between items-center z-10 mt-2 pl-4 pr-4">
+        <section className="header absolute left-0 top-0 w-full h-11 flex justify-between items-center z-50 mt-2 pl-4 pr-4">
             <div className="flex-[1]" >
                 <Link href='/' >
                     <Image className='w-20 h-11' src={logo} alt="Picture of the author" />

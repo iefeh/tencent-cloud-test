@@ -1,0 +1,9 @@
+.main-content {
+  top: 100%;
+  pointer-events: none;
+
+  &.fixed {
+    position: fixed;
+    top: 0;
+  }
+}
