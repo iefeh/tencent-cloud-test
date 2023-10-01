@@ -1,9 +1,104 @@
 .big-halo {
   position: absolute;
+  width: 70vw;
   right: 50%;
   bottom: 0px;
-  width: 500px;
-  height: 100px;
   transform: translateX(50%)
 }
 
+.small-halo {
+  position: absolute;
+  right: 50%;
+  bottom: 0px;
+  transform: translate(50%, -30px)
+}
+
+.track1 {
+  width: 90vw;
+  height: 90vw;
+  position: absolute;
+  bottom: 0px;
+  right: 0;
+  transform: translate(-5vw, 70vw);
+  border: 1px pink solid;
+  border-radius: 50%;
+  animation: rotate1 20s linear infinite;
+
+  .planet1 {
+    position: absolute;
+    top: 0;
+    right: 50%;
+    transform: translate(50%, -50%);
+  }
+  .planet2 {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+}
+
+
+.track2 {
+  width: 110vw;
+  height: 110vw;
+  position: absolute;
+  bottom: 0px;
+  right: 0;
+  transform: translate(5vw, 80vw);
+  border: 1px pink solid;
+  border-radius: 50%;
+  animation: rotate2 25s linear infinite;
+  
+  .planet3 {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+}
+
+.meteor {
+  position: absolute;
+  width: 2.5rem;
+  bottom: 80px;
+  right: 15%;
+  z-index: 50;
+}
+
+.stars1 {
+  position: absolute;
+  bottom: 20vh;
+  right: 10vw;
+}
+
+.stars2 {
+  position: absolute;
+  bottom: 20vh;
+  left: 10vw;
+}
+
+.stars3 {
+  position: absolute;
+  bottom: 40vh;
+  right: 30vw;
+}
+
+
+@keyframes rotate1 {
+  0% {
+    transform: translate(-5vw, 70vw) rotate(0);
+  }
+  100% {
+    transform: translate(-5vw, 70vw) rotate(360deg);
+  }
+}
+
+@keyframes rotate2 {
+  0% {
+    transform: translate(5vw, 80vw) rotate(0);
+  }
+  100% {
+    transform: translate(5vw, 80vw) rotate(360deg);
+  }
+}

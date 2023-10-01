@@ -3,9 +3,20 @@ import PageDesc from "../../components/common/PageDesc";
 import Image from "next/image";
 import "./home.scss";
 
+import halo1 from "img/nft/home/halo1.png";
+import halo2 from "img/nft/home/halo2.png";
+
+import meteor from "img/nft/home/meteor.png";
+import planet1 from "img/nft/home/planet1.png";
+import planet2 from "img/nft/home/planet2.png";
+import planet3 from "img/nft/home/planet3.png";
+import stars1 from "img/nft/home/stars1.png";
+import stars2 from "img/nft/home/stars2.png";
+import stars3 from "img/nft/home/stars3.png";
+
 const NftHome: React.FC = () => {
   return (
-    <div className="bg-video w-full h-screen relative flex justify-center items-center">
+    <div className="w-full h-screen relative flex justify-center items-center overflow-hidden">
       <PageDesc 
         hasBelt
         title="A DYNAMIC NFT ECOSYSTEM"
@@ -14,74 +25,70 @@ const NftHome: React.FC = () => {
 
       {/* 大光晕 */}
       <Image
+        loading='lazy'
         className="big-halo"
-        src='/img/nft/home/halo1.png'
+        src={halo1}
         alt=""
-        fill
       ></Image>
 
       {/* 小光晕 */}
       <Image
-        className="character-img"
-        src='/img/nft/home/halo2.png'
+        className="small-halo"
+        src={halo2}
         alt=""
-        fill
       ></Image>
 
-      {/* 陨石 */}
-      <Image
-        className="character-img"
-        src='/img/nft/home/meteor.png'
+       {/* 陨石 */}
+       <Image
+        className="meteor"
+        src={meteor}
         alt=""
-        fill
       ></Image>
 
-      {/* 行星 - 小 */}
-      <Image
-        className="character-img"
-        src='/img/nft/home/planet1.png'
-        alt=""
-        fill
-      ></Image>
+      <div className="track1">
+        {/* 行星 - 小 */}
+        <Image
+          className="planet1"
+          src={planet1}
+          alt=""
+        ></Image>
 
-      {/* 行星 - 中 */}
-      <Image
-        className="character-img"
-        src='/img/nft/home/planet2.png'
-        alt=""
-        fill
-      ></Image>
+        {/* 行星 - 中 */}
+        <Image
+          className="planet2"
+          src={planet2}
+          alt=""
+        ></Image>
+      </div>
 
-      {/* 行星 - 大 */}
-      <Image
-        className="character-img"
-        src='/img/nft/home/planet3.png'
-        alt=""
-        fill
-      ></Image>
+      <div className="track2">
+        {/* 行星 - 大 */}
+        <Image
+          className="planet3"
+          src={planet3}
+          alt=""
+        ></Image>
+      </div>
 
       {/* 星星1 */}
       <Image
-        className="character-img"
-        src='/img/nft/home/stars1.png'
+        className="stars1"
+        src={stars1}
         alt=""
-        fill
       ></Image>
 
       {/* 星星2 */}
       <Image
-        className="character-img"
-        src='/img/nft/home/stars2.png'
+        className="stars2"
+        src={stars2}
         alt=""
-        fill
       ></Image>
 
       {/* 星星3 */}
       <Image
-        className="character-img"
-        src='/img/nft/home/stars3.png'
+        className="stars3"
+        src={stars3}
         alt=""
-        fill
       ></Image>
 
     </div>
