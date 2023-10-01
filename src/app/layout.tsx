@@ -30,7 +30,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <LineBorder />
         <main
-          className="flex w-full h-screen flex-col items-center justify-between relative"
+          className="flex w-full h-screen flex-col items-center justify-between relative bg-black"
           id="main-layout"
         >
           <Suspense fallback={<Loading />}>
