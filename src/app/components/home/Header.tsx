@@ -25,9 +25,9 @@ export default function Header() {
                     <Image className='w-20 h-11' src={logo} alt="Picture of the author" />
                 </Link>
             </div>
-            <div className='font-semakin transition-all duration-500 delay-75'>
+            <div className='font-semakin'>
                 {routeText.map((value, index) => (
-                    <Link className='m-2 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799]' key={index} href={`/${value}`} >
+                    <Link className='m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799]' key={index} href={`/${value}`} >
                         {value}
                     </Link>
                 ))}
