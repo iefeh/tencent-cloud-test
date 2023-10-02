@@ -35,7 +35,7 @@ export default function Home() {
   const [bs, setBS] = useState<BScrollConstructor>();
   const basePageScrollTime = 200;
   const [aniState, setAniState] = useState(AniState.VIDEO);
-  const [isSloganAniEnd, setIsSloganAniEnd] = useState(false);
+  const [sloganTitleState, setSloganTitleState] = useState(0);
 
   useEffect(() => {
     if (bs) return;
@@ -52,8 +52,7 @@ export default function Home() {
   function onMaskAniEnd() {
     bs?.scrollTo(0, -window.innerHeight, 0);
     setAniState(AniState.SLOGAN);
-
-    setTimeout(() => setIsSloganAniEnd(true), 100);
+    setSloganTitleState(1);
   }
 
   function onSloganScreenWheel(e: WheelEvent) {
@@ -68,11 +67,15 @@ export default function Home() {
 
     function endCallback() {
       setAniState(isUp ? AniState.VIDEO : AniState.DESC);
-      isUp && setIsSloganAniEnd(false);
+      isUp && setSloganTitleState(0);
       bs!.off("scrollEnd", endCallback);
     }
 
     bs!.on("scrollEnd", endCallback);
+  }
+
+  function onSloganTitleAniEnd() {
+    setSloganTitleState(2);
   }
 
   function onSloganDescScreenWheel(e: WheelEvent) {
@@ -139,13 +142,12 @@ export default function Home() {
           onWheel={(e) => onSloganScreenWheel(e as any)}
         >
           <div
-            className={"title uppercase font-semakin text-basic-yellow text-5xl absolute left-1/2 top-[100vh] -translate-x-1/2 -translate-y-full z-20 hidden " + (isSloganAniEnd ? 'title-ani-end' : '')}
+            className={"title uppercase font-semakin text-basic-yellow text-5xl absolute left-1/2 top-0 -translate-x-1/2 z-20 " + (sloganTitleState === 1 ? 'title-ani-start' : sloganTitleState === 2 ? 'title-ani-end' : '')}
             style={{
-              display: 'block',
-              top: 0,
               animation:
-                aniState === AniState.SLOGAN && !isSloganAniEnd ? `title_ani 0.3s linear` : "none",
+                aniState === AniState.SLOGAN && sloganTitleState !== 2 ? `title_ani 0.5s linear` : "none",
             }}
+            onAnimationEnd={onSloganTitleAniEnd}
           >
             own your destiny
           </div>
