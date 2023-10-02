@@ -67,6 +67,7 @@ export default function SchoolDesc() {
     setSize();
 
     window.addEventListener("resize", setSize);
+    return () => window.removeEventListener("resize", setSize);
   }, []);
 
   useLayoutEffect(() => {
