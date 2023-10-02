@@ -13,7 +13,6 @@
     "@better-scroll/mouse-wheel": "^2.5.1",
     "@better-scroll/scroll-bar": "^2.5.1",
     "@svgr/webpack": "^8.1.0",
-    "dat.gui": "^0.7.9",
     "lodash": "^4.17.21",
     "next": "latest",
     "react": "latest",
