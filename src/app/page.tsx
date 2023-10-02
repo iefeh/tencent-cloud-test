@@ -61,7 +61,7 @@ export default function Home() {
     bs?.scrollTo(
       0,
       e.deltaY < 0 ? 0 : -window.innerHeight * 2,
-      basePageScrollTime
+      isUp ? basePageScrollTime : 800
     );
     setAniState(isUp ? AniState.SLOGAN_TO_VIDEO : AniState.SLOGAN_TO_DESC);
 
@@ -84,7 +84,7 @@ export default function Home() {
     bs?.scrollTo(
       0,
       (e.deltaY < 0 ? 1 : 3) * -window.innerHeight,
-      basePageScrollTime
+      isUp ? 800 : basePageScrollTime
     );
     setAniState(isUp ? AniState.DESC_TO_SLOGAN : AniState.DESC_TO_CHARACTER);
 
