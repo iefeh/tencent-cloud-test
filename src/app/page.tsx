@@ -167,7 +167,7 @@ export default function Home() {
         </div>
 
         <div
-          className="flex h-[56vw] justify-between bg-black relative overflow-hidden"
+          className="overflow-hidden"
           onWheel={(e) => onCharacterWheel(e as any)}
         >
           <Character />
