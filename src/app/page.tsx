@@ -56,7 +56,7 @@ export default function Home() {
 
         <SloganScreen fixed={sloganFixed} onCanvasInited={onCanvasInited} />
 
-        <div className="flex h-[56vw] justify-between bg-black relative overflow-hidden">
+        <div className="overflow-hidden">
           <Character />
         </div>
 
