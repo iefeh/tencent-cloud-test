@@ -1,0 +1,14 @@
+@keyframes title_ani {
+  0% {
+    transform: translate3D(-50%, 100vh, 0);
+  }
+  100% {
+    transform: translate3D(-50%, calc(50vh - 50%), 0);
+  }
+}
+
+.title-ani-end {
+  display: block;
+  top: 0;
+  transform: translate3D(-50%, calc(50vh - 50%), 0);
+}

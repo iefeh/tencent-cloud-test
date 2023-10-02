@@ -3,6 +3,7 @@ import BasicButton from "./BasicButton";
 import Belt from "./Belt";
 import whiteLogo from "img/logo_white.png";
 import goldenLogo from "img/logo_golden.png";
+import {ReactNode} from 'react';
 
 interface Props {
   whiteLogo?: boolean;
@@ -12,11 +13,13 @@ interface Props {
   subtitle?: string;
   buttonLabel?: string;
   buttonLink?: string;
+  className?: string;
+  button?: ReactNode;
 }
 
 export default function PageDesc(props: Props) {
   return (
-    <div className="page-desc text-center z-10 flex flex-col items-center">
+    <div className={"page-desc z-10 flex flex-col " + (props.className || 'items-center text-center')}>
       {props.whiteLogo && (
         <Image
           className="w-[13.125rem] h-[12.5625rem] mb-12"
@@ -52,6 +55,8 @@ export default function PageDesc(props: Props) {
       {props.buttonLabel && (
         <BasicButton label={props.buttonLabel} link={props.buttonLink} />
       )}
+
+      {props.button}
     </div>
   );
 }

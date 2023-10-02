@@ -1,9 +1,13 @@
 import Link from "next/link";
 import MediaIconBar from "../common/MediaIconBar";
 
-export default function Footer() {
+interface Props {
+  onWheel?: (e: WheelEvent) => void;
+}
+
+export default function Footer(props: Props) {
   return (
-    <footer className="contact-info w-full h-[25rem] box-border px-[6.25rem] pt-28 flex">
+    <footer className="contact-info w-full h-[25rem] box-border px-[6.25rem] pt-28 flex bg-black" onWheel={e => props.onWheel?.(e as any)}>
       <MediaIconBar type="yellow" gutter="lg" />
 
       <div className="contact-info uppercase ml-[26.6vw] font-poppins text-sm">
