@@ -23,7 +23,7 @@ const Character: React.FC = () => {
 
   const renderHero = () => {
     const calcWidth = (index: number) => {
-      if ([0, heroMap.length - 1].includes(index) ) return { width: '37.3vw'}
+      if ([0, heroMap.length - 1].includes(index)) return { width: '37.3vw'}
 
       return {width: '29.3vw'}
     }
@@ -35,6 +35,8 @@ const Character: React.FC = () => {
 
     const calcHero = (index: number) => {
       if (index === heroMap.length - 1) return 'character-img-last'
+      if (![0, heroMap.length - 1].includes(index)) return 'scale-img'
+
       return ''
     }
 
@@ -46,7 +48,6 @@ const Character: React.FC = () => {
       <div className="character">
         <div className="desc-box">
           <PageDesc 
-            hasBelt
             title="ASTRARK"
             subtitle="A strategic tower defence PVP game."
             buttonLabel="click to explore"

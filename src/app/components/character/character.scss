@@ -13,6 +13,7 @@
 .character-warp {
   --skew-deg: -22deg;
   --skew-re-deg: 22deg;
+  --translate-y: -1vw;
 
   position: relative;
   height: 100vh;
@@ -34,16 +35,23 @@
     bottom: 0;
     width: 33.3vw;
     transform: scale(1.8) skewX(var(--skew-re-deg)) translateX(7vw);
-    transition: all 0.2s;
+    transition: all 0.5s;
     &:hover {
-      transform: scale(2.5) skewX(var(--skew-re-deg)) translateX(7vw);
+      transform: scale(2.5) skewX(var(--skew-re-deg)) translateX(7vw) translateY(var(--translate-y));
     }
   }
 
   .character-img-last{
     transform: scale(1.8) skewX(var(--skew-re-deg)) !important;
     &:hover {
-      transform: scale(2.5) skewX(var(--skew-re-deg)) !important;
+      transform: scale(2.5) skewX(var(--skew-re-deg)) translateY(var(--translate-y))!important;
+    }
+  }
+
+  .scale-img {
+    transform: scale(2.3) skewX(var(--skew-re-deg)) translateX(7vw) !important;
+    &:hover {
+      transform: scale(3.0) skewX(var(--skew-re-deg)) translateX(7vw) translateY(var(--translate-y))!important;
     }
   }
 
@@ -54,6 +62,8 @@
     font-size: 14px;
     color: #fff;
     transform: skewX(var(--skew-re-deg));
+    font-family: decima;
+    opacity: 0.4;
   }
 
   .hero-name-last {
