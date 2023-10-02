@@ -4,7 +4,11 @@ import planetImg from "img/home/planet.png";
 import Image from "next/image";
 import './index.scss';
 
-export default function StarScreen() {
+interface Props {
+  className?: string;
+}
+
+export default function StarScreen(props: Props) {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
@@ -29,7 +33,7 @@ export default function StarScreen() {
   }, []);
 
   return (
-    <div className="star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none">
+    <div className={"star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none " + (props.className || '')}>
       <Image className="bg-img w-[80vw] h-[70vw] origin-center -translate-y-40" src={planetImg} alt="" />
 
       <canvas

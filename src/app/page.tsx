@@ -138,7 +138,7 @@ export default function Home() {
         <SwiperScreen onMaskAniEnd={onMaskAniEnd} />
 
         <div
-          className="slogan-screen w-full h-screen relative overflow-hidden"
+          className="slogan-screen w-full h-screen relative overflow-hidden "
           onWheel={(e) => onSloganScreenWheel(e as any)}
         >
           <div
@@ -178,7 +178,7 @@ export default function Home() {
         <Footer onWheel={(e) => onFooter(e as any)} />
       </div>
 
-      <StarScreen />
+      <StarScreen className={[AniState.SLOGAN, AniState.SLOGAN_TO_DESC, AniState.DESC, AniState.DESC_TO_SLOGAN].includes(aniState) ? 'star-screen-ani' : ''} />
     </section >
   );
 }
