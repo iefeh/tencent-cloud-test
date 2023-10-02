@@ -8,7 +8,7 @@ export default async function (ctx) {
   var w = window.innerWidth / 2,
     h = window.innerHeight / 2,
     opts = {
-      starCount: 30,
+      starCount: 40,
 
       radVel: 0.01,
       lineBaseVel: 0.1,
