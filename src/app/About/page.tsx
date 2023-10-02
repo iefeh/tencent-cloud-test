@@ -107,18 +107,18 @@ export default function About({
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
   const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
   const [open, setOpen] = useState(false);
-  // const scrollWrapper = createRef<HTMLDivElement>();
+  const scrollWrapper = useRef(null);
 
-  // useEffect(() => {
-  //   const bs = new BScroll(scrollWrapper.current!, {
-  //     scrollY: true,
-  //     bounce: false,
-  //     mouseWheel: true,
-  //   });
-  // }, [scrollWrapper]);
+  useEffect(() => {
+    const bs = new BScroll(scrollWrapper.current!, {
+      scrollY: true,
+      bounce: false,
+      mouseWheel: true,
+    });
+  }, [scrollWrapper]);
 
   return (
-    <div className="about relative scroll-wrapper w-full h-screen flex flex-col items-center justify-between overflow-y-auto">
+    <div ref={scrollWrapper} className="about relative scroll-wrapper w-full h-screen flex flex-col items-center justify-between">
       <div
         className="absolute w-full h-screen z-[2] bg-black"
         hidden={!open}
