@@ -1,5 +1,6 @@
 import Link from "next/link";
-import MediaIconBar from "../common/MediaIconBar";
+import MediaIconBar from "../../common/MediaIconBar";
+import './index.scss';
 
 interface Props {
   onWheel?: (e: WheelEvent) => void;
@@ -23,9 +24,9 @@ export default function Footer(props: Props) {
           </Link>
         </div>
 
-        <div className="contact-us mb-7">
-          <div className="base-info">contact us</div>
-          <div className="email">contact@moonveil.studio</div>
+        <div className="contact-us h-5 mb-7 relative">
+          <div className="base-info absolute left-0 top-0 text-[#4d4d4d]">contact us</div>
+          <div className="lowercase email absolute left-0 top-0">contact@moonveil.studio</div>
         </div>
 
         <div className="copyright mb-5">

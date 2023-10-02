@@ -1,0 +1,19 @@
+.contact-us {
+  .base-info:hover {
+    opacity: 0;
+
+    + .email {
+      opacity: 1;
+    }
+  }
+
+  .base-info {
+    transition: opacity 0.4s linear;
+  }
+
+  .email {
+    opacity: 0;
+    transition: opacity 0.4s linear;
+    pointer-events: none;
+  }
+}
