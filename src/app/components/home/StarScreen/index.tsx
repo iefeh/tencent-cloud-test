@@ -34,7 +34,7 @@ export default function StarScreen(props: Props) {
 
   return (
     <div className={"star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none " + (props.className || '')}>
-      <Image className="bg-img w-[80vw] h-[70vw] origin-center -translate-y-40" src={planetImg} alt="" />
+      <Image className="bg-img w-[80vw] h-[70vw] absolute left-[8rem] -top-[13.5rem] origin-center" src={planetImg} alt="" />
 
       <canvas
         ref={canvasRef}

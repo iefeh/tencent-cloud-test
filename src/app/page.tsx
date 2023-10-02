@@ -28,6 +28,7 @@ const enum AniState {
   CHARACTER_TO_DESC,
   DESC_TO_SLOGAN,
   SLOGAN_TO_VIDEO,
+  SLOGAN_FROM_DESC,
 }
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
   const basePageScrollTime = 200;
   const [aniState, setAniState] = useState(AniState.VIDEO);
   const [sloganTitleState, setSloganTitleState] = useState(0);
+  const [starScreenClass, setStarScreenClass] = useState("");
 
   useEffect(() => {
     if (bs) return;
@@ -61,7 +63,7 @@ export default function Home() {
     bs?.scrollTo(
       0,
       e.deltaY < 0 ? 0 : -window.innerHeight * 2,
-      isUp ? basePageScrollTime : 800
+      isUp ? basePageScrollTime : 1200
     );
     setAniState(isUp ? AniState.SLOGAN_TO_VIDEO : AniState.SLOGAN_TO_DESC);
 
@@ -84,12 +86,12 @@ export default function Home() {
     bs?.scrollTo(
       0,
       (e.deltaY < 0 ? 1 : 3) * -window.innerHeight,
-      isUp ? 800 : basePageScrollTime
+      isUp ? 1200 : basePageScrollTime
     );
     setAniState(isUp ? AniState.DESC_TO_SLOGAN : AniState.DESC_TO_CHARACTER);
 
     function endCallback() {
-      setAniState(isUp ? AniState.SLOGAN : AniState.CHARACTER);
+      setAniState(isUp ? AniState.SLOGAN_FROM_DESC : AniState.CHARACTER);
       bs!.off("scrollEnd", endCallback);
     }
 
@@ -129,6 +131,31 @@ export default function Home() {
     bs!.on("scrollEnd", endCallback);
   }
 
+  useEffect(() => {
+    const className = [
+      [
+        AniState.SLOGAN,
+        AniState.SLOGAN_TO_DESC,
+        AniState.DESC,
+        AniState.DESC_TO_SLOGAN,
+        AniState.SLOGAN_FROM_DESC,
+      ].includes(aniState) && "star-screen-ani",
+      [AniState.SLOGAN, AniState.SLOGAN_TO_DESC].includes(aniState) &&
+        "star-screen-planet-ani",
+      [AniState.SLOGAN_TO_DESC, AniState.DESC].includes(aniState) &&
+        "star-screen-to-desc-ani",
+      [
+        AniState.DESC_TO_SLOGAN,
+        AniState.SLOGAN_FROM_DESC,
+        AniState.DESC_TO_CHARACTER,
+        AniState.CHARACTER,
+      ].includes(aniState) && "star-screen-to-slogan-ani",
+    ]
+      .filter((c) => !!c)
+      .join(" ");
+    setStarScreenClass(className);
+  }, [aniState]);
+
   return (
     <section
       ref={scrollWrapper}
@@ -142,10 +169,21 @@ export default function Home() {
           onWheel={(e) => onSloganScreenWheel(e as any)}
         >
           <div
-            className={"title uppercase font-semakin text-basic-yellow text-5xl absolute left-1/2 top-0 -translate-x-1/2 z-20 " + (sloganTitleState === 1 ? 'title-ani-start' : sloganTitleState === 2 ? 'title-ani-end' : '')}
+            className={
+              "title uppercase font-semakin text-basic-yellow text-5xl absolute left-1/2 top-0 -translate-x-1/2 z-20 " +
+              (sloganTitleState === 1
+                ? "title-ani-start"
+                : sloganTitleState === 2
+                ? "title-ani-end"
+                : "")
+            }
             style={{
               animation:
-                aniState === AniState.SLOGAN && sloganTitleState !== 2 ? `title_ani 0.5s linear` : "none",
+                [AniState.SLOGAN, AniState.SLOGAN_FROM_DESC].includes(
+                  aniState
+                ) && sloganTitleState !== 2
+                  ? `title_ani 0.5s linear`
+                  : "none",
             }}
             onAnimationEnd={onSloganTitleAniEnd}
           >
@@ -162,7 +200,7 @@ export default function Home() {
               className="items-start text-left"
               hasBelt
               subtitle="With the power of cutting-edge technologies, our mission is to craft<br />top-notch gaming experiences that seamlessly<br /><span style='color: #f6c799'>combine casual flexibility</span> with <span style='color: #f6c799'>authentic fun depth.</span>"
-              buttonLabel="about"
+              buttonLabel="about moonveil"
               buttonLink="/About"
             />
           </div>
@@ -178,7 +216,7 @@ export default function Home() {
         <Footer onWheel={(e) => onFooter(e as any)} />
       </div>
 
-      <StarScreen className={[AniState.SLOGAN, AniState.SLOGAN_TO_DESC, AniState.DESC, AniState.DESC_TO_SLOGAN].includes(aniState) ? 'star-screen-ani' : ''} />
-    </section >
+      <StarScreen className={starScreenClass} />
+    </section>
   );
 }
