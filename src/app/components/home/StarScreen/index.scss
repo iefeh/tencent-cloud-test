@@ -1,0 +1,14 @@
+@keyframes star_img_scale {
+  0% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(0.4);
+  }
+}
+
+.star-screen {
+  .bg-img {
+    transform: scale(1.2);
+  }
+}
