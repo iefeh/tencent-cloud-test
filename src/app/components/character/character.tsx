@@ -8,6 +8,7 @@ import hero1 from 'img/character/char_one.png'
 import hero2 from 'img/character/char_two.png'
 import hero3 from 'img/character/char_three.png'
 import hero4 from 'img/character/char_four.png'
+import PageDesc from "../../components/common/PageDesc";
 
 import "./character.scss";
 
@@ -43,6 +44,15 @@ const Character: React.FC = () => {
     }
     return (
       <div className="character">
+        <div className="desc-box">
+          <PageDesc 
+            hasBelt
+            title="ASTRARK"
+            subtitle="A strategic tower defence PVP game."
+            buttonLabel="click to explore"
+            buttonLink="/comingsoon"
+          />
+        </div>
         { heroMap.map((item, index) => (
           <div key={index} className='character-warp' style={calcWidth(index)}>
             <div className="character-bg-box" style={{backgroundImage: `url(${item.imgUrl.src})`, ...calcBg(index)}}></div>

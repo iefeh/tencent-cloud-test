@@ -3,6 +3,13 @@
   display: flex;
   transform: translateX(-15vw);
 }
+.desc-box {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+  z-index: 60;
+}
 .character-warp {
   --skew-deg: -22deg;
   --skew-re-deg: 22deg;
