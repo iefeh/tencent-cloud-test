@@ -1,0 +1,65 @@
+@keyframes star_img_scale {
+  0% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(0.7);
+  }
+}
+
+@keyframes star_img_to_desc_scale {
+  0% {
+    transform: scale(0.7);
+  }
+  100% {
+    transform: scale(0.55);
+  }
+}
+
+@keyframes star_img_to_slogan_scale {
+  0% {
+    transform: scale(0.55);
+  }
+  100% {
+    transform: scale(0.7);
+  }
+}
+
+@keyframes star_screen_ani {
+  0% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.star-screen {
+  display: none;
+
+  &.star-screen-ani {
+    display: block;
+    animation: star_screen_ani 0.2s ease-in;
+  }
+
+  &.star-screen-planet-ani {
+    .bg-img {
+      transform: scale(0.7);
+      animation: star_img_scale 0.5s ease-in;
+    }
+  }
+
+  &.star-screen-to-desc-ani {
+    .bg-img {
+      transform: scale(0.55);
+      animation: star_img_to_desc_scale 0.8s ease-in;
+    }
+  }
+
+  &.star-screen-to-slogan-ani {
+    .bg-img {
+      transform: scale(0.7);
+      animation: star_img_to_slogan_scale 0.8s ease-in;
+    }
+  }
+}

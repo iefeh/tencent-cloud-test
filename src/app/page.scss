@@ -1,0 +1,28 @@
+@keyframes title_ani {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 100vh, 0);
+  }
+  20% {
+    opacity: 1;
+    transform: translate3d(-50%, calc(90vh - 10%), 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(-50%, calc(50vh - 50%), 0);
+  }
+}
+
+.slogan-screen {
+  .title {
+    transform: translate3d(-50%, 100vh, 0);
+
+    &.title-ani-start {
+      transform: translate3d(-50%, calc(50vh - 50%), 0);
+    }
+
+    &.title-ani-end {
+      transform: translate3d(-50%, calc(50vh - 50%), 0);
+    }
+  }
+}

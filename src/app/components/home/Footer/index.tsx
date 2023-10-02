@@ -1,9 +1,14 @@
 import Link from "next/link";
-import MediaIconBar from "../common/MediaIconBar";
+import MediaIconBar from "../../common/MediaIconBar";
+import './index.scss';
 
-export default function Footer() {
+interface Props {
+  onWheel?: (e: WheelEvent) => void;
+}
+
+export default function Footer(props: Props) {
   return (
-    <footer className="contact-info w-full h-[25rem] box-border px-[6.25rem] pt-28 flex">
+    <footer className="contact-info w-full h-[25rem] box-border md:px-[6.25rem] pt-28 flex-col bg-black md:flex-row" onWheel={e => props.onWheel?.(e as any)}>
       <MediaIconBar type="yellow" gutter="lg" />
 
       <div className="contact-info uppercase ml-[26.6vw] font-poppins text-sm">
@@ -19,9 +24,9 @@ export default function Footer() {
           </Link>
         </div>
 
-        <div className="contact-us mb-7">
-          <div className="base-info">contact us</div>
-          <div className="email">contact@moonveil.studio</div>
+        <div className="contact-us h-5 mb-7 relative">
+          <div className="base-info absolute left-0 top-0 text-[#4d4d4d]">contact us</div>
+          <div className="lowercase email absolute left-0 top-0">contact@moonveil.studio</div>
         </div>
 
         <div className="copyright mb-5">

@@ -1,3 +1,5 @@
+'use client';
+
 import XSvg from "svg/x.svg";
 import MediumSvg from "svg/medium.svg";
 import DiscordSvg from "svg/discord.svg";
@@ -17,6 +19,10 @@ export default function MediaIconBar(props: Props) {
   const sizeClass = props.size === 'default' ? 'w-8 h-8' : 'w-[3.25rem] h-[3.25rem]';
   const svgClass = [gutterClass, sizeClass].join(' ');
 
+  function openURL(url: string) {
+    window.open(url);
+  }
+
   return (
     <div
       className={[
@@ -25,11 +31,11 @@ export default function MediaIconBar(props: Props) {
         "color-" + (props.type || "white"),
       ].join(" ")}
     >
-      <XSvg className={sizeClass} />
-      <MediumSvg className={svgClass} />
-      <DiscordSvg className={svgClass} />
-      <TelegramSvg className={svgClass} />
-      <YoutubeSvg className={svgClass} />
+      <XSvg className={sizeClass} onClick={() => openURL('https://twitter.com/Moonveil_Studio')} />
+      <MediumSvg className={svgClass} onClick={() => openURL('https://medium.com/@Moonveil_Studio')} />
+      <DiscordSvg className={svgClass} onClick={() => openURL('https://discord.com/invite/NyECfU5XFX')} />
+      <TelegramSvg className={svgClass} onClick={() => openURL('https://t.me/+AeiqS8o2YmswYTgx')} />
+      <YoutubeSvg className={svgClass} onClick={() => openURL('https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A')} />
     </div>
   );
 }
