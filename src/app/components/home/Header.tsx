@@ -11,7 +11,7 @@ import Medium from "img/header/medium.svg";
 import Telegram from "img/header/telegram.svg";
 import X from "img/header/x.svg";
 import LoginDialog from "../common/LoginDialog";
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 const routeText = [
     { name: "Home", route: "/home" },
