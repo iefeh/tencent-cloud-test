@@ -13,6 +13,7 @@ import { useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/app/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
+import { throttle } from "lodash";
 
 interface Figure {
   img: StaticImageData;
@@ -100,20 +101,13 @@ export default function About({
   const containerRef = useRef(null);
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
   const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean | null>(null);
   const [swiperWrapper, setSwiperWrapper] = useState<SwiperClass>();
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
   function onSlideChangeEndWrapper() {
-    if (swiperWrapper?.activeIndex === 1) {
-      swiperWrapper?.mousewheel.enable();
-    } else {
-      swiperWrapper?.mousewheel.disable();
-    }
   }
   function onSlideChangeEnd() {
-    setCurFigure(figureArray[swiperFigure?.activeIndex!]);
-
     if (swiperFigure?.activeIndex === 4) {
       swiperWrapper?.mousewheel.enable();
     } else {
@@ -121,12 +115,16 @@ export default function About({
     }
   }
 
+  function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
+    console.log("%c Line:118 🍊 swiper", "color:#3f7cff", event, swiper);
+  }
+
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
       <Swiper
         className="relative scroll-wrapper w-full h-screen"
-        modules={[Mousewheel]}
         direction="vertical"
+        modules={[Mousewheel]}
         slidesPerView={1}
         onSwiper={setSwiperWrapper}
         onSlideChangeTransitionEnd={onSlideChangeEndWrapper}
@@ -135,7 +133,7 @@ export default function About({
           <div className="swiper-screen w-full h-screen relative">
             <div
               className={`absolute w-full h-screen z-[2] bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
-              // hidden={!open}
+              hidden={open === null}
             >
               <div className="flex h-screen">
                 <div className="w-1/2 flex items-center justify-start p-56">
@@ -177,9 +175,12 @@ export default function About({
               className="w-full h-full"
               modules={[Mousewheel]}
               slidesPerView={3}
-              mousewheel={true}
+              mousewheel={{
+                releaseOnEdges: true
+              }}
               centeredSlides={true}
               onSlideChangeTransitionEnd={onSlideChangeEnd}
+              onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
               {figureArray.map((figureData, index) => {
