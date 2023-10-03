@@ -2,6 +2,7 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   webpack(config) {
     // 针对 SVG 的处理规则
     config.module.rules.push({
@@ -23,6 +24,6 @@ const nextConfig = {
       },
     ]
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
