@@ -1,6 +1,6 @@
 "use client";
 import Image, { StaticImageData } from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 import "./about.scss";
 import MJ from "img/about/1@2x.png";
 import JW from "img/about/2@2x.png";
@@ -10,15 +10,10 @@ import PuffZ from "img/about/5@2x.png";
 import leftArrows from "img/about/arrow_1.png";
 import rightArrows from "img/about/arrow_2.png";
 import BScroll from "@better-scroll/core";
-import { useEffect, useRef, useState } from "react";
-import ScrollBar from "@better-scroll/scroll-bar";
-import MouseWheel from "@better-scroll/mouse-wheel";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/app/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
-
-BScroll.use(MouseWheel);
-BScroll.use(ScrollBar);
 
 interface Figure {
   img: StaticImageData;
@@ -107,18 +102,20 @@ export default function About({
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
   const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
   const [open, setOpen] = useState(false);
+  const [swiperWrapper, setSwiperWrapper] = useState<SwiperClass>();
+  const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
   const scrollWrapper = useRef(null);
 
-  useEffect(() => {
-    const bs = new BScroll(scrollWrapper.current!, {
-      scrollY: true,
-      bounce: false,
-      mouseWheel: true,
-    });
-  }, [scrollWrapper]);
+  function onSlideChangeEnd() {
+    if (swiperFigure?.activeIndex === 4) {
+      swiperWrapper?.mousewheel.enable();
+    } else {
+      swiperWrapper?.mousewheel.disable();
+    }
+  }
 
   return (
-    <div ref={scrollWrapper} className="about relative scroll-wrapper w-full h-screen flex flex-col items-center justify-between">
+    <div className="about w-full h-screen flex flex-col items-center justify-between">
       <div
         className="absolute w-full h-screen z-[2] bg-black"
         hidden={!open}
@@ -156,104 +153,216 @@ export default function About({
           />
         </div>
       </div>
-      <div className="scroll-container w-full relative">
-        <div className="swiper-screen w-full h-screen relative">
-          <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
-            OUR TEAM
-          </div>
-          <Swiper
-            className="w-full h-full"
-            modules={[Mousewheel]}
-            slidesPerView={3}
-            mousewheel={{
-              releaseOnEdges: true,
-            }}
-            centeredSlides={true}
-            onSlideChange={() => console.log("slide change")}
-            onSwiper={(swiper) => console.log(swiper)}
-          >
-            {figureArray.map((figureData, index) => {
-              return (
-                <SwiperSlide
-                  className="flex items-center justify-start w-[24rem]"
-                  key={figureData.name}
-                >
-                  <div
-                    onClick={() => {
-                      setCurFigure(figureData);
-                      setOpen(true);
-                    }}
-                    className="transition-transform transform group"
+      {/* <div ref={scrollWrapper} className="relative scroll-wrapper w-full h-screen" >
+        <div className="scroll-container w-full relative">
+          <div className="swiper-screen w-full h-screen relative">
+            <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
+              OUR TEAM
+            </div>
+            <Swiper
+              className="w-full h-full"
+              modules={[Mousewheel]}
+              slidesPerView={3}
+              mousewheel={{
+                releaseOnEdges: true,
+              }}
+              centeredSlides={true}
+              onSlideChange={() => console.log("slide change")}
+              onSwiper={(swiper) => console.log(swiper)}
+            >
+              {figureArray.map((figureData, index) => {
+                return (
+                  <SwiperSlide
+                    className="flex items-center justify-start w-[24rem]"
+                    key={figureData.name}
                   >
-                    <Image
-                      className="w-[20rem] h-[23rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
-                      src={figureData.img}
-                      alt={figureData.name}
-                    />
-                    <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
-                      <span className="text-white mb-1 leading-none">
-                        {figureData.name}
-                      </span>
-                      <span className="text-[#666] leading-none whitespace-nowrap">
-                        {figureData.subTitle}
-                      </span>
+                    <div
+                      onClick={() => {
+                        setCurFigure(figureData);
+                        setOpen(true);
+                      }}
+                      className="transition-transform transform group"
+                    >
+                      <Image
+                        className="w-[20rem] h-[23rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
+                        src={figureData.img}
+                        alt={figureData.name}
+                      />
+                      <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
+                        <span className="text-white mb-1 leading-none">
+                          {figureData.name}
+                        </span>
+                        <span className="text-[#666] leading-none whitespace-nowrap">
+                          {figureData.subTitle}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
-          <div className="scroll_btn w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
-            <div className="relative w-full h-full flex justify-center items-center">
-              scroll
-              <Image
-                className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]"
-                src={rightArrows}
-                alt="left"
-              />
-              <Image
-                className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]"
-                src={leftArrows}
-                alt="right"
-              />
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+            <div className="scroll_btn w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
+              <div className="relative w-full h-full flex justify-center items-center">
+                scroll
+                <Image
+                  className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]"
+                  src={rightArrows}
+                  alt="left"
+                />
+                <Image
+                  className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]"
+                  src={leftArrows}
+                  alt="right"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            ref={containerRef}
+            className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
+          >
+            <div
+              className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[7vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
+                }`}
+            >
+              Our Partners
+            </div>
+            <div
+              className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
+                }`}
+            >
+              <ul className="gap-[2vw] grid grid-cols-5">
+                {sponsorArray.map((value, index) => {
+                  return (
+                    <li
+                      key={index}
+                      className="w-[9.4vw] h-[4.7vw] relative"
+                    >
+                      <Image
+                        className="object-cover"
+                        src={`/img/about/${index + 1}.png`}
+                        alt=""
+                        fill
+                        sizes="100%"
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           </div>
         </div>
-        <div
-          ref={containerRef}
-          className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
-        >
-          <div
-            className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[7vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
-              }`}
-          >
-            Our Partners
-          </div>
-          <div
-            className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
-              }`}
-          >
-            <ul className="gap-[2vw] grid grid-cols-5">
-              {sponsorArray.map((value, index) => {
+      </div> */}
+
+      <Swiper
+        className="relative scroll-wrapper w-full h-screen"
+        modules={[Mousewheel]}
+        direction="vertical"
+        slidesPerView={1}
+        onSwiper={setSwiperWrapper}
+      >
+        <SwiperSlide>
+          <div className="swiper-screen w-full h-screen relative">
+            <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
+              OUR TEAM
+            </div>
+            <Swiper
+              className="w-full h-full"
+              modules={[Mousewheel]}
+              slidesPerView={3}
+              mousewheel={{
+                releaseOnEdges: true,
+              }}
+              centeredSlides={true}
+              onSlideChangeTransitionEnd={onSlideChangeEnd}
+              onSwiper={setSwiperFigure}
+            >
+              {figureArray.map((figureData, index) => {
                 return (
-                  <li
-                    key={index}
-                    className="w-[9.4vw] h-[4.7vw] relative"
+                  <SwiperSlide
+                    className="flex items-center justify-start w-[24rem]"
+                    key={figureData.name}
                   >
-                    <Image
-                      className="object-cover"
-                      src={`/img/about/${index + 1}.png`}
-                      alt=""
-                      fill
-                      sizes="100%"
-                    />
-                  </li>
+                    <div
+                      onClick={() => {
+                        setCurFigure(figureData);
+                        setOpen(true);
+                      }}
+                      className="transition-transform transform group"
+                    >
+                      <Image
+                        className="w-[20rem] h-[23rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
+                        src={figureData.img}
+                        alt={figureData.name}
+                      />
+                      <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
+                        <span className="text-white mb-1 leading-none">
+                          {figureData.name}
+                        </span>
+                        <span className="text-[#666] leading-none whitespace-nowrap">
+                          {figureData.subTitle}
+                        </span>
+                      </div>
+                    </div>
+                  </SwiperSlide>
                 );
               })}
-            </ul>
+            </Swiper>
+            <div className="scroll_btn w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
+              <div className="relative w-full h-full flex justify-center items-center">
+                scroll
+                <Image
+                  className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]"
+                  src={rightArrows}
+                  alt="left"
+                />
+                <Image
+                  className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]"
+                  src={leftArrows}
+                  alt="right"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div
+            ref={containerRef}
+            className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
+          >
+            <div
+              className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[7vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
+                }`}
+            >
+              Our Partners
+            </div>
+            <div
+              className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
+                }`}
+            >
+              <ul className="gap-[2vw] grid grid-cols-5">
+                {sponsorArray.map((value, index) => {
+                  return (
+                    <li
+                      key={index}
+                      className="w-[9.4vw] h-[4.7vw] relative"
+                    >
+                      <Image
+                        className="object-cover"
+                        src={`/img/about/${index + 1}.png`}
+                        alt=""
+                        fill
+                        sizes="100%"
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
+
     </div>
   );
 }
