@@ -62,7 +62,7 @@ const Character: React.FC = () => {
               src={item.heroUrl}
               alt=""
             ></Image>
-            <span className={`hero-name ${calcHeroName(index)}`}>{item.name}</span>
+            <span className={`hero-name ${calcHeroName(index)}` }>{item.name}</span>
           </div>
         ))}
       </div>

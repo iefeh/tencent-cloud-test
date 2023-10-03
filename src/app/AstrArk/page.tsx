@@ -33,7 +33,7 @@ export default function Home() {
           <AstrarkHome />
         </div>
 
-        <div className="w-full h-screen relative flex justify-center items-center overflow-hidden">
+        <div className="w-full h-screen">
           <WorldView />
         </div>
 
