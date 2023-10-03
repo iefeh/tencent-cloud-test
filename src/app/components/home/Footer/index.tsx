@@ -8,7 +8,7 @@ interface Props {
 
 export default function Footer(props: Props) {
   return (
-    <footer className="contact-info w-full h-[25rem] box-border md:px-[6.25rem] pt-28 flex-col bg-black md:flex-row" onWheel={e => props.onWheel?.(e as any)}>
+    <footer className="contact-info w-full h-[25rem] box-border px-[6.25rem] pt-28 flex flex-col bg-black md:flex-row" onWheel={e => props.onWheel?.(e as any)}>
       <MediaIconBar type="yellow" gutter="lg" />
 
       <div className="contact-info uppercase ml-[26.6vw] font-poppins text-sm">
