@@ -13,6 +13,14 @@
         animation: slideInAnim 1.2s ease;
         animation-fill-mode: both;
     }
+    .referralInAnim {
+        animation: referralInAnim 1.2s ease;
+        animation-fill-mode: both;
+    }
+    .referralOutAnim {
+        animation: referralOutAnim 1.2s ease;
+        animation-fill-mode: both;
+    }
 
     @keyframes slideInAnim {
         0% {
@@ -21,6 +29,26 @@
 
         100% {
             transform: translateY(0);
+        }
+    }
+
+    @keyframes referralInAnim {
+        0% {
+            transform: translateY(-100vh);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes referralOutAnim {
+        0% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(-100vh);
         }
     }
 }

@@ -9,8 +9,7 @@ import RobinZ from "img/about/4@2x.png";
 import PuffZ from "img/about/5@2x.png";
 import leftArrows from "img/about/arrow_1.png";
 import rightArrows from "img/about/arrow_2.png";
-import BScroll from "@better-scroll/core";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/app/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
@@ -104,7 +103,6 @@ export default function About({
   const [open, setOpen] = useState(false);
   const [swiperWrapper, setSwiperWrapper] = useState<SwiperClass>();
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
-  const scrollWrapper = useRef(null);
 
   function onSlideChangeEndWrapper() {
     if (swiperWrapper?.activeIndex === 1) {
@@ -115,7 +113,7 @@ export default function About({
   }
   function onSlideChangeEnd() {
     setCurFigure(figureArray[swiperFigure?.activeIndex!]);
-    
+
     if (swiperFigure?.activeIndex === 4) {
       swiperWrapper?.mousewheel.enable();
     } else {
@@ -136,8 +134,8 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className="absolute w-full h-screen z-[2] bg-black"
-              hidden={!open}
+              className={`absolute w-full h-screen z-[2] bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
+              // hidden={!open}
             >
               <div className="flex h-screen">
                 <div className="w-1/2 flex items-center justify-start p-56">
@@ -155,22 +153,22 @@ export default function About({
                   ></Image>
                 </div>
               </div>
+              <div
+                onClick={() => setOpen(!open)}
+                className="absolute bottom-36 left-1/2 z-[3] -translate-x-1/2 w-10 h-10 cursor-pointer"
+              >
+                <span className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10`}>
+                  <span>&#x2715;</span>
+                </span>
+                <Image
+                  className="object-cover"
+                  src="/img/about/button@2x.png"
+                  alt="close"
+                  fill
+                  sizes="100%"
+                />
+              </div>
               <div className="absolute bottom-[11.2rem] h-[1px] w-full lineYellow" ></div>
-            </div>
-            <div
-              onClick={() => setOpen(!open)}
-              className="absolute bottom-36 left-1/2 z-[3] -translate-x-1/2 w-10 h-10 cursor-pointer"
-            >
-              <span className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10 ${!open && 'rotate-45'}`}>
-                <span>&#x2715;</span>
-              </span>
-              <Image
-                className="object-cover"
-                src="/img/about/button@2x.png"
-                alt="close"
-                fill
-                sizes="100%"
-              />
             </div>
             <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
               OUR TEAM
@@ -244,8 +242,7 @@ export default function About({
               Our Partners
             </div>
             <div
-              className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
-                }`}
+              className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
             >
               <ul className="gap-[2vw] grid grid-cols-5">
                 {sponsorArray.map((value, index) => {
