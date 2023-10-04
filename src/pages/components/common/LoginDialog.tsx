@@ -5,6 +5,7 @@ import goldenLogo from "img/logo_golden.png";
 import btnTwitter from "img/login/btn_twitter.png";
 import btnGoogle from "img/login/btn_google.png";
 import GoogleLogin from "./GoogleLogin";
+import TwitterLogin from "./TwitterLogin";
 
 interface Props {
   visible?: boolean;
@@ -48,10 +49,10 @@ export default function LoginDialog({ visible, onClose }: Props) {
 
         <Link
           className="inline-flex items-center px-14 py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
-          href="/"
+          href="#"
         >
           <Image className="w-9 h-9" src={btnTwitter} alt="" />
-          <span>Continue With Google</span>
+          <TwitterLogin />
         </Link>
       </div>
     </div>,
