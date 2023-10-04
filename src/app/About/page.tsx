@@ -106,6 +106,9 @@ export default function About({
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
   function onSlideChangeEndWrapper() {
+    if (swiperWrapper?.activeIndex === 1) {
+      swiperWrapper?.mousewheel.enable();
+    }
   }
   function onSlideChangeEnd() {
     if (swiperFigure?.activeIndex === 4) {
@@ -113,10 +116,6 @@ export default function About({
     } else {
       swiperWrapper?.mousewheel.disable();
     }
-  }
-
-  function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
-    console.log("%c Line:118 🍊 swiper", "color:#3f7cff", event, swiper);
   }
 
   return (
@@ -180,7 +179,6 @@ export default function About({
               }}
               centeredSlides={true}
               onSlideChangeTransitionEnd={onSlideChangeEnd}
-              onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
               {figureArray.map((figureData, index) => {
