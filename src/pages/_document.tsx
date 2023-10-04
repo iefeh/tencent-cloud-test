@@ -3,7 +3,9 @@ import { Html, Head, Main, NextScript } from 'next/document'
 export default function Document() {
   return (
     <Html lang="en">
-      <Head />
+      <Head >
+        <script src="https://apis.google.com/js/api.js" async defer></script>
+      </Head>
       <body>
         <Main />
         <NextScript />

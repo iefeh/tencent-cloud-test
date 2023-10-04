@@ -4,6 +4,7 @@ import Image from "next/image";
 import goldenLogo from "img/logo_golden.png";
 import btnTwitter from "img/login/btn_twitter.png";
 import btnGoogle from "img/login/btn_google.png";
+import GoogleLogin from "./GoogleLogin";
 
 interface Props {
   visible?: boolean;
@@ -12,6 +13,17 @@ interface Props {
 
 export default function LoginDialog({ visible, onClose }: Props) {
   if (!visible) return null;
+
+  const handleLoginSuccess = (profile: any, idToken: string) => {
+    // 处理登录成功后的操作，可以将profile和idToken发送到服务器进行验证
+    console.log('Login success', profile, idToken);
+  };
+
+  const handleLoginFailure = (error: any) => {
+    // 处理登录失败后的操作
+    console.error('Login failed', error);
+  };
+
   return createPortal(
     <div className="login-dialog fixed left-0 top-0 w-full h-screen z-50">
       <div
@@ -28,10 +40,10 @@ export default function LoginDialog({ visible, onClose }: Props) {
 
         <Link
           className="inline-flex items-center px-14 py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
-          href="/"
+          href="#"
         >
           <Image className="w-9 h-9" src={btnGoogle} alt="" />
-          <span>Continue With Google</span>
+          <GoogleLogin onSuccess={handleLoginSuccess} onFailure={handleLoginFailure} />
         </Link>
 
         <Link

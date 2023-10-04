@@ -12,7 +12,6 @@ import { useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/pages/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
-import { throttle } from "lodash";
 
 interface Figure {
   img: StaticImageData;
