@@ -11,7 +11,7 @@ export default async function handler(req: any, res: any) {
 
       const oauthHeader: any = {
         oauth_callback: origin, // 替换为你的回调URL
-        oauth_consumer_key: '8GVz2KC81Psf63801UjlWFy0J',
+        oauth_consumer_key: 'by1lY2FaSGZTZmpqQVhCSDd6bHg6MTpjaQ',
         oauth_nonce: generateNonce(),
         oauth_signature_method: 'HMAC-SHA1',
         oauth_timestamp: Math.floor(Date.now() / 1000),
@@ -62,7 +62,7 @@ function generateNonce() {
 // 生成OAuth签名
 function generateSignature(httpMethod: string, url: string, oauthParams: any) {
   const baseString = generateBaseString(httpMethod, url, oauthParams);
-  const signingKey = `${encodeURIComponent('diF9FNT8RrafGo4c9Q6gAHFdEXdo28QmlNYQJzLu8w6zLRx4PJ')}&`; // 替换为你的Twitter API Secret Key
+  const signingKey = `${encodeURIComponent('QI4uGSYERWVt2YjcXagX-lijpOiZzLg-lPsA4MEJ-kBeJa-An3')}&`; // 替换为你的Twitter API Secret Key
   const signature = crypto
     .createHmac('sha1', signingKey)
     .update(baseString)
