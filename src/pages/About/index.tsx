@@ -10,7 +10,7 @@ import leftArrows from "img/about/arrow_1.png";
 import rightArrows from "img/about/arrow_2.png";
 import { useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
-import { IntersectionObserverHook } from "@/pages/hooks/intersectionObserverHook";
+import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 
 interface Figure {
