@@ -1,3 +1,4 @@
 interface Window {
-    gapi: any
+    google: any;
+    twttr: any;
 }

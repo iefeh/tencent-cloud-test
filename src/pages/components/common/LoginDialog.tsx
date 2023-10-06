@@ -42,7 +42,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
         <div
           className="inline-flex items-center cursor-pointer px-14 py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
         >
-          <Image className="w-9 h-9" src={btnGoogle} alt="" />
+          {/* <Image className="w-9 h-9" src={btnGoogle} alt="" /> */}
           <GoogleLogin onSuccess={handleLoginSuccess} onFailure={handleLoginFailure} />
         </div>
 
