@@ -10,6 +10,8 @@ export default function StarScreen(props: Props) {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
+  const [rafId, setRafId] = useState(-1);
+  const [hasRun, setHasRun] = useState(false);
 
   // eslint-disable-next-line import/no-anonymous-default-export
   function initCanvas(ctx: CanvasRenderingContext2D) {
@@ -54,7 +56,7 @@ export default function StarScreen(props: Props) {
     function loop() {
       step();
       draw();
-      window.requestAnimationFrame(loop);
+      setRafId(requestAnimationFrame(loop));
     }
 
     function step() {
@@ -139,8 +141,15 @@ export default function StarScreen(props: Props) {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
 
+    if (hasRun) return;
     initCanvas(ctx);
-  }, [canvasRef]);
+    setHasRun(true);
+
+    return () => {
+      ctx.clearRect(0, 0, width, height);
+      if (rafId > 0) cancelAnimationFrame(rafId);
+    }
+  }, []);
 
   useEffect(() => {
     setSize();
