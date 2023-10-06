@@ -10,8 +10,10 @@ import Youtube from "img/header/Youtube.svg";
 import Medium from "img/header/medium.svg";
 import Telegram from "img/header/telegram.svg";
 import X from "img/header/x.svg";
+import List from "svg/list.svg";
+import Close from "svg/close.svg";
 import LoginDialog from "../common/LoginDialog";
-import { useSelectedLayoutSegment } from "next/navigation";
+import Sidebar from "../common/Sidebar";
 import { useRouter } from "next/router";
 
 const routeText = [
@@ -31,6 +33,7 @@ const mediaIcon = [
 
 export default function Header() {
     const [loginVisible, setLoginVisible] = useState(false);
+    const [listOpen, setListOpen] = useState(false);
     const router = useRouter();
 
     function LoginSegments() {
@@ -79,12 +82,16 @@ export default function Header() {
                     label="login"
                     onClick={() => setLoginVisible(true)}
                 />
-            </div>
 
+                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-sm:block max-sm:ml-2 hidden w-[2rem] h-[1.88rem]" /> : <List onClick={() => setListOpen(true)} className="max-sm:block hidden max-sm:ml-2 w-[2rem] h-[1.88rem]" /> }
+            </div>
+            
+            
             <LoginDialog
                 visible={loginVisible}
                 onClose={() => setLoginVisible(false)}
             />
+            <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
         </section>
     );
 }

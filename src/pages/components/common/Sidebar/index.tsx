@@ -1,0 +1,46 @@
+import { createPortal } from "react-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
+
+interface Props {
+  visible?: boolean;
+  onClose?: () => void;
+}
+
+const routeText = [
+  { name: "Home", route: "/home" },
+  { name: "About", route: "/About" },
+  { name: "NFT", route: "/NFT" },
+  { name: "AstrArk", route: "/AstrArk" },
+  { name: "Loyalty Program", route: "/LoyaltyProgram" },
+  { name: "Maketplace", route: "/Maketplace" },
+];
+
+export default function Sidebar({ visible, onClose }: Props) {
+  const router = useRouter();
+  if (!visible) return null;
+
+  function LoginSegments() {
+    let temp = router.route;
+    return temp && temp !== '/' ? temp : '/home';
+}
+
+  return createPortal(
+    <div onClick={onClose} className="sidebar max-sm:block fixed mt-[3.25rem] left-0 top-0 w-full bg-black z-10">
+
+      <div className="content flex flex-col font-semakin text-center items-center justify-center h-full">
+        {routeText.map((value, index) => (
+          <Link
+            className={`m-2 transition-all duration-300 hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799]'}`}
+            key={index}
+            href={value.route}
+          >
+            {value.name}
+          </Link>
+        ))}
+      </div>
+
+    </div>,
+    document.body
+  );
+}

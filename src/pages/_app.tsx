@@ -20,6 +20,7 @@ import "./AstrArk/components/schoolDesc/index.scss";
 import "./AstrArk/components/school/Mystery/index.scss";
 import "./AstrArk/components/school/SchoolIcons/index.scss";
 import "./AstrArk/components/worldView/index.scss";
+import "./components/common/Sidebar/index.scss";
 import homePlanetBg from "img/home/planet.png";
 
 async function initResources(path: string) {
