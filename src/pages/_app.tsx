@@ -21,15 +21,16 @@ import "./AstrArk/components/school/Mystery/index.scss";
 import "./AstrArk/components/school/SchoolIcons/index.scss";
 import "./AstrArk/components/worldView/index.scss";
 import homePlanetBg from "img/home/planet.png";
+import loadingImg from "img/loading/bg_moon.png";
 
 async function initResources(path: string) {
   path = path.toLowerCase();
-  let resources: string[] = [];
+  let resources: string[] = [loadingImg.src];
 
   switch (path) {
     case "/":
     case "/home":
-      resources = [homePlanetBg.src];
+      resources.push(...[homePlanetBg.src]);
       break;
   }
 
@@ -52,31 +53,15 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   useEffect(() => {
+    // 仅第一次进入页面可能展示Loading
     initResources(router.route).then(() => setLoading(false));
-
-    const startLoading = (path: string) => {
-      setLoading(true);
-    };
-
-    const stopLoading = async (path: string) => {
-      await initResources(path);
-      setLoading(false);
-    };
-
-    Router.events.on("routeChangeStart", startLoading);
-    Router.events.on("routeChangeComplete", stopLoading);
-    Router.events.on("routeChangeError", stopLoading);
-
-    return () => {
-      Router.events.off("routeChangeStart", startLoading);
-      Router.events.off("routeChangeComplete", stopLoading);
-      Router.events.off("routeChangeError", stopLoading);
-    };
   }, []);
 
-  return (
-    <RootLayout loading={loading}>
-      {loading ? <Loading /> : <Component {...pageProps} />}
+  return loading ? (
+    <Loading />
+  ) : (
+    <RootLayout>
+      <Component {...pageProps} />
     </RootLayout>
   );
 }
