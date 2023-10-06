@@ -16,23 +16,23 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
+  loading
 }: {
   children: React.ReactNode;
+  loading: boolean;
 }) {
   return (
     <React.Fragment>
-      <LineBorder />
+      {loading || <LineBorder />}
 
       <main
         className="flex w-full h-screen flex-col items-center justify-between relative bg-black"
         id="main-layout"
       >
         <Suspense fallback={<Loading />}>
-          <Header />
+          {loading || <Header />}
 
           <section className="page-container w-full h-full">{children}</section>
-
-          <section className="page-container-mask fixed z-10"></section>
         </Suspense>
       </main>
     </React.Fragment>

@@ -1,10 +1,9 @@
-@keyframes text-belt {
+@keyframes ani_mon {
   0% {
-    background-position-x: 100%;
+    opacity: 0.1;
   }
-
   100% {
-    background-position-x: 0%;
+    opacity: 1;
   }
 }
 
@@ -13,7 +12,10 @@
     .text {
       background-image: linear-gradient(to right, var(--basic-yellow) 0%, var(--basic-yellow) 50%, white 50%, white 100%);
       background-size: 200%;
-      animation: text-belt 1.5s linear;
     }
   }
+}
+
+.moon {
+  animation: ani_mon 2s linear;
 }

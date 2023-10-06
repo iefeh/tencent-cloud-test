@@ -33,7 +33,7 @@ const config: Config = {
         'fz-16': '16px',
         'fz-18': '18px',
         'fz-20': '20px',
-      }
+      },
     },
   },
   plugins: [],
