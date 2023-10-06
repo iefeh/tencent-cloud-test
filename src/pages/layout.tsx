@@ -6,6 +6,7 @@ import LineBorder from "./components/home/LineBorder/index";
 import { Suspense } from "react";
 import Loading from "./components/common/Loading";
 import "swiper/css";
+import 'swiper/css/pagination';
 
 const inter = Inter({ subsets: ["latin"] });
 
