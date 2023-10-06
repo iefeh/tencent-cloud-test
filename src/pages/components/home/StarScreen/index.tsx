@@ -1,5 +1,4 @@
 import { useState, createRef, useEffect } from "react";
-import initCanvas from "./initCanvas";
 import planetImg from "img/home/planet.png";
 import Image from "next/image";
 
@@ -11,6 +10,125 @@ export default function StarScreen(props: Props) {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
+
+  // eslint-disable-next-line import/no-anonymous-default-export
+  function initCanvas(ctx: CanvasRenderingContext2D) {
+    var w = window.innerWidth / 2,
+      h = window.innerHeight / 2,
+      opts = {
+        starCount: 40,
+
+        radVel: 0.01,
+        lineBaseVel: 0.1,
+        lineAddedVel: 0.1,
+        lineBaseLife: 0.4,
+        lineAddedLife: 0.01,
+
+        starBaseLife: 10,
+        starAddedLife: 90,
+
+        ellipseTilt: -0.3,
+        ellipseBaseRadius: 0.15,
+        ellipseAddedRadius: 0.02,
+        ellipseAxisMultiplierX: 2,
+        ellipseAxisMultiplierY: 1,
+        ellipseCX: w / 2,
+        ellipseCY: h / 2,
+
+        repaintAlpha: 0.015,
+      },
+      stars: Star[] = [],
+      first = true;
+
+    function star_init() {
+      stars = Array(opts.starCount)
+        .fill(undefined)
+        .map((_) => new Star());
+
+      if (first) {
+        loop();
+        first = false;
+      }
+    };
+
+    function loop() {
+      step();
+      draw();
+      window.requestAnimationFrame(loop);
+    }
+
+    function step() {
+      stars.map(function (star) {
+        star.step();
+      });
+    }
+
+    function draw() {
+      ctx.translate(opts.ellipseCX, opts.ellipseCY);
+      ctx.rotate(opts.ellipseTilt);
+      ctx.scale(opts.ellipseAxisMultiplierX, opts.ellipseAxisMultiplierY);
+
+      ctx.scale(
+        1 / opts.ellipseAxisMultiplierX,
+        1 / opts.ellipseAxisMultiplierY
+      );
+      ctx.rotate(-opts.ellipseTilt);
+      ctx.translate(-opts.ellipseCX, -opts.ellipseCY);
+
+      stars.map(function (star) {
+        star.draw();
+      });
+    }
+
+    class Star {
+      public x: number;
+      public y: number;
+      public lifeStep: number;
+      public life: number;
+
+
+      constructor() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.lifeStep = Math.random() > 0.5 ? 1 : -1;
+        this.life = opts.starBaseLife + Math.random() * opts.starAddedLife;
+      }
+
+      step() {
+        this.life += this.lifeStep;
+  
+        if (this.life <= 0 || this.life >= 100) {
+          this.lifeStep *= -1;
+        }
+      }
+
+      draw() {
+        if (this.lifeStep < 0) {
+          ctx.globalCompositeOperation = "darken";
+  
+          ctx.fillStyle = ctx.shadowColor = `rgba(0, 0, 0, .1)`;
+        } else {
+          ctx.globalCompositeOperation = "lighten";
+  
+          ctx.fillStyle = ctx.shadowColor = `rgba(255, 255, 255, .1)`;
+        }
+        ctx.shadowBlur = this.life;
+        ctx.fillRect(this.x, this.y, 0.5, 0.5);
+      };
+    }
+
+    window.addEventListener("resize", function () {
+      w = window.innerWidth / 2;
+      h = window.innerHeight / 2;
+
+      opts.ellipseCX = w / 2;
+      opts.ellipseCY = h / 2;
+
+      star_init();
+    });
+
+    star_init();
+  }
 
   function setSize() {
     setWidth(window.innerWidth / 2);
@@ -28,12 +146,21 @@ export default function StarScreen(props: Props) {
     setSize();
 
     window.addEventListener("resize", setSize);
-    return () => window.removeEventListener('resize', setSize);
+    return () => window.removeEventListener("resize", setSize);
   }, []);
 
   return (
-    <div className={"star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none " + (props.className || '')}>
-      <Image className="bg-img w-[80vw] h-[70vw] absolute left-[8rem] -top-[13.5rem] origin-center" src={planetImg} alt="" />
+    <div
+      className={
+        "star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none " +
+        (props.className || "")
+      }
+    >
+      <Image
+        className="bg-img w-[80vw] h-[70vw] absolute left-[8rem] -top-[13.5rem] origin-center"
+        src={planetImg}
+        alt=""
+      />
 
       <canvas
         ref={canvasRef}
