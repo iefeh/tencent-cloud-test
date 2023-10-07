@@ -15,7 +15,7 @@ interface Props {
 
 export default function MediaIconBar(props: Props) {
   const gutterClass = `gutter-${props.gutter || "default"}`;
-  const sizeClass = props.size === 'default' ? 'w-8 h-8' : 'w-[3.25rem] h-[3.25rem]';
+  const sizeClass = props.size === 'default' ? 'w-8 h-8' : 'w-10 h-10';
   const svgClass = [gutterClass, sizeClass].join(' ');
 
   function openURL(url: string) {

@@ -48,6 +48,8 @@ export default function Home() {
       probeType: 3,
     });
     setBS(bscroll);
+
+    return () => bscroll.destroy();
   }, []);
 
   function onMaskAniEnd() {
