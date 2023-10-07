@@ -49,16 +49,20 @@ async function loadImage(path: string) {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const isHome = router.route === '/' || router.route === '/home';
+  const [loading, setLoading] = useState(isHome);
+  const [resLoading, setResLoading] = useState(isHome);
 
   useEffect(() => {
+    if (!loading || !isHome) return;
+
     // 仅第一次进入页面可能展示Loading
-    initResources(router.route).then(() => setLoading(false));
+    initResources(router.route).then(() => setResLoading(false));
   }, []);
 
   return loading ? (
-    <Loading />
+    <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
   ) : (
     <RootLayout>
       <Component {...pageProps} />
