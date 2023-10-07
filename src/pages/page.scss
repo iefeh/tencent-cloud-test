@@ -15,7 +15,7 @@
 
 @keyframes ani_up {
   0% {
-    transform: translateY(20%);
+    transform: translateY(10vh);
   }
   100% {
     transform: unset;
@@ -37,5 +37,5 @@
 }
 
 .ani-up {
-  animation: ani_up 0.8s ease-in-out;
+  animation: ani_up 1.2s ease-in-out;
 }
