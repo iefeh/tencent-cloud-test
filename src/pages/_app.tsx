@@ -23,6 +23,15 @@ import "./AstrArk/components/worldView/index.scss";
 import "./components/common/Sidebar/index.scss";
 import homePlanetBg from "img/home/planet.png";
 import loadingImg from "img/loading/bg_moon.png";
+import ntf_halo1 from "img/nft/home/halo1.png";
+import ntf_halo2 from "img/nft/home/halo2.png";
+import ntf_meteor from "img/nft/home/meteor.png";
+import ntf_planet1 from "img/nft/home/planet1.png";
+import ntf_planet2 from "img/nft/home/planet2.png";
+import ntf_planet3 from "img/nft/home/planet3.png";
+import ntf_stars1 from "img/nft/home/stars1.png";
+import ntf_stars2 from "img/nft/home/stars2.png";
+import ntf_stars3 from "img/nft/home/stars3.png";
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -32,6 +41,21 @@ async function initResources(path: string) {
     case "/":
     case "/home":
       resources.push(...[homePlanetBg.src]);
+      break;
+    case "/ntf":
+      resources.push(
+        ...[
+          ntf_halo1.src,
+          ntf_halo2.src,
+          ntf_meteor.src,
+          ntf_planet1.src,
+          ntf_planet2.src,
+          ntf_planet3.src,
+          ntf_stars1.src,
+          ntf_stars2.src,
+          ntf_stars3.src,
+        ]
+      );
       break;
   }
 
@@ -51,7 +75,7 @@ async function loadImage(path: string) {
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const isHome = router.route === '/' || router.route === '/home';
+  const isHome = router.route === "/" || router.route === "/home";
   const [loading, setLoading] = useState(isHome);
   const [resLoading, setResLoading] = useState(isHome);
 
@@ -59,7 +83,10 @@ export default function App({ Component, pageProps }: AppProps) {
     if (!loading || !isHome) return;
 
     // 仅第一次进入页面可能展示Loading
-    initResources(router.route).then(() => setResLoading(false));
+    initResources(router.route).then(() => {
+      setResLoading(false);
+      initResources('/ntf');
+    });
   }, []);
 
   return loading ? (
