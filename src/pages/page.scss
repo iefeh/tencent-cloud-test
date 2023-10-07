@@ -13,6 +13,15 @@
   }
 }
 
+@keyframes ani_up {
+  0% {
+    transform: translateY(20%);
+  }
+  100% {
+    transform: unset;
+  }
+}
+
 .slogan-screen {
   .title {
     transform: translate3d(-50%, 100vh, 0);
@@ -25,4 +34,8 @@
       transform: translate3d(-50%, calc(50vh - 50%), 0);
     }
   }
+}
+
+.ani-up {
+  animation: ani_up 0.8s ease-in-out;
 }
