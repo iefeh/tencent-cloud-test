@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import RootLayout from "./layout";
 import Loading from "./components/common/Loading";
@@ -22,15 +22,16 @@ import "./AstrArk/components/school/SchoolIcons/index.scss";
 import "./AstrArk/components/worldView/index.scss";
 import "./components/common/Sidebar/index.scss";
 import homePlanetBg from "img/home/planet.png";
+import loadingImg from "img/loading/bg_moon.png";
 
 async function initResources(path: string) {
   path = path.toLowerCase();
-  let resources: string[] = [];
+  let resources: string[] = [loadingImg.src];
 
   switch (path) {
     case "/":
     case "/home":
-      resources = [homePlanetBg.src];
+      resources.push(...[homePlanetBg.src]);
       break;
   }
 
@@ -49,35 +50,23 @@ async function loadImage(path: string) {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const isHome = router.route === '/' || router.route === '/home';
+  const [loading, setLoading] = useState(isHome);
+  const [resLoading, setResLoading] = useState(isHome);
 
   useEffect(() => {
-    initResources(router.route).then(() => setLoading(false));
+    if (!loading || !isHome) return;
 
-    const startLoading = (path: string) => {
-      setLoading(true);
-    };
-
-    const stopLoading = async (path: string) => {
-      await initResources(path);
-      setLoading(false);
-    };
-
-    Router.events.on("routeChangeStart", startLoading);
-    Router.events.on("routeChangeComplete", stopLoading);
-    Router.events.on("routeChangeError", stopLoading);
-
-    return () => {
-      Router.events.off("routeChangeStart", startLoading);
-      Router.events.off("routeChangeComplete", stopLoading);
-      Router.events.off("routeChangeError", stopLoading);
-    };
+    // 仅第一次进入页面可能展示Loading
+    initResources(router.route).then(() => setResLoading(false));
   }, []);
 
-  return (
-    <RootLayout loading={loading}>
-      {loading ? <Loading /> : <Component {...pageProps} />}
+  return loading ? (
+    <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+  ) : (
+    <RootLayout>
+      <Component {...pageProps} />
     </RootLayout>
   );
 }

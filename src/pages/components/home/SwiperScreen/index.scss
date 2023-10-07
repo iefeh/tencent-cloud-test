@@ -9,11 +9,52 @@
 
 .swiper-mask {
   display: none;
-  background: linear-gradient(to top, #000 100vh, rgba(0, 0, 0, .3) 130vh);
+  background: linear-gradient(to top, #000 100vh, rgba(0, 0, 0, 0.3) 130vh);
 
   &.ani {
     display: block;
     transform: translateY(-30vh);
     animation: home_video_mask 0.3s ease-in-out;
+  }
+}
+
+.swiper-screen {
+  .home-swiper-pagination {
+    position: absolute;
+    left: 5.2vw;
+    bottom: 3.3vw;
+
+    .pagi {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-right: 2vw;
+      font-size: 0.8vw;
+      min-width: 1.4vw;
+      height: 2.2vw;
+      opacity: 0.2;
+      cursor: pointer;
+    }
+
+    .pagi-active {
+      opacity: 1;
+      position: relative;
+      border-radius: 0;
+      border-bottom: 1px;
+      border-style: dashed;
+      border-color: hsla(0, 0%, 100%, 0.2);
+
+      &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        bottom: -0.1vw;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0.2vw;
+        height: 0.2vw;
+        background-color: #fff;
+      }
+    }
   }
 }

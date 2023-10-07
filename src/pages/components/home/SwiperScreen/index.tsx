@@ -1,11 +1,12 @@
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
 import IndexSlide from "../IndexSlide";
 import RaceSlide from "../RaceSlide";
 import EntertainmentSlide from "../EntertainmentSlide";
 import ComingSoon from "../../common/ComingSoon";
 import YellowCircle from "../../common/YellowCircle";
-import { useState, useEffect } from 'react';
-import { throttle } from 'lodash';
+import { useState, useEffect } from "react";
+import { throttle } from "lodash";
 
 interface Props {
   onMaskAniEnd?: () => void;
@@ -14,6 +15,7 @@ interface Props {
 export default function SwiperScreen(props: Props) {
   const [maskAni, setMaskAni] = useState(false);
   const [deltaY, setDeltaY] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   function onWheel(e: WheelEvent) {
     if (e.deltaY <= 0) return;
@@ -28,42 +30,73 @@ export default function SwiperScreen(props: Props) {
     }, 200);
   }
 
-  useEffect(throttle(() => {
-    if (!deltaY) return;
+  useEffect(
+    throttle(() => {
+      if (!deltaY) return;
 
-    setMaskAni(true);
-  }, 100), [deltaY])
+      setMaskAni(true);
+    }, 100),
+    [deltaY]
+  );
 
   return (
-    <div className="swiper-screen w-full h-screen relative overflow-hidden" onWheel={e => onWheel(e as unknown as WheelEvent)}>
+    <div
+      className="swiper-screen w-full h-screen relative overflow-hidden"
+      onWheel={(e) => onWheel(e as unknown as WheelEvent)}
+    >
       <Swiper
+        modules={[Pagination]}
         className="w-full h-full"
         loop
         autoplay={{ delay: 5000 }}
         slidesPerView={1}
-        onSlideChange={() => console.log("slide change")}
-        onSwiper={(swiper) => console.log(swiper)}
+        onSlideChange={(swiper) => {
+          const pagi = document.querySelector('.home-swiper-pagination .pagi-active');
+          const index = Array.prototype.indexOf.call(pagi?.parentNode?.childNodes, pagi);
+          setActiveIndex(index);
+        }}
+        pagination={{
+          el: ".home-swiper-pagination",
+          bulletClass: "pagi",
+          bulletActiveClass: "pagi-active",
+          type: "bullets",
+          clickable: true,
+          renderBullet(index, className) {
+            return `<span class="${className}">${(index + 1 + "").padStart(
+              2,
+              "0"
+            )}</span>`;
+          },
+        }}
       >
         <SwiperSlide>
-          <IndexSlide />
+          <IndexSlide needAni={activeIndex === 0} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <RaceSlide />
+          <RaceSlide needAni={activeIndex === 1} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <EntertainmentSlide />
+          <EntertainmentSlide needAni={activeIndex === 2} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <ComingSoon />
+          <ComingSoon needAni={activeIndex === 3} />
         </SwiperSlide>
+
+        <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
       </Swiper>
 
       <YellowCircle className="absolute right-[4.375rem] bottom-20 z-10" />
 
-      <div className={"swiper-mask absolute left-0 top-0 w-full h-[130vh] translate-y-full shadow-2xl z-20 " + (maskAni ? 'ani' : '')} onAnimationEnd={reset}></div>
+      <div
+        className={
+          "swiper-mask absolute left-0 top-0 w-full h-[130vh] translate-y-full shadow-2xl z-20 " +
+          (maskAni ? "ani" : "")
+        }
+        onAnimationEnd={reset}
+      ></div>
     </div>
   );
 }

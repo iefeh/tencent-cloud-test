@@ -6,6 +6,7 @@ import LineBorder from "./components/home/LineBorder/index";
 import { Suspense } from "react";
 import Loading from "./components/common/Loading";
 import "swiper/css";
+import 'swiper/css/pagination';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,22 +16,20 @@ const inter = Inter({ subsets: ["latin"] });
 // };
 
 export default function RootLayout({
-  children,
-  loading
+  children
 }: {
   children: React.ReactNode;
-  loading: boolean;
 }) {
   return (
     <React.Fragment>
-      {loading || <LineBorder />}
+      <LineBorder />
 
       <main
         className="flex w-full h-screen flex-col items-center justify-between relative bg-black"
         id="main-layout"
       >
         <Suspense fallback={<Loading />}>
-          {loading || <Header />}
+          <Header />
 
           <section className="page-container w-full h-full">{children}</section>
         </Suspense>
