@@ -8,6 +8,7 @@ import AstrarkHome from "./components/home";
 import AstrArkSchool from "./components/school";
 import AstrArkSchoolDesc from "./components/schoolDesc";
 import WorldView from "./components/worldView";
+import SecondDesc from './components/secondDesc';
 
 BScroll.use(MouseWheel);
 BScroll.use(ScrollBar);
@@ -32,6 +33,8 @@ export default function Home() {
         <div className="w-full flex h-screen relative text-center items-center">
           <AstrarkHome />
         </div>
+
+        <SecondDesc />
 
         <div className="w-full h-screen">
           <WorldView />

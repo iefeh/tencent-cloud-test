@@ -39,3 +39,13 @@
 .ani-up {
   animation: ani_up 1.2s ease-in-out;
 }
+
+.character {
+  .desc-box {
+    .page-desc {
+      .title:first-child {
+        font-size: 5.625rem;
+      }
+    }
+  }
+}
