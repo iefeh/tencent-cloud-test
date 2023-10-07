@@ -1,17 +1,18 @@
-import { createRef, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import SchoolIcons from "../school/SchoolIcons";
 import gBG from "img/astrark/school/bg_genetic.jpg";
 import mBG from "img/astrark/school/bg_mechanoid.jpg";
 import sBG from "img/astrark/school/bg_spiritual.jpg";
 import nBG from "img/astrark/school/bg_natural.jpg";
+import { Sketch } from "@/hooks/sketch";
 
 export default function SchoolDesc() {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const canvasRef = createRef<HTMLCanvasElement>();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [ctx, setCtx] = useState<CanvasRenderingContext2D>();
+  const bgContainerRef = useRef<HTMLDivElement>(null);
+  const sketch = useRef<Sketch>();
 
   const swipers = [
     {
@@ -36,30 +37,64 @@ export default function SchoolDesc() {
     },
   ];
 
-  function renderImage() {
-    if (!canvasRef.current || !ctx) return;
+  function initSketch() {
+    if (!bgContainerRef.current) return;
 
-    const bg = swipers[activeIndex].bg;
+    sketch.current = new Sketch(
+      bgContainerRef.current,
+      [gBG.src, mBG.src, sBG.src, nBG.src],
+      width,
+      height,
+      {
+        // debug: true,
+        uniforms: {
+          intensity: { value: 0.3, type: "f", min: 0, max: 2 },
+        },
+        fragment: `
+          uniform float time;
+          uniform float progress;
+          uniform float width;
+          uniform float scaleX;
+          uniform float scaleY;
+          uniform float transition;
+          uniform float radius;
+          uniform float intensity;
+          uniform sampler2D texture1;
+          uniform sampler2D texture2;
+          uniform sampler2D displacement;
+          uniform vec4 resolution;
+          varying vec2 vUv;
 
-    const img = new window.Image();
-    img.src = bg.src;
+          void main()	{
+            vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
 
-    img.onload = function () {
-      const { width: w, height: h } = img;
-      
-      canvasRef.current!.width = w;
-      canvasRef.current!.height = h;
-      canvasRef.current!.style.width = w + 'px';
-      canvasRef.current!.style.height = h + 'px';
+              vec4 d1 = texture2D(texture1, newUV);
+              vec4 d2 = texture2D(texture2, newUV);
 
-      ctx!.clearRect(0, 0, width, height);
-      ctx!.drawImage(img, 0, 0, w, h);
-    };
+              float displace1 = (d1.r + d1.g + d1.b)*0.33;
+              float displace2 = (d2.r + d2.g + d2.b)*0.33;
+              
+              vec4 t1 = texture2D(texture1, vec2(newUV.x + progress * (displace2 * intensity), newUV.y));
+              vec4 t2 = texture2D(texture2, vec2(newUV.x + (1.0 - progress) * (displace1 * intensity), newUV.y));
+
+              gl_FragColor = mix(t1, t2, progress);
+
+          }
+
+        `,
+      }
+    );
   }
 
   function setSize() {
     setWidth(window.innerWidth);
     setHeight(window.innerHeight);
+  }
+
+  function onIconClick(index: number) {
+    if (index === activeIndex || sketch.current?.isRunning) return;
+    setActiveIndex(index);
+    sketch.current?.jumpTo(index);
   }
 
   useLayoutEffect(() => {
@@ -70,22 +105,14 @@ export default function SchoolDesc() {
   }, []);
 
   useLayoutEffect(() => {
-    setCtx(canvasRef.current!.getContext("2d")!);
-  }, [canvasRef]);
+    if (sketch.current) return;
 
-  useLayoutEffect(() => {
-    if (!ctx) return;
-
-    renderImage();
-  }, [ctx]);
-
-  useLayoutEffect(() => {
-    renderImage();
-  }, [activeIndex]);
+    initSketch();
+  }, []);
 
   return (
     <section className="school-desc w-full h-screen relative overflow-hidden">
-      <canvas ref={canvasRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></canvas>
+      <div ref={bgContainerRef} className="w-full h-full"></div>
 
       <div className="school w-full h-screen absolute left-0 top-0 z-10">
         <div className="desc uppercase absolute w-[29.3125rem] h-[15rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] py-[2.625rem] box-border">
@@ -113,7 +140,7 @@ export default function SchoolDesc() {
       <SchoolIcons
         className="absolute left-1/2 bottom-12 -translate-x-1/2"
         activeIndex={activeIndex}
-        onClick={(index) => setActiveIndex(index)}
+        onClick={onIconClick}
       />
     </section>
   );
