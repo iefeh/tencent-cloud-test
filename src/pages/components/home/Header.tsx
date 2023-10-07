@@ -67,7 +67,7 @@ export default function Header() {
                     return (
                         <div key={index} onClick={() => window.open(value.link)} >
                             <Component
-                                className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-5 h-5 mr-4"
+                                className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-6 h-6 mr-4"
                             />
                         </div>
                     );
