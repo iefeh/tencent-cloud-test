@@ -15,7 +15,7 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import { useRouter } from "next/router";
 
 const routeText = [
-    { name: "Home", route: "/home" },
+    { name: "Home", route: "/" },
     { name: "About", route: "/About" },
     { name: "NFT", route: "/NFT" },
     { name: "AstrArk", route: "/AstrArk" },
