@@ -161,19 +161,19 @@ export default function StarScreen(props: Props) {
   return (
     <div
       className={
-        "star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none " +
+        "star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none flex justify-center items-center " +
         (props.className || "")
       }
     >
       <Image
-        className="bg-img w-[80vw] h-[70vw] absolute left-[8rem] -top-[13.5rem] origin-center"
+        className="bg-img w-[80vw] h-[70vw] flex z-10 relative -top-72 origin-center"
         src={planetImg}
         alt=""
       />
 
       <canvas
         ref={canvasRef}
-        className="bg-star absolute left-0 top-0 w-full h-full z-10"
+        className="bg-star absolute left-0 top-0 w-full h-full z-0"
         width={width}
         height={height}
       ></canvas>
