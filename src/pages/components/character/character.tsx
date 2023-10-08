@@ -9,6 +9,8 @@ import hero2 from "img/character/char_two.png";
 import hero3 from "img/character/char_three.png";
 import hero4 from "img/character/char_four.png";
 import PageDesc from "../../components/common/PageDesc";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from 'swiper/modules';
 
 const heroMap = [
   { heroUrl: hero1, imgUrl: bgOne, name: "MECHANICAL TECHNICIAN" },
@@ -42,35 +44,72 @@ const Character: React.FC = () => {
       return "";
     };
     return (
-      <div className="character">
-        <div className="desc-box">
-          <PageDesc
-            title="ASTRARK"
-            subtitle="A strategic tower defence PVP game."
-            buttonLabel="click to explore"
-            buttonLink="/comingsoon"
-          />
-        </div>
-        {heroMap.map((item, index) => (
-          <div key={index} className="character-warp" style={calcWidth(index)}>
-            <div
-              className="character-bg-box"
-              style={{
-                backgroundImage: `url(${item.imgUrl.src})`,
-                ...calcBg(index),
-              }}
-            ></div>
-            <Image
-              className={`character-img ${calcHero(index)}`}
-              src={item.heroUrl}
-              alt=""
-            ></Image>
-            <span className={`hero-name ${calcHeroName(index)}`}>
-              {item.name}
-            </span>
+      <>
+        <div className="character flex max-lg:hidden">
+          <div className="desc-box">
+            <PageDesc
+              title="ASTRARK"
+              subtitle="A strategic tower defence PVP game."
+              buttonLabel="click to explore"
+              buttonLink="/comingsoon"
+            />
           </div>
-        ))}
-      </div>
+          {heroMap.map((item, index) => (
+            <div key={index} className="character-warp" style={calcWidth(index)}>
+              <div
+                className="character-bg-box"
+                style={{
+                  backgroundImage: `url(${item.imgUrl.src})`,
+                  ...calcBg(index),
+                }}
+              ></div>
+              <Image
+                className={`character-img ${calcHero(index)}`}
+                src={item.heroUrl}
+                alt=""
+              ></Image>
+              <span className={`hero-name ${calcHeroName(index)}`}>
+                {item.name}
+              </span>
+            </div>
+          ))}
+        </div>
+        
+        
+        {/* 移动端适配 */}
+        <div className="max-lg:block items-center hidden">
+          <Swiper
+            className="w-full h-full"
+            loop
+            slidesPerView={1}
+            autoplay={{ delay: 2500 }}
+            modules={[Autoplay]}
+          >
+            { heroMap.map(item => {
+              return (
+                <SwiperSlide className="relative">
+                  <Image
+                    className="w-full h-full"
+                    src={item.imgUrl}
+                    alt=""
+                  ></Image>
+
+                  <Image
+                    className="absolute -bottom-[6rem] left-[12rem]"
+                    src={item.heroUrl}
+                    alt=""
+                  ></Image>
+
+                  <div className="font-decima opacity-0.4 absolute bottom-[1rem] left-[1rem]">{item.name}</div>
+                </SwiperSlide>
+              )
+            }) }
+          </Swiper>
+        </div>
+      </>
+      
+
+   
     );
   };
 
