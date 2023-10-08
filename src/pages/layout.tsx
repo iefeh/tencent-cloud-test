@@ -9,13 +9,6 @@ import "swiper/css";
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 
-const inter = Inter({ subsets: ["latin"] });
-
-// export const metadata: Metadata = {
-//   title: "Moonveil",
-//   description: "Moonveil Official Website",
-// };
-
 export default function RootLayout({
   children
 }: {

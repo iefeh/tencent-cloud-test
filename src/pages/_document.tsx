@@ -3,7 +3,8 @@ import { Html, Head, Main, NextScript } from 'next/document'
 export default function Document() {
   return (
     <Html lang="en">
-      <Head >
+      <Head title="Moonveil">
+        <meta name="description" content="Moonveil Official Website" />
         <script src="https://accounts.google.com/gsi/client" async defer></script>
         <script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
       </Head>

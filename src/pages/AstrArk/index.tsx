@@ -9,6 +9,7 @@ import AstrArkSchool from "./components/school";
 import AstrArkSchoolDesc from "./components/schoolDesc";
 import WorldView from "./components/worldView";
 import SecondDesc from './components/secondDesc';
+import Head from "next/head";
 
 BScroll.use(MouseWheel);
 BScroll.use(ScrollBar);
@@ -45,6 +46,10 @@ export default function Home() {
       ref={scrollWrapper}
       className="scroll-wrapper w-full h-screen overflow-hidden"
     >
+      <Head>
+        <title>AstrArk | Moonveil</title>
+      </Head>
+
       <div className="scroll-container">
         <div className="w-full flex h-screen relative text-center items-center" onClick={disable}>
           <AstrarkHome toDisable={disable} toEnable={enable}/>
