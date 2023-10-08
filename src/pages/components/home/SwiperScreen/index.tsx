@@ -22,6 +22,20 @@ export default function SwiperScreen(props: Props) {
     if (e.deltaY > deltaY) setDeltaY(e.deltaY);
   }
 
+  function onTouchStart(e: TouchEvent) {
+    if (!e.target) return;
+    (e.target as HTMLElement).dataset.y = e.touches[0].pageY + '';
+  }
+
+  function onTouchMove(e: TouchEvent) {
+    if (!e.target) return;
+
+    const y0 = (e.target as HTMLElement).dataset.y;
+    if (y0 === undefined || Number.isNaN(y0)) return;
+    
+    if (+y0 > e.touches[0].pageY) setMaskAni(true);
+  }
+
   function reset() {
     setTimeout(() => {
       props.onMaskAniEnd?.();
@@ -43,6 +57,8 @@ export default function SwiperScreen(props: Props) {
     <div
       className="swiper-screen w-full h-screen relative overflow-hidden"
       onWheel={(e) => onWheel(e as unknown as WheelEvent)}
+      onTouchStart={e => onTouchStart(e as any)}
+      onTouchMove={e => onTouchMove(e as any)}
     >
       <Swiper
         modules={[Pagination, Autoplay]}

@@ -56,28 +56,13 @@ export default function Home() {
 
   function onMaskAniEnd() {
     bs?.scrollTo(0, -window.innerHeight, 0);
-    bs?.enable();
     setAniState(AniState.SLOGAN);
     setSloganTitleState(1);
   }
 
   function onSloganScreenWheel(e: WheelEvent) {
     if (e.deltaY === 0) return;
-    const isUp = e.deltaY < 0;
-    bs?.scrollTo(
-      0,
-      e.deltaY < 0 ? 0 : -window.innerHeight * 2,
-      isUp ? basePageScrollTime : 1200
-    );
-    setAniState(isUp ? AniState.SLOGAN_TO_VIDEO : AniState.SLOGAN_TO_DESC);
-
-    function endCallback() {
-      setAniState(isUp ? AniState.VIDEO : AniState.DESC);
-      isUp && setSloganTitleState(0);
-      bs!.off("scrollEnd", endCallback);
-    }
-
-    bs!.on("scrollEnd", endCallback);
+    handleSloganEvent(e.deltaY < 0);
   }
 
   function onSloganTitleAniEnd() {
@@ -86,59 +71,17 @@ export default function Home() {
 
   function onSloganDescScreenWheel(e: WheelEvent) {
     if (e.deltaY === 0) return;
-    const isUp = e.deltaY < 0;
-    bs?.scrollTo(
-      0,
-      (e.deltaY < 0 ? 1 : 3) * -window.innerHeight,
-      isUp ? 1200 : basePageScrollTime
-    );
-    setAniState(isUp ? AniState.DESC_TO_SLOGAN : AniState.DESC_TO_CHARACTER);
-
-    function endCallback() {
-      setAniState(isUp ? AniState.SLOGAN_FROM_DESC : AniState.CHARACTER);
-      bs!.off("scrollEnd", endCallback);
-    }
-
-    bs!.on("scrollEnd", endCallback);
+    handleSloganEvent(e.deltaY < 0);
   }
 
   function onCharacterWheel(e: WheelEvent) {
     if (e.deltaY === 0) return;
-    const isUp = e.deltaY < 0;
-    bs?.scrollTo(
-      0,
-      e.deltaY < 0
-        ? -window.innerHeight * (aniState === AniState.CONTACT ? 3 : 2)
-        : bs.maxScrollY,
-      basePageScrollTime
-    );
-    setAniState(
-      isUp
-        ? aniState === AniState.CONTACT
-          ? AniState.CHARACTER
-          : AniState.CHARACTER_TO_DESC
-        : AniState.CHARACTER_TO_CONTACT
-    );
-
-    function endCallback() {
-      setAniState(isUp ? AniState.DESC : AniState.CONTACT);
-      bs!.off("scrollEnd", endCallback);
-    }
-
-    bs!.on("scrollEnd", endCallback);
+    handleCharacterEvent(e.deltaY < 0);
   }
 
   function onFooter(e: WheelEvent) {
     if (e.deltaY >= 0) return;
-    bs?.scrollTo(0, -window.innerHeight * 3, basePageScrollTime);
-    setAniState(AniState.CONTACT_TO_CHARACTER);
-
-    function endCallback() {
-      setAniState(AniState.CHARACTER);
-      bs!.off("scrollEnd", endCallback);
-    }
-
-    bs!.on("scrollEnd", endCallback);
+    handleFooterEvent();
   }
 
   useEffect(() => {
@@ -166,6 +109,106 @@ export default function Home() {
     setStarScreenClass(className);
   }, [aniState]);
 
+  function onTouchStart(e: TouchEvent) {
+    if (!e.target) return;
+    (e.target as HTMLElement).dataset.x = e.touches[0].pageX + "";
+    (e.target as HTMLElement).dataset.y = e.touches[0].pageY + "";
+  }
+
+  function onTouchMove(e: TouchEvent, screenIndex: number) {
+    if (!e.target) return;
+
+    const y0 = (e.target as HTMLElement).dataset.y;
+    const x0 = (e.target as HTMLElement).dataset.x;
+    if (y0 === undefined || x0 === undefined || Number.isNaN(y0)) return;
+    if (Math.abs(+x0 - e.touches[0].pageX) >= Math.abs(+y0 - e.touches[0].pageY)) return;
+
+    const isUp = +y0 < e.touches[0].pageY;
+    switch (screenIndex) {
+      case 1:
+        handleSloganEvent(isUp);
+        break;
+      case 2:
+        handleSloganDescEvent(isUp);
+        break;
+      case 3:
+        handleCharacterEvent(isUp);
+        break;
+      case 4:
+        handleFooterEvent();
+        break;
+    }
+  }
+
+  function handleSloganEvent(isUp: boolean) {
+    bs?.scrollTo(
+      0,
+      isUp ? 0 : -window.innerHeight * 2,
+      isUp ? basePageScrollTime : 1200
+    );
+    setAniState(isUp ? AniState.SLOGAN_TO_VIDEO : AniState.SLOGAN_TO_DESC);
+
+    function endCallback() {
+      setAniState(isUp ? AniState.VIDEO : AniState.DESC);
+      isUp && setSloganTitleState(0);
+      bs!.off("scrollEnd", endCallback);
+    }
+
+    bs!.on("scrollEnd", endCallback);
+  }
+
+  function handleSloganDescEvent(isUp: boolean) {
+    bs?.scrollTo(
+      0,
+      (isUp ? 1 : 3) * -window.innerHeight,
+      isUp ? 1200 : basePageScrollTime
+    );
+    setAniState(isUp ? AniState.DESC_TO_SLOGAN : AniState.DESC_TO_CHARACTER);
+
+    function endCallback() {
+      setAniState(isUp ? AniState.SLOGAN_FROM_DESC : AniState.CHARACTER);
+      bs!.off("scrollEnd", endCallback);
+    }
+
+    bs!.on("scrollEnd", endCallback);
+  }
+
+  function handleCharacterEvent(isUp: boolean) {
+    bs?.scrollTo(
+      0,
+      isUp
+        ? -window.innerHeight * (aniState === AniState.CONTACT ? 3 : 2)
+        : bs.maxScrollY,
+      basePageScrollTime
+    );
+    setAniState(
+      isUp
+        ? aniState === AniState.CONTACT
+          ? AniState.CHARACTER
+          : AniState.CHARACTER_TO_DESC
+        : AniState.CHARACTER_TO_CONTACT
+    );
+
+    function endCallback() {
+      setAniState(isUp ? AniState.DESC : AniState.CONTACT);
+      bs!.off("scrollEnd", endCallback);
+    }
+
+    bs!.on("scrollEnd", endCallback);
+  }
+
+  function handleFooterEvent() {
+    bs?.scrollTo(0, -window.innerHeight * 3, basePageScrollTime);
+    setAniState(AniState.CONTACT_TO_CHARACTER);
+
+    function endCallback() {
+      setAniState(AniState.CHARACTER);
+      bs!.off("scrollEnd", endCallback);
+    }
+
+    bs!.on("scrollEnd", endCallback);
+  }
+
   return (
     <section
       ref={scrollWrapper}
@@ -180,10 +223,12 @@ export default function Home() {
         <div
           className="slogan-screen w-full h-screen relative overflow-hidden "
           onWheel={(e) => onSloganScreenWheel(e as any)}
+          onTouchStart={(e) => onTouchStart(e as any)}
+          onTouchMove={(e) => onTouchMove(e as any, 1)}
         >
           <div
             className={
-              "title uppercase font-semakin text-[6.25rem] absolute left-1/2 top-0 -translate-x-1/2 z-20 whitespace-nowrap " +
+              "title uppercase font-semakin text-[6.25rem] absolute left-1/2 top-0 -translate-x-1/2 z-20 text-center " +
               (sloganTitleState === 1
                 ? "title-ani-start"
                 : sloganTitleState === 2
@@ -207,6 +252,8 @@ export default function Home() {
         <div
           className="w-full h-screen relative overflow-hidden"
           onWheel={(e) => onSloganDescScreenWheel(e as any)}
+          onTouchStart={(e) => onTouchStart(e as any)}
+          onTouchMove={(e) => onTouchMove(e as any, 2)}
         >
           <div className="absolute left-[56.35%] top-[43.7%]">
             <PageDesc
@@ -222,11 +269,17 @@ export default function Home() {
         <div
           className="overflow-hidden"
           onWheel={(e) => onCharacterWheel(e as any)}
+          onTouchStart={(e) => onTouchStart(e as any)}
+          onTouchMove={(e) => onTouchMove(e as any, 3)}
         >
           <Character />
         </div>
 
-        <Footer onWheel={(e) => onFooter(e as any)} />
+        <Footer
+          onWheel={(e) => onFooter(e as any)}
+          onTouchStart={(e) => onTouchStart(e as any)}
+          onTouchMove={(e) => onTouchMove(e as any, 4)}
+        />
       </div>
 
       <StarScreen className={starScreenClass} />
