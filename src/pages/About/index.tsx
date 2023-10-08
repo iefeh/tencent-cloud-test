@@ -12,6 +12,7 @@ import { useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
+import Head from "next/head";
 
 interface Figure {
   img: StaticImageData;
@@ -118,6 +119,10 @@ export default function About({
 
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
+      <Head>
+        <title>About | Moonveil</title>
+      </Head>
+
       <Swiper
         className="relative scroll-wrapper w-full h-screen"
         direction="vertical"

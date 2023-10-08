@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import NftHome from './components/home'
 
 export default function Page({
@@ -9,6 +10,10 @@ export default function Page({
   }) {
     return (
       <section>
+        <Head>
+          <title>NFT | Moonveil</title>
+        </Head>
+
         <NftHome></NftHome>
       </section>
     )

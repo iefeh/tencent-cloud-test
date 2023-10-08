@@ -1,6 +1,6 @@
 "use client";
 
-import { createRef, useEffect, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import BScroll from "@better-scroll/core";
 import ScrollBar from "@better-scroll/scroll-bar";
 import MouseWheel from "@better-scroll/mouse-wheel";
@@ -10,6 +10,7 @@ import Footer from "./components/home/Footer";
 import { BScrollConstructor } from "@better-scroll/core/dist/types/BScroll";
 import StarScreen from "./components/home/StarScreen";
 import PageDesc from "./components/common/PageDesc";
+import Head from "next/head";
 
 BScroll.use(MouseWheel);
 BScroll.use(ScrollBar);
@@ -48,12 +49,14 @@ export default function Home() {
       probeType: 3,
     });
     setBS(bscroll);
+    bscroll.disable();
 
     return () => bscroll.destroy();
   }, []);
 
   function onMaskAniEnd() {
     bs?.scrollTo(0, -window.innerHeight, 0);
+    bs?.enable();
     setAniState(AniState.SLOGAN);
     setSloganTitleState(1);
   }
@@ -168,6 +171,9 @@ export default function Home() {
       ref={scrollWrapper}
       className="scroll-wrapper relative w-full h-screen flex flex-col items-center justify-between overflow-hidden bg-no-repeat bg-fixed bg-origin-border"
     >
+      <Head>
+        <title>Home | Moonveil</title>
+      </Head>
       <div className="scroll-container w-full relative flex flex-col z-10">
         <SwiperScreen onMaskAniEnd={onMaskAniEnd} />
 

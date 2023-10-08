@@ -19,7 +19,6 @@ import "./AstrArk/components/schoolDesc/index.scss";
 import "./AstrArk/components/school/Mystery/index.scss";
 import "./AstrArk/components/school/SchoolIcons/index.scss";
 import "./AstrArk/components/worldView/index.scss";
-import "./components/common/Sidebar/index.scss";
 import homePlanetBg from "img/home/planet.png";
 import loadingImg from "img/loading/bg_moon.png";
 import ntf_halo1 from "img/nft/home/halo1.png";
@@ -110,6 +109,7 @@ function loadVideo(path: string) {
       await delay(100);
     }
 
+    document.body.removeChild(video);
     resolve(true);
   });
 }
@@ -118,6 +118,26 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [resLoading, setResLoading] = useState(true);
+
+  function resetRem() {
+    const ratio = window.devicePixelRatio;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    let fontSize = 16;
+    if (width >= height) {
+      fontSize *= width / 1920 / ratio;
+    } else {
+      fontSize *= Math.min(height, width * 2) / 667 / ratio;
+    }
+    document.documentElement.style.fontSize = `${fontSize}px`;
+  }
+
+  useEffect(() => {
+    resetRem();
+
+    window.addEventListener('resize', resetRem);
+    return () => window.removeEventListener('resize', resetRem);
+  }, []);
 
   useEffect(() => {
     if (!loading) return;

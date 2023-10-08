@@ -1,4 +1,4 @@
-import { useState, createRef, useEffect } from "react";
+import { useState, createRef, useEffect, useRef } from "react";
 import planetImg from "img/home/planet.png";
 import Image from "next/image";
 
@@ -10,13 +10,13 @@ export default function StarScreen(props: Props) {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
-  const [rafId, setRafId] = useState(-1);
+  const rafId = useRef(-1);
   const [hasRun, setHasRun] = useState(false);
 
   // eslint-disable-next-line import/no-anonymous-default-export
   function initCanvas(ctx: CanvasRenderingContext2D) {
-    var w = window.innerWidth / 2,
-      h = window.innerHeight / 2,
+    var w = window.innerWidth,
+      h = window.innerHeight,
       opts = {
         starCount: 40,
 
@@ -43,6 +43,7 @@ export default function StarScreen(props: Props) {
       first = true;
 
     function star_init() {
+      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
       stars = Array(opts.starCount)
         .fill(undefined)
         .map((_) => new Star());
@@ -56,7 +57,7 @@ export default function StarScreen(props: Props) {
     function loop() {
       step();
       draw();
-      setRafId(requestAnimationFrame(loop));
+      rafId.current = requestAnimationFrame(loop);
     }
 
     function step() {
@@ -133,8 +134,8 @@ export default function StarScreen(props: Props) {
   }
 
   function setSize() {
-    setWidth(window.innerWidth / 2);
-    setHeight(window.innerHeight / 2);
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
   }
 
   useEffect(() => {
@@ -147,7 +148,7 @@ export default function StarScreen(props: Props) {
 
     return () => {
       ctx.clearRect(0, 0, width, height);
-      if (rafId > 0) cancelAnimationFrame(rafId);
+      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
     }
   }, []);
 
