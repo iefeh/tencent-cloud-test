@@ -10,14 +10,14 @@ interface Props {
 export default function Footer(props: Props) {
   return (
     <footer
-      className="contact-info w-full h-[25rem] box-border px-[6.25rem] pt-28 flex flex-col bg-black md:flex-row"
+      className="contact-info w-full box-border px-[6.25rem] pt-28 pb-[6.5rem] flex max-lg:flex-col bg-black min-lg:flex-row max-lg:items-start"
       onWheel={(e) => props.onWheel?.(e as any)}
       onTouchStart={(e) => props.onTouchStart?.(e as any)}
       onTouchMove={e => props.onTouchMove?.(e as any)}
     >
-      <MediaIconBar type="yellow" gutter="lg" />
+      <MediaIconBar className="max-lg:mb-8" type="yellow" gutter="lg" />
 
-      <div className="contact-info uppercase ml-[26.6vw] font-poppins text-sm">
+      <div className="contact-info uppercase ml-[26.6vw] max-lg:ml-0 font-poppins text-sm">
         <div className="page-links text-lg w-[12.5rem] flex justify-between items-center mt-[0.625rem] mb-16">
           <Link className="hover:text-basic-yellow" href="/">
             Home

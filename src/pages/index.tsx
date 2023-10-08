@@ -71,7 +71,7 @@ export default function Home() {
 
   function onSloganDescScreenWheel(e: WheelEvent) {
     if (e.deltaY === 0) return;
-    handleSloganEvent(e.deltaY < 0);
+    handleSloganDescEvent(e.deltaY < 0);
   }
 
   function onCharacterWheel(e: WheelEvent) {
@@ -135,7 +135,7 @@ export default function Home() {
         handleCharacterEvent(isUp);
         break;
       case 4:
-        handleFooterEvent();
+        if (isUp) handleFooterEvent();
         break;
     }
   }
