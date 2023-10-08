@@ -20,7 +20,7 @@ const routeText = [
     { name: "Home", route: "/" },
     { name: "AstrArk", route: "/AstrArk" },
     { name: "NFT", route: "/NFT" },
-    { name: "Loyalty Program", route: "/comingsoon" },
+    { name: "Loyalty Program", route: "/LoyaltyProgram" },
     { name: "About", route: "/About" },
 ];
 const mediaIcon = [
@@ -37,7 +37,7 @@ export default function Header() {
 
     function LoginSegments() {
         let temp = router.route;
-        return temp && temp !== '/' ? temp : '/home';
+        return temp || '/';
     }
 
     return (
@@ -54,7 +54,7 @@ export default function Header() {
             <div className="font-semakin max-sm:hidden">
                 {routeText.map((value, index) => (
                     <Link
-                        className={`m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'}`}
+                        className={`m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'} text-[1.375rem] ml-8`}
                         key={index}
                         href={value.route}
                     >
