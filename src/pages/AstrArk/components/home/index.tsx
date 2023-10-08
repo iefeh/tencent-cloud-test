@@ -31,7 +31,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
     if (!textDomRef.current) return;
     if (currenScale >= maxAutoScale) {
       setShowFullVideo(true);
-      window.removeEventListener('wheel', scrollControl);
+      window.removeEventListener("wheel", scrollControl);
       toEnable();
       return;
     }
@@ -95,21 +95,19 @@ const AstrarkHome: React.FC<Props> = (props) => {
       </video>
 
       {showFullVideo || (
-        <>
-          <div
-            ref={textDomRef}
-            className="text uppercase text-[18rem] font-semakin absolute left-0 top-0 flex justify-center items-center w-full h-full bg-black text-white text-center mix-blend-multiply z-10 origin-center"
-          >
-            AstrArk
-          </div>
-
-          <Image
-            className="w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20"
-            src={arrowImg}
-            alt=""
-          />
-        </>
+        <div
+          ref={textDomRef}
+          className="text uppercase text-[18rem] font-semakin absolute left-0 top-0 flex justify-center items-center w-full h-full bg-black text-white text-center mix-blend-multiply z-10 origin-center"
+        >
+          AstrArk
+        </div>
       )}
+
+      <Image
+        className="w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20"
+        src={arrowImg}
+        alt=""
+      />
     </div>
   );
 };
