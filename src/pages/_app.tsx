@@ -110,6 +110,7 @@ function loadVideo(path: string) {
       await delay(100);
     }
 
+    document.body.removeChild(video);
     resolve(true);
   });
 }
