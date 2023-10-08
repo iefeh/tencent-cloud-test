@@ -1,11 +1,11 @@
 import Head from "next/head";
 import ComingSoon from "../components/common/ComingSoon";
 
-export default function ComingSoonPage() {
+export default function LoyaltyProgram() {
   return (
     <>
       <Head>
-        <title>Coming Soon | Moonveil</title>
+        <title>Loyalty Program | Moonveil</title>
       </Head>
       <ComingSoon />
     </>

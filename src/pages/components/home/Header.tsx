@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import BasicButton from "../common/BasicButton";
@@ -17,12 +17,11 @@ import Sidebar from "../common/Sidebar";
 import { useRouter } from "next/router";
 
 const routeText = [
-    { name: "Home", route: "/home" },
-    { name: "About", route: "/About" },
-    { name: "NFT", route: "/NFT" },
+    { name: "Home", route: "/" },
     { name: "AstrArk", route: "/AstrArk" },
+    { name: "NFT", route: "/NFT" },
     { name: "Loyalty Program", route: "/LoyaltyProgram" },
-    { name: "Maketplace", route: "/Maketplace" },
+    { name: "About", route: "/About" },
 ];
 const mediaIcon = [
     { img: X, link: 'https://twitter.com/Moonveil_Studio' },
@@ -38,24 +37,24 @@ export default function Header() {
 
     function LoginSegments() {
         let temp = router.route;
-        return temp && temp !== '/' ? temp : '/home';
+        return temp || '/';
     }
 
     return (
-        <section className="header absolute left-0 top-0 w-full h-11 flex justify-between items-center z-50 mt-2 pl-4 pr-4">
+        <section className="header absolute left-0 top-0 w-full flex justify-between items-center z-50 mt-4 pl-9 pr-4">
             <div className="flex-[1]">
                 <Link href="/">
                     <Image
-                        className="w-20 h-11"
+                        className="w-[8.4375rem] h-20"
                         src={logo}
                         alt="Picture of the author"
                     />
                 </Link>
             </div>
-            <div className="font-semakin max-sm:hidden">
+            <div className="font-semakin max-lg:hidden">
                 {routeText.map((value, index) => (
                     <Link
-                        className={`m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'}`}
+                        className={`m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'} text-[1.375rem] ml-8`}
                         key={index}
                         href={value.route}
                     >
@@ -65,13 +64,13 @@ export default function Header() {
             </div>
 
             <div className="flex items-center flex-[1] justify-end">
-                <div className="max-sm:hidden flex items-center" >
+                <div className="max-lg:hidden flex items-center" >
                     {mediaIcon.map((value, index) => {
                         const Component = value.img;
                         return (
                             <div key={index} onClick={() => window.open(value.link)} >
                                 <Component
-                                    className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-5 h-5 mr-4"
+                                    className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-7 h-7 mr-4"
                                 />
                             </div>
                         );
@@ -83,7 +82,7 @@ export default function Header() {
                     onClick={() => setLoginVisible(true)}
                 />
 
-                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-sm:block max-sm:ml-2 hidden w-[2rem] h-[1.88rem]" /> : <List onClick={() => setListOpen(true)} className="max-sm:block hidden max-sm:ml-2 w-[2rem] h-[1.88rem]" /> }
+                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[2rem] h-[1.88rem]" /> : <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[2rem] h-[1.88rem]" /> }
             </div>
             
             

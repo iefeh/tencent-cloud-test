@@ -12,6 +12,7 @@ import { useRef, useState } from "react";
 import { Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
+import Head from "next/head";
 
 interface Figure {
   img: StaticImageData;
@@ -87,7 +88,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
 ];
-const sponsorArray = new Array(20).fill(1);
+const sponsorArray = new Array(22).fill(1);
 
 export default function About({
   params,
@@ -118,6 +119,10 @@ export default function About({
 
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
+      <Head>
+        <title>About | Moonveil</title>
+      </Head>
+
       <Swiper
         className="relative scroll-wrapper w-full h-screen"
         direction="vertical"
@@ -136,7 +141,8 @@ export default function About({
                 <div className="w-1/2 flex items-center justify-start p-56">
                   <PageDesc
                     hasBelt
-                    title={`<span>${curFigure?.name}</span>&ensp;<span class="text-[#666]" >${curFigure?.subTitle}</span>`}
+                    className="character-desc text-left whitespace-nowrap"
+                    title={`<span>${curFigure?.name}</span><br><span class="text-[#666]" >${curFigure?.subTitle}</span>`}
                     subtitle={curFigure?.introduce}
                   />
                 </div>
@@ -241,16 +247,18 @@ export default function About({
             className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[7vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
+              className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[4vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
                 }`}
             >
-              Our Partners
+              Investors & Partners
             </div>
             <div
               className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
             >
               <ul className="gap-[2vw] grid grid-cols-5">
                 {sponsorArray.map((value, index) => {
+                  if (index === 20) return null;
+
                   return (
                     <li
                       key={index}

@@ -19,10 +19,15 @@
   position: absolute;
   bottom: 0px;
   right: 0;
-  transform: translate(-5vw, 70vw);
+  transform: translate(-5vw, 70vw) rotate(-120deg);
   border: 1px rgba(246, 199, 153, 0.2) solid;
   border-radius: 50%;
-  animation: rotate1 20s linear infinite;
+  animation: rotate1 36s linear infinite;
+
+  &.pause {
+    transform: translate(-5vw, 70vw) rotate(-131deg);
+    animation: none;
+  }
 
   .planet1 {
     position: absolute;
@@ -45,11 +50,23 @@
   position: absolute;
   bottom: 0px;
   right: 0;
-  transform: translate(5vw, 80vw);
+  transform: translate(5vw, 80vw) rotate(-120deg);
   border: 1px rgba(246, 199, 153, 0.2) solid;
   border-radius: 50%;
-  animation: rotate2 25s linear infinite;
+  animation: rotate2 45s linear infinite;
   
+  &.pause {
+    transform: translate(5vw, 80vw) rotate(-215deg);
+    animation: none;
+  }
+
+  .planet1 {
+    position: absolute;
+    bottom: 0;
+    right: 50%;
+    transform: translate(50%, 50%);
+  }
+
   .planet3 {
     position: absolute;
     width: 13vw;
@@ -88,18 +105,18 @@
 
 @keyframes rotate1 {
   0% {
-    transform: translate(-5vw, 70vw) rotate(0);
+    transform: translate(-5vw, 70vw) rotate(-120deg);
   }
   100% {
-    transform: translate(-5vw, 70vw) rotate(360deg);
+    transform: translate(-5vw, 70vw) rotate(240deg);
   }
 }
 
 @keyframes rotate2 {
   0% {
-    transform: translate(5vw, 80vw) rotate(0);
+    transform: translate(5vw, 80vw) rotate(-120deg);
   }
   100% {
-    transform: translate(5vw, 80vw) rotate(360deg);
+    transform: translate(5vw, 80vw) rotate(240deg);
   }
 }

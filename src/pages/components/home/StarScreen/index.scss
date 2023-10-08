@@ -1,27 +1,27 @@
 @keyframes star_img_scale {
   0% {
-    transform: scale(1.2);
+    transform: scale(1.5);
   }
   100% {
-    transform: scale(0.7);
+    transform: scale(1);
   }
 }
 
 @keyframes star_img_to_desc_scale {
   0% {
-    transform: scale(0.7);
+    transform: scale(1);
   }
   100% {
-    transform: scale(0.55);
+    transform: scale(0.8);
   }
 }
 
 @keyframes star_img_to_slogan_scale {
   0% {
-    transform: scale(0.55);
+    transform: scale(0.8);
   }
   100% {
-    transform: scale(0.7);
+    transform: scale(1);
   }
 }
 
@@ -44,21 +44,21 @@
 
   &.star-screen-planet-ani {
     .bg-img {
-      transform: scale(0.7);
+      transform: scale(1);
       animation: star_img_scale 0.5s ease-in;
     }
   }
 
   &.star-screen-to-desc-ani {
     .bg-img {
-      transform: scale(0.55);
+      transform: scale(0.8);
       animation: star_img_to_desc_scale 0.8s ease-in;
     }
   }
 
   &.star-screen-to-slogan-ani {
     .bg-img {
-      transform: scale(0.7);
+      transform: scale(1);
       animation: star_img_to_slogan_scale 0.8s ease-in;
     }
   }

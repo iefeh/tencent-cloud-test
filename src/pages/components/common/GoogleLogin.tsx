@@ -1,38 +1,33 @@
 // GoogleLogin.js
 "use client";
-
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
-    onSuccess: Function;
-    onFailure: Function
+  onSuccess: Function;
+  onFailure: Function
 }
 
 function GoogleLoginButton({ onSuccess, onFailure }: Props) {
-  const handleGoogleLogin = () => {
-    window.gapi.load('auth2', () => {
-        window.gapi.auth2.init({
-        client_id: '722381443189-4uc07bojimjdjbqng5al788k2nmdnclo.apps.googleusercontent.com',
-      }).then((auth2: any) => {
-        auth2.signIn()
-          .then((googleUser: any) => {
-            // 登录成功，可以获取用户信息
-            const profile = googleUser.getBasicProfile();
-            const idToken = googleUser.getAuthResponse().id_token;
-            
-            // 调用登录成功回调
-            onSuccess(profile, idToken);
-          })
-          .catch((error: any) => {
-            // 登录失败
-            onFailure(error);
-          });
-      });
+
+  const handleCredentialResponse = (response: any) => {
+    console.log("Encoded JWT ID token: " + response.credential);
+  }
+
+  useEffect(() => {
+    window.google.accounts.id.initialize({
+      client_id: "722381443189-4uc07bojimjdjbqng5al788k2nmdnclo.apps.googleusercontent.com",
+      callback: handleCredentialResponse
     });
-  };
+    window.google.accounts.id.renderButton(
+      document.getElementById("googlelogin"),
+      { theme: "filled_black", size: "large", shape: 'circle', text: 'continue_with' }  // customization attributes
+    );
+    window.google.accounts.id.prompt(); // also display the One Tap dialog
+  }, [])
 
   return (
-    <button onClick={handleGoogleLogin}>Continue With Google</button>
+    <div id="googlelogin"  >
+    </div>
   );
 }
 

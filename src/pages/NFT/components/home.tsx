@@ -18,8 +18,8 @@ const NftHome: React.FC = () => {
     <div className="w-full h-screen relative flex justify-center items-center overflow-hidden">
       <PageDesc 
         hasBelt
-        title="A DYNAMIC NFT ECOSYSTEM"
-        subtitle="<div style='font-size: 3rem; font-family: semakin; margin-top: 30px'>Coming soon...</div>"
+        needAni
+        title="A DYNAMIC NFT ECOSYSTEM<br>Coming soon..."
       />
 
       {/* 大光晕 */}
@@ -44,18 +44,29 @@ const NftHome: React.FC = () => {
         alt=""
       ></Image>
 
-      <div className="track1">
+<div className="track1 pause">
         {/* 行星 - 小 */}
         <Image
           className="planet1"
           src={planet1}
           alt=""
         ></Image>
+      </div>
 
+      <div className="track1">
         {/* 行星 - 中 */}
         <Image
           className="planet2"
           src={planet2}
+          alt=""
+        ></Image>
+      </div>
+
+      <div className="track2 pause">
+        {/* 行星 - 小 */}
+        <Image
+          className="planet1"
+          src={planet1}
           alt=""
         ></Image>
       </div>

@@ -53,4 +53,10 @@
             transform: translateY(-100vh);
         }
     }
+
+    .character-desc {
+        .title:nth-child(3) {
+            line-height: 2.25rem;
+        }
+    }
 }

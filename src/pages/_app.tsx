@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import RootLayout from "./layout";
 import Loading from "./components/common/Loading";
@@ -15,69 +15,149 @@ import "./components/common/MediaIconBar/index.scss";
 import "./components/character/character.scss";
 import "./About/about.scss";
 import "./NFT/components/home.scss";
-import "./AstrArk/components/home/index.scss";
 import "./AstrArk/components/schoolDesc/index.scss";
 import "./AstrArk/components/school/Mystery/index.scss";
 import "./AstrArk/components/school/SchoolIcons/index.scss";
 import "./AstrArk/components/worldView/index.scss";
-import "./components/common/Sidebar/index.scss";
 import homePlanetBg from "img/home/planet.png";
+import loadingImg from "img/loading/bg_moon.png";
+import ntf_halo1 from "img/nft/home/halo1.png";
+import ntf_halo2 from "img/nft/home/halo2.png";
+import ntf_meteor from "img/nft/home/meteor.png";
+import ntf_planet1 from "img/nft/home/planet1.png";
+import ntf_planet2 from "img/nft/home/planet2.png";
+import ntf_planet3 from "img/nft/home/planet3.png";
+import ntf_stars1 from "img/nft/home/stars1.png";
+import ntf_stars2 from "img/nft/home/stars2.png";
+import ntf_stars3 from "img/nft/home/stars3.png";
+import about_c1 from "img/about/1@2x.png";
+import about_c2 from "img/about/2@2x.png";
+import about_c3 from "img/about/3@2x.png";
+import about_c4 from "img/about/4@2x.png";
+import about_c5 from "img/about/5@2x.png";
 
 async function initResources(path: string) {
   path = path.toLowerCase();
-  let resources: string[] = [];
+  const promises: Promise<any>[] = [];
 
   switch (path) {
     case "/":
     case "/home":
-      resources = [homePlanetBg.src];
+      promises.push(...[homePlanetBg.src].map((path) => loadImage(path)));
+      promises.push(loadVideo("/video/ntfbg.webm"));
+      break;
+    case "/ntf":
+      promises.push(
+        ...[
+          ntf_halo1.src,
+          ntf_halo2.src,
+          ntf_meteor.src,
+          ntf_planet1.src,
+          ntf_planet2.src,
+          ntf_planet3.src,
+          ntf_stars1.src,
+          ntf_stars2.src,
+          ntf_stars3.src,
+        ].map((path) => loadImage(path))
+      );
+      break;
+    case "/about":
+      promises.push(
+        ...[
+          about_c1.src,
+          about_c2.src,
+          about_c3.src,
+          about_c4.src,
+          about_c5.src,
+        ].map((path) => loadImage(path))
+      );
+      break;
+    case "/astrark":
+      promises.push(loadVideo("/video/astrark.mp4"));
       break;
   }
 
-  await Promise.all(resources.map((res) => loadImage(res)));
+  await Promise.all(promises);
 }
 
-async function loadImage(path: string) {
+function loadImage(path: string) {
   const img = new Image();
   img.src = path;
   img.style.display = "none";
   document.body.appendChild(img);
 
-  img.onload = function () {
-    document.body.removeChild(img);
-  };
+  return new Promise((resolve) => {
+    img.onload = function () {
+      document.body.removeChild(img);
+      resolve(true);
+    };
+  });
+}
+
+function delay(timeout: number) {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+}
+
+function loadVideo(path: string) {
+  const video = document.createElement("video");
+  video.src = path;
+  video.style.display = "none";
+  document.body.appendChild(video);
+
+  return new Promise(async (resolve) => {
+    while (video.readyState !== 4) {
+      await delay(100);
+    }
+
+    document.body.removeChild(video);
+    resolve(true);
+  });
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [resLoading, setResLoading] = useState(true);
+
+  function resetRem() {
+    const ratio = window.devicePixelRatio;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    let fontSize = 16;
+    if (width >= height) {
+      fontSize *= width / 1920 / ratio;
+    } else {
+      fontSize *= Math.min(height, width * 2) / 667 / ratio;
+    }
+    document.documentElement.style.fontSize = `${fontSize}px`;
+  }
 
   useEffect(() => {
-    initResources(router.route).then(() => setLoading(false));
+    resetRem();
 
-    const startLoading = (path: string) => {
-      setLoading(true);
-    };
-
-    const stopLoading = async (path: string) => {
-      await initResources(path);
-      setLoading(false);
-    };
-
-    Router.events.on("routeChangeStart", startLoading);
-    Router.events.on("routeChangeComplete", stopLoading);
-    Router.events.on("routeChangeError", stopLoading);
-
-    return () => {
-      Router.events.off("routeChangeStart", startLoading);
-      Router.events.off("routeChangeComplete", stopLoading);
-      Router.events.off("routeChangeError", stopLoading);
-    };
+    window.addEventListener('resize', resetRem);
+    return () => window.removeEventListener('resize', resetRem);
   }, []);
 
-  return (
-    <RootLayout loading={loading}>
-      {loading ? <Loading /> : <Component {...pageProps} />}
+  useEffect(() => {
+    if (!loading) return;
+
+    loadImage(loadingImg.src).then(async () => {
+      // 仅第一次进入页面可能展示Loading
+      await initResources(router.route);
+
+      setResLoading(false);
+      initResources("/");
+      initResources("/ntf");
+      initResources("/about");
+    });
+  }, []);
+
+  return loading ? (
+    <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+  ) : (
+    <RootLayout>
+      <Component {...pageProps} />
     </RootLayout>
   );
 }

@@ -1,6 +1,10 @@
-export default function Belt() {
+interface Props {
+  className?: string;
+}
+
+export default function Belt(props: Props) {
   return (
-    <div className="belt inline-flex items-center">
+    <div className={"belt inline-flex items-center " + (props.className || '')}>
       <div className="belt-cube"></div>
 
       <div className="dotted-wrapper">

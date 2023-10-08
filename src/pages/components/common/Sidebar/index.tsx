@@ -8,12 +8,11 @@ interface Props {
 }
 
 const routeText = [
-  { name: "Home", route: "/home" },
-  { name: "About", route: "/About" },
-  { name: "NFT", route: "/NFT" },
+  { name: "Home", route: "/" },
   { name: "AstrArk", route: "/AstrArk" },
+  { name: "NFT", route: "/NFT" },
   { name: "Loyalty Program", route: "/LoyaltyProgram" },
-  { name: "Maketplace", route: "/Maketplace" },
+  { name: "About", route: "/About" },
 ];
 
 export default function Sidebar({ visible, onClose }: Props) {
@@ -22,16 +21,16 @@ export default function Sidebar({ visible, onClose }: Props) {
 
   function LoginSegments() {
     let temp = router.route;
-    return temp && temp !== '/' ? temp : '/home';
+    return temp || '/';
 }
 
   return createPortal(
-    <div onClick={onClose} className="sidebar max-sm:block fixed mt-[3.25rem] left-0 top-0 w-full bg-black z-10">
+    <div onClick={onClose} className="sidebar max-lg:block fixed left-0 top-0 w-full h-screen bg-black z-10">
 
       <div className="content flex flex-col font-semakin text-center items-center justify-center h-full">
         {routeText.map((value, index) => (
           <Link
-            className={`m-2 transition-all duration-300 hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799]'}`}
+            className={`m-2 transition-all duration-300 hover:text-[#F6C799] text-5xl leading-normal ${LoginSegments() === value.route && 'text-[#F6C799]'}`}
             key={index}
             href={value.route}
           >

@@ -1,7 +1,11 @@
 import Image from "next/image";
 import PageDesc from "../common/PageDesc";
 
-export default function RaceSlide() {
+interface Props {
+  needAni?: boolean;
+}
+
+export default function RaceSlide(props: Props) {
   return (
     <div className="bg-race w-full h-screen relative flex justify-center items-center">
       <Image
@@ -15,6 +19,7 @@ export default function RaceSlide() {
       <PageDesc
         whiteLogo
         hasBelt
+        needAni={props.needAni}
         title="See You In Q4 2023"
         subtitle="A real time tower-defense PVP game"
       />
