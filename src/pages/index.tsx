@@ -104,11 +104,17 @@ export default function Home() {
     const isUp = e.deltaY < 0;
     bs?.scrollTo(
       0,
-      e.deltaY < 0 ? -window.innerHeight * 2 : bs.maxScrollY,
+      e.deltaY < 0
+        ? -window.innerHeight * (aniState === AniState.CONTACT ? 3 : 2)
+        : bs.maxScrollY,
       basePageScrollTime
     );
     setAniState(
-      isUp ? AniState.CHARACTER_TO_DESC : AniState.CHARACTER_TO_CONTACT
+      isUp
+        ? aniState === AniState.CONTACT
+          ? AniState.CHARACTER
+          : AniState.CHARACTER_TO_DESC
+        : AniState.CHARACTER_TO_CONTACT
     );
 
     function endCallback() {
