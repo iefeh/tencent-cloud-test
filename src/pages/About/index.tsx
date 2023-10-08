@@ -245,7 +245,7 @@ export default function About({
               className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[4vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
                 }`}
             >
-              Our Partners
+              Investors & Partners
             </div>
             <div
               className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
