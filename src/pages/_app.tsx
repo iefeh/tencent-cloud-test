@@ -31,18 +31,24 @@ import ntf_planet3 from "img/nft/home/planet3.png";
 import ntf_stars1 from "img/nft/home/stars1.png";
 import ntf_stars2 from "img/nft/home/stars2.png";
 import ntf_stars3 from "img/nft/home/stars3.png";
+import about_c1 from "img/about/1@2x.png";
+import about_c2 from "img/about/2@2x.png";
+import about_c3 from "img/about/3@2x.png";
+import about_c4 from "img/about/4@2x.png";
+import about_c5 from "img/about/5@2x.png";
 
 async function initResources(path: string) {
   path = path.toLowerCase();
-  let resources: string[] = [loadingImg.src];
+  const promises: Promise<any>[] = [];
 
   switch (path) {
     case "/":
     case "/home":
-      resources.push(...[homePlanetBg.src]);
+      promises.push(...[homePlanetBg.src].map((path) => loadImage(path)));
+      promises.push(loadVideo("/video/ntfbg.webm"));
       break;
     case "/ntf":
-      resources.push(
+      promises.push(
         ...[
           ntf_halo1.src,
           ntf_halo2.src,
@@ -53,38 +59,77 @@ async function initResources(path: string) {
           ntf_stars1.src,
           ntf_stars2.src,
           ntf_stars3.src,
-        ]
+        ].map((path) => loadImage(path))
       );
+      break;
+    case "/about":
+      promises.push(
+        ...[
+          about_c1.src,
+          about_c2.src,
+          about_c3.src,
+          about_c4.src,
+          about_c5.src,
+        ].map((path) => loadImage(path))
+      );
+      break;
+    case "/astrark":
+      promises.push(loadVideo("/video/astrark.mp4"));
       break;
   }
 
-  await Promise.all(resources.map((res) => loadImage(res)));
+  await Promise.all(promises);
 }
 
-async function loadImage(path: string) {
+function loadImage(path: string) {
   const img = new Image();
   img.src = path;
   img.style.display = "none";
   document.body.appendChild(img);
 
-  img.onload = function () {
-    document.body.removeChild(img);
-  };
+  return new Promise((resolve) => {
+    img.onload = function () {
+      document.body.removeChild(img);
+      resolve(true);
+    };
+  });
+}
+
+function delay(timeout: number) {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+}
+
+function loadVideo(path: string) {
+  const video = document.createElement("video");
+  video.src = path;
+  video.style.display = "none";
+  document.body.appendChild(video);
+
+  return new Promise(async (resolve) => {
+    while (video.readyState !== 4) {
+      await delay(100);
+    }
+
+    resolve(true);
+  });
 }
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const isHome = router.route === "/" || router.route === "/home";
-  const [loading, setLoading] = useState(isHome);
-  const [resLoading, setResLoading] = useState(isHome);
+  const [loading, setLoading] = useState(true);
+  const [resLoading, setResLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading || !isHome) return;
+    if (!loading) return;
 
-    // 仅第一次进入页面可能展示Loading
-    initResources(router.route).then(() => {
+    loadImage(loadingImg.src).then(async () => {
+      // 仅第一次进入页面可能展示Loading
+      await initResources(router.route);
+
       setResLoading(false);
-      initResources('/ntf');
+      initResources("/");
+      initResources("/ntf");
+      initResources("/about");
     });
   }, []);
 

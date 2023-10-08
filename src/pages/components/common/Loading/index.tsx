@@ -16,14 +16,15 @@ export default function Loading(props: Props) {
   let els = 0;
   let textProgress = 100;
 
-  function startTextAni(currentEl: number) {
+  function startTextAni(currentEl = els) {
     if (!textRef.current || !progressRef.current) return;
     if (textProgress <= 0) {
       props.onLoaded?.();
       return;
     }
 
-    textProgress -= (currentEl - els) * 16.6666 / (props.resLoading ? 10000 : 500);
+    textProgress =
+      100 - ((currentEl - els) * 16.6666) / (props.resLoading ? 5000 : 300);
     textRef.current.style.backgroundPositionX = `${textProgress}%`;
     const prog = Math.max(Math.min(100 - Math.ceil(textProgress), 100), 0);
     progressRef.current.innerText = `${prog}%`;
@@ -32,10 +33,19 @@ export default function Loading(props: Props) {
 
   useEffect(() => {
     els = performance.now();
-    setRafId(requestAnimationFrame(startTextAni));
+    startTextAni();
 
-    return () => { if (rafId > 0) cancelAnimationFrame(rafId) };
+    return () => {
+      if (rafId > 0) cancelAnimationFrame(rafId);
+    };
   }, []);
+
+  useEffect(() => {
+    if (rafId > 0) cancelAnimationFrame(rafId);
+
+    els = performance.now();
+    startTextAni();
+  }, [props.resLoading]);
 
   return (
     <div className="loading fixed z-50 w-full h-screen flex justify-center items-center">
@@ -51,15 +61,23 @@ export default function Loading(props: Props) {
       </div>
 
       <div className="text-wrapper z-10 relative">
-        <span ref={textRef} className="text uppercase font-semakin text-4xl text-transparent bg-clip-text">
+        <span
+          ref={textRef}
+          className="text uppercase font-semakin text-4xl text-transparent bg-clip-text"
+        >
           Moonveil Entertainment presents.
         </span>
 
         <Belt className="absolute left-1/2 -translate-x-1/2 top-[3.875rem]" />
 
-        <div ref={progressRef} className="progress absolute left-1/2 -translate-x-1/2 top-[6.125rem] font-semakin text-xl">0%</div>
+        <div
+          ref={progressRef}
+          className="progress absolute left-1/2 -translate-x-1/2 top-[6.125rem] font-semakin text-xl"
+        >
+          0%
+        </div>
       </div>
-      
+
       <MediaIconBar className="absolute left-1/2 bottom-12 -translate-x-1/2" />
     </div>
   );
