@@ -41,11 +41,11 @@ export default function Header() {
     }
 
     return (
-        <section className="header absolute left-0 top-0 w-full h-11 flex justify-between items-center z-50 mt-2 pl-4 pr-4">
+        <section className="header absolute left-0 top-0 w-full flex justify-between items-center z-50 mt-4 pl-9 pr-4">
             <div className="flex-[1]">
                 <Link href="/">
                     <Image
-                        className="w-20 h-11"
+                        className="w-[8.4375rem] h-20"
                         src={logo}
                         alt="Picture of the author"
                     />
@@ -70,7 +70,7 @@ export default function Header() {
                         return (
                             <div key={index} onClick={() => window.open(value.link)} >
                                 <Component
-                                    className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-6 h-6 mr-4"
+                                    className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-7 h-7 mr-4"
                                 />
                             </div>
                         );
