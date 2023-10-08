@@ -120,6 +120,20 @@ export default function App({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(true);
   const [resLoading, setResLoading] = useState(true);
 
+  function resetRem() {
+    const ratio = window.devicePixelRatio;
+    const width = window.innerWidth;
+    const fontSize = 16 * width / 1920 / ratio;
+    document.documentElement.style.fontSize = `${fontSize}px`;
+  }
+
+  useEffect(() => {
+    resetRem();
+
+    window.addEventListener('resize', resetRem);
+    return () => window.removeEventListener('resize', resetRem);
+  }, []);
+
   useEffect(() => {
     if (!loading) return;
 
