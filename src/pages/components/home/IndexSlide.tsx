@@ -9,8 +9,7 @@ export default function IndexSlide(props: Props) {
     <div className="bg-video w-full h-screen relative flex justify-center items-center">
       <div className="video-container absolute inset-0">
         <video
-          className="w-full object-cover"
-          style={{ height: 'calc(100% - 2px)' }}
+          className="w-full h-full block object-cover"
           src="/video/ntfbg.webm"
           autoPlay
           muted

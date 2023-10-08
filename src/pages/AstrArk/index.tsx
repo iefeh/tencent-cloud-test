@@ -21,7 +21,10 @@ export default function Home() {
   useLayoutEffect(() => {
     bsRef.current = new BScroll(scrollWrapper.current!, {     
       mouseWheel: true,
-      useTransition: false,
+      useTransition: true,
+      scrollY: true,
+      bounce: false,
+      probeType: 3,
     })
 
     return () => {

@@ -15,7 +15,6 @@ import "./components/common/MediaIconBar/index.scss";
 import "./components/character/character.scss";
 import "./About/about.scss";
 import "./NFT/components/home.scss";
-import "./AstrArk/components/home/index.scss";
 import "./AstrArk/components/schoolDesc/index.scss";
 import "./AstrArk/components/school/Mystery/index.scss";
 import "./AstrArk/components/school/SchoolIcons/index.scss";
