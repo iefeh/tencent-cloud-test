@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination, Autoplay } from "swiper/modules";
 import IndexSlide from "../IndexSlide";
 import RaceSlide from "../RaceSlide";
 import EntertainmentSlide from "../EntertainmentSlide";
@@ -45,10 +45,10 @@ export default function SwiperScreen(props: Props) {
       onWheel={(e) => onWheel(e as unknown as WheelEvent)}
     >
       <Swiper
-        modules={[Pagination]}
+        modules={[Pagination, Autoplay]}
         className="w-full h-full"
         loop
-        autoplay={{ delay: 5000 }}
+        autoplay={{ delay: activeIndex === 0 ? 10000 : 5000 }}
         slidesPerView={1}
         onSlideChange={(swiper) => {
           const pagi = document.querySelector('.home-swiper-pagination .pagi-active');
