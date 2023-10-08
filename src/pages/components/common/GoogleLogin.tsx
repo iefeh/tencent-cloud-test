@@ -10,7 +10,7 @@ interface Props {
 function GoogleLoginButton({ onSuccess, onFailure }: Props) {
 
   const handleCredentialResponse = (response: any) => {
-    console.log("Encoded JWT ID token: " + response.credential);
+    console.log("Encoded JWT ID token: " + response);
   }
 
   useEffect(() => {

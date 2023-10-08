@@ -120,23 +120,23 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(true);
 
   function resetRem() {
-    const ratio = window.devicePixelRatio;
     const width = window.innerWidth;
     const height = window.innerHeight;
     let fontSize = 16;
     if (width >= height) {
-      fontSize *= width / 1920 / ratio;
+      fontSize *= width / 1920;
     } else {
-      fontSize *= Math.min(height, width * 2) / 667 / ratio;
+      fontSize *= Math.min(height, width * 2) / 667;
     }
     document.documentElement.style.fontSize = `${fontSize}px`;
   }
 
   useEffect(() => {
     resetRem();
+    const resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
 
-    window.addEventListener('resize', resetRem);
-    return () => window.removeEventListener('resize', resetRem);
+    window.addEventListener(resizeEvt, resetRem);
+    return () => window.removeEventListener(resizeEvt, resetRem);
   }, []);
 
   useEffect(() => {
