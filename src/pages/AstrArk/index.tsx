@@ -1,6 +1,6 @@
 "use client";
 
-import { createRef, useEffect } from "react";
+import { createRef, useEffect, useMemo, useRef, useLayoutEffect } from "react";
 import BScroll from "@better-scroll/core";
 import ScrollBar from "@better-scroll/scroll-bar";
 import MouseWheel from "@better-scroll/mouse-wheel";
@@ -15,14 +15,27 @@ BScroll.use(ScrollBar);
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
+  
+  const bsRef = useRef<any>()
 
-  useEffect(() => {
-    const bs = new BScroll(scrollWrapper.current!, {
-      scrollY: true,
-      bounce: false,
+  useLayoutEffect(() => {
+    bsRef.current = new BScroll(scrollWrapper.current!, {     
       mouseWheel: true,
-    });
-  });
+      useTransition: false,
+    })
+
+    return () => {
+      bsRef.current.destroy();
+    }
+  }, [])
+
+  const disable = () => {
+    bsRef.current.disable()
+  }
+
+  const enable = () => {
+    bsRef.current.enable()
+  }
 
   return (
     <section
@@ -30,8 +43,8 @@ export default function Home() {
       className="scroll-wrapper w-full h-screen overflow-hidden"
     >
       <div className="scroll-container">
-        <div className="w-full flex h-screen relative text-center items-center">
-          <AstrarkHome />
+        <div className="w-full flex h-screen relative text-center items-center" onClick={disable}>
+          <AstrarkHome toDisable={disable} toEnable={enable}/>
         </div>
 
         <SecondDesc />

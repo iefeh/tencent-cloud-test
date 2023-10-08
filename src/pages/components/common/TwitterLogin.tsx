@@ -1,7 +1,18 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const TwitterLoginButton = () => {
+  useEffect(() => {
+
+    // console.log("%c Line:7 🍿", "color:#42b983", window.twttr);
+    // window.twttr.widgets.createTweet(
+    //   'TwitterDev',
+    //   document.getElementById('twlogin'),
+    //   {
+    //     size: 'large'
+    //   }
+    // );
+  }, [])
   const handleTwitterLogin = async () => {
     try {
       const response = await fetch('/api/twitter', {
@@ -24,7 +35,7 @@ const TwitterLoginButton = () => {
   };
 
   return (
-    <button onClick={handleTwitterLogin}>Continue With Twitter</button>
+    <button id='twlogin' onClick={handleTwitterLogin} >Continue With Twitter</button>
   );
 };
 

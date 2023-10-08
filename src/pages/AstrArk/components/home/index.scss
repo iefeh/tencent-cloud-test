@@ -5,4 +5,20 @@
   font-size: 13rem;
   line-height: 1;
   background-position: 54% 40%;
+  transform: scale(1);
+  transition: all;
+}
+
+.bg-animation {
+  animation: toTransParent 1s linear;
+}
+
+
+@keyframes toTransParent {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

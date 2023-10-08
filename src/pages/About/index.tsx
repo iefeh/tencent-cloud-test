@@ -129,7 +129,7 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
+              className={`absolute w-full h-screen z-[2] max-sm:hidden bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
               hidden={open === null}
             >
               <div className="flex h-screen">
@@ -175,6 +175,14 @@ export default function About({
               mousewheel={{
                 releaseOnEdges: true
               }}
+              breakpoints={{
+                320: {
+                  slidesPerView: 1,
+                },
+                640: {
+                  slidesPerView: 3
+                }
+              }}
               centeredSlides={true}
               onSlideChangeTransitionEnd={onSlideChangeEnd}
               onSwiper={setSwiperFigure}
@@ -210,7 +218,7 @@ export default function About({
                 );
               })}
             </Swiper>
-            <div className="scroll_btn w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
+            <div className="scroll_btn max-sm:hidden w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
               <div className="relative w-full h-full flex justify-center items-center">
                 scroll
                 <Image
@@ -263,7 +271,6 @@ export default function About({
           </div>
         </SwiperSlide>
       </Swiper>
-
     </div>
   );
 }
