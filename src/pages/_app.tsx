@@ -19,7 +19,6 @@ import "./AstrArk/components/schoolDesc/index.scss";
 import "./AstrArk/components/school/Mystery/index.scss";
 import "./AstrArk/components/school/SchoolIcons/index.scss";
 import "./AstrArk/components/worldView/index.scss";
-import "./components/common/Sidebar/index.scss";
 import homePlanetBg from "img/home/planet.png";
 import loadingImg from "img/loading/bg_moon.png";
 import ntf_halo1 from "img/nft/home/halo1.png";
@@ -123,7 +122,13 @@ export default function App({ Component, pageProps }: AppProps) {
   function resetRem() {
     const ratio = window.devicePixelRatio;
     const width = window.innerWidth;
-    const fontSize = 16 * width / 1920 / ratio;
+    const height = window.innerHeight;
+    let fontSize = 16;
+    if (width >= height) {
+      fontSize *= width / 1920 / ratio;
+    } else {
+      fontSize *= Math.min(height, width * 2) / 667 / ratio;
+    }
     document.documentElement.style.fontSize = `${fontSize}px`;
   }
 
