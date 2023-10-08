@@ -247,22 +247,22 @@ export default function About({
             className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase text-[3vw] font-semakin leading-none mb-[4vw] translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"
+              className={`friendLink_title uppercase text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${isVisiable && "slideInAnim"
                 }`}
             >
               Investors & Partners
             </div>
             <div
-              className={`friends translate-y-[5vw] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
+              className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
             >
-              <ul className="gap-[2vw] grid grid-cols-5">
+              <ul className="gap-[2.38rem] grid grid-cols-5">
                 {sponsorArray.map((value, index) => {
                   if (index === 20) return null;
 
                   return (
                     <li
                       key={index}
-                      className="w-[9.4vw] h-[4.7vw] relative"
+                      className="w-[11.25rem] h-[5.53rem] relative"
                     >
                       <Image
                         className="object-cover"

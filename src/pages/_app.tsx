@@ -120,23 +120,28 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(true);
 
   function resetRem() {
-    const ratio = window.devicePixelRatio;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    let ratio = 1;
+    const u = navigator.userAgent;
+    const isiOS = /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(u);
+    if (isiOS) {
+      ratio = window.devicePixelRatio;
+    }
+    const width = document.documentElement.clientWidth;
     let fontSize = 16;
-    if (width >= height) {
+    if (width >= 1024) {
       fontSize *= width / 1920 / ratio;
     } else {
-      fontSize *= Math.min(height, width * 2) / 667 / ratio;
+      fontSize *= width / 375 / ratio;
     }
     document.documentElement.style.fontSize = `${fontSize}px`;
   }
 
   useEffect(() => {
     resetRem();
+    const resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
 
-    window.addEventListener('resize', resetRem);
-    return () => window.removeEventListener('resize', resetRem);
+    window.addEventListener(resizeEvt, resetRem);
+    return () => window.removeEventListener(resizeEvt, resetRem);
   }, []);
 
   useEffect(() => {
