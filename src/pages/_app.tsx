@@ -120,13 +120,18 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(true);
 
   function resetRem() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    let ratio = 1;
+    const u = navigator.userAgent;
+    const isiOS = /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(u);
+    if (isiOS) {
+      ratio = window.devicePixelRatio;
+    }
+    const width = document.documentElement.clientWidth;
     let fontSize = 16;
-    if (width >= height) {
-      fontSize *= width / 1920;
+    if (width >= 1024) {
+      fontSize *= width / 1920 / ratio;
     } else {
-      fontSize *= Math.min(height, width * 2) / 667;
+      fontSize *= width / 375 / ratio;
     }
     document.documentElement.style.fontSize = `${fontSize}px`;
   }

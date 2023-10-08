@@ -228,7 +228,7 @@ export default function Home() {
         >
           <div
             className={
-              "title uppercase font-semakin text-[6.25rem] absolute left-1/2 top-0 -translate-x-1/2 z-20 text-center " +
+              "title uppercase font-semakin text-[6.25rem] absolute left-1/2 top-0 -translate-x-1/2 z-20 text-center whitespace-nowrap max-lg:whitespace-normal " +
               (sloganTitleState === 1
                 ? "title-ani-start"
                 : sloganTitleState === 2
