@@ -4,7 +4,7 @@ import myImg from "img/astrark/school/mystery_circle.png";
 import itemImg from "img/astrark/school/mystery_item.png";
 
 export default function Mystery() {
-  const [textVisible, setTextVisible] = useState(false);
+  const [textVisible, setTextVisible] = useState(true);
 
   return (
     <div className="mystery absolute left-[4.75rem] bottom-[4.4375rem] flex items-center">

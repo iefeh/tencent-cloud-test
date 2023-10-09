@@ -5,6 +5,7 @@ const WorldView: React.FC = () => {
   return (
     <div className="second-desc h-screen relative flex justify-center items-center">
       <PageDesc
+        whiteLogo
         hasBelt
         className="items-start text-left"
         title="A real time<br>tower defence PVP game"
