@@ -51,7 +51,7 @@ const Character: React.FC = () => {
               title="ASTRARK"
               subtitle="A strategic tower defence PVP game."
               buttonLabel="click to explore"
-              buttonLink="/comingsoon"
+              buttonLink="/AstrArk"
             />
           </div>
           {heroMap.map((item, index) => (
@@ -85,9 +85,9 @@ const Character: React.FC = () => {
             autoplay={{ delay: 2500 }}
             modules={[Autoplay]}
           >
-            { heroMap.map(item => {
+            { heroMap.map((item, index) => {
               return (
-                <SwiperSlide className="relative">
+                <SwiperSlide className="relative" key={index}>
                   <Image
                     className="w-full h-full"
                     src={item.imgUrl}

@@ -65,6 +65,7 @@ export default function SwiperScreen(props: Props) {
         className="w-full h-full"
         loop
         autoplay={{ delay: activeIndex === 0 ? 10000 : 5000 }}
+        speed={1500}
         slidesPerView={1}
         onSlideChange={(swiper) => {
           const pagi = document.querySelector('.home-swiper-pagination .pagi-active');
