@@ -48,7 +48,7 @@ const Character: React.FC = () => {
             title="ASTRARK"
             subtitle="A strategic tower defence PVP game."
             buttonLabel="click to explore"
-            buttonLink="/comingsoon"
+            buttonLink="/AstrArk"
           />
         </div>
         {heroMap.map((item, index) => (
