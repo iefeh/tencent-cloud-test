@@ -1,10 +1,16 @@
-import React from "react";
 import PageDesc from "../../../components/common/PageDesc";
 
-const WorldView: React.FC = () => {
+interface Props {
+  scrollY: number;
+}
+
+export default function WorldView(props: Props) {
+  const { scrollY } = props;
+
   return (
     <div className="second-desc h-screen relative flex justify-center items-center">
       <PageDesc
+        needAni={scrollY > 300}
         whiteLogo
         hasBelt
         className="items-start text-left"
@@ -14,5 +20,3 @@ const WorldView: React.FC = () => {
     </div>
   );
 };
-
-export default WorldView;

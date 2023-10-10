@@ -1,6 +1,6 @@
 'use client';
 
-import { createRef, useRef } from 'react';
+import { createRef, useRef, useState } from 'react';
 import AstrarkHome from './components/home';
 import AstrArkSchool from './components/school';
 import AstrArkSchoolDesc from './components/schoolDesc';
@@ -12,6 +12,7 @@ import Scrollbar from 'smooth-scrollbar';
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
   const sbRef = useRef<Scrollbar>();
+  const [scrollY, setScrollY] = useState(0);
 
   function destroyScroll() {
     if (!scrollWrapper.current) return;
@@ -26,6 +27,7 @@ export default function Home() {
     scrollbar.track.xAxis.element.remove();
     scrollbar.track.yAxis.element.remove();
     scrollbar.addListener(status => {
+      setScrollY(status.offset.y || 0);
       if (status.offset.y > 0) return;
 
       destroyScroll();
@@ -50,7 +52,7 @@ export default function Home() {
       <div className="scroll-container">
         <AstrarkHome onScrollStatusChange={onScrollStatusChange} />
 
-        <SecondDesc />
+        <SecondDesc scrollY={scrollY} />
 
         <WorldView />
 
