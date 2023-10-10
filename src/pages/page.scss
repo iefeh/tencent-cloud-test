@@ -49,3 +49,10 @@
     }
   }
 }
+
+.page-home {
+  .scroll-content {
+    position: relative;
+    z-index: 10;
+  }
+}

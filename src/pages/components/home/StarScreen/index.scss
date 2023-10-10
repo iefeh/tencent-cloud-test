@@ -35,8 +35,6 @@
 }
 
 .star-screen {
-  display: none;
-
   &.star-screen-ani {
     display: block;
     animation: star_screen_ani 0.2s ease-in;

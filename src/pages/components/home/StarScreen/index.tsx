@@ -1,4 +1,4 @@
-import { useState, createRef, useEffect, useRef } from "react";
+import { useState, createRef, useEffect, useRef, useLayoutEffect } from "react";
 import planetImg from "img/home/planet.png";
 import Image from "next/image";
 
@@ -11,7 +11,6 @@ export default function StarScreen(props: Props) {
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
   const rafId = useRef(-1);
-  const [hasRun, setHasRun] = useState(false);
 
   // eslint-disable-next-line import/no-anonymous-default-export
   function initCanvas(ctx: CanvasRenderingContext2D) {
@@ -138,13 +137,11 @@ export default function StarScreen(props: Props) {
     setHeight(window.innerHeight);
   }
 
-  useEffect(() => {
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
+  useLayoutEffect(() => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d")!;
 
-    if (hasRun) return;
     initCanvas(ctx);
-    setHasRun(true);
 
     return () => {
       ctx.clearRect(0, 0, width, height);
