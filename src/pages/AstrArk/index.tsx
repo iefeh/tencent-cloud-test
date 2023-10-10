@@ -26,7 +26,9 @@ export default function Home() {
     scrollbar.track.xAxis.element.remove();
     scrollbar.track.yAxis.element.remove();
     scrollbar.addListener(status => {
-      console.log(1111, status);
+      if (status.offset.y > 0) return;
+
+      destroyScroll();
     })
     sbRef.current = scrollbar;
   }
@@ -46,7 +48,7 @@ export default function Home() {
       </Head>
 
       <div className="scroll-container">
-        <AstrarkHome sbRef={sbRef} onScrollStatusChange={onScrollStatusChange} />
+        <AstrarkHome onScrollStatusChange={onScrollStatusChange} />
 
         <SecondDesc />
 
