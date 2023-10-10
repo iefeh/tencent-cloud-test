@@ -17,6 +17,10 @@
   mask-position: 50% var(--mask-pos-y);
 }
 
+.videoShadow {
+  background: linear-gradient(to top, #000 10%, transparent 100%);
+}
+
 .arrowImg {
   transform: translate3d(-50%, -0.5rem, 0);
   animation: astrark_arrow_img 3s ease-in-out infinite;

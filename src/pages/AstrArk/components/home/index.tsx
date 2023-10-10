@@ -5,18 +5,17 @@ import { Scrollbar } from 'smooth-scrollbar/scrollbar';
 // import LogoSvg from "svg/logo.svg";
 import styles from './index.module.css';
 
-
 interface Props {
   onScrollStatusChange: (enable: boolean) => void;
 }
 
 function easeOutQuad(t: number, b: number, c: number, d: number) {
-  return -c *(t/=d)*(t-2) + b;
+  return -c * (t /= d) * (t - 2) + b;
 }
 
 const AstrarkHome: React.FC<Props> = (props) => {
   const { onScrollStatusChange } = props;
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
   const rafId = useRef(0);
   const maxScale = 30;
   const maxStaticScale = 25;
@@ -51,7 +50,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
 
     currenScale = scale;
     videoRef.current.style.setProperty('--mask-size', `${80 * scale}%`);
-    videoRef.current.style.setProperty('--mask-pos-y', `${50 + 20 * (scale - 1) / maxScale}%`);
+    videoRef.current.style.setProperty('--mask-pos-y', `${50 + (20 * (scale - 1)) / maxScale}%`);
     if (!isEnd) {
       rafId.current = requestAnimationFrame(runScaleAni);
     }
@@ -65,7 +64,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
     if (targetScale === nextTargetScale) return;
 
     targetScale = nextTargetScale;
-    scaleAniDuration = 1000 * Math.sqrt(Math.abs(targetScale - currenScale)) / 4;
+    scaleAniDuration = (1000 * Math.sqrt(Math.abs(targetScale - currenScale))) / 4;
     startScale = currenScale;
     els = performance.now();
     if (rafId.current > 0) cancelAnimationFrame(rafId.current);
@@ -84,20 +83,25 @@ const AstrarkHome: React.FC<Props> = (props) => {
       className="astrark-home relative w-full h-screen flex justify-center items-center overflow-hidden"
       onWheel={(e) => scrollControl(e as any)}
     >
-      <video
-        ref={videoRef}
-        className={'object-cover absolute left-0 top-0 w-full h-full z-0 ' + styles.maskVideo}
-        autoPlay
-        playsInline
-        muted
-        loop
-        preload="auto"
-      >
-        <source src="/video/astrark.mp4" />
-      </video>
+      <div ref={videoRef} className={"absolute left-0 top-0 w-full h-full z-0 " + styles.maskVideo}>
+        <video
+          className="object-cover w-full h-full"
+          autoPlay
+          playsInline
+          muted
+          loop
+          preload="auto"
+        >
+          <source src="/video/astrark.mp4" />
+        </video>
+
+        <div className={"absolute w-full h-1/2 left-0 bottom-0 z-10 " + styles.videoShadow}></div>
+      </div>
 
       <Image
-        className={"w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 " + styles.arrowImg}
+        className={
+          'w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 ' + styles.arrowImg
+        }
         src={arrowImg}
         alt=""
       />
