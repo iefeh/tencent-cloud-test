@@ -9,7 +9,7 @@ import PuffZ from "img/about/5@2x.png";
 import leftArrows from "img/about/arrow_1.png";
 import rightArrows from "img/about/arrow_2.png";
 import { useRef, useState } from "react";
-import { Mousewheel } from "swiper/modules";
+import { FreeMode, Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
@@ -104,13 +104,18 @@ export default function About({
   const [swiperWrapper, setSwiperWrapper] = useState<SwiperClass>();
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
-  function onSlideChangeEndWrapper() {
-    if (swiperWrapper?.activeIndex === 1) {
-      swiperWrapper?.mousewheel.enable();
+  function onSlideScrollWrapper(swiper: SwiperClass, event: WheelEvent) {
+    // console.log("%c Line:108 🥤 event", "color:#6ec1c2", event, swiper);
+    if (swiper.isEnd) {
+      swiperFigure?.mousewheel.disable()
+    } else {
+      swiperFigure?.mousewheel.enable()
     }
   }
-  function onSlideChangeEnd() {
-    if (swiperFigure?.activeIndex === 4) {
+
+  function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
+    // console.log("%c Line:108 🥤 event", "color:#6ec1c2", event, swiper);
+    if (swiper.isEnd) {
       swiperWrapper?.mousewheel.enable();
     } else {
       swiperWrapper?.mousewheel.disable();
@@ -127,9 +132,11 @@ export default function About({
         className="relative scroll-wrapper w-full h-screen"
         direction="vertical"
         modules={[Mousewheel]}
+        // freeMode={true}
+        onScroll={onSlideScrollWrapper}
+        // mousewheel={true}
         slidesPerView={1}
         onSwiper={setSwiperWrapper}
-        onSlideChangeTransitionEnd={onSlideChangeEndWrapper}
       >
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
@@ -137,7 +144,7 @@ export default function About({
               className={`absolute w-full h-screen z-[2] max-sm:hidden bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
               hidden={open === null}
             >
-              <div className="flex h-screen">
+              <div className="flex h-[90vh] shadow-[0px_0px_30px_10px_#514032]">
                 <div className="w-1/2 flex items-center justify-start p-56">
                   <PageDesc
                     hasBelt
@@ -148,7 +155,7 @@ export default function About({
                 </div>
                 <div className="w-1/2 flex items-center justify-center">
                   <Image
-                    className="object-cover w-[30.75rem] h-[31.56rem]"
+                    className="object-cover w-[40rem] h-[40.75rem]"
                     src={curFigure?.img!}
                     alt={curFigure?.name!}
                   ></Image>
@@ -156,11 +163,12 @@ export default function About({
               </div>
               <div
                 onClick={() => setOpen(!open)}
-                className="absolute bottom-36 left-1/2 z-[3] -translate-x-1/2 w-10 h-10 cursor-pointer"
+                className="absolute bottom-[10vh] left-1/2 z-[3] -translate-x-1/2 translate-y-1/2 w-10 h-10 cursor-pointer"
               >
                 <span className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10`}>
                   <span>&#x2715;</span>
                 </span>
+                <span className="absolute font-semakin -bottom-[80%] -translate-x-1/2 left-1/2 text-[#F6C799]" >Close</span>
                 <Image
                   className="object-cover"
                   src="/img/about/button@2x.png"
@@ -169,18 +177,17 @@ export default function About({
                   sizes="100%"
                 />
               </div>
-              <div className="absolute bottom-[11.2rem] h-[1px] w-full lineYellow" ></div>
+              {/* <div className="absolute bottom-[11.2rem] h-[1px] w-full lineYellow" ></div> */}
             </div>
             <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
               OUR TEAM
             </div>
             <Swiper
               className="w-full h-full"
-              modules={[Mousewheel]}
+              modules={[Mousewheel, FreeMode]}
+              freeMode={true}
               slidesPerView={3}
-              mousewheel={{
-                releaseOnEdges: true
-              }}
+              mousewheel={true}
               breakpoints={{
                 320: {
                   slidesPerView: 1,
@@ -190,7 +197,7 @@ export default function About({
                 }
               }}
               centeredSlides={true}
-              onSlideChangeTransitionEnd={onSlideChangeEnd}
+              onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
               {figureArray.map((figureData, index) => {
