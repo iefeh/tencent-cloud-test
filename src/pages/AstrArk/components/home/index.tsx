@@ -97,7 +97,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
       </video>
 
       <Image
-        className="w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20"
+        className={"w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 " + styles.arrowImg}
         src={arrowImg}
         alt=""
       />
