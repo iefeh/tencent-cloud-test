@@ -167,7 +167,7 @@ export default function StarScreen(props: Props) {
       }
     >
       <Image
-        className="bg-img w-[80vw] h-[70vw] flex z-10 relative -top-72 origin-center"
+        className="bg-img w-[80vw] h-[70vw] flex z-10 relative max-lg:top-[22rem] -top-72 origin-center"
         src={planetImg}
         alt=""
       />

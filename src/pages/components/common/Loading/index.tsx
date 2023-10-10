@@ -60,7 +60,7 @@ export default function Loading(props: Props) {
         />
       </div>
 
-      <div className="text-wrapper z-10 relative">
+      <div className="text-wrapper z-10 relative text-center">
         <span
           ref={textRef}
           className="text uppercase font-semakin text-4xl text-transparent bg-clip-text"

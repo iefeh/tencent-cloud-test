@@ -19,9 +19,9 @@ import { useRouter } from "next/router";
 const routeText = [
     { name: "Home", route: "/" },
     { name: "AstrArk", route: "/AstrArk" },
+    { name: "About", route: "/About" },
     { name: "NFT", route: "/NFT" },
     { name: "Loyalty Program", route: "/LoyaltyProgram" },
-    { name: "About", route: "/About" },
 ];
 const mediaIcon = [
     { img: X, link: 'https://twitter.com/Moonveil_Studio' },

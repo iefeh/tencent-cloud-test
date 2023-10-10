@@ -22,7 +22,7 @@ export default function EntertainmentSlide(props: Props) {
         title="Moonveil Entertainment"
         needAni={props.needAni}
         className="relative top-[5%] items-center text-center"
-        subtitle="With the power of web 3, our mission is to craft top-<br>notch gaming experiences that seamlessly combine casual<br>flexibilitywithauthentic fun depth."
+        subtitle="With the power of cutting-edge technologies, our mission is to<br>craft top-notch gaming experiences that seamlessly combine casual<br>flexibility with authentic fun depth."
       />
     </div>
   );

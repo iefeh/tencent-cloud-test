@@ -1,52 +1,53 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import RootLayout from "./layout";
-import Loading from "./components/common/Loading";
-import "./page.scss";
-import "./components/home/Footer/index.scss";
-import "./components/home/LineBorder/index.scss";
-import "./components/home/StarScreen/index.scss";
-import "./components/home/SwiperScreen/index.scss";
-import "./components/common/Belt/index.scss";
-import "./components/common/Loading/index.scss";
-import "./components/common/MediaIconBar/index.scss";
-import "./components/character/character.scss";
-import "./About/about.scss";
-import "./NFT/components/home.scss";
-import "./AstrArk/components/schoolDesc/index.scss";
-import "./AstrArk/components/school/Mystery/index.scss";
-import "./AstrArk/components/school/SchoolIcons/index.scss";
-import "./AstrArk/components/worldView/index.scss";
-import homePlanetBg from "img/home/planet.png";
-import loadingImg from "img/loading/bg_moon.png";
-import ntf_halo1 from "img/nft/home/halo1.png";
-import ntf_halo2 from "img/nft/home/halo2.png";
-import ntf_meteor from "img/nft/home/meteor.png";
-import ntf_planet1 from "img/nft/home/planet1.png";
-import ntf_planet2 from "img/nft/home/planet2.png";
-import ntf_planet3 from "img/nft/home/planet3.png";
-import ntf_stars1 from "img/nft/home/stars1.png";
-import ntf_stars2 from "img/nft/home/stars2.png";
-import ntf_stars3 from "img/nft/home/stars3.png";
-import about_c1 from "img/about/1@2x.png";
-import about_c2 from "img/about/2@2x.png";
-import about_c3 from "img/about/3@2x.png";
-import about_c4 from "img/about/4@2x.png";
-import about_c5 from "img/about/5@2x.png";
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import RootLayout from './layout';
+import Loading from './components/common/Loading';
+import './page.scss';
+import './components/home/Footer/index.scss';
+import './components/home/LineBorder/index.scss';
+import './components/home/StarScreen/index.scss';
+import './components/home/SwiperScreen/index.scss';
+import './components/common/Belt/index.scss';
+import './components/common/Loading/index.scss';
+import './components/common/MediaIconBar/index.scss';
+import './components/character/character.scss';
+import './About/about.scss';
+import './NFT/components/home.scss';
+import './AstrArk/components/schoolDesc/index.scss';
+import './AstrArk/components/school/Mystery/index.scss';
+import './AstrArk/components/school/SchoolIcons/index.scss';
+import './AstrArk/components/worldView/index.scss';
+import homePlanetBg from 'img/home/planet.png';
+import loadingImg from 'img/loading/bg_moon.png';
+import ntf_halo1 from 'img/nft/home/halo1.png';
+import ntf_halo2 from 'img/nft/home/halo2.png';
+import ntf_meteor from 'img/nft/home/meteor.png';
+import ntf_planet1 from 'img/nft/home/planet1.png';
+import ntf_planet2 from 'img/nft/home/planet2.png';
+import ntf_planet3 from 'img/nft/home/planet3.png';
+import ntf_stars1 from 'img/nft/home/stars1.png';
+import ntf_stars2 from 'img/nft/home/stars2.png';
+import ntf_stars3 from 'img/nft/home/stars3.png';
+import about_c1 from 'img/about/1@2x.png';
+import about_c2 from 'img/about/2@2x.png';
+import about_c3 from 'img/about/3@2x.png';
+import about_c4 from 'img/about/4@2x.png';
+import about_c5 from 'img/about/5@2x.png';
+import Head from 'next/head';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
   const promises: Promise<any>[] = [];
 
   switch (path) {
-    case "/":
-    case "/home":
+    case '/':
+    case '/home':
       promises.push(...[homePlanetBg.src].map((path) => loadImage(path)));
-      promises.push(loadVideo("/video/ntfbg.webm"));
+      promises.push(loadVideo('/video/ntfbg.webm'));
       break;
-    case "/ntf":
+    case '/ntf':
       promises.push(
         ...[
           ntf_halo1.src,
@@ -58,22 +59,16 @@ async function initResources(path: string) {
           ntf_stars1.src,
           ntf_stars2.src,
           ntf_stars3.src,
-        ].map((path) => loadImage(path))
+        ].map((path) => loadImage(path)),
       );
       break;
-    case "/about":
+    case '/about':
       promises.push(
-        ...[
-          about_c1.src,
-          about_c2.src,
-          about_c3.src,
-          about_c4.src,
-          about_c5.src,
-        ].map((path) => loadImage(path))
+        ...[about_c1.src, about_c2.src, about_c3.src, about_c4.src, about_c5.src].map((path) => loadImage(path)),
       );
       break;
-    case "/astrark":
-      promises.push(loadVideo("/video/astrark.mp4"));
+    case '/astrark':
+      promises.push(loadVideo('/video/astrark.mp4'));
       break;
   }
 
@@ -83,7 +78,7 @@ async function initResources(path: string) {
 function loadImage(path: string) {
   const img = new Image();
   img.src = path;
-  img.style.display = "none";
+  img.style.display = 'none';
   document.body.appendChild(img);
 
   return new Promise((resolve) => {
@@ -99,9 +94,9 @@ function delay(timeout: number) {
 }
 
 function loadVideo(path: string) {
-  const video = document.createElement("video");
+  const video = document.createElement('video');
   video.src = path;
-  video.style.display = "none";
+  video.style.display = 'none';
   document.body.appendChild(video);
 
   return new Promise(async (resolve) => {
@@ -120,13 +115,18 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(true);
 
   function resetRem() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    let ratio = 1;
+    const u = navigator.userAgent;
+    const isiOS = /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(u);
+    if (isiOS) {
+      ratio = window.devicePixelRatio;
+    }
+    const width = document.documentElement.clientWidth;
     let fontSize = 16;
-    if (width >= height) {
-      fontSize *= width / 1920;
+    if (width >= 1024) {
+      fontSize *= width / 1920 / ratio;
     } else {
-      fontSize *= Math.min(height, width * 2) / 667;
+      fontSize *= width / 375 / ratio;
     }
     document.documentElement.style.fontSize = `${fontSize}px`;
   }
@@ -147,17 +147,27 @@ export default function App({ Component, pageProps }: AppProps) {
       await initResources(router.route);
 
       setResLoading(false);
-      initResources("/");
-      initResources("/ntf");
-      initResources("/about");
+      initResources('/');
+      initResources('/ntf');
+      initResources('/about');
     });
   }, []);
 
-  return loading ? (
-    <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-  ) : (
-    <RootLayout>
-      <Component {...pageProps} />
-    </RootLayout>
+  return (
+    <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+        />
+      </Head>
+      {loading ? (
+        <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+      ) : (
+        <RootLayout>
+          <Component {...pageProps} />
+        </RootLayout>
+      )}
+    </>
   );
 }

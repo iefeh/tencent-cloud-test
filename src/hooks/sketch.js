@@ -132,7 +132,6 @@ export class Sketch {
         radius: { type: "f", value: 0 },
         texture1: { type: "f", value: this.textures[0] },
         texture2: { type: "f", value: this.textures[1] },
-        displacement: { type: "f", value: new THREE.TextureLoader().load('img/disp1.jpg') },
         resolution: { type: "v4", value: new THREE.Vector4() },
       },
       // wireframe: true,
