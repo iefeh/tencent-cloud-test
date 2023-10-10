@@ -52,7 +52,7 @@ export default function PageDesc(props: Props) {
 
       {props.subtitle && (
         <div
-          className="title text-lg font-decima mb-10"
+          className="title text-lg font-decima mb-10 tracking-tighter"
           dangerouslySetInnerHTML={{ __html: props.subtitle }}
         ></div>
       )}
