@@ -3,7 +3,7 @@ import { Pagination, Autoplay } from "swiper/modules";
 import IndexSlide from "../IndexSlide";
 import RaceSlide from "../RaceSlide";
 import EntertainmentSlide from "../EntertainmentSlide";
-import ComingSoon from "../../common/ComingSoon";
+import LimitedTestSlide from "../LimitedTestSlide";
 import YellowCircle from "../../common/YellowCircle";
 import { useState, useEffect } from "react";
 import { throttle } from "lodash";
@@ -99,7 +99,7 @@ export default function SwiperScreen(props: Props) {
         </SwiperSlide>
 
         <SwiperSlide>
-          <ComingSoon needAni={activeIndex === 3} />
+          <LimitedTestSlide needAni={activeIndex === 3} />
         </SwiperSlide>
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
