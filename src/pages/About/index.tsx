@@ -133,7 +133,7 @@ export default function About({
         direction="vertical"
         modules={[Mousewheel]}
         // freeMode={true}
-        onScroll={onSlideScrollWrapper}
+        // onScroll={onSlideScrollWrapper}
         // mousewheel={true}
         slidesPerView={1}
         onSwiper={setSwiperWrapper}
