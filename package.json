@@ -9,9 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@better-scroll/core": "^2.5.1",
-    "@better-scroll/mouse-wheel": "^2.5.1",
-    "@better-scroll/scroll-bar": "^2.5.1",
     "@svgr/webpack": "^8.1.0",
     "axios": "^1.5.1",
     "gsap": "^3.12.2",
