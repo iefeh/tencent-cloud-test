@@ -35,6 +35,27 @@ import about_c2 from 'img/about/2@2x.png';
 import about_c3 from 'img/about/3@2x.png';
 import about_c4 from 'img/about/4@2x.png';
 import about_c5 from 'img/about/5@2x.png';
+import sponsor_1 from 'img/about/1.png';
+import sponsor_2 from 'img/about/2.png';
+import sponsor_3 from 'img/about/3.png';
+import sponsor_4 from 'img/about/4.png';
+import sponsor_5 from 'img/about/5.png';
+import sponsor_6 from 'img/about/6.png';
+import sponsor_7 from 'img/about/7.png';
+import sponsor_8 from 'img/about/8.png';
+import sponsor_9 from 'img/about/9.png';
+import sponsor_10 from 'img/about/10.png';
+import sponsor_11 from 'img/about/11.png';
+import sponsor_12 from 'img/about/12.png';
+import sponsor_13 from 'img/about/13.png';
+import sponsor_14 from 'img/about/14.png';
+import sponsor_15 from 'img/about/15.png';
+import sponsor_16 from 'img/about/16.png';
+import sponsor_17 from 'img/about/17.png';
+import sponsor_18 from 'img/about/18.png';
+import sponsor_19 from 'img/about/19.png';
+import sponsor_20 from 'img/about/20.png';
+import sponsor_22 from 'img/about/22.png';
 import Head from 'next/head';
 
 async function initResources(path: string) {
@@ -64,7 +85,34 @@ async function initResources(path: string) {
       break;
     case '/about':
       promises.push(
-        ...[about_c1.src, about_c2.src, about_c3.src, about_c4.src, about_c5.src].map((path) => loadImage(path)),
+        ...[
+          about_c1.src,
+          about_c2.src,
+          about_c3.src,
+          about_c4.src,
+          about_c5.src,
+          sponsor_1.src,
+          sponsor_2.src,
+          sponsor_3.src,
+          sponsor_4.src,
+          sponsor_5.src,
+          sponsor_6.src,
+          sponsor_7.src,
+          sponsor_8.src,
+          sponsor_9.src,
+          sponsor_10.src,
+          sponsor_11.src,
+          sponsor_12.src,
+          sponsor_13.src,
+          sponsor_14.src,
+          sponsor_15.src,
+          sponsor_16.src,
+          sponsor_17.src,
+          sponsor_18.src,
+          sponsor_19.src,
+          sponsor_20.src,
+          sponsor_22.src,
+        ].map((path) => loadImage(path)),
       );
       break;
     case '/astrark':
@@ -149,7 +197,7 @@ export default function App({ Component, pageProps }: AppProps) {
       setResLoading(false);
       initResources('/');
       initResources('/ntf');
-      initResources('/about');
+      await initResources('/about');
     });
   }, []);
 
