@@ -14,10 +14,13 @@ import { Mousewheel } from 'swiper/modules';
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
   const [swiper, setSwiper] = useState<SwiperClass>();
+  const [scrollY, setScrollY] = useState(0);
 
   function onMaskAniEnd() {
     if (!swiper) return;
     swiper.enable();
+    swiper.slideNext(0);
+    setScrollY(swiper.translate);
   }
 
   function initSwiper(swiperIns: SwiperClass) {
@@ -26,7 +29,10 @@ export default function Home() {
   }
 
   function onSwiperScroll(swiper: SwiperClass, e: WheelEvent) {
-    console.log(23423, swiper, e);
+    if (swiper.isBeginning) {
+      swiper.disable();
+    }
+    setScrollY(swiper.translate);
   }
 
   return (
@@ -41,9 +47,8 @@ export default function Home() {
       <Swiper
         className="w-full h-full"
         modules={[Mousewheel]}
-        speed={1500}
-        slidesPerView={1}
-        freeMode
+        freeMode={{ enabled: true, sticky: false, momentum: true }}
+        slidesPerView="auto"
         mousewheel
         direction="vertical"
         onSwiper={initSwiper}
@@ -54,7 +59,7 @@ export default function Home() {
         </SwiperSlide>
 
         <SwiperSlide>
-          <SloganScreen />
+          <SloganScreen scrollY={scrollY} />
         </SwiperSlide>
 
         <SwiperSlide>
@@ -67,12 +72,12 @@ export default function Home() {
           </div>
         </SwiperSlide>
 
-        <SwiperSlide>
+        <SwiperSlide style={{ height: 'auto' }}>
           <Footer />
         </SwiperSlide>
       </Swiper>
 
-      <StarScreen />
+      <StarScreen scrollY={scrollY} />
     </section>
   );
 }

@@ -1,15 +1,17 @@
-import { useState, createRef, useEffect, useRef, useLayoutEffect } from "react";
-import planetImg from "img/home/planet.png";
-import Image from "next/image";
+import { useState, createRef, useEffect, useRef, useLayoutEffect, MutableRefObject } from 'react';
+import planetImg from 'img/home/planet.png';
+import Image from 'next/image';
+import useRAF from '@/hooks/raf';
 
 interface Props {
-  className?: string;
+  scrollY: number;
 }
 
 export default function StarScreen(props: Props) {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
+  const planetRef = useRef<HTMLImageElement>(null);
   const rafId = useRef(-1);
 
   // eslint-disable-next-line import/no-anonymous-default-export
@@ -51,7 +53,7 @@ export default function StarScreen(props: Props) {
         loop();
         first = false;
       }
-    };
+    }
 
     function loop() {
       step();
@@ -70,10 +72,7 @@ export default function StarScreen(props: Props) {
       ctx.rotate(opts.ellipseTilt);
       ctx.scale(opts.ellipseAxisMultiplierX, opts.ellipseAxisMultiplierY);
 
-      ctx.scale(
-        1 / opts.ellipseAxisMultiplierX,
-        1 / opts.ellipseAxisMultiplierY
-      );
+      ctx.scale(1 / opts.ellipseAxisMultiplierX, 1 / opts.ellipseAxisMultiplierY);
       ctx.rotate(-opts.ellipseTilt);
       ctx.translate(-opts.ellipseCX, -opts.ellipseCY);
 
@@ -88,7 +87,6 @@ export default function StarScreen(props: Props) {
       public lifeStep: number;
       public life: number;
 
-
       constructor() {
         this.x = Math.random() * w;
         this.y = Math.random() * h;
@@ -98,7 +96,7 @@ export default function StarScreen(props: Props) {
 
       step() {
         this.life += this.lifeStep;
-  
+
         if (this.life <= 0 || this.life >= 100) {
           this.lifeStep *= -1;
         }
@@ -106,20 +104,20 @@ export default function StarScreen(props: Props) {
 
       draw() {
         if (this.lifeStep < 0) {
-          ctx.globalCompositeOperation = "darken";
-  
+          ctx.globalCompositeOperation = 'darken';
+
           ctx.fillStyle = ctx.shadowColor = `rgba(0, 0, 0, .1)`;
         } else {
-          ctx.globalCompositeOperation = "lighten";
-  
+          ctx.globalCompositeOperation = 'lighten';
+
           ctx.fillStyle = ctx.shadowColor = `rgba(255, 255, 255, .1)`;
         }
         ctx.shadowBlur = this.life;
         ctx.fillRect(this.x, this.y, 0.5, 0.5);
-      };
+      }
     }
 
-    window.addEventListener("resize", function () {
+    window.addEventListener('resize', function () {
       w = window.innerWidth / 2;
       h = window.innerHeight / 2;
 
@@ -132,6 +130,20 @@ export default function StarScreen(props: Props) {
     star_init();
   }
 
+  const { update } = useRAF({
+    base: 1.2,
+    min: 0.6,
+    max: 1.2,
+    baseDuration: 1000,
+    getNextTarget: (y) =>
+      1.2 - ((y - document.documentElement.clientHeight) / document.documentElement.clientHeight / 2) * 0.6,
+    callback: (cur) => {
+      if (!planetRef.current) return;
+
+      planetRef.current.style.setProperty('--scale', cur + '');
+    },
+  });
+
   function setSize() {
     setWidth(window.innerWidth);
     setHeight(window.innerHeight);
@@ -139,32 +151,34 @@ export default function StarScreen(props: Props) {
 
   useLayoutEffect(() => {
     if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d")!;
+    const ctx = canvasRef.current.getContext('2d')!;
 
-    // initCanvas(ctx);
+    initCanvas(ctx);
 
     return () => {
       ctx.clearRect(0, 0, width, height);
       if (rafId.current > 0) cancelAnimationFrame(rafId.current);
-    }
+    };
   }, []);
 
   useEffect(() => {
     setSize();
 
-    window.addEventListener("resize", setSize);
-    return () => window.removeEventListener("resize", setSize);
+    window.addEventListener('resize', setSize);
+    return () => window.removeEventListener('resize', setSize);
   }, []);
 
+  useEffect(() => {
+    if (props.scrollY < 0) {
+      update(-props.scrollY);
+    }
+  }, [props.scrollY]);
+
   return (
-    <div
-      className={
-        "star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none flex justify-center items-center " +
-        (props.className || "")
-      }
-    >
+    <div className="star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none flex justify-center items-center">
       <Image
-        className="bg-img w-[80vw] h-[70vw] flex z-10 relative max-lg:top-[22rem] -top-72 origin-center"
+        ref={planetRef}
+        className="bg-img w-[80vw] h-[70vw] flex z-10 relative max-lg:top-[22rem] -top-36 origin-center"
         src={planetImg}
         alt=""
       />

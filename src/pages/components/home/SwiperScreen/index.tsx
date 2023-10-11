@@ -56,7 +56,7 @@ export default function SwiperScreen(props: Props) {
   return (
     <div
       className="swiper-screen w-full h-screen relative overflow-hidden"
-      // onWheel={(e) => onWheel(e as unknown as WheelEvent)}
+      onWheel={(e) => onWheel(e as unknown as WheelEvent)}
       onTouchStart={e => onTouchStart(e as any)}
       onTouchMove={e => onTouchMove(e as any)}
     >
