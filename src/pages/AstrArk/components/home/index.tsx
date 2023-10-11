@@ -1,12 +1,11 @@
-import React, { MutableRefObject, useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
-import { Scrollbar } from 'smooth-scrollbar/scrollbar';
-// import LogoSvg from "svg/logo.svg";
 import styles from './index.module.css';
+import maskBg from 'img/astrark/bg-mask.png';
 
 interface Props {
-  onScrollStatusChange: (enable: boolean) => void;
+  scrollY: number;
 }
 
 function easeOutQuad(t: number, b: number, c: number, d: number) {
@@ -14,41 +13,42 @@ function easeOutQuad(t: number, b: number, c: number, d: number) {
 }
 
 const AstrarkHome: React.FC<Props> = (props) => {
-  const { onScrollStatusChange } = props;
   const videoRef = useRef<HTMLDivElement>(null);
   const rafId = useRef(0);
   const maxScale = 30;
-  const maxStaticScale = 25;
-  let scaleAniDuration = 1000;
-  let startScale = 1;
-  let targetScale = 1;
-  let currenScale = 1;
-  let els = 0;
+  const scaleAniDuration = useRef(1000);
+  const startScale = useRef(1);
+  const targetScale = useRef(1);
+  const currenScale = useRef(1);
+  const els = useRef(0);
 
-  const runScaleAni = (curEl: number = els) => {
+  const runScaleAni = (curEl: number = els.current) => {
     if (!videoRef.current) return;
 
     let scale = 0;
     let isEnd = false;
 
     if (startScale < targetScale) {
-      scale = easeOutQuad(curEl - els, startScale, targetScale, scaleAniDuration);
-      isEnd = scale > targetScale || scale < startScale;
+      scale = easeOutQuad(curEl - els.current, startScale.current, targetScale.current, scaleAniDuration.current);
+      isEnd = scale > targetScale.current || scale < startScale.current;
     } else {
-      scale = targetScale + startScale - easeOutQuad(curEl - els, targetScale, startScale, scaleAniDuration);
-      isEnd = scale < targetScale || scale > startScale;
+      const deltaScale = easeOutQuad(
+        curEl - els.current,
+        targetScale.current,
+        startScale.current,
+        scaleAniDuration.current,
+      );
+      scale = targetScale.current + startScale.current - deltaScale;
+      isEnd = scale < targetScale.current || scale > startScale.current;
     }
 
-    if (isEnd || Math.abs(targetScale - scale) < 0.05) {
-      scale = targetScale;
-      startScale = targetScale;
+    if (isEnd || Math.abs(targetScale.current - scale) < 0.05) {
+      scale = targetScale.current;
+      startScale.current = targetScale.current;
       isEnd = true;
     }
-    if (scale >= maxStaticScale) {
-      onScrollStatusChange(true);
-    }
 
-    currenScale = scale;
+    currenScale.current = scale;
     videoRef.current.style.setProperty('--mask-size', `${80 * scale}%`);
     videoRef.current.style.setProperty('--mask-pos-y', `${50 + (20 * (scale - 1)) / maxScale}%`);
     if (!isEnd) {
@@ -56,20 +56,33 @@ const AstrarkHome: React.FC<Props> = (props) => {
     }
   };
 
-  const scrollControl = (e: WheelEvent) => {
-    if (e.deltaY === 0) return;
+  function runNextScale(scaleDiff: number) {
+    const nextTargetScale = Math.max(1, Math.min(maxScale, targetScale.current + scaleDiff));
+    if (targetScale.current === nextTargetScale) return;
 
-    const scaleDiff = (e.deltaY / scaleAniDuration) * maxScale;
-    const nextTargetScale = Math.max(1, Math.min(maxScale, targetScale + scaleDiff));
-    if (targetScale === nextTargetScale) return;
-
-    targetScale = nextTargetScale;
-    scaleAniDuration = (1000 * Math.sqrt(Math.abs(targetScale - currenScale))) / 4;
-    startScale = currenScale;
-    els = performance.now();
+    targetScale.current = nextTargetScale;
+    scaleAniDuration.current = (1000 * Math.sqrt(Math.abs(targetScale.current - currenScale.current))) / 4;
+    startScale.current = currenScale.current;
+    els.current = performance.now();
     if (rafId.current > 0) cancelAnimationFrame(rafId.current);
     runScaleAni();
-  };
+  }
+
+  useEffect(() => {
+    const scaleDiff = (props.scrollY / document.documentElement.clientHeight) * maxScale;
+    runNextScale(scaleDiff);
+
+    return () => {
+      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
+    };
+  }, [props.scrollY]);
+
+  function onWheel(e: WheelEvent) {
+    if (e.deltaY >= 0 || props.scrollY > 0) return;
+
+    const scaleDiff = (e.deltaY / scaleAniDuration.current) * maxScale;
+    runNextScale(scaleDiff);
+  }
 
   useLayoutEffect(() => {
     if (!videoRef.current) return;
@@ -80,12 +93,12 @@ const AstrarkHome: React.FC<Props> = (props) => {
 
   return (
     <div
-      className="astrark-home relative w-full h-screen flex justify-center items-center overflow-hidden"
-      onWheel={(e) => scrollControl(e as any)}
+      className="astrark-home w-full h-screen flex justify-center items-center overflow-hidden absolute left-0 top-0 z-0"
+      onWheel={(e) => onWheel(e as any)}
     >
-      <div ref={videoRef} className={"absolute left-0 top-0 w-full h-full z-0 " + styles.maskVideo}>
+      <div ref={videoRef} className="absolute left-0 top-0 w-full h-full z-0 ">
         <video
-          className="object-cover w-full h-full"
+          className={'object-cover w-full h-full ' + styles.maskVideo}
           autoPlay
           playsInline
           muted
@@ -95,7 +108,9 @@ const AstrarkHome: React.FC<Props> = (props) => {
           <source src="/video/astrark.mp4" />
         </video>
 
-        <div className={"absolute w-full h-1/2 left-0 bottom-0 z-10 " + styles.videoShadow}></div>
+        <Image className="object-cover z-10" src={maskBg} alt="" fill />
+
+        <div className={'absolute w-full h-1/2 left-0 bottom-0 z-20 ' + styles.videoShadow}></div>
       </div>
 
       <Image

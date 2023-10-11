@@ -1,6 +1,6 @@
 'use client';
 
-import { createRef, useRef, useState } from 'react';
+import { createRef, useLayoutEffect, useRef, useState } from 'react';
 import AstrarkHome from './components/home';
 import AstrArkSchool from './components/school';
 import AstrArkSchoolDesc from './components/schoolDesc';
@@ -20,37 +20,28 @@ export default function Home() {
     sbRef.current = undefined;
   }
 
-  function initScroll() {
-    destroyScroll();
-
+  useLayoutEffect(() => {
     const scrollbar = Scrollbar.init(scrollWrapper.current!, { thumbMinSize: 0, damping: 1 });
     scrollbar.track.xAxis.element.remove();
     scrollbar.track.yAxis.element.remove();
-    scrollbar.addListener(status => {
+    scrollbar.addListener((status) => {
       setScrollY(status.offset.y || 0);
-      if (status.offset.y > 0) return;
-
-      destroyScroll();
-    })
+    });
     sbRef.current = scrollbar;
-  }
 
-  function onScrollStatusChange(enable: boolean) {
-    if (enable && !sbRef.current) {
-      initScroll();
-    } else if (!enable && sbRef.current) {
-      destroyScroll();
-    }
-  }
+    return () => destroyScroll();
+  }, []);
 
   return (
-    <section ref={scrollWrapper} className="scroll-wrapper w-full h-screen overflow-hidden">
+    <section ref={scrollWrapper} className="scroll-wrapper w-full h-screen overflow-hidden relative">
       <Head>
         <title>AstrArk | Moonveil</title>
       </Head>
 
-      <div className="scroll-container">
-        <AstrarkHome onScrollStatusChange={onScrollStatusChange} />
+      <AstrarkHome scrollY={scrollY} />
+
+      <div className="scroll-container flex flex-col z-10">
+        <div className="w-full h-[200vh]"></div>
 
         <SecondDesc scrollY={scrollY} />
 

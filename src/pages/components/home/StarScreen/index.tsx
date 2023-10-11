@@ -141,7 +141,7 @@ export default function StarScreen(props: Props) {
     if (!canvasRef.current) return;
     const ctx = canvasRef.current.getContext("2d")!;
 
-    initCanvas(ctx);
+    // initCanvas(ctx);
 
     return () => {
       ctx.clearRect(0, 0, width, height);
