@@ -105,16 +105,14 @@ export default function About({
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
   function onSlideScrollWrapper(swiper: SwiperClass, event: WheelEvent) {
-    // console.log("%c Line:108 🥤 event", "color:#6ec1c2", event, swiper);
-    if (swiper.isEnd) {
-      swiperFigure?.mousewheel.disable()
+    if (swiper.translate === 0) {
+      swiperFigure?.mousewheel.enable();
     } else {
-      swiperFigure?.mousewheel.enable()
+      swiperFigure?.mousewheel.disable();
     }
   }
 
   function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
-    // console.log("%c Line:108 🥤 event", "color:#6ec1c2", event, swiper);
     if (swiper.isEnd) {
       swiperWrapper?.mousewheel.enable();
     } else {
@@ -131,10 +129,9 @@ export default function About({
       <Swiper
         className="relative scroll-wrapper w-full h-screen"
         direction="vertical"
-        modules={[Mousewheel]}
-        // freeMode={true}
-        // onScroll={onSlideScrollWrapper}
-        // mousewheel={true}
+        modules={[Mousewheel, FreeMode]}
+        onScroll={onSlideScrollWrapper}
+        freeMode={true}
         slidesPerView={1}
         onSwiper={setSwiperWrapper}
       >
@@ -177,7 +174,6 @@ export default function About({
                   sizes="100%"
                 />
               </div>
-              {/* <div className="absolute bottom-[11.2rem] h-[1px] w-full lineYellow" ></div> */}
             </div>
             <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
               OUR TEAM
