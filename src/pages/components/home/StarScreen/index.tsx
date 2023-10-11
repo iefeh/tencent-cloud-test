@@ -41,6 +41,7 @@ export default function StarScreen(props: Props) {
         repaintAlpha: 0.015,
       },
       stars: Star[] = [],
+      els = 0,
       first = true;
 
     function star_init() {
@@ -55,9 +56,12 @@ export default function StarScreen(props: Props) {
       }
     }
 
-    function loop() {
-      step();
-      draw();
+    function loop(curEl: number = els) {
+      if (curEl - els > 50) {
+        step();
+        draw();
+        els += 50;
+      }
       rafId.current = requestAnimationFrame(loop);
     }
 
