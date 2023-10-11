@@ -1,65 +1,58 @@
-"use client";
+'use client';
 
-import { createRef, useEffect, useMemo, useRef, useLayoutEffect } from "react";
-import BScroll from "@better-scroll/core";
-import ScrollBar from "@better-scroll/scroll-bar";
-import MouseWheel from "@better-scroll/mouse-wheel";
-import AstrarkHome from "./components/home";
-import AstrArkSchool from "./components/school";
-import AstrArkSchoolDesc from "./components/schoolDesc";
-import WorldView from "./components/worldView";
+import { createRef, useRef } from 'react';
+import AstrarkHome from './components/home';
+import AstrArkSchool from './components/school';
+import AstrArkSchoolDesc from './components/schoolDesc';
+import WorldView from './components/worldView';
 import SecondDesc from './components/secondDesc';
-import Head from "next/head";
-
-BScroll.use(MouseWheel);
-BScroll.use(ScrollBar);
+import Head from 'next/head';
+import Scrollbar from 'smooth-scrollbar';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
-  
-  const bsRef = useRef<any>()
+  const sbRef = useRef<Scrollbar>();
 
-  useLayoutEffect(() => {
-    bsRef.current = new BScroll(scrollWrapper.current!, {     
-      mouseWheel: true,
-      useTransition: true,
-      scrollY: true,
-      bounce: false,
-      probeType: 3,
-    })
-
-    return () => {
-      bsRef.current.destroy();
-    }
-  }, [])
-
-  const disable = () => {
-    bsRef.current.disable()
+  function destroyScroll() {
+    if (!scrollWrapper.current) return;
+    Scrollbar.destroy(scrollWrapper.current);
+    sbRef.current = undefined;
   }
 
-  const enable = () => {
-    bsRef.current.enable()
+  function initScroll() {
+    destroyScroll();
+
+    const scrollbar = Scrollbar.init(scrollWrapper.current!, { thumbMinSize: 0, damping: 1 });
+    scrollbar.track.xAxis.element.remove();
+    scrollbar.track.yAxis.element.remove();
+    scrollbar.addListener(status => {
+      if (status.offset.y > 0) return;
+
+      destroyScroll();
+    })
+    sbRef.current = scrollbar;
+  }
+
+  function onScrollStatusChange(enable: boolean) {
+    if (enable && !sbRef.current) {
+      initScroll();
+    } else if (!enable && sbRef.current) {
+      destroyScroll();
+    }
   }
 
   return (
-    <section
-      ref={scrollWrapper}
-      className="scroll-wrapper w-full h-screen overflow-hidden"
-    >
+    <section ref={scrollWrapper} className="scroll-wrapper w-full h-screen overflow-hidden">
       <Head>
         <title>AstrArk | Moonveil</title>
       </Head>
 
       <div className="scroll-container">
-        <div className="w-full flex h-screen relative text-center items-center" onClick={disable}>
-          <AstrarkHome toDisable={disable} toEnable={enable}/>
-        </div>
+        <AstrarkHome onScrollStatusChange={onScrollStatusChange} />
 
         <SecondDesc />
 
-        <div className="w-full h-screen">
-          <WorldView />
-        </div>
+        <WorldView />
 
         <AstrArkSchool />
 

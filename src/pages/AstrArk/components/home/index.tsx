@@ -1,90 +1,92 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import arrowImg from "img/astrark/arrow.png";
-import Image from "next/image";
+import React, { MutableRefObject, useLayoutEffect, useRef } from 'react';
+import arrowImg from 'img/astrark/arrow.png';
+import Image from 'next/image';
+import { Scrollbar } from 'smooth-scrollbar/scrollbar';
+// import LogoSvg from "svg/logo.svg";
+import styles from './index.module.css';
+
 
 interface Props {
-  toDisable: () => any;
-  toEnable: () => any;
+  onScrollStatusChange: (enable: boolean) => void;
+}
+
+function easeOutQuad(t: number, b: number, c: number, d: number) {
+  return -c *(t/=d)*(t-2) + b;
 }
 
 const AstrarkHome: React.FC<Props> = (props) => {
-  const { toDisable, toEnable } = props;
-  const [showFullVideo, setShowFullVideo] = useState(false);
-  const textDomRef = useRef<HTMLDivElement>(null);
-  const maxScale = 6;
-  const maxAutoScale = 20;
-  const scaleAniDuration = 300;
-  const autoAniDuration = 500;
-  const fpsSec = 16.6667;
-  let currenScale = 1;
+  const { onScrollStatusChange } = props;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const rafId = useRef(0);
+  const maxScale = 30;
+  const maxStaticScale = 25;
+  let scaleAniDuration = 1000;
+  let startScale = 1;
   let targetScale = 1;
-  let currenOpacity = 1;
-  let targetOpacity = 0;
-  let scalePf = 0;
-  let opacityPf = 0;
+  let currenScale = 1;
+  let els = 0;
 
-  useEffect(() => {
-    toDisable();
-  }, []);
+  const runScaleAni = (curEl: number = els) => {
+    if (!videoRef.current) return;
 
-  const runAutoAni = () => {
-    if (!textDomRef.current) return;
-    if (currenScale >= maxAutoScale) {
-      setShowFullVideo(true);
-      window.removeEventListener("wheel", scrollControl);
-      toEnable();
-      return;
+    let scale = 0;
+    let isEnd = false;
+
+    if (startScale < targetScale) {
+      scale = easeOutQuad(curEl - els, startScale, targetScale, scaleAniDuration);
+      isEnd = scale > targetScale || scale < startScale;
+    } else {
+      scale = targetScale + startScale - easeOutQuad(curEl - els, targetScale, startScale, scaleAniDuration);
+      isEnd = scale < targetScale || scale > startScale;
     }
 
-    currenScale += scalePf;
-    currenOpacity += opacityPf;
-    textDomRef.current.style.transform = `scale(${currenScale})`;
-    textDomRef.current.style.opacity = currenOpacity + "";
-    requestAnimationFrame(runAutoAni);
-  };
-
-  const runScaleAni = () => {
-    if (!textDomRef.current) return;
-
-    if (Math.abs(currenScale - targetScale) < 0.05) {
-      currenScale = targetScale;
-      textDomRef.current.style.transform = `scale(${currenScale})`;
-      if (currenScale >= maxScale) {
-        targetScale = maxAutoScale;
-        scalePf = ((targetScale - currenScale) * fpsSec) / autoAniDuration;
-        opacityPf =
-          ((targetOpacity - currenOpacity) * fpsSec) / autoAniDuration;
-        currenOpacity = 1;
-        targetOpacity = 0;
-        runAutoAni();
-      }
-      return;
+    if (isEnd || Math.abs(targetScale - scale) < 0.05) {
+      scale = targetScale;
+      startScale = targetScale;
+      isEnd = true;
+    }
+    if (scale >= maxStaticScale) {
+      onScrollStatusChange(true);
     }
 
-    currenScale += scalePf;
-    textDomRef.current.style.transform = `scale(${currenScale})`;
-    requestAnimationFrame(runScaleAni);
+    currenScale = scale;
+    videoRef.current.style.setProperty('--mask-size', `${80 * scale}%`);
+    videoRef.current.style.setProperty('--mask-pos-y', `${50 + 20 * (scale - 1) / maxScale}%`);
+    if (!isEnd) {
+      rafId.current = requestAnimationFrame(runScaleAni);
+    }
   };
 
   const scrollControl = (e: WheelEvent) => {
     if (e.deltaY === 0) return;
 
     const scaleDiff = (e.deltaY / scaleAniDuration) * maxScale;
-    targetScale = Math.max(1, Math.min(maxScale, targetScale + scaleDiff));
-    scalePf = ((targetScale - currenScale) * fpsSec) / scaleAniDuration;
+    const nextTargetScale = Math.max(1, Math.min(maxScale, targetScale + scaleDiff));
+    if (targetScale === nextTargetScale) return;
+
+    targetScale = nextTargetScale;
+    scaleAniDuration = 1000 * Math.sqrt(Math.abs(targetScale - currenScale)) / 4;
+    startScale = currenScale;
+    els = performance.now();
+    if (rafId.current > 0) cancelAnimationFrame(rafId.current);
     runScaleAni();
   };
 
-  useEffect(() => {
-    window.addEventListener("wheel", scrollControl);
+  useLayoutEffect(() => {
+    if (!videoRef.current) return;
 
-    return () => window.removeEventListener("wheel", scrollControl);
+    videoRef.current.style.setProperty('--mask-size', '80%');
+    videoRef.current.style.setProperty('--mask-pos-y', '50%');
   }, []);
 
   return (
-    <div className="astrark-home relative w-full h-screen flex justify-center items-center">
+    <div
+      className="astrark-home relative w-full h-screen flex justify-center items-center overflow-hidden"
+      onWheel={(e) => scrollControl(e as any)}
+    >
       <video
-        className="object-cover absolute left-0 top-0 w-full h-full z-0"
+        ref={videoRef}
+        className={'object-cover absolute left-0 top-0 w-full h-full z-0 ' + styles.maskVideo}
         autoPlay
         playsInline
         muted
@@ -93,15 +95,6 @@ const AstrarkHome: React.FC<Props> = (props) => {
       >
         <source src="/video/astrark.mp4" />
       </video>
-
-      {showFullVideo || (
-        <div
-          ref={textDomRef}
-          className="text uppercase text-[18rem] font-semakin absolute left-0 top-0 flex justify-center items-center w-full h-full bg-black text-white text-center mix-blend-multiply z-10 origin-center"
-        >
-          AstrArk
-        </div>
-      )}
 
       <Image
         className="w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20"
