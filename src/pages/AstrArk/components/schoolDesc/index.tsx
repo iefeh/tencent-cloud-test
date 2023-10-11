@@ -139,6 +139,8 @@ export default function SchoolDesc() {
 
       <SchoolIcons
         className="absolute left-1/2 bottom-12 -translate-x-1/2"
+        hoverActive
+        cursorPointer
         activeIndex={activeIndex}
         onClick={onIconClick}
       />

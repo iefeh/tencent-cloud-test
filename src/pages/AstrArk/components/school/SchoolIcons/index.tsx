@@ -1,5 +1,7 @@
 interface Props {
   activeIndex?: number;
+  hoverActive?: boolean;
+  cursorPointer?: boolean;
   showLabel?: boolean;
   className?: string;
   onClick?: (index: number) => void;
@@ -13,7 +15,7 @@ export default function SchoolIcon(props: Props) {
       {icons.map((label, index) => (
         <div
           key={index}
-          className="school-icon flex flex-col items-center text-white"
+          className={`school-icon flex flex-col items-center text-white ${props.hoverActive ? 'hover-active' : ''} ${props.cursorPointer ? 'cursor-pointer' : ''}`}
           onClick={() => props.onClick?.(index)}
         >
           <div

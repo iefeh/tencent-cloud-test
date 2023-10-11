@@ -5,12 +5,12 @@ interface Props {
   needAni?: boolean;
 }
 
-export default function EntertainmentSlide(props: Props) {
+export default function LimitedTestSlide(props: Props) {
   return (
     <div className="bg-race w-full h-screen relative flex justify-center items-center">
       <Image
         className="object-cover"
-        src="/img/bg_home_swiper_test.jpg"
+        src="/img/bg_home_swiper_test.png"
         alt=""
         fill
         sizes="100%"
