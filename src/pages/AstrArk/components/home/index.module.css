@@ -25,3 +25,12 @@
   transform: translate3d(-50%, -0.5rem, 0);
   animation: astrark_arrow_img 3s ease-in-out infinite;
 }
+
+.maskBg {
+  opacity: 1;
+  transition: opacity 300ms linear;
+}
+
+.hideMaskBg {
+  opacity: 0;
+}

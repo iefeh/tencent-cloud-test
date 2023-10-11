@@ -13,6 +13,7 @@ function easeOutQuad(t: number, b: number, c: number, d: number) {
 }
 
 const AstrarkHome: React.FC<Props> = (props) => {
+  const { scrollY } = props;
   const videoRef = useRef<HTMLDivElement>(null);
   const rafId = useRef(0);
   const maxScale = 30;
@@ -56,8 +57,8 @@ const AstrarkHome: React.FC<Props> = (props) => {
     }
   };
 
-  function runNextScale(scaleDiff: number) {
-    const nextTargetScale = Math.max(1, Math.min(maxScale, targetScale.current + scaleDiff));
+  function runNextScale(nextTargetScale: number) {
+    nextTargetScale = Math.max(1, Math.min(maxScale, nextTargetScale));
     if (targetScale.current === nextTargetScale) return;
 
     targetScale.current = nextTargetScale;
@@ -69,20 +70,13 @@ const AstrarkHome: React.FC<Props> = (props) => {
   }
 
   useEffect(() => {
-    const scaleDiff = (props.scrollY / document.documentElement.clientHeight) * maxScale;
-    runNextScale(scaleDiff);
+    const nextTargetScale = (scrollY / document.documentElement.clientHeight) * maxScale;
+    runNextScale(nextTargetScale);
 
     return () => {
       if (rafId.current > 0) cancelAnimationFrame(rafId.current);
     };
-  }, [props.scrollY]);
-
-  function onWheel(e: WheelEvent) {
-    if (e.deltaY >= 0 || props.scrollY > 0) return;
-
-    const scaleDiff = (e.deltaY / scaleAniDuration.current) * maxScale;
-    runNextScale(scaleDiff);
-  }
+  }, [scrollY]);
 
   useLayoutEffect(() => {
     if (!videoRef.current) return;
@@ -92,11 +86,8 @@ const AstrarkHome: React.FC<Props> = (props) => {
   }, []);
 
   return (
-    <div
-      className="astrark-home w-full h-screen flex justify-center items-center overflow-hidden absolute left-0 top-0 z-0"
-      onWheel={(e) => onWheel(e as any)}
-    >
-      <div ref={videoRef} className="absolute left-0 top-0 w-full h-full z-0 ">
+    <div ref={videoRef} className={"w-full h-screen flex justify-center items-center overflow-hidden fixed left-0 top-0 z-0 " + styles.astrarkHome}>
+      <div className="absolute left-0 top-0 w-full h-full z-0 ">
         <video
           className={'object-cover w-full h-full ' + styles.maskVideo}
           autoPlay
@@ -108,7 +99,12 @@ const AstrarkHome: React.FC<Props> = (props) => {
           <source src="/video/astrark.mp4" />
         </video>
 
-        <Image className="object-cover z-10" src={maskBg} alt="" fill />
+        <Image
+          className={['object-cover z-10', styles.maskBg, scrollY > 0 ? styles.hideMaskBg : ''].join(' ')}
+          src={maskBg}
+          alt=""
+          fill
+        />
 
         <div className={'absolute w-full h-1/2 left-0 bottom-0 z-20 ' + styles.videoShadow}></div>
       </div>

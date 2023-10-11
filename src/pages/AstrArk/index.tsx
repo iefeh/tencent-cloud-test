@@ -8,6 +8,7 @@ import WorldView from './components/worldView';
 import SecondDesc from './components/secondDesc';
 import Head from 'next/head';
 import Scrollbar from 'smooth-scrollbar';
+import styles from './index.module.css';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
@@ -33,24 +34,26 @@ export default function Home() {
   }, []);
 
   return (
-    <section ref={scrollWrapper} className="scroll-wrapper w-full h-screen overflow-hidden relative">
-      <Head>
-        <title>AstrArk | Moonveil</title>
-      </Head>
+    <>
+      <section ref={scrollWrapper} className="scroll-wrapper w-full h-screen overflow-hidden relative flex flex-col z-10">
+        <Head>
+          <title>AstrArk | Moonveil</title>
+        </Head>
+
+        <div className="scroll-container flex flex-col z-10">
+          <div className={"w-full h-[200vh] " + styles.emptyScreen}></div>
+
+          <SecondDesc />
+
+          <WorldView />
+
+          <AstrArkSchool />
+
+          <AstrArkSchoolDesc />
+        </div>
+      </section>
 
       <AstrarkHome scrollY={scrollY} />
-
-      <div className="scroll-container flex flex-col z-10">
-        <div className="w-full h-[200vh]"></div>
-
-        <SecondDesc scrollY={scrollY} />
-
-        <WorldView />
-
-        <AstrArkSchool />
-
-        <AstrArkSchoolDesc />
-      </div>
-    </section>
+    </>
   );
 }

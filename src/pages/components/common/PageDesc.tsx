@@ -3,7 +3,7 @@ import BasicButton from "./BasicButton";
 import Belt from "./Belt";
 import whiteLogo from "img/logo_white.png";
 import goldenLogo from "img/logo_golden.png";
-import { ReactNode } from "react";
+import { ReactNode, forwardRef } from "react";
 
 interface Props {
   needAni?: boolean;
@@ -18,9 +18,10 @@ interface Props {
   button?: ReactNode;
 }
 
-export default function PageDesc(props: Props) {
+export default forwardRef<HTMLDivElement, Props>(function PageDesc(props: Props, ref) {
   return (
     <div
+      ref={ref}
       className={
         "page-desc z-10 flex flex-col " +
         [
@@ -64,4 +65,4 @@ export default function PageDesc(props: Props) {
       {props.button}
     </div>
   );
-}
+});

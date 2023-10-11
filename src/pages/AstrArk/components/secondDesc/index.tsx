@@ -1,16 +1,16 @@
-import PageDesc from "../../../components/common/PageDesc";
+import { useRef } from 'react';
+import PageDesc from '../../../components/common/PageDesc';
+import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
 
-interface Props {
-  scrollY: number;
-}
-
-export default function WorldView(props: Props) {
-  const { scrollY } = props;
+export default function WorldView() {
+  const descRef = useRef<any>(null);
+  const visible = IntersectionObserverHook({ currentRef: descRef, options: { threshold: 0.1 } });
 
   return (
-    <div className="second-desc h-screen relative flex justify-center items-center">
+    <div className="second-desc h-screen relative flex justify-center items-center bg-black">
       <PageDesc
-        needAni={scrollY > 300}
+        ref={descRef}
+        needAni={visible}
         whiteLogo
         hasBelt
         className="items-start text-left"
@@ -19,4 +19,4 @@ export default function WorldView(props: Props) {
       />
     </div>
   );
-};
+}
