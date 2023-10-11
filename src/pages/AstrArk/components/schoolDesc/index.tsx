@@ -115,7 +115,7 @@ export default function SchoolDesc() {
       <div ref={bgContainerRef} className="w-full h-full"></div>
 
       <div className="school w-full h-screen absolute left-0 top-0 z-10">
-        <div className="desc uppercase absolute w-[29.3125rem] h-[15rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] py-[2.625rem] box-border">
+        <div className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border">
           <div className="flex items-center">
             <div className="w-[3.875rem] h-[3.875rem] relative">
               <Image
@@ -126,7 +126,7 @@ export default function SchoolDesc() {
               />
             </div>
 
-            <div className="h-12 uppercase text-5xl font-semakin ml-[0.625rem]">
+            <div className="h-12 uppercase text-5xl font-semakin ml-[0.625rem] leading-[3.875rem]">
               {swipers[activeIndex].name}
             </div>
           </div>
