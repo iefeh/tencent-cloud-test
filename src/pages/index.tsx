@@ -1,44 +1,32 @@
 'use client';
 
-import { createRef, useRef, useState } from 'react';
+import { createRef, useRef, useState, useEffect } from 'react';
 import SwiperScreen from './components/home/SwiperScreen';
 import Character from './components/character/character';
 import Footer from './components/home/Footer';
 import StarScreen from './components/home/StarScreen';
 import Head from 'next/head';
-import Scrollbar from 'smooth-scrollbar';
 import SloganScreen from './components/home/SloganScreen';
 import SloganDescScreen from './components/home/SloganDescScreen';
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
+import { Mousewheel } from 'swiper/modules';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
-  const sbRef = useRef<Scrollbar>();
-  const [scrollY, setScrollY] = useState(0);
-
-  function destroyScroll() {
-    if (!scrollWrapper.current) return;
-    Scrollbar.destroy(scrollWrapper.current);
-    sbRef.current = undefined;
-  }
-
-  function initScroll() {
-    destroyScroll();
-
-    const scrollbar = Scrollbar.init(scrollWrapper.current!, { thumbMinSize: 0, damping: 1 });
-    scrollbar.track.xAxis.element.remove();
-    scrollbar.track.yAxis.element.remove();
-    scrollbar.addListener((status) => {
-      setScrollY(status.offset.y || 0);
-      if (status.offset.y > 0) return;
-
-      destroyScroll();
-    });
-    scrollbar.scrollTo(0, document.documentElement.clientHeight);
-    sbRef.current = scrollbar;
-  }
+  const [swiper, setSwiper] = useState<SwiperClass>();
 
   function onMaskAniEnd() {
-    initScroll();
+    if (!swiper) return;
+    swiper.enable();
+  }
+
+  function initSwiper(swiperIns: SwiperClass) {
+    setSwiper(swiperIns);
+    swiperIns.disable();
+  }
+
+  function onSwiperScroll(swiper: SwiperClass, e: WheelEvent) {
+    console.log(23423, swiper, e);
   }
 
   return (
@@ -50,21 +38,41 @@ export default function Home() {
         <title>Home | Moonveil</title>
       </Head>
 
-      <div className="scroll-container w-full relative">
-        <SwiperScreen onMaskAniEnd={onMaskAniEnd} />
+      <Swiper
+        className="w-full h-full"
+        modules={[Mousewheel]}
+        speed={1500}
+        slidesPerView={1}
+        freeMode
+        mousewheel
+        direction="vertical"
+        onSwiper={initSwiper}
+        onScroll={onSwiperScroll}
+      >
+        <SwiperSlide>
+          <SwiperScreen onMaskAniEnd={onMaskAniEnd} />
+        </SwiperSlide>
 
-        <SloganScreen />
+        <SwiperSlide>
+          <SloganScreen />
+        </SwiperSlide>
 
-        <SloganDescScreen />
+        <SwiperSlide>
+          <SloganDescScreen />
+        </SwiperSlide>
 
-        <div className="overflow-hidden">
-          <Character />
-        </div>
+        <SwiperSlide>
+          <div className="overflow-hidden">
+            <Character />
+          </div>
+        </SwiperSlide>
 
-        <Footer />
-      </div>
+        <SwiperSlide>
+          <Footer />
+        </SwiperSlide>
+      </Swiper>
 
-      {scrollY > 0 && <StarScreen />}
+      <StarScreen />
     </section>
   );
 }
