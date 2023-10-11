@@ -3,12 +3,12 @@ import React from 'react';
 export default function LineBorder() {
     return (
         <div className='fixed z-50 w-full h-full pointer-events-none' >
-            <div className='absolute left-5 top-20 bg-line-tlf bg-size-100 h-28 w-1 opacity-40' ></div>
-            <div className='absolute left-5 bottom-5 ba-line-brl bg-size-100 h-32 w-32 opacity-40' ></div>
-            <div className='absolute left-5 top-1/2 -translate-y-1/2 bg-repeat bg-line-lr h-[9.4rem] w-[0.6rem] bg-[length:100%_.5rem]' ></div>
-            <div className='absolute right-5 top-20 rotate-y-180 bg-line-tlf bg-size-100 h-28 w-1 opacity-40' ></div>
-            <div className='absolute right-5 bottom-5 rotate-y-180 ba-line-brl bg-size-100 h-32 w-32 opacity-40' ></div>
-            <div className='absolute right-5 top-1/2 -translate-y-1/2 bg-repeat bg-line-lr h-[9.4rem] w-[0.6rem] bg-[length:100%_.5rem]' ></div>
+            <div className='absolute left-5 top-20 bg-line-tlf bg-size-100 h-[14rem] w-1' ></div>
+            <div className='absolute left-5 bottom-5 ba-line-brl bg-size-100 h-[14rem] w-[14rem] opacity-60' ></div>
+            <div className='absolute left-5 top-1/2 -translate-y-1/2 bg-repeat bg-line-lr h-[15rem] w-[0.6rem] bg-[length:100%_10px]' ></div>
+            <div className='absolute right-5 top-20 rotate-y-180 bg-line-tlf bg-size-100 h-[14rem] w-1' ></div>
+            <div className='absolute right-5 bottom-5 rotate-y-180 ba-line-brl bg-size-100 h-[14rem] w-[14rem] opacity-60' ></div>
+            <div className='absolute right-5 top-1/2 -translate-y-1/2 bg-repeat bg-line-lr h-[15rem] w-[0.6rem] bg-[length:100%_10px]' ></div>
             <div className='absolute bottom-5 bg-line-bottom left-1/2 -translate-x-1/2 bg-repeat w-1/2 h-[0.6rem] bg-[length:.5rem_100%]' ></div>
         </div>
     )
