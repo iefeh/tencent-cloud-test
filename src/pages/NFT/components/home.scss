@@ -20,9 +20,9 @@
   bottom: 0px;
   right: 0;
   transform: translate(-5vw, 70vw) rotate(-120deg);
-  border: 1px rgba(246, 199, 153, 0.2) solid;
+  border: 1px rgba(246, 199, 153, 0.08) solid;
   border-radius: 50%;
-  animation: rotate1 36s linear infinite;
+  animation: rotate1 20s linear infinite;
 
   &.pause {
     transform: translate(-5vw, 70vw) rotate(-131deg);
@@ -40,7 +40,7 @@
     top: 50%;
     right: 0;
     width: 25vw;
-    transform: translate(50%, -50%);
+    transform: translate(65%, -50%);
   }
 }
 
@@ -50,10 +50,10 @@
   position: absolute;
   bottom: 0px;
   right: 0;
-  transform: translate(5vw, 80vw) rotate(-120deg);
-  border: 1px rgba(246, 199, 153, 0.2) solid;
+  transform: translate(5vw, 80vw) rotate(-60deg);
+  border: 1px rgba(246, 199, 153, 0.08) solid;
   border-radius: 50%;
-  animation: rotate2 45s linear infinite;
+  animation: rotate2 25s linear infinite;
   
   &.pause {
     transform: translate(5vw, 80vw) rotate(-215deg);
@@ -86,20 +86,20 @@
 
 .stars1 {
   position: absolute;
-  bottom: 20vh;
-  right: 10vw;
+  bottom: 1vw;
+  left: 1vw;
 }
 
 .stars2 {
   position: absolute;
-  bottom: 20vh;
-  left: 10vw;
+  bottom: 1vw;
+  left: 17vw;
 }
 
 .stars3 {
   position: absolute;
-  bottom: 40vh;
-  right: 30vw;
+  bottom: 1vw;
+  right: 10vw;
 }
 
 
@@ -107,6 +107,15 @@
   0% {
     transform: translate(-5vw, 70vw) rotate(-120deg);
   }
+
+  60% {
+    transform: translate(-5vw, 70vw) rotate(-20deg);
+  }
+
+  70% {
+    transform: translate(-5vw, 70vw) rotate(180deg);
+  }
+
   100% {
     transform: translate(-5vw, 70vw) rotate(240deg);
   }
@@ -114,9 +123,18 @@
 
 @keyframes rotate2 {
   0% {
-    transform: translate(5vw, 80vw) rotate(-120deg);
+    transform: translate(5vw, 80vw) rotate(-60deg);
   }
+
+  60% {
+    transform: translate(5vw, 80vw) rotate(-160deg);
+  }
+
+  70% {
+    transform: translate(5vw, 80vw) rotate(-360deg);
+  }
+
   100% {
-    transform: translate(5vw, 80vw) rotate(240deg);
+    transform: translate(5vw, 80vw) rotate(-420deg);
   }
 }
