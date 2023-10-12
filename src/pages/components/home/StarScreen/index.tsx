@@ -2,6 +2,7 @@ import { useState, createRef, useEffect, useRef, useLayoutEffect, MutableRefObje
 import planetImg from 'img/home/planet.png';
 import Image from 'next/image';
 import useRAF from '@/hooks/raf';
+import { generateStarAni } from '@/hooks/star';
 
 interface Props {
   scrollY: number;
@@ -12,127 +13,6 @@ export default function StarScreen(props: Props) {
   const [height, setHeight] = useState(0);
   const canvasRef = createRef<HTMLCanvasElement>();
   const planetRef = useRef<HTMLImageElement>(null);
-  const rafId = useRef(-1);
-
-  // eslint-disable-next-line import/no-anonymous-default-export
-  function initCanvas(ctx: CanvasRenderingContext2D) {
-    var w = window.innerWidth,
-      h = window.innerHeight,
-      opts = {
-        starCount: 40,
-
-        radVel: 0.01,
-        lineBaseVel: 0.1,
-        lineAddedVel: 0.1,
-        lineBaseLife: 0.4,
-        lineAddedLife: 0.01,
-
-        starBaseLife: 10,
-        starAddedLife: 90,
-
-        ellipseTilt: -0.3,
-        ellipseBaseRadius: 0.15,
-        ellipseAddedRadius: 0.02,
-        ellipseAxisMultiplierX: 2,
-        ellipseAxisMultiplierY: 1,
-        ellipseCX: w / 2,
-        ellipseCY: h / 2,
-
-        repaintAlpha: 0.015,
-      },
-      stars: Star[] = [],
-      els = 0,
-      first = true;
-
-    function star_init() {
-      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
-      stars = Array(opts.starCount)
-        .fill(undefined)
-        .map((_) => new Star());
-
-      if (first) {
-        loop();
-        first = false;
-      }
-    }
-
-    function loop(curEl: number = els) {
-      if (curEl - els > 50) {
-        step();
-        draw();
-        els += 50;
-      }
-      rafId.current = requestAnimationFrame(loop);
-    }
-
-    function step() {
-      stars.map(function (star) {
-        star.step();
-      });
-    }
-
-    function draw() {
-      ctx.translate(opts.ellipseCX, opts.ellipseCY);
-      ctx.rotate(opts.ellipseTilt);
-      ctx.scale(opts.ellipseAxisMultiplierX, opts.ellipseAxisMultiplierY);
-
-      ctx.scale(1 / opts.ellipseAxisMultiplierX, 1 / opts.ellipseAxisMultiplierY);
-      ctx.rotate(-opts.ellipseTilt);
-      ctx.translate(-opts.ellipseCX, -opts.ellipseCY);
-
-      stars.map(function (star) {
-        star.draw();
-      });
-    }
-
-    class Star {
-      public x: number;
-      public y: number;
-      public lifeStep: number;
-      public life: number;
-
-      constructor() {
-        this.x = Math.random() * w;
-        this.y = Math.random() * h;
-        this.lifeStep = Math.random() > 0.5 ? 1 : -1;
-        this.life = opts.starBaseLife + Math.random() * opts.starAddedLife;
-      }
-
-      step() {
-        this.life += this.lifeStep;
-
-        if (this.life <= 0 || this.life >= 100) {
-          this.lifeStep *= -1;
-        }
-      }
-
-      draw() {
-        if (this.lifeStep < 0) {
-          ctx.globalCompositeOperation = 'darken';
-
-          ctx.fillStyle = ctx.shadowColor = `rgba(0, 0, 0, .1)`;
-        } else {
-          ctx.globalCompositeOperation = 'lighten';
-
-          ctx.fillStyle = ctx.shadowColor = `rgba(255, 255, 255, .1)`;
-        }
-        ctx.shadowBlur = this.life;
-        ctx.fillRect(this.x, this.y, 0.5, 0.5);
-      }
-    }
-
-    window.addEventListener('resize', function () {
-      w = window.innerWidth / 2;
-      h = window.innerHeight / 2;
-
-      opts.ellipseCX = w / 2;
-      opts.ellipseCY = h / 2;
-
-      star_init();
-    });
-
-    star_init();
-  }
 
   const { update } = useRAF({
     base: 1.2,
@@ -149,19 +29,21 @@ export default function StarScreen(props: Props) {
   });
 
   function setSize() {
-    setWidth(window.innerWidth);
-    setHeight(window.innerHeight);
+    setWidth(document.documentElement.clientWidth);
+    setHeight(document.documentElement.clientHeight);
   }
 
   useLayoutEffect(() => {
     if (!canvasRef.current) return;
     const ctx = canvasRef.current.getContext('2d')!;
 
-    initCanvas(ctx);
+    const { clientWidth, clientHeight } = document.documentElement;
+    const { init, stop } = generateStarAni(ctx, clientWidth, clientHeight);
+    init();
 
     return () => {
+      stop();
       ctx.clearRect(0, 0, width, height);
-      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
     };
   }, []);
 
