@@ -22,7 +22,7 @@ export default function Home() {
   }
 
   useLayoutEffect(() => {
-    const scrollbar = Scrollbar.init(scrollWrapper.current!, { thumbMinSize: 0, damping: 1 });
+    const scrollbar = Scrollbar.init(scrollWrapper.current!, { thumbMinSize: 0, damping: 0.05 });
     scrollbar.track.xAxis.element.remove();
     scrollbar.track.yAxis.element.remove();
     scrollbar.addListener((status) => {
