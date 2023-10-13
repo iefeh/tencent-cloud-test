@@ -1,5 +1,5 @@
-import Image from "next/image";
-import PageDesc from "../common/PageDesc";
+import Image from 'next/image';
+import PageDesc from '../common/PageDesc';
 
 interface Props {
   needAni?: boolean;
@@ -8,13 +8,9 @@ interface Props {
 export default function EntertainmentSlide(props: Props) {
   return (
     <div className="bg-race w-full h-screen relative flex justify-center items-center">
-      <Image
-        className="object-cover"
-        src="/img/bg_home_swiper_entertainment.jpg"
-        alt=""
-        fill
-        sizes="100%"
-      ></Image>
+      <Image className="object-cover" src="/img/bg_home_swiper_entertainment.png" alt="" fill sizes="100%"></Image>
+
+      <div className="absolute left-0 top-0 w-full h-full bg-black/40"></div>
 
       <PageDesc
         goldenLogo

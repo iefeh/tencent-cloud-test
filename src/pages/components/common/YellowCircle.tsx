@@ -13,7 +13,7 @@ export default function YellowCircle(props: Props) {
         props.className || "relative"
       }`}
     >
-      <div className="turn relative w-[4.125rem] h-[4.125rem] animate-spin5">
+      <div className="turn relative w-[5.25rem] h-[5.25rem] animate-spin5">
         <Image
           className="object-contain"
           src={turnImage}

@@ -22,20 +22,6 @@
   }
 }
 
-.slogan-screen {
-  .title {
-    transform: translate3d(-50%, 100vh, 0);
-
-    &.title-ani-start {
-      transform: translate3d(-50%, calc(50vh - 50%), 0);
-    }
-
-    &.title-ani-end {
-      transform: translate3d(-50%, calc(50vh - 50%), 0);
-    }
-  }
-}
-
 .ani-up {
   animation: ani_up 1.2s ease-in-out;
 }
@@ -47,5 +33,12 @@
         font-size: 5.625rem;
       }
     }
+  }
+}
+
+.page-home {
+  .scroll-content {
+    position: relative;
+    z-index: 10;
   }
 }
