@@ -49,7 +49,7 @@ const Character: React.FC = () => {
           <div className="desc-box flex justify-center items-center">
             <PageDesc
               title="ASTRARK"
-              subtitle="A strategic tower defence PVP game."
+              subtitle="<span class='whitespace-nowrap'>Stage One: An immersive tower defense strategy game.</span>"
               buttonLabel="click to explore"
               buttonLink="/AstrArk"
             />
