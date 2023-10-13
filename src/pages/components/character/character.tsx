@@ -46,7 +46,7 @@ const Character: React.FC = () => {
     return (
       <>
         <div className="character flex max-lg:hidden">
-          <div className="desc-box">
+          <div className="desc-box flex justify-center items-center">
             <PageDesc
               title="ASTRARK"
               subtitle="A strategic tower defence PVP game."
@@ -100,7 +100,7 @@ const Character: React.FC = () => {
                     alt=""
                   ></Image>
 
-                  <div className="font-decima opacity-0.4 absolute bottom-[1rem] left-[1rem]">{item.name}</div>
+                  <div className="font-decima absolute bottom-[1rem] left-[1rem] text-[#F6C799] border-[#F6C799] border-b-2">{item.name}</div>
                 </SwiperSlide>
               )
             }) }
