@@ -153,6 +153,17 @@ export default function App({ Component, pageProps }: AppProps) {
     });
   }, []);
 
+  useEffect(() => {
+    import('luxy.js').then((res) => {
+      if (!res.default) return;
+      res.default.init({
+        wrapper: '#__next',
+        targets: '.luxy-el',
+        wrapperSpeed: 0.03,
+      });
+    });
+  });
+
   return (
     <>
       <Head>

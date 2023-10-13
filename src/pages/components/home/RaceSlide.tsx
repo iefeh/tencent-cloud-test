@@ -17,7 +17,7 @@ export default function RaceSlide(props: Props) {
         hasBelt
         needAni={props.needAni}
         title="See You In Q4 2023"
-        subtitle="Real time tower-defense strategy game"
+        subtitle="An immersive tower defense strategy game."
       />
     </div>
   );
