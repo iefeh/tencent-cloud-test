@@ -5,7 +5,7 @@ import RaceSlide from '../RaceSlide';
 import EntertainmentSlide from '../EntertainmentSlide';
 import LimitedTestSlide from '../LimitedTestSlide';
 import YellowCircle from '../../common/YellowCircle';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { throttle } from 'lodash';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
@@ -18,6 +18,8 @@ export default function SwiperScreen(props: Props) {
   const [maskAni, setMaskAni] = useState(false);
   const [deltaY, setDeltaY] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigationPrevRef = useRef(null);
+  const navigationNextRef = useRef(null);
 
   function onWheel(e: WheelEvent) {
     if (e.deltaY <= 0) return;
@@ -66,7 +68,8 @@ export default function SwiperScreen(props: Props) {
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
         loop
-        autoplay={{ delay: activeIndex === 0 ? 10000 : 5000 }}
+        // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
         speed={1500}
         slidesPerView={1}
         onSlideChange={(swiper) => {
@@ -75,8 +78,8 @@ export default function SwiperScreen(props: Props) {
           setActiveIndex(index);
         }}
         navigation={{
-          prevEl: '.home-swiper-navi .home-swiper-navi-prev',
-          nextEl: '.home-swiper-navi .home-swiper-navi-next',
+          prevEl: navigationPrevRef.current,
+          nextEl: navigationNextRef.current,
         }}
         pagination={{
           el: '.home-swiper-pagination',
@@ -89,8 +92,12 @@ export default function SwiperScreen(props: Props) {
           },
         }}
       >
-        <SwiperSlide>
+        {/* <SwiperSlide>
           <IndexSlide needAni={activeIndex === 0} />
+        </SwiperSlide> */}
+
+        <SwiperSlide>
+          <LimitedTestSlide needAni={activeIndex === 0} />
         </SwiperSlide>
 
         <SwiperSlide>
@@ -101,15 +108,11 @@ export default function SwiperScreen(props: Props) {
           <EntertainmentSlide needAni={activeIndex === 2} />
         </SwiperSlide>
 
-        <SwiperSlide>
-          <LimitedTestSlide needAni={activeIndex === 3} />
-        </SwiperSlide>
-
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
-        <div className="home-swiper-navi home-swiper-navi-prev">
+        <div ref={navigationPrevRef} className="home-swiper-navi home-swiper-navi-prev">
           <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
         </div>
-        <div className="home-swiper-navi home-swiper-navi-next">
+        <div ref={navigationNextRef} className="home-swiper-navi home-swiper-navi-next">
           <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
         </div>
       </Swiper>
