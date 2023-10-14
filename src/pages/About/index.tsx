@@ -13,6 +13,7 @@ import { FreeMode, Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
+import EntertainmentSlide from "../components/home/EntertainmentSlide";
 
 interface Figure {
   img: StaticImageData;
@@ -181,25 +182,29 @@ export default function About({
             <Swiper
               className="w-full h-full"
               modules={[Mousewheel, FreeMode]}
-              freeMode={true}
-              slidesPerView={3}
+              freeMode={{ enabled: true, sticky: false, momentum: true }}
+              // slidesPerView={3}
+              slidesPerView="auto"
               mousewheel={true}
-              breakpoints={{
-                320: {
-                  slidesPerView: 1,
-                },
-                640: {
-                  slidesPerView: 3
-                }
-              }}
+              // breakpoints={{
+              //   320: {
+              //     slidesPerView: 1,
+              //   },
+              //   640: {
+              //     // slidesPerView: 3
+              //     slidesPerView: "auto"
+              //   }
+              // }}
               centeredSlides={true}
               onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
+              <SwiperSlide ><EntertainmentSlide needAni={true} /></SwiperSlide>
               {figureArray.map((figureData, index) => {
                 return (
                   <SwiperSlide
-                    className="flex items-center justify-start w-[24rem]"
+                    style={{ width: 'auto' }}
+                    className="flex items-center justify-start mr-[14.44rem]"
                     key={figureData.name}
                   >
                     <div
@@ -207,7 +212,7 @@ export default function About({
                         setCurFigure(figureData);
                         setOpen(true);
                       }}
-                      className="transition-transform transform group"
+                      className="transition-transform transform group w-[30.75rem]"
                     >
                       <Image
                         className="w-[30.75rem] h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
