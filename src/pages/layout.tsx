@@ -8,6 +8,7 @@ import Loading from "./components/common/Loading";
 import "swiper/css";
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
+import 'swiper/css/navigation';
 
 export default function RootLayout({
   children

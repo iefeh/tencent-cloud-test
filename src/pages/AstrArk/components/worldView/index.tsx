@@ -15,6 +15,8 @@ const WorldView: React.FC = () => {
         <source src="/video/meteorite.mp4" />
       </video>
 
+      <div className="bg-black/30 absolute inset-0 z-0"></div>
+
       <PageDesc
         hasBelt
         title="What happened..."
