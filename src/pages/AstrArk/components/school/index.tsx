@@ -6,9 +6,9 @@ import Mystery from './Mystery';
 
 export default function AstrArkSchool() {
   return (
-    <section className="w-full h-screen flex flex-col justify-center items-center relative">
-      <div className="luxy-el w-full h-full" data-speed-x="5" data-offset="-50">
-        <Image className="object-cover" src={bgImg} alt="" fill sizes="100%"></Image>
+    <section className="w-full h-[calc(100vh_-_100px)] relative overflow-hidden">
+      <div className="luxy-el w-full h-screen flex flex-col justify-center items-center" data-speed-y="2" data-offset="-200">
+        <Image className="object-cover" src={bgImg} alt="" fill />
 
         <PageDesc
           title="Emergence of 4<br>Schools of Thoughts"

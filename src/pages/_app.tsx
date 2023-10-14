@@ -159,7 +159,7 @@ export default function App({ Component, pageProps }: AppProps) {
       res.default.init({
         wrapper: '#__next',
         targets: '.luxy-el',
-        wrapperSpeed: 0.03,
+        wrapperSpeed: 0.02,
       });
     });
   });

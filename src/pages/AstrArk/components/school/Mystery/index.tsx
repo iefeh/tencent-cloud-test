@@ -8,7 +8,7 @@ export default function Mystery() {
   const [textVisible, setTextVisible] = useState(true);
 
   return (
-    <div className="mystery absolute left-[4.75rem] bottom-[4.4375rem] flex items-center">
+    <div className="mystery absolute left-[4.75rem] bottom-[6.4375rem] flex items-center">
       <div
         className="flex justify-center items-center w-[6.125rem] h-[6.1875rem] relative z-10"
         onClick={() => setTextVisible(!textVisible)}
