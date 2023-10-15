@@ -178,6 +178,7 @@ export default function App({ Component, pageProps }: AppProps) {
         this.init(LUXY_OPTIONS);
         this.disabled = false;
       };
+      window.luxy.disable();
 
       try {
         res.default.init(LUXY_OPTIONS);
