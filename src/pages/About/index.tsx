@@ -25,8 +25,8 @@ interface Figure {
 const figureArray: Figure[] = [
   {
     img: MJ,
-    name: "M.J",
-    subTitle: "CEO",
+    name: 'M.J',
+    subTitle: 'CEO',
     introduce: `<div class="text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- 10-year game dev & publishing experience</p>
@@ -40,8 +40,8 @@ const figureArray: Figure[] = [
   },
   {
     img: JW,
-    name: "J.W",
-    subTitle: "COO",
+    name: 'J.W',
+    subTitle: 'COO',
     introduce: `<div class="text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- Ex-pro player，lifetime hardcore gamer</p>
@@ -52,8 +52,8 @@ const figureArray: Figure[] = [
   },
   {
     img: MasonZ,
-    name: "Mason Z",
-    subTitle: "Executive Producer",
+    name: 'Mason Z',
+    subTitle: 'Executive Producer',
     introduce: `<div class="text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
   <p>- Formerly Head of two game studios of Tencent family</p>
@@ -64,8 +64,8 @@ const figureArray: Figure[] = [
   },
   {
     img: RobinZ,
-    name: "Robin Z",
-    subTitle: "Web 3 Producer",
+    name: 'Robin Z',
+    subTitle: 'Web 3 Producer',
     introduce: `<div class="text-left whitespace-nowrap" >
   <p>- Defi project builder</p>
   <p>- Crypto native since 2014</p>
@@ -77,8 +77,8 @@ const figureArray: Figure[] = [
   },
   {
     img: PuffZ,
-    name: "Puff Z",
-    subTitle: "Art Director",
+    name: 'Puff Z',
+    subTitle: 'Art Director',
     introduce: `<div class="text-left whitespace-nowrap" >
   <p>- 8 years Chief Gaming Companion experience</p>
   <p>- Discerning taste, unique aesthetics, and keen insight into players' psychology</p>
@@ -139,11 +139,13 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] max-sm:hidden bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
+              className={`absolute w-full h-screen z-[2] flex flex-col max-sm:hidden bg-black ${
+                open ? 'referralInAnim' : 'referralOutAnim'
+              }`}
               hidden={open === null}
             >
-              <div className="flex h-[90vh] shadow-[0px_0px_30px_10px_#514032]">
-                <div className="w-1/2 flex items-center justify-start p-56">
+              <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
+                <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem]">
                   <PageDesc
                     hasBelt
                     className="character-desc text-left whitespace-nowrap"
@@ -151,7 +153,7 @@ export default function About({
                     subtitle={curFigure?.introduce}
                   />
                 </div>
-                <div className="w-1/2 flex items-center justify-center">
+                <div className="w-1/2 flex items-end justify-center">
                   <Image
                     className="object-cover w-[40rem] h-[40.75rem]"
                     src={curFigure?.img!}
@@ -159,21 +161,21 @@ export default function About({
                   ></Image>
                 </div>
               </div>
-              <div
-                onClick={() => setOpen(!open)}
-                className="absolute bottom-[10vh] left-1/2 z-[3] -translate-x-1/2 translate-y-1/2 w-10 h-10 cursor-pointer"
-              >
-                <span className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10`}>
-                  <span>&#x2715;</span>
-                </span>
-                <span className="absolute font-semakin -bottom-[80%] -translate-x-1/2 left-1/2 text-[#F6C799]" >Close</span>
-                <Image
-                  className="object-cover"
-                  src="/img/about/button@2x.png"
-                  alt="close"
-                  fill
-                  sizes="100%"
-                />
+              <div className="blank w-full h-[11.875rem] relative">
+                <div
+                  onClick={() => setOpen(!open)}
+                  className="absolute bottom-full left-1/2 z-[3] -translate-x-1/2 translate-y-1/2 w-10 h-10 cursor-pointer"
+                >
+                  <span
+                    className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10`}
+                  >
+                    <span>&#x2715;</span>
+                  </span>
+                  <span className="absolute font-semakin -bottom-[80%] -translate-x-1/2 left-1/2 text-[#F6C799]">
+                    Close
+                  </span>
+                  <Image className="object-cover" src="/img/about/button@2x.png" alt="close" fill sizes="100%" />
+                </div>
               </div>
             </div>
             <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
@@ -220,12 +222,8 @@ export default function About({
                         alt={figureData.name}
                       />
                       <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
-                        <span className="text-white mb-1 leading-none">
-                          {figureData.name}
-                        </span>
-                        <span className="text-[#666] leading-none whitespace-nowrap">
-                          {figureData.subTitle}
-                        </span>
+                        <span className="text-white mb-1 leading-none">{figureData.name}</span>
+                        <span className="text-[#666] leading-none whitespace-nowrap">{figureData.subTitle}</span>
                       </div>
                     </div>
                   </SwiperSlide>
@@ -235,16 +233,8 @@ export default function About({
             <div className="scroll_btn max-sm:hidden w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
               <div className="relative w-full h-full flex justify-center items-center">
                 scroll
-                <Image
-                  className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]"
-                  src={rightArrows}
-                  alt="left"
-                />
-                <Image
-                  className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]"
-                  src={leftArrows}
-                  alt="right"
-                />
+                <Image className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]" src={rightArrows} alt="left" />
+                <Image className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]" src={leftArrows} alt="right" />
               </div>
             </div>
           </div>
@@ -255,30 +245,20 @@ export default function About({
             className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${isVisiable && "slideInAnim"
-                }`}
+              className={`friendLink_title uppercase text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
+                isVisiable && 'slideInAnim'
+              }`}
             >
               Investors & Partners
             </div>
-            <div
-              className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
-            >
+            <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
               <ul className="gap-[2.38rem] grid grid-cols-5">
                 {sponsorArray.map((value, index) => {
                   if (index === 20) return null;
 
                   return (
-                    <li
-                      key={index}
-                      className="w-[11.25rem] h-[5.53rem] relative"
-                    >
-                      <Image
-                        className="object-cover"
-                        src={`/img/about/${index + 1}.png`}
-                        alt=""
-                        fill
-                        sizes="100%"
-                      />
+                    <li key={index} className="w-[11.25rem] h-[5.53rem] relative">
+                      <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />
                     </li>
                   );
                 })}
