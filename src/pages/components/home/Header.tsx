@@ -41,7 +41,7 @@ export default function Header() {
     }
 
     return (
-        <section className="header absolute left-0 top-0 w-full flex justify-between items-center z-50 mt-4 pl-9 pr-4">
+        <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 mt-4 pl-9 pr-4">
             <div className="flex-[1]">
                 <Link href="/">
                     <Image

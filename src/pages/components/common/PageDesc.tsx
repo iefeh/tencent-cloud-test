@@ -23,7 +23,7 @@ export default forwardRef<HTMLDivElement, Props>(function PageDesc(props: Props,
     <div
       ref={ref}
       className={
-        'page-desc z-10 flex flex-col ' +
+        'page-desc z-10 flex flex-col translate-y-[10vh] ' +
         [props.className || 'items-center text-center', props.needAni ? 'ani-up' : ''].join(' ')
       }
     >

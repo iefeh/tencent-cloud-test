@@ -7,7 +7,6 @@ import AstrArkSchoolDesc from './components/schoolDesc';
 import WorldView from './components/worldView';
 import SecondDesc from './components/secondDesc';
 import Head from 'next/head';
-import styles from './index.module.css';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
@@ -25,16 +24,13 @@ export default function Home() {
 
   return (
     <>
-      <section
-        ref={scrollWrapper}
-        className="scroll-wrapper w-full relative flex flex-col z-10"
-      >
+      <section ref={scrollWrapper} id="luxy" className="scroll-wrapper w-full relative flex flex-col z-10">
         <Head>
           <title>AstrArk | Moonveil</title>
         </Head>
 
         <div className="scroll-container flex flex-col z-10">
-          <div className={'w-full h-[200vh] ' + styles.emptyScreen}></div>
+          <div className="w-full h-[200vh]"></div>
 
           <SecondDesc />
 

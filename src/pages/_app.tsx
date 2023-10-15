@@ -156,11 +156,16 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     import('luxy.js').then((res) => {
       if (!res.default) return;
-      res.default.init({
-        wrapper: '#__next',
-        targets: '.luxy-el',
-        wrapperSpeed: 0.02,
-      });
+      
+      try {
+        res.default.init({
+          wrapper: '#luxy',
+          targets: '.luxy-el',
+          wrapperSpeed: 0.05,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     });
   });
 

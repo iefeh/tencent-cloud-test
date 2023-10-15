@@ -24,11 +24,10 @@ export default function WorldView() {
   }
 
   useEffect(() => {
-    console.log(scrolling);
-    if (scrolling) return;
-    const top = descRef.current?.getBoundingClientRect().top || 0;
+    if (scrolling || !descRef.current) return;
+    const top = descRef.current.getBoundingClientRect().top || 0;
     if (top >= document.documentElement.clientHeight) return;
-    setVisible(true);
+    setVisible(top > - descRef.current.clientHeight);
   }, [scrolling]);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function WorldView() {
   }, []);
 
   return (
-    <div className="second-desc h-screen relative bg-black overflow-hidden">
+    <div className="second-desc h-screen relative bg-black shadow-[0_-300px_300px_100px_#000]">
       <div className="w-full h-full flex justify-center items-center">
         <PageDesc
           ref={descRef}

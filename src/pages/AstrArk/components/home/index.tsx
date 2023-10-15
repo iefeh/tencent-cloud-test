@@ -3,6 +3,7 @@ import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 import styles from './index.module.css';
 import maskBg from 'img/astrark/bg-mask.png';
+import whiteLogoImg from 'img/logo_white.png';
 
 interface Props {
   scrollY: number;
@@ -59,7 +60,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
 
   function runNextScale(nextTargetScale: number) {
     nextTargetScale = Math.max(1, Math.min(maxScale, nextTargetScale));
-    if (targetScale.current === nextTargetScale) return;
+    if (targetScale.current === nextTargetScale && currenScale.current === targetScale.current) return;
 
     targetScale.current = nextTargetScale;
     scaleAniDuration.current = (1000 * Math.sqrt(Math.abs(targetScale.current - currenScale.current))) / 4;
@@ -86,10 +87,15 @@ const AstrarkHome: React.FC<Props> = (props) => {
   }, []);
 
   return (
-    <div ref={videoRef} className={"w-full h-screen flex justify-center items-center overflow-hidden fixed left-0 top-0 z-0 " + styles.astrarkHome}>
+    <div
+      ref={videoRef}
+      className={
+        'w-full h-screen flex justify-center items-center overflow-hidden fixed left-0 top-0 z-0 ' + styles.astrarkHome
+      }
+    >
       <div className="absolute left-0 top-0 w-full h-full z-0 ">
         <video
-          className={'object-cover w-full h-full ' + styles.maskVideo}
+          className={'object-cover w-full h-full ' + (currenScale.current < maxScale ? styles.maskVideo : '')}
           autoPlay
           playsInline
           muted
@@ -114,6 +120,14 @@ const AstrarkHome: React.FC<Props> = (props) => {
           'w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 ' + styles.arrowImg
         }
         src={arrowImg}
+        alt=""
+      />
+
+      <Image
+        className={`w-[26.25rem] h-[25.125rem] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 transition-opacity ease-in-out duration-[1000ms] opacity-0 ${
+          currenScale.current < maxScale - 6 ? '' : 'opacity-100'
+        }`}
+        src={whiteLogoImg}
         alt=""
       />
     </div>
