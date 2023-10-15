@@ -141,8 +141,7 @@ export default function About({
             <div
               className={`absolute w-full h-screen z-[2] flex flex-col max-sm:hidden bg-black ${
                 open ? 'referralInAnim' : 'referralOutAnim'
-              }`}
-              hidden={open === null}
+              } ${open === null ? 'hidden' : ''}`}
             >
               <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
                 <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem]">
