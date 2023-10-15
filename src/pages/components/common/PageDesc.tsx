@@ -6,6 +6,7 @@ import goldenLogo from 'img/logo_golden.png';
 import { ReactNode, forwardRef } from 'react';
 
 interface Props {
+  baseAniTY?: boolean;
   needAni?: boolean;
   whiteLogo?: boolean;
   goldenLogo?: boolean;
@@ -22,10 +23,12 @@ export default forwardRef<HTMLDivElement, Props>(function PageDesc(props: Props,
   return (
     <div
       ref={ref}
-      className={
-        'page-desc z-10 flex flex-col ' +
-        [props.className || 'items-center text-center', props.needAni ? 'ani-up' : ''].join(' ')
-      }
+      className={[
+        'page-desc z-10 flex flex-col',
+        props.baseAniTY && 'translate-y-[10vh]',
+        props.className || 'items-center text-center',
+        props.needAni ? 'ani-up' : '',
+      ].join(' ')}
     >
       {props.whiteLogo && <Image className="w-[13.125rem] h-[12.5625rem] mb-12" src={whiteLogo} alt="" />}
 

@@ -25,7 +25,7 @@ export default function Sidebar({ visible, onClose }: Props) {
 }
 
   return createPortal(
-    <div onClick={onClose} className="sidebar max-lg:block fixed left-0 top-0 w-full h-screen bg-black z-10">
+    <div onClick={onClose} className="sidebar max-lg:block fixed left-0 top-0 w-full h-screen bg-black z-30">
 
       <div className="content flex flex-col font-semakin text-center items-center justify-center h-full">
         {routeText.map((value, index) => (

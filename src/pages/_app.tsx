@@ -57,6 +57,7 @@ import sponsor_19 from 'img/about/19.png';
 import sponsor_20 from 'img/about/20.png';
 import sponsor_22 from 'img/about/22.png';
 import Head from 'next/head';
+import { LUXY_OPTIONS } from '@/constant/luxy';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -200,6 +201,40 @@ export default function App({ Component, pageProps }: AppProps) {
       await initResources('/about');
     });
   }, []);
+
+  useEffect(() => {
+    const luxy = document.getElementById('luxy');
+    if (!luxy) return;
+
+    import('luxy.js').then((res) => {
+      if (!res.default) return;
+      
+      window.luxy = res.default;
+      window.luxy.getWrapperTranslateY = function() {
+        const { transform } = this.wrapper.style;
+        const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
+        return -y || 0;
+      }
+      window.luxy.disable = function() {
+        const { resizeId, scrollId } = this;
+        cancelAnimationFrame(resizeId);
+        cancelAnimationFrame(scrollId);
+        this.disabled = true;
+      };
+      window.luxy.enable = function() {
+        this.wapperOffset = this.getWrapperTranslateY();
+        this.init(LUXY_OPTIONS);
+        this.disabled = false;
+      };
+      window.luxy.disable();
+
+      try {
+        res.default.init(LUXY_OPTIONS);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  });
 
   return (
     <>

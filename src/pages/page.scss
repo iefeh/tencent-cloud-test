@@ -18,12 +18,12 @@
     transform: translateY(10vh);
   }
   100% {
-    transform: unset;
+    transform: translateY(0);
   }
 }
 
 .ani-up {
-  animation: ani_up 1.2s ease-in-out;
+  animation: ani_up 1.2s ease-in-out forwards;
 }
 
 .character {
@@ -40,5 +40,14 @@
   .scroll-content {
     position: relative;
     z-index: 10;
+  }
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
