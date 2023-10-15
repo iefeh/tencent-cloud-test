@@ -55,7 +55,7 @@ export default function Home() {
     <section
       ref={scrollWrapper}
       id="luxy"
-      className="page-home scroll-wrapper relative w-full flex flex-col items-center justify-between bg-no-repeat bg-fixed bg-origin-border z-20 pointer-events-none"
+      className="page-home scroll-wrapper relative w-full flex flex-col items-center justify-between bg-no-repeat bg-fixed bg-origin-border z-10"
     >
       <Head>
         <title>Home | Moonveil</title>

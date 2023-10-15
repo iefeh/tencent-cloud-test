@@ -57,7 +57,7 @@ export default function SwiperScreen(props: Props) {
   }, []);
 
   const SwiperContent = (
-    <div ref={swiperRef} className="swiper-screen w-full h-screen fixed left-0 top-0 overflow-hidden z-10 ">
+    <div ref={swiperRef} className="swiper-screen w-full h-screen fixed left-0 top-0 overflow-hidden z-20 ">
       <Swiper
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
