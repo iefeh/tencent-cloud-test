@@ -154,6 +154,9 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   useEffect(() => {
+    const luxy = document.getElementById('luxy');
+    if (!luxy) return;
+
     import('luxy.js').then((res) => {
       if (!res.default) return;
       
