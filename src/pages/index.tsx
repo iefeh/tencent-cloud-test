@@ -40,7 +40,6 @@ export default function Home() {
     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
     setScrollY(-scrollTop);
     if (scrollTop === 0 && !isFixed.current) {
-      // 重新设置动画状态会有文字跳动问题，暂不执行
       if (rafId.current > 0) cancelAnimationFrame(rafId.current);
       setLuxyFixed();
     }
@@ -69,13 +68,13 @@ export default function Home() {
 
       <SloganDescScreen />
 
-      <div className="overflow-hidden">
+      <div className="w-full overflow-hidden">
         <Character />
       </div>
 
       <Footer />
 
-      <StarScreen scrollY={scrollY} />
+      <StarScreen />
     </section>
   );
 }
