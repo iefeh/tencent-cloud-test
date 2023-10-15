@@ -22,6 +22,7 @@ export default function ComingSoon(props: Props) {
         subtitle="Expect more surprises for you."
         className="relative top-[15%] items-center text-center"
         needAni={props.needAni}
+        baseAniTY
       />
     </div>
   );

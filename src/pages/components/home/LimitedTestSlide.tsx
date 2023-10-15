@@ -21,6 +21,7 @@ export default function LimitedTestSlide(props: Props) {
         hasBelt
         title="Limited Pre-alpha Test"
         needAni={props.needAni}
+        baseAniTY
         subtitle="Click to enter Moonveil Discord to sign up."
         buttonLabel="Sign Up"
         buttonLink="https://discord.com/invite/NyECfU5XFX"

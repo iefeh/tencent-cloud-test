@@ -17,6 +17,7 @@ export default function EntertainmentSlide(props: Props) {
         hasBelt
         title="Moonveil Entertainment"
         needAni={props.needAni}
+        baseAniTY
         className="relative top-[5%] items-center text-center"
         subtitle="With the power of cutting-edge technologies, our mission is to<br>craft top-notch gaming experiences that seamlessly combine casual<br>flexibility with authentic fun depth."
       />

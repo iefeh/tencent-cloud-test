@@ -16,6 +16,7 @@ export default function RaceSlide(props: Props) {
         whiteLogo
         hasBelt
         needAni={props.needAni}
+        baseAniTY
         title="See You In Q4 2023"
         subtitle="An immersive tower defense strategy game."
       />

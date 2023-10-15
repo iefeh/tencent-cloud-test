@@ -41,6 +41,7 @@ export default function WorldView() {
         <PageDesc
           ref={descRef}
           needAni={visible}
+          baseAniTY
           hasBelt
           className="items-start text-left"
           title="An immersive<br>tower defense strategy game"
