@@ -36,6 +36,7 @@ import about_c3 from 'img/about/3@2x.png';
 import about_c4 from 'img/about/4@2x.png';
 import about_c5 from 'img/about/5@2x.png';
 import Head from 'next/head';
+import { LUXY_OPTIONS } from '@/constant/luxy';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -160,12 +161,26 @@ export default function App({ Component, pageProps }: AppProps) {
     import('luxy.js').then((res) => {
       if (!res.default) return;
       
+      window.luxy = res.default;
+      window.luxy.getWrapperTranslateY = function() {
+        const { transform } = this.wrapper.style;
+        const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
+        return -y || 0;
+      }
+      window.luxy.disable = function() {
+        const { resizeId, scrollId } = this;
+        cancelAnimationFrame(resizeId);
+        cancelAnimationFrame(scrollId);
+        this.disabled = true;
+      };
+      window.luxy.enable = function() {
+        this.wapperOffset = this.getWrapperTranslateY();
+        this.init(LUXY_OPTIONS);
+        this.disabled = false;
+      };
+
       try {
-        res.default.init({
-          wrapper: '#luxy',
-          targets: '.luxy-el',
-          wrapperSpeed: 0.05,
-        });
+        res.default.init(LUXY_OPTIONS);
       } catch (error) {
         console.log(error);
       }

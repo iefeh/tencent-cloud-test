@@ -1,6 +1,6 @@
 'use client';
 
-import { createRef, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import SwiperScreen from './components/home/SwiperScreen';
 import Character from './components/character/character';
 import Footer from './components/home/Footer';
@@ -8,74 +8,72 @@ import StarScreen from './components/home/StarScreen';
 import Head from 'next/head';
 import SloganScreen from './components/home/SloganScreen';
 import SloganDescScreen from './components/home/SloganDescScreen';
-import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { Mousewheel } from 'swiper/modules';
 
 export default function Home() {
-  const scrollWrapper = createRef<HTMLDivElement>();
-  const [swiper, setSwiper] = useState<SwiperClass>();
+  const scrollWrapper = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
+  const isFixed = useRef(true);
+  const rafId = useRef(0);
 
   function onMaskAniEnd() {
-    if (!swiper) return;
-    swiper.enable();
-    swiper.slideNext(0);
-    setScrollY(swiper.translate);
+    if (!scrollWrapper.current || !window.luxy) return;
+
+    window.luxy.disable();
+    isFixed.current = false;
+    const y = document.documentElement.clientHeight;
+    document.documentElement.scrollTo(0, y);
+    scrollWrapper.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
+    window.luxy.enable();
   }
 
-  function initSwiper(swiperIns: SwiperClass) {
-    setSwiper(swiperIns);
-    swiperIns.disable();
-  }
-
-  function onSwiperScroll(swiper: SwiperClass, e: WheelEvent) {
-    if (swiper.isBeginning) {
-      swiper.disable();
+  function setLuxyFixed() {
+    const y = window.luxy.getWrapperTranslateY();
+    if (y === 0) {
+      isFixed.current = true;
+      return;
     }
-    setScrollY(swiper.translate);
+
+    rafId.current = requestAnimationFrame(setLuxyFixed);
   }
+
+  function onLuxyScroll() {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    setScrollY(-scrollTop);
+    if (scrollTop === 0 && !isFixed.current) {
+      // 重新设置动画状态会有文字跳动问题，暂不执行
+      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
+      setLuxyFixed();
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', onLuxyScroll);
+    return () => window.removeEventListener('scroll', onLuxyScroll);
+  }, []);
 
   return (
     <section
       ref={scrollWrapper}
-      className="page-home scroll-wrapper relative w-full h-screen flex flex-col items-center justify-between overflow-hidden bg-no-repeat bg-fixed bg-origin-border"
+      id="luxy"
+      className="page-home scroll-wrapper relative w-full flex flex-col items-center justify-between bg-no-repeat bg-fixed bg-origin-border z-20 pointer-events-none"
     >
       <Head>
         <title>Home | Moonveil</title>
       </Head>
 
-      <Swiper
-        className="w-full h-full"
-        modules={[Mousewheel]}
-        freeMode={{ enabled: true, sticky: false, momentum: true }}
-        slidesPerView="auto"
-        mousewheel
-        direction="vertical"
-        onSwiper={initSwiper}
-        onScroll={onSwiperScroll}
-      >
-        <SwiperSlide>
-          <SwiperScreen onMaskAniEnd={onMaskAniEnd} />
-        </SwiperSlide>
+      <SwiperScreen scrollY={scrollY} isFixed={isFixed} parent={scrollWrapper} onMaskAniEnd={onMaskAniEnd} />
 
-        <SwiperSlide>
-          <SloganScreen scrollY={scrollY} />
-        </SwiperSlide>
+      <div className="w-full h-screen overflow-hidden"></div>
 
-        <SwiperSlide>
-          <SloganDescScreen />
-        </SwiperSlide>
+      <SloganScreen scrollY={scrollY} />
 
-        <SwiperSlide>
-          <div className="overflow-hidden">
-            <Character />
-          </div>
-        </SwiperSlide>
+      <SloganDescScreen />
 
-        <SwiperSlide style={{ height: 'auto' }}>
-          <Footer />
-        </SwiperSlide>
-      </Swiper>
+      <div className="overflow-hidden">
+        <Character />
+      </div>
+
+      <Footer />
 
       <StarScreen scrollY={scrollY} />
     </section>

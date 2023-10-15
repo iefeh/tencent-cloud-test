@@ -5,65 +5,59 @@ import RaceSlide from '../RaceSlide';
 import EntertainmentSlide from '../EntertainmentSlide';
 import LimitedTestSlide from '../LimitedTestSlide';
 import YellowCircle from '../../common/YellowCircle';
-import { useState, useEffect, useRef } from 'react';
-import { throttle } from 'lodash';
+import { useEffect, useState, useRef, MutableRefObject } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 
 interface Props {
+  scrollY: number;
+  isFixed: MutableRefObject<boolean>;
+  parent: MutableRefObject<HTMLDivElement | null>;
   onMaskAniEnd?: () => void;
 }
 
 export default function SwiperScreen(props: Props) {
+  const { scrollY, isFixed, parent, onMaskAniEnd } = props;
   const [maskAni, setMaskAni] = useState(false);
-  const [deltaY, setDeltaY] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
-
-  function onWheel(e: WheelEvent) {
-    if (e.deltaY <= 0) return;
-    if (e.deltaY > deltaY) setDeltaY(e.deltaY);
-  }
-
-  function onTouchStart(e: TouchEvent) {
-    if (!e.target) return;
-    (e.target as HTMLElement).dataset.y = e.touches[0].pageY + '';
-  }
-
-  function onTouchMove(e: TouchEvent) {
-    if (!e.target) return;
-
-    const y0 = (e.target as HTMLElement).dataset.y;
-    if (y0 === undefined || Number.isNaN(y0)) return;
-
-    if (+y0 > e.touches[0].pageY) setMaskAni(true);
-  }
+  const swiperRef = useRef<HTMLDivElement>(null);
+  let rafId = 0;
 
   function reset() {
     setTimeout(() => {
-      props.onMaskAniEnd?.();
-      setDeltaY(0);
+      onMaskAniEnd?.();
       setMaskAni(false);
     }, 200);
   }
 
-  useEffect(
-    throttle(() => {
-      if (!deltaY) return;
+  useEffect(() => {
+    setMaskAni(isFixed.current && scrollY < 0);
+  }, [scrollY]);
 
-      setMaskAni(true);
-    }, 100),
-    [deltaY],
-  );
+  function setSwiperTY() {
+    if (!swiperRef.current) return;
 
-  return (
-    <div
-      className="swiper-screen w-full h-screen relative overflow-hidden"
-      onWheel={(e) => onWheel(e as unknown as WheelEvent)}
-      onTouchStart={(e) => onTouchStart(e as any)}
-      onTouchMove={(e) => onTouchMove(e as any)}
-    >
+    if (!isFixed.current) {
+      const y = window.luxy?.getWrapperTranslateY?.() || 0;
+      swiperRef.current.style.transform = `translate3d(0, ${-y}px, 0)`;
+    }
+    rafId = requestAnimationFrame(setSwiperTY);
+  }
+
+  useEffect(() => {
+    if (!window.luxy || !swiperRef.current) return;
+
+    setSwiperTY();
+    return () => {
+      if (rafId > 0) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  const SwiperContent = (
+    <div ref={swiperRef} className="swiper-screen w-full h-screen fixed left-0 top-0 overflow-hidden z-10 ">
       <Swiper
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
@@ -128,4 +122,6 @@ export default function SwiperScreen(props: Props) {
       ></div>
     </div>
   );
+
+  return createPortal(SwiperContent, document.body);
 }

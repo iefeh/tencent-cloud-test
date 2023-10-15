@@ -1,8 +1,9 @@
-import { useState, createRef, useEffect, useRef, useLayoutEffect, MutableRefObject } from 'react';
+import { useState, createRef, useEffect, useRef, useLayoutEffect } from 'react';
 import planetImg from 'img/home/planet.png';
 import Image from 'next/image';
 import useRAF from '@/hooks/raf';
 import { generateStarAni } from '@/hooks/star';
+import { createPortal } from 'react-dom';
 
 interface Props {
   scrollY: number;
@@ -60,8 +61,8 @@ export default function StarScreen(props: Props) {
     }
   }, [props.scrollY]);
 
-  return (
-    <div className="star-screen z-0 absolute left-0 top-0 w-full h-screen pointer-events-none flex justify-center items-center">
+  const StarContent = (
+    <div className="star-screen z-0 fixed left-0 top-0 w-full h-screen pointer-events-none flex justify-center items-center">
       <Image
         ref={planetRef}
         className="bg-img w-[80vw] h-[70vw] flex z-10 relative max-lg:top-[22rem] -top-36 origin-center"
@@ -76,5 +77,7 @@ export default function StarScreen(props: Props) {
         height={height}
       ></canvas>
     </div>
-  );
+  )
+
+  return createPortal(StarContent, document.body);
 }
