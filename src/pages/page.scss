@@ -56,3 +56,9 @@ html {
     display: none;
   }
 }
+
+@media (max-width: 640px) {
+  .header {
+    background: linear-gradient(to bottom, #000 0, transparent 100%);
+  }
+}

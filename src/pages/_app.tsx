@@ -169,12 +169,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
-    let fontSize = 16;
-    if (width >= 1024) {
-      fontSize *= width / 1920;
-    } else {
-      fontSize *= width / 375;
-    }
+    const fontSize = 16 * width / 1920;
     document.documentElement.style.fontSize = `${fontSize}px`;
 
     const ratio = window.devicePixelRatio;
