@@ -253,8 +253,6 @@ export default function About({
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
               <ul className="gap-[2.38rem] grid grid-cols-5">
                 {sponsorArray.map((value, index) => {
-                  if (index === 20) return null;
-
                   return (
                     <li key={index} className="w-[11.25rem] h-[5.53rem] relative">
                       <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />
