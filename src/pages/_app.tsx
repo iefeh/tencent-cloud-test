@@ -163,22 +163,20 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [resLoading, setResLoading] = useState(true);
+  const [scale, setScale] = useState('1');
 
   function resetRem() {
-    let ratio = 1;
-    const u = navigator.userAgent;
-    const isiOS = /\(i[^;]+;( U;)? CPU.+Mac OS X/.test(u);
-    if (isiOS) {
-      ratio = window.devicePixelRatio;
-    }
     const width = document.documentElement.clientWidth;
     let fontSize = 16;
     if (width >= 1024) {
-      fontSize *= width / 1920 / ratio;
+      fontSize *= width / 1920;
     } else {
-      fontSize *= width / 375 / ratio;
+      fontSize *= width / 375;
     }
     document.documentElement.style.fontSize = `${fontSize}px`;
+
+    const ratio = window.devicePixelRatio;
+    setScale((1 / ratio).toFixed(2));
   }
 
   useEffect(() => {
@@ -242,7 +240,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <meta
           name="viewport"
-          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+          content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
       </Head>
       {loading ? (

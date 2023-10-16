@@ -11,35 +11,24 @@ import SloganDescScreen from './components/home/SloganDescScreen';
 
 export default function Home() {
   const scrollWrapper = useRef<HTMLDivElement>(null);
+  const maskRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
-  const isFixed = useRef(true);
   const rafId = useRef(0);
 
-  function onMaskAniEnd() {
-    if (!scrollWrapper.current || !window.luxy) return;
-
-    window.luxy.disable();
-    isFixed.current = false;
-    const y = document.documentElement.clientHeight;
-    document.documentElement.scrollTo(0, y);
-    scrollWrapper.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
-    window.luxy.enable();
-  }
-
   function setLuxyFixed() {
-    const y = window.luxy.getWrapperTranslateY();
-    if (y === 0) {
-      isFixed.current = true;
-      return;
-    }
+    if (!maskRef.current) return;
 
+    const y = window.luxy.getWrapperTranslateY();
+    const screenHeight = document.documentElement.clientHeight;
+    const fs8 = (parseInt(document.documentElement.style.fontSize) || 16) * 8;
+    maskRef.current.style.transform = `translate3d(0, ${screenHeight + fs8 - y * (1.3 + fs8 / screenHeight)}px, 0)`;
     rafId.current = requestAnimationFrame(setLuxyFixed);
   }
 
   function onLuxyScroll() {
     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
     setScrollY(-scrollTop);
-    if (scrollTop === 0 && !isFixed.current) {
+    if (scrollTop > 0) {
       if (rafId.current > 0) cancelAnimationFrame(rafId.current);
       setLuxyFixed();
     }
@@ -60,7 +49,7 @@ export default function Home() {
         <title>Home | Moonveil</title>
       </Head>
 
-      <SwiperScreen scrollY={scrollY} isFixed={isFixed} parent={scrollWrapper} onMaskAniEnd={onMaskAniEnd} />
+      <SwiperScreen />
 
       <div className="w-full h-screen overflow-hidden"></div>
 
@@ -75,6 +64,8 @@ export default function Home() {
       <Footer />
 
       <StarScreen />
+
+      <div ref={maskRef} className="swiper-mask absolute left-0 top-0 w-full h-[130vh] translate-y-[100vh] z-20"></div>
     </section>
   );
 }
