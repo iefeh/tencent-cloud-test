@@ -16,7 +16,7 @@ export default function SwiperScreen() {
   const swiperRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={swiperRef} className="swiper-screen w-full h-screen overflow-hidden z-20 ">
+    <div ref={swiperRef} className="swiper-screen w-full h-screen overflow-hidden z-20 relative ">
       <Swiper
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
