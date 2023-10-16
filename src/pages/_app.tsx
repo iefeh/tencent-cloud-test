@@ -55,6 +55,7 @@ import sponsor_17 from 'img/about/17.png';
 import sponsor_18 from 'img/about/18.png';
 import sponsor_19 from 'img/about/19.png';
 import sponsor_20 from 'img/about/20.png';
+import sponsor_21 from 'img/about/21.png';
 import sponsor_22 from 'img/about/22.png';
 import Head from 'next/head';
 import { LUXY_OPTIONS } from '@/constant/luxy';
@@ -113,6 +114,7 @@ async function initResources(path: string) {
           sponsor_18.src,
           sponsor_19.src,
           sponsor_20.src,
+          sponsor_21.src,
           sponsor_22.src,
         ].map((path) => loadImage(path)),
       );

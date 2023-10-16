@@ -40,6 +40,12 @@ export default function Header() {
         return temp || '/';
     }
 
+    function onLinkClick() {
+        window.luxy.disable();
+        window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
+        window.luxy.enable();
+    }
+
     return (
         <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 mt-4 pl-9 pr-4">
             <div className="flex-[1]">
@@ -57,6 +63,7 @@ export default function Header() {
                         className={`m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'} text-[1.375rem] ml-8`}
                         key={index}
                         href={value.route}
+                        onClick={onLinkClick}
                     >
                         {value.name}
                     </Link>
