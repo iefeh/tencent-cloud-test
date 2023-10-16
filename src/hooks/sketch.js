@@ -176,8 +176,7 @@ export class Sketch {
   jumpTo(index) {
     if(this.isRunning) return;
     this.isRunning = true;
-    let len = this.textures.length;
-    let nextTexture =this.textures[(index +1)%len];
+    let nextTexture =this.textures[index];
     this.material.uniforms.texture2.value = nextTexture;
     let tl = new TimelineMax();
     tl.to(this.material.uniforms.progress,this.duration,{
@@ -185,7 +184,7 @@ export class Sketch {
       ease: Power2[this.easing],
       onComplete:()=>{
         console.log('FINISH');
-        this.current = (index +1)%len;
+        this.current = index;
         this.material.uniforms.texture1.value = nextTexture;
         this.material.uniforms.progress.value = 0;
         this.isRunning = false;
