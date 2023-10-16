@@ -201,6 +201,7 @@ export default function About({
               onSwiper={setSwiperFigure}
             >
               <SwiperSlide ><EntertainmentSlide needAni={true} /></SwiperSlide>
+              <SwiperSlide style={{ width: 'auto' }}><div className="w-[36vw] h-full"></div></SwiperSlide>
               {figureArray.map((figureData, index) => {
                 return (
                   <SwiperSlide
