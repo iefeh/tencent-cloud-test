@@ -6,8 +6,8 @@ import Mystery from './Mystery';
 
 export default function AstrArkSchool() {
   return (
-    <section className="w-full h-[calc(100vh_-_100px)] relative overflow-hidden">
-      <div className="luxy-el w-full h-screen flex flex-col justify-center items-center" data-speed-y="2" data-offset="-200">
+    <section className="w-full h-screen relative overflow-hidden">
+      <div className="luxy-el w-full h-[calc(100vh_+_400px)] flex flex-col justify-center items-center" data-speed-y="8" data-offset="-640">
         <Image className="object-cover" src={bgImg} alt="" fill />
 
         <PageDesc

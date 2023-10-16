@@ -4,7 +4,7 @@ import PageDesc from '../../../components/common/PageDesc';
 const WorldView: React.FC = () => {
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
-      <div className="luxy-el w-full h-[calc(100vh_+_200px)] flex justify-center items-center" data-speed-y="5" data-offset="-200">
+      <div className="luxy-el w-full h-[calc(100vh_+_400px)] flex justify-center items-center" data-speed-y="8" data-offset="-300">
         <video
           className="object-cover absolute left-0 top-0 w-full h-full z-0"
           autoPlay
