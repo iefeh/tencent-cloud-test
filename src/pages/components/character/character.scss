@@ -62,10 +62,11 @@
     bottom: 40px;
     left: 70%;
     font-size: 14px;
-    color: #fff;
+    // color: #fff;
+    color: #f6c799;
     transform: skewX(var(--skew-re-deg));
     font-family: decima;
-    opacity: 0.4;
+    opacity: 0.8;
   }
 
   .hero-name-last {
