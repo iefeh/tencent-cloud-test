@@ -71,7 +71,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
   }
 
   useEffect(() => {
-    const nextTargetScale = (scrollY / document.documentElement.clientHeight) * maxScale;
+    const nextTargetScale = (scrollY / document.documentElement.clientHeight) * maxScale * 1.4;
     runNextScale(nextTargetScale);
 
     return () => {
@@ -124,8 +124,8 @@ const AstrarkHome: React.FC<Props> = (props) => {
       />
 
       <Image
-        className={`w-[26.25rem] h-[25.125rem] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 transition-opacity ease-in-out duration-[1000ms] opacity-0 ${
-          currenScale.current < maxScale - 6 ? '' : 'opacity-100'
+        className={`w-56 h-[13.375rem] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 transition-opacity ease-in-out duration-[1000ms] opacity-0 ${
+          currenScale.current < maxScale - 8 ? '' : 'opacity-100'
         }`}
         src={whiteLogoImg}
         alt=""
