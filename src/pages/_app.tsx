@@ -37,6 +37,7 @@ import about_c4 from 'img/about/4@2x.png';
 import about_c5 from 'img/about/5@2x.png';
 import Head from 'next/head';
 import { LUXY_OPTIONS } from '@/constant/luxy';
+import Script from 'next/script';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -203,6 +204,22 @@ export default function App({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </RootLayout>
       )}
+
+      <Script id="google-analytics">
+        {`
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.googletagmanager.com/gtag/js?id=G-S033BWR07Y','ga');
+ 
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-S033BWR07Y');
+        `}
+      </Script>
     </>
   );
 }
