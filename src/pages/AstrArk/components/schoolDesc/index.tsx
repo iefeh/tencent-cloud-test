@@ -6,6 +6,8 @@ import mBG from "img/astrark/school/bg_mechanoid.jpg";
 import sBG from "img/astrark/school/bg_spiritual.jpg";
 import nBG from "img/astrark/school/bg_natural.jpg";
 import { Sketch } from "@/hooks/sketch";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
 
 export default function SchoolDesc() {
   const [width, setWidth] = useState(0);
@@ -135,6 +137,23 @@ export default function SchoolDesc() {
             Home Planet : {swipers[activeIndex].homeplanet}
           </div>
         </div>
+      </div>
+
+      <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-10">
+        <Swiper
+          modules={[Mousewheel]}
+          slidesPerView={1}
+          speed={1200}
+          mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true }}
+          direction="horizontal"
+          onActiveIndexChange={(swiper) => onIconClick(swiper.activeIndex)}
+        >
+          {swipers.map((swiper, index) => (
+            <SwiperSlide key={index}>
+              <div className="w-screen h-screen"></div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
 
       <SchoolIcons
