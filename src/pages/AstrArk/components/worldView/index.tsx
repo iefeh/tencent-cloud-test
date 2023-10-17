@@ -2,28 +2,46 @@ import React from 'react';
 import PageDesc from '../../../components/common/PageDesc';
 
 const WorldView: React.FC = () => {
+  const Content = (
+    <>
+      <video
+        className="object-cover absolute left-0 top-0 w-full h-full z-0"
+        autoPlay
+        playsInline
+        muted
+        loop
+        preload="auto"
+      >
+        <source src="/video/meteorite.mp4" />
+      </video>
+
+      <div className="bg-black/30 absolute inset-0 z-0"></div>
+
+      <PageDesc
+        hasBelt
+        title="What happened..."
+        subtitle='A mysterious object offering infinite energy has reshaped<br/> our world. As humanity studies its enigmatic nature,<br/> humanity finds itself enslaved by the object while<br/> averting energy shortages.
+        <br/><br/>But when it vanished, chaos ensued. Nations crumbled, and<br/> it was called the "End Times."'
+      />
+    </>
+  );
+
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
-      <div className="luxy-el w-full h-[calc(100vh_+_400px)] flex justify-center items-center" data-speed-y="8" data-offset="-300">
-        <video
-          className="object-cover absolute left-0 top-0 w-full h-full z-0"
-          autoPlay
-          playsInline
-          muted
-          loop
-          preload="auto"
-        >
-          <source src="/video/meteorite.mp4" />
-        </video>
+      <div
+        className="luxy-el w-full h-[calc(100vh_+_400px)] flex justify-center items-center max-md:hidden"
+        data-speed-y="8"
+        data-offset="-300"
+      >
+        {Content}
+      </div>
 
-        <div className="bg-black/30 absolute inset-0 z-0"></div>
-
-        <PageDesc
-          hasBelt
-          title="What happened..."
-          subtitle='A mysterious object offering infinite energy has reshaped<br/> our world. As humanity studies its enigmatic nature,<br/> humanity finds itself enslaved by the object while<br/> averting energy shortages.
-        <br/><br/>But when it vanished, chaos ensued. Nations crumbled, and<br/> it was called the "End Times."'
-        />
+      <div
+        className="luxy-el w-full h-[calc(100vh_+_200px)] justify-center items-center max-md:flex hidden"
+        data-speed-y="2"
+        data-offset="-100"
+      >
+        {Content}
       </div>
     </div>
   );

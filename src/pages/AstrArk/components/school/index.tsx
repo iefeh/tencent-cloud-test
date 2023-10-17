@@ -5,19 +5,37 @@ import SchoolIcons from './SchoolIcons';
 import Mystery from './Mystery';
 
 export default function AstrArkSchool() {
+  const Content = (
+    <>
+      <Image className="object-cover" src={bgImg} alt="" fill />
+
+      <PageDesc
+        title="Emergence of 4<br>Schools of Thoughts"
+        subtitle="Now that it's back and time has rewound, 4 schools of thoughts emerged. each<br>with its own belief of the true approach to harnessing the infinite power."
+      />
+
+      <SchoolIcons />
+
+      <Mystery />
+    </>
+  );
+
   return (
     <section className="w-full h-screen relative overflow-hidden">
-      <div className="luxy-el w-full h-[calc(100vh_+_400px)] flex flex-col justify-center items-center" data-speed-y="8" data-offset="-640">
-        <Image className="object-cover" src={bgImg} alt="" fill />
+      <div
+        className="luxy-el w-full h-[calc(100vh_+_400px)] flex flex-col justify-center items-center max-md:hidden"
+        data-speed-y="8"
+        data-offset="-640"
+      >
+        {Content}
+      </div>
 
-        <PageDesc
-          title="Emergence of 4<br>Schools of Thoughts"
-          subtitle="Now that it's back and time has rewound, 4 schools of thoughts emerged. each<br>with its own belief of the true approach to harnessing the infinite power."
-        />
-
-        <SchoolIcons />
-
-        <Mystery />
+      <div
+        className="luxy-el w-full h-[calc(100vh_+_400px)] flex-col justify-center items-center max-md:flex hidden"
+        data-speed-y="4"
+        data-offset="-440"
+      >
+        {Content}
       </div>
     </section>
   );
