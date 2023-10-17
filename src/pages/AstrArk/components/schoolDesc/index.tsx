@@ -1,13 +1,14 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
-import SchoolIcons from "../school/SchoolIcons";
-import gBG from "img/astrark/school/bg_genetic.jpg";
-import mBG from "img/astrark/school/bg_mechanoid.jpg";
-import sBG from "img/astrark/school/bg_spiritual.jpg";
-import nBG from "img/astrark/school/bg_natural.jpg";
-import { Sketch } from "@/hooks/sketch";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
+import { useLayoutEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import SchoolIcons from '../school/SchoolIcons';
+import gBG from 'img/astrark/school/bg_genetic.jpg';
+import mBG from 'img/astrark/school/bg_mechanoid.jpg';
+import sBG from 'img/astrark/school/bg_spiritual.jpg';
+import nBG from 'img/astrark/school/bg_natural.jpg';
+import { Sketch } from '@/hooks/sketch';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Mousewheel } from 'swiper/modules';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 export default function SchoolDesc() {
   const [width, setWidth] = useState(0);
@@ -15,26 +16,28 @@ export default function SchoolDesc() {
   const [activeIndex, setActiveIndex] = useState(0);
   const bgContainerRef = useRef<HTMLDivElement>(null);
   const sketch = useRef<Sketch>();
+  const [showDescAni, setShowDescAni] = useState(false);
+  const nodeRef = useRef<HTMLDivElement>();
 
   const swipers = [
     {
-      name: "genetic",
-      homeplanet: "zenith",
+      name: 'genetic',
+      homeplanet: 'zenith',
       bg: gBG,
     },
     {
-      name: "mechanoid",
-      homeplanet: "hyperborea",
+      name: 'mechanoid',
+      homeplanet: 'hyperborea',
       bg: mBG,
     },
     {
-      name: "spiritual",
-      homeplanet: "aoen",
+      name: 'spiritual',
+      homeplanet: 'aoen',
       bg: sBG,
     },
     {
-      name: "natural",
-      homeplanet: "aurora",
+      name: 'natural',
+      homeplanet: 'aurora',
       bg: nBG,
     },
   ];
@@ -42,17 +45,12 @@ export default function SchoolDesc() {
   function initSketch() {
     if (!bgContainerRef.current) return;
 
-    sketch.current = new Sketch(
-      bgContainerRef.current,
-      [gBG.src, mBG.src, sBG.src, nBG.src],
-      width,
-      height,
-      {
-        // debug: true,
-        uniforms: {
-          intensity: { value: 0.3, type: "f", min: 0, max: 2 },
-        },
-        fragment: `
+    sketch.current = new Sketch(bgContainerRef.current, [gBG.src, mBG.src, sBG.src, nBG.src], width, height, {
+      // debug: true,
+      uniforms: {
+        intensity: { value: 0.3, type: 'f', min: 0, max: 2 },
+      },
+      fragment: `
           uniform float time;
           uniform float progress;
           uniform float width;
@@ -84,8 +82,7 @@ export default function SchoolDesc() {
           }
 
         `,
-      }
-    );
+    });
   }
 
   function setSize() {
@@ -102,8 +99,8 @@ export default function SchoolDesc() {
   useLayoutEffect(() => {
     setSize();
 
-    window.addEventListener("resize", setSize);
-    return () => window.removeEventListener("resize", setSize);
+    window.addEventListener('resize', setSize);
+    return () => window.removeEventListener('resize', setSize);
   }, []);
 
   useLayoutEffect(() => {
@@ -117,26 +114,37 @@ export default function SchoolDesc() {
       <div ref={bgContainerRef} className="w-full h-full"></div>
 
       <div className="school w-full h-screen absolute left-0 top-0 z-10">
-        <div className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border">
-          <div className="flex items-center">
-            <div className="w-[3.875rem] h-[3.875rem] relative">
-              <Image
-                className="object-cover"
-                src={`/img/astrark/school/${swipers[activeIndex].name}.png`}
-                alt=""
-                fill
-              />
-            </div>
+        <SwitchTransition mode="out-in">
+          <CSSTransition
+            classNames="desc"
+            key={activeIndex}
+            timeout={800}
+            unmountOnExit
+          >
+            {() => (
+              <div className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border">
+                <div className="flex items-center">
+                  <div className="w-[3.875rem] h-[3.875rem] relative">
+                    <Image
+                      className="object-cover"
+                      src={`/img/astrark/school/${swipers[activeIndex].name}.png`}
+                      alt=""
+                      fill
+                    />
+                  </div>
 
-            <div className="h-12 uppercase text-5xl font-semakin ml-[0.625rem] leading-[3.875rem]">
-              {swipers[activeIndex].name}
-            </div>
-          </div>
+                  <div className="h-12 uppercase text-5xl font-semakin ml-[0.625rem] leading-[3.875rem]">
+                    {swipers[activeIndex].name}
+                  </div>
+                </div>
 
-          <div className="font-semakin text-2xl text-basic-yellow mt-3">
-            Home Planet : {swipers[activeIndex].homeplanet}
-          </div>
-        </div>
+                <div className="font-semakin text-2xl text-basic-yellow mt-3">
+                  Home Planet : {swipers[activeIndex].homeplanet}
+                </div>
+              </div>
+            )}
+          </CSSTransition>
+        </SwitchTransition>
       </div>
 
       <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-10">
