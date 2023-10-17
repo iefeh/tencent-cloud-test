@@ -79,28 +79,30 @@ const Character: React.FC = () => {
         {/* 移动端适配 */}
         <div className="max-lg:block items-center hidden">
           <Swiper
-            className="w-full h-full"
+            className="w-full h-screen"
             loop
             slidesPerView={1}
-            autoplay={{ delay: 2500 }}
+            autoplay={{ delay: 5000 }}
             modules={[Autoplay]}
           >
             { heroMap.map((item, index) => {
               return (
                 <SwiperSlide className="relative" key={index}>
-                  <Image
-                    className="w-full h-full"
-                    src={item.imgUrl}
-                    alt=""
-                  ></Image>
+                  <div className="w-full h-screen">
+                    <Image
+                      className="h-screen"
+                      src={item.imgUrl}
+                      alt=""
+                    ></Image>
 
-                  <Image
-                    className="absolute -bottom-[6rem] left-[12rem]"
-                    src={item.heroUrl}
-                    alt=""
-                  ></Image>
+                    <Image
+                      className="absolute max-w-[120%] -bottom-[6rem] left-[12rem]"
+                      src={item.heroUrl}
+                      alt=""
+                    ></Image>
 
-                  <div className="font-decima absolute bottom-[1rem] left-[1rem] text-[#F6C799] border-[#F6C799] border-b-2">{item.name}</div>
+                    <div className="font-decima absolute bottom-[1rem] left-[1rem] text-[#F6C799] border-[#F6C799] border-b-2">{item.name}</div>
+                  </div>
                 </SwiperSlide>
               )
             }) }

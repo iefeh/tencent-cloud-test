@@ -1,6 +1,8 @@
-import { createPortal } from "react-dom";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { createPortal } from 'react-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import MediaIconBar from '../MediaIconBar';
+import styles from './index.module.css';
 
 interface Props {
   visible?: boolean;
@@ -8,11 +10,11 @@ interface Props {
 }
 
 const routeText = [
-  { name: "Home", route: "/" },
-  { name: "AstrArk", route: "/AstrArk" },
-  { name: "About", route: "/About" },
-  { name: "NFT", route: "/NFT" },
-  { name: "Loyalty Program", route: "/LoyaltyProgram" },
+  { name: 'Home', route: '/' },
+  { name: 'AstrArk', route: '/AstrArk' },
+  { name: 'About', route: '/About' },
+  { name: 'NFT', route: '/NFT' },
+  { name: 'Loyalty Program', route: '/LoyaltyProgram' },
 ];
 
 export default function Sidebar({ visible, onClose }: Props) {
@@ -22,15 +24,16 @@ export default function Sidebar({ visible, onClose }: Props) {
   function LoginSegments() {
     let temp = router.route;
     return temp || '/';
-}
+  }
 
   return createPortal(
-    <div onClick={onClose} className="sidebar max-lg:block fixed left-0 top-0 w-full h-screen bg-black z-30">
-
-      <div className="content flex flex-col font-semakin text-center items-center justify-center h-full">
+    <div onClick={onClose} className="sidebar max-lg:flex fixed left-0 top-0 w-full h-screen bg-black z-30 flex flex-col">
+      <div className="content flex-1 flex flex-col font-semakin text-center items-center justify-center">
         {routeText.map((value, index) => (
           <Link
-            className={`m-2 transition-all duration-300 hover:text-[#F6C799] text-5xl leading-normal ${LoginSegments() === value.route && 'text-[#F6C799]'}`}
+            className={`m-2 transition-all duration-300 hover:text-[#F6C799] text-6xl leading-[7.5rem] ${
+              LoginSegments() === value.route && 'text-[#F6C799]'
+            }`}
             key={index}
             href={value.route}
           >
@@ -39,7 +42,8 @@ export default function Sidebar({ visible, onClose }: Props) {
         ))}
       </div>
 
+      <MediaIconBar className={"h-60 flex justify-center items-center " + styles.sidebarMediaIcons} />
     </div>,
-    document.body
+    document.body,
   );
 }

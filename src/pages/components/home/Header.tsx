@@ -84,12 +84,12 @@ export default function Header() {
                     })}
                 </div>
                 <BasicButton
-                    className="text-[14px] leading-[20px] px-[18px] rounded-[24px]"
+                    className={"text-[14px] leading-[20px] px-[18px] rounded-[24px] " + (listOpen ? 'hidden' : '')}
                     label="login"
                     onClick={() => setLoginVisible(true)}
                 />
 
-                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[2rem] h-[1.88rem]" /> : <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[32px] h-[30px]" /> }
+                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[4rem] h-[4rem]" /> : <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[4rem] h-[4rem]" /> }
             </div>
             
             

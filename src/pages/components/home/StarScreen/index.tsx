@@ -41,7 +41,8 @@ export default function StarScreen() {
     if (!planetRef.current) return;
 
     const y = window.luxy.getWrapperTranslateY();
-    const cur = 1.2 - ((y - document.documentElement.clientHeight) / document.documentElement.clientHeight / 2) * 0.6;
+    const l = document.documentElement.clientHeight;
+    const cur = 1.2 * l / 960 - (y / l / 2 - 0.5) * 0.6;
     planetRef.current.style.setProperty('--scale', cur + '');
     rafId.current = requestAnimationFrame(setLuxyTrans);
   }
@@ -52,7 +53,7 @@ export default function StarScreen() {
   }
 
   useEffect(() => {
-    window.addEventListener('scroll', onLuxyScroll);
+    window.addEventListener('scroll', onLuxyScroll); 
     return () => window.removeEventListener('scroll', onLuxyScroll);
   }, []);
 
@@ -60,7 +61,7 @@ export default function StarScreen() {
     <div className="star-screen z-0 fixed left-0 top-0 w-full h-screen pointer-events-none flex justify-center items-center">
       <Image
         ref={planetRef}
-        className="bg-img w-[80vw] h-[70vw] flex z-10 relative max-lg:top-[22rem] -top-36 origin-center"
+        className="bg-img w-[80vw] h-[70vw] flex z-10 relative max-lg:top-0 -top-36 origin-center"
         src={planetImg}
         alt=""
       />
