@@ -133,7 +133,7 @@ export default function About({
         modules={[Mousewheel, FreeMode]}
         onScroll={onSlideScrollWrapper}
         freeMode={true}
-        slidesPerView={1}
+        slidesPerView="auto"
         onSwiper={setSwiperWrapper}
       >
         <SwiperSlide>
@@ -245,17 +245,17 @@ export default function About({
             className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
+              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
                 isVisiable && 'slideInAnim'
               }`}
             >
               Investors & Partners
             </div>
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
-              <ul className="gap-[2.38rem] grid grid-cols-5">
+              <ul className="max-sm:gap-[1rem] max-sm:grid-cols-3 gap-[2.38rem] grid grid-cols-5">
                 {sponsorArray.map((value, index) => {
                   return (
-                    <li key={index} className="w-[11.25rem] h-[5.53rem] relative">
+                    <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
                       <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />
                     </li>
                   );
