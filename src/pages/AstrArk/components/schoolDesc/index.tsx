@@ -56,7 +56,7 @@ export default function SchoolDesc() {
   function initSketch() {
     if (!bgContainerRef.current) return;
 
-    sketch.current = new Sketch(bgContainerRef.current, [gBG.src, mBG.src, sBG.src, nBG.src], width, height, {
+    sketch.current = new Sketch(bgContainerRef.current, [gBG.src, mBG.src, sBG.src, nBG.src], width * 1.2, height * 1.2, {
       // debug: true,
       uniforms: {
         intensity: { value: 0.3, type: 'f', min: 0, max: 2 },
@@ -130,7 +130,7 @@ export default function SchoolDesc() {
             {() => (
               <div
                 ref={nodeRef}
-                className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border"
+                className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border max-md:hidden"
               >
                 <div className="flex items-center">
                   <div className="w-[3.875rem] h-[3.875rem] relative">
@@ -176,7 +176,7 @@ export default function SchoolDesc() {
       {isTouchedBottom || <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-20"></div>}
 
       <SchoolIcons
-        className="absolute left-1/2 bottom-12 -translate-x-1/2 z-20"
+        className="absolute left-1/2 bottom-12 -translate-x-1/2 z-20 max-md:gap-4"
         hoverActive
         cursorPointer
         activeIndex={activeIndex}
