@@ -2,7 +2,7 @@ import React from 'react';
 import PageDesc from '../../../components/common/PageDesc';
 
 const WorldView: React.FC = () => {
-  const Content = () => (
+  const Content = (
     <>
       <video
         className="object-cover absolute left-0 top-0 w-full h-full z-0"
@@ -22,7 +22,7 @@ const WorldView: React.FC = () => {
         title="What happened..."
         subtitle={
           <div className="title text-lg font-decima mb-10 tracking-tighter">
-            <span className='max-md:inline-block hidden'>
+            <span className="max-md:inline-block hidden">
               A mysterious object offering infinite energy has reshaped our world. As humanity studies its enigmatic
               nature, humanity finds itself enslaved by the object while averting energy shortages. But when it
               vanished, chaos ensued. Nations crumbled, and it was called the &quot;End Times.&quot;
@@ -47,11 +47,19 @@ const WorldView: React.FC = () => {
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
       <div
+        className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center big:flex hidden p-8"
+        data-speed-y="8"
+        data-offset="-400"
+      >
+        {Content}
+      </div>
+
+      <div
         className="luxy-el w-full h-[calc(100vh_+_400px)] flex justify-center items-center max-md:hidden p-8"
         data-speed-y="8"
         data-offset="-300"
       >
-        <Content />
+        {Content}
       </div>
 
       <div
@@ -59,7 +67,7 @@ const WorldView: React.FC = () => {
         data-speed-y="2"
         data-offset="-100"
       >
-        <Content />
+        {Content}
       </div>
     </div>
   );
