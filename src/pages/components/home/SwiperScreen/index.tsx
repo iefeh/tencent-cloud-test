@@ -21,6 +21,7 @@ export default function SwiperScreen() {
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
         loop
+        // 视频10s自动切换，图片5s自动切换
         // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         speed={1500}
@@ -45,20 +46,22 @@ export default function SwiperScreen() {
           },
         }}
       >
+        {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
+
         {/* <SwiperSlide>
           <IndexSlide needAni={activeIndex === 0} />
         </SwiperSlide> */}
 
-        <SwiperSlide>
+        {/* <SwiperSlide>
           <LimitedTestSlide needAni={activeIndex === 0} />
+        </SwiperSlide> */}
+
+        <SwiperSlide>
+          <RaceSlide needAni={activeIndex === 0} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <RaceSlide needAni={activeIndex === 1} />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <EntertainmentSlide needAni={activeIndex === 2} />
+          <EntertainmentSlide needAni={activeIndex === 1} />
         </SwiperSlide>
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
