@@ -115,13 +115,10 @@ const AstrarkHome: React.FC<Props> = (props) => {
         <div className={'absolute w-full h-1/2 left-0 bottom-0 z-20 ' + styles.videoShadow}></div>
       </div>
 
-      <Image
-        className={
-          'w-[3.1875rem] h-[1.75rem] absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 ' + styles.arrowImg
-        }
-        src={arrowImg}
-        alt=""
-      />
+      <div className={'absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 flex flex-col items-center ' + styles.arrowImg}>
+        <div className="font-decima text-basic-yellow mb-2">Scroll Down</div>
+        <Image className="w-[3.1875rem] h-[1.75rem]" src={arrowImg} alt="" />
+      </div>
 
       <Image
         className={`w-56 h-[13.375rem] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 transition-opacity ease-in-out duration-[1000ms] opacity-0 ${
