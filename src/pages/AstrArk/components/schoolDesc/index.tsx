@@ -176,7 +176,7 @@ export default function SchoolDesc() {
       {isTouchedBottom || <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-20"></div>}
 
       <SchoolIcons
-        className="absolute left-1/2 bottom-12 -translate-x-1/2 z-20 max-md:gap-4"
+        className="absolute left-1/2 bottom-12 -translate-x-1/2 z-20"
         hoverActive
         cursorPointer
         activeIndex={activeIndex}
