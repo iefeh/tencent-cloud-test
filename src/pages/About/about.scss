@@ -59,4 +59,8 @@
             line-height: 2.25rem;
         }
     }
+
+    .mask {
+        background: linear-gradient(to right, transparent 0, #000 50%, transparent 100%);
+    }
 }

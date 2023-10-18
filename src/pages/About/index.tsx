@@ -200,7 +200,11 @@ export default function About({
               onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
-              <SwiperSlide ><EntertainmentSlide needAni={true} /></SwiperSlide>
+              <SwiperSlide>
+                <EntertainmentSlide needAni={true} />
+
+                <div className="mask absolute left-[80vw] top-0 h-screen w-[40vw]"></div>
+              </SwiperSlide>
               <SwiperSlide style={{ width: 'auto' }}><div className="w-[36vw] h-full"></div></SwiperSlide>
               {figureArray.map((figureData, index) => {
                 return (
