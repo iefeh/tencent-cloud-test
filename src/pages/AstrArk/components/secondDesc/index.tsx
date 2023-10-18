@@ -57,7 +57,7 @@ export default function WorldView() {
           needAni={visible}
           baseAniTY
           hasBelt
-          className="items-start text-left"
+          className="items-start text-left relative -top-12"
           title="An immersive<br>tower defense strategy game"
           subtitle={<Subtitle />}
         />
