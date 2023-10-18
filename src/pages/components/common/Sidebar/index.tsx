@@ -27,7 +27,7 @@ export default function Sidebar({ visible, onClose }: Props) {
   }
 
   return createPortal(
-    <div onClick={onClose} className="sidebar max-lg:flex fixed left-0 top-0 w-full h-screen bg-black z-30 flex flex-col">
+    <div onClick={onClose} className="sidebar max-sm:pt-[80px] max-sm:justify-around max-lg:flex fixed left-0 top-0 w-full h-screen bg-black z-30 flex flex-col">
       <div className="content flex-1 flex flex-col font-semakin text-center items-center justify-center">
         {routeText.map((value, index) => (
           <Link
@@ -42,7 +42,7 @@ export default function Sidebar({ visible, onClose }: Props) {
         ))}
       </div>
 
-      <MediaIconBar className={"h-60 flex justify-center items-center " + styles.sidebarMediaIcons} />
+      <MediaIconBar className={"max-sm:h-48 h-60 flex justify-center items-center " + styles.sidebarMediaIcons} />
     </div>,
     document.body,
   );
