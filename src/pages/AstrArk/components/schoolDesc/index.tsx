@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import SchoolIcons from '../school/SchoolIcons';
 import gBG from 'img/astrark/school/bg_genetic.jpg';
@@ -16,8 +16,19 @@ export default function SchoolDesc() {
   const [activeIndex, setActiveIndex] = useState(0);
   const bgContainerRef = useRef<HTMLDivElement>(null);
   const sketch = useRef<Sketch>();
-  const [showDescAni, setShowDescAni] = useState(false);
-  const nodeRef = useRef<HTMLDivElement>();
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [isTouchedBottom, setIsTouchedBottom] = useState(false);
+
+  function onLuxyScroll() {
+    const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+    const isTB = scrollTop === scrollHeight - clientHeight;
+    setIsTouchedBottom(isTB);
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', onLuxyScroll);
+    return () => window.removeEventListener('scroll', onLuxyScroll);
+  }, []);
 
   const swipers = [
     {
@@ -115,14 +126,12 @@ export default function SchoolDesc() {
 
       <div className="school w-full h-screen absolute left-0 top-0 z-10">
         <SwitchTransition mode="out-in">
-          <CSSTransition
-            classNames="desc"
-            key={activeIndex}
-            timeout={800}
-            unmountOnExit
-          >
+          <CSSTransition classNames="desc" nodeRef={nodeRef} key={activeIndex} timeout={800} unmountOnExit>
             {() => (
-              <div className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border">
+              <div
+                ref={nodeRef}
+                className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border"
+              >
                 <div className="flex items-center">
                   <div className="w-[3.875rem] h-[3.875rem] relative">
                     <Image
@@ -164,8 +173,10 @@ export default function SchoolDesc() {
         </Swiper>
       </div>
 
+      {isTouchedBottom || <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-20"></div>}
+
       <SchoolIcons
-        className="absolute left-1/2 bottom-12 -translate-x-1/2"
+        className="absolute left-1/2 bottom-12 -translate-x-1/2 z-20"
         hoverActive
         cursorPointer
         activeIndex={activeIndex}

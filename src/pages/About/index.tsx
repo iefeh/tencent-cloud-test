@@ -239,10 +239,10 @@ export default function About({
             </div>
           </div>
         </SwiperSlide>
-        <SwiperSlide>
+        <SwiperSlide style={{ minHeight: '100vh', height: 'auto' }}>
           <div
             ref={containerRef}
-            className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
+            className="w-full friendLink_wrap bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
               className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
@@ -252,8 +252,10 @@ export default function About({
               Investors & Partners
             </div>
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
-              <ul className="max-sm:gap-[1rem] max-sm:grid-cols-3 gap-[2.38rem] grid grid-cols-5">
+              <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
+                  if (index === 5) return;
+
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
                       <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />

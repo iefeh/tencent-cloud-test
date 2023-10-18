@@ -4,11 +4,15 @@ import myImg from 'img/astrark/school/mystery_circle.png';
 import itemImg from 'img/astrark/school/mystery_item.png';
 import closeImg from 'img/astrark/close.png';
 
-export default function Mystery() {
+interface Props {
+  className?: string;
+}
+
+export default function Mystery(props: Props) {
   const [textVisible, setTextVisible] = useState(true);
 
   return (
-    <div className="mystery absolute left-[4.75rem] bottom-[6.4375rem] flex items-center">
+    <div className={"mystery flex items-center " + (props.className || '')}>
       <div
         className="flex justify-center items-center w-[6.125rem] h-[6.1875rem] relative z-10"
         onClick={() => setTextVisible(!textVisible)}
