@@ -93,7 +93,7 @@ export default function Header() {
                     onClick={() => setLoginVisible(true)}
                 />
 
-                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[4rem] h-[4rem]" /> : <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[4rem] h-[4rem]" /> }
+                {listOpen ? <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[3rem] h-[3rem]" /> : <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[3rem] h-[3rem]" /> }
             </div>
             
             
