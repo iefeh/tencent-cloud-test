@@ -21,7 +21,7 @@ export default function Home() {
     const y = window.luxy.getWrapperTranslateY();
     const screenHeight = document.documentElement.clientHeight;
     const fs8 = (parseInt(document.documentElement.style.fontSize) || 16) * 8;
-    maskRef.current.style.transform = `translate3d(0, ${screenHeight + fs8 - y * (1.3 + fs8 / screenHeight)}px, 0)`;
+    maskRef.current.style.transform = `translate3d(0, ${screenHeight + fs8 - y * (0.6 + fs8 / screenHeight)}px, 0)`;
     rafId.current = requestAnimationFrame(setLuxyFixed);
   }
 
@@ -65,7 +65,7 @@ export default function Home() {
 
       <StarScreen />
 
-      <div ref={maskRef} className="swiper-mask absolute left-0 top-0 w-full h-[130vh] translate-y-[100vh] z-20"></div>
+      <div ref={maskRef} className="swiper-mask absolute left-0 top-0 w-full h-[60vh] translate-y-[calc(100vh_+_8rem)] z-20"></div>
     </section>
   );
 }
