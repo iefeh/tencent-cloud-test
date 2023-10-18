@@ -173,7 +173,9 @@ export default function App({ Component, pageProps }: AppProps) {
     document.documentElement.style.fontSize = `${fontSize}px`;
 
     const ratio = window.devicePixelRatio;
-    setScale((1 / ratio).toFixed(2));
+    if (/windows|win32|win64|wow32|wow64/g.test(navigator.userAgent.toLowerCase())) {
+      setScale((1 / ratio).toFixed(2));
+    }
   }
 
   useEffect(() => {
@@ -204,7 +206,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
     import('luxy.js').then((res) => {
       if (!res.default) return;
-      
+
       window.luxy = res.default;
       window.luxy.getWrapperTranslateY = function() {
         const { transform } = this.wrapper.style;
@@ -254,7 +256,7 @@ export default function App({ Component, pageProps }: AppProps) {
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
           })(window,document,'script','https://www.googletagmanager.com/gtag/js?id=G-S033BWR07Y','ga');
- 
+
           window.dataLayer = window.dataLayer || [];
           function gtag() {
             dataLayer.push(arguments);
