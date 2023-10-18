@@ -40,10 +40,15 @@ export default function Header() {
         return temp || '/';
     }
 
-    function onLinkClick() {
-        window.luxy.disable();
-        window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
-        window.luxy.enable();
+    function onLinkClick(path: string) {
+        router.push(path);
+        try {
+            window.luxy.disable();
+            window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
+            window.luxy.enable();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -57,16 +62,15 @@ export default function Header() {
                     />
                 </Link>
             </div>
-            <div className="font-semakin max-lg:hidden">
+            <div className="font-semakin flex items-center max-lg:hidden">
                 {routeText.map((value, index) => (
-                    <Link
-                        className={`m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'} text-[22px] ml-8`}
+                    <div
+                        className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'} text-[22px] ml-8`}
                         key={index}
-                        href={value.route}
-                        onClick={onLinkClick}
+                        onClick={() => onLinkClick(value.route)}
                     >
                         {value.name}
-                    </Link>
+                    </div>
                 ))}
             </div>
 
