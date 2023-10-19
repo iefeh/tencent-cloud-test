@@ -6,9 +6,10 @@ import mBG from 'img/astrark/school/bg_mechanoid.jpg';
 import sBG from 'img/astrark/school/bg_spiritual.jpg';
 import nBG from 'img/astrark/school/bg_natural.jpg';
 import { Sketch } from '@/hooks/sketch';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import { throttle } from 'lodash';
 
 export default function SchoolDesc() {
   const [width, setWidth] = useState(0);
@@ -18,11 +19,13 @@ export default function SchoolDesc() {
   const sketch = useRef<Sketch>();
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isTouchedBottom, setIsTouchedBottom] = useState(false);
+  const swiperRef = useRef<SwiperClass>();
 
+  const throttleSetIisTouchedBottom = throttle((isTB: boolean) => setIsTouchedBottom(isTB), 1000);
   function onLuxyScroll() {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
     const isTB = scrollTop === scrollHeight - clientHeight;
-    setIsTouchedBottom(isTB);
+    throttleSetIisTouchedBottom(isTB);
   }
 
   useEffect(() => {
@@ -101,10 +104,37 @@ export default function SchoolDesc() {
     setHeight(window.innerHeight);
   }
 
-  function onIconClick(index: number) {
-    if (index === activeIndex || sketch.current?.isRunning) return;
+  function switchSketch(index: number) {
+    if (activeIndex === 0 && isTouchedBottom) {
+      document.documentElement.style.overflow = 'hidden';
+    }
+    if (activeIndex === 1 && index === 0) {
+      setTimeout(() => {
+        document.documentElement.style.overflow = 'unset';
+      }, 1000);
+    }
     setActiveIndex(index);
     sketch.current?.jumpTo(index);
+    swiperRef.current?.slideTo(index, 0);
+  }
+
+  function onIconClick(index: number) {
+    if (index === activeIndex || sketch.current?.isRunning) return;
+    switchSketch(index);
+  }
+
+  const changeBySwiper = throttle((index: number) => {
+    const nextIndex = (activeIndex + (index > activeIndex ? 1 : -1) + swipers.length) % swipers.length;
+    switchSketch(nextIndex);
+  }, 500);
+
+  function onSlideChange(index: number) {
+    if (index === activeIndex || sketch.current?.isRunning) return;
+    changeBySwiper(index);
+  }
+
+  function onSwiperWheel(e: WheelEvent) {
+    e.stopPropagation();
   }
 
   useLayoutEffect(() => {
@@ -156,14 +186,18 @@ export default function SchoolDesc() {
         </SwitchTransition>
       </div>
 
-      <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-10">
+      <div
+        className="absolute left-0 top-0 w-full h-screen overflow-hidden z-10"
+        onWheel={(e) => onSwiperWheel(e as any)}
+      >
         <Swiper
           modules={[Mousewheel]}
           slidesPerView={1}
-          speed={1200}
-          mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true }}
+          speed={0}
+          mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true, thresholdTime: 1200 }}
           direction="horizontal"
-          onActiveIndexChange={(swiper) => onIconClick(swiper.activeIndex)}
+          onInit={(swiper) => (swiperRef.current = swiper)}
+          onActiveIndexChange={(swiper) => onSlideChange(swiper.realIndex)}
         >
           {swipers.map((swiper, index) => (
             <SwiperSlide key={index}>
