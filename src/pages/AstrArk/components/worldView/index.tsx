@@ -20,8 +20,26 @@ const WorldView: React.FC = () => {
       <PageDesc
         hasBelt
         title="What happened..."
-        subtitle='A mysterious object offering infinite energy has reshaped<br/> our world. As humanity studies its enigmatic nature,<br/> humanity finds itself enslaved by the object while<br/> averting energy shortages.
-        <br/><br/>But when it vanished, chaos ensued. Nations crumbled, and<br/> it was called the "End Times."'
+        subtitle={
+          <div className="title text-lg font-decima mb-10 tracking-tighter">
+            <span className="max-md:inline-block hidden">
+              A mysterious object offering infinite energy has reshaped our world. As humanity studies its enigmatic
+              nature, humanity finds itself enslaved by the object while averting energy shortages. But when it
+              vanished, chaos ensued. Nations crumbled, and it was called the &quot;End Times.&quot;
+            </span>
+
+            <span className="max-md:hidden">
+              A mysterious object offering infinite energy has reshaped
+              <br /> our world. As humanity studies its enigmatic nature,
+              <br /> humanity finds itself enslaved by the object while
+              <br /> averting energy shortages.
+              <br />
+              <br />
+              But when it vanished, chaos ensued. Nations crumbled, and
+              <br /> it was called the &quot;End Times.&quot;
+            </span>
+          </div>
+        }
       />
     </>
   );
@@ -29,7 +47,15 @@ const WorldView: React.FC = () => {
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
       <div
-        className="luxy-el w-full h-[calc(100vh_+_400px)] flex justify-center items-center max-md:hidden"
+        className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center big:flex hidden p-8"
+        data-speed-y="8"
+        data-offset="-400"
+      >
+        {Content}
+      </div>
+
+      <div
+        className="luxy-el w-full h-[calc(100vh_+_400px)] flex justify-center items-center max-md:hidden p-8"
         data-speed-y="8"
         data-offset="-300"
       >
@@ -37,7 +63,7 @@ const WorldView: React.FC = () => {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_200px)] justify-center items-center max-md:flex hidden"
+        className="luxy-el w-full h-[calc(100vh_+_200px)] justify-center items-center max-md:flex hidden p-8"
         data-speed-y="2"
         data-offset="-100"
       >

@@ -133,7 +133,7 @@ export default function About({
         modules={[Mousewheel, FreeMode]}
         onScroll={onSlideScrollWrapper}
         freeMode={true}
-        slidesPerView={1}
+        slidesPerView="auto"
         onSwiper={setSwiperWrapper}
       >
         <SwiperSlide>
@@ -200,7 +200,11 @@ export default function About({
               onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
-              <SwiperSlide ><EntertainmentSlide needAni={true} /></SwiperSlide>
+              <SwiperSlide>
+                <EntertainmentSlide needAni={true} />
+
+                <div className="mask absolute left-[80vw] top-0 h-screen w-[40vw]"></div>
+              </SwiperSlide>
               <SwiperSlide style={{ width: 'auto' }}><div className="w-[36vw] h-full"></div></SwiperSlide>
               {figureArray.map((figureData, index) => {
                 return (
@@ -239,23 +243,25 @@ export default function About({
             </div>
           </div>
         </SwiperSlide>
-        <SwiperSlide>
+        <SwiperSlide style={{ minHeight: '100vh', height: 'auto' }}>
           <div
             ref={containerRef}
-            className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
+            className="w-full friendLink_wrap bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
+              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
                 isVisiable && 'slideInAnim'
               }`}
             >
               Investors & Partners
             </div>
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
-              <ul className="gap-[2.38rem] grid grid-cols-5">
+              <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
+                  if (index === 5) return;
+
                   return (
-                    <li key={index} className="w-[11.25rem] h-[5.53rem] relative">
+                    <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
                       <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />
                     </li>
                   );
