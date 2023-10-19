@@ -55,7 +55,7 @@ const WorldView: React.FC = () => {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_400px)] justify-center items-center min-[768px]:flex hidden p-8"
+        className="luxy-el w-full h-[calc(100vh_+_400px)] justify-center items-center min-[768px]:max-[2560px]:flex hidden p-8"
         data-speed-y="8"
         data-offset="-300"
       >
