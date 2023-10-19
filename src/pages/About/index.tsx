@@ -40,7 +40,7 @@ const figureArray: Figure[] = [
   },
   {
     img: JW,
-    name: 'J.W',
+    name: 'Jason',
     subTitle: 'COO',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
@@ -56,7 +56,7 @@ const figureArray: Figure[] = [
     subTitle: 'Executive Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
-  <p>- Formerly Head of two game studios of Tencent family</p>
+  <p>- Formerly Head of a game studio of the Tecent family</p>
   <p>- Bacon evangelist</p>
   <p>- Sarcastic Master</p>
   <p>- Foe of Fats for Life</p>
@@ -258,7 +258,7 @@ export default function About({
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
               <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
-                  if (index === 5) return;
+                  if (index === 10) return;
 
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">

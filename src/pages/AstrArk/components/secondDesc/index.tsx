@@ -51,7 +51,7 @@ export default function WorldView() {
 
   return (
     <div className="second-desc h-screen relative bg-black shadow-[0_-300px_300px_100px_#000]">
-      <div className="w-full h-full flex justify-center items-center p-12">
+      <div className="w-full h-full flex justify-center items-center p-48">
         <PageDesc
           ref={descRef}
           needAni={visible}

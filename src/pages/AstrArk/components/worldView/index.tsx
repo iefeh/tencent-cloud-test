@@ -19,7 +19,7 @@ const WorldView: React.FC = () => {
 
       <PageDesc
         hasBelt
-        title="What happened..."
+        title={<div className='title text-[6.25rem] uppercase font-semakin mb-4 max-md:text-6xl'>What happened...</div>}
         subtitle={
           <div className="title text-lg font-decima mb-10 tracking-tighter">
             <span className="max-md:inline-block hidden">

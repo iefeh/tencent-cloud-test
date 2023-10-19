@@ -43,7 +43,7 @@ export default function SchoolDesc() {
     },
     {
       name: 'spiritual',
-      homeplanet: 'aoen',
+      homeplanet: 'aeon',
       bg: sBG,
     },
     {
