@@ -59,6 +59,9 @@ import sponsor_22 from 'img/about/22.png';
 import Head from 'next/head';
 import { LUXY_OPTIONS } from '@/constant/luxy';
 import Script from 'next/script';
+import astrark_bg_home from 'img/astrark/bg-home.jpg';
+import astrark_bg_mask from 'img/astrark/bg-mask.png';
+import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -119,7 +122,14 @@ async function initResources(path: string) {
       );
       break;
     case '/astrark':
-      promises.push(loadVideo('/video/astrark.mp4'));
+      promises.push(
+        ...[
+          astrark_bg_home.src,
+          astrark_bg_mask.src,
+          astrark_bg_world_view.src,
+        ].map((path) => loadImage(path)),
+      );
+      // promises.push(loadVideo('/video/astrark.mp4'));
       break;
   }
 
@@ -138,10 +148,6 @@ function loadImage(path: string) {
       resolve(true);
     };
   });
-}
-
-function delay(timeout: number) {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
 function loadVideo(path: string) {
