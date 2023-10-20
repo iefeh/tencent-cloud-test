@@ -26,19 +26,30 @@ export default function Sidebar({ visible, onClose }: Props) {
     return temp || '/';
   }
 
+  function onLinkClick(path: string) {
+    try {
+        window.luxy.disable();
+        router.push(path);
+        window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
+        window.luxy.enable();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
   return createPortal(
     <div onClick={onClose} className="sidebar max-sm:pt-[80px] max-sm:justify-around max-lg:flex fixed left-0 top-0 w-full h-screen bg-black z-30 flex flex-col">
       <div className="content flex-1 flex flex-col font-semakin text-center items-center justify-center">
         {routeText.map((value, index) => (
-          <Link
+          <div
             className={`max-md:leading-[5.5rem] m-2 transition-all duration-300 hover:text-[#F6C799] text-5xl leading-[7.5rem] ${
               LoginSegments() === value.route && 'text-[#F6C799]'
             }`}
             key={index}
-            href={value.route}
+            onClick={() => onLinkClick(value.route)}
           >
             {value.name}
-          </Link>
+          </div>
         ))}
       </div>
 
