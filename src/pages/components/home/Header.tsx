@@ -54,13 +54,13 @@ export default function Header() {
     return (
         <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
             <div className="flex-[1]">
-                <Link href="/">
+                <div onClick={() => onLinkClick('/')}>
                     <Image
                         className="w-[135px] h-[80px]"
                         src={logo}
                         alt="Picture of the author"
                     />
-                </Link>
+                </div>
             </div>
             <div className="font-semakin flex items-center max-lg:hidden">
                 {routeText.map((value, index) => (

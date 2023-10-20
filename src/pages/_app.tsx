@@ -123,11 +123,7 @@ async function initResources(path: string) {
       break;
     case '/astrark':
       promises.push(
-        ...[
-          astrark_bg_home.src,
-          astrark_bg_mask.src,
-          astrark_bg_world_view.src,
-        ].map((path) => loadImage(path)),
+        ...[astrark_bg_home.src, astrark_bg_mask.src, astrark_bg_world_view.src].map((path) => loadImage(path)),
       );
       // promises.push(loadVideo('/video/astrark.mp4'));
       break;
@@ -172,7 +168,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
-    const fontSize = Math.max(16 * width / 1920, 12);
+    const fontSize = Math.max((16 * width) / 1920, 12);
     document.documentElement.style.fontSize = `${fontSize}px`;
 
     const ratio = window.devicePixelRatio;
@@ -211,20 +207,24 @@ export default function App({ Component, pageProps }: AppProps) {
       if (!res.default) return;
 
       window.luxy = res.default;
-      window.luxy.getWrapperTranslateY = function() {
+      window.luxy.getWrapperTranslateY = function () {
         const { transform } = this.wrapper.style;
         const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
         return -y || 0;
-      }
-      window.luxy.disable = function() {
+      };
+      window.luxy.disable = function () {
         const { resizeId, scrollId } = this;
         cancelAnimationFrame(resizeId);
         cancelAnimationFrame(scrollId);
         this.disabled = true;
       };
-      window.luxy.enable = function() {
+      window.luxy.enable = function () {
         this.wapperOffset = this.getWrapperTranslateY();
-        this.init(LUXY_OPTIONS);
+        try {
+          this.init(LUXY_OPTIONS);
+        } catch (error) {
+          console.log(error);
+        }
         this.disabled = false;
       };
       window.luxy.disable();
