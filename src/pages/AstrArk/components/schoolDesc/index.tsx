@@ -150,6 +150,10 @@ export default function SchoolDesc() {
     initSketch();
   }, []);
 
+  useEffect(() => {
+    return () => { document.documentElement.style.overflow = 'unset' };
+  }, []);
+
   return (
     <section className="school-desc w-full h-screen relative overflow-hidden">
       <div ref={bgContainerRef} className="w-full h-full"></div>
