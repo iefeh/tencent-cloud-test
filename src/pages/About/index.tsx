@@ -56,7 +56,7 @@ const figureArray: Figure[] = [
     subTitle: 'Executive Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
-  <p>- Formerly Head of a game studio of the Tecent family</p>
+  <p>- Formerly Head of a game studio of the Tencent family</p>
   <p>- Bacon evangelist</p>
   <p>- Sarcastic Master</p>
   <p>- Foe of Fats for Life</p>
