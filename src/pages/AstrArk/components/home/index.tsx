@@ -101,6 +101,7 @@ const AstrarkHome: React.FC<Props> = (props) => {
           muted
           loop
           preload="auto"
+          poster="/img/astrark/bg-home.jpg"
         >
           <source src="/video/astrark.mp4" />
         </video>
