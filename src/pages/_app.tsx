@@ -150,13 +150,11 @@ function loadVideo(path: string) {
   video.style.display = 'none';
   document.body.appendChild(video);
 
-  return new Promise(async (resolve) => {
-    while (video.readyState !== 4) {
-      await delay(100);
-    }
-
-    document.body.removeChild(video);
-    resolve(true);
+  return new Promise((resolve) => {
+    video.addEventListener('canplay', () => {
+      document.body.removeChild(video);
+      resolve(true);
+    });
   });
 }
 
@@ -195,7 +193,7 @@ export default function App({ Component, pageProps }: AppProps) {
       setResLoading(false);
       initResources('/');
       initResources('/ntf');
-      await initResources('/about');
+      initResources('/about');
     });
   }, []);
 

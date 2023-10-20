@@ -11,6 +11,7 @@ const WorldView: React.FC = () => {
         muted
         loop
         preload="auto"
+        poster="/img/astrark/bg-world-view.jpg"
       >
         <source src="/video/meteorite.mp4" />
       </video>
