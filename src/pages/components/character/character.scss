@@ -1,0 +1,104 @@
+.character {
+  width: 133.2vw; 
+  transform: translateX(-15vw);
+}
+.desc-box {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+  z-index: 60;
+  width: 0;
+  height: 0;
+  box-shadow: 0 0 30rem 30rem rgba(0, 0, 0, 0.4);
+}
+.character-warp {
+  --skew-deg: -22deg;
+  --skew-re-deg: 22deg;
+  --translate-y: -1vw;
+
+  position: relative;
+  height: 100vh;
+  transform: skewX(var(--skew-deg));
+  overflow: hidden;
+
+  .character-bg-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 240%;
+    height: 200%;
+    transform:skewX(var(--skew-re-deg));
+  }
+
+  .character-img {
+    position: absolute;
+    right: 0;
+    bottom: -2vw;
+    width: 33.3vw;
+    transform: scale(1.8) skewX(var(--skew-re-deg)) translateX(7vw);
+    transition: all 0.5s;
+    &:hover {
+      transform: scale(2.1) skewX(var(--skew-re-deg)) translateX(7vw) translateY(var(--translate-y));
+    }
+  }
+
+  .character-img-last{
+    transform: scale(1.8) skewX(var(--skew-re-deg)) !important;
+    &:hover {
+      transform: scale(2.1) skewX(var(--skew-re-deg)) translateY(var(--translate-y))!important;
+    }
+  }
+
+  .scale-img {
+    transform: scale(2.3) skewX(var(--skew-re-deg)) translateX(7vw) !important;
+    &:hover {
+      transform: scale(2.5) skewX(var(--skew-re-deg)) translateX(7vw) translateY(var(--translate-y))!important;
+    }
+  }
+
+  .hero-name {
+    position: absolute;
+    bottom: 40px;
+    left: 70%;
+    font-size: 14px;
+    // color: #fff;
+    color: #f6c799;
+    transform: skewX(var(--skew-re-deg));
+    font-family: decima;
+    opacity: 0.8;
+  }
+
+  .hero-name-last {
+    left: 55%;
+  }
+
+  &:nth-child(2) {
+    .character-bg-box {
+      left: 12vw !important;
+    }
+  }
+
+  &:nth-child(3) {
+    .character-img  {
+      right: 8vw !important;
+    }
+  }
+
+  &:nth-child(4) {
+    .character-bg-box {
+      left: -4vw !important;
+    }
+
+    .character-img  {
+      right: 8vw !important;
+    }
+  }
+
+  &:nth-child(5) {
+    .character-bg-box {
+      left: -8vw !important;
+    }
+  }
+}
+
