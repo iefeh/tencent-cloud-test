@@ -27,7 +27,7 @@ const figureArray: Figure[] = [
     img: MJ,
     name: 'M.J',
     subTitle: 'CEO',
-    introduce: `<div class="text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- 10-year game dev & publishing experience</p>
   <p>- Lifetime hardcore gamer, Starcraft pro</p>
@@ -40,9 +40,9 @@ const figureArray: Figure[] = [
   },
   {
     img: JW,
-    name: 'J.W',
+    name: 'Jason',
     subTitle: 'COO',
-    introduce: `<div class="text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- Ex-pro player，lifetime hardcore gamer</p>
   <p>- Traveller on earth, also from Azeroth to Dragon isles</p>
@@ -54,9 +54,9 @@ const figureArray: Figure[] = [
     img: MasonZ,
     name: 'Mason Z',
     subTitle: 'Executive Producer',
-    introduce: `<div class="text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
-  <p>- Formerly Head of two game studios of Tencent family</p>
+  <p>- Formerly Head of a game studio of the Tencent family</p>
   <p>- Bacon evangelist</p>
   <p>- Sarcastic Master</p>
   <p>- Foe of Fats for Life</p>
@@ -66,7 +66,7 @@ const figureArray: Figure[] = [
     img: RobinZ,
     name: 'Robin Z',
     subTitle: 'Web 3 Producer',
-    introduce: `<div class="text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Defi project builder</p>
   <p>- Crypto native since 2014</p>
   <p>- 7 years full-stack mobile-game dev & production experience</p>
@@ -79,7 +79,7 @@ const figureArray: Figure[] = [
     img: PuffZ,
     name: 'Puff Z',
     subTitle: 'Art Director',
-    introduce: `<div class="text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 8 years Chief Gaming Companion experience</p>
   <p>- Discerning taste, unique aesthetics, and keen insight into players' psychology</p>
   <p>- Tree-climbing Pro</p>
@@ -203,19 +203,20 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] flex flex-col max-sm:hidden bg-black ${open ? 'referralInAnim' : 'referralOutAnim'
-                } ${open === null ? 'hidden' : ''}`}
+              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${
+                open ? 'referralInAnim' : 'referralOutAnim'
+              } ${open === null ? 'hidden' : ''}`}
             >
               <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
-                <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem]">
+                <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem] max-md:pl-8 max-md:pr-4 max-md:w-full">
                   <PageDesc
                     hasBelt
-                    className="character-desc text-left whitespace-nowrap"
+                    className="character-desc text-left whitespace-nowrap max-md:whitespace-normal"
                     title={`<span>${curFigure?.name}</span><br><span class="text-[#666]" >${curFigure?.subTitle}</span>`}
                     subtitle={curFigure?.introduce}
                   />
                 </div>
-                <div className="w-1/2 flex items-end justify-center">
+                <div className="w-1/2 flex items-end justify-center max-md:hidden">
                   <Image
                     className="object-cover w-[40rem] h-[40.75rem]"
                     src={curFigure?.img!}
@@ -320,7 +321,7 @@ export default function About({
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
               <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
-                  if (index === 5) return;
+                  if (index === 10) return;
 
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">

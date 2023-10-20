@@ -78,7 +78,12 @@ export class Sketch {
   }
 
   resize() {
+    const { clientWidth } = document.documentElement;
     this.width = this.container.offsetWidth;
+    if (clientWidth <= 768) {
+      this.width *= 2;
+      this.camera.position.set(0.5, 0, 2);
+    }
     this.height = this.container.offsetHeight;
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;

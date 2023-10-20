@@ -3,7 +3,7 @@ import PageDesc from "../common/PageDesc";
 export default function SloganDescScreen() {
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      <div className="absolute left-[56.35%] top-[43.7%]">
+      <div className="absolute left-[56.35%] top-[43.7%] max-md:left-[30%]">
         <PageDesc
           className="items-start text-left"
           hasBelt

@@ -18,7 +18,6 @@ import './NFT/components/home.scss';
 import './AstrArk/components/schoolDesc/index.scss';
 import './AstrArk/components/school/Mystery/index.scss';
 import './AstrArk/components/school/SchoolIcons/index.scss';
-import './AstrArk/components/worldView/index.scss';
 import homePlanetBg from 'img/home/planet.png';
 import loadingImg from 'img/loading/bg_moon.png';
 import ntf_halo1 from 'img/nft/home/halo1.png';
