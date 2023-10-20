@@ -14,7 +14,7 @@ import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
 import EntertainmentSlide from "../components/home/EntertainmentSlide";
-import { scrollRef, scrollStart } from "./scroll";
+import { scrollRef, scrollStart } from "../../hooks/scroll";
 
 interface Figure {
   img: StaticImageData;
