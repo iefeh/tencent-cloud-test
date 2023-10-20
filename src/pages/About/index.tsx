@@ -8,7 +8,7 @@ import RobinZ from "img/about/4@2x.png";
 import PuffZ from "img/about/5@2x.png";
 import leftArrows from "img/about/arrow_1.png";
 import rightArrows from "img/about/arrow_2.png";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
@@ -99,6 +99,7 @@ export default function About({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const containerRef = useRef(null);
+  const wheelRef = useRef({ scrollSpeed: 0, lastTime: 0, lastScrollTop: 0 });
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
   const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
   const [open, setOpen] = useState<boolean | null>(null);
@@ -106,6 +107,25 @@ export default function About({
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
   function onSlideScrollWrapper(swiper: SwiperClass, event: WheelEvent) {
+    const { lastTime, scrollSpeed } = wheelRef.current
+    // 获取当前时间
+    const currentTime = new Date().getTime();
+
+    // 计算时间差
+    const timeDiff = currentTime - lastTime;
+
+    // 计算滚动速度
+    if (timeDiff < 200) {
+      wheelRef.current.scrollSpeed += event.deltaY * 0.01;
+    } else {
+      wheelRef.current.scrollSpeed = event.deltaY * 0.01;
+    }
+
+    // 更新最后滚动时间
+    wheelRef.current.lastTime = currentTime;
+
+    // 开始滚动动画
+    requestAnimationFrame(scroll);
     if (swiper.translate === 0) {
       swiperFigure?.mousewheel.enable();
     } else {
@@ -114,10 +134,49 @@ export default function About({
   }
 
   function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
+    const { lastTime, scrollSpeed } = wheelRef.current
+    // 获取当前时间
+    const currentTime = new Date().getTime();
+
+    // 计算时间差
+    const timeDiff = currentTime - lastTime;
+
+    // 计算滚动速度
+    if (timeDiff < 200) {
+      wheelRef.current.scrollSpeed += event.deltaY * 0.01;
+    } else {
+      wheelRef.current.scrollSpeed = event.deltaY * 0.01;
+    }
+
+    // 更新最后滚动时间
+    wheelRef.current.lastTime = currentTime;
+
+    // 开始滚动动画
+    requestAnimationFrame(scroll);
     if (swiper.isEnd) {
       swiperWrapper?.mousewheel.enable();
     } else {
       swiperWrapper?.mousewheel.disable();
+    }
+  }
+
+  function scroll() {
+    const { lastScrollTop, scrollSpeed } = wheelRef.current
+    // 计算新的滚动位置
+    const newScrollTop = lastScrollTop - scrollSpeed;
+
+    // 滚动页面
+    window.scrollTo(0, newScrollTop);
+
+    // 减小滚动速度，模拟惯性效果
+    wheelRef.current.scrollSpeed *= 0.95;
+
+    // 更新最后滚动位置
+    wheelRef.current.lastScrollTop = newScrollTop;
+
+    // 如果滚动速度足够小，就停止动画
+    if (Math.abs(scrollSpeed) > 0.05) {
+      requestAnimationFrame(scroll);
     }
   }
 
@@ -139,9 +198,8 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] flex flex-col max-sm:hidden bg-black ${
-                open ? 'referralInAnim' : 'referralOutAnim'
-              } ${open === null ? 'hidden' : ''}`}
+              className={`absolute w-full h-screen z-[2] flex flex-col max-sm:hidden bg-black ${open ? 'referralInAnim' : 'referralOutAnim'
+                } ${open === null ? 'hidden' : ''}`}
             >
               <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
                 <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem]">
@@ -249,9 +307,8 @@ export default function About({
             className="w-full friendLink_wrap bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
-                isVisiable && 'slideInAnim'
-              }`}
+              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'
+                }`}
             >
               Investors & Partners
             </div>
