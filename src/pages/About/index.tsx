@@ -14,6 +14,7 @@ import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
 import EntertainmentSlide from "../components/home/EntertainmentSlide";
+import { scrollRef, scrollStart } from "./scroll";
 
 interface Figure {
   img: StaticImageData;
@@ -99,7 +100,9 @@ export default function About({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const containerRef = useRef(null);
-  const wheelRef = useRef({ scrollSpeed: 0, lastTime: 0, lastScrollTop: 0 });
+  const wheelRef = useRef({ scrollSpeed: 0, lastTime: 0, lastScrollTop: 0, cancelId: 0, lastScrollRight: 0 });
+  const transverseRef = useRef<scrollRef>({ lastTime: 0, scrollSpeed: 0, cancelId: 0, lastScroll: 0 });
+  const longitudinalRef = useRef<scrollRef>({ lastTime: 0, scrollSpeed: 0, cancelId: 0, lastScroll: 0 });
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
   const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
   const [open, setOpen] = useState<boolean | null>(null);
@@ -107,25 +110,8 @@ export default function About({
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
   function onSlideScrollWrapper(swiper: SwiperClass, event: WheelEvent) {
-    const { lastTime, scrollSpeed } = wheelRef.current
-    // 获取当前时间
-    const currentTime = new Date().getTime();
+    scrollStart(event, longitudinalRef, swiper);
 
-    // 计算时间差
-    const timeDiff = currentTime - lastTime;
-
-    // 计算滚动速度
-    if (timeDiff < 200) {
-      wheelRef.current.scrollSpeed += event.deltaY * 0.01;
-    } else {
-      wheelRef.current.scrollSpeed = event.deltaY * 0.01;
-    }
-
-    // 更新最后滚动时间
-    wheelRef.current.lastTime = currentTime;
-
-    // 开始滚动动画
-    requestAnimationFrame(scroll);
     if (swiper.translate === 0) {
       swiperFigure?.mousewheel.enable();
     } else {
@@ -134,25 +120,8 @@ export default function About({
   }
 
   function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
-    const { lastTime, scrollSpeed } = wheelRef.current
-    // 获取当前时间
-    const currentTime = new Date().getTime();
+    scrollStart(event, transverseRef, swiper);
 
-    // 计算时间差
-    const timeDiff = currentTime - lastTime;
-
-    // 计算滚动速度
-    if (timeDiff < 200) {
-      wheelRef.current.scrollSpeed += event.deltaY * 0.01;
-    } else {
-      wheelRef.current.scrollSpeed = event.deltaY * 0.01;
-    }
-
-    // 更新最后滚动时间
-    wheelRef.current.lastTime = currentTime;
-
-    // 开始滚动动画
-    requestAnimationFrame(scroll);
     if (swiper.isEnd) {
       swiperWrapper?.mousewheel.enable();
     } else {
@@ -160,30 +129,18 @@ export default function About({
     }
   }
 
-  function scroll() {
-    const { lastScrollTop, scrollSpeed } = wheelRef.current
-    // 计算新的滚动位置
-    const newScrollTop = lastScrollTop - scrollSpeed;
 
-    // 滚动页面
-    if (swiperFigure?.mousewheel.enabled){
-      swiperFigure.setTranslate(newScrollTop);
-    } else {
-      swiperWrapper?.setTranslate(newScrollTop);
+
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      cancelAnimationFrame(wheelRef.current.cancelId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      cancelAnimationFrame(transverseRef.current.cancelId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      cancelAnimationFrame(longitudinalRef.current.cancelId);
     }
-    //  window.scrollTo(0, newScrollTop);
-
-    // 减小滚动速度，模拟惯性效果
-    wheelRef.current.scrollSpeed *= 0.95;
-
-    // 更新最后滚动位置
-    wheelRef.current.lastScrollTop = newScrollTop;
-
-    // 如果滚动速度足够小，就停止动画
-    if (Math.abs(scrollSpeed) > 0.05) {
-      requestAnimationFrame(scroll);
-    }
-  }
+  }, [])
 
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
@@ -203,9 +160,8 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${
-                open ? 'referralInAnim' : 'referralOutAnim'
-              } ${open === null ? 'hidden' : ''}`}
+              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${open ? 'referralInAnim' : 'referralOutAnim'
+                } ${open === null ? 'hidden' : ''}`}
             >
               <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
                 <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem] max-md:pl-8 max-md:pr-4 max-md:w-full">
