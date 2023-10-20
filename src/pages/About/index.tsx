@@ -166,7 +166,12 @@ export default function About({
     const newScrollTop = lastScrollTop - scrollSpeed;
 
     // 滚动页面
-    window.scrollTo(0, newScrollTop);
+    if (swiperFigure?.mousewheel.enabled){
+      swiperFigure.setTranslate(newScrollTop);
+    } else {
+      swiperWrapper?.setTranslate(newScrollTop);
+    }
+    //  window.scrollTo(0, newScrollTop);
 
     // 减小滚动速度，模拟惯性效果
     wheelRef.current.scrollSpeed *= 0.95;
