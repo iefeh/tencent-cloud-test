@@ -100,7 +100,6 @@ export default function About({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const containerRef = useRef(null);
-  const wheelRef = useRef({ scrollSpeed: 0, lastTime: 0, lastScrollTop: 0, cancelId: 0, lastScrollRight: 0 });
   const transverseRef = useRef<scrollRef>({ lastTime: 0, scrollSpeed: 0, cancelId: 0, lastScroll: 0 });
   const longitudinalRef = useRef<scrollRef>({ lastTime: 0, scrollSpeed: 0, cancelId: 0, lastScroll: 0 });
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
@@ -133,8 +132,6 @@ export default function About({
 
   useEffect(() => {
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      cancelAnimationFrame(wheelRef.current.cancelId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       cancelAnimationFrame(transverseRef.current.cancelId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
