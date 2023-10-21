@@ -1,22 +1,21 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Pagination, Autoplay, Navigation } from 'swiper/modules';
 import IndexSlide from '../IndexSlide';
 import RaceSlide from '../RaceSlide';
 import EntertainmentSlide from '../EntertainmentSlide';
 import LimitedTestSlide from '../LimitedTestSlide';
 import YellowCircle from '../../common/YellowCircle';
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 
 export default function SwiperScreen() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [needAnis, setNeedAnis] = useState([true, false, false, false]);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
-  const swiperRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={swiperRef} className="swiper-screen w-full h-screen overflow-hidden z-20 relative ">
+    <div className="swiper-screen w-full h-screen overflow-hidden z-20 relative ">
       <Swiper
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
@@ -24,12 +23,16 @@ export default function SwiperScreen() {
         // 视频10s自动切换，图片5s自动切换
         // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
-        speed={1500}
+        speed={2000}
         slidesPerView={1}
-        onSlideChange={(swiper) => {
-          const pagi = document.querySelector('.home-swiper-pagination .pagi-active');
-          const index = Array.prototype.indexOf.call(pagi?.parentNode?.childNodes, pagi);
-          setActiveIndex(index);
+        onSlideChangeTransitionStart={(swiper) => {
+          const list = [...needAnis];
+          list[swiper.realIndex] = true;
+          setNeedAnis(list);
+        }}
+        onSlideChangeTransitionEnd={(swiper) => {
+          const list = needAnis.map((_, i) => i === swiper.realIndex);
+          setNeedAnis(list);
         }}
         navigation={{
           prevEl: navigationPrevRef.current,
@@ -57,11 +60,11 @@ export default function SwiperScreen() {
         </SwiperSlide> */}
 
         <SwiperSlide>
-          <RaceSlide needAni={activeIndex === 0} />
+          <RaceSlide needAni={needAnis[0]} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <EntertainmentSlide needAni={activeIndex === 1} />
+          <EntertainmentSlide needAni={needAnis[1]} />
         </SwiperSlide>
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
