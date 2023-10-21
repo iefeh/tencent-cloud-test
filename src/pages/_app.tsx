@@ -125,7 +125,6 @@ async function initResources(path: string) {
       promises.push(
         ...[astrark_bg_home.src, astrark_bg_mask.src, astrark_bg_world_view.src].map((path) => loadImage(path)),
       );
-      // promises.push(loadVideo('/video/astrark.mp4'));
       break;
   }
 

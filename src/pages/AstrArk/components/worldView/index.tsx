@@ -13,7 +13,7 @@ const WorldView: React.FC = () => {
         preload="auto"
         poster="/img/astrark/bg-world-view.jpg"
       >
-        <source src="/video/meteorite.mp4" />
+        <source src="/video/meteorite.webm" />
       </video>
 
       <div className="bg-black/30 absolute inset-0 z-0"></div>
