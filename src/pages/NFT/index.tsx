@@ -9,7 +9,7 @@ export default function Page({
     searchParams: { [key: string]: string | string[] | undefined }
   }) {
     return (
-      <section>
+      <section id="luxy" className="w-full flex flex-col z-10">
         <Head>
           <title>NFT | Moonveil</title>
         </Head>
