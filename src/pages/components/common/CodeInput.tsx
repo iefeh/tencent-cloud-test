@@ -1,0 +1,84 @@
+import { FormEvent, useRef, useState, MutableRefObject } from 'react';
+
+interface Props {
+  length?: number;
+  onChange?: (code: string) => void;
+  onComplete?: (code: string) => void;
+}
+
+const enum LoginStatus {
+  INPUT_EMAIL
+}
+
+export default function CodeInput(props: Props) {
+  const { length = 6, onComplete, onChange } = props;
+  const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(length).fill(null));
+  const [codes, setCodes] = useState(Array(length).fill(''));
+  const currentFocusIndex = useRef(-1);
+  const isFull = useRef(false);
+
+  function onFocus(index?: number) {
+    let targetIndex = index;
+    if (targetIndex === undefined) {
+      targetIndex = codes.findIndex((code) => !code);
+      if (targetIndex < 0) targetIndex = length - 1;
+    } else if (targetIndex < 0) {
+      targetIndex = 0;
+    }
+    if (currentFocusIndex.current === targetIndex) return;
+    currentFocusIndex.current = targetIndex;
+    inputRefs.current[targetIndex]?.focus();
+  }
+
+  function onKeyUp(e: KeyboardEvent, index: number, value: string) {
+    if (value || e.code.toUpperCase() !== 'BACKSPACE') return;
+    if (isFull.current) {
+      isFull.current = false;
+      return;
+    }
+    onFocus(index - 1);
+  }
+
+  function onInput(e: FormEvent<HTMLInputElement>, index: number, value: string) {
+    let newValue = (e.target as HTMLInputElement).value;
+    newValue = newValue[newValue.length - 1] || '';
+    const arr = codes.slice();
+    if (newValue !== '' && !/[0-9]/.test(newValue)) {
+      newValue = arr[index];
+    }
+
+    arr[index] = newValue;
+    if (newValue !== '') {
+      if (index < length - 1) {
+        onFocus(index + 1);
+      } else {
+        isFull.current = true;
+        onComplete?.(arr.join(''));
+      }
+    }
+    inputRefs.current[index]!.value = arr[index] || '';
+    setCodes(arr);
+    onChange?.(arr.join(''));
+  }
+
+  return (
+    <>
+      <span className="code-input inline-flex justify-between items-center w-full text-lg">
+        {codes.map((value, index) => (
+          <input
+            ref={(ref) => {
+              inputRefs.current[index] = ref;
+            }}
+            className="inline-block w-10 h-10 outline-none border-deep-yellow border-1 rounded text-center bg-basic-gray"
+            key={index}
+            type="text"
+            value={value}
+            onKeyUp={e => onKeyUp(e as any, index, value)}
+            onInput={(e) => onInput(e, index, value)}
+            onFocus={() => onFocus(index)}
+          />
+        ))}
+      </span>
+    </>
+  );
+}
