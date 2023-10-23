@@ -1,0 +1,16 @@
+@keyframes ani_breath {
+  0% {
+    transform: translate3d(0, -50%, 0) scale(0.2);
+  }
+  50% {
+    transform: translate3d(0, -50%, 0) scale(0.6);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0) scale(0.2);
+  }
+}
+
+.breath {
+  transform: translate3d(0, -50%, 0) scale(0.2);
+  animation: ani_breath 5s ease-in-out infinite;
+}
