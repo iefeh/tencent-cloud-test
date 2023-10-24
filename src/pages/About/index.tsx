@@ -274,7 +274,7 @@ export default function About({
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
               <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
-                  if (index === 10 || index === 5) return;
+                  if (index === 10) return;
 
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
