@@ -1,4 +1,6 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
+import {appendQueryParamToUrl} from "@/lib/utils/url";
+import {generateEmailHTML} from "@/lib/templates/captchat";
 
 export const sesClient = new SESClient({
     region: process.env.AWS_REGION,
@@ -8,8 +10,11 @@ export const sesClient = new SESClient({
     }
 });
 
-
-export const sendCaptchaEmail = async (toAddress: string, captcha: number) => {
+export const sendCaptchaEmail = async (toAddress: string, captcha: number, quickFillURL?: string) => {
+    if (!quickFillURL) {
+        quickFillURL = 'https://www.moonveil.gg/email/captcha/quickfill'
+    }
+    quickFillURL = appendQueryParamToUrl(quickFillURL, 'code', captcha);
     const createSendEmailCommand = (toAddress, fromAddress) => {
         return new SendEmailCommand({
             Destination: {
@@ -28,16 +33,12 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number) => {
                     /* required */
                     Html: {
                         Charset: "UTF-8",
-                        Data: `<b>Hello there, ${captcha}</b>`,
+                        Data: generateEmailHTML(captcha, quickFillURL),
                     },
-                    // Text: {
-                    //     Charset: "UTF-8",
-                    //     Data: "Hello world?",
-                    // },
                 },
                 Subject: {
                     Charset: "UTF-8",
-                    Data: "Login Verification",
+                    Data: "Verification Code",
                 },
             },
             Source: fromAddress,

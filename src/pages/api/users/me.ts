@@ -5,26 +5,20 @@ import * as response from "@/lib/response/response";
 import {redis} from "@/lib/redis/client";
 import User from "@/lib/models/User";
 import UserGoogle from "@/lib/models/UserGoogle";
+import {mustAuthInterceptor} from "@/lib/middleware/auth";
+import UserTwitter from "@/lib/models/UserTwitter";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.get(async (req, res) => {
-    const authorization = req.headers.authorization;
-    if (!authorization) {
-        res.json(response.unauthorized());
-        return;
-    }
-    const userId = await redis.get(`user_session:${authorization}`);
-    if (!userId) {
-        res.json(response.unauthorized());
-        return;
-    }
-
+router.use(mustAuthInterceptor).get(async (req, res) => {
+    const userId = req.userId;
     await connectMongo();
     const user = await User.findOne({'user_id': userId}, {_id: 0, __v: 0})
     const google = await UserGoogle.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})
+    const twitter = await UserTwitter.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})
     const entity = user.toObject();
     entity.google = google;
+    entity.twitter = twitter;
     res.json(response.success(entity));
 });
 
@@ -37,8 +31,6 @@ router.all((req, res) => {
 
 export default router.handler({
     onError(err, req, res) {
-        res.status(400).json({
-            error: (err as Error).message,
-        });
+        res.status(500).json(response.serverError());
     },
 });

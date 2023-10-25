@@ -1,4 +1,4 @@
-export function appendQueryParamToUrl(url: string, key: string, value: string): string {
+export function appendQueryParamToUrl(url: string, key: string, value: string | number | boolean): string {
     const delimiter = url.includes('?') ? '&' : '?';
     return `${url}${delimiter}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
 }

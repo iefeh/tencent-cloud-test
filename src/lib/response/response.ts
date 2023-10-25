@@ -24,8 +24,11 @@ const ResponseMessages = {
     [ResponseCode.ERROR_UNAUTHORIZED]: 'Unauthorized',
     [ResponseCode.ERROR_INVALID_PARAMS]: 'Invalid Parameter',
     [ResponseCode.ERROR_NOT_FOUND]: 'Not Found',
+    // 验证码失效，常见于验证码找不到
     [ResponseCode.ERROR_CAPTCHA_EXPIRED]: 'Captcha Expired',
+    // 验证码不匹配，常见于验证码校验
     [ResponseCode.ERROR_CAPTCHA_MISMATCH]: 'Captcha Mismatch',
+    // 授权拒绝，常见于Oauth2授权
     [ResponseCode.ERROR_AUTHORIZATION_DENIED]: 'Authorization Denied',
     // 添加响应码对应的msg
 }
