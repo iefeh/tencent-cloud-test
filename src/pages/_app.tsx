@@ -62,6 +62,7 @@ import Script from 'next/script';
 import astrark_bg_home from 'img/astrark/bg-home.jpg';
 import astrark_bg_mask from 'img/astrark/bg-mask.png';
 import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
+import usePostMessage from '@/hooks/usePostMessage';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -160,9 +161,11 @@ function loadVideo(path: string) {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
+  const whiteList = ['/email/captcha/quickfill'];
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [resLoading, setResLoading] = useState(true);
+  const isInWhiteList = whiteList.includes(router.route);
+  const [loading, setLoading] = useState(!isInWhiteList);
+  const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
 
   function resetRem() {
@@ -236,6 +239,8 @@ export default function App({ Component, pageProps }: AppProps) {
     });
   });
 
+  usePostMessage();
+
   return (
     <>
       <Head>
@@ -247,7 +252,7 @@ export default function App({ Component, pageProps }: AppProps) {
       {loading ? (
         <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
       ) : (
-        <RootLayout>
+        <RootLayout isInWhiteList={isInWhiteList}>
           <Component {...pageProps} />
         </RootLayout>
       )}

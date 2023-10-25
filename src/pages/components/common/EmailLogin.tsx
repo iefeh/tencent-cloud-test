@@ -12,7 +12,7 @@ export default function EmailLogin(props: Props) {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [codeBtnText, setCodeBtnText] = useState('Send Code');
-  const MAX_LEFT_SECONDS = 3;
+  const MAX_LEFT_SECONDS = 60;
   const leftSeconds = useRef(0);
   const timer = useRef(0);
   const isCounting = useRef(false);
@@ -27,28 +27,34 @@ export default function EmailLogin(props: Props) {
       setDesc('Please enter a valid email address, then try again.');
       return;
     }
-
     if (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS) return;
-    leftSeconds.current = MAX_LEFT_SECONDS;
-    setCodeBtnText(`${leftSeconds.current}s`);
-    isCounting.current = true;
-    setDesc('Verification code has been sent, please check your email.');
 
-    timer.current = window.setInterval(() => {
-      leftSeconds.current--;
-      if (leftSeconds.current <= 0) {
-        clearInterval(timer.current);
-        setCodeBtnText('Re-sent');
-        isCounting.current = false;
-        return;
-      }
+    fetch(`/api/auth/signin/captcha?email=${email}`)
+      .then((res) => res.json())
+      .then(() => {
+        leftSeconds.current = MAX_LEFT_SECONDS;
+        setCodeBtnText(`${leftSeconds.current}s`);
+        isCounting.current = true;
+        setDesc('Verification code has been sent, please check your email.');
 
-      setCodeBtnText(`${leftSeconds.current}s`);
-    }, 1000);
+        timer.current = window.setInterval(() => {
+          leftSeconds.current--;
+          if (leftSeconds.current <= 0) {
+            clearInterval(timer.current);
+            setCodeBtnText('Re-sent');
+            isCounting.current = false;
+            return;
+          }
+
+          setCodeBtnText(`${leftSeconds.current}s`);
+        }, 1000);
+      });
   }
 
   function onVerify() {
-    console.log('verify code', code);
+    fetch('/api/auth/signin/email', { method: 'post', body: JSON.stringify({ email, captcha: code }) })
+      .then((res) => res.json())
+      .then(() => {});
   }
 
   useEffect(() => {
@@ -80,6 +86,7 @@ export default function EmailLogin(props: Props) {
           type="email"
           value={email}
           disabled={isCounting.current}
+          placeholder="Your Email"
           onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
         />
 

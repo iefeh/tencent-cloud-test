@@ -9,9 +9,11 @@ import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
 
 export default function RootLayout({
-  children
+  children,
+  isInWhiteList
 }: {
   children: React.ReactNode;
+  isInWhiteList: boolean;
 }) {
   return (
     <React.Fragment>
@@ -22,7 +24,7 @@ export default function RootLayout({
         id="main-layout"
       > */}
         <Suspense fallback={<Loading />}>
-          <Header />
+          {isInWhiteList || <Header />}
 
           <section className="page-container w-full h-full">{children}</section>
         </Suspense>
