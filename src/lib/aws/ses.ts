@@ -3,10 +3,10 @@ import {appendQueryParamToUrl} from "@/lib/utils/url";
 import {generateEmailHTML} from "@/lib/templates/captchat";
 
 export const sesClient = new SESClient({
-    region: process.env.AWS_REGION,
+    region: process.env.AWS_REGION ?? "",
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? ""
     }
 });
 
@@ -15,7 +15,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
         quickFillURL = 'https://www.moonveil.gg/email/captcha/quickfill'
     }
     quickFillURL = appendQueryParamToUrl(quickFillURL, 'code', captcha);
-    const createSendEmailCommand = (toAddress, fromAddress) => {
+    const createSendEmailCommand = (toAddress: string, fromAddress: string) => {
         return new SendEmailCommand({
             Destination: {
                 /* required */
@@ -33,7 +33,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
                     /* required */
                     Html: {
                         Charset: "UTF-8",
-                        Data: generateEmailHTML(captcha, quickFillURL),
+                        Data: generateEmailHTML(captcha, quickFillURL ?? ""),
                     },
                 },
                 Subject: {
@@ -49,7 +49,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
     };
     const sendEmailCommand = createSendEmailCommand(
         toAddress,
-        process.env.EMAIL_FROM,
+        process.env.EMAIL_FROM ?? "",
     );
     await sesClient.send(sendEmailCommand);
 };

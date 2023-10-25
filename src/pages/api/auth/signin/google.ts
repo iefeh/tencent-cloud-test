@@ -1,12 +1,9 @@
-import '../../../../lib/authorization/google-auth';
 import * as response from '../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
-import passport from 'passport'
-import * as jwt from 'jsonwebtoken';
 import {AuthorizationPayload, AuthorizationFlow} from "@/lib/models/authentication";
 import {redis} from '@/lib/redis/client';
 import {v4 as uuidv4} from 'uuid';
-import {ClientCredentials, ResourceOwnerPassword, AuthorizationCode} from 'simple-oauth2';
+import {AuthorizationCode} from 'simple-oauth2';
 import {createRouter} from "next-connect";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
@@ -42,7 +39,6 @@ router.get(async (req, res) => {
         redirect_uri: "http://localhost:3000/api/auth/callback/google",
         scope: 'openid profile email',
         state: state,
-        customParam: 'foo', // non-standard oauth params may be passed as well
     });
 
     res.json(response.success({

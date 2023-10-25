@@ -1,7 +1,5 @@
-import '../../../../lib/authorization/twitter-auth';
 import * as response from '../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
-import passport from 'passport'
 import {v4 as uuidv4} from 'uuid';
 import {redis} from '@/lib/redis/client';
 import {AuthorizationPayload, AuthorizationFlow} from "@/lib/models/authentication";
