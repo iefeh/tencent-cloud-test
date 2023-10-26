@@ -1,5 +1,5 @@
 import { KEY_AUTHORIZATION } from '@/constant/storage';
-import { getUserInfoAPI, loginByEmailAPI } from '@/http/services/login';
+import { getUserInfoAPI, loginByEmailAPI, logoutAPI } from '@/http/services/login';
 import { makeAutoObservable } from 'mobx';
 
 class UserStore {
@@ -26,6 +26,13 @@ class UserStore {
     const res = await getUserInfoAPI();
     this.userInfo = res;
   };
+
+  logout = async () => {
+    await logoutAPI();
+    this.token = '';
+    localStorage.removeItem(KEY_AUTHORIZATION);
+    this.userInfo = null;
+  }
 }
 
 export default UserStore;

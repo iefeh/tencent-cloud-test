@@ -12,6 +12,7 @@
     "@aws-sdk/client-ses": "^3.433.0",
     "@sendgrid/mail": "^7.7.0",
     "@svgr/webpack": "^8.1.0",
+    "@szhsin/react-menu": "^4.1.0",
     "axios": "^1.5.1",
     "gsap": "^3.12.2",
     "ioredis": "^5.3.2",

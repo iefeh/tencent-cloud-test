@@ -16,7 +16,6 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use((res) => {
   if (!res.data) return null;
 
-  console.log(23424, res.data);
   const data = JSON.parse(res.data);
 
   if (data.code !== 1) {

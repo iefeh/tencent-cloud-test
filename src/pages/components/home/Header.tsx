@@ -16,6 +16,7 @@ import Sidebar from '../common/Sidebar';
 import { useRouter } from 'next/router';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
+import UserAvatar from '../common/UserAvatar';
 
 const routeText = [
   { name: 'Home', route: '/' },
@@ -86,18 +87,7 @@ const Header = () => {
             );
           })}
         </div>
-        {userInfo ? (
-          <div className="user-info relative">
-            <Image
-              className="rounded-full overflow-hidden"
-              objectFit="cover"
-              width={32}
-              height={32}
-              src={userInfo.avatar_url}
-              alt=""
-            />
-          </div>
-        ) : (
+        {userInfo ? <UserAvatar /> : (
           <BasicButton
             className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] ' + (listOpen ? 'hidden' : '')}
             label="login"
