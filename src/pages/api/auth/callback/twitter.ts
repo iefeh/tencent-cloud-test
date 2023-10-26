@@ -1,4 +1,3 @@
-import '../../../../lib/authorization/twitter-auth';
 import * as response from '../../../../lib/response/response';
 import {NextApiRequest, NextApiResponse} from 'next'
 import {v4 as uuidv4} from 'uuid';
@@ -22,6 +21,10 @@ router.get(async (req, res) => {
         return;
     }
     const stateVal = await redis.get(`authorization_state:twitter:${state}`);
+    if (!stateVal) {
+        res.json(response.notFound());
+        return;
+    }
     const authPayload = JSON.parse(stateVal) as AuthorizationPayload;
 
     if (error) {
@@ -99,8 +102,11 @@ router.get(async (req, res) => {
     const token = uuidv4();
     await redis.setex(`user_session:${token}`, 60 * 60 * 24 * 7, user_id);
     const responseData = response.success();
-    responseData.token = token;
-    const landing_url = appendQueryParamsToUrl(authPayload.landing_url, responseData);
+    const landing_url = appendQueryParamsToUrl(authPayload.landing_url, {
+        code: responseData.code,
+        msg: responseData.msg,
+        token: token,
+    });
     res.redirect(landing_url);
 });
 

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.433.0",
+    "@sendgrid/mail": "^7.7.0",
     "@svgr/webpack": "^8.1.0",
     "axios": "^1.5.1",
     "gsap": "^3.12.2",
@@ -41,6 +42,7 @@
     "@types/react-dom": "^18",
     "@types/react-transition-group": "^4.4.7",
     "@types/simple-oauth2": "^5.0.6",
+    "@types/uuid": "^9.0.6",
     "autoprefixer": "^10",
     "eslint": "^8",
     "eslint-config-next": "13.5.4",

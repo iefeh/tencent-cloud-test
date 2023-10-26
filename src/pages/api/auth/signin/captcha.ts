@@ -1,6 +1,6 @@
 import * as response from '../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
-import {sendCaptchaEmail} from '@/lib/aws/ses';
+import {sendCaptchaEmail, sendGridCaptchaEmail} from '@/lib/aws/ses';
 import {redis} from '@/lib/redis/client';
 import {createRouter} from "next-connect";
 
@@ -14,7 +14,8 @@ router.get(async (req, res) => {
     }
     const captcha = Math.floor(100000 + Math.random() * 900000);
     await redis.setex(`login_captcha:${email}`, 60 * 60 * 15, captcha);
-    await sendCaptchaEmail("no-reply@moonveil.studio", captcha, quick_fill_url);
+    // await sendCaptchaEmail("no-reply@moonveil.studio", captcha, quick_fill_url as string);
+    await sendGridCaptchaEmail(email as string, captcha, quick_fill_url as string);
     res.json(response.success());
 });
 

@@ -5,10 +5,10 @@ import * as response from "@/lib/response/response";
 import {redis} from "@/lib/redis/client";
 import User from "@/lib/models/User";
 import UserGoogle from "@/lib/models/UserGoogle";
-import {mustAuthInterceptor} from "@/lib/middleware/auth";
+import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import UserTwitter from "@/lib/models/UserTwitter";
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
+const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
