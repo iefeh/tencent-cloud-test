@@ -6,10 +6,6 @@ interface Props {
   onComplete?: (code: string) => void;
 }
 
-const enum LoginStatus {
-  INPUT_EMAIL
-}
-
 export default function CodeInput(props: Props) {
   const { length = 6, onComplete, onChange } = props;
   const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(length).fill(null));
@@ -17,14 +13,15 @@ export default function CodeInput(props: Props) {
   const currentFocusIndex = useRef(-1);
   const isFull = useRef(false);
 
-  function onFocus(index?: number) {
-    let targetIndex = index;
-    if (targetIndex === undefined) {
-      targetIndex = codes.findIndex((code) => !code);
-      if (targetIndex < 0) targetIndex = length - 1;
-    } else if (targetIndex < 0) {
-      targetIndex = 0;
+  function onFocus(index: number) {
+    let targetIndex = Math.max(Math.min(index, length - 1), 0);
+    const firstEI = codes.findIndex((code) => !code);
+    if (firstEI > -1) {
+      if (firstEI < targetIndex - 1) targetIndex = firstEI;
+    } else {
+      targetIndex = length - 1;
     }
+
     if (currentFocusIndex.current === targetIndex) return;
     currentFocusIndex.current = targetIndex;
     inputRefs.current[targetIndex]?.focus();
@@ -61,6 +58,17 @@ export default function CodeInput(props: Props) {
     onChange?.(arr.join(''));
   }
 
+  function onPaste(e: ClipboardEvent) {
+    const text = e.clipboardData?.getData('Text');
+    if (!text) return;
+
+    const chars = text.split('');
+    const newCodes = codes.map((_, i) => (/[0-9]/.test(chars[i]) ? chars[i] : ''));
+    setCodes(newCodes);
+    const lastIndex = newCodes.findLastIndex((c) => !!c);
+    setTimeout(() => onFocus(lastIndex), 500);
+  }
+
   return (
     <>
       <span className="code-input inline-flex justify-between items-center w-full text-lg">
@@ -73,9 +81,13 @@ export default function CodeInput(props: Props) {
             key={index}
             type="text"
             value={value}
-            onKeyUp={e => onKeyUp(e as any, index, value)}
+            onKeyUp={(e) => onKeyUp(e as any, index, value)}
             onInput={(e) => onInput(e, index, value)}
             onFocus={() => onFocus(index)}
+            onBlur={() => {
+              currentFocusIndex.current = -1;
+            }}
+            onPaste={(e) => onPaste(e as any)}
           />
         ))}
       </span>

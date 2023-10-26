@@ -19,9 +19,9 @@ const EmailLogin = (props: Props) => {
   const [codeBtnText, setCodeBtnText] = useState('Send Code');
   const MAX_LEFT_SECONDS = 60;
   const leftSeconds = useRef(0);
-  const isLoading = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
   const timer = useRef(0);
-  const isCounting = useRef(false);
+  const [isCounting, setIsCounting] = useState(false);
   const [desc, setDesc] = useState('Please type in your email to get the verification code.');
 
   async function onSendClick() {
@@ -33,9 +33,9 @@ const EmailLogin = (props: Props) => {
       setDesc('Please enter a valid email address, then try again.');
       return;
     }
-    if (isLoading.current || (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS)) return;
+    if (isLoading || isCounting || (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS)) return;
 
-    isLoading.current = true;
+    setIsLoading(true);
     setDesc('Sending. . .');
     try {
       await sendEmailCodeAPI({ email });
@@ -43,12 +43,12 @@ const EmailLogin = (props: Props) => {
       setDesc(error?.message || error);
       return;
     } finally {
-      isLoading.current = false;
+      setIsLoading(false);
     }
 
     leftSeconds.current = MAX_LEFT_SECONDS;
     setCodeBtnText(`${leftSeconds.current}s`);
-    isCounting.current = true;
+    setIsCounting(true);
     setDesc('Verification code has been sent, please check your email.');
 
     timer.current = window.setInterval(() => {
@@ -56,7 +56,7 @@ const EmailLogin = (props: Props) => {
       if (leftSeconds.current <= 0) {
         clearInterval(timer.current);
         setCodeBtnText('Re-sent');
-        isCounting.current = false;
+        setIsCounting(false);
         return;
       }
 
@@ -65,6 +65,8 @@ const EmailLogin = (props: Props) => {
   }
 
   async function onVerify() {
+    if (code.length < 6) return;
+
     try {
       await loginByEmail?.({ email, captcha: code });
       onLogin?.();
@@ -101,15 +103,15 @@ const EmailLogin = (props: Props) => {
           className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10"
           type="email"
           value={email}
-          disabled={isCounting.current}
+          disabled={isCounting || isLoading}
           placeholder="Your Email"
           onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
         />
 
         <div
           className={
-            'inline-flex items-center cursor-pointer px-6 py-2 justify-center bg-basic-gray rounded-[3.5rem] w-[7.875rem] ' +
-            (isCounting.current ? 'cursor-not-allowed' : 'hover:bg-deep-yellow')
+            'inline-flex items-center px-6 py-2 justify-center bg-basic-gray rounded-[3.5rem] w-[7.875rem] ' +
+            (isCounting || isLoading ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
           }
           onClick={onSendClick}
         >
@@ -128,8 +130,8 @@ const EmailLogin = (props: Props) => {
       <div className="row verify">
         <div
           className={
-            'inline-flex items-center cursor-pointer px-14 justify-center py-2 bg-basic-gray rounded-[3.5rem] mt-5 ' +
-            (code.length < 6 ? 'cursor-not-allowed' : 'hover:bg-deep-yellow')
+            'inline-flex items-center px-14 justify-center py-2 bg-basic-gray rounded-[3.5rem] mt-5 ' +
+            (code.length < 6 ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
           }
           onClick={onVerify}
         >
@@ -138,6 +140,6 @@ const EmailLogin = (props: Props) => {
       </div>
     </div>
   );
-}
+};
 
 export default observer(EmailLogin);
