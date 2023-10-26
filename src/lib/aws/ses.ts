@@ -16,15 +16,15 @@ export const sendGridCaptchaEmail = async (toAddress: string, captcha: number, q
         quickFillURL = 'https://www.moonveil.gg/email/captcha/quickfill'
     }
     quickFillURL = appendQueryParamToUrl(quickFillURL, 'code', captcha);
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
     const msg = {
         to: toAddress, // Change to your recipient
         from: {
-            email: process.env.EMAIL_FROM,
-            name: process.env.EMAIL_FROM_NAME,
+            email: process.env.EMAIL_FROM as string,
+            name: process.env.EMAIL_FROM_NAME as string,
         },
         subject: 'Verification Code',
-        html: generateEmailHTML(captcha, quickFillURL ?? ""),
+        html: generateEmailHTML(captcha, quickFillURL as string),
     }
     await sgMail.send(msg);
 }

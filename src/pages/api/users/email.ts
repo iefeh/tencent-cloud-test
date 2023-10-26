@@ -13,7 +13,7 @@ router.get(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
     const msg = {
         to: email, // Change to your recipient
         from: 'no-reply@moonveil.studio', // Change to your verified sender
