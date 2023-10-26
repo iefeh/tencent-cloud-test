@@ -7,9 +7,9 @@ import {createRouter} from "next-connect";
 import connectMongo from "@/lib/mongodb/client";
 import User from "@/lib/models/User";
 import {appendQueryParamsToUrl} from "@/lib/utils/url";
-import {AuthorizationCode, AuthorizationTokenConfig} from 'simple-oauth2';
-import axios from "axios";
 import UserTwitter from "@/lib/models/UserTwitter";
+import {generateUserSession} from "@/lib/middleware/session";
+import {twitterOAuthProvider} from "@/lib/authorization/provider";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -39,33 +39,13 @@ router.get(async (req, res) => {
         return;
     }
 
-    const config = {
-        client: {
-            id: process.env.TWITTER_CLIENT_ID!,
-            secret: process.env.TWITTER_CLIENT_SECRET!
-        },
-        auth: {
-            tokenHost: 'https://api.twitter.com',
-            tokenPath: '/2/oauth2/token',
-        }
-    };
-    const client = new AuthorizationCode(config);
-    const options = {
-        client_id: process.env.TWITTER_CLIENT_ID!,
-        code: code,
-        redirect_uri: "http://127.0.0.1:3000/api/auth/callback/twitter",
-        scope: 'offline.access tweet.read users.read follows.read like.read',
+    const authToken = await twitterOAuthProvider.authenticate({
+        code: code as string,
         code_verifier: authPayload.code_challenge,
-    };
-    const at = await client.getToken(options as AuthorizationTokenConfig);
-    // 获取twitter用户
-    const userResponse = await axios.get('https://api.twitter.com/2/users/me?expansions=pinned_tweet_id&user.fields=created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified', {
-        headers: {
-            'Authorization': 'Bearer ' + at.token.access_token
-        }
     });
-    const connection = userResponse.data.data;
-
+    // 获取绑定用户
+    const data: any = await twitterOAuthProvider.createRequest(authToken).get('https://api.twitter.com/2/users/me?expansions=pinned_tweet_id&user.fields=created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified');
+    const connection = data.data;
     // 执行用户登录
     await connectMongo();
     let userConnection = await UserTwitter.findOne({'twitter_id': connection.id, 'deleted_time': null})
@@ -97,10 +77,8 @@ router.get(async (req, res) => {
     }
 
     // 执行用户登录
-    const user_id = userConnection.user_id;
-    // 生成登录token
-    const token = uuidv4();
-    await redis.setex(`user_session:${token}`, 60 * 60 * 24 * 7, user_id);
+    const userId = userConnection.user_id;
+    const token = await generateUserSession(userId);
     const responseData = response.success();
     const landing_url = appendQueryParamsToUrl(authPayload.landing_url, {
         code: responseData.code,

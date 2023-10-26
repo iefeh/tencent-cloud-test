@@ -5,6 +5,9 @@ import {redis} from '@/lib/redis/client';
 import {v4 as uuidv4} from 'uuid';
 import {AuthorizationCode} from 'simple-oauth2';
 import {createRouter} from "next-connect";
+import {OAuthProvider} from "@/lib/authorization/oauth";
+import {OAuthOptions} from "@/lib/authorization/types";
+import {googleOAuthProvider} from "@/lib/authorization/provider";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -23,24 +26,9 @@ router.get(async (req, res) => {
     const state = uuidv4();
     await redis.setex(`authorization_state:google:${state}`, 60 * 60 * 30, JSON.stringify(payload));
 
-    const config = {
-        client: {
-            id: process.env.GOOGLE_CLIENT_ID!,
-            secret: process.env.GOOGLE_CLIENT_SECRET!
-        },
-        auth: {
-            tokenHost: 'https://www.googleapis.com/oauth2/v4/token',
-            authorizeHost: 'https://accounts.google.com/o/oauth2/v2/auth',
-            authorizePath: '/o/oauth2/v2/auth'
-        }
-    };
-    const client = new AuthorizationCode(config);
-    const authorizationUri = client.authorizeURL({
-        redirect_uri: "http://localhost:3000/api/users/auth/callback/google",
-        scope: 'openid profile email',
+    const authorizationUri = googleOAuthProvider.authorizationURL({
         state: state,
     });
-
     res.json(response.success({
         authorization_url: authorizationUri
     }));

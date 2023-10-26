@@ -5,6 +5,7 @@ import User from "@/lib/models/User";
 import {v4 as uuidv4} from 'uuid';
 import connectMongo from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
+import {generateUserSession} from "@/lib/middleware/session";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -41,8 +42,7 @@ router.post(async (req, res) => {
     // 删除验证码
     await redis.del(`login_captcha:${email}`);
     // 生成登录token
-    const token = uuidv4();
-    await redis.setex(`user_session:${token}`, 60 * 60 * 15, user.user_id);
+    const token = await generateUserSession(user.user_id);
     res.json(response.success({
         token: token,
     }));

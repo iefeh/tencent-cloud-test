@@ -7,9 +7,9 @@ import {createRouter} from "next-connect";
 import connectMongo from "@/lib/mongodb/client";
 import User from "@/lib/models/User";
 import {appendQueryParamsToUrl} from "@/lib/utils/url";
-import {AuthorizationCode, AuthorizationTokenConfig} from 'simple-oauth2';
-import axios from "axios";
-import UserGoogle from "@/lib/models/UserGoogle";
+import UserGoogle, {IUserGoogle} from "@/lib/models/UserGoogle";
+import {generateUserSession} from "@/lib/middleware/session";
+import {googleOAuthProvider} from "@/lib/authorization/provider";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -40,35 +40,14 @@ router.get(async (req, res) => {
         return;
     }
 
-    const config = {
-        client: {
-            id: process.env.GOOGLE_CLIENT_ID!,
-            secret: process.env.GOOGLE_CLIENT_SECRET!
-        },
-        auth: {
-            tokenHost: 'https://www.googleapis.com',
-            tokenPath: '/oauth2/v4/token',
-        }
-    };
-    const client = new AuthorizationCode(config);
-    const options = {
-        code: code,
-        redirect_uri: "http://localhost:3000/api/users/auth/callback/google",
-        scope: 'openid profile email',
-        client_id: process.env.GOOGLE_CLIENT_ID!,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET!
-    };
-    const at = await client.getToken(options as AuthorizationTokenConfig);
-    // 获取绑定用户
-    const userResponse = await axios.get('https://openidconnect.googleapis.com/v1/userinfo', {
-        headers: {
-            'Authorization': 'Bearer ' + at.token.access_token
-        }
+    const authToken = await googleOAuthProvider.authenticate({
+        code: code as string,
     });
+    // 获取绑定用户
+    const connection:any = await googleOAuthProvider.createRequest(authToken).get('https://openidconnect.googleapis.com/v1/userinfo');
 
     // 执行用户登录
     await connectMongo();
-    const connection = userResponse.data;
     let userConnection = await UserGoogle.findOne({'google_id': connection.sub, 'deleted_time': null})
     if (!userConnection) {
         // 新创建用户与其社交绑定
@@ -95,10 +74,8 @@ router.get(async (req, res) => {
         await newUser.save();
     }
     // 执行用户登录
-    const user_id = userConnection.user_id;
-    // 生成登录token
-    const token = uuidv4();
-    await redis.setex(`user_session:${token}`, 60 * 60 * 24 * 7, user_id);
+    const userId = userConnection.user_id;
+    const token = await generateUserSession(userId);
     const responseData = response.success();
     const landing_url = appendQueryParamsToUrl(authPayload.landing_url, {
         code: responseData.code,
