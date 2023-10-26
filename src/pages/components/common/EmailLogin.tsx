@@ -1,24 +1,30 @@
 import Image from 'next/image';
 import CodeInput from './CodeInput';
 import goldenLogo from 'img/logo_golden.png';
-import { useState, useEffect, useRef, use } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
+import { loginByEmailAPI, sendEmailCodeAPI } from '@/http/services/login';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
   onClose?: () => void;
+  onLogin?: () => void;
 }
 
-export default function EmailLogin(props: Props) {
-  const { onClose } = props;
+const EmailLogin = (props: Props) => {
+  const { loginByEmail } = useContext(MobxContext);
+  const { onClose, onLogin } = props;
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [codeBtnText, setCodeBtnText] = useState('Send Code');
   const MAX_LEFT_SECONDS = 60;
   const leftSeconds = useRef(0);
+  const isLoading = useRef(false);
   const timer = useRef(0);
   const isCounting = useRef(false);
   const [desc, setDesc] = useState('Please type in your email to get the verification code.');
 
-  function onSendClick() {
+  async function onSendClick() {
     if (!email) {
       setDesc('Please input your email.');
       return;
@@ -27,34 +33,44 @@ export default function EmailLogin(props: Props) {
       setDesc('Please enter a valid email address, then try again.');
       return;
     }
-    if (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS) return;
+    if (isLoading.current || (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS)) return;
 
-    fetch(`/api/auth/signin/captcha?email=${email}`)
-      .then((res) => res.json())
-      .then(() => {
-        leftSeconds.current = MAX_LEFT_SECONDS;
-        setCodeBtnText(`${leftSeconds.current}s`);
-        isCounting.current = true;
-        setDesc('Verification code has been sent, please check your email.');
+    isLoading.current = true;
+    setDesc('Sending. . .');
+    try {
+      await sendEmailCodeAPI({ email });
+    } catch (error: any) {
+      setDesc(error?.message || error);
+      return;
+    } finally {
+      isLoading.current = false;
+    }
 
-        timer.current = window.setInterval(() => {
-          leftSeconds.current--;
-          if (leftSeconds.current <= 0) {
-            clearInterval(timer.current);
-            setCodeBtnText('Re-sent');
-            isCounting.current = false;
-            return;
-          }
+    leftSeconds.current = MAX_LEFT_SECONDS;
+    setCodeBtnText(`${leftSeconds.current}s`);
+    isCounting.current = true;
+    setDesc('Verification code has been sent, please check your email.');
 
-          setCodeBtnText(`${leftSeconds.current}s`);
-        }, 1000);
-      });
+    timer.current = window.setInterval(() => {
+      leftSeconds.current--;
+      if (leftSeconds.current <= 0) {
+        clearInterval(timer.current);
+        setCodeBtnText('Re-sent');
+        isCounting.current = false;
+        return;
+      }
+
+      setCodeBtnText(`${leftSeconds.current}s`);
+    }, 1000);
   }
 
-  function onVerify() {
-    fetch('/api/auth/signin/email', { method: 'post', body: JSON.stringify({ email, captcha: code }) })
-      .then((res) => res.json())
-      .then(() => {});
+  async function onVerify() {
+    try {
+      await loginByEmail?.({ email, captcha: code });
+      onLogin?.();
+    } catch (error: any) {
+      setDesc(error?.message || error);
+    }
   }
 
   useEffect(() => {
@@ -123,3 +139,5 @@ export default function EmailLogin(props: Props) {
     </div>
   );
 }
+
+export default observer(EmailLogin);

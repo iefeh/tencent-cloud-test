@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import BasicButton from "../common/BasicButton";
 import logo from "img/header/logo.png";
 import Discord from "img/header/discord.svg";
@@ -15,6 +14,8 @@ import Close from "svg/close.svg";
 import LoginDialog from "../common/LoginDialog";
 import Sidebar from "../common/Sidebar";
 import { useRouter } from "next/router";
+import { MobxContext } from "@/pages/_app";
+import { observer } from "mobx-react-lite";
 
 const routeText = [
     { name: "Home", route: "/" },
@@ -30,7 +31,8 @@ const mediaIcon = [
     { img: Medium, link: 'https://medium.com/@Moonveil_Studio' },
     { img: Youtube, link: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A' }];
 
-export default function Header() {
+const Header = () => {
+    const { userInfo } = useContext(MobxContext);
     const [loginVisible, setLoginVisible] = useState(false);
     const [listOpen, setListOpen] = useState(false);
     const router = useRouter();
@@ -87,11 +89,17 @@ export default function Header() {
                         );
                     })}
                 </div>
-                <BasicButton
-                    className={"text-[14px] leading-[20px] px-[18px] rounded-[24px] " + (listOpen ? 'hidden' : '')}
-                    label="login"
-                    onClick={() => setLoginVisible(true)}
-                />
+                {userInfo ? (
+                    <div className="user-info relative">
+                        <Image width={64} height={64} src={userInfo.avatar_url} alt="" />
+                    </div>
+                ) : (
+                    <BasicButton
+                        className={"text-[14px] leading-[20px] px-[18px] rounded-[24px] " + (listOpen ? 'hidden' : '')}
+                        label="login"
+                        onClick={() => setLoginVisible(true)}
+                    />
+                )}
 
                 {listOpen ? <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[3rem] h-[3rem]" /> : <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[3rem] h-[3rem]" /> }
             </div>
@@ -105,3 +113,5 @@ export default function Header() {
         </section>
     );
 }
+
+export default observer(Header);

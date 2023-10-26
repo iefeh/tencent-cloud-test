@@ -62,7 +62,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
         <div className="mask w-full h-full bg-transparent" onClick={onCloseClick}></div>
 
         <div className="content absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[28.5rem] h-[27.56rem] bg-black rounded-[1.25rem] z-10 border-2 border-solid border-[#1F1B17] flex flex-col items-center overflow-hidden text-sm px-6">
-          {emailLoginVisible ? <EmailLogin onClose={() => setEmailLoginVisible(false)} /> : <LoginButtons />}
+          {emailLoginVisible ? <EmailLogin onClose={() => setEmailLoginVisible(false)} onLogin={onCloseClick} /> : <LoginButtons />}
         </div>
       </div>
     ) : null,

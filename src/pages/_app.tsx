@@ -1,7 +1,7 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import RootLayout from './layout';
 import Loading from './components/common/Loading';
 import './page.scss';
@@ -63,6 +63,8 @@ import astrark_bg_home from 'img/astrark/bg-home.jpg';
 import astrark_bg_mask from 'img/astrark/bg-mask.png';
 import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
 import usePostMessage from '@/hooks/usePostMessage';
+import { useStore } from '@/store';
+import UserStore from '@/store/User';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -160,6 +162,8 @@ function loadVideo(path: string) {
   });
 }
 
+export const MobxContext = createContext<UserStore>(new UserStore());
+
 export default function App({ Component, pageProps }: AppProps) {
   const whiteList = ['/email/captcha/quickfill'];
   const router = useRouter();
@@ -167,6 +171,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(!isInWhiteList);
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
+  const store = useStore();
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
@@ -241,6 +246,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   usePostMessage();
 
+  useEffect(() => {
+    store.init();
+  }, []);
+
   return (
     <>
       <Head>
@@ -252,9 +261,11 @@ export default function App({ Component, pageProps }: AppProps) {
       {loading ? (
         <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
       ) : (
-        <RootLayout isInWhiteList={isInWhiteList}>
-          <Component {...pageProps} />
-        </RootLayout>
+        <MobxContext.Provider value={store}>
+          <RootLayout isInWhiteList={isInWhiteList}>
+            <Component {...pageProps} />
+          </RootLayout>
+        </MobxContext.Provider>
       )}
 
       <Script id="google-analytics">
