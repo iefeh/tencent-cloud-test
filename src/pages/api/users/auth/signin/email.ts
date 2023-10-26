@@ -1,4 +1,4 @@
-import * as response from '../../../../lib/response/response';
+import * as response from '../../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
 import {redis} from '@/lib/redis/client';
 import User from "@/lib/models/User";

@@ -1,4 +1,4 @@
-import * as response from '../../../../lib/response/response';
+import * as response from '../../../../../lib/response/response';
 import {NextApiRequest, NextApiResponse} from 'next'
 import {v4 as uuidv4} from 'uuid';
 import {redis} from '@/lib/redis/client';
@@ -53,7 +53,7 @@ router.get(async (req, res) => {
     const client = new AuthorizationCode(config);
     const options = {
         code: code,
-        redirect_uri: "http://localhost:3000/api/auth/callback/google",
+        redirect_uri: "http://localhost:3000/api/users/auth/callback/google",
         scope: 'openid profile email',
         client_id: process.env.GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!

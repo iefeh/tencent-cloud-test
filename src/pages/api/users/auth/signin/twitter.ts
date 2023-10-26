@@ -1,15 +1,16 @@
-import * as response from '../../../../lib/response/response';
+import * as response from '../../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
-import {AuthorizationPayload, AuthorizationFlow} from "@/lib/models/authentication";
-import {redis} from '@/lib/redis/client';
 import {v4 as uuidv4} from 'uuid';
+import {redis} from '@/lib/redis/client';
+import {AuthorizationPayload, AuthorizationFlow} from "@/lib/models/authentication";
 import {AuthorizationCode} from 'simple-oauth2';
+import {appendQueryParamsToUrl} from "@/lib/utils/url";
 import {createRouter} from "next-connect";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    // 检查用户的授权落地页
+// 检查用户的授权落地页
     const landing_url = req.query.landing_url as string;
     if (!req.query.landing_url) {
         res.json(response.invalidParams());
@@ -19,30 +20,33 @@ router.get(async (req, res) => {
     const payload: AuthorizationPayload = {
         landing_url: landing_url,
         flow: AuthorizationFlow.Login,
+        code_challenge: uuidv4(),
     };
     const state = uuidv4();
-    await redis.setex(`authorization_state:google:${state}`, 60 * 60 * 30, JSON.stringify(payload));
+
+    await redis.setex(`authorization_state:twitter:${state}`, 60 * 60 * 30, JSON.stringify(payload));
 
     const config = {
         client: {
-            id: process.env.GOOGLE_CLIENT_ID!,
-            secret: process.env.GOOGLE_CLIENT_SECRET!
+            id: process.env.TWITTER_CLIENT_ID!,
+            secret: process.env.TWITTER_CLIENT_SECRET!
         },
         auth: {
-            tokenHost: 'https://www.googleapis.com/oauth2/v4/token',
-            authorizeHost: 'https://accounts.google.com/o/oauth2/v2/auth',
-            authorizePath: '/o/oauth2/v2/auth'
+            tokenHost: 'https://twitter.com',
+            authorizePath: '/i/oauth2/authorize'
         }
     };
     const client = new AuthorizationCode(config);
     const authorizationUri = client.authorizeURL({
-        redirect_uri: "http://localhost:3000/api/auth/callback/google",
-        scope: 'openid profile email',
+        redirect_uri: "http://127.0.0.1:3000/api/auth/callback/twitter",
+        scope: 'offline.access tweet.read users.read follows.read like.read',
         state: state,
     });
-
     res.json(response.success({
-        authorization_url: authorizationUri
+        authorization_url: appendQueryParamsToUrl(authorizationUri, {
+            code_challenge: payload.code_challenge,
+            code_challenge_method: 'plain'
+        })
     }));
 });
 

@@ -1,6 +1,7 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
 import {appendQueryParamToUrl} from "@/lib/utils/url";
 import {generateEmailHTML} from "@/lib/templates/captchat";
+import * as sgMail from '@sendgrid/mail';
 
 export const sesClient = new SESClient({
     region: process.env.AWS_REGION ?? "",
@@ -9,6 +10,24 @@ export const sesClient = new SESClient({
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? ""
     }
 });
+
+export const sendGridCaptchaEmail = async (toAddress: string, captcha: number, quickFillURL?: string) => {
+    if (!quickFillURL) {
+        quickFillURL = 'https://www.moonveil.gg/email/captcha/quickfill'
+    }
+    quickFillURL = appendQueryParamToUrl(quickFillURL, 'code', captcha);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const msg = {
+        to: toAddress, // Change to your recipient
+        from: {
+            email: process.env.EMAIL_FROM,
+            name: process.env.EMAIL_FROM_NAME,
+        },
+        subject: 'Verification Code',
+        html: generateEmailHTML(captcha, quickFillURL ?? ""),
+    }
+    await sgMail.send(msg);
+}
 
 export const sendCaptchaEmail = async (toAddress: string, captcha: number, quickFillURL?: string) => {
     if (!quickFillURL) {

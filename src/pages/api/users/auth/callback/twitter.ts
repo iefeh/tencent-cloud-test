@@ -1,4 +1,4 @@
-import * as response from '../../../../lib/response/response';
+import * as response from '../../../../../lib/response/response';
 import {NextApiRequest, NextApiResponse} from 'next'
 import {v4 as uuidv4} from 'uuid';
 import {redis} from '@/lib/redis/client';
