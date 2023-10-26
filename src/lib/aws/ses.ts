@@ -4,10 +4,10 @@ import {generateEmailHTML} from "@/lib/templates/captchat";
 import * as sgMail from '@sendgrid/mail';
 
 export const sesClient = new SESClient({
-    region: process.env.AWS_REGION ?? "",
+    region: process.env.AWS_REGION as string,
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? ""
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string
     }
 });
 
@@ -52,7 +52,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
                     /* required */
                     Html: {
                         Charset: "UTF-8",
-                        Data: generateEmailHTML(captcha, quickFillURL ?? ""),
+                        Data: generateEmailHTML(captcha, quickFillURL as string),
                     },
                 },
                 Subject: {
@@ -68,7 +68,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
     };
     const sendEmailCommand = createSendEmailCommand(
         toAddress,
-        process.env.EMAIL_FROM ?? "",
+        process.env.EMAIL_FROM as string,
     );
     await sesClient.send(sendEmailCommand);
 };
