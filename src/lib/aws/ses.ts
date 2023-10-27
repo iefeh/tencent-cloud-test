@@ -1,6 +1,6 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
 import {appendQueryParamToUrl} from "@/lib/utils/url";
-import {generateEmailHTML} from "@/lib/templates/captchat";
+import {generateCaptchaEmailHTML} from "@/lib/templates/captchat";
 import * as sgMail from '@sendgrid/mail';
 
 export const sesClient = new SESClient({
@@ -24,7 +24,7 @@ export const sendGridCaptchaEmail = async (toAddress: string, captcha: number, q
             name: process.env.EMAIL_FROM_NAME as string,
         },
         subject: 'Verification Code',
-        html: generateEmailHTML(captcha, quickFillURL as string),
+        html: generateCaptchaEmailHTML(captcha, quickFillURL as string),
     }
     await sgMail.send(msg);
 }
@@ -52,7 +52,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
                     /* required */
                     Html: {
                         Charset: "UTF-8",
-                        Data: generateEmailHTML(captcha, quickFillURL as string),
+                        Data: generateCaptchaEmailHTML(captcha, quickFillURL as string),
                     },
                 },
                 Subject: {

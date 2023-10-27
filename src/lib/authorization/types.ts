@@ -5,13 +5,18 @@ export interface OAuthOptions {
     redirectURI: string;
     authEndpoint: string;
     tokenEndpoint: string;
+
+    enableBasicAuth?: boolean;
+    basicAuthCredentialCallback?: (ops: OAuthOptions) => string;
+
     onAccessTokenRefreshed?: (newToken: OAuthToken) => void;
     onRefreshTokenExpired?: (newToken: OAuthToken) => void;
 }
 
 export interface AuthorizationParams {
-    state?: string;
+    state: string;
 
+    // 传递自定义的参数，例如传递code_challenge与code_challenge_method，我们不负责处理code challenge
     [key: string]: string | number | undefined;
 }
 
@@ -19,6 +24,8 @@ export interface AuthenticateParams {
     code: string;
 
     [key: string]: string | number | undefined;
+
+    headers?: any;
 }
 
 export interface OAuthToken {
@@ -33,3 +40,12 @@ export interface OAuthToken {
     [key: string]: any;
 }
 
+
+export interface OAuthRefreshTokenPayload {
+    grant_type: 'refresh_token';
+    client_id: string;
+    client_secret: string;
+    refresh_token: string;
+
+    [key: string]: any;
+}

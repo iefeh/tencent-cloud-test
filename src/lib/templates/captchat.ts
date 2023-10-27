@@ -1,4 +1,4 @@
-export function generateEmailHTML(captcha: number, quickFillURL: string): string {
+export function generateCaptchaEmailHTML(captcha: number, quickFillURL: string): string {
     const currentYear = new Date().getFullYear();
     return `
 <!DOCTYPE html>
@@ -42,20 +42,24 @@ export function generateEmailHTML(captcha: number, quickFillURL: string): string
             margin-top: 40px;
             font-size: 14px;
         }
+        .gray {
+            color: #505050;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <img class="logo" src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/logo/logo.png" alt="Moonveil Logo">
-    <p>Welcome to Moonveil Entertainment! 🚀</p>
-    <p>To kickstart your journey, here's your unique verification code:</p>
+    <p class="gray">Welcome to Moonveil Entertainment! 🚀</p>
+    <p class="gray">Here's your verification code to kickoff your journey</p>
     <div class="code">${captcha}</div>
-    <p>Please click <a href="${quickFillURL}">here</a> to enter the code and complete the verification.<br>
+    <p class="gray">Please click <a href="${quickFillURL}">here</a> to enter the code and complete the verification.<br>
         Please keep the code to yourself and don't share with anyone.</p>
     <hr>
-    <p>Please note that this is an automated message, so there is no need to reply. If you have any questions or need help, reach out us anytime at <a href="mailto:contact@moonveil.studio">contact@moonveil.studio</a></p>
-    <p>Welcome aboard!</p>
-    <div class="footer">
+    <p class="gray">Please note that this is an automated message, so there is no need to reply. If you have any questions or need further help, feel free to reach out to us anytime at [<a href="mailto:contact@moonveil.studio">contact@moonveil.studio</a>]</p>
+    <p class="gray">Welcome aboard!</p>
+    <hr>
+    <div class="footer gray">
         <p>Follow Us</p>
         <a href="https://discord.com/invite/NyECfU5XFX">Discord</a> | <a href="https://twitter.com/Moonveil_Studio">Twitter</a> | <a href="https://t.me/+AeiqS8o2YmswYTgx">Telegram</a> | <a href="https://medium.com/@Moonveil_Studio">Medium</a>
         <p>Copyright &copy; ${currentYear} Moonveil Entertainment.</p>

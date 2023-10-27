@@ -1,7 +1,6 @@
 import {OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 
-
 const googleOAuthOps: OAuthOptions = {
     clientId: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -18,6 +17,7 @@ const twitterOAuthOps: OAuthOptions = {
     scope: process.env.TWITTER_AUTH_SCOPE!,
     redirectURI: process.env.TWITTER_REDIRECT_URL!,
     authEndpoint: process.env.TWITTER_AUTH_URL!,
-    tokenEndpoint: process.env.TWITTER_TOKEN_URL!
+    tokenEndpoint: process.env.TWITTER_TOKEN_URL!,
+    enableBasicAuth: true
 }
 export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);
