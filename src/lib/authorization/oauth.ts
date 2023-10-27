@@ -1,71 +1,83 @@
-import {AuthenticateParams, AuthorizationParams, OAuthOptions, OAuthToken} from "@/lib/authorization/types";
+import {
+    AuthenticateParams,
+    AuthorizationParams,
+    OAuthOptions,
+    OAuthRefreshTokenPayload,
+    OAuthToken
+} from "@/lib/authorization/types";
 import axios, {AxiosError} from "axios";
 
 export class OAuthProvider {
-    private readonly options: OAuthOptions;
+    public readonly options: OAuthOptions;
 
     constructor(options: OAuthOptions) {
         this.options = options;
     }
 
-    // authorizationURL 返回授权地址
-    public authorizationURL(params: AuthorizationParams): string {
+    public authorizationURL(extraParams: AuthorizationParams): string {
         const {clientId, redirectURI, authEndpoint, scope} = this.options;
 
-        const defaultParams = {
+        const baseParams = {
             response_type: 'code',
             client_id: clientId,
             redirect_uri: redirectURI,
             scope: Array.isArray(scope) ? scope.join(' ') : scope
         };
 
-        const mergedParams = {
-            ...defaultParams,
-            ...params
+        const params = {
+            ...baseParams,
+            ...extraParams
         };
 
-        const urlParams = new URLSearchParams(mergedParams);
+        const urlParams = new URLSearchParams(params);
         return `${authEndpoint}?${urlParams.toString()}`;
     }
 
-    // oauth认证
-    public async authenticate(params: AuthenticateParams): Promise<OAuthToken> {
+    public async authenticate(extraParams: AuthenticateParams): Promise<OAuthToken> {
         const {clientId, clientSecret, redirectURI, tokenEndpoint} = this.options;
-        const defaultParams = {
+        const baseParams = {
             grant_type: 'authorization_code',
             client_id: clientId,
             client_secret: clientSecret,
             redirect_uri: redirectURI,
         };
-        const mergedParams = {
-            ...defaultParams,
-            ...params
+        const params = {
+            ...baseParams,
+            ...extraParams
         };
-        // 固定加上basic auth，可以做成配置hook，让外部传递函数对请求的
-        const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-        const headers = {
-            Authorization: `Basic ${credentials}`,
-        };
-        const response = await axios.post<OAuthToken>(tokenEndpoint, mergedParams, {headers});
+
+        const headers = this.calcBasicAuthHeader();
+        const response = await axios.post<OAuthToken>(tokenEndpoint, params, {headers});
         const data = response.data;
-        // console.log(data);
         return data as OAuthToken;
     }
 
+    public calcBasicAuthHeader(): {} {
+        const {clientId, clientSecret, enableBasicAuth, basicAuthCredentialCallback} = this.options;
+        if (!enableBasicAuth) {
+            return {}
+        }
+
+        let credential: string;
+        if (basicAuthCredentialCallback) {
+            credential = basicAuthCredentialCallback(this.options);
+        } else {
+            credential = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+        }
+        return {Authorization: `Basic ${credential}`};
+    }
+
     public async refreshAccessToken(token: OAuthToken): Promise<OAuthToken> {
-        const {clientId, clientSecret, tokenEndpoint, onAccessTokenRefreshed, onRefreshTokenExpired} = this.options;
+        const {onAccessTokenRefreshed, onRefreshTokenExpired} = this.options;
         try {
-            const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-            const headers = {
-                Authorization: `Basic ${credentials}`,
-            };
-            const response = await axios.post<OAuthToken>(tokenEndpoint, {
+            const payload: OAuthRefreshTokenPayload = {
                 grant_type: 'refresh_token',
-                client_id: clientId,
-                client_secret: clientSecret,
-                refresh_token: token.refresh_token,
-            }, {headers});
-            console.log(response.status)
+                client_id: this.options.clientId,
+                client_secret: this.options.clientSecret,
+                refresh_token: token.refresh_token!,
+            };
+            const headers = this.calcBasicAuthHeader();
+            const response = await axios.post<OAuthToken>(this.options.tokenEndpoint, payload, {headers});
             const data = response.data;
             // 使用对象解构合并两个对象，确保只更新token相关数据，保留用户自定义数据
             const newToken = {
@@ -85,26 +97,22 @@ export class OAuthProvider {
             if (isAxiosError(error) && error.response?.status === 401 && onRefreshTokenExpired) {
                 onRefreshTokenExpired(token);
             }
-            console.error(error);
-            throw new Error("Failed to refresh access token: " + error);
+            throw error;
         }
     }
 
     public createRequest(token: OAuthToken): OAuthRequest {
         return new OAuthRequest(this, token);
     }
-
-
 }
 
 function isAxiosError(error: any): error is AxiosError {
     return error && error.response;
 }
 
-// 用于以用户名义发起请求，自动刷新token
 class OAuthRequest {
     private authProvider: OAuthProvider;
-    private token: OAuthToken;
+    public token: OAuthToken;
 
     constructor(authProvider: OAuthProvider, token: OAuthToken) {
         this.authProvider = authProvider;
@@ -131,4 +139,23 @@ class OAuthRequest {
         }
     }
 
+    public async post<T>(url: string, data?: any, options?: any): Promise<T> {
+        const {headers, retryOn401 = true} = options || {};
+        try {
+            const response = await axios.post<T>(url, data, {
+                ...options,
+                headers: {
+                    ...headers,
+                    Authorization: `Bearer ${this.token.access_token}`,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            if (isAxiosError(error) && error.response?.status === 403 && this.token.refresh_token && retryOn401) {
+                this.token = await this.authProvider.refreshAccessToken(this.token);
+                return this.post<T>(url, data, {...options, retryOn401: false});
+            }
+            throw error;
+        }
+    }
 }
