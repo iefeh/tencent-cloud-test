@@ -3,7 +3,7 @@ import { KEY_AUTHORIZATION } from './../constant/storage';
 import { useEffect } from 'react';
 import { MobxContext } from '@/pages/_app';
 
-export default function useAuthDialog(dialog: MutableRefObject<Window | null>) {
+export default function useAuthDialog(dialog: MutableRefObject<Window | null>, callback?: () => void) {
   const store = useContext(MobxContext);
 
   function authLogin() {
@@ -15,6 +15,7 @@ export default function useAuthDialog(dialog: MutableRefObject<Window | null>) {
     if (!dialog.current) return;
     dialog.current.close();
     dialog.current = null;
+    callback?.();
   }
 
   useEffect(() => {

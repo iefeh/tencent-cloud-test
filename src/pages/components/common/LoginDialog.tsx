@@ -24,7 +24,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const dialogWindowRef = useRef<Window | null>(null);
 
-  useAuthDialog(dialogWindowRef);
+  useAuthDialog(dialogWindowRef, () => onCloseClick());
 
   const handleLoginSuccess = (profile: any, idToken: string) => {
     // 处理登录成功后的操作，可以将profile和idToken发送到服务器进行验证
