@@ -46,10 +46,10 @@ const Character: React.FC = () => {
     return (
       <>
         <div className="character flex max-lg:hidden">
-          <div className="desc-box">
+          <div className="desc-box flex justify-center items-center">
             <PageDesc
               title="ASTRARK"
-              subtitle="A strategic tower defence PVP game."
+              subtitle="<span class='whitespace-nowrap'>Stage One: An immersive tower defense strategy game.</span>"
               buttonLabel="click to explore"
               buttonLink="/AstrArk"
             />
@@ -79,28 +79,30 @@ const Character: React.FC = () => {
         {/* 移动端适配 */}
         <div className="max-lg:block items-center hidden">
           <Swiper
-            className="w-full h-full"
+            className="w-full h-screen"
             loop
             slidesPerView={1}
-            autoplay={{ delay: 2500 }}
+            autoplay={{ delay: 5000 }}
             modules={[Autoplay]}
           >
             { heroMap.map((item, index) => {
               return (
                 <SwiperSlide className="relative" key={index}>
-                  <Image
-                    className="w-full h-full"
-                    src={item.imgUrl}
-                    alt=""
-                  ></Image>
+                  <div className="w-full h-screen">
+                    <Image
+                      className="h-screen"
+                      src={item.imgUrl}
+                      alt=""
+                    ></Image>
 
-                  <Image
-                    className="absolute -bottom-[6rem] left-[12rem]"
-                    src={item.heroUrl}
-                    alt=""
-                  ></Image>
+                    <Image
+                      className="absolute max-w-[120%] -bottom-[6rem] left-[12rem]"
+                      src={item.heroUrl}
+                      alt=""
+                    ></Image>
 
-                  <div className="font-decima opacity-0.4 absolute bottom-[1rem] left-[1rem]">{item.name}</div>
+                    <div className="font-decima absolute bottom-[1rem] left-[1rem] text-[#F6C799] border-[#F6C799] border-b-2">{item.name}</div>
+                  </div>
                 </SwiperSlide>
               )
             }) }

@@ -11,7 +11,7 @@ export default function SchoolIcon(props: Props) {
   const icons = ["genetic", "mechanoid", "spiritual", "natural"];
 
   return (
-    <div className={"school-icons flex items-center gap-24 z-10 " + props.className}>
+    <div className={"school-icons flex items-center gap-24 z-10 max-md:gap-4 " + props.className}>
       {icons.map((label, index) => (
         <div
           key={index}

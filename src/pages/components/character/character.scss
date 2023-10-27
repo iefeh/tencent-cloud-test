@@ -8,6 +8,9 @@
   right: 50%;
   transform: translate(50%, -50%);
   z-index: 60;
+  width: 0;
+  height: 0;
+  box-shadow: 0 0 30rem 30rem rgba(0, 0, 0, 0.4);
 }
 .character-warp {
   --skew-deg: -22deg;
@@ -59,10 +62,11 @@
     bottom: 40px;
     left: 70%;
     font-size: 14px;
-    color: #fff;
+    // color: #fff;
+    color: #f6c799;
     transform: skewX(var(--skew-re-deg));
     font-family: decima;
-    opacity: 0.4;
+    opacity: 0.8;
   }
 
   .hero-name-last {

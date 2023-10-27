@@ -1,11 +1,16 @@
-import { createPortal } from "react-dom";
-import Link from "next/link";
-import Image from "next/image";
-import goldenLogo from "img/logo_golden.png";
-import btnTwitter from "img/login/btn_twitter.png";
-import btnGoogle from "img/login/btn_google.png";
-import GoogleLogin from "./GoogleLogin";
-import TwitterLogin from "./TwitterLogin";
+import { createPortal } from 'react-dom';
+import Image from 'next/image';
+import goldenLogo from 'img/logo_golden.png';
+import btnTwitter from 'img/login/btn_twitter.png';
+import btnGoogle from 'img/login/btn_google.png';
+import { useRef, useState } from 'react';
+import EmailLogin from './EmailLogin';
+import { CSSTransition } from 'react-transition-group';
+import { getGoogleAuthLinkAPI, getTwitterAuthLinkAPI } from '@/http/services/login';
+import { toast } from 'react-toastify';
+import { throttle } from 'lodash';
+import { DEFAULT_TOAST_OPTIONS } from '@/constant/toast';
+import useAuthDialog from '@/hooks/useAuthDialog';
 
 interface Props {
   visible?: boolean;
@@ -13,48 +18,89 @@ interface Props {
 }
 
 export default function LoginDialog({ visible, onClose }: Props) {
-  if (!visible) return null;
+  const [emailLoginVisible, setEmailLoginVisible] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogWindowRef = useRef<Window | null>(null);
 
-  const handleLoginSuccess = (profile: any, idToken: string) => {
-    // 处理登录成功后的操作，可以将profile和idToken发送到服务器进行验证
-    console.log('Login success', profile, idToken);
+  useAuthDialog(dialogWindowRef, () => onCloseClick());
+
+  function openAuthWindow(authURL: string) {
+    const dialog = window.open(
+      authURL,
+      'Authrization',
+      'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+    );
+    dialogWindowRef.current = dialog;
+  }
+
+  const onGoogleLoginClick = throttle(async () => {
+    try {
+      const res = await getGoogleAuthLinkAPI();
+      if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+      openAuthWindow(res.authorization_url);
+    } catch (error: any) {
+      toast.error(error?.message || error, DEFAULT_TOAST_OPTIONS);
+    }
+  }, 500);
+
+  const onTwitterLoginClick = throttle(async () => {
+    try {
+      const res = await getTwitterAuthLinkAPI();
+      if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+      openAuthWindow(res.authorization_url);
+    } catch (error: any) {
+      toast.error(error?.message || error, DEFAULT_TOAST_OPTIONS);
+    }
+  }, 500);
+
+  const onCloseClick = () => {
+    onClose?.();
+    setEmailLoginVisible(false);
   };
 
-  const handleLoginFailure = (error: any) => {
-    // 处理登录失败后的操作
-    console.error('Login failed', error);
-  };
+  const LoginButtons = () => (
+    <>
+      <Image className="w-[8.625rem] h-[5.125rem] mt-20 mb-[2rem]" src={goldenLogo} alt="" />
+
+      <div
+        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
+        onClick={onGoogleLoginClick}
+      >
+        <Image className="w-9 h-9" src={btnGoogle} alt="" />
+        <div>Continue With Google</div>
+      </div>
+
+      <div
+        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
+        onClick={onTwitterLoginClick}
+      >
+        <Image className="w-9 h-9" src={btnTwitter} alt="" />
+        <div>Continue With Twitter</div>
+      </div>
+
+      <div
+        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
+        onClick={() => setEmailLoginVisible(true)}
+      >
+        <div className="leading-9">Continue With Email</div>
+      </div>
+    </>
+  );
 
   return createPortal(
-    <div className="login-dialog fixed left-0 top-0 w-full h-screen z-50">
-      <div
-        className="mask w-full h-full bg-transparent"
-        onClick={onClose}
-      ></div>
+    <CSSTransition nodeRef={dialogRef} classNames="login-dialog" in={visible} timeout={800} unmountOnExit>
+      <div ref={dialogRef} className="login-dialog fixed left-0 top-0 w-full h-screen z-50 font-poppins-medium">
+        <div className="mask w-full h-full bg-transparent" onClick={onCloseClick}></div>
 
-      <div className="content absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[28.5rem] h-[27.56rem] bg-black rounded-[1.25rem] z-10 border-2 border-solid border-[#1F1B17] flex flex-col items-center overflow-hidden font-poppins-medium text-sm">
-        <Image
-          className="w-[8.625rem] h-[5.125rem] mt-20 mb-[3.75rem]"
-          src={goldenLogo}
-          alt=""
-        />
-
-        <div
-          className="inline-flex items-center cursor-pointer px-14 py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
-        >
-          <Image className="w-9 h-9" src={btnGoogle} alt="" />
-          <div>Continue With Google</div>
-          {/* <GoogleLogin onSuccess={handleLoginSuccess} onFailure={handleLoginFailure} /> */}
-        </div>
-
-        <div
-          className="inline-flex items-center cursor-pointer px-14 py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
-        >
-          <Image className="w-9 h-9" src={btnTwitter} alt="" />
-          <TwitterLogin />
+        <div className="content absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[28.5rem] h-[27.56rem] bg-black rounded-[1.25rem] z-10 border-2 border-solid border-[#1F1B17] flex flex-col items-center text-sm px-6 shadow-lg">
+          {emailLoginVisible ? (
+            <EmailLogin onClose={() => setEmailLoginVisible(false)} onLogin={onCloseClick} />
+          ) : (
+            <LoginButtons />
+          )}
         </div>
       </div>
-    </div>,
-    document.body
+    </CSSTransition>,
+    document.body,
   );
 }

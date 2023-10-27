@@ -14,11 +14,11 @@
         animation-fill-mode: both;
     }
     .referralInAnim {
-        animation: referralInAnim 1.2s ease;
+        animation: referralInAnim 0.84s ease;
         animation-fill-mode: both;
     }
     .referralOutAnim {
-        animation: referralOutAnim 1.2s ease;
+        animation: referralOutAnim 0.84s ease;
         animation-fill-mode: both;
     }
 
@@ -58,5 +58,13 @@
         .title:nth-child(3) {
             line-height: 2.25rem;
         }
+
+        .subtitle {
+            white-space: normal;
+        }
+    }
+
+    .mask {
+        background: linear-gradient(to right, transparent 0, #000 50%, transparent 100%);
     }
 }

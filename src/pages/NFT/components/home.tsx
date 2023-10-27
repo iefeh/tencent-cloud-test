@@ -19,6 +19,7 @@ const NftHome: React.FC = () => {
       <PageDesc
         hasBelt
         needAni
+        baseAniTY
         title="A DYNAMIC NFT ECOSYSTEM"
         subtitle="<div style='font-size: 3rem; font-family: semakin; margin-top: 30px'>Coming soon...</div>"
       />

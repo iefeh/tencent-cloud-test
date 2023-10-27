@@ -18,12 +18,12 @@
     transform: translateY(10vh);
   }
   100% {
-    transform: unset;
+    transform: translateY(0);
   }
 }
 
 .ani-up {
-  animation: ani_up 1.2s ease-in-out;
+  animation: ani_up 1.2s ease-in-out forwards;
 }
 
 .character {
@@ -40,5 +40,25 @@
   .scroll-content {
     position: relative;
     z-index: 10;
+  }
+
+  .swiper-mask {
+    background-color: #000;
+    box-shadow: 0 0 8rem 8rem #000;
+  }
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    background: linear-gradient(to bottom, #000 0, transparent 100%);
   }
 }

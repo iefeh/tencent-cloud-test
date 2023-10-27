@@ -46,13 +46,13 @@ export default function Footer(props: Props) {
         <div className="bottom w-[15.25rem] flex justify-between items-center text-[#4d4d4d]">
           <Link
             className="hover:text-white transition-all duration-200 ease-in"
-            href="/"
+            href="/PrivacyPolicy"
           >
             Privacy Policy
           </Link>
           <Link
             className="hover:text-white transition-all duration-200 ease-in"
-            href="/"
+            href="/CookiesPolicy"
           >
             Cookies Policy
           </Link>

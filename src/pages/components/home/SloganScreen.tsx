@@ -30,7 +30,7 @@ export default function SloganScreen(props: Props) {
   }, [props.scrollY]);
 
   return (
-    <div className="slogan-screen w-full h-screen relative overflow-hidden ">
+    <div className="slogan-screen w-full h-screen relative">
       <div ref={sloganRef} className={"title uppercase font-semakin text-[6.25rem] absolute left-1/2 top-0 z-20 text-center whitespace-nowrap max-lg:whitespace-normal " + styles.slogan}>
         own your destiny
       </div>

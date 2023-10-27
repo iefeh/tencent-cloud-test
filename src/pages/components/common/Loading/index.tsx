@@ -68,11 +68,11 @@ export default function Loading(props: Props) {
           Moonveil Entertainment presents.
         </span>
 
-        <Belt className="absolute left-1/2 -translate-x-1/2 top-[3.875rem]" />
+        <Belt className="absolute left-1/2 -translate-x-1/2 top-[3.875rem] max-md:top-[8.4rem]" />
 
         <div
           ref={progressRef}
-          className="progress absolute left-1/2 -translate-x-1/2 top-[6.125rem] font-semakin text-xl"
+          className="progress absolute left-1/2 -translate-x-1/2 top-[6.125rem] font-semakin text-xl max-md:top-[10rem]"
         >
           0%
         </div>

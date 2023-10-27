@@ -1,6 +1,6 @@
 'use client';
 
-import { createRef, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import SwiperScreen from './components/home/SwiperScreen';
 import Character from './components/character/character';
 import Footer from './components/home/Footer';
@@ -8,76 +8,64 @@ import StarScreen from './components/home/StarScreen';
 import Head from 'next/head';
 import SloganScreen from './components/home/SloganScreen';
 import SloganDescScreen from './components/home/SloganDescScreen';
-import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import { Mousewheel } from 'swiper/modules';
 
 export default function Home() {
-  const scrollWrapper = createRef<HTMLDivElement>();
-  const [swiper, setSwiper] = useState<SwiperClass>();
+  const scrollWrapper = useRef<HTMLDivElement>(null);
+  const maskRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
+  const rafId = useRef(0);
 
-  function onMaskAniEnd() {
-    if (!swiper) return;
-    swiper.enable();
-    swiper.slideNext(0);
-    setScrollY(swiper.translate);
+  function setLuxyFixed() {
+    if (!maskRef.current) return;
+
+    const y = window.luxy.getWrapperTranslateY();
+    const screenHeight = document.documentElement.clientHeight;
+    const fs8 = (parseInt(document.documentElement.style.fontSize) || 16) * 8;
+    maskRef.current.style.transform = `translate3d(0, ${screenHeight + fs8 - y * (0.6 + fs8 / screenHeight)}px, 0)`;
+    rafId.current = requestAnimationFrame(setLuxyFixed);
   }
 
-  function initSwiper(swiperIns: SwiperClass) {
-    setSwiper(swiperIns);
-    swiperIns.disable();
-  }
-
-  function onSwiperScroll(swiper: SwiperClass, e: WheelEvent) {
-    if (swiper.isBeginning) {
-      swiper.disable();
+  function onLuxyScroll() {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    setScrollY(-scrollTop);
+    if (scrollTop > 0) {
+      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
+      setLuxyFixed();
     }
-    setScrollY(swiper.translate);
   }
+
+  useEffect(() => {
+    window.addEventListener('scroll', onLuxyScroll);
+    return () => window.removeEventListener('scroll', onLuxyScroll);
+  }, []);
 
   return (
     <section
       ref={scrollWrapper}
-      className="page-home scroll-wrapper relative w-full h-screen flex flex-col items-center justify-between overflow-hidden bg-no-repeat bg-fixed bg-origin-border"
+      id="luxy"
+      className="page-home scroll-wrapper relative w-full flex flex-col items-center justify-between bg-no-repeat bg-fixed bg-origin-border z-10"
     >
       <Head>
         <title>Home | Moonveil</title>
       </Head>
 
-      <Swiper
-        className="w-full h-full"
-        modules={[Mousewheel]}
-        freeMode={{ enabled: true, sticky: false, momentum: true }}
-        slidesPerView="auto"
-        mousewheel
-        direction="vertical"
-        onSwiper={initSwiper}
-        onScroll={onSwiperScroll}
-      >
-        <SwiperSlide>
-          <SwiperScreen onMaskAniEnd={onMaskAniEnd} />
-        </SwiperSlide>
+      <SwiperScreen />
 
-        <SwiperSlide>
-          <SloganScreen scrollY={scrollY} />
-        </SwiperSlide>
+      <div className="w-full h-screen overflow-hidden"></div>
 
-        <SwiperSlide>
-          <SloganDescScreen />
-        </SwiperSlide>
+      <SloganScreen scrollY={scrollY} />
 
-        <SwiperSlide>
-          <div className="overflow-hidden">
-            <Character />
-          </div>
-        </SwiperSlide>
+      <SloganDescScreen />
 
-        <SwiperSlide style={{ height: 'auto' }}>
-          <Footer />
-        </SwiperSlide>
-      </Swiper>
+      <div className="w-full overflow-hidden">
+        <Character />
+      </div>
 
-      <StarScreen scrollY={scrollY} />
+      <Footer />
+
+      <StarScreen />
+
+      <div ref={maskRef} className="swiper-mask absolute left-0 top-0 w-full h-[60vh] translate-y-[calc(100vh_+_8rem)] z-20"></div>
     </section>
   );
 }

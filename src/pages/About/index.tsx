@@ -13,6 +13,7 @@ import { FreeMode, Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
+import EntertainmentSlide from "../components/home/EntertainmentSlide";
 
 interface Figure {
   img: StaticImageData;
@@ -24,9 +25,9 @@ interface Figure {
 const figureArray: Figure[] = [
   {
     img: MJ,
-    name: "M.J",
-    subTitle: "CEO",
-    introduce: `<div class="text-left whitespace-nowrap" >
+    name: 'M.J',
+    subTitle: 'CEO',
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- 10-year game dev & publishing experience</p>
   <p>- Lifetime hardcore gamer, Starcraft pro</p>
@@ -39,9 +40,9 @@ const figureArray: Figure[] = [
   },
   {
     img: JW,
-    name: "J.W",
-    subTitle: "COO",
-    introduce: `<div class="text-left whitespace-nowrap" >
+    name: 'Jason',
+    subTitle: 'COO',
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- Ex-pro player，lifetime hardcore gamer</p>
   <p>- Traveller on earth, also from Azeroth to Dragon isles</p>
@@ -51,11 +52,11 @@ const figureArray: Figure[] = [
   },
   {
     img: MasonZ,
-    name: "Mason Z",
-    subTitle: "Executive Producer",
-    introduce: `<div class="text-left whitespace-nowrap" >
+    name: 'Mason Z',
+    subTitle: 'Executive Producer',
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
-  <p>- Formerly Head of two game studios of Tencent family</p>
+  <p>- Formerly Head of a game studio of the Tecent family</p>
   <p>- Bacon evangelist</p>
   <p>- Sarcastic Master</p>
   <p>- Foe of Fats for Life</p>
@@ -63,9 +64,9 @@ const figureArray: Figure[] = [
   },
   {
     img: RobinZ,
-    name: "Robin Z",
-    subTitle: "Web 3 Producer",
-    introduce: `<div class="text-left whitespace-nowrap" >
+    name: 'Robin Z',
+    subTitle: 'Web 3 Producer',
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Defi project builder</p>
   <p>- Crypto native since 2014</p>
   <p>- 7 years full-stack mobile-game dev & production experience</p>
@@ -76,9 +77,9 @@ const figureArray: Figure[] = [
   },
   {
     img: PuffZ,
-    name: "Puff Z",
-    subTitle: "Art Director",
-    introduce: `<div class="text-left whitespace-nowrap" >
+    name: 'Puff Z',
+    subTitle: 'Art Director',
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 8 years Chief Gaming Companion experience</p>
   <p>- Discerning taste, unique aesthetics, and keen insight into players' psychology</p>
   <p>- Tree-climbing Pro</p>
@@ -132,25 +133,26 @@ export default function About({
         modules={[Mousewheel, FreeMode]}
         onScroll={onSlideScrollWrapper}
         freeMode={true}
-        slidesPerView={1}
+        slidesPerView="auto"
         onSwiper={setSwiperWrapper}
       >
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] max-sm:hidden bg-black ${open ? 'referralInAnim' : 'referralOutAnim'}`}
-              hidden={open === null}
+              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${
+                open ? 'referralInAnim' : 'referralOutAnim'
+              } ${open === null ? 'hidden' : ''}`}
             >
-              <div className="flex h-[90vh] shadow-[0px_0px_30px_10px_#514032]">
-                <div className="w-1/2 flex items-center justify-start p-56">
+              <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
+                <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem] max-md:pl-8 max-md:pr-4 max-md:w-full">
                   <PageDesc
                     hasBelt
-                    className="character-desc text-left whitespace-nowrap"
+                    className="character-desc text-left whitespace-nowrap max-md:whitespace-normal"
                     title={`<span>${curFigure?.name}</span><br><span class="text-[#666]" >${curFigure?.subTitle}</span>`}
                     subtitle={curFigure?.introduce}
                   />
                 </div>
-                <div className="w-1/2 flex items-center justify-center">
+                <div className="w-1/2 flex items-end justify-center max-md:hidden">
                   <Image
                     className="object-cover w-[40rem] h-[40.75rem]"
                     src={curFigure?.img!}
@@ -158,21 +160,21 @@ export default function About({
                   ></Image>
                 </div>
               </div>
-              <div
-                onClick={() => setOpen(!open)}
-                className="absolute bottom-[10vh] left-1/2 z-[3] -translate-x-1/2 translate-y-1/2 w-10 h-10 cursor-pointer"
-              >
-                <span className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10`}>
-                  <span>&#x2715;</span>
-                </span>
-                <span className="absolute font-semakin -bottom-[80%] -translate-x-1/2 left-1/2 text-[#F6C799]" >Close</span>
-                <Image
-                  className="object-cover"
-                  src="/img/about/button@2x.png"
-                  alt="close"
-                  fill
-                  sizes="100%"
-                />
+              <div className="blank w-full h-[11.875rem] relative">
+                <div
+                  onClick={() => setOpen(!open)}
+                  className="absolute bottom-full left-1/2 z-[3] -translate-x-1/2 translate-y-1/2 w-10 h-10 cursor-pointer"
+                >
+                  <span
+                    className={`absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black z-10`}
+                  >
+                    <span>&#x2715;</span>
+                  </span>
+                  <span className="absolute font-semakin -bottom-[80%] -translate-x-1/2 left-1/2 text-[#F6C799]">
+                    Close
+                  </span>
+                  <Image className="object-cover" src="/img/about/button@2x.png" alt="close" fill sizes="100%" />
+                </div>
               </div>
             </div>
             <div className="absolute font-semakin w-full h-full flex items-center justify-center text-9xl text-[#17100A]">
@@ -181,25 +183,34 @@ export default function About({
             <Swiper
               className="w-full h-full"
               modules={[Mousewheel, FreeMode]}
-              freeMode={true}
-              slidesPerView={3}
+              freeMode={{ enabled: true, sticky: false, momentum: true }}
+              // slidesPerView={3}
+              slidesPerView="auto"
               mousewheel={true}
-              breakpoints={{
-                320: {
-                  slidesPerView: 1,
-                },
-                640: {
-                  slidesPerView: 3
-                }
-              }}
+              // breakpoints={{
+              //   320: {
+              //     slidesPerView: 1,
+              //   },
+              //   640: {
+              //     // slidesPerView: 3
+              //     slidesPerView: "auto"
+              //   }
+              // }}
               centeredSlides={true}
               onScroll={onSlideScroll}
               onSwiper={setSwiperFigure}
             >
+              <SwiperSlide>
+                <EntertainmentSlide needAni={true} />
+
+                <div className="mask absolute left-[80vw] top-0 h-screen w-[40vw]"></div>
+              </SwiperSlide>
+              <SwiperSlide style={{ width: 'auto' }}><div className="w-[36vw] h-full"></div></SwiperSlide>
               {figureArray.map((figureData, index) => {
                 return (
                   <SwiperSlide
-                    className="flex items-center justify-start w-[24rem]"
+                    style={{ width: 'auto' }}
+                    className="flex items-center justify-start mr-[14.44rem]"
                     key={figureData.name}
                   >
                     <div
@@ -207,7 +218,7 @@ export default function About({
                         setCurFigure(figureData);
                         setOpen(true);
                       }}
-                      className="transition-transform transform group"
+                      className="transition-transform transform group w-[30.75rem]"
                     >
                       <Image
                         className="w-[30.75rem] h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
@@ -215,12 +226,8 @@ export default function About({
                         alt={figureData.name}
                       />
                       <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
-                        <span className="text-white mb-1 leading-none">
-                          {figureData.name}
-                        </span>
-                        <span className="text-[#666] leading-none whitespace-nowrap">
-                          {figureData.subTitle}
-                        </span>
+                        <span className="text-white mb-1 leading-none">{figureData.name}</span>
+                        <span className="text-[#666] leading-none whitespace-nowrap">{figureData.subTitle}</span>
                       </div>
                     </div>
                   </SwiperSlide>
@@ -230,50 +237,32 @@ export default function About({
             <div className="scroll_btn max-sm:hidden w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
               <div className="relative w-full h-full flex justify-center items-center">
                 scroll
-                <Image
-                  className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]"
-                  src={rightArrows}
-                  alt="left"
-                />
-                <Image
-                  className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]"
-                  src={leftArrows}
-                  alt="right"
-                />
+                <Image className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]" src={rightArrows} alt="left" />
+                <Image className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]" src={leftArrows} alt="right" />
               </div>
             </div>
           </div>
         </SwiperSlide>
-        <SwiperSlide>
+        <SwiperSlide style={{ minHeight: '100vh', height: 'auto' }}>
           <div
             ref={containerRef}
-            className="h-screen w-full friendLink_wrap min-h-screen bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
+            className="w-full friendLink_wrap bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${isVisiable && "slideInAnim"
-                }`}
+              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
+                isVisiable && 'slideInAnim'
+              }`}
             >
               Investors & Partners
             </div>
-            <div
-              className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && "slideInAnim"}`}
-            >
-              <ul className="gap-[2.38rem] grid grid-cols-5">
+            <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
+              <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
-                  if (index === 20) return null;
+                  if (index === 10) return;
 
                   return (
-                    <li
-                      key={index}
-                      className="w-[11.25rem] h-[5.53rem] relative"
-                    >
-                      <Image
-                        className="object-cover"
-                        src={`/img/about/${index + 1}.png`}
-                        alt=""
-                        fill
-                        sizes="100%"
-                      />
+                    <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
+                      <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />
                     </li>
                   );
                 })}

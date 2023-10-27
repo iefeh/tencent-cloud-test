@@ -58,3 +58,17 @@ body {
   font-family: poppins-medium;
   src: url("/fonts/Poppins-Medium.ttf");
 }
+
+.szh-menu-container--theme-dark .szh-menu.szh-menu {
+  background-color: #000;
+  border: none;
+  border-radius: 10px;
+}
+
+.szh-menu-container--theme-dark .szh-menu__item--hover.szh-menu__item--hover {
+  background-color: #000;
+}
+
+.szh-menu.szh-menu {
+  min-width: 148px;
+}

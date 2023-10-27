@@ -78,7 +78,12 @@ export class Sketch {
   }
 
   resize() {
+    const { clientWidth } = document.documentElement;
     this.width = this.container.offsetWidth;
+    if (clientWidth <= 768) {
+      this.width *= 2;
+      this.camera.position.set(0.5, 0, 2);
+    }
     this.height = this.container.offsetHeight;
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
@@ -176,8 +181,7 @@ export class Sketch {
   jumpTo(index) {
     if(this.isRunning) return;
     this.isRunning = true;
-    let len = this.textures.length;
-    let nextTexture =this.textures[(index +1)%len];
+    let nextTexture =this.textures[index];
     this.material.uniforms.texture2.value = nextTexture;
     let tl = new TimelineMax();
     tl.to(this.material.uniforms.progress,this.duration,{
@@ -185,7 +189,7 @@ export class Sketch {
       ease: Power2[this.easing],
       onComplete:()=>{
         console.log('FINISH');
-        this.current = (index +1)%len;
+        this.current = index;
         this.material.uniforms.texture1.value = nextTexture;
         this.material.uniforms.progress.value = 0;
         this.isRunning = false;
