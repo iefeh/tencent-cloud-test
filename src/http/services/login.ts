@@ -15,3 +15,12 @@ export function getUserInfoAPI(): Promise<UserInfo> {
 export function logoutAPI() {
   return http.post('/api/auth/signout');
 }
+
+export function getGoogleAuthLinkAPI(): Promise<GoogleAuthDto> {
+  const { origin } = location;
+  const params = {
+    landing_url: `${origin}/auth`,
+  };
+
+  return http.get('/api/auth/signin/google', { params });
+}

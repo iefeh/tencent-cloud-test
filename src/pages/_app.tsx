@@ -66,6 +66,7 @@ import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
 import usePostMessage from '@/hooks/usePostMessage';
 import { useStore } from '@/store';
 import UserStore from '@/store/User';
+import { ToastContainer } from 'react-toastify';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -266,6 +267,8 @@ export default function App({ Component, pageProps }: AppProps) {
           <RootLayout isInWhiteList={isInWhiteList}>
             <Component {...pageProps} />
           </RootLayout>
+
+          <ToastContainer />
         </MobxContext.Provider>
       )}
 

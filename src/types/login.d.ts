@@ -10,3 +10,7 @@ declare interface LoginByEmailBodyDto {
 declare interface TokenDto {
   token: string
 }
+
+declare interface GoogleAuthDto {
+  authorization_url: string;
+}

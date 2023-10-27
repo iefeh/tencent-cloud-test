@@ -8,6 +8,11 @@ import TwitterLogin from './TwitterLogin';
 import { useRef, useState } from 'react';
 import EmailLogin from './EmailLogin';
 import { CSSTransition } from 'react-transition-group';
+import { getGoogleAuthLinkAPI } from '@/http/services/login';
+import { toast } from 'react-toastify';
+import { throttle } from 'lodash';
+import { DEFAULT_TOAST_OPTIONS } from '@/constant/toast';
+import useAuthDialog from '@/hooks/useAuthDialog';
 
 interface Props {
   visible?: boolean;
@@ -17,6 +22,9 @@ interface Props {
 export default function LoginDialog({ visible, onClose }: Props) {
   const [emailLoginVisible, setEmailLoginVisible] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogWindowRef = useRef<Window | null>(null);
+
+  useAuthDialog(dialogWindowRef);
 
   const handleLoginSuccess = (profile: any, idToken: string) => {
     // 处理登录成功后的操作，可以将profile和idToken发送到服务器进行验证
@@ -28,6 +36,25 @@ export default function LoginDialog({ visible, onClose }: Props) {
     console.error('Login failed', error);
   };
 
+  function openAuthWindow(authURL: string) {
+    const dialog = window.open(
+      authURL,
+      'Authrization',
+      'width=600,height=400,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+    );
+    dialogWindowRef.current = dialog;
+  }
+
+  const onGoogleLoginClick = throttle(async () => {
+    try {
+      const res = await getGoogleAuthLinkAPI();
+      if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+      openAuthWindow(res.authorization_url);
+    } catch (error: any) {
+      toast.error(error?.message || error, DEFAULT_TOAST_OPTIONS);
+    }
+  }, 500);
+
   const onCloseClick = () => {
     onClose?.();
     setEmailLoginVisible(false);
@@ -37,7 +64,10 @@ export default function LoginDialog({ visible, onClose }: Props) {
     <>
       <Image className="w-[8.625rem] h-[5.125rem] mt-20 mb-[2rem]" src={goldenLogo} alt="" />
 
-      <div className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow">
+      <div
+        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
+        onClick={onGoogleLoginClick}
+      >
         <Image className="w-9 h-9" src={btnGoogle} alt="" />
         <div>Continue With Google</div>
         {/* <GoogleLogin onSuccess={handleLoginSuccess} onFailure={handleLoginFailure} /> */}
