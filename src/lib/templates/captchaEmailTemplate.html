@@ -9,6 +9,7 @@
             font-family: Arial, sans-serif;
             padding: 40px;
             text-align: center;
+            color: #333333; /* 深灰色 */
         }
         .container {
             border: 1px solid #ccc;
@@ -30,9 +31,10 @@
             padding: 10px 0;
             font-size: 24px;
             margin: 20px 0;
+            color: #000; /* 验证码字体颜色保持不变 */
         }
         a {
-            color: #000;
+            color: #333333; /* 深灰色 */
             text-decoration: underline;
         }
         .footer {
@@ -45,17 +47,18 @@
 <div class="container">
     <img class="logo" src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/logo/logo.png" alt="Moonveil Logo">
     <p>Welcome to Moonveil Entertainment! 🚀</p>
-    <p>To kickstart your journey, here's your unique verification code:</p>
-    <div class="code">captcha</div>
-    <p>Please click <a href="quickFillURL">here</a> to enter the code and complete the verification.<br>
+    <p>Here's your verification code to kickoff your journey</p>
+    <div class="code">${captcha}</div>
+    <p>Please click <a href="${quickFillURL}">here</a> to enter the code and complete the verification.<br>
         Please keep the code to yourself and don't share with anyone.</p>
     <hr>
-    <p>Please note that this is an automated message, so there is no need to reply. If you have any questions or need help, reach out us anytime at <a href="mailto:contact@moonveil.studio">contact@moonveil.studio</a></p>
+    <p>Please note that this is an automated message, so there is no need to reply. If you have any questions or need further help, feel free to reach out to us anytime at [<a href="mailto:contact@moonveil.studio">contact@moonveil.studio</a>]</p>
     <p>Welcome aboard!</p>
+    <hr>
     <div class="footer">
         <p>Follow Us</p>
         <a href="https://discord.com/invite/NyECfU5XFX">Discord</a> | <a href="https://twitter.com/Moonveil_Studio">Twitter</a> | <a href="https://t.me/+AeiqS8o2YmswYTgx">Telegram</a> | <a href="https://medium.com/@Moonveil_Studio">Medium</a>
-        <p>Copyright &copy; 2023 Moonveil Entertainment.</p>
+        <p>Copyright &copy; ${currentYear} Moonveil Entertainment.</p>
     </div>
 </div>
 </body>
