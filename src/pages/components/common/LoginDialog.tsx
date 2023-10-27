@@ -8,7 +8,7 @@ import TwitterLogin from './TwitterLogin';
 import { useRef, useState } from 'react';
 import EmailLogin from './EmailLogin';
 import { CSSTransition } from 'react-transition-group';
-import { getGoogleAuthLinkAPI } from '@/http/services/login';
+import { getGoogleAuthLinkAPI, getTwitterAuthLinkAPI } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
 import { DEFAULT_TOAST_OPTIONS } from '@/constant/toast';
@@ -40,7 +40,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
     const dialog = window.open(
       authURL,
       'Authrization',
-      'width=600,height=400,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
     );
     dialogWindowRef.current = dialog;
   }
@@ -48,6 +48,16 @@ export default function LoginDialog({ visible, onClose }: Props) {
   const onGoogleLoginClick = throttle(async () => {
     try {
       const res = await getGoogleAuthLinkAPI();
+      if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+      openAuthWindow(res.authorization_url);
+    } catch (error: any) {
+      toast.error(error?.message || error, DEFAULT_TOAST_OPTIONS);
+    }
+  }, 500);
+
+  const onTwitterLoginClick = throttle(async () => {
+    try {
+      const res = await getTwitterAuthLinkAPI();
       if (!res?.authorization_url) throw new Error('Get authorization link failed!');
       openAuthWindow(res.authorization_url);
     } catch (error: any) {
@@ -73,9 +83,13 @@ export default function LoginDialog({ visible, onClose }: Props) {
         {/* <GoogleLogin onSuccess={handleLoginSuccess} onFailure={handleLoginFailure} /> */}
       </div>
 
-      <div className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5">
+      <div
+        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
+        onClick={onTwitterLoginClick}
+      >
         <Image className="w-9 h-9" src={btnTwitter} alt="" />
-        <TwitterLogin />
+        <div>Continue With Twitter</div>
+        {/* <TwitterLogin /> */}
       </div>
 
       <div

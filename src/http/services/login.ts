@@ -24,3 +24,12 @@ export function getGoogleAuthLinkAPI(): Promise<GoogleAuthDto> {
 
   return http.get('/api/auth/signin/google', { params });
 }
+
+export function getTwitterAuthLinkAPI(): Promise<GoogleAuthDto> {
+  const { origin } = location;
+  const params = {
+    landing_url: `${origin}/auth`,
+  };
+
+  return http.get('/api/auth/signin/twitter', { params });
+}
