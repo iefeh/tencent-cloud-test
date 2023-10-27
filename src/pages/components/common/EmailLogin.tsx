@@ -2,7 +2,7 @@ import Image from 'next/image';
 import CodeInput from './CodeInput';
 import goldenLogo from 'img/logo_golden.png';
 import { useState, useEffect, useRef, useContext } from 'react';
-import { loginByEmailAPI, sendEmailCodeAPI } from '@/http/services/login';
+import { sendEmailCodeAPI } from '@/http/services/login';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 
