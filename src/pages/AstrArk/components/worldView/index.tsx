@@ -48,7 +48,7 @@ const WorldView: React.FC = () => {
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
       <div
-        className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center hidden p-8 min-[2560px]:flex "
+        className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center hidden p-8 min-[2400px]:flex "
         data-speed-y="8"
         data-offset="-400"
       >
@@ -56,7 +56,7 @@ const WorldView: React.FC = () => {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_400px)] justify-center items-center min-[768px]:max-[2560px]:flex hidden p-8"
+        className="luxy-el w-full h-[calc(100vh_+_400px)] justify-center items-center min-[768px]:max-[2399px]:flex hidden p-8"
         data-speed-y="8"
         data-offset="-300"
       >
