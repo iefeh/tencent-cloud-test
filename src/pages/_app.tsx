@@ -260,7 +260,7 @@ export default function App({ Component, pageProps }: AppProps) {
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
       </Head>
-      {loading ? (
+      {!isInWhiteList && loading ? (
         <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
       ) : (
         <MobxContext.Provider value={store}>
