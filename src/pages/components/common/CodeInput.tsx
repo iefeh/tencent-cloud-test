@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState, MutableRefObject } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 
 interface Props {
   length?: number;
@@ -59,14 +59,15 @@ export default function CodeInput(props: Props) {
   }
 
   function onPaste(e: ClipboardEvent) {
+    e.preventDefault();
     const text = e.clipboardData?.getData('Text');
-    if (!text) return;
+    if (!text || !/^[0-9]{6}$/.test(text)) return;
 
     const chars = text.split('');
-    const newCodes = codes.map((_, i) => (/[0-9]/.test(chars[i]) ? chars[i] : ''));
-    setCodes(newCodes);
-    const lastIndex = newCodes.findLastIndex((c) => !!c);
-    setTimeout(() => onFocus(lastIndex), 500);
+    setCodes(chars);
+    setTimeout(() => {
+      onFocus(chars.length - 1);
+    }, 500);
   }
 
   return (
