@@ -1,3 +1,4 @@
+import { KEY_AUTHORIZATION } from '@/constant/storage';
 import { useStore } from '@/store';
 import { Axios } from 'axios';
 
@@ -9,8 +10,7 @@ const axios = new Axios({
 });
 
 axios.interceptors.request.use((config) => {
-  const store = useStore();
-  config.headers.Authorization = store.token || '';
+  config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
   return config;
 });
 
