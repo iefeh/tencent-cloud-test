@@ -34,7 +34,7 @@ const UserAvatar = () => {
         theming="dark"
         onClose={() => toggle(false)}
       >
-        <MenuItem onClick={logout}>
+        <MenuItem onClick={() => logout()}>
           <Image width={24} height={24} src={logoutImg} alt="" />
           <span className="font-poppins-medium uppercase text-[14px]">Log Out</span>
         </MenuItem>
