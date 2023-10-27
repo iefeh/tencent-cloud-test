@@ -3,8 +3,6 @@ import Image from 'next/image';
 import goldenLogo from 'img/logo_golden.png';
 import btnTwitter from 'img/login/btn_twitter.png';
 import btnGoogle from 'img/login/btn_google.png';
-import GoogleLogin from './GoogleLogin';
-import TwitterLogin from './TwitterLogin';
 import { useRef, useState } from 'react';
 import EmailLogin from './EmailLogin';
 import { CSSTransition } from 'react-transition-group';
@@ -25,16 +23,6 @@ export default function LoginDialog({ visible, onClose }: Props) {
   const dialogWindowRef = useRef<Window | null>(null);
 
   useAuthDialog(dialogWindowRef, () => onCloseClick());
-
-  const handleLoginSuccess = (profile: any, idToken: string) => {
-    // 处理登录成功后的操作，可以将profile和idToken发送到服务器进行验证
-    console.log('Login success', profile, idToken);
-  };
-
-  const handleLoginFailure = (error: any) => {
-    // 处理登录失败后的操作
-    console.error('Login failed', error);
-  };
 
   function openAuthWindow(authURL: string) {
     const dialog = window.open(
@@ -80,7 +68,6 @@ export default function LoginDialog({ visible, onClose }: Props) {
       >
         <Image className="w-9 h-9" src={btnGoogle} alt="" />
         <div>Continue With Google</div>
-        {/* <GoogleLogin onSuccess={handleLoginSuccess} onFailure={handleLoginFailure} /> */}
       </div>
 
       <div
@@ -89,7 +76,6 @@ export default function LoginDialog({ visible, onClose }: Props) {
       >
         <Image className="w-9 h-9" src={btnTwitter} alt="" />
         <div>Continue With Twitter</div>
-        {/* <TwitterLogin /> */}
       </div>
 
       <div
