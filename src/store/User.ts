@@ -27,12 +27,17 @@ class UserStore {
     this.userInfo = res;
   };
 
-  logout = async () => {
-    await logoutAPI();
+  logout = async (needRequest = true) => {
+    if (needRequest) {
+      await logoutAPI();
+    }
+
     this.token = '';
     localStorage.removeItem(KEY_AUTHORIZATION);
     this.userInfo = null;
-  }
+  };
+
+  
 }
 
 export default UserStore;

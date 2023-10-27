@@ -1,4 +1,4 @@
-import { KEY_AUTHORIZATION } from '@/constant/storage';
+import { useStore } from '@/store';
 import { Axios } from 'axios';
 
 const axios = new Axios({
@@ -9,7 +9,8 @@ const axios = new Axios({
 });
 
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
+  const store = useStore();
+  config.headers.Authorization = store.token || '';
   return config;
 });
 
@@ -19,6 +20,14 @@ axios.interceptors.response.use((res) => {
   const data = JSON.parse(res.data);
 
   if (data.code !== 1) {
+    switch (data.code) {
+      // token expired
+      case -2: {
+        const store = useStore();
+        store.logout(false);
+        break;
+      }
+    }
     throw new Error(data.msg);
   }
 
