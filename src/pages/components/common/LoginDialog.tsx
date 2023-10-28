@@ -21,6 +21,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
   const [emailLoginVisible, setEmailLoginVisible] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const dialogWindowRef = useRef<Window | null>(null);
+  const isAuthing = useRef(false);
 
   useAuthDialog(dialogWindowRef, () => onCloseClick());
 
@@ -34,22 +35,32 @@ export default function LoginDialog({ visible, onClose }: Props) {
   }
 
   const onGoogleLoginClick = throttle(async () => {
+    if (isAuthing.current) return;
+
+    isAuthing.current = true;
     try {
       const res = await getGoogleAuthLinkAPI();
       if (!res?.authorization_url) throw new Error('Get authorization link failed!');
       openAuthWindow(res.authorization_url);
     } catch (error: any) {
       toast.error(error?.message || error, DEFAULT_TOAST_OPTIONS);
+    } finally {
+      isAuthing.current = false;
     }
   }, 500);
 
   const onTwitterLoginClick = throttle(async () => {
+    if (isAuthing.current) return;
+
+    isAuthing.current = true;
     try {
       const res = await getTwitterAuthLinkAPI();
       if (!res?.authorization_url) throw new Error('Get authorization link failed!');
       openAuthWindow(res.authorization_url);
     } catch (error: any) {
       toast.error(error?.message || error, DEFAULT_TOAST_OPTIONS);
+    } finally {
+      isAuthing.current = false;
     }
   }, 500);
 

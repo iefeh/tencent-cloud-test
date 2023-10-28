@@ -96,7 +96,7 @@ const EmailLogin = (props: Props) => {
 
       <div className="row email w-full flex justify-between items-center mt-4">
         <input
-          className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10 w-[13rem]"
+          className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10 w-[13rem] px-3"
           type="email"
           value={email}
           placeholder="Your Email"
