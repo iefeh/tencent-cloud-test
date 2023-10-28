@@ -44,6 +44,8 @@ export default function CodeInput(props: Props) {
     const chars = text.split('');
     setCodes(chars);
     inputRefs.current[chars.length - 1]?.focus();
+    onChange?.(text);
+    onComplete?.(text);
   }
 
   return (

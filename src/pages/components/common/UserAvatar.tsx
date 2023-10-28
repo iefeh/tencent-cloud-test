@@ -17,8 +17,8 @@ const UserAvatar = () => {
 
   return (
     <>
-      <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer">
-        <div className="avatar rounded-full overflow-hidden w-[32px] h-[32px]">
+      <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
+        <div className="avatar rounded-full overflow-hidden w-[28px] h-[28px] relative">
           <Image
             className="object-cover"
             src={userInfo.avatar_url}
