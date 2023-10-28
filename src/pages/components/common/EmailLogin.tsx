@@ -16,7 +16,7 @@ const EmailLogin = (props: Props) => {
   const { onClose, onLogin } = props;
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
-  const [codeBtnText, setCodeBtnText] = useState('Send Code');
+  const [codeBtnText, setCodeBtnText] = useState('Send');
   const MAX_LEFT_SECONDS = 60;
   const leftSeconds = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +82,7 @@ const EmailLogin = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    setCodeBtnText('Send Code');
+    setCodeBtnText('Send');
   }, [email]);
 
   return (
@@ -91,7 +91,7 @@ const EmailLogin = (props: Props) => {
         <Image className="w-[8.625rem] h-[5.125rem]" src={goldenLogo} alt="" />
 
         <div
-          className="inline-flex items-center cursor-pointer px-10 py-2 justify-center rounded-[3.5rem] bg-deep-yellow mt-5"
+          className="inline-flex items-center cursor-pointer px-8 py-2 justify-center rounded-[3.5rem] bg-deep-yellow mt-5"
           onClick={onClose}
         >
           <div className="leading-6">Back</div>
@@ -110,7 +110,7 @@ const EmailLogin = (props: Props) => {
 
         <div
           className={
-            'inline-flex items-center px-6 py-2 justify-center bg-basic-gray rounded-[3.5rem] w-[7.875rem] ' +
+            'inline-flex items-center px-6 py-2 justify-center bg-basic-gray rounded-[3.5rem] w-[6rem] ' +
             (isCounting || isLoading ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
           }
           onClick={onSendClick}

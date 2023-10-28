@@ -55,7 +55,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
 
   const onCloseClick = () => {
     onClose?.();
-    setEmailLoginVisible(false);
+    setTimeout(() => setEmailLoginVisible(false), 800);
   };
 
   const LoginButtons = () => (
