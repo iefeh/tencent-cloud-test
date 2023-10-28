@@ -55,7 +55,7 @@ const EmailLogin = (props: Props) => {
       leftSeconds.current--;
       if (leftSeconds.current <= 0) {
         clearInterval(timer.current);
-        setCodeBtnText('Re-sent');
+        setCodeBtnText('Resend');
         setIsCounting(false);
         return;
       }
@@ -81,10 +81,6 @@ const EmailLogin = (props: Props) => {
     };
   }, []);
 
-  useEffect(() => {
-    setCodeBtnText('Send');
-  }, [email]);
-
   return (
     <div className="email-login flex flex-col items-center w-[20rem]">
       <div className="row back w-full flex justify-between items-center mt-8">
@@ -100,10 +96,9 @@ const EmailLogin = (props: Props) => {
 
       <div className="row email w-full flex justify-between items-center mt-4">
         <input
-          className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10"
+          className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10 w-[13rem]"
           type="email"
           value={email}
-          disabled={isCounting || isLoading}
           placeholder="Your Email"
           onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
         />
