@@ -7,7 +7,7 @@ import {createRouter} from "next-connect";
 import connectMongo from "@/lib/mongodb/client";
 import User from "@/lib/models/User";
 import {appendQueryParamsToUrl} from "@/lib/utils/url";
-import UserGoogle, {IUserGoogle} from "@/lib/models/UserGoogle";
+import UserGoogle from "@/lib/models/UserGoogle";
 import {generateUserSession} from "@/lib/middleware/session";
 import {googleOAuthProvider} from "@/lib/authorization/provider";
 

@@ -15,6 +15,7 @@ export enum ResponseCode {
     ERROR_CAPTCHA_EXPIRED = -5,
     ERROR_CAPTCHA_MISMATCH = -6,
     ERROR_AUTHORIZATION_DENIED = -7,
+    ERROR_SEND_CAPTCHA_DISALLOWED = -8,
     // 添加对应的响应码
 }
 
@@ -30,6 +31,8 @@ const ResponseMessages = {
     [ResponseCode.ERROR_CAPTCHA_MISMATCH]: 'Captcha Mismatch',
     // 授权拒绝，常见于Oauth2授权
     [ResponseCode.ERROR_AUTHORIZATION_DENIED]: 'Authorization Denied',
+    // 不允许发送验证码，间隔不对或者IP受限
+    [ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED]: 'Sending Captcha Temporarily Disallowed',
     // 添加响应码对应的msg
 }
 
@@ -52,3 +55,4 @@ export const notFound = build(ResponseCode.ERROR_NOT_FOUND);
 export const captchaExpired = build(ResponseCode.ERROR_CAPTCHA_EXPIRED);
 export const captchaMismatch = build(ResponseCode.ERROR_CAPTCHA_MISMATCH);
 export const authorizationDenied = build(ResponseCode.ERROR_AUTHORIZATION_DENIED);
+export const sendCaptchaDisallowed = build(ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED);

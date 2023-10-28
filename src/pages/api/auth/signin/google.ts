@@ -24,7 +24,7 @@ router.get(async (req, res) => {
         flow: AuthorizationFlow.Login,
     };
     const state = uuidv4();
-    await redis.setex(`authorization_state:google:${state}`, 60 * 60 * 30, JSON.stringify(payload));
+    await redis.setex(`authorization_state:google:${state}`, 60 * 60 * 12, JSON.stringify(payload));
 
     const authorizationUri = googleOAuthProvider.authorizationURL({
         state: state,

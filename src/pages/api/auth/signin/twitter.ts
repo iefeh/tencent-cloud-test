@@ -22,7 +22,7 @@ router.get(async (req, res) => {
         code_challenge: uuidv4(),
     };
     const state = uuidv4();
-    await redis.setex(`authorization_state:twitter:${state}`, 60 * 60 * 30, JSON.stringify(payload));
+    await redis.setex(`authorization_state:twitter:${state}`, 60 * 60 * 12, JSON.stringify(payload));
 
     const authorizationUri = twitterOAuthProvider.authorizationURL({
         state: state,
