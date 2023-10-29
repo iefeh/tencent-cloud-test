@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { sendEmailCodeAPI } from '@/http/services/login';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
+import { KEY_EMAIL } from '@/constant/storage';
 
 interface Props {
   onClose?: () => void;
@@ -24,6 +25,17 @@ const EmailLogin = (props: Props) => {
   const [isCounting, setIsCounting] = useState(false);
   const [desc, setDesc] = useState('Please type in your email to get the verification code.');
 
+  function listenEmail() {
+    localStorage.setItem(KEY_EMAIL, email);
+
+    function closeDialog() {
+      onLogin?.();
+      window.removeEventListener('storage', closeDialog);
+    }
+
+    window.addEventListener('storage', closeDialog);
+  }
+
   async function onSendClick() {
     if (!email) {
       setDesc('Please input your email.');
@@ -37,6 +49,7 @@ const EmailLogin = (props: Props) => {
 
     setIsLoading(true);
     setDesc('Sending. . .');
+    listenEmail();
     try {
       await sendEmailCodeAPI({ email });
     } catch (error: any) {
