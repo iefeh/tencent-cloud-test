@@ -6,6 +6,7 @@ import {v4 as uuidv4} from 'uuid';
 import connectMongo from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
 import {generateUserSession} from "@/lib/middleware/session";
+import {genLoginJWT} from "@/lib/particle.network/auth";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -45,6 +46,7 @@ router.post(async (req, res) => {
     const token = await generateUserSession(user.user_id);
     res.json(response.success({
         token: token,
+        particle_jwt: genLoginJWT(user.user_id),
     }));
 });
 

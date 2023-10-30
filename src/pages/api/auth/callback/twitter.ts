@@ -10,6 +10,7 @@ import {appendQueryParamsToUrl} from "@/lib/utils/url";
 import UserTwitter from "@/lib/models/UserTwitter";
 import {generateUserSession} from "@/lib/middleware/session";
 import {twitterOAuthProvider} from "@/lib/authorization/provider";
+import {genLoginJWT} from "@/lib/particle.network/auth";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -84,6 +85,7 @@ router.get(async (req, res) => {
         code: responseData.code,
         msg: responseData.msg,
         token: token,
+        particle_jwt: genLoginJWT(userId),
     });
     res.redirect(landing_url);
 });

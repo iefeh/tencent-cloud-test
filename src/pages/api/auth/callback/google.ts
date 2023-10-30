@@ -10,6 +10,7 @@ import {appendQueryParamsToUrl} from "@/lib/utils/url";
 import UserGoogle from "@/lib/models/UserGoogle";
 import {generateUserSession} from "@/lib/middleware/session";
 import {googleOAuthProvider} from "@/lib/authorization/provider";
+import {genLoginJWT} from "@/lib/particle.network/auth";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -44,7 +45,7 @@ router.get(async (req, res) => {
         code: code as string,
     });
     // 获取绑定用户
-    const connection:any = await googleOAuthProvider.createRequest(authToken).get('https://openidconnect.googleapis.com/v1/userinfo');
+    const connection: any = await googleOAuthProvider.createRequest(authToken).get('https://openidconnect.googleapis.com/v1/userinfo');
 
     // 执行用户登录
     await connectMongo();
@@ -81,6 +82,7 @@ router.get(async (req, res) => {
         code: responseData.code,
         msg: responseData.msg,
         token: token,
+        particle_jwt: genLoginJWT(userId),
     });
     res.redirect(landing_url);
 });

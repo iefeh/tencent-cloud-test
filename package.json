@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@auth/mongodb-adapter": "^2.0.2",
+    "@types/jsonwebtoken": "^9.0.4",
     "@types/lodash": "^4.14.199",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.8.7",
