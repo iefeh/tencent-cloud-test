@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+import { KEY_EMAIL } from '@/constant/storage';
+import { MobxContext } from '@/pages/_app';
+import { useContext, useEffect } from 'react';
 
 const KEY_QUICK_FILL = '__quick_fill_code__';
 
@@ -7,10 +9,21 @@ export function setQuickFillCode(code: string) {
 }
 
 export default function usePostMessage() {
-  function listen(e: StorageEvent) {
-    const code = localStorage.getItem(KEY_QUICK_FILL);
-    console.log(code);
-    localStorage.removeItem(KEY_QUICK_FILL);
+  const store = useContext(MobxContext);
+
+  async function listen(e: StorageEvent) {
+    const email = localStorage.getItem(KEY_EMAIL) || '';
+    const code = localStorage.getItem(KEY_QUICK_FILL) || '';
+    if (!email || !code) return;
+
+    try {
+      await store.loginByEmail({ email, captcha: code });
+      localStorage.removeItem(KEY_EMAIL);
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      localStorage.removeItem(KEY_QUICK_FILL);
+    }
   }
 
   useEffect(() => {

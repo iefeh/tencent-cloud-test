@@ -1,5 +1,6 @@
 declare interface SendEmailCodeParamsDto {
   email: string;
+  quick_fill_url?: string
 }
 
 declare interface LoginByEmailBodyDto {

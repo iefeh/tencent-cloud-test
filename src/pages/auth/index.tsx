@@ -6,6 +6,7 @@ export default function Auth() {
     const query = new URLSearchParams(location.search);
     const token = query.get('token') || '';
     localStorage.setItem(KEY_AUTHORIZATION, token);
+    window.close();
   }, []);
 
   return null;

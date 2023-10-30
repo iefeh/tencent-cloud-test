@@ -11,32 +11,13 @@ export default function CodeInput(props: Props) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(length).fill(null));
   const [codes, setCodes] = useState(Array(length).fill(''));
   const currentFocusIndex = useRef(-1);
-  const isFull = useRef(false);
 
-  function onFocus(index: number) {
-    let targetIndex = Math.max(Math.min(index, length - 1), 0);
-    const firstEI = codes.findIndex((code) => !code);
-    if (firstEI > -1) {
-      if (firstEI < targetIndex - 1) targetIndex = firstEI;
-    } else {
-      targetIndex = length - 1;
-    }
-
-    if (currentFocusIndex.current === targetIndex) return;
-    currentFocusIndex.current = targetIndex;
-    inputRefs.current[targetIndex]?.focus();
-  }
-
-  function onKeyUp(e: KeyboardEvent, index: number, value: string) {
+  function onKeyDown(e: KeyboardEvent, index: number, value: string) {
     if (value || e.code.toUpperCase() !== 'BACKSPACE') return;
-    if (isFull.current) {
-      isFull.current = false;
-      return;
-    }
-    onFocus(index - 1);
+    if (index > 0) inputRefs.current[index - 1]?.focus();
   }
 
-  function onInput(e: FormEvent<HTMLInputElement>, index: number, value: string) {
+  const onInput = (index: number) => (e: FormEvent<HTMLInputElement>) => {
     let newValue = (e.target as HTMLInputElement).value;
     newValue = newValue[newValue.length - 1] || '';
     const arr = codes.slice();
@@ -45,18 +26,15 @@ export default function CodeInput(props: Props) {
     }
 
     arr[index] = newValue;
-    if (newValue !== '') {
-      if (index < length - 1) {
-        onFocus(index + 1);
-      } else {
-        isFull.current = true;
-        onComplete?.(arr.join(''));
-      }
+    if (newValue && index < codes.length - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
     inputRefs.current[index]!.value = arr[index] || '';
     setCodes(arr);
-    onChange?.(arr.join(''));
-  }
+    const text = arr.join('');
+    onChange?.(text);
+    if (text.length >= length) onComplete?.(text);
+  };
 
   function onPaste(e: ClipboardEvent) {
     e.preventDefault();
@@ -65,9 +43,9 @@ export default function CodeInput(props: Props) {
 
     const chars = text.split('');
     setCodes(chars);
-    setTimeout(() => {
-      onFocus(chars.length - 1);
-    }, 500);
+    inputRefs.current[chars.length - 1]?.focus();
+    onChange?.(text);
+    onComplete?.(text);
   }
 
   return (
@@ -82,9 +60,9 @@ export default function CodeInput(props: Props) {
             key={index}
             type="text"
             value={value}
-            onKeyUp={(e) => onKeyUp(e as any, index, value)}
-            onInput={(e) => onInput(e, index, value)}
-            onFocus={() => onFocus(index)}
+            pattern="[0-9]"
+            onKeyDown={(e) => onKeyDown(e as any, index, value)}
+            onInput={onInput(index)}
             onBlur={() => {
               currentFocusIndex.current = -1;
             }}

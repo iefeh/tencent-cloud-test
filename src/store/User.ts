@@ -19,7 +19,7 @@ class UserStore {
     const res = await loginByEmailAPI(data);
     this.token = res.token || '';
     localStorage.setItem(KEY_AUTHORIZATION, this.token);
-    this.getUserInfo();
+    await this.getUserInfo();
   };
 
   getUserInfo = async () => {
