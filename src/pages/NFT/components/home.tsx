@@ -12,6 +12,7 @@ import planet3 from 'img/nft/home/planet3.png';
 import stars1 from 'img/nft/home/stars1.png';
 import stars2 from 'img/nft/home/stars2.png';
 import stars3 from 'img/nft/home/stars3.png';
+import BasicButton from '@/pages/components/common/BasicButton';
 
 const NftHome: React.FC = () => {
   return (
@@ -21,7 +22,20 @@ const NftHome: React.FC = () => {
         needAni
         baseAniTY
         title="A DYNAMIC NFT ECOSYSTEM"
-        subtitle="<div style='font-size: 3rem; font-family: semakin; margin-top: 30px'>Coming soon...</div>"
+        subtitle={
+          <div className="max-w-[32rem] font-decima">
+            At Moonveil, we put player experience at the heart of everything we do. Our goal is to create a dynamic NFT
+            ecosystem that encourages players to stay engaged with our games and offers continuous rewards and returns
+            in the future.
+          </div>
+        }
+        button={
+          <div className="flex gap-2 mt-[7rem]">
+            <BasicButton label="Tetra NFT Series" link="/TetraNFT" />
+            <BasicButton label="Get Involved" link="/WhitelistTasks" />
+            <BasicButton label="Coming Soon" />
+          </div>
+        }
       />
 
       {/* 大光晕 */}

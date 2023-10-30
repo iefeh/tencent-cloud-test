@@ -5,12 +5,12 @@ import TrifleScren from './components/TrifleScreen';
 import PrivilegeScreen from './components/PrivilegeScreen';
 import Footer from '../components/home/Footer';
 
-export default function NFT() {
+export default function TetraNFT() {
   return (
     <>
       <section id="luxy" className="w-full flex flex-col z-10">
         <Head>
-          <title>NFT | Moonveil</title>
+          <title>NFT | Moonveil Entertainment</title>
         </Head>
 
         <div className="page-container w-full">
