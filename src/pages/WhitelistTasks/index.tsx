@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import PreviewBox from './components/PreviewBox';
 
 export default function WhitelistTasks() {
   return (
@@ -8,7 +9,9 @@ export default function WhitelistTasks() {
           <title>WhitelistTasks | Moonveil Entertainment</title>
         </Head>
 
-        <div className="page-container w-full">WhitelistTasks</div>
+        <div className="page-container w-full pl-[36.5%]">WhitelistTasks</div>
+
+        <PreviewBox />
       </section>
     </>
   );
