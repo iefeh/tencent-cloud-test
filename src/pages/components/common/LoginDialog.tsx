@@ -11,6 +11,8 @@ import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
 import { DEFAULT_TOAST_OPTIONS } from '@/constant/toast';
 import useAuthDialog from '@/hooks/useAuthDialog';
+// import XSvg from 'svg/x.svg';
+import emailImg from 'img/icon/email.png';
 
 interface Props {
   visible?: boolean;
@@ -86,6 +88,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
         onClick={onTwitterLoginClick}
       >
         <Image className="w-9 h-9" src={btnTwitter} alt="" />
+        {/* <XSvg className="w-9 h-9 text-white" /> */}
         <div>Continue With Twitter</div>
       </div>
 
@@ -93,6 +96,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
         className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
         onClick={() => setEmailLoginVisible(true)}
       >
+        <Image className="w-9 h-9" src={emailImg} alt="" />
         <div className="leading-9">Continue With Email</div>
       </div>
     </>
