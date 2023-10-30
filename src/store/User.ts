@@ -6,6 +6,7 @@ import { makeAutoObservable } from 'mobx';
 class UserStore {
   token = '';
   userInfo: UserInfo | null = null;
+  jwtToken = '';
 
   constructor() {
     makeAutoObservable(this);
@@ -19,14 +20,15 @@ class UserStore {
   loginByEmail = async (data: LoginByEmailBodyDto) => {
     const res = await loginByEmailAPI(data);
     this.token = res.token || '';
+    this.jwtToken = res.particle_jwt || '';
     localStorage.setItem(KEY_AUTHORIZATION, this.token);
+    this.loginParticle();
     await this.getUserInfo();
   };
 
   getUserInfo = async () => {
     const res = await getUserInfoAPI();
     this.userInfo = res;
-    this.loginParticle();
   };
 
   logout = async (needRequest = true) => {
@@ -48,7 +50,11 @@ class UserStore {
 
     let userInfo;
     if (!particle.auth.isLogin()) {
-      userInfo = await particle.auth.login();
+      userInfo = await particle.auth.login({
+        preferredAuthType: 'jwt',
+        account: this.jwtToken,
+        hideLoading: true,
+      });
     } else {
       userInfo = particle.auth.getUserInfo();
     }
@@ -57,8 +63,6 @@ class UserStore {
   };
 
   loginParticle = async () => {
-    if (!this.userInfo) return;
-
     const particleUserInfo = await this.getParticleUserInfo();
     if (!particleUserInfo) return;
 

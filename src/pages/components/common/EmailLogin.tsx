@@ -18,6 +18,7 @@ const EmailLogin = (props: Props) => {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [codeBtnText, setCodeBtnText] = useState('Send');
+  const [verifyBtnText, setVerifyBtnText] = useState('Verify');
   const MAX_LEFT_SECONDS = 60;
   const leftSeconds = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,8 +79,9 @@ const EmailLogin = (props: Props) => {
   }
 
   async function onVerify() {
-    if (code.length < 6) return;
+    if (code.length < 6 || isLoading) return;
 
+    setVerifyBtnText('Verifying');
     setIsLoading(true);
     try {
       await loginByEmail?.({ email, captcha: code });
@@ -88,6 +90,7 @@ const EmailLogin = (props: Props) => {
       setDesc(error?.message || error);
     } finally {
       setIsLoading(false);
+      setVerifyBtnText('Verify');
     }
   }
 
@@ -142,11 +145,11 @@ const EmailLogin = (props: Props) => {
         <div
           className={
             'inline-flex items-center px-14 justify-center py-2 bg-basic-gray rounded-[3.5rem] mt-5 ' +
-            (code.length < 6 || isCounting || isLoading ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
+            (code.length < 6 || isLoading ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
           }
           onClick={onVerify}
         >
-          <div className="leading-9">Verify</div>
+          <div className="leading-9">{verifyBtnText}</div>
         </div>
       </div>
     </div>
