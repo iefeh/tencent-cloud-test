@@ -34,3 +34,7 @@ export function getTwitterAuthLinkAPI(): Promise<GoogleAuthDto> {
 
   return http.get('/api/auth/signin/twitter', { params });
 }
+
+export function signInParticleAPI(data: ParticleAuthDto) {
+  return http.post('/api/auth/signin/particle', JSON.stringify(data));
+}

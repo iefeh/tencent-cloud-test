@@ -15,3 +15,9 @@ declare interface TokenDto {
 declare interface GoogleAuthDto {
   authorization_url: string;
 }
+
+declare interface ParticleAuthDto {
+  particle_auth_token: string;
+  particle_user_id: string;
+  platform?: string;
+}
