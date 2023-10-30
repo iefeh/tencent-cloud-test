@@ -1,30 +1,20 @@
-import Head from 'next/head';
-import BreathBackground from './components/BreathBackground';
-import IndexScreen from './components/IndexScreen';
-import TrifleScren from './components/TrifleScreen';
-import PrivilegeScreen from './components/PrivilegeScreen';
-import Footer from '../components/home/Footer';
+import Head from 'next/head'
+import NftHome from './components/home'
 
-export default function NFT() {
-  return (
-    <>
-      <section id="luxy" className="w-full flex flex-col z-10">
+export default function Page({
+    params,
+    searchParams,
+  }: {
+    params: { slug: string }
+    searchParams: { [key: string]: string | string[] | undefined }
+  }) {
+    return (
+      <section>
         <Head>
           <title>NFT | Moonveil</title>
         </Head>
 
-        <div className="page-container w-full">
-          <IndexScreen />
-
-          <TrifleScren />
-
-          <PrivilegeScreen />
-
-          <Footer />
-        </div>
+        <NftHome></NftHome>
       </section>
-
-      <BreathBackground />
-    </>
-  );
-}
+    )
+  }
