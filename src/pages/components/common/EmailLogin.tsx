@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { sendEmailCodeAPI } from '@/http/services/login';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
+import { KEY_EMAIL } from '@/constant/storage';
 
 interface Props {
   onClose?: () => void;
@@ -16,13 +17,24 @@ const EmailLogin = (props: Props) => {
   const { onClose, onLogin } = props;
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
-  const [codeBtnText, setCodeBtnText] = useState('Send Code');
+  const [codeBtnText, setCodeBtnText] = useState('Send');
   const MAX_LEFT_SECONDS = 60;
   const leftSeconds = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
   const timer = useRef(0);
   const [isCounting, setIsCounting] = useState(false);
   const [desc, setDesc] = useState('Please type in your email to get the verification code.');
+
+  function listenEmail() {
+    localStorage.setItem(KEY_EMAIL, email);
+
+    function closeDialog() {
+      onLogin?.();
+      window.removeEventListener('storage', closeDialog);
+    }
+
+    window.addEventListener('storage', closeDialog);
+  }
 
   async function onSendClick() {
     if (!email) {
@@ -37,6 +49,7 @@ const EmailLogin = (props: Props) => {
 
     setIsLoading(true);
     setDesc('Sending. . .');
+    listenEmail();
     try {
       await sendEmailCodeAPI({ email });
     } catch (error: any) {
@@ -55,7 +68,7 @@ const EmailLogin = (props: Props) => {
       leftSeconds.current--;
       if (leftSeconds.current <= 0) {
         clearInterval(timer.current);
-        setCodeBtnText('Re-sent');
+        setCodeBtnText('Resend');
         setIsCounting(false);
         return;
       }
@@ -67,11 +80,14 @@ const EmailLogin = (props: Props) => {
   async function onVerify() {
     if (code.length < 6) return;
 
+    setIsLoading(true);
     try {
       await loginByEmail?.({ email, captcha: code });
       onLogin?.();
     } catch (error: any) {
       setDesc(error?.message || error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -81,17 +97,13 @@ const EmailLogin = (props: Props) => {
     };
   }, []);
 
-  useEffect(() => {
-    setCodeBtnText('Send Code');
-  }, [email]);
-
   return (
     <div className="email-login flex flex-col items-center w-[20rem]">
       <div className="row back w-full flex justify-between items-center mt-8">
         <Image className="w-[8.625rem] h-[5.125rem]" src={goldenLogo} alt="" />
 
         <div
-          className="inline-flex items-center cursor-pointer px-10 py-2 justify-center rounded-[3.5rem] bg-deep-yellow mt-5"
+          className="inline-flex items-center cursor-pointer px-8 py-2 justify-center rounded-[3.5rem] bg-deep-yellow mt-5"
           onClick={onClose}
         >
           <div className="leading-6">Back</div>
@@ -100,17 +112,16 @@ const EmailLogin = (props: Props) => {
 
       <div className="row email w-full flex justify-between items-center mt-4">
         <input
-          className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10"
+          className="bg-basic-gray inline-block outline-none border-deep-yellow border-1 rounded text-center h-10 w-[13rem] px-3"
           type="email"
           value={email}
-          disabled={isCounting || isLoading}
           placeholder="Your Email"
           onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
         />
 
         <div
           className={
-            'inline-flex items-center px-6 py-2 justify-center bg-basic-gray rounded-[3.5rem] w-[7.875rem] ' +
+            'inline-flex items-center px-6 py-2 justify-center bg-basic-gray rounded-[3.5rem] w-[6rem] ' +
             (isCounting || isLoading ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
           }
           onClick={onSendClick}
@@ -131,7 +142,7 @@ const EmailLogin = (props: Props) => {
         <div
           className={
             'inline-flex items-center px-14 justify-center py-2 bg-basic-gray rounded-[3.5rem] mt-5 ' +
-            (code.length < 6 ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
+            (code.length < 6 || isCounting || isLoading ? 'cursor-not-allowed' : 'hover:bg-deep-yellow cursor-pointer')
           }
           onClick={onVerify}
         >

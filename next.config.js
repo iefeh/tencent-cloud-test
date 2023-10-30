@@ -8,6 +8,12 @@ const nextConfig = {
       {
         hostname: 'moonveil-public.s3.ap-southeast-2.amazonaws.com',
       },
+      {
+        hostname: 'pbs.twimg.com',
+      },
+      {
+        hostname: 'lh3.googleusercontent.com',
+      },
     ],
   },
   webpack(config) {

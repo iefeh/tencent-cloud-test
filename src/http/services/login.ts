@@ -1,6 +1,7 @@
 import http from '../index';
 
 export function sendEmailCodeAPI(params: SendEmailCodeParamsDto) {
+  params.quick_fill_url = `${location.origin}/email/captcha/quickfill`;
   return http.get('/api/auth/signin/captcha', { params });
 }
 

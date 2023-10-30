@@ -17,24 +17,19 @@ const UserAvatar = () => {
 
   return (
     <>
-      <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer">
-        <Image
-          className="rounded-full overflow-hidden object-cover"
-          width={48}
-          height={48}
-          src={userInfo.avatar_url}
-          alt=""
-        />
+      <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
+        <div className="avatar rounded-full overflow-hidden w-[28px] h-[28px] relative">
+          <Image
+            className="object-cover"
+            src={userInfo.avatar_url}
+            alt=""
+            fill
+          />
+        </div>
       </div>
 
-      <ControlledMenu
-        {...hoverProps}
-        {...menuState}
-        anchorRef={ref}
-        theming="dark"
-        onClose={() => toggle(false)}
-      >
-        <MenuItem onClick={logout}>
+      <ControlledMenu {...hoverProps} {...menuState} anchorRef={ref} theming="dark" onClose={() => toggle(false)}>
+        <MenuItem onClick={() => logout()}>
           <Image width={24} height={24} src={logoutImg} alt="" />
           <span className="font-poppins-medium uppercase text-[14px]">Log Out</span>
         </MenuItem>

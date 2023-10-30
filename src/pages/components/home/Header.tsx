@@ -89,16 +89,16 @@ const Header = () => {
         </div>
         {userInfo ? <UserAvatar /> : (
           <BasicButton
-            className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] ' + (listOpen ? 'hidden' : '')}
+            className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8 ' + (listOpen ? 'hidden' : '')}
             label="login"
             onClick={() => setLoginVisible(true)}
           />
         )}
 
         {listOpen ? (
-          <Close onClick={() => setListOpen(false)} className="max-lg:block max-lg:ml-9 hidden w-[3rem] h-[3rem]" />
+          <Close onClick={() => setListOpen(false)} className="max-lg:block mr6 hidden w-[3rem] h-[3rem]" />
         ) : (
-          <List onClick={() => setListOpen(true)} className="max-lg:block hidden max-lg:ml-9 w-[3rem] h-[3rem]" />
+          <List onClick={() => setListOpen(true)} className="max-lg:block mr-6 hidden w-[3rem] h-[3rem]" />
         )}
       </div>
 
