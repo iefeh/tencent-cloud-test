@@ -76,7 +76,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
       <Image className="w-[8.625rem] h-[5.125rem] mt-20 mb-[2rem]" src={goldenLogo} alt="" />
 
       <div
-        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
+        className="inline-flex items-center cursor-pointer w-[18.875rem] py-2 px-[3.5rem] bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow"
         onClick={onGoogleLoginClick}
       >
         <Image className="w-9 h-9" src={btnGoogle} alt="" />
@@ -84,7 +84,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
       </div>
 
       <div
-        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
+        className="inline-flex items-center cursor-pointer w-[18.875rem] py-2 px-[3.5rem] bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
         onClick={onTwitterLoginClick}
       >
         <Image className="w-9 h-9" src={btnTwitter} alt="" />
@@ -93,7 +93,7 @@ export default function LoginDialog({ visible, onClose }: Props) {
       </div>
 
       <div
-        className="inline-flex items-center cursor-pointer w-[18.875rem] justify-center py-2 bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
+        className="inline-flex items-center cursor-pointer w-[18.875rem] py-2 px-[3.5rem] bg-basic-gray rounded-[3.5rem] hover:bg-deep-yellow mt-5"
         onClick={() => setEmailLoginVisible(true)}
       >
         <Image className="w-9 h-9" src={emailImg} alt="" />

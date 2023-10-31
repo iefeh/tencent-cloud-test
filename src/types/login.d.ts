@@ -1,6 +1,6 @@
 declare interface SendEmailCodeParamsDto {
   email: string;
-  quick_fill_url?: string
+  quick_fill_url?: string;
 }
 
 declare interface LoginByEmailBodyDto {
@@ -9,9 +9,16 @@ declare interface LoginByEmailBodyDto {
 }
 
 declare interface TokenDto {
-  token: string
+  token: string;
+  particle_jwt: string;
 }
 
 declare interface GoogleAuthDto {
   authorization_url: string;
+}
+
+declare interface ParticleAuthDto {
+  particle_auth_token: string;
+  particle_user_id: string;
+  platform?: string;
 }
