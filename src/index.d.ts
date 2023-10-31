@@ -5,3 +5,7 @@ interface Window {
 }
 
 declare module 'luxy.js';
+
+interface QuickfillDto {
+    code: string;
+}

@@ -34,6 +34,12 @@ const config: Config = {
         'fz-18': '18px',
         'fz-20': '20px',
       },
+      borderColor: {
+        'deep-yellow': '#665C50'
+      },
+      borderWidth: {
+        1: '1px'
+      }
     },
   },
   plugins: [],
