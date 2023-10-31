@@ -28,6 +28,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         user_id: data.uuid,
         evm_wallet: getEvmWallet(data.wallets),
     }
+    console.log(`user ${userId} particle ${particle}`);
     const particleAuthUserId = data.jwtId.split(':')[1];
     if (particleAuthUserId != userId) {
         console.error(`want particle auth user ${userId} but got ${particleAuthUserId}`);
