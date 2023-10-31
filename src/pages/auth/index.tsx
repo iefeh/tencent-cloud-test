@@ -1,11 +1,14 @@
-import { KEY_AUTHORIZATION } from "@/constant/storage";
-import { useEffect } from "react";
+import { KEY_AUTHORIZATION, KEY_PARTICLE_TOKEN } from '@/constant/storage';
+import { useEffect } from 'react';
 
 export default function Auth() {
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const token = query.get('token') || '';
+    const jwt = query.get('particle_jwt') || '';
     localStorage.setItem(KEY_AUTHORIZATION, token);
+    localStorage.setItem(KEY_PARTICLE_TOKEN, jwt);
+    localStorage.setItem('temp_auth', location.search);
     window.close();
   }, []);
 
