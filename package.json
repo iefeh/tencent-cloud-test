@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/react": "^2.1.13",
     "@svgr/webpack": "^8.1.0",
     "axios": "^1.5.1",
+    "framer-motion": "^10.16.4",
     "gsap": "^3.12.2",
     "lodash": "^4.17.21",
     "luxy.js": "^0.1.0",

@@ -53,6 +53,7 @@ import Script from 'next/script';
 import astrark_bg_home from 'img/astrark/bg-home.jpg';
 import astrark_bg_mask from 'img/astrark/bg-mask.png';
 import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
+import { NextUIProvider } from '@nextui-org/react';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -65,9 +66,7 @@ async function initResources(path: string) {
       promises.push(loadVideo('/video/ntfbg.webm'));
       break;
     case '/ntf':
-      promises.push(
-        ...[].map((path) => loadImage(path)),
-      );
+      promises.push(...[].map((path) => loadImage(path)));
       break;
     case '/about':
       promises.push(
@@ -225,13 +224,16 @@ export default function App({ Component, pageProps }: AppProps) {
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
       </Head>
-      {loading ? (
-        <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-      ) : (
-        <RootLayout>
-          <Component {...pageProps} />
-        </RootLayout>
-      )}
+
+      <NextUIProvider>
+        {loading ? (
+          <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+        ) : (
+          <RootLayout>
+            <Component {...pageProps} />
+          </RootLayout>
+        )}
+      </NextUIProvider>
 
       <Script id="google-analytics">
         {`
