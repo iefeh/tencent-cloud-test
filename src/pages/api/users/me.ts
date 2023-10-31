@@ -31,6 +31,7 @@ router.all((req, res) => {
 
 export default router.handler({
     onError(err, req, res) {
+        console.error(err);
         res.status(500).json(response.serverError());
     },
 });
