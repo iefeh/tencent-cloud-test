@@ -24,6 +24,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     }
     await connectMongo();
     const data = await getParticleUser(particle_user_id, particle_auth_token);
+
     const particle = {
         web_token: particle_auth_token,
         user_id: data.uuid,
