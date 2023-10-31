@@ -11,6 +11,7 @@ export default function useAuthDialog(dialog: MutableRefObject<Window | null>, c
     if (!token) return;
 
     store.token = token;
+    store.loginParticle();
     store.getUserInfo().catch(() => void 0);
     if (!dialog.current) return;
     dialog.current.close();
