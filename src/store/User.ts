@@ -54,11 +54,13 @@ class UserStore {
   getParticleUserInfo = async () => {
     let userInfo;
     if (!this.particle.auth.isLogin()) {
+      console.log('token moonveil', this.jwtToken);
       userInfo = await this.particle.auth.login({
         preferredAuthType: 'jwt',
         account: this.jwtToken,
         hideLoading: true,
       });
+      console.log('userInfo particle', userInfo);
     } else {
       userInfo = this.particle.auth.getUserInfo();
     }
@@ -68,9 +70,9 @@ class UserStore {
 
   loginParticle = async () => {
     const particleUserInfo = await this.getParticleUserInfo();
-    if (!particleUserInfo) return;
+    // if (!particleUserInfo) return;
 
-    const { token, uuid } = particleUserInfo;
+    const { token, uuid } = particleUserInfo!;
 
     const data: ParticleAuthDto = {
       particle_auth_token: token,
