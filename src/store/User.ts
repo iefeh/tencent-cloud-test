@@ -7,9 +7,15 @@ class UserStore {
   token = '';
   userInfo: UserInfo | null = null;
   jwtToken = '';
+  particle: ParticleNetwork;
 
   constructor() {
     makeAutoObservable(this);
+    this.particle = new ParticleNetwork({
+      projectId: '6e3c69f1-f726-405a-8277-93542a2e602d',
+      clientKey: 'cqTW7Q9qUDlZOhZ0uTiwDYP3BidmCrx2eWlNHzSZ',
+      appId: 'f9d66501-274a-4a88-9848-5749641693d6',
+    });
   }
 
   init = () => {
@@ -32,6 +38,10 @@ class UserStore {
   };
 
   logout = async (needRequest = true) => {
+    if (this.particle.auth.isLogin()) {
+      this.particle.auth.logout(true);
+    }
+
     if (needRequest) {
       await logoutAPI();
     }
@@ -42,21 +52,15 @@ class UserStore {
   };
 
   getParticleUserInfo = async () => {
-    const particle = new ParticleNetwork({
-      projectId: '6e3c69f1-f726-405a-8277-93542a2e602d',
-      clientKey: 'cqTW7Q9qUDlZOhZ0uTiwDYP3BidmCrx2eWlNHzSZ',
-      appId: 'f9d66501-274a-4a88-9848-5749641693d6',
-    });
-
     let userInfo;
-    if (!particle.auth.isLogin()) {
-      userInfo = await particle.auth.login({
+    if (!this.particle.auth.isLogin()) {
+      userInfo = await this.particle.auth.login({
         preferredAuthType: 'jwt',
         account: this.jwtToken,
         hideLoading: true,
       });
     } else {
-      userInfo = particle.auth.getUserInfo();
+      userInfo = this.particle.auth.getUserInfo();
     }
 
     return userInfo;
