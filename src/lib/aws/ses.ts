@@ -34,7 +34,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
         quickFillURL = 'https://www.moonveil.gg/email/captcha/quickfill'
     }
     quickFillURL = appendQueryParamToUrl(quickFillURL, 'code', captcha);
-    const createSendEmailCommand = (toAddress: string, fromAddress: string) => {
+    const createSendEmailCommand = (toAddress: string, fromAddress: string, fromName: string) => {
         return new SendEmailCommand({
             Destination: {
                 /* required */
@@ -60,7 +60,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
                     Data: "Verification Code",
                 },
             },
-            Source: fromAddress,
+            Source: `${fromName} <${fromAddress}>`,
             ReplyToAddresses: [
                 /* more items */
             ],
@@ -69,6 +69,7 @@ export const sendCaptchaEmail = async (toAddress: string, captcha: number, quick
     const sendEmailCommand = createSendEmailCommand(
         toAddress,
         process.env.EMAIL_FROM as string,
+        process.env.EMAIL_FROM_NAME as string,
     );
     await sesClient.send(sendEmailCommand);
 };
