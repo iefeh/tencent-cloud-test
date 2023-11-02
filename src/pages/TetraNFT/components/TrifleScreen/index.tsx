@@ -4,6 +4,10 @@ import Image from 'next/image';
 import inactiveTrifleImg from 'img/nft/trifle/trifle_inactive.jpg';
 import activeTrifleImg1 from 'img/nft/trifle/trifle_active_1.jpg';
 import arrowImg from 'img/nft/trifle/arrow.png';
+import trifleBgImg1 from 'img/nft/trifle/trifle_bg_1.png';
+import trifleBgImg2 from 'img/nft/trifle/trifle_bg_2.png';
+import activeLabelImg from 'img/nft/trifle/label_active.png';
+import inactiveLabelImg from 'img/nft/trifle/label_inactive.png';
 
 export default function TrifleScren() {
   const trifles = [
@@ -11,6 +15,8 @@ export default function TrifleScren() {
       title: 'Destiny Tetra',
       label: 'Level I',
       activeImg: activeTrifleImg1,
+      bgImg: trifleBgImg1,
+      bgStyle: { maxWidth: '109%', width: '109%', height: '109%' },
       isActive: true,
     },
     {
@@ -18,6 +24,8 @@ export default function TrifleScren() {
       label: 'Level II',
       // TODO 替换二阶激活图片
       activeImg: activeTrifleImg1,
+      bgImg: trifleBgImg2,
+      bgStyle: { maxWidth: '103%', width: '103%', height: '103%' },
       isActive: false,
     },
     {
@@ -30,7 +38,7 @@ export default function TrifleScren() {
   ];
 
   return (
-    <div className="w-full h-screen bg-black flex flex-col justify-center items-center shadow-[0_-4rem_4rem_4rem_#000]">
+    <div className="w-full h-screen bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000]">
       <PageDesc
         title="Collect, Sythesize and Upgrade"
         subtitle={
@@ -42,29 +50,64 @@ export default function TrifleScren() {
         }
       />
 
-      <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24">We have three levels of Tetra NFTs</div>
+      <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
+        We have three levels of Tetra NFTs
+      </div>
 
       <div className="px-10 py-4 border border-[#3E3123] rounded-[0.625rem] bg-[rgba(246,199,153,0.06)] mt-[1.875rem] font-decima text-base">
         Collect multiple Level I Destiny Tetra NFTs to synthesize and upgrade to higher level NFTs.
       </div>
 
-      <div className="mystery-box-list flex justify-between items-center">
+      <div className="mystery-box-list flex justify-between items-center mt-[6.625rem]">
         {trifles.map((item, index) => {
           return (
             <>
-              {index > 0 && <Image className="w-7 h-[3.1875rem]" src={arrowImg} alt="" />}
+              {index > 0 && <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />}
 
-              <div className="mystery-box">
-                <div className="bg"></div>
-                <div className="box">
+              <div className="mystery-box relative">
+                {item.bgImg && (
+                  <Image className="absolute bottom-2 right-2 z-0" style={item.bgStyle} src={item.bgImg} alt="" />
+                )}
+
+                <div
+                  className={
+                    'box relative z-0 cursor-pointer border rounded-[1.25rem] ' +
+                    (item.isActive ? 'border-[rgba(75,217,214,0.6)]' : 'border-[rgba(255,255,255,0.5)]')
+                  }
+                >
                   <Image
-                    className={
-                      'w-[18.75rem] h-[18.75rem] border rounded-[1.25rem] ' +
-                      (item.isActive ? 'border-[rgba(75,217,214,0.6)]' : 'border-[rgba(255,255,255,0.5)]')
-                    }
+                    className="w-[18.75rem] h-[18.75rem] rounded-[1.25rem] relative z-10 transition-opacity hover:opacity-0"
                     src={item.isActive ? item.activeImg : inactiveTrifleImg}
                     alt=""
                   />
+
+                  {/* TODO 优化失焦后重置进度 */}
+                  <video
+                    className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem]"
+                    autoPlay
+                    playsInline
+                    muted
+                    loop
+                    preload="auto"
+                  >
+                    <source src="/video/ntfbg.webm" />
+                  </video>
+
+                  <span className="absolute left-1/2 -bottom-8 -translate-x-1/2 translate-y-full font-semakin text-lg text-[#333] uppercase">
+                    {item.label}
+                  </span>
+
+                  <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 w-[8.8125rem] h-6 text-center z-10">
+                    <Image src={item.isActive ? activeLabelImg : inactiveLabelImg} alt="" fill />
+                    <span
+                      className={
+                        'relative z-0 font-decima text-sm ' +
+                        (item.isActive ? 'text-[#4BD9D6]' : 'text-[rgba(255,255,255,0.5)]')
+                      }
+                    >
+                      {item.title}
+                    </span>
+                  </div>
                 </div>
               </div>
             </>
@@ -72,7 +115,7 @@ export default function TrifleScren() {
         })}
       </div>
 
-      <BasicButton className="mt-[5.25rem]" label="Get Involved" link="/WhitelistTasks" />
+      <BasicButton className="mt-[8.1875rem]" label="Get Involved" link="/WhitelistTasks" />
     </div>
   );
 }
