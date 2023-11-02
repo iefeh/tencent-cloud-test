@@ -17,6 +17,7 @@ export default function TrifleScren() {
       activeImg: activeTrifleImg1,
       bgImg: trifleBgImg1,
       bgStyle: { maxWidth: '109%', width: '109%', height: '109%' },
+      videoSrc: '/video/ntfbg.webm',
       isActive: true,
     },
     {
@@ -76,22 +77,27 @@ export default function TrifleScren() {
                   }
                 >
                   <Image
-                    className="w-[18.75rem] h-[18.75rem] rounded-[1.25rem] relative z-10 transition-opacity hover:opacity-0"
+                    className={
+                      'w-[18.75rem] h-[18.75rem] rounded-[1.25rem] relative z-10 transition-opacity ' +
+                      (item.isActive ? 'hover:opacity-0' : '')
+                    }
                     src={item.isActive ? item.activeImg : inactiveTrifleImg}
                     alt=""
                   />
 
                   {/* TODO 优化失焦后重置进度 */}
-                  <video
-                    className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem]"
-                    autoPlay
-                    playsInline
-                    muted
-                    loop
-                    preload="auto"
-                  >
-                    <source src="/video/ntfbg.webm" />
-                  </video>
+                  {item.isActive && item.videoSrc && (
+                    <video
+                      className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem]"
+                      autoPlay
+                      playsInline
+                      muted
+                      loop
+                      preload="auto"
+                    >
+                      <source src={item.videoSrc} />
+                    </video>
+                  )}
 
                   <span className="absolute left-1/2 -bottom-8 -translate-x-1/2 translate-y-full font-semakin text-lg text-[#333] uppercase">
                     {item.label}
