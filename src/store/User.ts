@@ -54,6 +54,7 @@ class UserStore {
   getParticleUserInfo = async () => {
     let userInfo;
     if (!this.particle.auth.isLogin()) {
+      console.log('particle not login, use jwt: ', this.jwtToken);
       userInfo = await this.particle.auth.login({
         preferredAuthType: 'jwt',
         account: this.jwtToken,
@@ -68,9 +69,12 @@ class UserStore {
 
   loginParticle = async () => {
     const particleUserInfo = await this.getParticleUserInfo();
+    console.log('particle user info(return when it\'s null): ', particleUserInfo);
     if (!particleUserInfo) return;
 
     const { token, uuid } = particleUserInfo!;
+    console.log('particle has logged in, token: ', token);
+    console.log('particle has logged in, uuid: ', uuid);
 
     const data: ParticleAuthDto = {
       particle_auth_token: token,
@@ -78,6 +82,7 @@ class UserStore {
       platform: 'web',
     };
 
+    console.log('particle report request, token: ', token);
     const res = await signInParticleAPI(data);
     return res;
   };
