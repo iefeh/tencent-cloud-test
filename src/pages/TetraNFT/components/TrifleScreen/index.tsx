@@ -39,7 +39,7 @@ export default function TrifleScren() {
   ];
 
   return (
-    <div className="w-full h-screen bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000]">
+    <div className="w-full bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000] pt-[9.0625rem]">
       <PageDesc
         title="Collect, Sythesize and Upgrade"
         subtitle={
