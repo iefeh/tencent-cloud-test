@@ -6,7 +6,8 @@ import activeCardImg2 from 'img/nft/trifle/trifle_card_2_active.png';
 import inactiveCardImg2 from 'img/nft/trifle/trifle_card_2_inactive.png';
 import activeCardImg3 from 'img/nft/trifle/trifle_card_3_active.png';
 import inactiveCardImg3 from 'img/nft/trifle/trifle_card_3_inactive.png';
-import tagImg from 'img/nft/trifle/tag.png';
+import topBgImg from 'img/nft/trifle/bg_top.png';
+import triangleImg from 'img/nft/trifle/triangle.png';
 import Image from 'next/image';
 import PrivilegeList from '../PrivilegeList';
 
@@ -32,8 +33,18 @@ export default function PrivilegeScreen() {
   ]);
 
   return (
-    <div className="w-full bg-black flex flex-col justify-center items-center pt-[16.25rem]">
-      <div className="bg-box"></div>
+    <div className="w-full bg-black flex flex-col justify-center items-center pt-[16.25rem] relative">
+      <div className="bg-box absolute left-0 top-0 w-full h-full">
+        <div className="top-box absolute top-0 left-1/2 -translate-x-1/2">
+          <Image className="w-[55rem] h-[55rem]" src={topBgImg} alt="" />
+
+          <Image
+            className="w-[4.5625rem] h-[4.125rem] absolute top-[14.5625rem] left-1/2 -translate-x-1/2"
+            src={triangleImg}
+            alt=""
+          />
+        </div>
+      </div>
 
       <PageDesc
         title={
