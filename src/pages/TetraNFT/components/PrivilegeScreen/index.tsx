@@ -7,6 +7,9 @@ import inactiveCardImg2 from 'img/nft/trifle/trifle_card_2_inactive.png';
 import activeCardImg3 from 'img/nft/trifle/trifle_card_3_active.png';
 import inactiveCardImg3 from 'img/nft/trifle/trifle_card_3_inactive.png';
 import topBgImg from 'img/nft/trifle/bg_top.png';
+import topRightBgImg from 'img/nft/trifle/bg_top_right.png';
+import bottomRightBgImg from 'img/nft/trifle/bg_bottom_right.png';
+import middleLeftBgImg from 'img/nft/trifle/bg_middle_left.png';
 import triangleImg from 'img/nft/trifle/triangle.png';
 import Image from 'next/image';
 import PrivilegeList from '../PrivilegeList';
@@ -44,6 +47,10 @@ export default function PrivilegeScreen() {
             alt=""
           />
         </div>
+
+        <Image className="w-[18.75rem] h-[18.375rem] absolute top-0 right-0" src={topRightBgImg} alt="" />
+        <Image className="w-[12.375rem] h-[14.8125rem] absolute bottom-0 right-0" src={bottomRightBgImg} alt="" />
+        <Image className="w-[20.375rem] h-[23.875rem] absolute left-0 top-1/2 -translate-y-1/2" src={middleLeftBgImg} alt="" />
       </div>
 
       <PageDesc
