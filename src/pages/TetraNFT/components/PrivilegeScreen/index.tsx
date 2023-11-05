@@ -37,7 +37,7 @@ export default function PrivilegeScreen() {
   ]);
 
   return (
-    <div className="w-full bg-black flex flex-col justify-center items-center pt-[16.25rem] relative">
+    <div className="w-full bg-black flex flex-col justify-center items-center pt-[21.3125rem] pb-[17.375rem] relative">
       <div className="bg-box absolute left-0 top-0 w-full h-full">
         <div className="top-box absolute top-0 left-1/2 -translate-x-1/2">
           <Image className="w-[55rem] h-[55rem]" src={topBgImg} alt="" />
@@ -49,10 +49,10 @@ export default function PrivilegeScreen() {
           />
         </div>
 
-        <Image className="w-[18.75rem] h-[18.375rem] absolute top-[9.0625rem] right-0" src={topRightBgImg} alt="" />
-        <Image className="w-[12.375rem] h-[14.8125rem] absolute bottom-0 right-0" src={bottomRightBgImg} alt="" />
+        <Image className="w-[18.75rem] h-[18.375rem] absolute top-[5.0625rem] right-0" src={topRightBgImg} alt="" />
+        <Image className="w-[12.375rem] h-[14.8125rem] absolute bottom-[19.6875rem] right-[14.3125rem]" src={bottomRightBgImg} alt="" />
         <Image
-          className="w-[20.375rem] h-[23.875rem] absolute left-0 top-1/2 -translate-y-1/2"
+          className="w-[20.375rem] h-[23.875rem] absolute left-0 top-[55.5625rem] -translate-y-1/2"
           src={middleLeftBgImg}
           alt=""
         />
