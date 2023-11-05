@@ -8,6 +8,7 @@ import trifleBgImg1 from 'img/nft/trifle/trifle_bg_1.png';
 import trifleBgImg2 from 'img/nft/trifle/trifle_bg_2.png';
 import activeLabelImg from 'img/nft/trifle/label_active.png';
 import inactiveLabelImg from 'img/nft/trifle/label_inactive.png';
+import { Fragment } from 'react';
 
 export default function TrifleScren() {
   const trifles = [
@@ -62,8 +63,10 @@ export default function TrifleScren() {
       <div className="mystery-box-list flex justify-between items-center mt-[6.625rem]">
         {trifles.map((item, index) => {
           return (
-            <>
-              {index > 0 && <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />}
+            <Fragment key={index}>
+              {index > 0 && (
+                <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />
+              )}
 
               <div className="mystery-box relative">
                 {item.bgImg && (
@@ -72,13 +75,13 @@ export default function TrifleScren() {
 
                 <div
                   className={
-                    'box relative z-0 cursor-pointer border rounded-[1.25rem] ' +
+                    'box relative z-0 border rounded-[1.25rem] ' +
                     (item.isActive ? 'border-[rgba(75,217,214,0.6)]' : 'border-[rgba(255,255,255,0.5)]')
                   }
                 >
                   <Image
                     className={
-                      'w-[18.75rem] h-[18.75rem] rounded-[1.25rem] relative z-10 transition-opacity ' +
+                      'w-[18.75rem] h-[18.75rem] rounded-[1.25rem] relative z-10 cursor-pointer transition-opacity ' +
                       (item.isActive ? 'hover:opacity-0' : '')
                     }
                     src={item.isActive ? item.activeImg : inactiveTrifleImg}
@@ -88,7 +91,7 @@ export default function TrifleScren() {
                   {/* TODO 优化失焦后重置进度 */}
                   {item.isActive && item.videoSrc && (
                     <video
-                      className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem]"
+                      className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem] cursor-pointer"
                       autoPlay
                       playsInline
                       muted
@@ -116,7 +119,7 @@ export default function TrifleScren() {
                   </div>
                 </div>
               </div>
-            </>
+            </Fragment>
           );
         })}
       </div>
