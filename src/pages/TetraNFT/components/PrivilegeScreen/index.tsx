@@ -1,6 +1,6 @@
 import BasicButton from '@/pages/components/common/BasicButton';
 import PageDesc from '@/pages/components/common/PageDesc';
-import { useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import activeCardImg1 from 'img/nft/trifle/trifle_card_1_active.png';
 import activeCardImg2 from 'img/nft/trifle/trifle_card_2_active.png';
 import inactiveCardImg2 from 'img/nft/trifle/trifle_card_2_inactive.png';
@@ -13,31 +13,33 @@ import middleLeftBgImg from 'img/nft/trifle/bg_middle_left.png';
 import triangleImg from 'img/nft/trifle/triangle.png';
 import Image from 'next/image';
 import PrivilegeList from '../PrivilegeList';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 export default function PrivilegeScreen() {
   const [trifleCards, setTrifleCards] = useState([
     {
       activeImg: activeCardImg1,
       inactiveImg: activeCardImg1,
-      rotateDeg: -8,
       isActive: true,
     },
     {
       activeImg: activeCardImg2,
       inactiveImg: inactiveCardImg2,
-      rotateDeg: 8,
       isActive: false,
     },
     {
       activeImg: activeCardImg3,
       inactiveImg: inactiveCardImg3,
-      rotateDeg: -1,
       isActive: false,
     },
   ]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const cardRefs = Array(trifleCards.length)
+    .fill(null)
+    .map(() => createRef<HTMLDivElement>());
 
   return (
-    <div className="w-full bg-black flex flex-col justify-center items-center pt-[21.3125rem] pb-[17.375rem] relative">
+    <div className="screen-privilege w-full bg-black flex flex-col justify-center items-center pt-[21.3125rem] pb-[17.375rem] relative">
       <div className="bg-box absolute left-0 top-0 w-full h-full">
         <div className="top-box absolute top-0 left-1/2 -translate-x-1/2">
           <Image className="w-[55rem] h-[55rem]" src={topBgImg} alt="" />
@@ -50,7 +52,11 @@ export default function PrivilegeScreen() {
         </div>
 
         <Image className="w-[18.75rem] h-[18.375rem] absolute top-[5.0625rem] right-0" src={topRightBgImg} alt="" />
-        <Image className="w-[12.375rem] h-[14.8125rem] absolute bottom-[19.6875rem] right-[14.3125rem]" src={bottomRightBgImg} alt="" />
+        <Image
+          className="w-[12.375rem] h-[14.8125rem] absolute bottom-[19.6875rem] right-[14.3125rem]"
+          src={bottomRightBgImg}
+          alt=""
+        />
         <Image
           className="w-[20.375rem] h-[23.875rem] absolute left-0 top-[55.5625rem] -translate-y-1/2"
           src={middleLeftBgImg}
@@ -71,16 +77,22 @@ export default function PrivilegeScreen() {
 
         <div className="privileges flex justify-center items-center mt-[16.25rem] h-[30.125rem]">
           <div className="cards relative w-[22.75rem] h-[27.75rem]">
-            {trifleCards.map(({ isActive, activeImg, inactiveImg, rotateDeg }, index) => (
-              <div
+            {trifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
+              <CSSTransition
+                in={index >= currentIndex}
+                classNames="card"
+                nodeRef={cardRefs[index]}
                 key={index}
-                className={`card-level-${index + 1} z-[${
-                  trifleCards.length - index
-                }] w-full h-full absolute left-0 top-0 origin-center`}
-                style={{ transform: `rotate(${rotateDeg || 0}deg)` }}
+                timeout={800}
+                unmountOnExit
               >
-                <Image src={isActive ? activeImg : inactiveImg} alt="" fill />
-              </div>
+                <div
+                  ref={cardRefs[index]}
+                  className={`card-level-${index + 1} w-full h-full absolute left-0 top-0 origin-center`}
+                >
+                  <Image src={isActive ? activeImg : inactiveImg} alt="" fill />
+                </div>
+              </CSSTransition>
             ))}
           </div>
 
