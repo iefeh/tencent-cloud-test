@@ -1,6 +1,6 @@
 import BasicButton from '@/pages/components/common/BasicButton';
 import PageDesc from '@/pages/components/common/PageDesc';
-import { createRef, useEffect, useRef, useState } from 'react';
+import { createRef, useState } from 'react';
 import activeCardImg1 from 'img/nft/trifle/trifle_card_1_active.png';
 import activeCardImg2 from 'img/nft/trifle/trifle_card_2_active.png';
 import inactiveCardImg2 from 'img/nft/trifle/trifle_card_2_inactive.png';
@@ -13,7 +13,9 @@ import middleLeftBgImg from 'img/nft/trifle/bg_middle_left.png';
 import triangleImg from 'img/nft/trifle/triangle.png';
 import Image from 'next/image';
 import PrivilegeList from '../PrivilegeList';
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Mousewheel } from 'swiper/modules';
 
 export default function PrivilegeScreen() {
   const [trifleCards, setTrifleCards] = useState([
@@ -21,19 +23,26 @@ export default function PrivilegeScreen() {
       activeImg: activeCardImg1,
       inactiveImg: activeCardImg1,
       isActive: true,
+      rocketLevelText: 'Level I',
+      rocketTitle: 'Destiny Tetra',
     },
     {
       activeImg: activeCardImg2,
       inactiveImg: inactiveCardImg2,
       isActive: false,
+      rocketLevelText: 'Level II',
+      rocketTitle: 'Eternity Tetra',
     },
     {
       activeImg: activeCardImg3,
       inactiveImg: inactiveCardImg3,
       isActive: false,
+      rocketLevelText: 'Level III',
+      rocketTitle: 'Infinity Tetra',
     },
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAniRunning, setIsAniRunning] = useState(false);
   const cardRefs = Array(trifleCards.length)
     .fill(null)
     .map(() => createRef<HTMLDivElement>());
@@ -85,6 +94,8 @@ export default function PrivilegeScreen() {
                 key={index}
                 timeout={800}
                 unmountOnExit
+                onEnter={() => setIsAniRunning(true)}
+                onExited={() => setIsAniRunning(true)}
               >
                 <div
                   ref={cardRefs[index]}
@@ -114,6 +125,39 @@ export default function PrivilegeScreen() {
           <BasicButton label="View Full Previleges" active />
           <BasicButton label="Get Involved" link="/WhitelistTasks" />
         </div>
+      </div>
+
+      <div className="rocket absolute right-0 top-1/2 -translate-y-1/2 font-poppins-medium text-sm mr-[3rem]">
+        {trifleCards.map(({ rocketLevelText, rocketTitle }, index) => (
+          <div
+            key={index}
+            className={[
+              'stage [&+.stage]:my-6 cursor-pointer',
+              index === currentIndex ? 'text-basic-yellow' : 'text-[rgba(255,255,255,0.4)]',
+            ].join(' ')}
+            onClick={() => setCurrentIndex(index)}
+          >
+            <div>{rocketLevelText}</div>
+            <div>{rocketTitle}</div>
+          </div>
+        ))}
+
+        <Swiper
+          className="!absolute left-0 top-0 z-10 w-full h-full"
+          modules={[Mousewheel]}
+          speed={800}
+          direction="vertical"
+          slidesPerView={1}
+          allowTouchMove={false}
+          mousewheel={!isAniRunning && { forceToAxis: true }}
+          onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
+        >
+          {trifleCards.map((_, index) => (
+            <SwiperSlide key={index}>
+              <div className="w-full h-full"></div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </div>
   );
