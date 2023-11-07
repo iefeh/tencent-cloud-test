@@ -16,34 +16,13 @@ import PrivilegeList from '../PrivilegeList';
 import { CSSTransition } from 'react-transition-group';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
+import PrivilegeModal from '../PrivilegeModal';
+import { TrifleCards } from '../constant/card';
 
 export default function PrivilegeScreen() {
-  const [trifleCards, setTrifleCards] = useState([
-    {
-      activeImg: activeCardImg1,
-      inactiveImg: activeCardImg1,
-      isActive: true,
-      rocketLevelText: 'Level I',
-      rocketTitle: 'Destiny Tetra',
-    },
-    {
-      activeImg: activeCardImg2,
-      inactiveImg: inactiveCardImg2,
-      isActive: false,
-      rocketLevelText: 'Level II',
-      rocketTitle: 'Eternity Tetra',
-    },
-    {
-      activeImg: activeCardImg3,
-      inactiveImg: inactiveCardImg3,
-      isActive: false,
-      rocketLevelText: 'Level III',
-      rocketTitle: 'Infinity Tetra',
-    },
-  ]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAniRunning, setIsAniRunning] = useState(false);
-  const cardRefs = Array(trifleCards.length)
+  const cardRefs = Array(TrifleCards.length)
     .fill(null)
     .map(() => createRef<HTMLDivElement>());
 
@@ -86,7 +65,7 @@ export default function PrivilegeScreen() {
 
         <div className="privileges flex justify-center items-center mt-[16.25rem] h-[30.125rem]">
           <div className="cards relative w-[22.75rem] h-[27.75rem]">
-            {trifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
+            {TrifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
               <CSSTransition
                 in={index >= currentIndex}
                 classNames="card"
@@ -112,7 +91,7 @@ export default function PrivilegeScreen() {
               Privileges of Destiny Tetra
             </div>
 
-            <PrivilegeList />
+            <PrivilegeList step={currentIndex} />
           </div>
         </div>
 
@@ -122,13 +101,13 @@ export default function PrivilegeScreen() {
         </div>
 
         <div className="flex justify-center items-center gap-2 mt-[4.625rem]">
-          <BasicButton label="View Full Previleges" active />
+          <PrivilegeModal />
           <BasicButton label="Get Involved" link="/WhitelistTasks" />
         </div>
       </div>
 
       <div className="rocket absolute right-0 top-1/2 -translate-y-1/2 font-poppins-medium text-sm mr-[3rem]">
-        {trifleCards.map(({ rocketLevelText, rocketTitle }, index) => (
+        {TrifleCards.map(({ rocketLevelText, rocketTitle }, index) => (
           <div
             key={index}
             className={[
@@ -152,7 +131,7 @@ export default function PrivilegeScreen() {
           mousewheel={!isAniRunning && { forceToAxis: true }}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
         >
-          {trifleCards.map((_, index) => (
+          {TrifleCards.map((_, index) => (
             <SwiperSlide key={index}>
               <div className="w-full h-full"></div>
             </SwiperSlide>
