@@ -4,6 +4,7 @@ import PrivilegeList from '../PrivilegeList';
 import Image from 'next/image';
 import BasicButton from '@/pages/components/common/BasicButton';
 import { TrifleCards } from '../constant/card';
+import closeImg from 'img/nft/trifle/close.png';
 
 const PrivilegeModal: React.FC = (props: any) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -13,10 +14,20 @@ const PrivilegeModal: React.FC = (props: any) => {
       <BasicButton label="View Full Previleges" active onClick={onOpen} />
 
       <Modal
-        className="max-w-[75rem] bg-black border-2 border-basic-yellow [&:webkit-scrollbar]:hidden"
+        className="max-w-[75rem] bg-black border-2 border-basic-yellow"
         isOpen={isOpen}
         isDismissable={false}
         scrollBehavior="outside"
+        classNames={{
+          closeButton: 'flex items-center -right-[2rem] translate-x-full hover:bg-transparent active:bg-transparent',
+        }}
+        closeButton={
+          <div>
+            <Image className="w-6 h-6" src={closeImg} alt="" />
+
+            <span className="uppercase font-semakin text-base text-basic-yellow leading-none ml-3">close</span>
+          </div>
+        }
         onOpenChange={onOpenChange}
       >
         <ModalContent>
