@@ -48,11 +48,11 @@ const PrivilegeModal: React.FC = (props: any) => {
                 return (
                   <div
                     key={index}
-                    className="flex-1 flex flex-col items-center [&:not(:first-child)]:border-l border-[#31281F] pt-[2.625rem]"
+                    className="flex-1 w-[33.33%] flex flex-col items-center [&:not(:first-child)]:border-l border-[#31281F] pt-[2.625rem]"
                   >
                     <Image className="w-[15.9375rem] h-[19.4375rem]" src={isActive ? activeImg : inactiveImg} alt="" />
 
-                    <div className="px-[1.625rem] pt-[2.75rem] pb-[11.25rem] mt-[3.1875rem] border-t border-[#31281F]">
+                    <div className="w-full px-[1.625rem] pt-[2.75rem] pb-[6rem] mt-[3.1875rem] border-t border-[#31281F]">
                       <PrivilegeList step={index} />
                     </div>
                   </div>
