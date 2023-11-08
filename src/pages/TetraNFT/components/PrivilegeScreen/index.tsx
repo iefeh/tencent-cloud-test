@@ -1,11 +1,6 @@
 import BasicButton from '@/pages/components/common/BasicButton';
 import PageDesc from '@/pages/components/common/PageDesc';
-import { createRef, useState } from 'react';
-import activeCardImg1 from 'img/nft/trifle/trifle_card_1_active.png';
-import activeCardImg2 from 'img/nft/trifle/trifle_card_2_active.png';
-import inactiveCardImg2 from 'img/nft/trifle/trifle_card_2_inactive.png';
-import activeCardImg3 from 'img/nft/trifle/trifle_card_3_active.png';
-import inactiveCardImg3 from 'img/nft/trifle/trifle_card_3_inactive.png';
+import { createRef, useState, useRef, useEffect } from 'react';
 import topBgImg from 'img/nft/trifle/bg_top.png';
 import topRightBgImg from 'img/nft/trifle/bg_top_right.png';
 import bottomRightBgImg from 'img/nft/trifle/bg_bottom_right.png';
@@ -22,9 +17,18 @@ import { TrifleCards } from '../constant/card';
 export default function PrivilegeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAniRunning, setIsAniRunning] = useState(false);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const cardsWrapperRef = useRef<HTMLDivElement>(null);
+  const [cardContainerHeight, setCardContainerHeight] = useState('auto');
   const cardRefs = Array(TrifleCards.length)
     .fill(null)
     .map(() => createRef<HTMLDivElement>());
+
+  useEffect(() => {
+    if (!cardsContainerRef.current) return;
+    const height = cardsContainerRef.current.scrollHeight || 0;
+    setCardContainerHeight(height > 0 ? `${height}px` : 'auto');
+  }, [currentIndex]);
 
   return (
     <div className="screen-privilege w-full bg-black flex flex-col justify-center items-center pt-[21.3125rem] pb-[17.375rem] relative">
@@ -63,35 +67,43 @@ export default function PrivilegeScreen() {
           subtitle="We have customized special rewards and benefits for different levels of Tetra NFT owners."
         />
 
-        <div className="privileges flex justify-center items-center mt-[16.25rem] h-[30.125rem]">
-          <div className="cards relative w-[22.75rem] h-[27.75rem]">
-            {TrifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
-              <CSSTransition
-                in={index >= currentIndex}
-                classNames="card"
-                nodeRef={cardRefs[index]}
-                key={index}
-                timeout={800}
-                unmountOnExit
-                onEnter={() => setIsAniRunning(true)}
-                onExited={() => setIsAniRunning(true)}
-              >
-                <div
-                  ref={cardRefs[index]}
-                  className={`card-level-${index + 1} w-full h-full absolute left-0 top-0 origin-center`}
+        <div
+          ref={cardsWrapperRef}
+          className="privileges mt-[16.25rem] transition-[height] ease-in-out duration-500 overflow-hidden shadow-[0_-4rem_4rem_4rem_#000_inset]"
+          style={{
+            height: cardContainerHeight,
+          }}
+        >
+          <div ref={cardsContainerRef} className="flex justify-center items-center">
+            <div className="cards relative w-[22.75rem] h-[27.75rem]">
+              {TrifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
+                <CSSTransition
+                  in={index >= currentIndex}
+                  classNames="card"
+                  nodeRef={cardRefs[index]}
+                  key={index}
+                  timeout={800}
+                  unmountOnExit
+                  onEnter={() => setIsAniRunning(true)}
+                  onExited={() => setIsAniRunning(true)}
                 >
-                  <Image src={isActive ? activeImg : inactiveImg} alt="" fill />
-                </div>
-              </CSSTransition>
-            ))}
-          </div>
-
-          <div className="pl-[6.25rem] ml-[5.375rem] border-l border-[rgba(246,199,153,0.2)] h-full">
-            <div className="title font-semakin text-3xl text-basic-yellow mb-[3.375rem]">
-              Privileges of Destiny Tetra
+                  <div
+                    ref={cardRefs[index]}
+                    className={`card-level-${index + 1} w-full h-full absolute left-0 top-0 origin-center`}
+                  >
+                    <Image src={isActive ? activeImg : inactiveImg} alt="" fill />
+                  </div>
+                </CSSTransition>
+              ))}
             </div>
 
-            <PrivilegeList step={currentIndex} />
+            <div className="pl-[6.25rem] ml-[5.375rem] border-l border-[rgba(246,199,153,0.2)] h-full">
+              <div className="title font-semakin text-3xl text-basic-yellow mb-[3.375rem]">
+                Privileges of Destiny Tetra
+              </div>
+
+              <PrivilegeList step={currentIndex} />
+            </div>
           </div>
         </div>
 
