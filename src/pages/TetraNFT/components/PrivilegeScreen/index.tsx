@@ -114,7 +114,7 @@ export default function PrivilegeScreen() {
 
         <div className="flex justify-center items-center gap-2 mt-[4.625rem]">
           <PrivilegeModal />
-          <BasicButton label="Get Involved" link="/WhitelistTasks" />
+          <BasicButton label="Get Involved" />
         </div>
       </div>
 

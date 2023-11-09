@@ -124,7 +124,7 @@ export default function TrifleScren() {
         })}
       </div>
 
-      <BasicButton className="mt-[8.1875rem]" label="Get Involved" link="/WhitelistTasks" />
+      <BasicButton className="mt-[8.1875rem]" label="Get Involved" />
     </div>
   );
 }
