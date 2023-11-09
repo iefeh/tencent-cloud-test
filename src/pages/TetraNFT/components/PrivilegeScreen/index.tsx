@@ -1,6 +1,6 @@
 import BasicButton from '@/pages/components/common/BasicButton';
 import PageDesc from '@/pages/components/common/PageDesc';
-import { createRef, useState, useRef, useEffect } from 'react';
+import { createRef, useState, useRef, useEffect, BaseSyntheticEvent } from 'react';
 import topBgImg from 'img/nft/trifle/bg_top.png';
 import topRightBgImg from 'img/nft/trifle/bg_top_right.png';
 import bottomRightBgImg from 'img/nft/trifle/bg_bottom_right.png';
@@ -23,6 +23,19 @@ export default function PrivilegeScreen() {
   const cardRefs = Array(TrifleCards.length)
     .fill(null)
     .map(() => createRef<HTMLDivElement>());
+
+  function onSwiperSlideClick(e: BaseSyntheticEvent) {
+    const y = (e.nativeEvent as any).offsetY;
+    const h = (e.target as HTMLElement).clientHeight;
+    const r = y / h;
+    if (r < 0.3333) {
+      setCurrentIndex(0);
+    } else if (r < 0.6667) {
+      setCurrentIndex(1);
+    } else {
+      setCurrentIndex(2);
+    }
+  }
 
   useEffect(() => {
     if (!cardsContainerRef.current) return;
@@ -56,7 +69,7 @@ export default function PrivilegeScreen() {
         />
       </div>
 
-      <div className="flex flex-col items-center relative z-0">
+      <div className="flex flex-col items-center relative z-0 w-full">
         <PageDesc
           needAni
           title={
@@ -70,12 +83,12 @@ export default function PrivilegeScreen() {
 
         <div
           ref={cardsWrapperRef}
-          className="privileges mt-[16.25rem] transition-[height] ease-in-out duration-500 overflow-hidden shadow-[0_-4rem_4rem_4rem_#000_inset]"
+          className="privileges mt-[15.75rem] pt-2 transition-[height] ease-in-out duration-500 overflow-hidden shadow-[0_-4rem_4rem_4rem_#000_inset] w-full relative"
           style={{
             height: cardContainerHeight,
           }}
         >
-          <div ref={cardsContainerRef} className="flex justify-center items-center">
+          <div ref={cardsContainerRef} className="flex justify-center">
             <div className="cards relative w-[22.75rem] h-[27.75rem]">
               {TrifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
                 <CSSTransition
@@ -106,6 +119,39 @@ export default function PrivilegeScreen() {
               <PrivilegeList step={currentIndex} />
             </div>
           </div>
+
+          <div className="rocket absolute right-0 top-[6.25rem] font-poppins-medium text-sm mr-[3rem] z-0">
+            {TrifleCards.map(({ rocketLevelText, rocketTitle }, index) => (
+              <div
+                key={index}
+                className={[
+                  'stage [&+.stage]:my-6 cursor-pointer transition-colors',
+                  index === currentIndex ? 'text-basic-yellow' : 'text-[rgba(255,255,255,0.4)]',
+                ].join(' ')}
+                onClick={() => setCurrentIndex(index)}
+              >
+                <div>{rocketLevelText}</div>
+                <div>{rocketTitle}</div>
+              </div>
+            ))}
+
+            <Swiper
+              className="!absolute left-0 top-0 z-10 w-full h-full"
+              modules={[Mousewheel]}
+              speed={800}
+              direction="vertical"
+              slidesPerView={1}
+              allowTouchMove={false}
+              mousewheel={!isAniRunning && { forceToAxis: true }}
+              onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
+            >
+              {TrifleCards.map((_, index) => (
+                <SwiperSlide key={index}>
+                  <div className="w-full h-full cursor-pointer" onClick={(e) => onSwiperSlideClick(e as any)}></div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
 
         <div className="font-decima text-base w-[62.5rem] pt-6 pr-[2.375rem] pb-[2.1875rem] pl-[1.9375rem] border border-[#3E3123] rounded-[1.25rem] bg-[rgba(246,199,153,0.06)] text-justify mt-[7.25rem]">
@@ -117,39 +163,6 @@ export default function PrivilegeScreen() {
           <PrivilegeModal />
           <BasicButton label="Get Involved" />
         </div>
-      </div>
-
-      <div className="rocket absolute right-0 top-1/2 -translate-y-1/2 font-poppins-medium text-sm mr-[3rem]">
-        {TrifleCards.map(({ rocketLevelText, rocketTitle }, index) => (
-          <div
-            key={index}
-            className={[
-              'stage [&+.stage]:my-6 cursor-pointer',
-              index === currentIndex ? 'text-basic-yellow' : 'text-[rgba(255,255,255,0.4)]',
-            ].join(' ')}
-            onClick={() => setCurrentIndex(index)}
-          >
-            <div>{rocketLevelText}</div>
-            <div>{rocketTitle}</div>
-          </div>
-        ))}
-
-        <Swiper
-          className="!absolute left-0 top-0 z-10 w-full h-full"
-          modules={[Mousewheel]}
-          speed={800}
-          direction="vertical"
-          slidesPerView={1}
-          allowTouchMove={false}
-          mousewheel={!isAniRunning && { forceToAxis: true }}
-          onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
-        >
-          {TrifleCards.map((_, index) => (
-            <SwiperSlide key={index}>
-              <div className="w-full h-full"></div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
       </div>
     </div>
   );
