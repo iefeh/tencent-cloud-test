@@ -12,7 +12,7 @@ import { CSSTransition } from 'react-transition-group';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import PrivilegeModal from '../PrivilegeModal';
-import { TrifleCards } from '../constant/card';
+import { TrifleCards } from '@/constant/card';
 
 export default function PrivilegeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);

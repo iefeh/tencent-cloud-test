@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import tagImg from 'img/nft/trifle/tag.png';
-import { Privileges, TrifleCards } from '../constant/card';
+import { Privileges, TrifleCards } from '@/constant/card';
 
 interface Props {
   step: number;

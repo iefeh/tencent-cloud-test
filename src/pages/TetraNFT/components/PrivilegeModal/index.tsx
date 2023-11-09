@@ -3,7 +3,7 @@ import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nex
 import PrivilegeList from '../PrivilegeList';
 import Image from 'next/image';
 import BasicButton from '@/pages/components/common/BasicButton';
-import { TrifleCards } from '../constant/card';
+import { TrifleCards } from '@/constant/card';
 import closeImg from 'img/nft/trifle/close.png';
 
 const PrivilegeModal: React.FC = (props: any) => {
