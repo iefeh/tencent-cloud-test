@@ -58,6 +58,7 @@ export default function PrivilegeScreen() {
 
       <div className="flex flex-col items-center relative z-0">
         <PageDesc
+          needAni
           title={
             <div className="font-semakin">
               <div className="text-3xl">Previleges of the</div>

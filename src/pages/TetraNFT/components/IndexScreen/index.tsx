@@ -1,13 +1,19 @@
+import PageDesc from '@/pages/components/common/PageDesc';
 import YellowCircle from '@/pages/components/common/YellowCircle';
 
 export default function IndexScreen() {
   return (
     <div className="w-full">
       <div className="w-full h-screen relative flex justify-center items-center">
-        <div className="font-semakin text-center">
-          <div className="text-4xl">Introducing The</div>
-          <div className="text-[6.25rem]">Tetra NFT Series</div>
-        </div>
+        <PageDesc
+          needAni
+          title={
+            <div className="font-semakin text-center">
+              <div className="text-4xl">Introducing The</div>
+              <div className="text-[6.25rem]">Tetra NFT Series</div>
+            </div>
+          }
+        />
 
         <YellowCircle className="absolute right-[4.375rem] bottom-20 z-10" />
       </div>
