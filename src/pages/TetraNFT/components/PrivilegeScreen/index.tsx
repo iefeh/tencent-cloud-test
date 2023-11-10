@@ -13,6 +13,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import PrivilegeModal from '../PrivilegeModal';
 import { TrifleCards } from '@/constant/card';
+import useLuxyScroll from '@/hooks/luxyScroll';
 
 export default function PrivilegeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,6 +24,8 @@ export default function PrivilegeScreen() {
   const cardRefs = Array(TrifleCards.length)
     .fill(null)
     .map(() => createRef<HTMLDivElement>());
+  const descRef = useRef<HTMLDivElement>(null);
+  const { visible } = useLuxyScroll(descRef);
 
   function onSwiperSlideClick(e: BaseSyntheticEvent) {
     const y = (e.nativeEvent as any).offsetY;
@@ -71,7 +74,9 @@ export default function PrivilegeScreen() {
 
       <div className="flex flex-col items-center relative z-0 w-full">
         <PageDesc
-          needAni
+          ref={descRef}
+          needAni={visible}
+          baseAniTY
           title={
             <div className="font-semakin">
               <div className="text-3xl">Previleges of the</div>

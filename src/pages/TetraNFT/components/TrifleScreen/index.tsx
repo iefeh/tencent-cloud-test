@@ -8,7 +8,8 @@ import trifleBgImg1 from 'img/nft/trifle/trifle_bg_1.png';
 import trifleBgImg2 from 'img/nft/trifle/trifle_bg_2.png';
 import activeLabelImg from 'img/nft/trifle/label_active.png';
 import inactiveLabelImg from 'img/nft/trifle/label_inactive.png';
-import { Fragment } from 'react';
+import { Fragment, useRef } from 'react';
+import useLuxyScroll from '@/hooks/luxyScroll';
 
 export default function TrifleScren() {
   const trifles = [
@@ -38,36 +39,41 @@ export default function TrifleScren() {
       isActive: false,
     },
   ];
+  const descRef = useRef<HTMLDivElement>(null);
+  const { visible } = useLuxyScroll(descRef);
 
   return (
-    <div className="w-full bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000] pt-[9.0625rem]">
+    <div
+      ref={descRef}
+      className="w-full bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000] pt-[9.0625rem]"
+    >
       <PageDesc
-        needAni
+        needAni={visible}
+        baseAniTY
         title="Collect, Sythesize and Upgrade"
         subtitle={
-          <div className="w-[54rem] font-decima text-lg">
-            Our creative gameplay of Tetra NFT Series is to collect, synthesize and upgrade. A higher level of Tetra NFT
-            ownership means more rights, rewards, and influence in our ecosystem, and also means greater
-            responsibilities to our community.
-          </div>
+          <>
+            <div className="w-[54rem] font-decima text-lg">
+              Our creative gameplay of Tetra NFT Series is to collect, synthesize and upgrade. A higher level of Tetra
+              NFT ownership means more rights, rewards, and influence in our ecosystem, and also means greater
+              responsibilities to our community.
+            </div>
+            <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
+              We have three levels of Tetra NFTs
+            </div>
+
+            <div className="px-10 py-4 border border-[#3E3123] rounded-[0.625rem] bg-[rgba(246,199,153,0.06)] mt-[1.875rem] font-decima text-base">
+              Collect multiple Level I Destiny Tetra NFTs to synthesize and upgrade to higher level NFTs.
+            </div>
+          </>
         }
       />
-
-      <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
-        We have three levels of Tetra NFTs
-      </div>
-
-      <div className="px-10 py-4 border border-[#3E3123] rounded-[0.625rem] bg-[rgba(246,199,153,0.06)] mt-[1.875rem] font-decima text-base">
-        Collect multiple Level I Destiny Tetra NFTs to synthesize and upgrade to higher level NFTs.
-      </div>
 
       <div className="mystery-box-list flex justify-between items-center mt-[6.625rem]">
         {trifles.map((item, index) => {
           return (
             <Fragment key={index}>
-              {index > 0 && (
-                <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />
-              )}
+              {index > 0 && <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />}
 
               <div className="mystery-box relative">
                 {item.bgImg && (
