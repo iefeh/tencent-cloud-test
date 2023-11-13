@@ -31,7 +31,7 @@ export default function BreathBackground() {
     <div ref={bgRef} className="fixed w-screen h-screen left-0 top-0 z-0 flex justify-center items-center">
       <Image className="w-[44.875rem] h-[41.5rem]" src={triangleImg} alt="" />
       <Image
-        className={'w-[120rem] absolute left-0 top-[61.5%] origin-center ' + styles.breath}
+        className={'w-[120rem] absolute left-0 top-[61.5%] origin-center border border-[rgba(255,216,178,0.2)] rounded-full ' + styles.breath}
         src={breathImg}
         alt=""
       />
