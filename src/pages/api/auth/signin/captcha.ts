@@ -1,6 +1,6 @@
 import * as response from '../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
-import {sendCaptchaEmail, sendGridCaptchaEmail} from '@/lib/aws/ses';
+import {sendCaptchaEmail} from '@/lib/aws/ses';
 import {redis} from '@/lib/redis/client';
 import {createRouter} from "next-connect";
 import {allowToSendLoginCaptcha} from "@/lib/redis/ratelimit";
