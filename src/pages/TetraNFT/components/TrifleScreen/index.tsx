@@ -97,16 +97,20 @@ export default function TrifleScren() {
 
                   {/* TODO 优化失焦后重置进度 */}
                   {item.isActive && item.videoSrc && (
-                    <video
-                      className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem] cursor-pointer"
-                      autoPlay
-                      playsInline
-                      muted
-                      loop
-                      preload="auto"
-                    >
-                      <source src={item.videoSrc} />
-                    </video>
+                    <>
+                      <video
+                        className="object-cover w-full h-full absolute left-0 top-0 z-0 rounded-[1.25rem] cursor-pointer"
+                        autoPlay
+                        playsInline
+                        muted
+                        loop
+                        preload="auto"
+                      >
+                        <source src={item.videoSrc} />
+                      </video>
+
+                      <div className="absolute left-0 top-0 w-full h-full bg-black/50"></div>
+                    </>
                   )}
 
                   <span className="absolute left-1/2 -bottom-8 -translate-x-1/2 translate-y-full font-semakin text-lg text-[#333] uppercase">

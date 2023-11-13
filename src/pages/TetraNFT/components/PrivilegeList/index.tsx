@@ -26,10 +26,10 @@ export default function PrivilegeList(props: Props) {
               <Image src={tagImg} alt="" fill />
             </div>
 
-            <div className="content flex items-center text-base ml-[0.5625rem] whitespace-normal">
+            <div className="content flex items-center text-base ml-[0.5625rem] whitespace-normal flex-1">
               <div className="index font-poppins-medium w-5 flex-shrink-0">{(index + 1 + '').padStart(2, '0')}.</div>
 
-              <div className={'text font-poppins ml-[1.875rem] break-all ' + (isMask ? 'blur-sm' : '')}>
+              <div className={'text font-poppins ml-[1.875rem] break-words w-0 flex-1 ' + (isMask ? 'blur-sm' : '')}>
                 {isMask ? Array(p.length).fill('*').join('') : p}
               </div>
             </div>
