@@ -1,8 +1,30 @@
+import { useRef, useEffect } from 'react';
+
 export default function IndexScreen() {
+  const rafId = useRef(0);
+
+  function runAni() {
+    requestAnimationFrame(runAni);
+    const y = window.luxy.getWrapperTranslateY();
+    const sy = document.documentElement.scrollTop || document.body.scrollTop;
+    const h = document.documentElement.clientHeight;
+    if (y < h && sy > h && h - y > 2) {
+      document.documentElement.scrollTo(0, h);
+    }
+  }
+
+  useEffect(() => {
+    if (rafId.current > 0) cancelAnimationFrame(rafId.current);
+    runAni();
+
+    return () => {
+      if (rafId.current > 0) cancelAnimationFrame(rafId.current);
+    };
+  }, []);
+
   return (
     <div className="page-tetra-nft-index-screen w-full">
-      <div className="w-full h-screen relative flex justify-center items-center">
-      </div>
+      <div className="w-full h-screen relative flex justify-center items-center"></div>
 
       <div className="w-full h-screen flex justify-center items-center">
         <div className="w-[48.1875rem] font-decima text-lg text-justify">
