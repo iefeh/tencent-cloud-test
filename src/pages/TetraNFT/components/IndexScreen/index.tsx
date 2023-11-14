@@ -1,62 +1,7 @@
-import PageDesc from '@/pages/components/common/PageDesc';
-import YellowCircle from '@/pages/components/common/YellowCircle';
-import { useEffect, useRef } from 'react';
-
 export default function IndexScreen() {
-  const scrollY = useRef(0);
-  const rafId = useRef(0);
-  const titleOpacity = useRef(1);
-  const descScreenRef = useRef<HTMLDivElement>(null);
-
-  function runAni() {
-    const y = window.luxy.getWrapperTranslateY();
-    const duration = Math.max((1 - (y - 100) / 100) * 300, 0);
-    const targetOpacity = Math.max(1 - (y - 100) / 100, 0);
-    if (duration < Number.EPSILON) {
-      titleOpacity.current = 0;
-    } else {
-      titleOpacity.current += ((targetOpacity - titleOpacity.current) / duration) * 16.6667;
-    }
-
-    if (descScreenRef.current) {
-      descScreenRef.current.style.opacity = titleOpacity.current + '';
-    }
-    rafId.current = requestAnimationFrame(runAni);
-  }
-
-  function onLuxyScroll() {
-    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-    const targetY = scrollTop;
-    if (rafId.current > 0) cancelAnimationFrame(rafId.current);
-    runAni();
-    const screenHeight = document.documentElement.clientHeight;
-    if (targetY > scrollY.current && targetY < screenHeight) {
-      document.documentElement.scrollTo({ left: 0, top: screenHeight });
-    } else if (targetY < scrollY.current && targetY < screenHeight) {
-      document.documentElement.scrollTo({ left: 0, top: 0 });
-    }
-    scrollY.current = targetY;
-  }
-
-  useEffect(() => {
-    window.addEventListener('scroll', onLuxyScroll);
-    return () => window.removeEventListener('scroll', onLuxyScroll);
-  }, []);
-
   return (
-    <div className="w-full">
-      <div ref={descScreenRef} className="w-full h-screen relative flex justify-center items-center">
-        <PageDesc
-          needAni
-          title={
-            <div className="font-semakin text-center">
-              <div className="text-4xl">Introducing The</div>
-              <div className="text-[6.25rem]">Tetra NFT Series</div>
-            </div>
-          }
-        />
-
-        <YellowCircle className="absolute right-[4.375rem] bottom-20 z-10 transition-opacity duration-500" />
+    <div className="page-tetra-nft-index-screen w-full">
+      <div className="w-full h-screen relative flex justify-center items-center">
       </div>
 
       <div className="w-full h-screen flex justify-center items-center">
