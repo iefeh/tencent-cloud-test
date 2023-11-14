@@ -45,7 +45,12 @@ export default function MainTitle() {
   }, []);
 
   return (
-    <div className="page-tetra-nft-main-title fixed left-0 top-0 z-10 w-full h-screen flex justify-center items-center">
+    <div
+      className={
+        'page-tetra-nft-main-title fixed left-0 top-0 z-10 w-full h-screen flex justify-center items-center ' +
+        (descVisible.current || isAniRunning ? 'block' : 'hidden')
+      }
+    >
       <CSSTransition
         in={descVisible.current}
         nodeRef={descRef}
