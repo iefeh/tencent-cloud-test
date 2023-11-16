@@ -43,7 +43,7 @@ export default function PrivilegeScreen() {
   useEffect(() => {
     if (!cardsContainerRef.current) return;
     const height = cardsContainerRef.current.scrollHeight || 0;
-    setCardContainerHeight(height > 0 ? `${height}px` : 'auto');
+    setCardContainerHeight(height > 0 ? `${height + 8}px` : 'auto');
   }, [currentIndex]);
 
   return (

@@ -19,7 +19,8 @@ const PrivilegeModal: React.FC = (props: any) => {
         isDismissable={false}
         scrollBehavior="outside"
         classNames={{
-          closeButton: 'flex items-center -right-[2rem] translate-x-full hover:bg-transparent active:bg-transparent',
+          closeButton:
+            'flex items-center right-[20rem] translate-x-full hover:bg-transparent active:bg-transparen fixed mt-[inherit]',
         }}
         closeButton={
           <div>
@@ -28,6 +29,7 @@ const PrivilegeModal: React.FC = (props: any) => {
             <span className="uppercase font-semakin text-base text-basic-yellow leading-none ml-3">close</span>
           </div>
         }
+        style={{ transform: 'none' }}
         onOpenChange={onOpenChange}
       >
         <ModalContent>

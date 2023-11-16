@@ -58,16 +58,17 @@ export default function TrifleScren() {
               NFT ownership means more rights, rewards, and influence in our ecosystem, and also means greater
               responsibilities to our community.
             </div>
-            <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
-              We have three levels of Tetra NFTs
-            </div>
-
-            <div className="px-10 py-4 border border-[#3E3123] rounded-[0.625rem] bg-[rgba(246,199,153,0.06)] mt-[1.875rem] font-decima text-base">
-              Collect multiple Level I Destiny Tetra NFTs to synthesize and upgrade to higher level NFTs.
-            </div>
           </>
         }
       />
+
+      <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
+        We have three levels of Tetra NFTs
+      </div>
+
+      <div className="px-10 py-4 border border-[#3E3123] rounded-[0.625rem] bg-[rgba(246,199,153,0.06)] mt-[1.875rem] font-decima text-base">
+        Collect multiple Level I Destiny Tetra NFTs to synthesize and upgrade to higher level NFTs.
+      </div>
 
       <div className="mystery-box-list flex justify-between items-center mt-[6.625rem]">
         {trifles.map((item, index) => {
