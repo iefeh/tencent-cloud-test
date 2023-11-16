@@ -4,6 +4,7 @@ import IndexScreen from './components/IndexScreen';
 import TrifleScren from './components/TrifleScreen';
 import PrivilegeScreen from './components/PrivilegeScreen';
 import Footer from '../components/home/Footer';
+import MainTitle from './components/IndexScreen/MainTitle';
 
 export default function TetraNFT() {
   return (
@@ -25,6 +26,7 @@ export default function TetraNFT() {
       </section>
 
       <BreathBackground />
+      <MainTitle />
     </>
   );
 }
