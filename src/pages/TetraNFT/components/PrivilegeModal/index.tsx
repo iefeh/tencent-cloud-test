@@ -5,6 +5,7 @@ import Image from 'next/image';
 import BasicButton from '@/pages/components/common/BasicButton';
 import { TrifleCards } from '@/constant/card';
 import closeImg from 'img/nft/trifle/close.png';
+import { createPortal } from 'react-dom';
 
 const PrivilegeModal: React.FC = (props: any) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -18,18 +19,7 @@ const PrivilegeModal: React.FC = (props: any) => {
         isOpen={isOpen}
         isDismissable={false}
         scrollBehavior="outside"
-        classNames={{
-          closeButton:
-            'flex items-center right-[20rem] translate-x-full hover:bg-transparent active:bg-transparen fixed mt-[inherit]',
-        }}
-        closeButton={
-          <div>
-            <Image className="w-6 h-6" src={closeImg} alt="" />
-
-            <span className="uppercase font-semakin text-base text-basic-yellow leading-none ml-3">close</span>
-          </div>
-        }
-        style={{ transform: 'none' }}
+        hideCloseButton
         onOpenChange={onOpenChange}
       >
         <ModalContent>
@@ -64,6 +54,19 @@ const PrivilegeModal: React.FC = (props: any) => {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {isOpen &&
+        createPortal(
+          <div
+            className="fixed right-[20rem] min-[640px]:top-[4.25rem] translate-x-full flex items-center z-[100] cursor-pointer"
+            onClick={onOpenChange}
+          >
+            <Image className="w-6 h-6" src={closeImg} alt="" />
+
+            <span className="uppercase font-semakin text-base text-basic-yellow leading-none ml-3">close</span>
+          </div>,
+          document.body,
+        )}
     </>
   );
 };
