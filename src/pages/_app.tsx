@@ -143,6 +143,8 @@ function loadImage(path: string) {
   document.body.appendChild(img);
 
   return new Promise((resolve) => {
+    // 兼容safari图片资源加载逻辑
+    if (img.complete) return resolve(true);
     img.onload = function () {
       document.body.removeChild(img);
       resolve(true);
@@ -152,15 +154,24 @@ function loadImage(path: string) {
 
 function loadVideo(path: string) {
   const video = document.createElement('video');
+  video.autoplay = true;
+  video.preload = 'auto';
+  video.muted = true;
   video.src = path;
   video.style.display = 'none';
   document.body.appendChild(video);
 
   return new Promise((resolve) => {
-    video.addEventListener('canplay', () => {
-      document.body.removeChild(video);
-      resolve(true);
-    });
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.userAgent.indexOf('Mac') > -1) {
+      setTimeout(() => {
+        resolve(true);
+      }, 1000);
+    } else {
+      video.addEventListener('canplay', () => {
+        document.body.removeChild(video);
+        resolve(true);
+      });
+    }
   });
 }
 
