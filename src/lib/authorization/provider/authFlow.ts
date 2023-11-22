@@ -76,7 +76,7 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
         await userConnection.save();
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.success());
         res.redirect(landing_url);
-    } catch (error) {
+    } catch (error: any) {
         if (error.code === 11000) {
             console.warn('唯一性键冲突：', error);
             const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());

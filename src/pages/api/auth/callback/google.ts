@@ -58,7 +58,7 @@ router.get(async (req, res) => {
     const userId = userConnection.user_id;
     const token = await generateUserSession(userId);
     const responseData = response.success();
-    const landing_url = appendQueryParamsToUrl(authPayload.landing_url, {
+    const landing_url = appendQueryParamsToUrl(authPayload!.landing_url, {
         code: responseData.code,
         msg: responseData.msg,
         token: token,

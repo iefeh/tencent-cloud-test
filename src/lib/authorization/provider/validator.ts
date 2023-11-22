@@ -5,7 +5,7 @@ import {AuthProvider} from "@/lib/authorization/types";
 import {appendQueryParamsToUrl} from "@/lib/utils/url";
 
 
-export async function validateCallbackState(provider: AuthProvider, req, res): Promise<{ passed: boolean, authPayload?: AuthorizationPayload }> {
+export async function validateCallbackState(provider: AuthProvider, req:any, res:any): Promise<{ passed: boolean, authPayload?: AuthorizationPayload }> {
     const {state, error, code} = req.query;
     if (!state) {
         console.log("callback state not found");
@@ -23,12 +23,12 @@ export async function validateCallbackState(provider: AuthProvider, req, res): P
         if (error.includes('access_denied')) {
             const landing_url = appendQueryParamsToUrl(authPayload.landing_url, response.authorizationDenied());
             res.redirect(landing_url);
-            return {passed: false};
+            return {passed: false, authPayload: authPayload};
         }
         console.error(error);
         const landing_url = appendQueryParamsToUrl(authPayload.landing_url, response.serverError());
         res.redirect(landing_url);
-        return {passed: false};
+        return {passed: false, authPayload: authPayload};
     }
     return {passed: true, authPayload: authPayload};
 }
