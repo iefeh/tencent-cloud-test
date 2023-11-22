@@ -1,13 +1,12 @@
 import * as response from '../../../../lib/response/response';
-import {NextApiRequest, NextApiResponse} from 'next'
+import {NextApiResponse, NextApiRequest} from 'next'
 import {createRouter} from "next-connect";
-import {TwitterAuthFlow} from "@/lib/authorization/provider/twitter";
-import {handleAuthCallback} from "@/lib/authorization/provider/authFlow";
+import {generateAuthorizationURL} from "@/lib/authorization/provider/twitter";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    await handleAuthCallback(new TwitterAuthFlow(), req, res);
+    // await generateAuthorizationURL(req, res);
 });
 
 // this will run if none of the above matches

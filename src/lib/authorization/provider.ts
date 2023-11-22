@@ -11,13 +11,3 @@ const googleOAuthOps: OAuthOptions = {
 }
 export const googleOAuthProvider = new OAuthProvider(googleOAuthOps);
 
-const twitterOAuthOps: OAuthOptions = {
-    clientId: process.env.TWITTER_CLIENT_ID!,
-    clientSecret: process.env.TWITTER_CLIENT_SECRET!,
-    scope: process.env.TWITTER_AUTH_SCOPE!,
-    redirectURI: process.env.TWITTER_REDIRECT_URL!,
-    authEndpoint: process.env.TWITTER_AUTH_URL!,
-    tokenEndpoint: process.env.TWITTER_TOKEN_URL!,
-    enableBasicAuth: true
-}
-export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);

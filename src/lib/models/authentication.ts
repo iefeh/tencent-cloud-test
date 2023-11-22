@@ -7,12 +7,12 @@ export interface AuthorizationPayload {
     flow: AuthorizationFlow
     // 当前授权的用户，只有用户在已登录(connect)时存在
     authorization_user_id?: string
-    // 当前授权的
+    // 当前授权的code识别码
     code_challenge?: string
 }
 
 
 export enum AuthorizationFlow {
-    Login = "LOGIN",
-    Connect = "CONNECT"
+    LOGIN = "LOGIN",
+    CONNECT = "CONNECT"
 }
