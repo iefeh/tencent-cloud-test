@@ -1,8 +1,6 @@
 import * as response from '../../../../lib/response/response';
 import {NextApiRequest, NextApiResponse} from 'next'
 import {v4 as uuidv4} from 'uuid';
-import {redis} from '@/lib/redis/client';
-import {AuthorizationPayload} from "@/lib/models/authentication";
 import {createRouter} from "next-connect";
 import connectMongo from "@/lib/mongodb/client";
 import User from "@/lib/models/User";
@@ -11,36 +9,18 @@ import UserGoogle from "@/lib/models/UserGoogle";
 import {generateUserSession} from "@/lib/middleware/session";
 import {googleOAuthProvider} from "@/lib/authorization/provider";
 import {genLoginJWT} from "@/lib/particle.network/auth";
+import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {AuthProvider} from "@/lib/authorization/types";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    const {state, error, code} = req.query;
-    if (!state) {
-        console.log("callback state not found");
-        res.json(response.notFound());
+    const {passed, authPayload} = await validateCallbackState(AuthProvider.GOOGLE, req, res);
+    if (!passed) {
         return;
     }
-    const stateVal = await redis.get(`authorization_state:google:${state}`);
-    if (!stateVal) {
-        res.json(response.notFound());
-        return;
-    }
-
-    const authPayload = JSON.parse(stateVal) as AuthorizationPayload;
-
-    if (error) {
-        if (error.includes('access_denied')) {
-            const landing_url = appendQueryParamsToUrl(authPayload.landing_url, response.authorizationDenied());
-            res.redirect(landing_url);
-            return;
-        }
-        console.error(error);
-        const landing_url = appendQueryParamsToUrl(authPayload.landing_url, response.serverError());
-        res.redirect(landing_url);
-        return;
-    }
-
+    
+    const {code} = req.query;
     const authToken = await googleOAuthProvider.authenticate({
         code: code as string,
     });
@@ -78,7 +58,7 @@ router.get(async (req, res) => {
     const userId = userConnection.user_id;
     const token = await generateUserSession(userId);
     const responseData = response.success();
-    const landing_url = appendQueryParamsToUrl(authPayload.landing_url, {
+    const landing_url = appendQueryParamsToUrl(authPayload!.landing_url, {
         code: responseData.code,
         msg: responseData.msg,
         token: token,

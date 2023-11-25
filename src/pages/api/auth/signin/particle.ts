@@ -1,11 +1,9 @@
-import type {NextApiRequest, NextApiResponse} from "next";
+import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import connectMongo from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
-import UserGoogle from "@/lib/models/UserGoogle";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import UserTwitter from "@/lib/models/UserTwitter";
 import {getEvmWallet, getParticleUser} from "@/lib/particle.network/auth";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
