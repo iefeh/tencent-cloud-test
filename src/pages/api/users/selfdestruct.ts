@@ -12,13 +12,17 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
     await connectMongo();
-    const user = await User.findOne({'user_id': userId}, {_id: 0, __v: 0})
-    const google = await UserGoogle.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})
-    const twitter = await UserTwitter.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})
-    const entity = user.toObject();
-    entity.google = google;
-    entity.twitter = twitter;
-    res.json(response.success(entity));
+    const user = await User.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})
+    if (!user) {
+        res.status(200).json(response.notFound("Account not found"));
+        return;
+    }
+    if (user.selfdestruct_request_time) {
+        res.status(200).json(response.success());
+        return;
+    }
+    await User.updateOne({'user_id': userId}, {'selfdestruct_request_time': Date.now()});
+    res.status(200).json(response.success());
 });
 
 // this will run if none of the above matches

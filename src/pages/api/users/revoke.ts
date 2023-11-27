@@ -1,12 +1,7 @@
-import type {NextApiRequest, NextApiResponse} from "next";
+import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectMongo from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import {redis} from "@/lib/redis/client";
-import User from "@/lib/models/User";
-import UserGoogle from "@/lib/models/UserGoogle";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import UserTwitter from "@/lib/models/UserTwitter";
+import { UserContextRequest} from "@/lib/middleware/auth";
 import {OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 

@@ -1,7 +1,7 @@
-import type {NextApiRequest, NextApiResponse} from "next";
+import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import {UserContextRequest} from "@/lib/middleware/auth";
 import {genLoginJWT, getParticleUser} from "@/lib/particle.network/auth";
 
 
