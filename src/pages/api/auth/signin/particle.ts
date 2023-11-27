@@ -9,7 +9,6 @@ import {getEvmWallet, getParticleUser} from "@/lib/particle.network/auth";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
-    console.log("request triggered");
     const userId = req.userId;
     const {particle_user_id, particle_auth_token, platform} = req.body;
     if (!particle_auth_token || !particle_user_id) {
