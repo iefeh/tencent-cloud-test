@@ -19,7 +19,11 @@ export interface IUser extends Document {
         evm_wallet: string
     }
     // 用户创建时间，毫秒时间戳
-    created_time: number
+    created_time: number,
+    // 申请账号自毁时间
+    selfdestruct_request_time: number | null,
+    // 用户删除时间
+    deleted_time: number,
 }
 
 const UserSchema = new Schema<IUser>({
@@ -33,6 +37,8 @@ const UserSchema = new Schema<IUser>({
         evm_wallet: {type: String}
     },
     created_time: {type: Number, required: true},
+    selfdestruct_request_time: {type: Number},
+    deleted_time: {type: Number, default: null},
 });
 
 // 用户邮件，同一个邮件不允许多次绑定
