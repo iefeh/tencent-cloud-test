@@ -1,13 +1,14 @@
 import Head from "next/head";
-import ComingSoon from "../components/common/ComingSoon";
+import IndexScreen from "./subScreens/IndexScreen";
 
 export default function LoyaltyProgram() {
   return (
-    <>
+    <section id="luxy" className="w-full flex flex-col">
       <Head>
         <title>Loyalty Program | Moonveil</title>
       </Head>
-      <ComingSoon />
-    </>
+      
+      <IndexScreen />
+    </section>
   );
 }
