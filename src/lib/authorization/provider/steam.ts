@@ -1,0 +1,121 @@
+import * as response from "@/lib/response/response";
+import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
+import {v4 as uuidv4} from "uuid";
+import {redis} from "@/lib/redis/client";
+import {AuthProvider, OAuthOptions} from "@/lib/authorization/types";
+import {OAuthProvider} from "@/lib/authorization/oauth";
+import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
+import {NextApiResponse} from "next";
+import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import UserTwitter from "@/lib/models/UserTwitter";
+import User from "@/lib/models/User";
+import OAuthToken from "@/lib/models/OAuthToken";
+
+const twitterOAuthOps: OAuthOptions = {
+    clientId: process.env.TWITTER_CLIENT_ID!,
+    clientSecret: process.env.TWITTER_CLIENT_SECRET!,
+    scope: process.env.TWITTER_AUTH_SCOPE!,
+    redirectURI: process.env.TWITTER_REDIRECT_URL!,
+    authEndpoint: process.env.TWITTER_AUTH_URL!,
+    tokenEndpoint: process.env.TWITTER_TOKEN_URL!,
+    enableBasicAuth: true
+}
+export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);
+
+export async function generateAuthorizationURL(req: any, res: any) {
+    // 检查用户的授权落地页
+    const landing_url = req.query.landing_url as string;
+    if (!req.query.landing_url) {
+        res.json(response.invalidParams());
+        return;
+    }
+
+    // 生成授权的状态字段
+    const currFlow = req.userId ? AuthorizationFlow.CONNECT : AuthorizationFlow.LOGIN;
+    const payload: AuthorizationPayload = {
+        landing_url: landing_url,
+        flow: currFlow,
+        code_challenge: uuidv4(),
+        authorization_user_id: req.userId,
+    };
+    const state = uuidv4();
+    await redis.setex(`authorization_state:twitter:${state}`, 60 * 60 * 12, JSON.stringify(payload));
+
+    // twitter授权必须要传递code_challenge，并且在获取访问token时回传.
+    const authorizationUri = twitterOAuthProvider.authorizationURL({
+        state: state,
+        code_challenge: payload.code_challenge!,
+        code_challenge_method: 'plain'
+    });
+    res.json(response.success({
+        authorization_url: authorizationUri
+    }));
+}
+
+
+export class TwitterAuthFlow extends AuthFlowBase {
+
+    async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
+        return validateCallbackState(AuthProvider.TWITTER, req, res);
+    }
+
+    async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
+        const {code} = req.query;
+        const authToken = await twitterOAuthProvider.authenticate({
+            code: code as string,
+            code_verifier: authPayload.code_challenge,
+        });
+
+        // 获取绑定用户
+        const data: any = await twitterOAuthProvider.createRequest(authToken).get('https://api.twitter.com/2/users/me?expansions=pinned_tweet_id&user.fields=created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified');
+        const connection = data.data;
+        // 保存用户授权token
+        const now = Date.now();
+        const userTokenUpdates = {
+            token_type: authToken.token_type,
+            access_token: authToken.access_token,
+            refresh_token: authToken.refresh_token,
+            expires_in: authToken.expires_in,
+            expire_time: now + authToken.expires_in! * 1000,
+            created_time: now,
+            updated_time: now,
+        };
+        await OAuthToken.findOneAndUpdate({
+            platform: "twitter",
+            platform_id: connection.id,
+            deleted_time: null
+        }, {$set: userTokenUpdates}, {upsert: true});
+        return connection;
+    }
+
+    async queryUserConnectionFromParty(party: any): Promise<any> {
+        return await UserTwitter.findOne({'twitter_id': party.id, 'deleted_time': null})
+    }
+
+    constructUserConnection(userId: string, authParty: any): any {
+        return new UserTwitter({
+            user_id: userId,
+            twitter_id: authParty.id,
+            description: authParty.description,
+            verified: authParty.verified,
+            username: authParty.username,
+            name: authParty.name,
+            url: authParty.url,
+            protected: authParty.protected,
+            profile_image_url: authParty.profile_image_url,
+            location: authParty.location,
+            register_time: authParty.register_time,
+            public_metrics: authParty.public_metrics,
+            created_time: Date.now(),
+        });
+    }
+
+    constructNewUser(authParty: any): any {
+        return new User({
+            user_id: uuidv4(),
+            username: authParty.name,
+            avatar_url: authParty.profile_image_url,
+            created_time: Date.now(),
+        });
+    }
+}
