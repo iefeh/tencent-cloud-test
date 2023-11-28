@@ -55,16 +55,16 @@ export default function SwiperScreen() {
           <IndexSlide needAni={activeIndex === 0} />
         </SwiperSlide> */}
 
-        <SwiperSlide>
+        {/* <SwiperSlide>
           <LimitedTestSlide needAni={needAnis[0]} />
+        </SwiperSlide> */}
+
+        <SwiperSlide>
+          <RaceSlide needAni={needAnis[0]} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <RaceSlide needAni={needAnis[1]} />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <EntertainmentSlide needAni={needAnis[2]} />
+          <EntertainmentSlide needAni={needAnis[1]} />
         </SwiperSlide>
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
