@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import UserAvatar from '../common/UserAvatar';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from '@nextui-org/react';
 
 interface RouteMenu {
   name: string;
@@ -91,7 +92,24 @@ const Header = () => {
       <div className="font-semakin flex items-center max-lg:hidden">
         {routeText.map((value, index) =>
           value.children ? (
-            <div key={index}></div>
+            <Dropdown key={index}>
+              <DropdownTrigger>
+                <div
+                  className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
+                    isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799] border-b-2'
+                  } text-[22px] ml-8`}
+                >
+                  Loyalty Program
+                </div>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Loyalty Program Actions" className="text-center">
+                {value.children.map((item) => (
+                  <DropdownItem className="uppercase font-semakin text-lg" key={item.route} href={item.route}>
+                    {item.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
           ) : (
             <div
               className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
