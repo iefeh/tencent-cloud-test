@@ -13,6 +13,8 @@ export default function WhatIsMBScreen() {
         <PageDesc
           hasBelt
           className="text-left max-w-[32.125rem] mt-[6.5rem]"
+          needAni
+          baseAniTY
           title={
             <div className="font-semakin text-6xl mb-12">
               <div>What is</div>

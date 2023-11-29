@@ -2,6 +2,7 @@ import Head from "next/head";
 import IndexScreen from "./subScreens/Index";
 import WhatIsMBScreen from "./subScreens/WhatIsMB";
 import BadgeScreen from "./subScreens/Badge";
+import JourneyScreen from "./subScreens/Journey";
 
 export default function LoyaltyProgram() {
   return (
@@ -15,6 +16,8 @@ export default function LoyaltyProgram() {
       <WhatIsMBScreen />
 
       <BadgeScreen />
+
+      <JourneyScreen />
     </section>
   );
 }
