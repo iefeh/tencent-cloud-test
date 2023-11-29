@@ -1,5 +1,5 @@
 import Head from "next/head";
-import IndexScreen from "./subScreens/IndexScreen";
+import IndexScreen from "./subScreens/Index";
 
 export default function LoyaltyProgram() {
   return (
