@@ -102,9 +102,13 @@ const Header = () => {
                   Loyalty Program
                 </div>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Loyalty Program Actions" className="text-center">
+              <DropdownMenu
+                aria-label="Loyalty Program Actions"
+                className="text-center"
+                onAction={(key) => onLinkClick(key.toString())}
+              >
                 {value.children.map((item) => (
-                  <DropdownItem className="uppercase font-semakin text-lg" key={item.route} href={item.route}>
+                  <DropdownItem className="uppercase font-semakin text-lg" key={item.route}>
                     {item.name}
                   </DropdownItem>
                 ))}
