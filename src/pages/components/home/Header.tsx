@@ -18,13 +18,36 @@ import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import UserAvatar from '../common/UserAvatar';
 
-const routeText = [
+interface RouteMenu {
+  name: string;
+  route?: string;
+  children?: RouteMenu[];
+}
+
+const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   { name: 'AstrArk', route: '/AstrArk' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
-  { name: 'Loyalty Program', route: '/LoyaltyProgram' },
+  {
+    name: 'Loyalty Program',
+    children: [
+      {
+        name: 'Loyalty System',
+        route: '/LoyaltyProgram/intro',
+      },
+      {
+        name: 'Earn Moon Beams',
+        route: '/LoyaltyProgram/earn',
+      },
+      {
+        name: 'MB=MVP',
+        route: '/LoyaltyProgram/Exchange',
+      },
+    ],
+  },
 ];
+
 const mediaIcon = [
   { img: X, link: 'https://twitter.com/Moonveil_Studio' },
   { img: Discord, link: 'https://discord.com/invite/NyECfU5XFX' },
@@ -39,12 +62,14 @@ const Header = () => {
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
 
-  function LoginSegments() {
-    let temp = router.route;
-    return temp || '/';
+  function isActiveRoute(menu: RouteMenu) {
+    const route = router.route || '/';
+    return menu.route === route || menu.children?.some((item) => item.route === route);
   }
 
-  function onLinkClick(path: string) {
+  function onLinkClick(path?: string) {
+    if (!path) return;
+
     router.push(path);
     try {
       window.luxy.disable();
@@ -62,18 +87,23 @@ const Header = () => {
           <Image className="w-[135px] h-[80px]" src={logo} alt="Picture of the author" />
         </div>
       </div>
+
       <div className="font-semakin flex items-center max-lg:hidden">
-        {routeText.map((value, index) => (
-          <div
-            className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
-              LoginSegments() === value.route && 'text-[#F6C799] border-[#F6C799] border-b-2'
-            } text-[22px] ml-8`}
-            key={index}
-            onClick={() => onLinkClick(value.route)}
-          >
-            {value.name}
-          </div>
-        ))}
+        {routeText.map((value, index) =>
+          value.children ? (
+            <div key={index}></div>
+          ) : (
+            <div
+              className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
+                isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799] border-b-2'
+              } text-[22px] ml-8`}
+              key={index}
+              onClick={() => onLinkClick(value.route)}
+            >
+              {value.name}
+            </div>
+          ),
+        )}
       </div>
 
       <div className="flex items-center flex-[1] justify-end">
@@ -87,7 +117,10 @@ const Header = () => {
             );
           })}
         </div>
-        {userInfo ? <UserAvatar /> : (
+
+        {userInfo ? (
+          <UserAvatar />
+        ) : (
           <BasicButton
             className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8 ' + (listOpen ? 'hidden' : '')}
             label="login"
@@ -103,6 +136,7 @@ const Header = () => {
       </div>
 
       <LoginDialog visible={loginVisible} onClose={() => setLoginVisible(false)} />
+
       <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
     </section>
   );
