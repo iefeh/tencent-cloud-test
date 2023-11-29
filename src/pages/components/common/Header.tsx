@@ -2,7 +2,7 @@
 
 import React, { useContext, useState } from 'react';
 import Image from 'next/image';
-import BasicButton from '../common/BasicButton';
+import BasicButton from './BasicButton';
 import logo from 'img/header/logo.png';
 import Discord from 'img/header/discord.svg';
 import Youtube from 'img/header/Youtube.svg';
@@ -11,12 +11,12 @@ import Telegram from 'img/header/telegram.svg';
 import X from 'img/header/x.svg';
 import List from 'svg/list.svg';
 import Close from 'svg/close.svg';
-import LoginDialog from '../common/LoginDialog';
-import Sidebar from '../common/Sidebar';
+import LoginDialog from './LoginDialog';
+import Sidebar from './Sidebar';
 import { useRouter } from 'next/router';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
-import UserAvatar from '../common/UserAvatar';
+import UserAvatar from './UserAvatar';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from '@nextui-org/react';
 
 interface RouteMenu {
