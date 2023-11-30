@@ -1,29 +1,4 @@
 .swiper-screen {
-  .home-swiper-pagination {
-    position: absolute;
-    left: 5.2vw;
-    bottom: 3.3vw;
-
-    .pagi {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      margin-right: 2vw;
-      font-size: 0.8vw;
-      min-width: 1.4vw;
-      height: 2vw;
-      opacity: 0.2;
-      cursor: pointer;
-    }
-
-    .pagi-active {
-      opacity: 1;
-      position: relative;
-      border-bottom: 2px solid #f6c799;
-      color: #f6c799;
-    }
-  }
-
   .home-swiper-navi {
     position: absolute;
     top: 50%;
@@ -40,5 +15,31 @@
       right: 4rem;
       transform: translateY(-50%) rotate(-90deg);
     }
+  }
+}
+
+.home-swiper-pagination.home-swiper-pagination,
+.basic-swiper-pagination.basic-swiper-pagination {
+  position: absolute;
+  left: 5.2vw;
+  bottom: 3.3vw;
+
+  .pagi {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-right: 2vw;
+    font-size: 0.8vw;
+    min-width: 1.4vw;
+    height: 2vw;
+    opacity: 0.2;
+    cursor: pointer;
+  }
+
+  .pagi-active {
+    opacity: 1;
+    position: relative;
+    border-bottom: 2px solid #f6c799;
+    color: #f6c799;
   }
 }

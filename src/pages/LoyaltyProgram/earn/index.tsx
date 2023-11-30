@@ -1,0 +1,14 @@
+import Head from "next/head";
+import BannerAndRank from "./components/BannerAndRank";
+
+export default function LoyaltyEarn() {
+  return (
+    <section id="luxy" className="w-full flex flex-col px-[16.25rem] [&>div]:mx-auto">
+      <Head>
+        <title>Earn Moon Beams | Moonveil</title>
+      </Head>
+
+      <BannerAndRank />
+    </section>
+  );
+}

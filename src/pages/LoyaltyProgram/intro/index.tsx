@@ -4,11 +4,11 @@ import WhatIsMBScreen from "./subScreens/WhatIsMB";
 import BadgeScreen from "./subScreens/Badge";
 import JourneyScreen from "./subScreens/Journey";
 
-export default function LoyaltyProgram() {
+export default function LoyaltyIntro() {
   return (
     <section id="luxy" className="w-full flex flex-col">
       <Head>
-        <title>Loyalty Program | Moonveil</title>
+        <title>Loyalty System | Moonveil</title>
       </Head>
       
       <IndexScreen />
