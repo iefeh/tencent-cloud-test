@@ -27,7 +27,7 @@ const routeText = [
 ];
 const mediaIcon = [
   { img: X, link: 'https://twitter.com/Moonveil_Studio' },
-  { img: Discord, link: 'https://discord.com/invite/NyECfU5XFX' },
+  { img: Discord, link: 'https://discord.gg/moonveil' },
   { img: Telegram, link: 'https://t.me/+AeiqS8o2YmswYTgx' },
   { img: Medium, link: 'https://medium.com/@Moonveil_Studio' },
   { img: Youtube, link: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A' },
