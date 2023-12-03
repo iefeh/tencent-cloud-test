@@ -2,7 +2,7 @@ import Image from 'next/image';
 import inviteBgImg from 'img/loyalty/earn/bg_earn_banner_invite.jpg';
 import inviteImg from 'img/loyalty/earn/invite.png';
 import BasicButton from '@/pages/components/common/BasicButton';
-import circleInsideImg from 'img/loyalty/earn/circle_inside.png';
+import mbImg from 'img/loyalty/earn/mb.png';
 import circleOutsideImg from 'img/loyalty/earn/circle_outside.png';
 
 export default function Invite() {
@@ -27,7 +27,7 @@ export default function Invite() {
       <div className="w-32 h-32 relative flex justify-center items-center">
         <Image className="animate-spin5" src={circleOutsideImg} alt="" fill />
 
-        <Image className="relative z-0" src={circleInsideImg} alt="" />
+        <Image className="relative z-0" src={mbImg} alt="" />
       </div>
     </div>
   );
