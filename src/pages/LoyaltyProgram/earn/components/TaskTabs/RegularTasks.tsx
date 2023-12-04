@@ -143,7 +143,7 @@ export default function RegularTasks() {
           return (
             <div
               key={index}
-              className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-between"
+              className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-between hover:border-basic-yellow transition-[border-color] duration-500"
             >
               <div>
                 <div className="text-xl">{task.title}</div>
