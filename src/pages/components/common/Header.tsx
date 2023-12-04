@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { Fragment, useContext, useRef, useState } from 'react';
 import Image from 'next/image';
 import BasicButton from './BasicButton';
 import logo from 'img/header/logo.png';
@@ -17,13 +17,7 @@ import { useRouter } from 'next/router';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import UserAvatar from './UserAvatar';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from '@nextui-org/react';
-
-interface RouteMenu {
-  name: string;
-  route?: string;
-  children?: RouteMenu[];
-}
+import HeaderDropdownMenu from './HeaderDropdownMenu';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -92,28 +86,7 @@ const Header = () => {
       <div className="font-semakin flex items-center max-lg:hidden">
         {routeText.map((value, index) =>
           value.children ? (
-            <Dropdown key={index}>
-              <DropdownTrigger>
-                <div
-                  className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
-                    isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799] border-b-2'
-                  } text-[22px] ml-8`}
-                >
-                  Loyalty Program
-                </div>
-              </DropdownTrigger>
-              <DropdownMenu
-                aria-label="Loyalty Program Actions"
-                className="text-center"
-                onAction={(key) => onLinkClick(key.toString())}
-              >
-                {value.children.map((item) => (
-                  <DropdownItem className="uppercase font-semakin text-lg" key={item.route}>
-                    {item.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+            <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} onLinkClick={onLinkClick} />
           ) : (
             <div
               className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
