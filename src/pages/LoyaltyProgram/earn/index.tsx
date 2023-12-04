@@ -1,5 +1,7 @@
 import Head from "next/head";
 import BannerAndRank from "./components/BannerAndRank";
+import EarnBanner from "./components/EarnBanner";
+import TaskTabs from "./components/TaskTabs";
 
 export default function LoyaltyEarn() {
   return (
@@ -9,6 +11,10 @@ export default function LoyaltyEarn() {
       </Head>
 
       <BannerAndRank />
+
+      <EarnBanner />
+
+      <TaskTabs />
     </section>
   );
 }
