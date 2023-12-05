@@ -1,5 +1,5 @@
 import { PaginationItemRenderProps, PaginationItemType, cn } from '@nextui-org/react';
-import { ChevronIcon } from './ChevronIcon';
+import ChevronIcon from './ChevronIcon';
 
 export default function PaginationRenderItem({
   ref,
