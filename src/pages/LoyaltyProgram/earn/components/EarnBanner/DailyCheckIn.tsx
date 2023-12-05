@@ -5,7 +5,7 @@ import BasicButton from '@/pages/components/common/BasicButton';
 
 export default function DailyCheckIn() {
   return (
-    <div className="w-[42.5rem] h-[13.75rem] relative overflow-hidden rounded-[0.625rem] border-1 border-[#1D1D1D] flex flex-col justify-between pt-[3.0625rem] pb-[3.1875rem] px-[2.875rem]">
+    <div className="w-[42.5rem] h-[13.75rem] relative overflow-hidden rounded-[0.625rem] border-1 border-[#1D1D1D] flex flex-col justify-between pt-[3.0625rem] pb-[3.1875rem] px-[2.875rem] hover:border-basic-yellow transition-[border-color] duration-500">
       <Image src={dailyBgImg} alt="" fill />
 
       <Image className="w-[9.5625rem] h-[2.6875rem] relative z-0" src={dailyCheckInImg} alt="" />

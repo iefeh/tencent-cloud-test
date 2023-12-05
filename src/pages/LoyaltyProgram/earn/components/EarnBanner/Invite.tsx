@@ -7,7 +7,7 @@ import circleOutsideImg from 'img/loyalty/earn/circle_outside.png';
 
 export default function Invite() {
   return (
-    <div className="w-[42.5rem] h-[13.75rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-yellow pt-[2.75rem] pr-[4.375rem] pb-[3.0625rem] pl-[2.375rem] flex justify-between items-center">
+    <div className="w-[42.5rem] h-[13.75rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2.75rem] pr-[4.375rem] pb-[3.0625rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500">
       <Image src={inviteBgImg} alt="" fill />
 
       <div className="flex flex-col justify-between relative z-0 h-full">

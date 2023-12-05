@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import banner01Img from 'img/loyalty/earn/banner_01.jpg';
 import Image from 'next/image';
-import { Pagination } from 'swiper/modules';
+import { Autoplay, Pagination } from 'swiper/modules';
 
 export default function HotBanner() {
   const banners = [
@@ -24,9 +24,11 @@ export default function HotBanner() {
   return (
     <Swiper
       className="w-[57.8125rem] h-[37.5rem] overflow-hidden rounded-[0.625rem] relative"
-      modules={[Pagination]}
+      modules={[Pagination, Autoplay]}
       slidesPerView={1}
       loop
+      autoplay={{ delay: 5000, disableOnInteraction: false }}
+      speed={2000}
       pagination={{
         el: '.basic-swiper-pagination',
         bulletClass: 'pagi',
