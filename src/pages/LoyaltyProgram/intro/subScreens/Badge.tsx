@@ -1,8 +1,14 @@
 import PageDesc from '@/pages/components/common/PageDesc';
 import Image from 'next/image';
 import badgesImg from 'img/loyalty/intro/badges.png';
+import { useRef } from 'react';
+import { useShake } from '../utils';
 
 export default function BadgeScreen() {
+  const shakeRef = useRef<HTMLDivElement>(null);
+
+  useShake(shakeRef);
+
   return (
     <div className="w-full h-screen flex justify-center items-center relative">
       <div className="flex justify-center gap-[5.625rem] w-auto">
@@ -16,7 +22,9 @@ export default function BadgeScreen() {
         />
 
         <div>
-          <Image className="w-[45.3125rem] h-[40rem]" src={badgesImg} alt="" />
+          <div ref={shakeRef}>
+            <Image className="w-[45.3125rem] h-[40rem]" src={badgesImg} alt="" />
+          </div>
         </div>
       </div>
     </div>
