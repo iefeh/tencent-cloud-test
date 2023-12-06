@@ -2,7 +2,7 @@ import PageDesc from '@/pages/components/common/PageDesc';
 import Image from 'next/image';
 import mbImg from 'img/loyalty/intro/mb.png';
 import { useRef } from 'react';
-import { useShake } from '../utils';
+import useShake from '@/hooks/useShake';
 
 export default function WhatIsMBScreen() {
   const shakeRef = useRef<HTMLDivElement>(null);

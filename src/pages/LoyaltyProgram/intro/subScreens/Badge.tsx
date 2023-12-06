@@ -2,7 +2,7 @@ import PageDesc from '@/pages/components/common/PageDesc';
 import Image from 'next/image';
 import badgesImg from 'img/loyalty/intro/badges.png';
 import { useRef } from 'react';
-import { useShake } from '../utils';
+import useShake from '@/hooks/useShake';
 
 export default function BadgeScreen() {
   const shakeRef = useRef<HTMLDivElement>(null);

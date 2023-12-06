@@ -1,6 +1,6 @@
 import { RefObject, useLayoutEffect, useRef } from 'react';
 
-export function useShake(nodeRef: RefObject<HTMLDivElement>) {
+export default function useShake(nodeRef: RefObject<HTMLDivElement>) {
   const shakeDeg = useRef(0);
 
   function onMousemove(e: MouseEvent) {
