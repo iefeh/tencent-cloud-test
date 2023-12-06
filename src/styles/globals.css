@@ -80,3 +80,15 @@ body {
 .szh-menu.szh-menu {
   min-width: 148px;
 }
+
+.basic-card {
+  background-color: #1D1D1D;
+  border-radius: 0.625rem;
+}
+
+.basic-card > div {
+  padding-top: 0.6875rem;
+  padding-bottom: 0.6875rem;
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+}

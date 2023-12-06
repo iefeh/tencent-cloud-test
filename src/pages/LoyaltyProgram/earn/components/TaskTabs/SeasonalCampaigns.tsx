@@ -3,6 +3,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/LGButton';
 import { Pagination } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
+import { useRouter } from 'next/router';
 
 const enum TaskRewardType {
   /** Moonveil Beams */
@@ -52,6 +53,7 @@ const TASK_STATUS_DICT = {
 };
 
 export default function SeasonalCampaigns() {
+  const router = useRouter();
   const tasks: TaskItem[] = [
     {
       title: 'AstrArk Character Voice Rally',
@@ -175,6 +177,10 @@ export default function SeasonalCampaigns() {
     },
   ];
 
+  function onTaskClick(task: TaskItem) {
+    router.push(`/LoyaltyProgram/task?taskId=${task.title}`);
+  }
+
   return (
     <div className="mt-7 flex flex-col items-center">
       <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins">
@@ -183,6 +189,7 @@ export default function SeasonalCampaigns() {
             <div
               key={index}
               className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[1.6875rem] px-[1.5625rem] pb-[2.3125rem] flex flex-col cursor-pointer hover:border-basic-yellow transition-[border-color] duration-500"
+              onClick={() => onTaskClick(task)}
             >
               <div className="w-[25rem] h-[11.25rem] overflow-hidden rounded-[0.625rem] relative">
                 <Image
