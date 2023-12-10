@@ -36,7 +36,7 @@ export default function Tasks() {
       {taskList.map((task, index) => (
         <div
           key={index}
-          className="flex justify-between items-center py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem]"
+          className="flex justify-between items-center py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300"
         >
           <div className="flex items-center">
             <Image className="w-9 h-9" src={task.icon} alt="" width={36} height={36} />

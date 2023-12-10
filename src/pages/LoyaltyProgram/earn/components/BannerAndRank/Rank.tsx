@@ -3,13 +3,11 @@ import bgImg from 'img/loyalty/earn/bg_rank.jpg';
 import Image from 'next/image';
 import leftDecoImg from 'img/loyalty/earn/leaderbord_deco_left.png';
 import rightDecoImg from 'img/loyalty/earn/leaderbord_deco_right.png';
-import myRankBgImg from 'img/loyalty/earn/bg_my_rank.jpg';
-import blackRankImg from 'img/loyalty/earn/rank_black.png';
-import blackMBImg from 'img/loyalty/earn/mb_black.png';
 import avatarImg1 from 'img/loyalty/earn/avatar_1.png';
 import avatarImg2 from 'img/loyalty/earn/avatar_2.png';
 import avatarImg3 from 'img/loyalty/earn/avatar_3.png';
 import { cn } from '@nextui-org/react';
+import MyRanking from '@/pages/components/common/MyRanking';
 
 export default function Rank() {
   const [topRanks, setTopRanks] = useState([
@@ -110,31 +108,7 @@ export default function Rank() {
 
       <div className="flex flex-col w-[25.625rem] h-[14.6875rem] overflow-hidden">
         {/* My Rank */}
-        {myRankInfo && (
-          <div className="w-full h-[4.53125rem] relative rounded-t-[2.25rem] overflow-hidden">
-            <Image src={myRankBgImg} alt="" fill />
-
-            <div className="w-full h-full relative z-0 flex justify-between items-center text-black font-semakin px-6">
-              <div className="flex items-center">
-                <Image className="w-[2.625rem] h-[2.625rem] overflow-hidden rounded-full" src={blackMBImg} alt="" />
-
-                <div className="h-full flex flex-col justify-between ml-[0.625rem]">
-                  <span className="text-2xl leading-none">{myRankInfo.points || '--'}</span>
-                  <span className="leading-none">Moon Beams</span>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <Image className="w-[2.625rem] h-[2.625rem] overflow-hidden rounded-full" src={blackRankImg} alt="" />
-
-                <div className="h-full flex flex-col justify-between ml-[0.625rem]">
-                  <span className="text-2xl leading-none">{myRankInfo.rank || '--'}</span>
-                  <span className="leading-none">Ranking</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {myRankInfo && <MyRanking className="rounded-t-[2.25rem]" />}
 
         <div
           className={cn([
