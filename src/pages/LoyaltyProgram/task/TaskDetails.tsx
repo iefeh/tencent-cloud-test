@@ -1,9 +1,11 @@
-import { Card, CardBody } from '@nextui-org/react';
+import { Card, CardBody, Divider } from '@nextui-org/react';
 import ShareButton from '@/pages/components/common/ShareButton';
+import Tasks from './components/Tasks';
+import Descriptions from './components/Descriptions';
 
 export default function TaskDetails() {
   return (
-    <div className="w-[56.25rem]">
+    <div className="w-[56.25rem] pb-[16.5rem]">
       <div className="font-semakin text-[2.5rem]">AstrArk Character Voice Rally</div>
 
       <div className="w-full flex justify-between items-center">
@@ -23,6 +25,12 @@ export default function TaskDetails() {
 
         <ShareButton />
       </div>
+
+      <Divider className="my-[2.625rem]" />
+
+      <Tasks />
+
+      <Descriptions />
     </div>
   );
 }
