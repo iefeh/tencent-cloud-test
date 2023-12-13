@@ -35,14 +35,12 @@ export default function ShareButton() {
         {...hoverProps}
         {...menuState}
         anchorRef={anchorRef}
-        menuClassName="translate-y-[0.9375rem]"
-        menuStyle={{ backgroundColor: '#1A1917', borderRadius: '0.5rem' }}
         theming="dark"
-        align='center'
+        align="center"
         onClose={() => toggle(false)}
       >
         {menus.map((menu, index) => (
-          <MenuItem key={index} className="hover:!bg-[#1A1917] hover:text-basic-yellow">
+          <MenuItem key={index} className="hover:text-basic-yellow">
             <Image className="w-4 h-4" width={16} height={16} src={menu.icon} alt="" />
             <span className="font-poppins-medium text-[14px] ml-[0.9375rem]">{menu.label}</span>
           </MenuItem>

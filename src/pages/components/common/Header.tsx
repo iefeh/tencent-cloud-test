@@ -18,6 +18,10 @@ import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import UserAvatar from './UserAvatar';
 import HeaderDropdownMenu from './HeaderDropdownMenu';
+import moreIconImg from 'img/header/more.png';
+import moreIconActiveImg from 'img/header/more_active.png';
+import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
+import { cn } from '@nextui-org/react';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -47,9 +51,55 @@ const mediaIcon = [
   { img: X, link: 'https://twitter.com/Moonveil_Studio' },
   { img: Discord, link: 'https://discord.com/invite/NyECfU5XFX' },
   { img: Telegram, link: 'https://t.me/+AeiqS8o2YmswYTgx' },
-  { img: Medium, link: 'https://medium.com/@Moonveil_Studio' },
-  { img: Youtube, link: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A' },
 ];
+
+const MoreLinks = () => {
+  const moreMedias = [
+    { img: Medium, link: 'https://medium.com/@Moonveil_Studio' },
+    { img: Youtube, link: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A' },
+  ];
+
+  const menuRef = useRef(null);
+  const [menuState, toggle] = useMenuState({ transition: true });
+  const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
+
+  return (
+    <>
+      <div ref={menuRef} {...anchorProps} className="ml-2 mr-[1.375rem] px-2 cursor-pointer relative">
+        <Image className="w-1 h-[0.9375rem]" src={moreIconImg} alt="" />
+        <Image
+          className={cn([
+            'active w-1 h-[0.9375rem transition-opacity absolute z-[1] left-1/2 top-0 -translate-x-1/2',
+            menuState.state === 'closed' ? 'opacity-0' : 'opacity-100',
+          ])}
+          src={moreIconActiveImg}
+          alt=""
+        />
+      </div>
+
+      <ControlledMenu
+        className="pt-[1.4375rem] px-[2.625rem] pb-7"
+        {...hoverProps}
+        {...menuState}
+        anchorRef={menuRef}
+        theming="dark"
+        onClose={() => toggle(false)}
+      >
+        {moreMedias.map((child, ci) => {
+          const Component = child.img;
+
+          return (
+            <MenuItem key={ci}>
+              <div className="link-menu [&+.link-menu]:ml-4" onClick={() => window.open(child.link)}>
+                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-[28px] h-[28px]" />
+              </div>
+            </MenuItem>
+          );
+        })}
+      </ControlledMenu>
+    </>
+  );
+};
 
 const Header = () => {
   const { userInfo } = useContext(MobxContext);
@@ -106,11 +156,13 @@ const Header = () => {
           {mediaIcon.map((value, index) => {
             const Component = value.img;
             return (
-              <div key={index} onClick={() => window.open(value.link)}>
-                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-[28px] h-[28px] mr-4" />
+              <div className="link-menu [&+.link-menu]:ml-4" key={index} onClick={() => window.open(value.link)}>
+                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-[28px] h-[28px]" />
               </div>
             );
           })}
+
+          <MoreLinks />
         </div>
 
         {userInfo ? (
