@@ -8,7 +8,7 @@ export default function LoyaltyIntro() {
   return (
     <section id="luxy" className="w-full flex flex-col">
       <Head>
-        <title>Loyalty System | Moonveil</title>
+        <title>Loyalty System | Moonveil Entertainment</title>
       </Head>
       
       <IndexScreen />

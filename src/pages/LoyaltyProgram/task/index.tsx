@@ -6,7 +6,7 @@ export default function LoyaltyTask() {
   return (
     <section id="luxy" className="w-full flex flex-col px-[16.25rem] [&>div]:mx-auto">
       <Head>
-        <title>TaskDetails | Moonveil</title>
+        <title>TaskDetails | Moonveil Entertainment</title>
       </Head>
 
       <div className="flex gap-[3.125rem] pt-[10.9375rem]">

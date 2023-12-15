@@ -5,7 +5,7 @@ export default function ComingSoonPage() {
   return (
     <>
       <Head>
-        <title>Coming Soon | Moonveil</title>
+        <title>Coming Soon | Moonveil Entertainment</title>
       </Head>
       <ComingSoon />
     </>
