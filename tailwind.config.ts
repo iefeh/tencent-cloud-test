@@ -47,6 +47,9 @@ const config: Config = {
       borderWidth: {
         1: '1px',
       },
+      borderRadius: {
+        base: '0.625rem',
+      },
     },
   },
   plugins: [nextui()],
