@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import Image from 'next/image';
 import BasicButton from './BasicButton';
 import logo from 'img/header/logo.png';
@@ -22,6 +22,7 @@ import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
+// import UserInfo from './UserInfo';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -174,6 +175,8 @@ const Header = () => {
             onClick={() => setLoginVisible(true)}
           />
         )}
+
+        {/* {listOpen || <UserInfo />} */}
 
         {listOpen ? (
           <Close onClick={() => setListOpen(false)} className="max-lg:block mr6 hidden w-[3rem] h-[3rem]" />
