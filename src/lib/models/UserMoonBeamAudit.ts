@@ -5,7 +5,7 @@ type UserMoonBeamAuditType = "quests";
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
 export interface IUserMoonBeamAudit extends Document {
     // 关联的用户id
-    uid: String;
+    user_id: String;
     // MB审计类型
     type: UserMoonBeamAuditType;
     // MB的变化值，可增，可减少.
@@ -19,7 +19,7 @@ export interface IUserMoonBeamAudit extends Document {
 }
 
 const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
-    uid: {type: String, required: true},
+    user_id: {type: String, required: true},
     type: {type: String, required: true},
     moon_beam_delta: {type: Number, required: true},
     reward_taint: {type: String, default: null},
