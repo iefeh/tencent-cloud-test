@@ -15,6 +15,8 @@ export interface IUser extends Document {
         user_id: string,
         // web端的token
         web_token: string,
+        ios_token: {type: String},
+        android_token: {type: String},
         // 用户的托管钱包
         evm_wallet: string
     }
@@ -34,6 +36,8 @@ const UserSchema = new Schema<IUser>({
     particle: {
         user_id: {type: String},
         web_token: {type: String},
+        ios_token: {type: String},
+        android_token: {type: String},
         evm_wallet: {type: String}
     },
     created_time: {type: Number, required: true},

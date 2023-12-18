@@ -15,18 +15,37 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    if (!platform || platform != 'web') {
-        res.json(response.invalidParams());
-        return
-    }
-    await connectMongo();
     const data = await getParticleUser(particle_user_id, particle_auth_token);
 
-    const particle = {
-        web_token: particle_auth_token,
-        user_id: data.uuid,
-        evm_wallet: getEvmWallet(data.wallets),
+    let particle: any;
+    switch (platform) {
+        case "web":
+            particle = {
+                "particle.user_id": data.uuid,
+                "particle.web_token": particle_auth_token,
+                "particle.evm_wallet": getEvmWallet(data.wallets),
+            }
+            break;
+        case "android":
+            particle = {
+                "particle.user_id": data.uuid,
+                "particle.android_token": particle_auth_token,
+                "particle.evm_wallet": getEvmWallet(data.wallets),
+            }
+            break;
+        case "ios":
+            particle = {
+                "particle.user_id": data.uuid,
+                "particle.ios_token": particle_auth_token,
+                "particle.evm_wallet": getEvmWallet(data.wallets),
+            }
+            break;
+        default:
+            res.json(response.invalidParams());
+            return
     }
+
+    await connectMongo();
     console.log(`user ${userId} particle ${particle}`);
     const particleAuthUserId = data.jwtId.split(':')[1];
     if (particleAuthUserId != userId) {
@@ -34,7 +53,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return;
     }
-    await User.updateOne({'user_id': userId}, {'particle': particle});
+    await User.updateOne({'user_id': userId}, {$set: particle});
     res.json(response.success());
 });
 
