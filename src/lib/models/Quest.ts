@@ -13,6 +13,7 @@ export type QuestRewardType =
     "moon_beam"
     | "usdt";
 
+// 任务记录
 export interface IQuest extends Document {
     // 任务id，每个任务拥有唯一id
     id: string,
