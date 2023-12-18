@@ -22,8 +22,9 @@ export default function BadgeScreen() {
         />
 
         <div>
-          <div ref={shakeRef}>
+          <div className="relative hover:shadow-[0_0_8px_4px_rgba(246,199,153,0.1)] transition-shadow" ref={shakeRef}>
             <Image className="w-[45.3125rem] h-[40rem]" src={badgesImg} alt="" />
+            <div className="mask absolute w-full h-full left-0 top-0 z-0 transition-shadow duration-300 will-change-transform"></div>
           </div>
         </div>
       </div>

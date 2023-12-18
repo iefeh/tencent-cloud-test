@@ -1,36 +1,27 @@
 import { RefObject, useLayoutEffect, useRef } from 'react';
 
 export default function useShake(nodeRef: RefObject<HTMLDivElement>) {
-  const MAX_DEG_X = 8;
-  const MAX_DEG_Y = 4;
-  const STEP_DEG_X = 0.005;
-  const STEP_DEG_Y = 0.002;
-  const currentDX = useRef(0);
-  const currentDY = useRef(0);
+  const CLASS_HOVER_IN = 'shake-hover-in';
+  const CLASS_HOVER_OUT = 'shake-hover-out';
+  const MAX_DEG_X = 16;
+  const MAX_DEG_Y = 8;
   const targetDX = useRef(0);
   const targetDY = useRef(0);
-  const rafId = useRef(0);
 
-  function levelOff() {
+  function onMouseenter(e: MouseEvent) {
     if (!nodeRef.current) return;
-    if (currentDX.current === targetDX.current && currentDY.current === targetDY.current) return;
-    currentDX.current += (currentDX.current > targetDX.current ? -1 : 1) * STEP_DEG_X;
-    currentDY.current += (currentDY.current > targetDY.current ? -1 : 1) * STEP_DEG_Y;
+    nodeRef.current.classList.remove(CLASS_HOVER_OUT);
+    nodeRef.current.classList.add(CLASS_HOVER_IN);
 
-    if (Math.abs(targetDX.current - currentDX.current) < STEP_DEG_X) {
-      currentDX.current = targetDX.current;
-    }
-
-    if (Math.abs(targetDY.current - currentDY.current) < STEP_DEG_Y) {
-      currentDY.current = targetDY.current;
-    }
-
-    nodeRef.current.style.transform = `rotateX(${currentDX.current}deg) rotateY(${currentDY.current}deg)`;
-    rafId.current = requestAnimationFrame(levelOff);
+    setTimeout(() => {
+      if (!nodeRef.current) return;
+      nodeRef.current.classList.remove(CLASS_HOVER_IN);
+    }, 1000);
   }
 
   function onMousemove(e: MouseEvent) {
     if (!nodeRef.current) return;
+
     const { offsetX, offsetY } = e;
     const { offsetWidth, offsetHeight } = nodeRef.current;
     const ox = offsetWidth / 2;
@@ -40,14 +31,32 @@ export default function useShake(nodeRef: RefObject<HTMLDivElement>) {
     const dy = ((offsetX - ox) / ox) * MAX_DEG_Y;
     targetDX.current = dx;
     targetDY.current = dy;
-    levelOff();
+    nodeRef.current.style.transform = `rotateX(${dx}deg) rotateY(${dy}deg)`;
+
+    const mask = nodeRef.current.querySelector<HTMLElement>(':scope .mask');
+    if (!mask) return;
+    const theta  = Math.atan2(dy, dx);
+    const angle  = (theta * 180 / Math.PI + 180) % 360;
+    mask.style.background = `linear-gradient(${angle}deg, rgba(246,199,153,${e.offsetY / offsetHeight * .25}) 0%,rgba(246, 199, 153,0) 30%)`;
   }
 
   function onMouseleave(e: MouseEvent) {
     if (!nodeRef.current) return;
+    nodeRef.current.classList.remove(CLASS_HOVER_IN);
+    nodeRef.current.classList.add(CLASS_HOVER_OUT);
+
+    setTimeout(() => {
+      if (!nodeRef.current) return;
+      nodeRef.current.classList.remove(CLASS_HOVER_OUT);
+    }, 1000);
+
     targetDX.current = 0;
     targetDY.current = 0;
-    levelOff();
+    nodeRef.current.style.transform = 'rotateX(0deg) rotateY(0deg)';
+
+    const mask = nodeRef.current.querySelector<HTMLElement>(':scope .mask');
+    if (!mask) return;
+    mask.style.background = 'none';
   }
 
   useLayoutEffect(() => {
@@ -55,14 +64,17 @@ export default function useShake(nodeRef: RefObject<HTMLDivElement>) {
     const pe = nodeRef.current.parentElement;
     if (!pe) return;
 
-    pe.style.perspective = '300px';
-    nodeRef.current.addEventListener('mouseenter', onMousemove);
+    pe.style.perspective = '1000px';
+    pe.style.transformStyle = 'preserve-3d';
+    nodeRef.current.style.perspective = '1000px';
+    nodeRef.current.style.transformStyle = 'preserve-3d';
+    nodeRef.current.addEventListener('mouseenter', onMouseenter);
     nodeRef.current.addEventListener('mousemove', onMousemove);
     nodeRef.current.addEventListener('mouseleave', onMouseleave);
 
     return () => {
       if (!nodeRef.current) return;
-      nodeRef.current.removeEventListener('mouseenter', onMousemove);
+      nodeRef.current.removeEventListener('mouseenter', onMouseenter);
       nodeRef.current.removeEventListener('mousemove', onMousemove);
       nodeRef.current.removeEventListener('mouseleave', onMouseleave);
     };

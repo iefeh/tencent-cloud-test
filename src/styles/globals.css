@@ -94,3 +94,11 @@ body {
   padding-left: 1.75rem;
   padding-right: 1.75rem;
 }
+
+.shake-hover-in {
+  transition: transform 0.2s ease-in;
+}
+
+.shake-hover-out {
+  transition: transform 0.2s ease-in;
+}
