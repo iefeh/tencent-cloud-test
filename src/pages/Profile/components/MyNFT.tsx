@@ -22,8 +22,8 @@ export default function MyNFT() {
   ]);
 
   return (
-    <div className="">
-      <div className="mt-20 font-semakin text-2xl text-basic-yellow">My NFT</div>
+    <div className="mt-20">
+      <div className="font-semakin text-2xl text-basic-yellow">My NFT</div>
 
       <Divider className="my-[1.875rem]" />
 

@@ -5,6 +5,7 @@ import MyBadges from './components/MyBadges';
 import DailyCheckIn from '../LoyaltyProgram/earn/components/EarnBanner/DailyCheckIn';
 import Invite from '../LoyaltyProgram/earn/components/EarnBanner/Invite';
 import MyNFT from './components/MyNFT';
+import EventsParticipated from './components/EventsParticipated';
 
 export default function ProfilePage() {
   return (
@@ -29,6 +30,8 @@ export default function ProfilePage() {
       </div>
       
       <MyNFT />
+
+      <EventsParticipated />
     </section>
   );
 }
