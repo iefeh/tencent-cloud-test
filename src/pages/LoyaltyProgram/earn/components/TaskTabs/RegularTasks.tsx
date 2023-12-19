@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
-import LGButton from '@/pages/components/common/LGButton';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Pagination } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 

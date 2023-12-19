@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import earnMBsBgImg from 'img/profile/bg_earn_mbs.png';
 import mbImg from 'img/loyalty/earn/mb.png';
-import LGButton from '@/pages/components/common/LGButton';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 
 export default function MoonBeams() {
   return (

@@ -1,7 +1,7 @@
 import MyRanking from '@/pages/components/common/MyRanking';
 import Countdown from './components/Countdown';
 import Rewards from './components/Rewards';
-import LGButton from '@/pages/components/common/LGButton';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 
 export default function TaskReward() {
   return (

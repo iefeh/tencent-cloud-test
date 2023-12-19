@@ -1,4 +1,4 @@
-import LGButton from '@/pages/components/common/LGButton';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 import Image from 'next/image';
 import { useState } from 'react';
 
