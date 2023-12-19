@@ -2,9 +2,45 @@ import Image from 'next/image';
 import triangleImg from 'img/loyalty/intro/triangle.png';
 import triangleLightImg from 'img/loyalty/intro/triangle_light.png';
 import journeyDefaultImg from 'img/loyalty/intro/journey_default.png';
+import journeyHLImg from 'img/loyalty/intro/journey_highlight_left.png';
+import journeyHRImg from 'img/loyalty/intro/journey_highlight_right.png';
 import PageDesc from '@/pages/components/common/PageDesc';
+import { MouseEventHandler, useRef, useState } from 'react';
 
 export default function JourneyScreen() {
+  const journeyWrapperRef = useRef<HTMLDivElement>(null);
+  const [journeyImg, setJourneyImg] = useState(journeyDefaultImg);
+
+  const onJourneyMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
+    const {
+      nativeEvent: { offsetX },
+    } = e;
+    const width = journeyWrapperRef.current?.offsetWidth || 0;
+    if (!width) {
+      setJourneyImg(journeyDefaultImg);
+      return;
+    }
+
+    const xp = offsetX / width;
+    const leftMin = 173 / 1400;
+    const leftMax = 935 / 1400;
+    const rightMin = 989 / 1400;
+    const rightMax = 1271 / 1400;
+
+    // 左边界线
+    if (xp >= leftMin && xp <= leftMax) {
+      setJourneyImg(journeyHLImg);
+    } else if (xp >= rightMin && xp <= rightMax) {
+      setJourneyImg(journeyHRImg);
+    } else {
+      setJourneyImg(journeyDefaultImg);
+    }
+  };
+
+  const onJourneyMouseLeave: MouseEventHandler<HTMLDivElement> = (e) => {
+    setJourneyImg(journeyDefaultImg);
+  };
+
   return (
     <div className="w-full flex flex-col justify-center items-center relative">
       <div className="relative w-[44.75rem] h-[41.9375rem]">
@@ -39,7 +75,14 @@ export default function JourneyScreen() {
         </div>
       </div>
 
-      <Image className="mb-[12.5625rem] -translate-y-[8.4375rem]" src={journeyDefaultImg} alt="" />
+      <div
+        ref={journeyWrapperRef}
+        className="w-[87.5rem] h-[58.8125rem] relative mb-[12.5625rem] -translate-y-[8.4375rem]"
+        onMouseMove={onJourneyMouseMove}
+        onMouseLeave={onJourneyMouseLeave}
+      >
+        <Image src={journeyImg} alt="" fill />
+      </div>
     </div>
   );
 }
