@@ -7,24 +7,25 @@ import '@szhsin/react-menu/dist/transitions/slide.css';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import logoutImg from 'img/logout.png';
+import { useRouter } from 'next/router';
 
 const UserAvatar = () => {
+  const router = useRouter();
   const { userInfo, logout } = useContext(MobxContext);
   const ref = useRef(null);
   const [menuState, toggle] = useMenuState({ transition: true });
   const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
   if (!userInfo) return null;
 
+  function onAvatarClick() {
+    router.push('/Profile');
+  }
+
   return (
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
-        <div className="avatar rounded-full overflow-hidden w-[28px] h-[28px] relative">
-          <Image
-            className="object-cover"
-            src={userInfo.avatar_url}
-            alt=""
-            fill
-          />
+        <div className="avatar rounded-full overflow-hidden w-[28px] h-[28px] relative" onClick={onAvatarClick}>
+          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill />
         </div>
       </div>
 
