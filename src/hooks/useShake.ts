@@ -1,10 +1,14 @@
 import { RefObject, useLayoutEffect, useRef } from 'react';
 
-export default function useShake(nodeRef: RefObject<HTMLDivElement>) {
+interface ShakeOptions {
+  maxDegX?: number;
+  maxDegY?: number;
+}
+
+export default function useShake(nodeRef: RefObject<HTMLDivElement>, options?: ShakeOptions) {
   const CLASS_HOVER_IN = 'shake-hover-in';
   const CLASS_HOVER_OUT = 'shake-hover-out';
-  const MAX_DEG_X = 16;
-  const MAX_DEG_Y = 8;
+  const { maxDegX: MAX_DEG_X = 16, maxDegY: MAX_DEG_Y = 8 } = options || {};
   const targetDX = useRef(0);
   const targetDY = useRef(0);
 
@@ -35,9 +39,11 @@ export default function useShake(nodeRef: RefObject<HTMLDivElement>) {
 
     const mask = nodeRef.current.querySelector<HTMLElement>(':scope .mask');
     if (!mask) return;
-    const theta  = Math.atan2(dy, dx);
-    const angle  = (theta * 180 / Math.PI + 180) % 360;
-    mask.style.background = `linear-gradient(${angle}deg, rgba(246,199,153,${e.offsetY / offsetHeight * .25}) 0%,rgba(246, 199, 153,0) 30%)`;
+    const theta = Math.atan2(dy, dx);
+    const angle = ((theta * 180) / Math.PI + 180) % 360;
+    mask.style.background = `linear-gradient(${angle}deg, rgba(246,199,153,${
+      (e.offsetY / offsetHeight) * 0.25
+    }) 0%,rgba(246, 199, 153,0) 30%)`;
   }
 
   function onMouseleave(e: MouseEvent) {
