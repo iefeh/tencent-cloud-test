@@ -3,6 +3,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Pagination } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
+import ConnectAndVerify from '@/pages/components/common/buttons/ConnectAndVerify';
 
 const enum TaskRewardType {
   /** Moonveil Beams */
@@ -159,10 +160,11 @@ export default function RegularTasks() {
                 </div>
 
                 <div className="mt-5">
-                  {task.showConnectButton !== false && <LGButton label={task.connectButtonText || 'Connect'} />}
+                  {/* {task.showConnectButton !== false && <LGButton label={task.connectButtonText || 'Connect'} />}
                   {task.showVerifyButton !== false && (
                     <LGButton className="ml-2" label={task.verifyButtonText || 'Verify'} />
-                  )}
+                  )} */}
+                  <ConnectAndVerify />
                 </div>
               </div>
             </div>

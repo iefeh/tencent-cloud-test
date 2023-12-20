@@ -1,39 +1,44 @@
 'use client';
 
-import { cn } from '@nextui-org/react';
+import { Button, cn } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 
 interface Props {
   label: string;
   link?: string;
   className?: string;
+  loading?: boolean;
   actived?: boolean;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
 export default function LGButton(props: Props) {
-  const { actived } = props;
+  const { loading, actived, disabled, onClick, link } = props;
   const router = useRouter();
   const onLinkClick = () => {
-    if (!props.link) return;
+    if (!link) return;
 
-    if (/^http/.test(props.link)) {
-      window.open(props.link);
+    if (/^http/.test(link)) {
+      window.open(link);
     } else {
-      router.push(props.link);
+      router.push(link);
     }
   };
 
   return (
-    <button
+    <Button
       className={cn([
-        'basic-button uppercase text-sm px-6 py-1 border border-solid rounded-3xl  transition-all duration-1000 font-poppins-medium hover:border-transparent hover:text-black hover:bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
-        actived ? 'border-transparent text-black bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]' : 'text-white',
+        'lg-button h-auto uppercase text-sm px-6 py-1 border-2 border-solid rounded-3xl text-white transition-all duration-1000 font-poppins-medium bg-transparent hover:border-transparent hover:text-black hover:bg-[linear-gradient(80deg,#D9A970,#EFEBC5)] cursor-pointer',
+        actived && 'border-transparent text-black bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
+        disabled && 'text-[#999] border-[#999] opacity-100',
         props.className,
       ])}
-      onClick={props.onClick || (props.link && onLinkClick) || undefined}
+      isLoading={loading}
+      isDisabled={disabled}
+      onPress={onClick || (link && onLinkClick) || undefined}
     >
       {props.label}
-    </button>
+    </Button>
   );
 }
