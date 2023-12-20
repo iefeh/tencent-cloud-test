@@ -1,7 +1,7 @@
 import {IQuest} from "@/lib/models/Quest";
 import {verifyQuestResult} from "@/lib/quests/types";
 import {queryUserDiscordAuthorization} from "@/lib/quests/items/connectDiscord";
-import {AuthorizationType} from "@/lib/models/authentication";
+import {AuthorizationType} from "@/lib/authorization/types";
 
 // 校验用户是否拥有discord角色
 export async function verifyHoldDiscordRoleQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {

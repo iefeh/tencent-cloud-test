@@ -4,7 +4,6 @@ import {Document, Schema, models, model} from 'mongoose'
 export interface IUserSteam extends Document {
     user_id: string,
     steam_id: string,
-    communityvisibilitystate: number,
     profilestate: number,
     personaname: string,
     commentpermission: string,
@@ -28,7 +27,6 @@ export interface IUserSteam extends Document {
 const UserSteamSchema = new Schema<IUserSteam>({
     user_id: {type: String, required: true},
     steam_id: {type: String, required: true},
-    communityvisibilitystate: {type: Number, required: true},
     profilestate: {type: Number},
     personaname: {type: String},
     commentpermission: {type: String},

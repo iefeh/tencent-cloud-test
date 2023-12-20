@@ -1,12 +1,13 @@
 import * as response from '../../../../lib/response/response';
-import {NextApiResponse, NextApiRequest} from 'next'
+import {NextApiRequest, NextApiResponse} from 'next'
 import {createRouter} from "next-connect";
-import {generateAuthorizationURL} from "@/lib/authorization/provider/steam";
+import {handleAuthCallback} from "@/lib/authorization/provider/authFlow";
+import {SteamAuthFlow} from "@/lib/authorization/provider/steam";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    await generateAuthorizationURL(req, res);
+    await handleAuthCallback(new SteamAuthFlow(), req, res);
 });
 
 // this will run if none of the above matches

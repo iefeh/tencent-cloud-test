@@ -1,13 +1,12 @@
-import {AuthProvider, OAuthOptions} from "@/lib/authorization/types";
+import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 import * as response from "@/lib/response/response";
-import {AuthorizationFlow, AuthorizationPayload, AuthorizationType} from "@/lib/models/authentication";
+import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
 import {v4 as uuidv4} from "uuid";
 import {redis} from "@/lib/redis/client";
 import {twitterOAuthProvider} from "@/lib/authorization/provider/twitter";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
-import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import {validateCallbackState} from "@/lib/authorization/provider/validator";
 import UserGoogle from "@/lib/models/UserGoogle";
@@ -52,7 +51,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
 export class GoogleAuthFlow extends AuthFlowBase {
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
-        return validateCallbackState(AuthProvider.GOOGLE, req, res);
+        return validateCallbackState(AuthorizationType.Google, req, res);
     }
 
     async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {

@@ -52,9 +52,10 @@ export interface OAuthRefreshTokenPayload {
     [key: string]: any;
 }
 
-
-export enum AuthProvider {
-    GOOGLE = "google",
-    TWITTER = "twitter",
-    DISCORD = "discord",
+export enum AuthorizationType {
+    Twitter = "twitter",
+    Discord = "discord",
+    Wallet = "wallet",
+    Google = "google",
+    Steam = "steam",
 }

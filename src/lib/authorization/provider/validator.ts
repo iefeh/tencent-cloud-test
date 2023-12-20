@@ -1,18 +1,18 @@
 import * as response from "@/lib/response/response";
 import {redis} from "@/lib/redis/client";
 import {AuthorizationPayload} from "@/lib/models/authentication";
-import {AuthProvider} from "@/lib/authorization/types";
 import {appendQueryParamsToUrl} from "@/lib/utils/url";
+import {AuthorizationType} from "@/lib/authorization/types";
 
 
-export async function validateCallbackState(provider: AuthProvider, req:any, res:any): Promise<{ passed: boolean, authPayload?: AuthorizationPayload }> {
+export async function validateCallbackState(authType: AuthorizationType, req: any, res: any): Promise<{ passed: boolean, authPayload?: AuthorizationPayload }> {
     const {state, error, code} = req.query;
     if (!state) {
         console.log("callback state not found");
         res.json(response.notFound());
         return {passed: false};
     }
-    const stateVal = await redis.get(`authorization_state:${provider}:${state}`);
+    const stateVal = await redis.get(`authorization_state:${authType}:${state}`);
     if (!stateVal) {
         res.json(response.notFound());
         return {passed: false};

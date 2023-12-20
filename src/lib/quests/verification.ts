@@ -4,8 +4,8 @@ import {queryUserWalletAuthorization, verifyConnectWalletQuest} from "@/lib/ques
 import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/items/connectTwitter";
 import {queryUserDiscordAuthorization, verifyConnectDiscordQuest} from "@/lib/quests/items/connectDiscord";
 import {queryUserSteamAuthorization, verifyConnectSteamQuest} from "@/lib/quests/items/connectSteam";
-import {AuthorizationType} from "@/lib/models/authentication";
 import {verifyQuestResult} from "@/lib/quests/types";
+import {AuthorizationType} from "@/lib/authorization/types";
 
 // 检查用户是否完成特定类型任务
 export async function verifyUserQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {

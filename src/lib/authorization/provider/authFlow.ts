@@ -1,13 +1,8 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
-import {AuthProvider} from "@/lib/authorization/types";
 import connectMongo from "@/lib/mongodb/client";
 import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/utils/url";
 import * as response from "@/lib/response/response";
-import User from "@/lib/models/User";
-import {v4 as uuidv4} from "uuid";
-import UserTwitter from "@/lib/models/UserTwitter";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import logger from "@/lib/logger/winstonLogger";

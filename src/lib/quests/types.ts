@@ -1,7 +1,7 @@
-import {AuthorizationType} from "@/lib/models/authentication";
 import {IUserWallet} from "@/lib/models/UserWallet";
 import {IUserSteam} from "@/lib/models/UserSteam";
 import {IOAuthToken} from "@/lib/models/OAuthToken";
+import {AuthorizationType} from "@/lib/authorization/types";
 
 export type FollowOnTwitter = {
     // 关注的目标用户
