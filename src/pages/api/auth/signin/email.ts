@@ -23,7 +23,6 @@ router.post(async (req, res) => {
         return
     }
     if (historyCaptcha != captcha) {
-        console.log(captcha, historyCaptcha);
         res.json(response.captchaMismatch());
         return
     }

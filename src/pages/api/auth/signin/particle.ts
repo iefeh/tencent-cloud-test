@@ -5,6 +5,7 @@ import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {getEvmWallet, getParticleUser} from "@/lib/particle.network/auth";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -27,7 +28,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         user_id: data.uuid,
         evm_wallet: getEvmWallet(data.wallets),
     }
-    console.log(`user ${userId} particle ${particle}`);
+    logger.debug(`user ${userId} particle ${particle}`);
     const particleAuthUserId = data.jwtId.split(':')[1];
     if (particleAuthUserId != userId) {
         console.error(`want particle auth user ${userId} but got ${particleAuthUserId}`);
@@ -40,7 +41,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
 
 // this will run if none of the above matches
 router.all((req, res) => {
-    console.log("request not found triggered");
     res.status(405).json({
         error: "Method not allowed",
     });

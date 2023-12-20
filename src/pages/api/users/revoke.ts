@@ -4,6 +4,7 @@ import * as response from "@/lib/response/response";
 import { UserContextRequest} from "@/lib/middleware/auth";
 import {OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -26,10 +27,10 @@ router.get(async (req, res) => {
         authEndpoint: "https://twitter.com/i/oauth2/authorize",
         tokenEndpoint: "https://api.twitter.com/2/oauth2/token",
         onAccessTokenRefreshed: newToken => {
-            console.log("access token refreshed:", newToken)
+            logger.debug("access token refreshed:", newToken)
         },
         onRefreshTokenExpired: newToken => {
-            console.log("access token revoked:", newToken)
+            logger.debug("access token revoked:", newToken)
         }
     }
     const provider = new OAuthProvider(oauthOps);

@@ -1,17 +1,25 @@
 import {Document, Schema, models, model} from 'mongoose'
 
-export type QuestType =
-    "connect_wallet"
-    | "connect_twitter"
-    | "connect_discord"
-    | "connect_telegram"
-    | "connect_steam"
-    | "follow_twitter"
-    | "hold_nft";
+export enum QuestType {
+    ConnectWallet = "connect_wallet",
+    ConnectTwitter = "connect_twitter",
+    ConnectDiscord = "connect_discord",
+    ConnectTelegram = "connect_telegram",
+    ConnectSteam = "connect_steam",
+    FollowOnTwitter = "follow_on_twitter",
+    RetweetTweet = "retweet_tweet",
+    HoldDiscordRole = "hold_discord_role",
+    Whitelist = "whitelist",
+    GamePreRegister = "game_pre_register",
+    HoldNFT = "hold_nft",
+}
 
-export type QuestRewardType =
-    "moon_beam"
-    | "usdt";
+export enum QuestRewardType {
+    // 固定奖励，奖励数量配置于当前任务中
+    Fixed = "fixed",
+    // 范围奖励，奖励数量特定于任务进行动态分配
+    Range = "range",
+}
 
 // 任务记录
 export interface IQuest extends Document {
@@ -25,10 +33,17 @@ export interface IQuest extends Document {
     tip: string,
     // 任务类型
     type: QuestType,
-    // 任务奖励类型
-    reward_type: QuestRewardType,
-    // 奖励数量
-    reward_amount: number,
+    // 任务属性，根据任务类型不同，属性不同
+    properties: any,
+    // 奖励设置
+    reward: {
+        // 奖励类型
+        type: QuestRewardType,
+        // 任务奖励数量，当奖励类型为range时表示最少可以获得的奖励
+        amount: number,
+        // 当任务奖励为range时，最大可以获得的奖励数量
+        max_amount: number,
+    },
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -43,8 +58,12 @@ const QuestSchema = new Schema<IQuest>({
     description: {type: String, default: null},
     tip: {type: String, default: null},
     type: {type: String},
-    reward_type: {type: String, default: null},
-    reward_amount: {type: String, default: null},
+    properties: Schema.Types.Mixed,
+    reward: {
+        type: {type: String},
+        amount: {type: Number},
+        max_amount: {type: Number},
+    },
     created_time: {type: Number},
     updated_time: {type: Number},
     deleted_time: {type: Number},

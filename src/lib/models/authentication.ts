@@ -16,3 +16,9 @@ export enum AuthorizationFlow {
     LOGIN = "LOGIN",
     CONNECT = "CONNECT"
 }
+
+export enum AuthorizationType {
+    Twitter = "twitter",
+    Discord = "discord",
+    Wallet = "wallet",
+}

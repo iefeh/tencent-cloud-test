@@ -12,7 +12,6 @@ export async function validateCallbackState(provider: AuthProvider, req:any, res
         res.json(response.notFound());
         return {passed: false};
     }
-    console.log("provider:", provider)
     const stateVal = await redis.get(`authorization_state:${provider}:${state}`);
     if (!stateVal) {
         res.json(response.notFound());
