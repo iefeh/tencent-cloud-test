@@ -50,7 +50,7 @@ export class OAuthProvider {
         for (const [key, value] of Object.entries(merged)) {
             params.append(key, value as string);
         }
-        // 默认设置basic auth与content type
+        // 设置请求头
         let headers = this.calcBasicAuthHeader();
         headers = {
             ...headers,
