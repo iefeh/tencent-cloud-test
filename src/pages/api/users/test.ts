@@ -4,31 +4,17 @@ import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import {RestClient} from "okx-api";
 import {AxiosRequestConfig} from "axios";
+import {CovalentClient} from "@covalenthq/client-sdk";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
+// Covalent api 免费额度 RPS=4， 50$ RPS=100
 router.get(async (req, res) => {
-
     try {
-        // @ts-ignore
-        const config: AxiosRequestConfig = {
-            headers: {
-                'OK-ACCESS-PROJECT': '2c09c1f4dc44aafe78fd5af4387e25f8'
-            },
-        };
-        const client = new RestClient({
-            apiKey: "2c42251d-e5e5-4365-af2e-071221a77a92",
-            apiSecret: "E255851080C5BE59400D641494878735",
-            apiPass: "S1@qYBQ#6W#!yurA",
-        }, 'demo', {}, config);
-        const result = await client.postPrivate("/api/v5/waas/wallet/create-wallet", {
-            addresses: [{
-                "chainId": "1",
-                "address": "0x1260b33a7b1Ca6919c74d6212f2D17945222827f"
-            }],
-            walletId: "13886e05-1265-4b79-8ac3-b7ab46211001",
-        });
-        console.log(result.data);
+        const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
+        // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
+        const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
+        console.log(resp.data);
     } catch (error) {
         console.error(error)
     }

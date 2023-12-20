@@ -1,30 +1,28 @@
 import {IQuest, QuestType} from "@/lib/models/Quest";
-import {IUserMoonBeamAudit} from "@/lib/models/UserMoonBeamAudit";
 import logger from "@/lib/logger/winstonLogger";
+import {queryUserWalletAuthorization, verifyConnectWalletQuest} from "@/lib/quests/items/connectWallet";
+import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/items/connectTwitter";
+import {queryUserDiscordAuthorization, verifyConnectDiscordQuest} from "@/lib/quests/items/connectDiscord";
+import {queryUserSteamAuthorization, verifyConnectSteamQuest} from "@/lib/quests/items/connectSteam";
+import {AuthorizationType} from "@/lib/models/authentication";
+import {verifyQuestResult} from "@/lib/quests/types";
 
-export type verifyQuestResult = {
-    // 是否可以申请任务
-    claimable: boolean;
-    // 任务对应的audit记录
-    audit: IUserMoonBeamAudit;
-}
-
-export async function verifyUserQuest(userId: string, quest: IQuest): Promise<IUserMoonBeamAudit> {
+// 检查用户是否完成特定类型任务
+export async function verifyUserQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {
     switch (quest.type) {
         case QuestType.ConnectWallet:
-            break;
+            return verifyConnectWalletQuest(userId, quest);
         case QuestType.ConnectTwitter:
-            break;
+            return verifyConnectTwitterQuest(userId, quest);
         case QuestType.ConnectDiscord:
-            break;
+            return verifyConnectDiscordQuest(userId, quest);
         case QuestType.ConnectTelegram:
-            break;
+            return {claimable: false};
         case QuestType.ConnectSteam:
-            break;
+            return verifyConnectSteamQuest(userId, quest);
         case QuestType.FollowOnTwitter:
-            break;
         case QuestType.RetweetTweet:
-            break;
+            return verifyTwitterQuest(userId, quest);
         case QuestType.HoldDiscordRole:
             break;
         case QuestType.Whitelist:
@@ -36,4 +34,16 @@ export async function verifyUserQuest(userId: string, quest: IQuest): Promise<IU
         default:
             logger.error(`quest ${quest.id} type ${quest.type} not implemented`);
     }
+    return {claimable: false};
+}
+
+async function verifyTwitterQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {
+    // 需要twitter绑定
+    const twitterAuth = await queryUserTwitterAuthorization(userId);
+    if (!twitterAuth) {
+        return {claimable: false, require_authorization: AuthorizationType.Twitter};
+    }
+    // 伪验证，等待1秒
+    await promiseSleep(1200);
+    return {claimable: true};
 }

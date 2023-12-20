@@ -1,11 +1,10 @@
-import Quest, {QuestType} from "@/lib/models/Quest";
+import {QuestType} from "@/lib/models/Quest";
 import {AuthorizationType} from "@/lib/models/authentication";
-import {PipelineStage} from "mongoose";
-import UserDiscord from "@/lib/models/UserDiscord";
-import UserTwitter from "@/lib/models/UserTwitter";
-import UserWallet from "@/lib/models/UserWallet";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import UserSteam from "@/lib/models/UserSteam";
+import {queryUserWalletAuthorization} from "@/lib/quests/items/connectWallet";
+import {queryUserTwitterAuthorization} from "@/lib/quests/items/connectTwitter";
+import {queryUserDiscordAuthorization} from "@/lib/quests/items/connectDiscord";
+import {queryUserSteamAuthorization} from "@/lib/quests/items/connectSteam";
 
 export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加verified字段
@@ -62,7 +61,7 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
                 quest.achieved = !!discord;
                 break;
             case QuestType.ConnectSteam:
-                const steam = await UserSteam.findOne({user_id: userId, deleted_time: null});
+                const steam = await queryUserSteamAuthorization(userId);
                 quest.achieved = !!steam;
         }
     }
@@ -127,92 +126,6 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
                 break;
         }
     });
-}
-
-// 返回结构：
-//            {
-//                 user_id: 1,
-//                 discord_id: 1,
-//                 token: "$oauth_tokens"
-//             }
-async function queryUserDiscordAuthorization(userId: string): Promise<any> {
-    const aggregateQuery: PipelineStage[] = [
-        {
-            $match: {
-                user_id: userId,
-                deleted_time: null,
-            }
-        },
-        {
-            $lookup: {
-                from: "oauth_tokens",
-                let: {platform_id: "$discord_id"},
-                pipeline: [
-                    // 联表时过滤已删除的记录
-                    {$match: {$expr: {$and: [{$eq: ["$platform_id", "$$platform_id"]}, {$eq: ["$deleted_time", null]}]}}}
-                ],
-                as: "oauth_tokens"
-            }
-        },
-        {
-            $unwind: "$oauth_tokens"
-        },
-        {
-            $project: {
-                _id: 0,
-                user_id: 1,
-                discord_id: 1,
-                token: "$oauth_tokens"
-            }
-        }
-    ];
-    const results = await UserDiscord.aggregate(aggregateQuery);
-    return results.length > 0 ? results[0] : null;
-}
-
-// 返回结构：
-//            {
-//                 user_id: 1,
-//                 twitter_id: 1,
-//                 token: "$oauth_tokens"
-//             }
-async function queryUserTwitterAuthorization(userId: string): Promise<any> {
-    const aggregateQuery: PipelineStage[] = [
-        {
-            $match: {
-                user_id: userId,
-                deleted_time: null,
-            }
-        },
-        {
-            $lookup: {
-                from: "oauth_tokens",
-                let: {platform_id: "$twitter_id"},
-                pipeline: [
-                    // 联表时过滤已删除的记录
-                    {$match: {$expr: {$and: [{$eq: ["$platform_id", "$$platform_id"]}, {$eq: ["$deleted_time", null]}]}}}
-                ],
-                as: "oauth_tokens"
-            }
-        },
-        {
-            $unwind: "$oauth_tokens"
-        },
-        {
-            $project: {
-                _id: 0,
-                user_id: 1,
-                twitter_id: 1,
-                token: "$oauth_tokens"
-            }
-        }
-    ];
-    const results = await UserTwitter.aggregate(aggregateQuery);
-    return results.length > 0 ? results[0] : null;
-}
-
-async function queryUserWalletAuthorization(userId: string): Promise<any> {
-    return await UserWallet.findOne({user_id: userId, deleted_time: null});
 }
 
 // 为任务添加authorization、user_authorized字段，标识任务需要的前置授权类型

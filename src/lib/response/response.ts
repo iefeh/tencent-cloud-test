@@ -17,6 +17,7 @@ export enum ResponseCode {
     ERROR_AUTHORIZATION_DENIED = -7,
     ERROR_SEND_CAPTCHA_DISALLOWED = -8,
     ERROR_ACCOUNT_DUPLICATE_BOUND = -9,
+    ERROR_ACCOUNT_ALREADY_BOUND_MEDIA = -10,
     // 添加对应的响应码
 }
 
@@ -34,8 +35,10 @@ const ResponseMessages = {
     [ResponseCode.ERROR_AUTHORIZATION_DENIED]: 'Authorization Denied',
     // 不允许发送验证码，间隔不对或者IP受限
     [ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED]: 'Sending Captcha Temporarily Disallowed',
-    // 社媒重复绑定，当前已经绑定社媒或者社媒已经绑定到其他账号
+    // 社媒重复绑定，当前社媒已经绑定到其他账号
     [ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND]: 'Media Already Bound To Others',
+    // 当前账户已绑定对应社媒
+    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA]: 'Account Already Bound Media',
     // 添加响应码对应的msg
 }
 
@@ -60,3 +63,4 @@ export const captchaMismatch = build(ResponseCode.ERROR_CAPTCHA_MISMATCH);
 export const authorizationDenied = build(ResponseCode.ERROR_AUTHORIZATION_DENIED);
 export const sendCaptchaDisallowed = build(ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED);
 export const accountDuplicateBound = build(ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND);
+export const accountAlreadyBoundMedia = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA);
