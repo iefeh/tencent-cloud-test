@@ -22,9 +22,16 @@ export default function HeaderDropdownMenu(props: Props) {
           isActive && 'text-[#F6C799] border-[#F6C799] border-b-2'
         } text-[22px] ml-8`}
       >
-        Loyalty Program
+        {item.name}
       </div>
-      <ControlledMenu className="pt-[1.4375rem] px-[2.625rem] pb-7" {...hoverProps} {...menuState} anchorRef={menuRef} theming="dark" onClose={() => toggle(false)}>
+      <ControlledMenu
+        className="pt-[1.4375rem] px-[2.625rem] pb-7"
+        {...hoverProps}
+        {...menuState}
+        anchorRef={menuRef}
+        theming="dark"
+        onClose={() => toggle(false)}
+      >
         {item.children!.map((child, ci) => (
           <MenuItem key={ci} onClick={() => onLinkClick?.(child.route)}>
             <span className="font-semakin uppercase text-lg hover:text-basic-yellow">{child.name}</span>
