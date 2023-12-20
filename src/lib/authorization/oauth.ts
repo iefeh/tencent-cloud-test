@@ -41,12 +41,21 @@ export class OAuthProvider {
             client_secret: clientSecret,
             redirect_uri: redirectURI,
         };
-        const params = {
+        const merged = {
             ...baseParams,
             ...extraParams
         };
-
-        const headers = this.calcBasicAuthHeader();
+        // 把参数转为form-urlencoded
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(merged)) {
+            params.append(key, value as string);
+        }
+        // 默认设置basic auth与content type
+        let headers = this.calcBasicAuthHeader();
+        headers = {
+            ...headers,
+            "Content-type": "application/x-www-form-urlencoded",
+        }
         const response = await axios.post<OAuthToken>(tokenEndpoint, params, {headers});
         const data = response.data;
         return data as OAuthToken;

@@ -10,6 +10,7 @@ import {v4 as uuidv4} from "uuid";
 import UserTwitter from "@/lib/models/UserTwitter";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
+import logger from "@/lib/logger/winstonLogger";
 
 export interface ValidationResult {
     passed: boolean,
@@ -40,7 +41,7 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
         return;
     }
     if (!authPayload) {
-        console.error('authPayload not present when validate callback passed from flow:', authFlow);
+        logger.error(`authPayload not present when validate callback passed from flow:${authFlow}`);
         res.status(500).json(response.serverError());
         return;
     }
@@ -78,12 +79,12 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
         res.redirect(landing_url);
     } catch (error: any) {
         if (error.code === 11000) {
-            console.warn('唯一性键冲突：', error);
+            logger.warn('唯一性键冲突：', error);
             const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());
             res.redirect(landing_url);
             return;
         }
-        console.error(error);
+        logger.error(error);
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.serverError());
         res.redirect(landing_url);
     }

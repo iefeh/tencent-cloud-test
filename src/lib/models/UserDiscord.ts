@@ -6,12 +6,14 @@ export interface IUserDiscord extends Document {
     // 用户的dc id
     discord_id: string,
     username: string,
-    // 头像
+    // 头像，可能为null
     avatar: string;
     avatar_decoration: string,
     public_flags: number,
+    premium_type: number,
     flags: number,
     banner: string,
+    global_name: string,
     locale: string | null,
     email: string,
     verified: boolean;
@@ -26,9 +28,11 @@ const UserDiscordSchema = new Schema<IUserDiscord>({
     user_id: {type: String, required: true},
     discord_id: {type: String, required: true},
     username: {type: String},
+    global_name: {type: String},
     avatar: {type: String},
     avatar_decoration: {type: String},
     public_flags: {type: Number},
+    premium_type: {type: Number},
     flags: {type: Number},
     banner: {type: String},
     locale: {type: String},

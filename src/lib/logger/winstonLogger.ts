@@ -1,5 +1,3 @@
-// app/logger/winstonLogger.ts
-
 import * as winston from 'winston';
 import {format} from 'date-fns';
 

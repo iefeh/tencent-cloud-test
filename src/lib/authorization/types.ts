@@ -55,5 +55,6 @@ export interface OAuthRefreshTokenPayload {
 
 export enum AuthProvider {
     GOOGLE = "google",
-    TWITTER = "twitter"
+    TWITTER = "twitter",
+    DISCORD = "discord",
 }

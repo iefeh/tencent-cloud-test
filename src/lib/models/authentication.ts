@@ -21,4 +21,5 @@ export enum AuthorizationType {
     Twitter = "twitter",
     Discord = "discord",
     Wallet = "wallet",
+    Google = "google",
 }

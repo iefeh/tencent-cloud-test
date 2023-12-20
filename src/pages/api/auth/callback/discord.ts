@@ -2,12 +2,12 @@ import * as response from '../../../../lib/response/response';
 import {NextApiRequest, NextApiResponse} from 'next'
 import {createRouter} from "next-connect";
 import {handleAuthCallback} from "@/lib/authorization/provider/authFlow";
-import {GoogleAuthFlow} from "@/lib/authorization/provider/google";
+import {DiscordAuthFlow} from "@/lib/authorization/provider/discord";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    await handleAuthCallback(new GoogleAuthFlow(), req, res);
+    await handleAuthCallback(new DiscordAuthFlow(), req, res);
 });
 
 // this will run if none of the above matches
