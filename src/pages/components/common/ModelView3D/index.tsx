@@ -1,3 +1,6 @@
+import { useRef } from 'react';
+import useModelView from '@/hooks/useModelView';
+
 interface Props {
   source: string;
   texture?: string;
@@ -5,6 +8,9 @@ interface Props {
 
 export default function ModelView3D(props: Props) {
   const { source, texture } = props;
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  return <div className="inline-block w-48 h-48"></div>;
+  useModelView(containerRef, source, texture);
+
+  return <div ref={containerRef} className="inline-block w-full h-full"></div>;
 }

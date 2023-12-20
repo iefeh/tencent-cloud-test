@@ -1,8 +1,9 @@
 import Head from 'next/head';
 import FogScreen from './subScreens/Fog';
 import KeyVisionScreen from './subScreens/KeyVision';
+import IntroScreen from './subScreens/Intro';
 
-export default function ProfilePage() {
+export default function BushwhackPage() {
   return (
     <section
       id="luxy"
@@ -15,6 +16,8 @@ export default function ProfilePage() {
       <FogScreen />
 
       <KeyVisionScreen />
+
+      <IntroScreen />
     </section>
   );
 }
