@@ -16,14 +16,25 @@ interface CVOptions {
 }
 
 export function useConnectAndVerify(options?: CVOptions) {
-  const [connectable, setConnectable] = useState(true);
-  const [connected, setConnected] = useState(false);
-  const [connectLoading, setConnectLoading] = useState(false);
-  const [verifiable, setVerifiable] = useState(false);
-  const [verified, setVerified] = useState(false);
-  const [verifyLoading, setVerifyLoading] = useState(false);
-
   const { init, connect, verify } = options || {};
+
+  const {
+    enabled: connectable,
+    checked: connected,
+    loading: connectLoading,
+    setEnabled: setConnectable,
+    setChecked: setConnected,
+    onCheck: onConnect,
+  } = useCheck({ check: connect });
+
+  const {
+    enabled: verifiable,
+    checked: verified,
+    loading: verifyLoading,
+    setEnabled: setVerifiable,
+    setChecked: setVerified,
+    onCheck: onVerify,
+  } = useCheck({ check: verify });
 
   async function initData() {
     if (!init) return;
@@ -37,57 +48,63 @@ export function useConnectAndVerify(options?: CVOptions) {
     } catch (error) {}
   }
 
-  async function onConnect() {
-    setConnectLoading(true);
-
-    if (!connect) {
-      delay(() => {
-        setConnected(true);
-        setVerifiable(true);
-        setConnectLoading(false);
-      }, 500);
-      return;
-    }
-
-    try {
-      await connect();
-      setConnected(true);
-    } catch (error) {
-    } finally {
-      setVerifyLoading(false);
-    }
-  }
-
-  async function onVerify() {
-    setVerifyLoading(true);
-
-    if (!verify) {
-      delay(() => {
-        setVerified(true);
-        setVerifyLoading(false);
-      }, 500);
-      return;
-    }
-
-    try {
-      await verify();
-      setVerified(true);
-    } catch (error) {
-    } finally {
-      setVerifyLoading(false);
-    }
-  }
-
   initData();
 
   return { connectable, connected, connectLoading, verifiable, verified, verifyLoading, onConnect, onVerify };
 }
 
+interface CheckOptions {
+  init?: () => CVInitStatus | undefined | Promise<CVInitStatus | undefined>;
+  check?: () => void;
+  onChecked?: () => void;
+}
+
+export function useCheck(options?: CheckOptions) {
+  const [enabled, setEnabled] = useState(true);
+  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { init, check, onChecked } = options || {};
+
+  async function initData() {
+    if (!init) return;
+
+    try {
+      const initRes = await init();
+      setEnabled(!!initRes?.connectable);
+      setChecked(!!initRes?.connected);
+    } catch (error) {}
+  }
+
+  async function onCheck() {
+    setLoading(true);
+
+    if (!check) {
+      delay(() => {
+        setChecked(true);
+        onChecked && onChecked();
+        setLoading(false);
+      }, 500);
+      return;
+    }
+
+    try {
+      await check();
+      setChecked(true);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  initData();
+
+  return { enabled, checked, loading, setEnabled, setChecked, onCheck };
+}
+
 interface Props {
   connectTexts?: VerifyTexts;
   verifyTexts?: VerifyTexts;
-  connectProps?: CVOptions;
-  verifyProps?: CVOptions;
 }
 
 interface VerifyTexts {
@@ -96,12 +113,31 @@ interface VerifyTexts {
   finishedLabel: string;
 }
 
+interface CheckButtonProps {
+  texts: VerifyTexts;
+  options: CheckOptions;
+}
+
+export function CheckButton(props: CheckButtonProps) {
+  const { texts: { label, loadingLabel, finishedLabel }, options } = props;
+  const { loading, enabled, checked, onCheck } = useCheck(options);
+
+  return (
+    <LGButton
+      label={loading ? loadingLabel : checked ? finishedLabel : label}
+      loading={loading}
+      disabled={!enabled || checked}
+      onClick={onCheck}
+    />
+  );
+}
+
 export default function ConnectAndVerify(props: Props & CVOptions) {
-  const { connectTexts, verifyTexts, connectProps, verifyProps } = props;
+  const { connectTexts, verifyTexts } = props;
   const { connectable, connected, connectLoading, verifiable, verified, verifyLoading, onConnect, onVerify } =
     useConnectAndVerify(props);
 
-  const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isEnabled: boolean, isFinished: boolean) => {
+  const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
     const { label, loadingLabel, finishedLabel } = texts;
     return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
   };
@@ -112,19 +148,18 @@ export default function ConnectAndVerify(props: Props & CVOptions) {
         label={getButtonLabel(
           connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
           connectLoading,
-          connectable,
           connected,
         )}
         loading={connectLoading}
         disabled={!connectable || connected}
         onClick={onConnect}
       />
+
       <LGButton
         className="ml-2"
         label={getButtonLabel(
           verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
           verifyLoading,
-          verifiable,
           verified,
         )}
         loading={verifyLoading}
