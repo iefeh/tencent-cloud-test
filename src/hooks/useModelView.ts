@@ -1,7 +1,7 @@
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { RefObject, useEffect } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { TGALoader } from 'three/examples/jsm/Addons';
 
 export class ModelViewer {
@@ -108,9 +108,9 @@ export class ModelViewer {
 
   initControls() {
     const controls = new TrackballControls(this.camera, this.renderer.domElement);
-    controls.noZoom = true;
+    // controls.noZoom = true;
     controls.noPan = true;
-    controls.rotateSpeed = 24;
+    controls.rotateSpeed = 16;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 1;
 
@@ -122,6 +122,11 @@ export class ModelViewer {
     this.rafId = requestAnimationFrame(this.renderCallback);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+  }
+
+  reset() {
+    this.controls.reset();
+    this.camera.lookAt(0, 0, 0);
   }
 
   dispose() {
@@ -146,14 +151,19 @@ export class ModelViewer {
 }
 
 export default function useModelView(containerRef: RefObject<HTMLDivElement>, source: string, texture?: string) {
+  const modelViewer = useRef<ModelViewer>();
+
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const modelViewer = new ModelViewer(containerRef.current, source, texture);
+    const viewer = new ModelViewer(containerRef.current, source, texture);
 
-    modelViewer.init();
-    modelViewer.render();
+    viewer.init();
+    viewer.render();
+    modelViewer.current = viewer;
 
-    return () => modelViewer.dispose();
+    return () => viewer.dispose();
   });
+
+  return { reset: () => modelViewer.current?.reset() };
 }
