@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
 import getMongoConnection from "@/lib/mongodb/client";
 
-async function doTransaction<T>(callback: (session: mongoose.session) => Promise<T>): Promise<T> {
+async function doTransaction<T>(callback: (session: any) => Promise<T>): Promise<T> {
     const conn = await getMongoConnection();
     const session = await conn.startSession();
     session.startTransaction();

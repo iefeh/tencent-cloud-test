@@ -1,10 +1,10 @@
-import {QuestType} from "@/lib/models/Quest";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import {queryUserWalletAuthorization} from "@/lib/quests/items/connectWallet";
 import {queryUserTwitterAuthorization} from "@/lib/quests/items/connectTwitter";
 import {queryUserDiscordAuthorization} from "@/lib/quests/items/connectDiscord";
 import {queryUserSteamAuthorization} from "@/lib/quests/items/connectSteam";
 import {AuthorizationType} from "@/lib/authorization/types";
+import {QuestType} from "@/lib/quests/types";
 
 export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加verified字段

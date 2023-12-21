@@ -4,7 +4,7 @@ import {createRouter} from "next-connect";
 import {verifySignature, verifySignWallet} from "@/lib/web3/wallet";
 import {redis} from "@/lib/redis/client";
 import logger from "@/lib/logger/winstonLogger";
-import UserWallet from "@/lib/models/UserWallet";
+import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import User from "@/lib/models/User";
@@ -34,7 +34,7 @@ router.post(async (req, res) => {
     }));
 });
 
-async function createUserAndWallet(address: string): Promise<UserWallet> {
+async function createUserAndWallet(address: string): Promise<IUserWallet> {
     const user = new User({
         user_id: uuidv4(),
         username: address,

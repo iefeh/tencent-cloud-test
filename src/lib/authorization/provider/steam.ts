@@ -10,10 +10,10 @@ import logger from "@/lib/logger/winstonLogger";
 import {NextApiResponse} from "next";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {validateCallbackState} from "@/lib/authorization/provider/validator";
-import * as SteamWebAPI from 'steamapi';
+// import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
 
-// const SteamAPI = require('steamapi');
+const SteamWebAPI = require('steamapi');
 
 const OPENID_CHECK = {
     ns: 'http://specs.openid.net/auth/2.0',
