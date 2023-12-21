@@ -16,6 +16,10 @@ export enum ResponseCode {
     ERROR_CAPTCHA_MISMATCH = -6,
     ERROR_AUTHORIZATION_DENIED = -7,
     ERROR_SEND_CAPTCHA_DISALLOWED = -8,
+    ERROR_ACCOUNT_DUPLICATE_BOUND = -9,
+    ERROR_ACCOUNT_ALREADY_BOUND_MEDIA = -10,
+    ERROR_WALLET_SIGNATURE_MISMATCH = -11,
+    ERROR_WALLET_SIGNATURE_EXPIRED = -12,
     // 添加对应的响应码
 }
 
@@ -33,6 +37,14 @@ const ResponseMessages = {
     [ResponseCode.ERROR_AUTHORIZATION_DENIED]: 'Authorization Denied',
     // 不允许发送验证码，间隔不对或者IP受限
     [ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED]: 'Sending Captcha Temporarily Disallowed',
+    // 社媒重复绑定，当前社媒已经绑定到其他账号
+    [ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND]: 'Media Already Bound To Others',
+    // 当前账户已绑定对应社媒
+    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA]: 'Account Already Bound Media',
+    // 钱包签名不匹配
+    [ResponseCode.ERROR_WALLET_SIGNATURE_MISMATCH]: "Wallet Signature Mismatch",
+    // 钱包签名已过期
+    [ResponseCode.ERROR_WALLET_SIGNATURE_EXPIRED]: "Wallet Signature Expired. Please Make Sure Your System Time Up To Date.",
     // 添加响应码对应的msg
 }
 
@@ -56,3 +68,7 @@ export const captchaExpired = build(ResponseCode.ERROR_CAPTCHA_EXPIRED);
 export const captchaMismatch = build(ResponseCode.ERROR_CAPTCHA_MISMATCH);
 export const authorizationDenied = build(ResponseCode.ERROR_AUTHORIZATION_DENIED);
 export const sendCaptchaDisallowed = build(ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED);
+export const accountDuplicateBound = build(ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND);
+export const accountAlreadyBoundMedia = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA);
+export const walletSignatureMismatch = build(ResponseCode.ERROR_WALLET_SIGNATURE_MISMATCH);
+export const walletSignatureExpired = build(ResponseCode.ERROR_WALLET_SIGNATURE_EXPIRED);

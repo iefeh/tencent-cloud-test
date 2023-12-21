@@ -1,14 +1,10 @@
-import type {NextApiRequest, NextApiResponse} from "next";
+import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectMongo from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import {redis} from "@/lib/redis/client";
-import User from "@/lib/models/User";
-import UserGoogle from "@/lib/models/UserGoogle";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import UserTwitter from "@/lib/models/UserTwitter";
+import { UserContextRequest} from "@/lib/middleware/auth";
 import {OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -31,10 +27,10 @@ router.get(async (req, res) => {
         authEndpoint: "https://twitter.com/i/oauth2/authorize",
         tokenEndpoint: "https://api.twitter.com/2/oauth2/token",
         onAccessTokenRefreshed: newToken => {
-            console.log("access token refreshed:", newToken)
+            logger.debug("access token refreshed:", newToken)
         },
         onRefreshTokenExpired: newToken => {
-            console.log("access token revoked:", newToken)
+            logger.debug("access token revoked:", newToken)
         }
     }
     const provider = new OAuthProvider(oauthOps);
@@ -53,6 +49,7 @@ router.all((req, res) => {
 
 export default router.handler({
     onError(err, req, res) {
+        console.error(err);
         res.status(500).json(response.serverError());
     },
 });

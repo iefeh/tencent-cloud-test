@@ -1,12 +1,11 @@
-import type {NextApiRequest, NextApiResponse} from "next";
+import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
-import UserGoogle from "@/lib/models/UserGoogle";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import UserTwitter from "@/lib/models/UserTwitter";
 import {getEvmWallet, getParticleUser} from "@/lib/particle.network/auth";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -21,13 +20,15 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    await connectMongo();
+    await getMongoConnection();
     const data = await getParticleUser(particle_user_id, particle_auth_token);
+
     const particle = {
         web_token: particle_auth_token,
         user_id: data.uuid,
         evm_wallet: getEvmWallet(data.wallets),
     }
+    logger.debug(`user ${userId} particle ${particle}`);
     const particleAuthUserId = data.jwtId.split(':')[1];
     if (particleAuthUserId != userId) {
         console.error(`want particle auth user ${userId} but got ${particleAuthUserId}`);
@@ -47,6 +48,7 @@ router.all((req, res) => {
 
 export default router.handler({
     onError(err, req, res) {
+        console.error(err);
         res.status(500).json(response.serverError());
     },
 });

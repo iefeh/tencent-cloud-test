@@ -10,6 +10,8 @@ export interface IUser extends Document {
     avatar_url: string,
     // 绑定的邮件
     email?: string,
+    // MB数量
+    moon_beam: number,
     // particle网络的属性
     particle?: {
         user_id: string,
@@ -19,7 +21,11 @@ export interface IUser extends Document {
         evm_wallet: string
     }
     // 用户创建时间，毫秒时间戳
-    created_time: number
+    created_time: number,
+    // 申请账号自毁时间
+    selfdestruct_request_time: number | null,
+    // 用户删除时间
+    deleted_time: number,
 }
 
 const UserSchema = new Schema<IUser>({
@@ -27,12 +33,15 @@ const UserSchema = new Schema<IUser>({
     username: {type: String},
     avatar_url: {type: String},
     email: {type: String},
+    moon_beam: {type: Number, default: 0},
     particle: {
         user_id: {type: String},
         web_token: {type: String},
         evm_wallet: {type: String}
     },
     created_time: {type: Number, required: true},
+    selfdestruct_request_time: {type: Number},
+    deleted_time: {type: Number, default: null},
 });
 
 // 用户邮件，同一个邮件不允许多次绑定

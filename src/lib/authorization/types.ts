@@ -35,6 +35,8 @@ export interface OAuthToken {
     scope?: string;
     token_type?: string;
     id_token?: string;
+    // 访问token的过期时间，毫秒时间戳
+    expire_time?: number;
 
     // 传递自定义参数，这些参数也将会出现在回调onAccessTokenRefreshed、onRefreshTokenExpired的入参中
     [key: string]: any;
@@ -48,4 +50,12 @@ export interface OAuthRefreshTokenPayload {
     refresh_token: string;
 
     [key: string]: any;
+}
+
+export enum AuthorizationType {
+    Twitter = "twitter",
+    Discord = "discord",
+    Wallet = "wallet",
+    Google = "google",
+    Steam = "steam",
 }

@@ -3,7 +3,7 @@ import {NextApiResponse, NextApiRequest} from 'next'
 import {redis} from '@/lib/redis/client';
 import User from "@/lib/models/User";
 import {v4 as uuidv4} from 'uuid';
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
@@ -23,12 +23,11 @@ router.post(async (req, res) => {
         return
     }
     if (historyCaptcha != captcha) {
-        console.log(captcha, historyCaptcha);
         res.json(response.captchaMismatch());
         return
     }
     // 执行用户登录
-    await connectMongo();
+    await getMongoConnection();
     let user = await User.findOne({'email': email})
     if (!user) {
         user = new User({

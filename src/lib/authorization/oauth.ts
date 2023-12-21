@@ -41,12 +41,21 @@ export class OAuthProvider {
             client_secret: clientSecret,
             redirect_uri: redirectURI,
         };
-        const params = {
+        const merged = {
             ...baseParams,
             ...extraParams
         };
-
-        const headers = this.calcBasicAuthHeader();
+        // 把参数转为form-urlencoded
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(merged)) {
+            params.append(key, value as string);
+        }
+        // 设置请求头
+        let headers = this.calcBasicAuthHeader();
+        headers = {
+            ...headers,
+            "Content-type": "application/x-www-form-urlencoded",
+        }
         const response = await axios.post<OAuthToken>(tokenEndpoint, params, {headers});
         const data = response.data;
         return data as OAuthToken;
@@ -119,7 +128,21 @@ class OAuthRequest {
         this.token = token;
     }
 
+    private async checkRefreshTokenExpiration() {
+        if (!this.token.expire_time) {
+            return;
+        }
+        // 给与10秒的缓冲时间
+        const now = Date.now() + 10 * 1000;
+        if (now < this.token.expire_time) {
+            return;
+        }
+        // token已过期，执行刷新.
+        this.token = await this.authProvider.refreshAccessToken(this.token);
+    }
+
     public async get<T>(url: string, options?: any): Promise<T> {
+        await this.checkRefreshTokenExpiration();
         const {headers, retryOn401 = true} = options || {};
         try {
             const response = await axios.get<T>(url, {
@@ -140,6 +163,7 @@ class OAuthRequest {
     }
 
     public async post<T>(url: string, data?: any, options?: any): Promise<T> {
+        await this.checkRefreshTokenExpiration();
         const {headers, retryOn401 = true} = options || {};
         try {
             const response = await axios.post<T>(url, data, {
