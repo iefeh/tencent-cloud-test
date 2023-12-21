@@ -2,7 +2,7 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import {generateAuthorizationURL} from "@/lib/authorization/provider/steam";
 import UserSteam from "@/lib/models/UserSteam";
 
@@ -10,7 +10,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     // 检查用户是否已经绑定，不允许重复绑定
-    await connectMongo();
+    await getMongoConnection();
     const twitterAuth = await UserSteam.findOne({user_id: req.userId, deleted_time: null});
     if (twitterAuth) {
         res.json(response.accountAlreadyBoundMedia());

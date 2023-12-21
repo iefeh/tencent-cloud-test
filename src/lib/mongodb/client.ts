@@ -18,7 +18,7 @@ if (!cached) {
     cached = global.mongoose = {conn: null, promise: null}
 }
 
-async function connectMongo() {
+async function getMongoConnection() {
     if (cached.conn) {
         return cached.conn
     }
@@ -40,4 +40,4 @@ async function connectMongo() {
     return cached.conn
 }
 
-export default connectMongo
+export default getMongoConnection

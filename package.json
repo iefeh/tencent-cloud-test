@@ -19,6 +19,7 @@
     "axios": "^1.5.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.0.1",
+    "ethers": "^6.9.1",
     "gsap": "^3.12.2",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",

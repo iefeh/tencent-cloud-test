@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
 import UserGoogle from "@/lib/models/UserGoogle";
@@ -33,7 +33,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         return;
     }
     // 检查用户是否完成任务，与用户获取的经验
-    await connectMongo();
+    await getMongoConnection();
 
     res.json(response.success({
 

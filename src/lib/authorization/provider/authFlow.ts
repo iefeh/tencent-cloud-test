@@ -1,11 +1,12 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/utils/url";
 import * as response from "@/lib/response/response";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import logger from "@/lib/logger/winstonLogger";
+import doTransaction from "@/lib/mongodb/transaction";
 
 export interface ValidationResult {
     passed: boolean,
@@ -41,7 +42,7 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
         return;
     }
     try {
-        await connectMongo();
+        await getMongoConnection();
         // 获取当前的授权第三方用户
         const authParty = await authFlow.getAuthParty(req, authPayload);
         if (authPayload.flow == AuthorizationFlow.CONNECT) {
@@ -92,8 +93,11 @@ async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: Authoriz
         // 新创建用户与其社交绑定
         const newUser = authFlow.constructNewUser(authParty);
         userConnection = authFlow.constructUserConnection(newUser.user_id, authParty);
-        await userConnection.save();
-        await newUser.save();
+        await doTransaction(async (session) => {
+            const opts = {session};
+            await userConnection.save(opts);
+            await newUser.save(opts);
+        });
     }
     // 执行用户登录
     const userId = userConnection.user_id;
