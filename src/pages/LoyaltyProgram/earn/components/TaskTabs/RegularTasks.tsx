@@ -3,15 +3,15 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { CircularProgress, Pagination } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import ConnectAndVerify from '@/pages/components/common/buttons/ConnectAndVerify';
-import { TaskListItem, queryTaskListAPI } from '@/http/services/task';
+import ConnectAndVerify, { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
+import { TaskListItem, TaskReward, queryTaskListAPI } from '@/http/services/task';
 import { useEffect, useState } from 'react';
-import { QuestRewardType } from '../../../task';
+import { QuestRewardType, QuestType } from './index';
 
 interface TaskItem extends TaskListItem {
-  connectButtonText?: string;
+  connectTexts?: VerifyTexts;
   showConnectButton?: boolean;
-  verifyButtonText?: string;
+  verifyTexts?: VerifyTexts;
   showVerifyButton?: boolean;
   onConnectClick?: (item: TaskItem) => void;
   onVerifyClick?: (item: TaskItem) => void;
@@ -31,9 +31,35 @@ export default function RegularTasks() {
       const res = await queryTaskListAPI({ page_num: pageIndex, page_size: pageSize });
       const { quests, total } = res;
       setPagiInto({ ...pagiInfo, total: +total || 0 });
-      setTasks(quests);
+      handleQuests(quests);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  function handleQuests(list: TaskItem[]) {
+    list.forEach((item) => {
+      switch (item.id) {
+        case QuestType.RetweetTweet:
+          item.connectTexts = { label: 'Rwtweet', loadingLabel: 'Retweeting', finishedLabel: 'Retweeted' };
+          break;
+      }
+    });
+
+    setTasks(list);
+  }
+
+  function getRewardText(reward: TaskReward) {
+    const { amount, type, max_amount, min_amount } = reward || {};
+    if (!reward || isNaN(amount)) return '???';
+
+    switch (type) {
+      case QuestRewardType.Fixed:
+        return `${amount} MBs`;
+      case QuestRewardType.Range:
+        return max_amount ? `${max_amount} MBs Max` : `${min_amount} MBs Max`;
+      default:
+        return '???';
     }
   }
 
@@ -58,6 +84,7 @@ export default function RegularTasks() {
 
                   {/* {task.desc && task.desc.length > 0 && <div className="text-sm text-[#999]">{task.desc[0]}</div>} */}
                   <div className="text-sm text-[#999]">{task.description}</div>
+                  <div className="text-sm text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
                 </div>
 
                 <div className="footer">
@@ -65,19 +92,11 @@ export default function RegularTasks() {
                     <Image className="w-8 h-8" src={mbImg} alt="" />
 
                     <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-                      {isNaN(task.reward.amount)
-                        ? '???'
-                        : task.reward.type === QuestRewardType.Range
-                        ? `${task.reward.max_amount} MBs Max`
-                        : `${task.reward.amount} MBs`}
+                      {getRewardText(task.reward)}
                     </span>
                   </div>
 
                   <div className="mt-5">
-                    {/* {task.showConnectButton !== false && <LGButton label={task.connectButtonText || 'Connect'} />}
-                  {task.showVerifyButton !== false && (
-                    <LGButton className="ml-2" label={task.verifyButtonText || 'Verify'} />
-                  )} */}
                     <ConnectAndVerify />
                   </div>
                 </div>

@@ -107,7 +107,7 @@ interface Props {
   verifyTexts?: VerifyTexts;
 }
 
-interface VerifyTexts {
+export interface VerifyTexts {
   label: string;
   loadingLabel: string;
   finishedLabel: string;

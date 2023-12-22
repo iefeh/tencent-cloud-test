@@ -10,6 +10,7 @@ export interface TaskReward {
   type: string;
   amount: number;
   max_amount: number;
+  min_amount: number;
 }
 
 export interface TaskListItem {
@@ -22,6 +23,8 @@ export interface TaskListItem {
   type: string;
   authorization: string | null;
   user_authorized?: boolean;
+  verified?: boolean;
+  achieved?: boolean;
 }
 
 export interface TaskListResDto {
