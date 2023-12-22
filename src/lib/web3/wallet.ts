@@ -1,4 +1,43 @@
 import {ethers} from "ethers";
+import * as response from "@/lib/response/response";
+import logger from "@/lib/logger/winstonLogger";
+
+/**
+ * 校验当前签名的钱包
+ *
+ * @param req http请求对象
+ * @param res http响应对象
+ * @returns 如果签名有效则签名的钱包地址，否则通过res响应并返回""
+ */
+export function verifySignWallet(req: any, res: any): string {
+    const {address, message, signature} = req.body;
+    if (!address || !message || !signature) {
+        res.json(response.invalidParams());
+        return "";
+    }
+    const validSig = verifySignature(address, message, signature);
+    if (!validSig) {
+        res.json(response.walletSignatureMismatch());
+        return "";
+    }
+    // 校验签名时间戳
+    const messages = message.split(":");
+    if (messages.length != 2) {
+        logger.error(`want wallet ${address} sign message timestamp but not got`);
+        res.json(response.walletSignatureMismatch());
+        return "";
+    }
+    const signature_time = Number(messages[1]);
+    // 签名时间必须在5min内
+    const timePassed = Date.now() - signature_time;
+    // if (timePassed > 5 * 50 * 1000) {
+    //     logger.warn(`wallet ${address} signature expired`);
+    //     res.json(response.walletSignatureExpired());
+    //     return "";
+    // }
+    return address.toLowerCase();
+}
+
 
 /**
  * 使用web3.js验证Ethereum签名

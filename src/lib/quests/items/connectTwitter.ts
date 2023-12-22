@@ -2,7 +2,6 @@ import {PipelineStage} from "mongoose";
 import UserTwitter from "@/lib/models/UserTwitter";
 import {IQuest} from "@/lib/models/Quest";
 import {verifyQuestResult} from "@/lib/quests/types";
-import {queryUserWalletAuthorization} from "@/lib/quests/items/connectWallet";
 
 // 返回结构：
 //            {

@@ -10,6 +10,7 @@ import Quest from "@/lib/models/Quest";
 import {notFound} from "@/lib/response/response";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import logger from "@/lib/logger/winstonLogger";
+import {verifyUserQuest} from "@/lib/quests/verification";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -25,7 +26,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         return;
     }
     // 检查用户是否已经完成该任务
-    const userId = req.userId;
+    const userId = req.userId!;
     const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: quest_id});
     if (achievement) {
         logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
@@ -34,10 +35,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     }
     // 检查用户是否完成任务，与用户获取的经验
     await getMongoConnection();
-
-    res.json(response.success({
-
-    }));
+    await verifyUserQuest(userId, quest);
+    res.json(response.success({}));
 });
 
 // this will run if none of the above matches

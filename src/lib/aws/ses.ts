@@ -1,7 +1,7 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
 import {appendQueryParamToUrl} from "@/lib/utils/url";
-import {generateCaptchaEmailHTML} from "@/lib/templates/captchat";
 import * as sgMail from '@sendgrid/mail';
+import {generateCaptchaEmailHTML} from "@/lib/templates/email";
 
 export const sesClient = new SESClient({
     region: process.env.AWS_REGION as string,

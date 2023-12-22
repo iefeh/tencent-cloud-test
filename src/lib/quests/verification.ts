@@ -1,11 +1,12 @@
-import {IQuest, QuestType} from "@/lib/models/Quest";
+import {IQuest} from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {queryUserWalletAuthorization, verifyConnectWalletQuest} from "@/lib/quests/items/connectWallet";
+import {verifyConnectWalletQuest} from "@/lib/quests/items/connectWallet";
 import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/items/connectTwitter";
-import {queryUserDiscordAuthorization, verifyConnectDiscordQuest} from "@/lib/quests/items/connectDiscord";
-import {queryUserSteamAuthorization, verifyConnectSteamQuest} from "@/lib/quests/items/connectSteam";
-import {verifyQuestResult} from "@/lib/quests/types";
+import { verifyConnectDiscordQuest} from "@/lib/quests/items/connectDiscord";
+import { verifyConnectSteamQuest} from "@/lib/quests/items/connectSteam";
+import {QuestType, verifyQuestResult} from "@/lib/quests/types";
 import {AuthorizationType} from "@/lib/authorization/types";
+import {verifyHoldDiscordRoleQuest} from "@/lib/quests/items/holdDiscordRole";
 
 // 检查用户是否完成特定类型任务
 export async function verifyUserQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {
@@ -24,7 +25,7 @@ export async function verifyUserQuest(userId: string, quest: IQuest): Promise<ve
         case QuestType.RetweetTweet:
             return verifyTwitterQuest(userId, quest);
         case QuestType.HoldDiscordRole:
-            break;
+            return verifyHoldDiscordRoleQuest(userId, quest);
         case QuestType.Whitelist:
             break;
         case QuestType.GamePreRegister:

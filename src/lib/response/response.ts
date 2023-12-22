@@ -20,6 +20,8 @@ export enum ResponseCode {
     ERROR_ACCOUNT_ALREADY_BOUND_MEDIA = -10,
     ERROR_WALLET_SIGNATURE_MISMATCH = -11,
     ERROR_WALLET_SIGNATURE_EXPIRED = -12,
+    ERROR_WALLET_ALREADY_BOUND_TO_OTHERS = -13,
+    ERROR_ACCOUNT_ALREADY_BOUND_WALLET = -14,
     // 添加对应的响应码
 }
 
@@ -45,6 +47,10 @@ const ResponseMessages = {
     [ResponseCode.ERROR_WALLET_SIGNATURE_MISMATCH]: "Wallet Signature Mismatch",
     // 钱包签名已过期
     [ResponseCode.ERROR_WALLET_SIGNATURE_EXPIRED]: "Wallet Signature Expired. Please Make Sure Your System Time Up To Date.",
+    // 钱包已经绑定到其他用户
+    [ResponseCode.ERROR_WALLET_ALREADY_BOUND_TO_OTHERS]: "Wallet already bound to others.",
+    // 账户已经绑定了钱包
+    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET]: "Account already bound wallet.",
     // 添加响应码对应的msg
 }
 
@@ -72,3 +78,5 @@ export const accountDuplicateBound = build(ResponseCode.ERROR_ACCOUNT_DUPLICATE_
 export const accountAlreadyBoundMedia = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA);
 export const walletSignatureMismatch = build(ResponseCode.ERROR_WALLET_SIGNATURE_MISMATCH);
 export const walletSignatureExpired = build(ResponseCode.ERROR_WALLET_SIGNATURE_EXPIRED);
+export const walletAlreadyBoundToOthers = build(ResponseCode.ERROR_WALLET_ALREADY_BOUND_TO_OTHERS);
+export const accountAlreadyBoundWallet = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET);
