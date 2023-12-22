@@ -60,17 +60,25 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
 }
 
 async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any): Promise<void> {
-    let userConnection = await authFlow.queryUserConnectionFromParty(authParty);
-    if (userConnection) {
-        // 账号已经绑定到其他用户，此处暂时不判断绑定到谁
+    const userConnection = await authFlow.queryUserConnectionFromParty(authParty);
+    if (userConnection && userConnection.user_id != authPayload.authorization_user_id) {
+        // 账号已经绑定到其他用户
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());
         res.redirect(landing_url);
         return;
     }
     // 创建新的用户绑定
-    userConnection = authFlow.constructUserConnection(authPayload.authorization_user_id!, authParty);
+    const newUserConnection = authFlow.constructUserConnection(authPayload.authorization_user_id!, authParty);
     try {
-        await userConnection.save();
+        await doTransaction(async (session) => {
+            const opts = {session};
+            if (userConnection) {
+                // 移除历史绑定
+                userConnection.deleted_time = newUserConnection.created_time
+                await userConnection.save(opts);
+            }
+            await newUserConnection.save(opts);
+        });
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.success());
         res.redirect(landing_url);
     } catch (error: any) {

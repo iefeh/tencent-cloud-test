@@ -9,7 +9,7 @@ import axios from "axios";
 import logger from "@/lib/logger/winstonLogger";
 import {NextApiResponse} from "next";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {validateCallbackState} from "@/lib/authorization/provider/util";
 // import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
 

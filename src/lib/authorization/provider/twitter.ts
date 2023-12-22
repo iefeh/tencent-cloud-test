@@ -6,7 +6,7 @@ import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {validateCallbackState} from "@/lib/authorization/provider/util";
 import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";

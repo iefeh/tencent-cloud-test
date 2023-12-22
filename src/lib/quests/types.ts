@@ -2,6 +2,8 @@ import {IUserWallet} from "@/lib/models/UserWallet";
 import {IUserSteam} from "@/lib/models/UserSteam";
 import {IOAuthToken} from "@/lib/models/OAuthToken";
 import {AuthorizationType} from "@/lib/authorization/types";
+import {IUserTwitter} from "@/lib/models/UserTwitter";
+import {IUserDiscord} from "@/lib/models/UserDiscord";
 
 
 export enum QuestType {
@@ -36,6 +38,8 @@ export type RetweetTweet = {
 }
 
 export type HoldDiscordRole = {
+    // discord的邀请链接，用户可以通过该链接加入DC
+    guild_url: string;
     // 在指定的工会
     guild_id: string;
     // 拥有的角色
@@ -56,15 +60,22 @@ export type HoldNFT = {
     token_id: number | null;
 }
 
-export type verifyQuestResult = {
-    // 是否可以申请任务
+// 检查任务完成结果
+export type checkClaimableResult = {
+    // 是否可以申领任务奖励
     claimable: boolean;
-    // 是否需要用户授权
+    // 是否需要用户授权(任务需要用户先授权再进行任务申领检查)
     require_authorization?: AuthorizationType;
-    // 用户绑定的钱包，仅当任务类型为connect_wallet时存在
-    wallet?: IUserWallet;
-    // 用户绑定的steam，仅当任务类型为connect_steam时存在
-    steam?: IUserSteam;
-    // 用户的授权token，仅当任务类型为connect_discord或connect_twitter时存在
-    auth_token?: IOAuthToken;
+}
+
+// 领取任务奖励结果
+export type claimRewardResult = {
+    // 任务是否已经领取
+    claimed: boolean;
+    // 是否需要用户授权(任务需要用户先授权再进行任务申领检查)
+    require_authorization?: AuthorizationType;
+    // 领取的奖励数量
+    claimed_amount?: number;
+    // 未能领取任务奖励情况下的提醒
+    tip?: string;
 }

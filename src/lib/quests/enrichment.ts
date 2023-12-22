@@ -1,8 +1,8 @@
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import {queryUserWalletAuthorization} from "@/lib/quests/items/connectWallet";
-import {queryUserTwitterAuthorization} from "@/lib/quests/items/connectTwitter";
-import {queryUserDiscordAuthorization} from "@/lib/quests/items/connectDiscord";
-import {queryUserSteamAuthorization} from "@/lib/quests/items/connectSteam";
+import {queryUserWalletAuthorization} from "@/lib/quests/implementations/connectWallet";
+import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitter";
+import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscord";
+import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectSteam";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {QuestType} from "@/lib/quests/types";
 

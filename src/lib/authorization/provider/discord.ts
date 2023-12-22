@@ -8,8 +8,9 @@ import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authF
 import {NextApiResponse} from "next";
 import OAuthToken from "@/lib/models/OAuthToken";
 import User from "@/lib/models/User";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {deleteAuthToken, saveRotateAuthToken, validateCallbackState} from "@/lib/authorization/provider/util";
 import UserDiscord from "@/lib/models/UserDiscord";
+import logger from "@/lib/logger/winstonLogger";
 
 
 const discordOAuthOps: OAuthOptions = {
@@ -19,7 +20,15 @@ const discordOAuthOps: OAuthOptions = {
     redirectURI: process.env.DISCORD_REDIRECT_URL!,
     authEndpoint: process.env.DISCORD_AUTH_URL!,
     tokenEndpoint: process.env.DISCORD_TOKEN_URL!,
-    enableBasicAuth: true
+    enableBasicAuth: true,
+    onAccessTokenRefreshed: async authToken => {
+        logger.debug("access token refreshed:", authToken)
+        await saveRotateAuthToken(authToken);
+    },
+    onRefreshTokenExpired: async authToken => {
+        logger.debug("refresh token revoked:", authToken);
+        await deleteAuthToken(authToken);
+    }
 }
 export const discordOAuthProvider = new OAuthProvider(discordOAuthOps);
 

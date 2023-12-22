@@ -1,15 +1,15 @@
 import {PipelineStage} from "mongoose";
-import UserDiscord from "@/lib/models/UserDiscord";
+import UserTwitter from "@/lib/models/UserTwitter";
 import {IQuest} from "@/lib/models/Quest";
-import {verifyQuestResult} from "@/lib/quests/types";
+import {checkClaimableResult} from "@/lib/quests/types";
 
 // 返回结构：
 //            {
 //                 user_id: 1,
-//                 discord_id: 1,
+//                 twitter_id: 1,
 //                 token: "$oauth_tokens"
 //             }
-export async function queryUserDiscordAuthorization(userId: string): Promise<any> {
+export async function queryUserTwitterAuthorization(userId: string): Promise<any> {
     const aggregateQuery: PipelineStage[] = [
         {
             $match: {
@@ -20,7 +20,7 @@ export async function queryUserDiscordAuthorization(userId: string): Promise<any
         {
             $lookup: {
                 from: "oauth_tokens",
-                let: {platform_id: "$discord_id"},
+                let: {platform_id: "$twitter_id"},
                 pipeline: [
                     // 联表时过滤已删除的记录
                     {$match: {$expr: {$and: [{$eq: ["$platform_id", "$$platform_id"]}, {$eq: ["$deleted_time", null]}]}}}
@@ -35,17 +35,17 @@ export async function queryUserDiscordAuthorization(userId: string): Promise<any
             $project: {
                 _id: 0,
                 user_id: 1,
-                discord_id: 1,
+                twitter_id: 1,
                 token: "$oauth_tokens"
             }
         }
     ];
-    const results = await UserDiscord.aggregate(aggregateQuery);
+    const results = await UserTwitter.aggregate(aggregateQuery);
     return results.length > 0 ? results[0] : null;
 }
 
-// 校验用户是否绑定了discord
-export async function verifyConnectDiscordQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {
-    const discord = await queryUserDiscordAuthorization(userId);
-    return {claimable: !!discord, auth_token: !!discord ? discord.token : null};
+// 校验用户是否绑定了twitter
+export async function verifyConnectTwitterQuest(userId: string, quest: IQuest): Promise<checkClaimableResult> {
+    const twitter = await queryUserTwitterAuthorization(userId);
+    return {claimable: !!twitter};
 }

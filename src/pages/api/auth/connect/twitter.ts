@@ -4,7 +4,7 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {generateAuthorizationURL} from "@/lib/authorization/provider/twitter";
 import getMongoConnection from "@/lib/mongodb/client";
-import {queryUserTwitterAuthorization} from "@/lib/quests/items/connectTwitter";
+import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitter";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 

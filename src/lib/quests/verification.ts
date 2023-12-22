@@ -1,15 +1,15 @@
 import {IQuest} from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {verifyConnectWalletQuest} from "@/lib/quests/items/connectWallet";
-import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/items/connectTwitter";
-import { verifyConnectDiscordQuest} from "@/lib/quests/items/connectDiscord";
-import { verifyConnectSteamQuest} from "@/lib/quests/items/connectSteam";
-import {QuestType, verifyQuestResult} from "@/lib/quests/types";
+import {verifyConnectWalletQuest} from "@/lib/quests/implementations/connectWallet";
+import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitter";
+import {verifyConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscord";
+import {verifyConnectSteamQuest} from "@/lib/quests/implementations/connectSteam";
+import {QuestType, checkClaimableResult} from "@/lib/quests/types";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {verifyHoldDiscordRoleQuest} from "@/lib/quests/items/holdDiscordRole";
+import {verifyHoldDiscordRoleQuest} from "@/lib/quests/implementations/holdDiscordRole";
 
-// 检查用户是否完成特定类型任务
-export async function verifyUserQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {
+// 检查用户是否可以申请特定任务
+export async function checkUserQuestClaimable(userId: string, quest: IQuest): Promise<checkClaimableResult> {
     switch (quest.type) {
         case QuestType.ConnectWallet:
             return verifyConnectWalletQuest(userId, quest);
@@ -38,7 +38,7 @@ export async function verifyUserQuest(userId: string, quest: IQuest): Promise<ve
     return {claimable: false};
 }
 
-async function verifyTwitterQuest(userId: string, quest: IQuest): Promise<verifyQuestResult> {
+async function verifyTwitterQuest(userId: string, quest: IQuest): Promise<checkClaimableResult> {
     // 需要twitter绑定
     const twitterAuth = await queryUserTwitterAuthorization(userId);
     if (!twitterAuth) {
