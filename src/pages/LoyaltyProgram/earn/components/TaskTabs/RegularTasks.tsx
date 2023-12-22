@@ -1,33 +1,14 @@
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import { Pagination } from '@nextui-org/react';
+import { CircularProgress, Pagination } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import ConnectAndVerify from '@/pages/components/common/buttons/ConnectAndVerify';
+import { TaskListItem, queryTaskListAPI } from '@/http/services/task';
+import { useEffect, useState } from 'react';
+import { QuestRewardType } from '../../../task';
 
-const enum TaskRewardType {
-  /** Moonveil Beams */
-  MB,
-}
-
-interface TaskReward {
-  amount: string;
-  type: TaskRewardType;
-}
-
-const enum TaskStatus {
-  NOT_STARTED,
-  NOT_CONNECTED,
-  CONNECTED,
-  VERIFIED,
-}
-
-interface TaskItem {
-  title: string;
-  desc: string[];
-  descExtended?: boolean;
-  reward: TaskReward;
-  status: TaskStatus;
+interface TaskItem extends TaskListItem {
   connectButtonText?: string;
   showConnectButton?: boolean;
   verifyButtonText?: string;
@@ -37,157 +18,93 @@ interface TaskItem {
 }
 
 export default function RegularTasks() {
-  const tasks: TaskItem[] = [
-    {
-      title: 'Connect Your Wallet',
-      desc: [
-        'Connect to your crypto wallet',
-        'Be sure to use the most valuable wallet to connect. MBs will be rewarded based on the value of digital assets in your wallet. ',
-      ],
-      descExtended: false,
-      reward: {
-        amount: '3500 MBs Max',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Connect Your Twitter',
-      desc: ['Connet to your Twitter account'],
-      descExtended: false,
-      reward: {
-        amount: '50 MBs',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Connect Your Discord',
-      desc: ['Connect to Discord and join our official channel'],
-      descExtended: false,
-      reward: {
-        amount: '50 MBs',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Connect Your Telegram',
-      desc: ['Join our official telegram group'],
-      descExtended: false,
-      reward: {
-        amount: '50 MBs',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Twitter Follow @Moonveil_Studio',
-      desc: ['Connect to Discord and join our official channel'],
-      descExtended: false,
-      reward: {
-        amount: '50 MBs',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Retweet Task',
-      desc: ['Please retweet from @Moonveil_Studio'],
-      descExtended: false,
-      reward: {
-        amount: 'Min 100 MBs',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Connect Your Steam',
-      desc: [
-        'Sign in with your Steam',
-        'Set your profile to “Public”',
-        'In order to view your profile, please go to Privacy Settings and set all profile items to ”Public”.',
-      ],
-      descExtended: false,
-      reward: {
-        amount: '800 MBs Max',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Verify Your Moonveil NFTs',
-      desc: ['Connect your wallet and verify your Moonveil NFTs status'],
-      descExtended: false,
-      reward: {
-        amount: '0',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-    {
-      title: 'Creator Call to Action',
-      desc: ['If you are a content creator, please submit your profile and join our creators’ team.'],
-      descExtended: false,
-      reward: {
-        amount: '???',
-        type: TaskRewardType.MB,
-      },
-      status: TaskStatus.NOT_CONNECTED,
-    },
-  ];
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [pagiInfo, setPagiInto] = useState({
+    total: 0,
+    pageIndex: 1,
+    pageSize: 9,
+  });
+
+  async function queryTasks() {
+    try {
+      const { pageIndex, pageSize } = pagiInfo;
+      const res = await queryTaskListAPI({ page_num: pageIndex, page_size: pageSize });
+      const { quests, total } = res;
+      setPagiInto({ ...pagiInfo, total: +total || 0 });
+      setTasks(quests);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    queryTasks();
+  }, []);
 
   return (
     <div className="mt-7 flex flex-col items-center">
-      <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins">
-        {tasks.map((task, index) => {
-          return (
-            <div
-              key={index}
-              className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-between hover:border-basic-yellow transition-[border-color] duration-500"
-            >
-              <div>
-                <div className="text-xl">{task.title}</div>
+      {tasks.length < 1 ? (
+        <CircularProgress aria-label="Loading..." />
+      ) : (
+        <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full">
+          {tasks.map((task, index) => {
+            return (
+              <div
+                key={index}
+                className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-between hover:border-basic-yellow transition-[border-color] duration-500"
+              >
+                <div>
+                  <div className="text-xl">{task.name}</div>
 
-                {task.desc && task.desc.length > 0 && <div className="text-sm text-[#999]">{task.desc[0]}</div>}
-              </div>
-
-              <div className="footer">
-                <div className="flex items-center">
-                  {task.reward.type === TaskRewardType.MB && <Image className="w-8 h-8" src={mbImg} alt="" />}
-
-                  <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{task.reward.amount}</span>
+                  {/* {task.desc && task.desc.length > 0 && <div className="text-sm text-[#999]">{task.desc[0]}</div>} */}
+                  <div className="text-sm text-[#999]">{task.description}</div>
                 </div>
 
-                <div className="mt-5">
-                  {/* {task.showConnectButton !== false && <LGButton label={task.connectButtonText || 'Connect'} />}
+                <div className="footer">
+                  <div className="flex items-center">
+                    <Image className="w-8 h-8" src={mbImg} alt="" />
+
+                    <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
+                      {isNaN(task.reward.amount)
+                        ? '???'
+                        : task.reward.type === QuestRewardType.Range
+                        ? `${task.reward.max_amount} MBs Max`
+                        : `${task.reward.amount} MBs`}
+                    </span>
+                  </div>
+
+                  <div className="mt-5">
+                    {/* {task.showConnectButton !== false && <LGButton label={task.connectButtonText || 'Connect'} />}
                   {task.showVerifyButton !== false && (
                     <LGButton className="ml-2" label={task.verifyButtonText || 'Verify'} />
                   )} */}
-                  <ConnectAndVerify />
+                    <ConnectAndVerify />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
-      <Pagination
-        className="mt-[4.6875rem] mb-[8.75rem]"
-        showControls
-        total={10}
-        initialPage={1}
-        renderItem={PaginationRenderItem}
-        classNames={{
-          wrapper: 'gap-3',
-          item: 'w-12 h-12 font-poppins-medium text-base text-white',
-          prev: 'w-12 h-12 border-1 border-white bg-transparent',
-          next: 'w-12 h-12 border-1 border-white bg-transparent',
-        }}
-        disableCursorAnimation
-        radius="full"
-        variant="light"
-      />
+      {pagiInfo.total > 0 && (
+        <Pagination
+          className="mt-[4.6875rem] mb-[8.75rem]"
+          showControls
+          total={pagiInfo.total}
+          initialPage={1}
+          renderItem={PaginationRenderItem}
+          classNames={{
+            wrapper: 'gap-3',
+            item: 'w-12 h-12 font-poppins-medium text-base text-white',
+            prev: 'w-12 h-12 border-1 border-white bg-transparent',
+            next: 'w-12 h-12 border-1 border-white bg-transparent',
+          }}
+          disableCursorAnimation
+          radius="full"
+          variant="light"
+        />
+      )}
     </div>
   );
 }
