@@ -1,9 +1,4 @@
-import {IUserWallet} from "@/lib/models/UserWallet";
-import {IUserSteam} from "@/lib/models/UserSteam";
-import {IOAuthToken} from "@/lib/models/OAuthToken";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {IUserTwitter} from "@/lib/models/UserTwitter";
-import {IUserDiscord} from "@/lib/models/UserDiscord";
 
 
 export enum QuestType {
@@ -16,7 +11,7 @@ export enum QuestType {
     RetweetTweet = "retweet_tweet",
     HoldDiscordRole = "hold_discord_role",
     Whitelist = "whitelist",
-    GamePreRegister = "game_pre_register",
+    UserMetric = "user_metric",
     HoldNFT = "hold_nft",
 }
 
@@ -27,16 +22,19 @@ export enum QuestRewardType {
     Range = "range",
 }
 
+// 关注
 export type FollowOnTwitter = {
     // 关注的目标用户
     username: string;
 }
 
+// 转推
 export type RetweetTweet = {
     // 目标推文地址
     tweet_url: string;
 }
 
+// 持有discord角色
 export type HoldDiscordRole = {
     // discord的邀请链接，用户可以通过该链接加入DC
     guild_url: string;
@@ -46,11 +44,13 @@ export type HoldDiscordRole = {
     role_ids: string[];
 }
 
+// 白名单
 export type Whitelist = {
     // 白名单id
     whitelist_id: string;
 }
 
+// 持有NFT
 export type HoldNFT = {
     // NFT所在的链id
     chain_id: string;
@@ -58,6 +58,18 @@ export type HoldNFT = {
     contract_addr: string;
     // NFT的token id
     token_id: number | null;
+}
+
+// 用户指标
+export type UserMetric = {
+    // 指标名称，如 "register_astrark"
+    metric: string;
+    // 指标需要满足的值
+    value: boolean | number | string;
+    // 操作符
+    operator: '==' | '>=' | '<=' | '>' | '<';
+    // 任务地址，可为空
+    url: string;
 }
 
 // 检查任务完成结果
@@ -70,8 +82,8 @@ export type checkClaimableResult = {
 
 // 领取任务奖励结果
 export type claimRewardResult = {
-    // 任务是否已经领取
-    claimed: boolean;
+    // 任务是否已经领取奖励
+    verified: boolean;
     // 是否需要用户授权(任务需要用户先授权再进行任务申领检查)
     require_authorization?: AuthorizationType;
     // 领取的奖励数量

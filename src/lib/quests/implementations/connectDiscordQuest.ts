@@ -20,15 +20,25 @@ export class ConnectDiscordQuest extends QuestBase {
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
-        const claimableResult = await this.checkClaimable(userId);
-        if (!claimableResult.claimable) {
+        // 获取用户的discord
+        const userDiscord = await UserDiscord.findOne({user_id: userId, deleted_time: null});
+        if (!userDiscord) {
             return {
-                claimed: false,
-                require_authorization: claimableResult.require_authorization,
+                verified: false,
+                require_authorization: AuthorizationType.Discord,
+                tip: "You should connect your Discord Account first."
             }
         }
-        // 领取用户奖励
-        return {claimed: false}
+        // 污染discord，确保同一个discord单任务只能获取一次奖励
+        const taint = `${this.quest.id},${AuthorizationType.Discord},${userDiscord.discord_id}`;
+        const result = await this.saveUserReward(userId, taint, this.quest.reward.amount);
+        if (result.duplicated) {
+            return {
+                verified: false,
+                tip: "The Discord Account has already claimed reward.",
+            }
+        }
+        return {verified: result.done, claimed_amount: result.done ? this.quest.reward.amount : undefined}
     }
 }
 

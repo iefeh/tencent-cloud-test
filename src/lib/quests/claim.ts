@@ -1,17 +1,50 @@
 // 用户通过了任务检查，直接申领任务奖励
 import {IQuest} from "@/lib/models/Quest";
-import {QuestRewardType, QuestType, checkClaimableResult} from "@/lib/quests/types";
+import {QuestType, checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import {AuthorizationType} from "@/lib/authorization/types";
 import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
+import logger from "@/lib/logger/winstonLogger";
+import {QuestBase} from "@/lib/quests/implementations/base";
+import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
+import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
+import {HoldDiscordRoleQuest} from "@/lib/quests/implementations/holdDiscordRoleQuest";
+import {UserMetricQuest} from "@/lib/quests/implementations/userMetricQuest";
 
-export async function claimUserQuest(userId: string, quest: IQuest, verifyResult: checkClaimableResult) {
-    if (quest.reward.type == QuestRewardType.Fixed) {
-        await claimFixedRewardQuest(userId, quest, verifyResult);
-        return;
+// TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
+//       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
+export async function claimQuestReward(userId: string, quest: IQuest): Promise<claimRewardResult> {
+    let baseQuest: QuestBase;
+    switch (quest.type) {
+        case QuestType.ConnectWallet:
+            break;
+        case QuestType.ConnectDiscord:
+            baseQuest = new ConnectDiscordQuest(quest)
+            break;
+        case QuestType.FollowOnTwitter:
+        case QuestType.RetweetTweet:
+            await promiseSleep(1200);
+        case QuestType.ConnectTwitter:
+            baseQuest = new ConnectTwitterQuest(quest)
+            break;
+        case QuestType.ConnectSteam:
+            break;
+        case QuestType.HoldDiscordRole:
+            baseQuest = new HoldDiscordRoleQuest(quest)
+            break;
+        case QuestType.Whitelist:
+            break;
+        case QuestType.UserMetric:
+            baseQuest = new UserMetricQuest(quest)
+            break;
+        case QuestType.HoldNFT:
+            break;
+        default:
+            logger.error(`quest ${quest.id} type ${quest.type} not implemented`);
+            return {verified: false}
     }
+    return baseQuest.claimReward(userId);
 }
 
 // 申领固定任务奖励

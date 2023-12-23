@@ -1,5 +1,9 @@
 import mongoose from 'mongoose'
 
+export function isDuplicateKeyError(error: any): boolean {
+    return error && error == 11000
+}
+
 declare global {
     var mongoose: any // This must be a `var` and not a `let / const`
 }
