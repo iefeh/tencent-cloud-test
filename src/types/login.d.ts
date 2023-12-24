@@ -13,7 +13,7 @@ declare interface TokenDto {
   particle_jwt: string;
 }
 
-declare interface GoogleAuthDto {
+declare interface AuthDto {
   authorization_url: string;
 }
 

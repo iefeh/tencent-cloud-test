@@ -11,8 +11,8 @@ interface CVInitStatus {
 
 interface CVOptions {
   init?: () => CVInitStatus | undefined | Promise<CVInitStatus | undefined>;
-  connect?: () => void;
-  verify?: () => void;
+  connect?: (args?: any) => void;
+  verify?: (args?: any) => void;
 }
 
 export function useConnectAndVerify(options?: CVOptions) {
@@ -119,7 +119,10 @@ interface CheckButtonProps {
 }
 
 export function CheckButton(props: CheckButtonProps) {
-  const { texts: { label, loadingLabel, finishedLabel }, options } = props;
+  const {
+    texts: { label, loadingLabel, finishedLabel },
+    options,
+  } = props;
   const { loading, enabled, checked, onCheck } = useCheck(options);
 
   return (

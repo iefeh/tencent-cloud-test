@@ -7,6 +7,7 @@ import ConnectAndVerify, { VerifyTexts } from '@/pages/components/common/buttons
 import { TaskListItem, TaskReward, queryTaskListAPI } from '@/http/services/task';
 import { useEffect, useState } from 'react';
 import { QuestRewardType, QuestType } from './index';
+import { connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
@@ -40,6 +41,16 @@ export default function RegularTasks() {
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
       switch (item.id) {
+        case QuestType.ConnectTwitter:
+          item.onConnectClick = async (item) => {
+            const res = await connectTwitterAPI();
+          };
+          break;
+        case QuestType.ConnectSteam:
+          item.onConnectClick = (item) => {
+            return connectSteamAPI();
+          };
+          break;
         case QuestType.RetweetTweet:
           item.connectTexts = { label: 'Rwtweet', loadingLabel: 'Retweeting', finishedLabel: 'Retweeted' };
           break;
@@ -82,7 +93,6 @@ export default function RegularTasks() {
                 <div>
                   <div className="text-xl">{task.name}</div>
 
-                  {/* {task.desc && task.desc.length > 0 && <div className="text-sm text-[#999]">{task.desc[0]}</div>} */}
                   <div className="text-sm text-[#999]">{task.description}</div>
                   <div className="text-sm text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
                 </div>
@@ -97,7 +107,12 @@ export default function RegularTasks() {
                   </div>
 
                   <div className="mt-5">
-                    <ConnectAndVerify />
+                    <ConnectAndVerify
+                      connectTexts={task.connectTexts}
+                      verifyTexts={task.verifyTexts}
+                      connect={task.onConnectClick}
+                      verify={task.onVerifyClick}
+                    />
                   </div>
                 </div>
               </div>

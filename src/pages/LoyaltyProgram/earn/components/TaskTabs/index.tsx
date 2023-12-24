@@ -26,13 +26,14 @@ export const enum QuestRewardType {
 export default function TaskTabs() {
   const tabs = [
     {
-      key: 'Regular Tasks',
+      // key: 'Regular Tasks',
+      key: 'Whitelist Tasks',
       content: <RegularTasks />,
     },
-    {
-      key: 'Seasonal Campaigns',
-      content: <SeasonalCampaigns />,
-    },
+    // {
+    //   key: 'Seasonal Campaigns',
+    //   content: <SeasonalCampaigns />,
+    // },
   ];
 
   return (
