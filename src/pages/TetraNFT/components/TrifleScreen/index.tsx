@@ -14,7 +14,7 @@ import useLuxyScroll from '@/hooks/luxyScroll';
 export default function TrifleScren() {
   const trifles = [
     {
-      title: 'Destiny Tetra',
+      title: 'Destiny TETRA',
       label: 'Level I',
       activeImg: activeTrifleImg1,
       bgImg: trifleBgImg1,
@@ -23,7 +23,7 @@ export default function TrifleScren() {
       isActive: true,
     },
     {
-      title: 'Eternity Tetra',
+      title: 'Eternity TETRA',
       label: 'Level II',
       // TODO 替换二阶激活图片
       activeImg: activeTrifleImg1,
@@ -32,7 +32,7 @@ export default function TrifleScren() {
       isActive: false,
     },
     {
-      title: 'Infinity Tetra',
+      title: 'Infinity TETRA',
       label: 'Level III',
       // TODO 替换三阶激活图片
       activeImg: activeTrifleImg1,
@@ -54,7 +54,7 @@ export default function TrifleScren() {
         subtitle={
           <>
             <div className="w-[54rem] font-decima text-lg">
-              Our creative gameplay of Tetra NFT Series is to collect, synthesize and upgrade. A higher level of Tetra
+              Our creative gameplay of TETRA NFT Series is to collect, synthesize and upgrade. A higher level of TETRA
               NFT ownership means more rights, rewards, and influence in our ecosystem, and also means greater
               responsibilities to our community.
             </div>
@@ -63,11 +63,11 @@ export default function TrifleScren() {
       />
 
       <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
-        We have three levels of Tetra NFTs
+        We have three levels of TETRA NFTs
       </div>
 
       <div className="px-10 py-4 border border-[#3E3123] rounded-[0.625rem] bg-[rgba(246,199,153,0.06)] mt-[1.875rem] font-decima text-base">
-        Collect multiple Level I Destiny Tetra NFTs to synthesize and upgrade to higher level NFTs.
+        Collect multiple Level I Destiny TETRA NFTs to synthesize and upgrade to higher level NFTs.
       </div>
 
       <div className="mystery-box-list flex justify-between items-center mt-[6.625rem]">

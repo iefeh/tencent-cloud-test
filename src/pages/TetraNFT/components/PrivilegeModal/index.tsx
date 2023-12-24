@@ -25,10 +25,10 @@ const PrivilegeModal: React.FC = (props: any) => {
         <ModalContent>
           <ModalHeader>
             <div className="flex-1 flex flex-col items-center text-center pt-[5.3125rem] pb-[4.5rem]">
-              <div className="font-semakin text-basic-yellow text-4xl">Previleges of the Tetra NFT Series</div>
+              <div className="font-semakin text-basic-yellow text-4xl">Previleges of the TETRA NFT Series</div>
               <div className="font-decima text-base max-w-[50rem] text-center mt-[1.75rem]">
-                In the future, if you successfully obtain the upgraded Level Level II-Enterity Tetra NFT or Level
-                III-Infinity Tetra NFT, you will receive exponentially increased benefits and unlock more diverse
+                In the future, if you successfully obtain the upgraded Level Level II-Enterity TETRA NFT or Level
+                III-Infinity TETRA NFT, you will receive exponentially increased benefits and unlock more diverse
                 gameplay and rewards.
               </div>
             </div>

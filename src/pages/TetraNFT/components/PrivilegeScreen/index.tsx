@@ -80,10 +80,10 @@ export default function PrivilegeScreen() {
           title={
             <div className="font-semakin">
               <div className="text-3xl">Previleges of the</div>
-              <div className="text-[6.25rem]">Tetra NFT Series</div>
+              <div className="text-[6.25rem]">TETRA NFT Series</div>
             </div>
           }
-          subtitle="We have customized special rewards and benefits for different levels of Tetra NFT owners."
+          subtitle="We have customized special rewards and benefits for different levels of TETRA NFT owners."
         />
 
         <div
@@ -118,7 +118,7 @@ export default function PrivilegeScreen() {
 
             <div className="pl-[6.25rem] ml-[5.375rem] border-l border-[rgba(246,199,153,0.2)] h-full">
               <div className="title font-semakin text-3xl text-basic-yellow mb-[3.375rem]">
-                Privileges of Destiny Tetra
+                Privileges of Destiny TETRA
               </div>
 
               <PrivilegeList step={currentIndex} />
@@ -160,8 +160,8 @@ export default function PrivilegeScreen() {
         </div>
 
         <div className="font-decima text-base w-[62.5rem] pt-6 pr-[2.375rem] pb-[2.1875rem] pl-[1.9375rem] border border-[#3E3123] rounded-[1.25rem] bg-[rgba(246,199,153,0.06)] text-justify mt-[7.25rem]">
-          In the future, if you successfully obtain the upgraded Level Level II-Eternity Tetra NFT or Level III-Infinity
-          Tetra NFT, you will receive exponentially increased benefits and unlock more diverse gameplay and rewards.
+          In the future, if you successfully obtain the upgraded Level Level II-Eternity TETRA NFT or Level III-Infinity
+          TETRA NFT, you will receive exponentially increased benefits and unlock more diverse gameplay and rewards.
         </div>
 
         <div className="flex justify-center items-center gap-2 mt-[4.625rem]">

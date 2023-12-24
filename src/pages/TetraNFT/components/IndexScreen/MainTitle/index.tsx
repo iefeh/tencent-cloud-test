@@ -66,7 +66,7 @@ export default function MainTitle() {
           title={
             <div className="font-semakin text-center">
               <div className="text-4xl">Introducing The</div>
-              <div className="text-[6.25rem]">Tetra NFT Series</div>
+              <div className="text-[6.25rem]">TETRA NFT Series</div>
             </div>
           }
         />
