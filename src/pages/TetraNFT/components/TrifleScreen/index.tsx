@@ -50,13 +50,13 @@ export default function TrifleScren() {
       <PageDesc
         needAni={visible}
         baseAniTY
-        title="Collect, Sythesize and Upgrade"
+        title="Collect, Synthesize and Upgrade"
         subtitle={
           <>
             <div className="w-[54rem] font-decima text-lg">
-              Our creative gameplay of TETRA NFT Series is to collect, synthesize and upgrade. A higher level of TETRA
-              NFT ownership means more rights, rewards, and influence in our ecosystem, and also means greater
-              responsibilities to our community.
+              In the TETRA NFT Series, the essence of our gameplay revolves around collecting, synthesizing, and
+              upgrading. Owning higher-level TETRA NFTs not only grants you increased rights, rewards, and influence
+              within our ecosystem, but also brings greater responsibilities towards the community.
             </div>
           </>
         }

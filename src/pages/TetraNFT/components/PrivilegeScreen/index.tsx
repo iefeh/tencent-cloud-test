@@ -160,8 +160,8 @@ export default function PrivilegeScreen() {
         </div>
 
         <div className="font-decima text-base w-[62.5rem] pt-6 pr-[2.375rem] pb-[2.1875rem] pl-[1.9375rem] border border-[#3E3123] rounded-[1.25rem] bg-[rgba(246,199,153,0.06)] text-justify mt-[7.25rem]">
-          In the future, if you successfully obtain the upgraded Level Level II-Eternity TETRA NFT or Level III-Infinity
-          TETRA NFT, you will receive exponentially increased benefits and unlock more diverse gameplay and rewards.
+          In the future, securing an upgraded Level II Eternity TETRA NFT or Level III Infinity TETRA NFT will
+          exponentially boost your benefits and unlock a more diverse range of gameplay and reward.
         </div>
 
         <div className="flex justify-center items-center gap-2 mt-[4.625rem]">

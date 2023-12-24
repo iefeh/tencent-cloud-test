@@ -24,9 +24,7 @@ const NftHome: React.FC = () => {
         title="A DYNAMIC NFT ECOSYSTEM"
         subtitle={
           <div className="max-w-[32rem] font-decima">
-            At Moonveil, we put player experience at the heart of everything we do. Our goal is to create a dynamic NFT
-            ecosystem that encourages players to stay engaged with our games and offers continuous rewards and returns
-            in the future.
+            At Moonveil, we put player experience at the heart of everything we do. We aim to build a dynamic NFT ecosystem that keeps players actively engaged with our games and provides them with ongoing rewards and returns in the future.
           </div>
         }
         button={

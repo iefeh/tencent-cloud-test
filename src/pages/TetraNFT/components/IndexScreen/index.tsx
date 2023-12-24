@@ -30,16 +30,11 @@ export default function IndexScreen() {
         <div className="w-[48.1875rem] font-decima text-lg text-justify">
           <div>
             Introducing the TETRA NFT Series, the groundbreaking and strategic ecosystem NFTs by Moonveil. The
-            first-ever release promises to be the most valuable and sought-after NFT product in the future. Our unique
-            collecting, synthesizing, and upgrading NFT gameplay will grant you exclusive ownership privileges and
-            rewards.
+            first-ever release promises to be the most valuable and sought-after NFT product in the future. Our unique mechanics around collecting, synthesizing, and upgrading NFTs will grant you exclusive ownership privileges and rewards.
           </div>
           <br />
           <div className="mt-5">
-            As a TETRA NFT holder, you become a vital part of Moonveil&apos;s future ecosystem. We&apos;ve meticulously
-            designed a comprehensive system of benefits across multiple in-game and platform products, ensuring you
-            receive long-term, stable returns. Embrace this thrilling opportunity to shape the future of gaming and NFTs
-            while enjoying lasting rewards with Moonveil&apos;s extraordinary TETRA NFTs.
+            Owning a TETRA NFT places you at the heart of Moonveil&apos;s evolving ecosystem. We&apos;ve carefully crafted a broad spectrum of benefits across our in-game and platform offerings, aimed at providing you with consistent, long-term returns. Seize this exciting chance to be a part of the future of gaming and NFTs, all while reaping enduring rewards through Moonveil&apos;s  unique TETRA NFTs.
           </div>
         </div>
       </div>

@@ -6,11 +6,10 @@ import inactiveCardImg3 from 'img/nft/trifle/trifle_card_3_inactive.png';
 
 export const Privileges = [
   // level i
-  'Join the private VIP Discord channel',
   'Early access to future events',
-  'A certain amount of free token airdrop',
-  'Offline event VIP hospitality rights',
-  'Guaranteed Beta test right of future games produced by Moonveil',
+  'Exclusive Benefits within the Community',
+  'Token airdrop privileges',
+  'Guaranteed game test privileges for future games produced by Moonveil',
   'Holders can claim free BattlePass',
   'Lifetime ingame discount',
   'Special in-game props airdrop',
@@ -33,7 +32,7 @@ export const TrifleCards = [
     isActive: true,
     rocketLevelText: 'Level I',
     rocketTitle: 'Destiny Tetra',
-    privilegeLimitRow: 7,
+    privilegeLimitRow: 6,
   },
   {
     activeImg: activeCardImg2,
@@ -41,7 +40,7 @@ export const TrifleCards = [
     isActive: false,
     rocketLevelText: 'Level II',
     rocketTitle: 'Eternity Tetra',
-    privilegeLimitRow: 11,
+    privilegeLimitRow: 10,
   },
   {
     activeImg: activeCardImg3,
