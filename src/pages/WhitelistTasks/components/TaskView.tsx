@@ -7,11 +7,11 @@ export default function TaskView() {
     <div className="task-list w-[64.5%] ml-auto pt-[12.75rem] pl-[3.75rem]">
       <PageDesc
         className="items-start text-left"
-        title={<div className="font-semibold text-5xl">Destiny Tetra NFT Whitelist Tasks</div>}
+        title={<div className="font-semibold text-5xl">Destiny TETRA NFT Whitelist Tasks</div>}
         subtitle={
           <div className="font-poppins text-base max-w-[54.875rem] mt-9">
             Participating in the following tasks will give you the opportunity to be whitelisted for a Level-I Destiny
-            Tetra NFT.
+            TETRA NFT.
             <br />
             Time: August 10th, 12:00 UTC - August 15th, 12:00 UTC
           </div>

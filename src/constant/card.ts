@@ -31,7 +31,7 @@ export const TrifleCards = [
     inactiveImg: activeCardImg1,
     isActive: true,
     rocketLevelText: 'Level I',
-    rocketTitle: 'Destiny Tetra',
+    rocketTitle: 'Destiny TETRA',
     privilegeLimitRow: 6,
   },
   {
@@ -39,7 +39,7 @@ export const TrifleCards = [
     inactiveImg: inactiveCardImg2,
     isActive: false,
     rocketLevelText: 'Level II',
-    rocketTitle: 'Eternity Tetra',
+    rocketTitle: 'Eternity TETRA',
     privilegeLimitRow: 10,
   },
   {
@@ -47,7 +47,7 @@ export const TrifleCards = [
     inactiveImg: inactiveCardImg3,
     isActive: false,
     rocketLevelText: 'Level III',
-    rocketTitle: 'Infinity Tetra',
+    rocketTitle: 'Infinity TETRA',
     privilegeLimitRow: -1,
   },
 ];
