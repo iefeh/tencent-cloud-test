@@ -11,7 +11,7 @@ export const Privileges = [
   'Token airdrop privileges',
   'Guaranteed game test privileges for future games produced by Moonveil',
   'Holders can claim free BattlePass',
-  'Lifetime ingame discount',
+  'Lifetime in-game discount',
   'Special in-game props airdrop',
   // level ii
   'Join the private VIP Discord channel',
