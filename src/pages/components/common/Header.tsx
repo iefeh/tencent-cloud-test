@@ -26,14 +26,8 @@ import { cn } from '@nextui-org/react';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
-  // { name: 'AstrArk', route: '/AstrArk' },
-  {
-    name: 'Games',
-    children: [
-      { name: 'AstrArk', route: '/AstrArk' },
-      { name: 'Bushwhack', route: '/Bushwhack' },
-    ],
-  },
+  { name: 'AstrArk', route: '/AstrArk' },
+  { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
   {
