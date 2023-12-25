@@ -74,7 +74,12 @@ export default function TrifleScren() {
         {trifles.map((item, index) => {
           return (
             <Fragment key={index}>
-              {index > 0 && <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />}
+              {index > 0 && (
+                <div className="flex flex-col items-center">
+                  <div className="font-semakin text-basic-yellow text-sm">Merge</div>
+                  <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />
+                </div>
+              )}
 
               <div className="mystery-box relative">
                 {item.bgImg && (
