@@ -26,6 +26,12 @@ export default function BushwhackPage() {
       if (rafId.current > 0) cancelAnimationFrame(rafId.current);
       setLuxyFixed();
     }
+
+    const { scrollHeight } = document.documentElement;
+    if (scrollTop === scrollHeight) return;
+    if (scrollHeight - scrollTop < 50) {
+      document.documentElement.scrollTo(0, scrollHeight);
+    }
   }
 
   useEffect(() => {
