@@ -6,8 +6,8 @@ export enum Metric {
 
     // 钱包token价值
     WalletTokenUSDValue = "wallet_token_usd_value",
-    // 钱包token价值上次计算时间
-    WalletTokenUSDTime = "wallet_token_value_last_calc_time",
+    // 钱包token价值上次计算时间(可用该时间限制客户端计算钱包价值的间隔)
+    WalletTokenValueLastCalcTime = "wallet_token_value_last_calc_time",
 
     // Steam账号年限
     SteamAccountYears = "steam_account_years",
@@ -29,6 +29,14 @@ export interface IUserMetrics extends Document {
     wallet_token_usd_value: number,
     // 钱包token价值上次计算时间
     wallet_token_value_last_calc_time: number,
+    // Steam账号年限
+    steam_account_years: number,
+    // Steam账号游戏数
+    steam_account_game_count: number,
+    // Steam账户的美金价值，按照游戏的价格+当前用户拥有的游戏进行价值计算
+    steam_account_usd_value: number,
+    // Steam账户评分
+    steam_account_rating: number,
     // 创建时间毫秒时间戳
     created_time: number,
 }
@@ -38,6 +46,10 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
     pre_register_astrark: {type: Boolean},
     wallet_token_usd_value: {Type: Number},
     wallet_token_value_last_calc_time: {Type: Number},
+    steam_account_years: {Type: Number},
+    steam_account_game_count: {Type: Number},
+    steam_account_usd_value: {Type: Number},
+    steam_account_rating: {Type: Number},
     created_time: {type: Number, required: true},
 });
 

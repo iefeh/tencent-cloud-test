@@ -1,9 +1,16 @@
 import {Document, Schema, models, model} from 'mongoose'
 
+export enum SteamProfileVisibility {
+    Invisible = 1,
+    Visible = 3,
+}
+
 // 用户的steam绑定
 export interface IUserSteam extends Document {
     user_id: string,
     steam_id: string,
+    // 判断用户是否公开profile信息，communityvisibilitystate == 1表示不可见，communityvisibilitystate == 3表示可见
+    communityvisibilitystate: SteamProfileVisibility,
     profilestate: number,
     personaname: string,
     commentpermission: string,
@@ -27,6 +34,7 @@ export interface IUserSteam extends Document {
 const UserSteamSchema = new Schema<IUserSteam>({
     user_id: {type: String, required: true},
     steam_id: {type: String, required: true},
+    communityvisibilitystate: {type: Number},
     profilestate: {type: Number},
     personaname: {type: String},
     commentpermission: {type: String},

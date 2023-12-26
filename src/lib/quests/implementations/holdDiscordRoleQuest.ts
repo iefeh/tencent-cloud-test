@@ -67,14 +67,15 @@ export class HoldDiscordRoleQuest extends QuestBase {
         }
         // 污染discord，确保同一个discord单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
-        const result = await this.saveUserReward(userId, taint, this.quest.reward.amount);
+        const rewardDelta = await this.checkUserRewardDelta(userId);
+        const result = await this.saveUserReward(userId, taint, rewardDelta);
         if (result.duplicated) {
             return {
                 verified: false,
                 tip: "The Discord Account has already claimed reward.",
             }
         }
-        return {verified: result.done, claimed_amount: result.done ? this.quest.reward.amount : undefined}
+        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
     }
 }
 

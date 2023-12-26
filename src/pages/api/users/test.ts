@@ -7,17 +7,50 @@ import {AxiosRequestConfig} from "axios";
 import {CovalentClient} from "@covalenthq/client-sdk";
 import {Web3} from "web3";
 import {ethers} from "ethers";
+import UserMetricReward, {checkMetricReward} from "@/lib/models/UserMetricReward";
+import UserMetrics from "@/lib/models/UserMetrics";
+import getMongoConnection from "@/lib/mongodb/client";
+import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
+import Quest from "@/lib/models/Quest";
+import UserSteam from "@/lib/models/UserSteam";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
 router.get(async (req, res) => {
     try {
+        await getMongoConnection();
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);
-        console.log(verifySignature("0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05", "Hello! Please sign this message to confirm your ownership of the address. This action will not cost any gas fee. Here is a unique text: 1703126275000", "0x6d3f06749c44b71fa0b4fc6f07da66c95ea4102c1762859771c2c43365ef35092dd22e2f6a55fe5de57c6712f15d9741f18c3e06ed11303a11b7745cb0151d001b"));
+        const quest = await Quest.findOne({id: "connect_steam"});
+        const questWrapper = new ConnectSteamQuest(quest);
+        const userSteam = new UserSteam({
+            avatar: "",
+            avatarfull: "",
+            avatarhash: "",
+            avatarmedium: "",
+            commentpermission: "",
+            communityvisibilitystate: undefined,
+            created_time: 0,
+            deleted_time: undefined,
+            loccountrycode: "",
+            personaname: "",
+            personastate: 0,
+            personastateflags: 0,
+            primaryclanid: "",
+            profilestate: 0,
+            profileurl: "",
+            realname: "",
+            user_id: "test_user_2",
+            steam_id: "76561198157621569",
+            timecreated: 1071806400
+        });
+        // const result = await questWrapper.refreshUserSteamMetric("test_user_2", userSteam);
+        const result = await questWrapper.claimReward("test_user_2");
+        console.log(result);
+        console.log();
     } catch (error) {
         console.error(error)
     }

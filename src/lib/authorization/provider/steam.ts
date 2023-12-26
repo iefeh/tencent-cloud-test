@@ -12,6 +12,7 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {validateCallbackState} from "@/lib/authorization/provider/util";
 // import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
+import {da} from "date-fns/locale";
 
 const SteamWebAPI = require('steamapi');
 
@@ -120,8 +121,8 @@ export class SteamAuthFlow extends AuthFlowBase {
             logger.error(`validate steam id failed for auth:${authPayload.toString()}`);
             return null;
         }
-        const steamAPI = new SteamWebAPI(process.env.STEAM_CLIENT_SECRET!);
-        return await steamAPI.getUserSummary(steamId);
+        const response = await axios.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${process.env.STEAM_CLIENT_SECRET}&steamids=${steamId}`);
+        return response.data.response.players[0];
     }
 
     async queryUserConnectionFromParty(party: any): Promise<any> {
@@ -131,20 +132,20 @@ export class SteamAuthFlow extends AuthFlowBase {
     constructUserConnection(userId: string, authParty: any): any {
         return new UserSteam({
             user_id: userId,
-            steam_id: authParty.steamID,
+            steam_id: authParty.steamid,
             communityvisibilitystate: authParty.communityvisibilitystate,
-            personaname: authParty.nickname,
-            commentpermission: authParty.commentPermission,
-            profileurl: authParty.url,
-            avatar: authParty.avatar.small,
-            avatarmedium: authParty.avatar.medium,
-            avatarfull: authParty.avatar.large,
-            personastate: authParty.personaState,
-            realname: authParty.realName,
-            primaryclanid: authParty.primaryGroupID,
-            timecreated: authParty.created,
-            personastateflags: authParty.personaStateFlags,
-            loccountrycode: authParty.countryCode,
+            personaname: authParty.personaname,
+            commentpermission: authParty.commentpermission,
+            profileurl: authParty.profileurl,
+            avatar: authParty.avatar,
+            avatarmedium: authParty.avatarmedium,
+            avatarfull: authParty.avatarfull,
+            personastate: authParty.personastate,
+            realname: authParty.realname,
+            primaryclanid: authParty.primaryclanid,
+            timecreated: authParty.timecreated,
+            personastateflags: authParty.personastateflags,
+            loccountrycode: authParty.loccountrycode,
             created_time: Date.now(),
         });
     }
@@ -153,7 +154,7 @@ export class SteamAuthFlow extends AuthFlowBase {
         return new User({
             user_id: uuidv4(),
             username: authParty.personaname,
-            avatar_url: authParty.avatar.small,
+            avatar_url: authParty.avatar,
             created_time: Date.now(),
         });
     }

@@ -47,13 +47,14 @@ export class UserMetricQuest extends QuestBase {
         }
         // 污染用户，确保同一个用户单任务只能获取一次奖励
         const taint = `${this.quest.id},user,${userId}`;
-        const result = await this.saveUserReward(userId, taint, this.quest.reward.amount);
+        const rewardDelta = await this.checkUserRewardDelta(userId);
+        const result = await this.saveUserReward(userId, taint, rewardDelta);
         if (result.duplicated) {
             return {
                 verified: false,
                 tip: "You have already claimed reward.",
             }
         }
-        return {verified: result.done, claimed_amount: result.done ? this.quest.reward.amount : undefined}
+        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
     }
 }

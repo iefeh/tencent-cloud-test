@@ -57,3 +57,48 @@ UserMetricRewardSchema.index({require_metric: 1, reward_type: 1});
 
 // 使用既有模型或者新建模型
 export default models.UserMetricReward || model<IUserMetricReward>('UserMetricReward', UserMetricRewardSchema, 'user_metric_rewards');
+
+// 检查用户指标满足的奖励设置
+export function checkMetricReward(metricValue: boolean | number | string, reward: IUserMetricReward): RewardItem | null {
+    const compareValues = (a, b, operator) => {
+        switch (operator) {
+            case '>=':
+            case '>':
+                // 当操作符是 '>=' 或 '>' 时，我们想要'大'的值在前面，因此使用倒序排序。
+                // 如果a的值大于b的值，则返回负数（a排在前面）
+                return b.require_metric_value - a.require_metric_value;
+
+            case '<=':
+            case '<':
+                // 当操作符是 '<=' 或 '<' 时，我们想要'小'的值在前面，因此使用正序排序。
+                // 如果a的值小于b的值，则返回负数（a排在前面）
+                return a.require_metric_value - b.require_metric_value;
+        }
+    };
+    // 对奖励设置进行排序，确保排序和操作符匹配，以用于和用户指标进行比较，定位奖励
+    reward.settings.sort((a, b) => compareValues(a, b, reward.require_operator));
+    for (const setting of reward.settings) {
+        let isEligibleForReward = false;
+        switch (reward.require_operator) {
+            case '==':
+                isEligibleForReward = metricValue == setting.require_metric_value;
+                break;
+            case '>=':
+                isEligibleForReward = metricValue >= setting.require_metric_value;
+                break;
+            case '<=':
+                isEligibleForReward = metricValue <= setting.require_metric_value;
+                break;
+            case '>':
+                isEligibleForReward = metricValue > setting.require_metric_value;
+                break;
+            case '<':
+                isEligibleForReward = metricValue < setting.require_metric_value;
+                break;
+        }
+        if (isEligibleForReward) {
+            return setting;
+        }
+    }
+    return null;
+}
