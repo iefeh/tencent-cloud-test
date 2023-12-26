@@ -6,18 +6,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal, ModalBody, ModalContent, cn, useDisclosure } from '@nextui-org/react';
 import ModelView3D from '@/pages/components/common/model/ModelView3D';
 
-interface SourceInfo {
-  source: string;
-  texture?: string;
-}
-
 interface MaskItem {
   x: number;
   y: number;
   w: number;
   h: number;
   visible: boolean;
-  mask: SourceInfo;
+  mask: ModelInfo;
 }
 
 export default function FogScreen() {
@@ -37,6 +32,18 @@ export default function FogScreen() {
       mask: {
         source: '/models/chaowan_mianju.fbx',
         texture: '/models/textures/chaowan.tga',
+        // rotate: {
+        //   // x: Math.PI / 4,
+        //   y: -Math.PI / 4,
+        //   z: -Math.PI / 6,
+        // },
+        offsetPower: {
+          x: -0.5,
+          y: -4,
+          z: 0,
+        },
+        // zoom: 6,
+        zoom: 5,
       },
     },
     // doctor
@@ -49,6 +56,15 @@ export default function FogScreen() {
       mask: {
         source: '/models/lewis_mask.fbx',
         texture: '/models/textures/Lewis.tga',
+        rotate: {
+          x: Math.PI / 4,
+          y: -Math.PI / 6,
+          z: Math.PI / 6,
+        },
+        offsetPower: {
+          y: -0.5,
+        },
+        zoom: 6,
       },
     },
     // rhea
@@ -61,11 +77,20 @@ export default function FogScreen() {
       mask: {
         source: '/models/rhea_mask.fbx',
         texture: '/models/textures/T_Rhea.tga',
+        rotate: {
+          x: Math.PI / 4,
+          y: -Math.PI / 6,
+          z: Math.PI / 6,
+        },
+        offsetPower: {
+          y: -0.5,
+        },
+        zoom: 6,
       },
     },
   ]);
   const maskVal = useRef<MaskItem[]>(masks);
-  const [maskInfo, setMaskInfo] = useState<SourceInfo>({
+  const [maskInfo, setMaskInfo] = useState<ModelInfo>({
     source: '/models/rhea_mask.fbx',
     texture: '/models/textures/T_Rhea.tga',
   });
@@ -222,7 +247,7 @@ export default function FogScreen() {
           {(onClose) => (
             <>
               <ModalBody>
-                <ModelView3D {...maskInfo} />
+                <ModelView3D info={maskInfo} />
               </ModalBody>
               {/* <ModalFooter>
                 <Button color="danger" variant="light" onPress={onReset}>

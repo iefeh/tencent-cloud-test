@@ -3,8 +3,7 @@ import useModelView from '@/hooks/useModelView';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter } from '@nextui-org/react';
 
 interface Props {
-  source: string;
-  texture?: string;
+  info: ModelInfo;
 }
 
 interface ModelView3DModalProps extends Props {
@@ -13,7 +12,7 @@ interface ModelView3DModalProps extends Props {
 }
 
 export function ModelView3DModal(props: ModelView3DModalProps) {
-  const { isOpen, onOpenChange, source, texture } = props;
+  const { isOpen, onOpenChange, info } = props;
   const viewRef = useRef(null);
 
   function onReset() {
@@ -26,7 +25,7 @@ export function ModelView3DModal(props: ModelView3DModalProps) {
         {(onClose) => (
           <>
             <ModalBody>
-              <ModelView3D ref={viewRef} source={source} texture={texture} />
+              <ModelView3D ref={viewRef} info={info} />
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={onReset}>
@@ -41,10 +40,10 @@ export function ModelView3DModal(props: ModelView3DModalProps) {
 }
 
 const ModelView3D = forwardRef<HTMLDivElement, Props>(function ModelView3D(props, ref) {
-  const { source, texture } = props;
+  const { info } = props;
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { reset } = useModelView(containerRef, source, texture);
+  const { reset } = useModelView(containerRef, info);
   useImperativeHandle(
     ref,
     () =>

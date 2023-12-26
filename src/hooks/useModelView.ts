@@ -2,18 +2,18 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { RefObject, useEffect, useRef, useState } from 'react';
-import { TGALoader } from 'three/examples/jsm/Addons';
+import { OrbitControls, TGALoader } from 'three/examples/jsm/Addons';
 
 export class ModelViewer {
   private scene!: THREE.Scene;
   private camera!: THREE.Camera;
   private model!: THREE.Group<THREE.Object3DEventMap>;
   private renderer!: THREE.WebGLRenderer;
-  private controls!: TrackballControls;
+  private controls!: TrackballControls | OrbitControls;
   private rafId = 0;
   private renderCallback!: () => void;
 
-  constructor(private container: HTMLElement, private source: string, private texture?: string) {
+  constructor(private container: HTMLElement, private modelInfo: ModelInfo) {
     this.renderCallback = this.render.bind(this);
   }
 
@@ -55,13 +55,14 @@ export class ModelViewer {
       const manager = new THREE.LoadingManager();
       manager.addHandler(/\.tga$/i, new TGALoader());
       const fbxLoader = new FBXLoader(manager);
+      const { source, texture } = this.modelInfo;
 
       fbxLoader.load(
-        this.source,
+        source,
         (loadedModel) => {
-          if (this.texture) {
+          if (texture) {
             const textureLoader = new TGALoader();
-            const textureNormal = textureLoader.load(this.texture);
+            const textureNormal = textureLoader.load(texture);
 
             loadedModel.traverse((v: any) => {
               if (!v.isMesh) return;
@@ -74,9 +75,20 @@ export class ModelViewer {
 
           const box = new THREE.Box3();
           const {
-            max: { y },
+            max: { x, y, z },
           } = box.expandByObject(loadedModel);
-          loadedModel.position.y = -y / 2;
+          const { rotate, offsetPower, zoom = 1 } = this.modelInfo;
+          const { x: opx = 0, y: opy = 0, z: opz = 0 } = offsetPower || {};
+          loadedModel.position.x = x * opx;
+          loadedModel.position.y = y * opy;
+          loadedModel.position.z = z * opz;
+
+          const { x: rx = 0, y: ry = 0, z: rz = 0 } = rotate || {};
+          loadedModel.rotateX(rx);
+          loadedModel.rotateY(ry);
+          loadedModel.rotateX(rz);
+          loadedModel.scale.set(zoom, zoom, zoom);
+
           this.scene.add(loadedModel);
           this.model = loadedModel;
           resolve(loadedModel);
@@ -107,9 +119,17 @@ export class ModelViewer {
   }
 
   initControls() {
-    const controls = new TrackballControls(this.camera, this.renderer.domElement);
-    // controls.noZoom = true;
-    controls.noPan = true;
+    let controls;
+    const { isTrackballControlls } = this.modelInfo;
+    if (isTrackballControlls) {
+      controls = new TrackballControls(this.camera, this.renderer.domElement);
+      controls.noPan = true;
+      // controls.noZoom = true;
+    } else {
+      controls = new OrbitControls(this.camera, this.renderer.domElement);
+      // controls.enableZoom = false;
+    }
+
     controls.rotateSpeed = 16;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 1;
@@ -150,13 +170,13 @@ export class ModelViewer {
   }
 }
 
-export default function useModelView(containerRef: RefObject<HTMLDivElement>, source: string, texture?: string) {
+export default function useModelView(containerRef: RefObject<HTMLDivElement>, model: ModelInfo) {
   const modelViewer = useRef<ModelViewer>();
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const viewer = new ModelViewer(containerRef.current, source, texture);
+    const viewer = new ModelViewer(containerRef.current, model);
 
     viewer.init();
     viewer.render();
