@@ -18,9 +18,9 @@ export default function BushwhackPage() {
 
       <FogScreen />
 
-      <KeyVisionScreen />
+      {/* <KeyVisionScreen />
 
-      <IntroScreen />
+      <IntroScreen /> */}
     </section>
   );
 }
