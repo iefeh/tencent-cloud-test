@@ -25,7 +25,7 @@ export default function FogScreen() {
     // thief
     {
       x: 336,
-      y: (419 / 1080) * 929,
+      y: 419,
       w: 70,
       h: 94,
       visible: false,
@@ -49,7 +49,7 @@ export default function FogScreen() {
     // doctor
     {
       x: 733,
-      y: (770 / 1080) * 929,
+      y: 770,
       w: 88,
       h: 100,
       visible: false,
@@ -70,7 +70,7 @@ export default function FogScreen() {
     // rhea
     {
       x: 1318,
-      y: (542 / 1080) * 929,
+      y: 542,
       w: 81,
       h: 94,
       visible: false,
@@ -214,7 +214,7 @@ export default function FogScreen() {
         <div
           key={index}
           className={cn(['flex flex-col items-center absolute z-20', mask.visible || 'hidden'])}
-          style={{ left: `${mask.x / 16}rem`, top: `${mask.y / 16}rem` }}
+          style={{ left: `${((mask.x / 1920) * width) / 16}rem`, top: `${((mask.y / 1080) * height) / 16}rem` }}
         >
           <Image className="w-[3.75rem] h-[3.75rem] animate-bounce" src={hintImg} alt="" />
           <div
