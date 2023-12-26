@@ -26,7 +26,6 @@ export default function FogScreen() {
   const ctx = useRef<CanvasRenderingContext2D | null>(null);
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
-  const isRenderering = useRef(false);
   const [masks, setMasks] = useState<MaskItem[]>([
     // thief
     {
@@ -43,7 +42,7 @@ export default function FogScreen() {
     // doctor
     {
       x: 733,
-      y: 770 / 1080 * 929,
+      y: (770 / 1080) * 929,
       w: 88,
       h: 100,
       visible: false,
@@ -55,7 +54,7 @@ export default function FogScreen() {
     // rhea
     {
       x: 1318,
-      y: 542 / 1080 * 929,
+      y: (542 / 1080) * 929,
       w: 81,
       h: 94,
       visible: false,
@@ -74,6 +73,7 @@ export default function FogScreen() {
   const isViewing = useRef(false);
   const [isStarting, setIsStarting] = useState(false);
   const isRunning = useRef(false);
+  const [finished, setFinished] = useState(false);
 
   const RADIUS_MIN = 50;
   const RADIUS_MAX = 100;
@@ -87,6 +87,8 @@ export default function FogScreen() {
     setTimeout(() => {
       initCanvas();
     }, 100);
+
+    window.addEventListener('resize', init);
   }
 
   function onFogMousemove(e: MouseEvent) {
@@ -105,15 +107,26 @@ export default function FogScreen() {
     ctx.current.fillRect(pX - RADIUS_MAX, pY - RADIUS_MAX, RADIUS_MAX * 2, RADIUS_MAX * 2);
 
     const newMasks = structuredClone(maskVal.current);
+    let visibleCount = 0;
     newMasks.forEach((mask) => {
-      if (mask.visible) return;
+      if (mask.visible) {
+        visibleCount++;
+        return;
+      }
       const { x, y, w, h } = mask;
 
       if (pX > x && pX < x + w && pY > y && pY < y + h) {
         mask.visible = true;
       }
     });
+
     setMasks((maskVal.current = newMasks));
+    if (visibleCount < newMasks.length) return;
+
+    window.removeEventListener('mousemove', onFogMousemove);
+    setTimeout(() => {
+      setFinished(true);
+    }, 500);
   }
 
   function initCanvas(w = width, h = height) {
@@ -129,21 +142,12 @@ export default function FogScreen() {
       context.globalCompositeOperation = 'destination-out';
     }, 100);
 
-    // canvasRef.current.addEventListener('mousedown', (e) => {
-    //   const { clientX, clientY } = e;
-    //   e.preventDefault();
-    //   isRenderering.current = true;
-    // });
-
     window.addEventListener('mousemove', onFogMousemove);
-
-    canvasRef.current.addEventListener('mouseup', (e) => {
-      e.preventDefault();
-      isRenderering.current = false;
-    });
   }
 
   function onViewMask(item: MaskItem) {
+    if (!item.visible) return;
+
     setMaskInfo(item.mask);
     onOpen();
     isViewing.current = true;
@@ -158,9 +162,11 @@ export default function FogScreen() {
 
   useEffect(() => {
     init();
-    window.addEventListener('resize', init);
 
-    return () => window.removeEventListener('resize', init);
+    return () => {
+      window.removeEventListener('resize', init);
+      window.removeEventListener('mousemove', onFogMousemove);
+    };
   }, []);
 
   return (
@@ -173,7 +179,10 @@ export default function FogScreen() {
         ref={canvasRef}
         width={width}
         height={height}
-        className="absolute w-full h-full left-0 top-0 z-10"
+        className={cn([
+          'absolute w-full h-full left-0 top-0 z-10 transition-opacity !duration-[3000ms]',
+          finished && 'opacity-0',
+        ])}
       ></canvas>
 
       {masks.map((mask, index) => (
