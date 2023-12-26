@@ -4,6 +4,7 @@ import ScrollDownArrow from '@/pages/components/common/ScrollDownArrow';
 import arrowImg from 'img/bushwhack/countdown/arrow.png';
 import fogImg from 'img/bushwhack/countdown/fog.png';
 import PageDesc from '@/pages/components/common/PageDesc';
+import { createPortal } from 'react-dom';
 
 export default function CountdownScreen() {
   return (
@@ -28,7 +29,7 @@ export default function CountdownScreen() {
         }
       />
 
-      <ScrollDownArrow icon={arrowImg} className="!text-[#CFD9FF]" />
+      {createPortal(<ScrollDownArrow icon={arrowImg} className="!fixed !text-[#CFD9FF]" />, document.body)}
     </div>
   );
 }
