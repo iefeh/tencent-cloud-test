@@ -1,21 +1,20 @@
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
-import LGButton from '@/pages/components/common/buttons/LGButton';
 import { CircularProgress, Pagination } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import ConnectAndVerify, { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
 import { TaskListItem, TaskReward, queryTaskListAPI } from '@/http/services/task';
 import { useEffect, useState } from 'react';
-import { QuestRewardType, QuestType } from './index';
-import { connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
+import { QuestRewardType, QuestType } from '@/constant/task';
+import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
   showConnectButton?: boolean;
   verifyTexts?: VerifyTexts;
   showVerifyButton?: boolean;
-  onConnectClick?: (item: TaskItem) => void;
-  onVerifyClick?: (item: TaskItem) => void;
+  onConnectClick?: (item: TaskItem) => string | undefined | Promise<string | undefined>;
+  onVerifyClick?: (item: TaskItem) => undefined;
 }
 
 export default function RegularTasks() {
@@ -31,7 +30,7 @@ export default function RegularTasks() {
       const { pageIndex, pageSize } = pagiInfo;
       const res = await queryTaskListAPI({ page_num: pageIndex, page_size: pageSize });
       const { quests, total } = res;
-      setPagiInto({ ...pagiInfo, total: +total || 0 });
+      setPagiInto({ ...pagiInfo, total: Math.ceil((+total || 0) / pagiInfo.pageSize) });
       handleQuests(quests);
     } catch (error) {
       console.log(error);
@@ -42,13 +41,24 @@ export default function RegularTasks() {
     list.forEach((item) => {
       switch (item.id) {
         case QuestType.ConnectTwitter:
-          item.onConnectClick = async (item) => {
+          item.onConnectClick = async () => {
             const res = await connectTwitterAPI();
+            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+            return res.authorization_url;
           };
           break;
         case QuestType.ConnectSteam:
-          item.onConnectClick = (item) => {
-            return connectSteamAPI();
+          item.onConnectClick = async () => {
+            const res = await connectSteamAPI();
+            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+            return res.authorization_url;
+          };
+          break;
+        case QuestType.ConnectDiscord:
+          item.onConnectClick = async () => {
+            const res = await connectDiscordAPI();
+            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
+            return res.authorization_url;
           };
           break;
         case QuestType.RetweetTweet:
@@ -108,6 +118,7 @@ export default function RegularTasks() {
 
                   <div className="mt-5">
                     <ConnectAndVerify
+                      type={task.type}
                       connectTexts={task.connectTexts}
                       verifyTexts={task.verifyTexts}
                       connect={task.onConnectClick}

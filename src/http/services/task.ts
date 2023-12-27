@@ -1,3 +1,4 @@
+import { QuestType } from '@/constant/task';
 import http from '../index';
 
 export interface TaskProperties {
@@ -20,7 +21,7 @@ export interface TaskListItem {
   properties: TaskProperties | null;
   reward: TaskReward;
   tip: string;
-  type: string;
+  type: QuestType;
   authorization: string | null;
   user_authorized?: boolean;
   verified?: boolean;
@@ -36,4 +37,15 @@ export interface TaskListResDto {
 
 export function queryTaskListAPI(params: PageQueryDto): Promise<TaskListResDto> {
   return http.get('/api/quests/list', { params });
+}
+
+interface VerifyTaskResDTO {
+  verified: boolean;
+  claimed_amount?: number;
+  require_authorization?: string;
+  tip?: string;
+}
+
+export function verifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskResDTO> {
+  return http.post('/api/quests/verify', JSON.stringify(data));
 }

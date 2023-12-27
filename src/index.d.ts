@@ -14,3 +14,7 @@ interface PageQueryDto {
   page_num: number;
   page_size: number;
 }
+
+interface Dict<T> {
+  [key: string]: T;
+}

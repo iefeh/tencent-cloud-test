@@ -1,9 +1,10 @@
+import { QuestType } from '@/constant/task';
 import http from '../index';
 
-function getAuthParams() {
+function getAuthParams(path = '') {
   const { origin } = location;
   const params = {
-    landing_url: `${origin}/auth`,
+    landing_url: `${origin}/auth${path}`,
   };
 
   return params;
@@ -39,13 +40,13 @@ export function signInParticleAPI(data: ParticleAuthDto) {
 }
 
 export function connectTwitterAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/twitter', { params: getAuthParams() });
+  return http.get('/api/auth/connect/twitter', { params: getAuthParams(`/connect?type=${QuestType.ConnectTwitter}`) });
 }
 
 export function connectSteamAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/steam', { params: getAuthParams() });
+  return http.get('/api/auth/connect/steam', { params: getAuthParams(`/connect?type=${QuestType.ConnectSteam}`) });
 }
 
 export function connectDiscordAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/discord', { params: getAuthParams() });
+  return http.get('/api/auth/connect/discord', { params: getAuthParams(`/connect?type=${QuestType.ConnectDiscord}`) });
 }

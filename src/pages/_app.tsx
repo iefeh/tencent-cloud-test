@@ -67,6 +67,7 @@ import usePostMessage from '@/hooks/usePostMessage';
 import { useStore } from '@/store';
 import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -167,7 +168,7 @@ function loadVideo(path: string) {
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
@@ -250,6 +251,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     store.init();
+
+    window.Storage.prototype.read = function <T>(key: string) {
+      const val = this.getItem(key);
+      if (!val) return null;
+      return JSON.parse(val) as T;
+    };
+
+    window.Storage.prototype.save = function <T>(key: string, val: T) {
+      this.setItem(key, JSON.stringify(val || ''));
+    };
   }, []);
 
   return (
@@ -267,10 +278,10 @@ export default function App({ Component, pageProps }: AppProps) {
           <RootLayout isInWhiteList={isInWhiteList}>
             <Component {...pageProps} />
           </RootLayout>
-
-          <ToastContainer />
         </MobxContext.Provider>
       )}
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick />
 
       <Script id="google-analytics">
         {`

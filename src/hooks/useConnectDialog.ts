@@ -1,22 +1,8 @@
-import { useContext, MutableRefObject } from 'react';
-import { KEY_AUTHORIZATION, KEY_PARTICLE_TOKEN } from '../constant/storage';
+import { MutableRefObject } from 'react';
 import { useEffect } from 'react';
-import { MobxContext } from '@/pages/_app';
 
-export default function useAuthDialog(dialog: MutableRefObject<Window | null>, callback?: () => void) {
-  const store = useContext(MobxContext);
-
+export default function useConnectDialog(dialog: MutableRefObject<Window | null>, callback?: (args?: any) => void) {
   function authLogin() {
-    const token = localStorage.getItem(KEY_AUTHORIZATION);
-    const jwt = localStorage.getItem(KEY_PARTICLE_TOKEN);
-    console.log('token at thirdparty-login callback url search params', token);
-    console.log('jwt-token at thirdparty-login callback url search params', jwt);
-    if (!token) return;
-
-    store.token = token;
-    store.jwtToken = jwt || '';
-    store.loginParticle();
-    store.getUserInfo().catch(() => void 0);
     if (!dialog.current) return;
     dialog.current.close();
     dialog.current = null;

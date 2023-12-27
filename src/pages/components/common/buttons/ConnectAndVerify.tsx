@@ -1,6 +1,11 @@
 import { delay } from 'lodash';
 import LGButton from './LGButton';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import useConnectDialog from '@/hooks/useConnectDialog';
+import { QuestType } from '@/constant/task';
+import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
+import { toast } from 'react-toastify';
+import { verifyTaskAPI } from '@/http/services/task';
 
 interface CVInitStatus {
   connectable?: boolean;
@@ -10,13 +15,27 @@ interface CVInitStatus {
 }
 
 interface CVOptions {
+  type: QuestType;
   init?: () => CVInitStatus | undefined | Promise<CVInitStatus | undefined>;
-  connect?: (args?: any) => void;
-  verify?: (args?: any) => void;
+  connect?: (args?: any) => string | undefined | Promise<string | undefined>;
+  verify?: (args?: any) => undefined;
 }
 
-export function useConnectAndVerify(options?: CVOptions) {
-  const { init, connect, verify } = options || {};
+export function useConnectAndVerify(options: CVOptions) {
+  const { type, init, connect, verify } = options || {};
+  const dialogWindowRef = useRef<Window | null>(null);
+
+  function openAuthWindow(authURL: string) {
+    const dialog = window.open(
+      authURL,
+      'Authrization',
+      'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+    );
+    dialogWindowRef.current = dialog;
+    dialog?.addEventListener('close', () => {
+      dialogWindowRef.current = null;
+    });
+  }
 
   const {
     enabled: connectable,
@@ -25,7 +44,14 @@ export function useConnectAndVerify(options?: CVOptions) {
     setEnabled: setConnectable,
     setChecked: setConnected,
     onCheck: onConnect,
-  } = useCheck({ check: connect });
+  } = useCheck({
+    check: async () => {
+      if (!connect) return false;
+      const path = await connect();
+      if (!path) return false;
+      openAuthWindow(path);
+    },
+  });
 
   const {
     enabled: verifiable,
@@ -34,7 +60,16 @@ export function useConnectAndVerify(options?: CVOptions) {
     setEnabled: setVerifiable,
     setChecked: setVerified,
     onCheck: onVerify,
-  } = useCheck({ check: verify });
+  } = useCheck({
+    check: async () => {
+      try {
+        const res = await verifyTaskAPI({ quest_id: type });
+        return !!res.verified;
+      } catch (error) {
+        return false;
+      }
+    },
+  });
 
   async function initData() {
     if (!init) return;
@@ -50,12 +85,25 @@ export function useConnectAndVerify(options?: CVOptions) {
 
   initData();
 
+  useConnectDialog(dialogWindowRef, () => {
+    const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
+    const { token, code, msg } = tokens[type] || {};
+    setConnected(+code !== -1 && !!token);
+
+    if (+code === 1) return;
+
+    delete tokens[type];
+    localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
+
+    toast.error(msg);
+  });
+
   return { connectable, connected, connectLoading, verifiable, verified, verifyLoading, onConnect, onVerify };
 }
 
 interface CheckOptions {
   init?: () => CVInitStatus | undefined | Promise<CVInitStatus | undefined>;
-  check?: () => void;
+  check?: () => boolean | undefined | Promise<boolean | undefined>;
   onChecked?: () => void;
 }
 
@@ -89,8 +137,8 @@ export function useCheck(options?: CheckOptions) {
     }
 
     try {
-      await check();
-      setChecked(true);
+      const res = await check();
+      setChecked(!!res);
     } catch (error) {
     } finally {
       setLoading(false);
