@@ -48,4 +48,5 @@ UserDiscordSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserDiscordSchema.index({discord_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.UserDiscord || model<IUserDiscord>('UserDiscord', UserDiscordSchema, 'user_discords');
+const UserDiscord = models.UserDiscord || model<IUserDiscord>('UserDiscord', UserDiscordSchema, 'user_discords');
+export default UserDiscord;

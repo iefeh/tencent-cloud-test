@@ -47,4 +47,5 @@ UserGoogleSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserGoogleSchema.index({google_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.UserGoogle || model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
+const UserGoogle = models.UserGoogle || model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
+export default UserGoogle;
