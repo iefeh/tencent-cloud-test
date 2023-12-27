@@ -10,7 +10,8 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
     await getMongoConnection();
-    await saveWalletReward();
+    await saveWalletTokenReward();
+    await saveWalletNftReward();
     await saveSteamReward();
     res.json(response.success());
 });
@@ -60,7 +61,7 @@ async function saveSteamReward() {
     await steamReward.save();
 }
 
-async function saveWalletReward() {
+async function saveWalletTokenReward() {
     // 创建连接钱包的奖励规则
     const walletRewardSettings: RewardItem[] = [
         {
@@ -122,7 +123,52 @@ async function saveWalletReward() {
     const walletReward = new UserMetricReward({
         id: "8610c3a9-6477-4bf0-9228-cf2bc0c9d965",
         reward_type: UserMetricRewardType.MoonBeams,
-        require_metric: Metric.WalletTokenUSDValue,
+        require_metric: Metric.WalletTokenUsdValue,
+        require_operator: ">",
+        settings: walletRewardSettings,
+        created_time: Date.now(),
+    });
+    await walletReward.save();
+}
+
+async function saveWalletNftReward() {
+    // 创建连接钱包的奖励规则
+    const walletRewardSettings: RewardItem[] = [
+        {
+            // 大于100W奖励5000MB
+            require_metric_value: 1000000,
+            reward_moon_beam: 5000,
+        },
+        {
+            // 大于50W奖励2500MB
+            require_metric_value: 500000,
+            reward_moon_beam: 2500,
+        },
+        {
+            // 大于10W奖励800MB
+            require_metric_value: 100000,
+            reward_moon_beam: 800,
+        },
+        {
+            // 大于1W奖励300MB
+            require_metric_value: 10000,
+            reward_moon_beam: 300,
+        },
+        {
+            // 大于1000奖励100MB
+            require_metric_value: 1000,
+            reward_moon_beam: 100,
+        },
+        {
+            // 大于100奖励5MB
+            require_metric_value: 100,
+            reward_moon_beam: 30,
+        },
+    ];
+    const walletReward = new UserMetricReward({
+        id: "be3ed7bc-104b-4499-9b26-940608b11bb0",
+        reward_type: UserMetricRewardType.MoonBeams,
+        require_metric: Metric.WalletNftUsdValue,
         require_operator: ">",
         settings: walletRewardSettings,
         created_time: Date.now(),

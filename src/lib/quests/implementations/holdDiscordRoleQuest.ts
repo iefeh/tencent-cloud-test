@@ -6,8 +6,6 @@ import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
 import logger from "@/lib/logger/winstonLogger";
 import {deleteAuthToken, isDiscordAuthRevokedError} from "@/lib/authorization/provider/util";
 import {QuestBase} from "@/lib/quests/implementations/base";
-import UserDiscord from "@/lib/models/UserDiscord";
-import OAuthToken, {IOAuthToken} from "@/lib/models/OAuthToken";
 
 export class HoldDiscordRoleQuest extends QuestBase {
     // 用户的授权discord_id，在checkClaimable()时设置
