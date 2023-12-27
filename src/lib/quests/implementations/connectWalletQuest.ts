@@ -2,14 +2,14 @@ import UserWallet from "@/lib/models/UserWallet";
 import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
-import UserTwitter from "@/lib/models/UserTwitter";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {retryAllowToSendRequest2Debank} from "@/lib/redis/ratelimit";
 import logger from "@/lib/logger/winstonLogger";
-import WalletAsset, {IWalletAsset} from "@/lib/models/WalletAsset";
-import * as Debank from "debank";
+import WalletAsset, {WalletNFT, WalletToken} from "@/lib/models/WalletAsset";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
+
+const Debank = require('debank')
 
 export class ConnectWalletQuest extends QuestBase {
     // 用户的授权钱包地址，在checkClaimable()时设置
@@ -74,9 +74,9 @@ export class ConnectWalletQuest extends QuestBase {
         })
         // 计算指标值
         const totalTokenValue = Number(tokenData.total_usd_value.toFixed(2));
-        const tokens = tokenData.chain_list.filter(chain => chain.usd_value > 0);
-        const nfts = nftData.filter(nft => nft.usd_price > 0);
-        let totalNFTValue = nfts.reduce((sum, nft) => {
+        const tokens = tokenData.chain_list.filter((token: WalletToken) => token.usd_value > 0);
+        const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price > 0);
+        let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
             // 根据最新成交价格评估NFT价值
             return sum + nft.usd_price * nft.amount;
         }, 0);
