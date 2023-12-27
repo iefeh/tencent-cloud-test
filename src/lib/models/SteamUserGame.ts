@@ -2,7 +2,7 @@ import {Document, Schema, models, model} from 'mongoose'
 
 export type SteamUserGameStats = {
     // 游戏id
-    app_id: string,
+    appid: string,
     // 玩耍时长，分钟.
     playtime_forever: number,
     playtime_2weeks: number,

@@ -55,19 +55,19 @@ export class ConnectSteamQuest extends QuestBase {
             return refreshGameStats.interrupted;
         }
         const gameCount = refreshGameStats.gameData?.game_count!;
-        const userGames = refreshGameStats.gameData?.games;
+        const userGames = refreshGameStats.gameData?.games!;
         // 保存用户的游戏信息
         const gameIds = userGames.map(game => game.appid);
         const gamePriceMap = await this.prepareUserGamePriceInfos(userSteam.steam_id, gameIds);
         // 计算用户的账号价值
         const accountYears = (Date.now() / 1000 - userSteam.timecreated) / (365 * 24 * 3600);
         let accountValue = 0;
-        for (let [appid, priceOverview] of gamePriceMap) {
+        gamePriceMap.forEach((priceOverview, appid) => {
             if (!priceOverview) {
-                continue;
+                return;
             }
             accountValue += (priceOverview.final / 100);
-        }
+        });
         const steamRating = this.calcUserSteamRating(accountYears, gameCount, accountValue);
         // 保存用户steam指标
         await UserMetrics.updateOne(
@@ -197,11 +197,15 @@ export class ConnectSteamQuest extends QuestBase {
     async prepareUserGamePriceInfos(steamId: string, gameIds: string[]): Promise<Map<String, SteamGamePriceOverview>> {
         const gameIdArray = chunkArray(gameIds, 500);
         const gamePriceMap = new Map<String, SteamGamePriceOverview>();
+
         for (let subGameIds of gameIdArray) {
             const subGamePriceMap = await this.prepareUserGamePriceInfoBatch(steamId, subGameIds);
-            for (let [key, value] of subGamePriceMap) {
-                gamePriceMap.set(key, value);
-            }
+            subGamePriceMap.forEach((priceOverview, appid) => {
+                if (!priceOverview) {
+                    return;
+                }
+                gamePriceMap.set(appid, priceOverview);
+            });
         }
         return gamePriceMap;
     }

@@ -5,9 +5,13 @@ import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBea
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
-import UserMetricReward, {checkMetricReward} from "@/lib/models/UserMetricReward";
+import UserMetricReward, {checkMetricReward, IUserMetricReward, RewardItem} from "@/lib/models/UserMetricReward";
 import UserMetrics from "@/lib/models/UserMetrics";
 import logger from "@/lib/logger/winstonLogger";
+
+interface IProjection {
+    [key: string]: number;
+}
 
 // 任务基类，用户的任务状态：
 // 1.是否完成了当前任务，完成/未完成，通过具体任务的checkClaimable()函数判断
@@ -35,8 +39,8 @@ export abstract class QuestBase {
         const rewardIds = this.quest.reward.range_reward_ids;
         const rewards = await UserMetricReward.find({id: {$in: rewardIds}});
         // 查询需要的用户指标
-        const projection = {_id: 0};
-        rewards.forEach(reward => projection[reward.require_metric] = 1);
+        const projection: IProjection = {_id: 0};
+        rewards.forEach((reward: IUserMetricReward) => projection[reward.require_metric] = 1);
         const userMetric = await UserMetrics.findOne({user_id: userId}, projection);
         // 检查用户指标是否存在，不存在时直接报错
         for (let reward of rewards) {

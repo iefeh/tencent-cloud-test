@@ -11,7 +11,7 @@ import OAuthToken, {IOAuthToken} from "@/lib/models/OAuthToken";
 
 export class HoldDiscordRoleQuest extends QuestBase {
     // 用户的授权discord_id，在checkClaimable()时设置
-    private user_discord_id: string;
+    private user_discord_id = "";
 
     constructor(quest: IQuest) {
         super(quest);

@@ -56,7 +56,8 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
 UserMetricsSchema.index({user_id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.UserMetrics || model<IUserMetrics>('UserMetrics', UserMetricsSchema, 'user_metrics');
+const UserMetrics = models.UserMetrics || model<IUserMetrics>('UserMetrics', UserMetricsSchema, 'user_metrics');
+export default UserMetrics;
 
 // 设置用户的指标
 export async function createUserMetric(userId: string, metric: Metric, value: string | number | boolean) {

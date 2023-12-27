@@ -15,7 +15,7 @@ import {UserMetricQuest} from "@/lib/quests/implementations/userMetricQuest";
 // TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
 //       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
 export async function claimQuestReward(userId: string, quest: IQuest): Promise<claimRewardResult> {
-    let baseQuest: QuestBase;
+    let baseQuest: QuestBase | undefined;
     switch (quest.type) {
         case QuestType.ConnectWallet:
             break;
@@ -43,6 +43,10 @@ export async function claimQuestReward(userId: string, quest: IQuest): Promise<c
         default:
             logger.error(`quest ${quest.id} type ${quest.type} not implemented`);
             return {verified: false}
+    }
+    if (!baseQuest) {
+        logger.error(`base quest not initialized`);
+        return {verified: false}
     }
     return baseQuest.claimReward(userId);
 }
