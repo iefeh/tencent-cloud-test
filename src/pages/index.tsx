@@ -46,7 +46,7 @@ export default function Home() {
       className="page-home scroll-wrapper relative w-full flex flex-col items-center justify-between bg-no-repeat bg-fixed bg-origin-border z-10"
     >
       <Head>
-        <title>Home | Moonveil</title>
+        <title>Home | Moonveil Entertainment</title>
       </Head>
 
       <SwiperScreen />

@@ -1,0 +1,59 @@
+import type {NextApiResponse} from "next";
+import {createRouter} from "next-connect";
+import getMongoConnection from "@/lib/mongodb/client";
+import * as response from "@/lib/response/response";
+import User from "@/lib/models/User";
+import UserGoogle from "@/lib/models/UserGoogle";
+import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import UserTwitter from "@/lib/models/UserTwitter";
+import Quest from "@/lib/models/Quest";
+import {notFound} from "@/lib/response/response";
+import QuestAchievement from "@/lib/models/QuestAchievement";
+import logger from "@/lib/logger/winstonLogger";
+import {checkUserQuestClaimable} from "@/lib/quests/verification";
+import {claimQuestReward} from "@/lib/quests/claim";
+import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
+
+const router = createRouter<UserContextRequest, NextApiResponse>();
+
+router.use(mustAuthInterceptor).post(async (req, res) => {
+    const {quest_id} = req.body;
+    if (!quest_id) {
+        res.json(response.invalidParams());
+        return;
+    }
+    await getMongoConnection();
+    const quest = await Quest.findOne({id: quest_id});
+    if (!quest) {
+        res.json(response.notFound("Unknown quest."));
+        return;
+    }
+    const userId = req.userId!;
+    // 检查用户是否已经完成该任务, 注意此处使用的是ConnectDiscordQuest，但我们实际是为了使用他基类的方法
+    const verified = await new ConnectDiscordQuest(quest).checkVerified(userId);
+    if (verified) {
+        logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
+        res.json(response.success({
+            verified: true,
+        }));
+        return;
+    }
+    // 申领任务奖励
+    await getMongoConnection();
+    const result = await claimQuestReward(userId, quest);
+    res.json(response.success(result));
+});
+
+// this will run if none of the above matches
+router.all((req, res) => {
+    res.status(405).json({
+        error: "Method not allowed",
+    });
+});
+
+export default router.handler({
+    onError(err, req, res) {
+        console.error(err);
+        res.status(500).json(response.serverError());
+    },
+});

@@ -9,8 +9,8 @@ export interface OAuthOptions {
     enableBasicAuth?: boolean;
     basicAuthCredentialCallback?: (ops: OAuthOptions) => string;
 
-    onAccessTokenRefreshed?: (newToken: OAuthToken) => void;
-    onRefreshTokenExpired?: (newToken: OAuthToken) => void;
+    onAccessTokenRefreshed?: (newToken: AuthToken) => Promise<void>;
+    onRefreshTokenExpired?: (newToken: AuthToken) => Promise<void>;
 }
 
 export interface AuthorizationParams {
@@ -28,7 +28,7 @@ export interface AuthenticateParams {
     headers?: any;
 }
 
-export interface OAuthToken {
+export interface AuthToken {
     access_token: string;
     refresh_token?: string;
     expires_in?: number;
@@ -52,8 +52,10 @@ export interface OAuthRefreshTokenPayload {
     [key: string]: any;
 }
 
-
-export enum AuthProvider {
-    GOOGLE = "google",
-    TWITTER = "twitter"
+export enum AuthorizationType {
+    Twitter = "twitter",
+    Discord = "discord",
+    Wallet = "wallet",
+    Google = "google",
+    Steam = "steam",
 }

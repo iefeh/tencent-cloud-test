@@ -1,5 +1,9 @@
 import mongoose from 'mongoose'
 
+export function isDuplicateKeyError(error: any): boolean {
+    return error && error == 11000
+}
+
 declare global {
     var mongoose: any // This must be a `var` and not a `let / const`
 }
@@ -18,7 +22,7 @@ if (!cached) {
     cached = global.mongoose = {conn: null, promise: null}
 }
 
-async function connectMongo() {
+async function getMongoConnection() {
     if (cached.conn) {
         return cached.conn
     }
@@ -40,4 +44,4 @@ async function connectMongo() {
     return cached.conn
 }
 
-export default connectMongo
+export default getMongoConnection

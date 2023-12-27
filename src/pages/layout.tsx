@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./components/home/Header";
+import Header from "./components/common/Header";
 import LineBorder from "./components/home/LineBorder/index";
 import { Suspense } from "react";
 import Loading from "./components/common/Loading";

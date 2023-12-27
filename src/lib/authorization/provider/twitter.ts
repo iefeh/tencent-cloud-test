@@ -2,11 +2,11 @@ import * as response from "@/lib/response/response";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
 import {v4 as uuidv4} from "uuid";
 import {redis} from "@/lib/redis/client";
-import {AuthProvider, OAuthOptions} from "@/lib/authorization/types";
+import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {validateCallbackState} from "@/lib/authorization/provider/util";
 import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
@@ -39,7 +39,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
         authorization_user_id: req.userId,
     };
     const state = uuidv4();
-    await redis.setex(`authorization_state:twitter:${state}`, 60 * 60 * 12, JSON.stringify(payload));
+    await redis.setex(`authorization_state:${AuthorizationType.Twitter}:${state}`, 60 * 60 * 12, JSON.stringify(payload));
 
     // twitter授权必须要传递code_challenge，并且在获取访问token时回传.
     const authorizationUri = twitterOAuthProvider.authorizationURL({
@@ -56,7 +56,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
 export class TwitterAuthFlow extends AuthFlowBase {
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
-        return validateCallbackState(AuthProvider.TWITTER, req, res);
+        return validateCallbackState(AuthorizationType.Twitter, req, res);
     }
 
     async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
@@ -81,7 +81,7 @@ export class TwitterAuthFlow extends AuthFlowBase {
             updated_time: now,
         };
         await OAuthToken.findOneAndUpdate({
-            platform: "twitter",
+            platform: AuthorizationType.Twitter,
             platform_id: connection.id,
             deleted_time: null
         }, {$set: userTokenUpdates}, {upsert: true});

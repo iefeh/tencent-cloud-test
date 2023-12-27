@@ -1,10 +1,11 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {getEvmWallet, getParticleUser} from "@/lib/particle.network/auth";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -15,6 +16,11 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
+    if (!platform || platform != 'web') {
+        res.json(response.invalidParams());
+        return
+    }
+    await getMongoConnection();
     const data = await getParticleUser(particle_user_id, particle_auth_token);
 
     let particle: any;
@@ -44,9 +50,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             res.json(response.invalidParams());
             return
     }
-
-    await connectMongo();
-    console.log(`user ${userId} particle ${particle}`);
+    logger.debug(`user ${userId} particle ${particle}`);
     const particleAuthUserId = data.jwtId.split(':')[1];
     if (particleAuthUserId != userId) {
         console.error(`want particle auth user ${userId} but got ${particleAuthUserId}`);
@@ -59,7 +63,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
 
 // this will run if none of the above matches
 router.all((req, res) => {
-    console.log("request not found triggered");
     res.status(405).json({
         error: "Method not allowed",
     });

@@ -3,17 +3,17 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {generateAuthorizationURL} from "@/lib/authorization/provider/twitter";
-import UserTwitter from "@/lib/models/UserTwitter";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
+import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitterQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
-    // 检查用户是否已经绑定
-    await connectMongo();
-    let userTwitter = await UserTwitter.findOne({'user_id': req.userId, 'deleted_time': null})
-    if (userTwitter) {
-        res.json(response.authorizationDenied());
+    // 检查用户是否已经绑定，不允许重复绑定
+    await getMongoConnection();
+    const twitterAuth = await queryUserTwitterAuthorization(req.userId!);
+    if (twitterAuth) {
+        res.json(response.accountAlreadyBoundMedia());
         return;
     }
     await generateAuthorizationURL(req, res);

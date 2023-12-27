@@ -1,15 +1,12 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
-import {AuthProvider} from "@/lib/authorization/types";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/utils/url";
 import * as response from "@/lib/response/response";
-import User from "@/lib/models/User";
-import {v4 as uuidv4} from "uuid";
-import UserTwitter from "@/lib/models/UserTwitter";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
+import logger from "@/lib/logger/winstonLogger";
+import doTransaction from "@/lib/mongodb/transaction";
 
 export interface ValidationResult {
     passed: boolean,
@@ -40,12 +37,12 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
         return;
     }
     if (!authPayload) {
-        console.error('authPayload not present when validate callback passed from flow:', authFlow);
+        logger.error(`authPayload not present when validate callback passed from flow:${authFlow}`);
         res.status(500).json(response.serverError());
         return;
     }
     try {
-        await connectMongo();
+        await getMongoConnection();
         // 获取当前的授权第三方用户
         const authParty = await authFlow.getAuthParty(req, authPayload);
         if (authPayload.flow == AuthorizationFlow.CONNECT) {
@@ -63,27 +60,35 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
 }
 
 async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any): Promise<void> {
-    let userConnection = await authFlow.queryUserConnectionFromParty(authParty);
-    if (userConnection) {
-        // 账号已经绑定到其他用户，此处暂时不判断绑定到谁
+    const userConnection = await authFlow.queryUserConnectionFromParty(authParty);
+    if (userConnection && userConnection.user_id != authPayload.authorization_user_id) {
+        // 账号已经绑定到其他用户
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());
         res.redirect(landing_url);
         return;
     }
     // 创建新的用户绑定
-    userConnection = authFlow.constructUserConnection(authPayload.authorization_user_id!, authParty);
+    const newUserConnection = authFlow.constructUserConnection(authPayload.authorization_user_id!, authParty);
     try {
-        await userConnection.save();
+        await doTransaction(async (session) => {
+            const opts = {session};
+            if (userConnection) {
+                // 移除历史绑定
+                userConnection.deleted_time = newUserConnection.created_time
+                await userConnection.save(opts);
+            }
+            await newUserConnection.save(opts);
+        });
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.success());
         res.redirect(landing_url);
     } catch (error: any) {
-        if (error.code === 11000) {
-            console.warn('唯一性键冲突：', error);
+        if (isDuplicateKeyError(error)) {
+            logger.warn('唯一性键冲突：', error);
             const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());
             res.redirect(landing_url);
             return;
         }
-        console.error(error);
+        logger.error(error);
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.serverError());
         res.redirect(landing_url);
     }
@@ -96,8 +101,11 @@ async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: Authoriz
         // 新创建用户与其社交绑定
         const newUser = authFlow.constructNewUser(authParty);
         userConnection = authFlow.constructUserConnection(newUser.user_id, authParty);
-        await userConnection.save();
-        await newUser.save();
+        await doTransaction(async (session) => {
+            const opts = {session};
+            await userConnection.save(opts);
+            await newUser.save(opts);
+        });
     }
     // 执行用户登录
     const userId = userConnection.user_id;

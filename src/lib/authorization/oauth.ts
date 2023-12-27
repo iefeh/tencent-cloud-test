@@ -3,9 +3,10 @@ import {
     AuthorizationParams,
     OAuthOptions,
     OAuthRefreshTokenPayload,
-    OAuthToken
+    AuthToken
 } from "@/lib/authorization/types";
 import axios, {AxiosError} from "axios";
+import logger from "@/lib/logger/winstonLogger";
 
 export class OAuthProvider {
     public readonly options: OAuthOptions;
@@ -33,7 +34,8 @@ export class OAuthProvider {
         return `${authEndpoint}?${urlParams.toString()}`;
     }
 
-    public async authenticate(extraParams: AuthenticateParams): Promise<OAuthToken> {
+
+    public async authenticate(extraParams: AuthenticateParams): Promise<AuthToken> {
         const {clientId, clientSecret, redirectURI, tokenEndpoint} = this.options;
         const baseParams = {
             grant_type: 'authorization_code',
@@ -41,15 +43,24 @@ export class OAuthProvider {
             client_secret: clientSecret,
             redirect_uri: redirectURI,
         };
-        const params = {
+        const merged = {
             ...baseParams,
             ...extraParams
         };
-
-        const headers = this.calcBasicAuthHeader();
-        const response = await axios.post<OAuthToken>(tokenEndpoint, params, {headers});
+        // 把参数转为form-urlencoded
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(merged)) {
+            params.append(key, value as string);
+        }
+        // 设置请求头
+        let headers = this.calcBasicAuthHeader();
+        headers = {
+            ...headers,
+            "Content-type": "application/x-www-form-urlencoded",
+        }
+        const response = await axios.post<AuthToken>(tokenEndpoint, params, {headers});
         const data = response.data;
-        return data as OAuthToken;
+        return data as AuthToken;
     }
 
     public calcBasicAuthHeader(): {} {
@@ -67,17 +78,22 @@ export class OAuthProvider {
         return {Authorization: `Basic ${credential}`};
     }
 
-    public async refreshAccessToken(token: OAuthToken): Promise<OAuthToken> {
+    public async refreshAccessToken(token: AuthToken): Promise<AuthToken> {
+        logger.debug(`refresh platform ${token.platform} user ${token.platform_id} auth token.`);
         const {onAccessTokenRefreshed, onRefreshTokenExpired} = this.options;
         try {
-            const payload: OAuthRefreshTokenPayload = {
-                grant_type: 'refresh_token',
-                client_id: this.options.clientId,
-                client_secret: this.options.clientSecret,
-                refresh_token: token.refresh_token!,
-            };
-            const headers = this.calcBasicAuthHeader();
-            const response = await axios.post<OAuthToken>(this.options.tokenEndpoint, payload, {headers});
+            const params = new URLSearchParams();
+            params.set('grant_type', 'refresh_token');
+            params.set('client_id', this.options.clientId);
+            params.set('client_secret', this.options.clientSecret);
+            params.set('refresh_token', token.refresh_token!);
+            // 设置请求头
+            let headers = this.calcBasicAuthHeader();
+            headers = {
+                ...headers,
+                "Content-type": "application/x-www-form-urlencoded",
+            }
+            const response = await axios.post<AuthToken>(this.options.tokenEndpoint, params, {headers});
             const data = response.data;
             // 使用对象解构合并两个对象，确保只更新token相关数据，保留用户自定义数据
             const newToken = {
@@ -90,18 +106,18 @@ export class OAuthProvider {
                 id_token: data.id_token
             };
             if (onAccessTokenRefreshed) {
-                onAccessTokenRefreshed(newToken);
+                await onAccessTokenRefreshed(newToken);
             }
-            return newToken as OAuthToken;
+            return newToken as AuthToken;
         } catch (error) {
             if (isAxiosError(error) && error.response?.status === 401 && onRefreshTokenExpired) {
-                onRefreshTokenExpired(token);
+                await onRefreshTokenExpired(token);
             }
             throw error;
         }
     }
 
-    public createRequest(token: OAuthToken): OAuthRequest {
+    public createRequest(token: AuthToken): OAuthRequest {
         return new OAuthRequest(this, token);
     }
 }
@@ -112,11 +128,19 @@ function isAxiosError(error: any): error is AxiosError {
 
 class OAuthRequest {
     private authProvider: OAuthProvider;
-    public token: OAuthToken;
+    public token: AuthToken;
+    // 请求重试的状态码标识，默认401
+    private retryHttpStatus: number;
 
-    constructor(authProvider: OAuthProvider, token: OAuthToken) {
+    constructor(authProvider: OAuthProvider, token: AuthToken) {
         this.authProvider = authProvider;
         this.token = token;
+        this.retryHttpStatus = 401;
+    }
+
+    public setRetryHttpStatus(status: number): OAuthRequest {
+        this.retryHttpStatus = status;
+        return this;
     }
 
     private async checkRefreshTokenExpiration() {
@@ -134,7 +158,8 @@ class OAuthRequest {
 
     public async get<T>(url: string, options?: any): Promise<T> {
         await this.checkRefreshTokenExpiration();
-        const {headers, retryOn401 = true} = options || {};
+        logger.debug(`making http get request to ${url}.`);
+        const {headers, retry} = options || {};
         try {
             const response = await axios.get<T>(url, {
                 ...options,
@@ -145,9 +170,10 @@ class OAuthRequest {
             });
             return response.data;
         } catch (error) {
-            if (isAxiosError(error) && error.response?.status === 403 && this.token.refresh_token && retryOn401) {
+            if (isAxiosError(error) && error.response?.status === this.retryHttpStatus && this.token.refresh_token && !retry) {
+                logger.debug(`retrying request ${url} on status ${this.retryHttpStatus}`);
                 this.token = await this.authProvider.refreshAccessToken(this.token);
-                return this.get<T>(url, {...options, retryOn401: false});
+                return this.get<T>(url, {...options, retry: 1});
             }
             throw error;
         }
@@ -155,7 +181,8 @@ class OAuthRequest {
 
     public async post<T>(url: string, data?: any, options?: any): Promise<T> {
         await this.checkRefreshTokenExpiration();
-        const {headers, retryOn401 = true} = options || {};
+        logger.debug(`making http post request to ${url}.`);
+        const {headers, retry} = options || {};
         try {
             const response = await axios.post<T>(url, data, {
                 ...options,
@@ -166,9 +193,10 @@ class OAuthRequest {
             });
             return response.data;
         } catch (error) {
-            if (isAxiosError(error) && error.response?.status === 403 && this.token.refresh_token && retryOn401) {
+            if (isAxiosError(error) && error.response?.status === this.retryHttpStatus && this.token.refresh_token && !retry) {
+                logger.debug(`retrying request ${url} on status ${this.retryHttpStatus}`);
                 this.token = await this.authProvider.refreshAccessToken(this.token);
-                return this.post<T>(url, data, {...options, retryOn401: false});
+                return this.post<T>(url, data, {...options, retry: 1});
             }
             throw error;
         }

@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectMongo from "@/lib/mongodb/client";
+import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
 import UserGoogle from "@/lib/models/UserGoogle";
@@ -11,7 +11,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
-    await connectMongo();
+    await getMongoConnection();
     const user = await User.findOne({'user_id': userId}, {_id: 0, __v: 0})
     const google = await UserGoogle.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})
     const twitter = await UserTwitter.findOne({'user_id': userId, 'deleted_time': null}, {_id: 0, __v: 0})

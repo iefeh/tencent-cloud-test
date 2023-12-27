@@ -10,6 +10,8 @@ export interface IUser extends Document {
     avatar_url: string,
     // 绑定的邮件
     email?: string,
+    // MB数量
+    moon_beam: number,
     // particle网络的属性
     particle?: {
         user_id: string,
@@ -33,6 +35,7 @@ const UserSchema = new Schema<IUser>({
     username: {type: String},
     avatar_url: {type: String},
     email: {type: String},
+    moon_beam: {type: Number, default: 0},
     particle: {
         user_id: {type: String},
         web_token: {type: String},

@@ -8,7 +8,6 @@ export default function Auth() {
     const jwt = query.get('particle_jwt') || '';
     localStorage.setItem(KEY_AUTHORIZATION, token);
     localStorage.setItem(KEY_PARTICLE_TOKEN, jwt);
-    localStorage.setItem('temp_auth', location.search);
     window.close();
   }, []);
 

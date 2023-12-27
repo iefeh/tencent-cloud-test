@@ -1,11 +1,20 @@
 interface Window {
-    google: any;
-    twttr: any;
-    luxy: any;
+  google: any;
+  twttr: any;
+  luxy: any;
 }
 
 declare module 'luxy.js';
 
 interface QuickfillDto {
-    code: string;
+  code: string;
+}
+
+interface PageQueryDto {
+  page_num: number;
+  page_size: number;
+}
+
+interface Dict<T> {
+  [key: string]: T;
 }

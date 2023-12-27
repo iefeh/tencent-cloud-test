@@ -8,7 +8,7 @@ export interface IUserGoogle extends Document {
     // 用户的谷歌email
     email: string,
     // 邮件是否校验
-    email_verified: boolean | false;
+    email_verified: boolean;
     // 名
     given_name: string | '',
     // 姓
