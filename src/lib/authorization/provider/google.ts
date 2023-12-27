@@ -8,7 +8,7 @@ import {twitterOAuthProvider} from "@/lib/authorization/provider/twitter";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
 import User from "@/lib/models/User";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {validateCallbackState} from "@/lib/authorization/provider/util";
 import UserGoogle from "@/lib/models/UserGoogle";
 
 const googleOAuthOps: OAuthOptions = {

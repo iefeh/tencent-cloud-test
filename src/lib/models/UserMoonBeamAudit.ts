@@ -1,6 +1,8 @@
 import {Document, Model, model, models, Schema} from 'mongoose';
 
-type UserMoonBeamAuditType = "quests";
+export enum UserMoonBeamAuditType {
+    Quests = "quests",
+}
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
 export interface IUserMoonBeamAudit extends Document {
@@ -28,6 +30,7 @@ const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
 });
 
 UserMoonBeamAuditSchema.index({uid: 1, type: 1});
+UserMoonBeamAuditSchema.index({corr_id: 1});
 UserMoonBeamAuditSchema.index({reward_taint: 1}, {unique: true});
 
 export default models.UserMoonBeamAudit || model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');

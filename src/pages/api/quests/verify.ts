@@ -10,7 +10,7 @@ import Quest from "@/lib/models/Quest";
 import {notFound} from "@/lib/response/response";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import logger from "@/lib/logger/winstonLogger";
-import {verifyUserQuest} from "@/lib/quests/verification";
+import {checkUserQuestClaimable} from "@/lib/quests/verification";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -20,6 +20,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return;
     }
+    await getMongoConnection();
     const quest = await Quest.findOne({id: quest_id});
     if (!quest) {
         res.json(response.notFound("Unknown quest."));
@@ -30,12 +31,21 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: quest_id});
     if (achievement) {
         logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
-        res.json(response.success());
+        res.json(response.success({
+            verified: true,
+        }));
         return;
     }
     // 检查用户是否完成任务，与用户获取的经验
     await getMongoConnection();
-    await verifyUserQuest(userId, quest);
+    const verifyQuestResult = await checkUserQuestClaimable(userId, quest);
+    if (!verifyQuestResult.claimable) {
+        res.json(response.success({
+            verified: verifyQuestResult.claimable,
+            require_authorization: verifyQuestResult.require_authorization,
+        }));
+        return;
+    }
     res.json(response.success({}));
 });
 
