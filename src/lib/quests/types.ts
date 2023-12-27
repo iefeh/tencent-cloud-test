@@ -18,7 +18,7 @@ export enum QuestType {
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
 export const QuestMetrics = new Map<QuestType, Metric[]>([
     // 连接钱包时，可用的指标是钱包代币价值
-    [QuestType.ConnectWallet, [Metric.WalletTokenUSDValue]],
+    [QuestType.ConnectWallet, [Metric.WalletTokenUsdValue, Metric.WalletNftUsdValue, Metric.WalletAssetUsdValue]],
     // 连接steam时，可用指标为：账号年限、游戏数量、账号价值、账号综合评分
     [QuestType.ConnectSteam, [Metric.SteamAccountYears, Metric.SteamAccountGameCount, Metric.SteamAccountUSDValue, Metric.SteamAccountRating]]
 ]);

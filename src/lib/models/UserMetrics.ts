@@ -1,13 +1,18 @@
 import {Document, Schema, models, model} from 'mongoose'
 
+// TODO：添加新的metric，一定需要同时修改IUserMetrics与UserMetricsSchema
 export enum Metric {
     // 预约AstrArk
     PreRegisterAstrArk = "pre_register_astrark",
 
     // 钱包token价值
-    WalletTokenUSDValue = "wallet_token_usd_value",
-    // 钱包token价值上次计算时间(可用该时间限制客户端计算钱包价值的间隔)
-    WalletTokenValueLastCalcTime = "wallet_token_value_last_calc_time",
+    WalletTokenUsdValue = "wallet_token_usd_value",
+    // 钱包NFT价值
+    WalletNftUsdValue = "wallet_nft_usd_value",
+    // 钱包资产价值 = 钱包token价值+WalletNFTUSDValue
+    WalletAssetUsdValue = "wallet_asset_usd_value",
+    // 钱包资产价值上次刷新时间(可用该时间限制客户端计算钱包价值的间隔)
+    WalletAssetValueLastRefreshTime = "wallet_asset_value_last_refresh_time",
 
     // Steam账号年限
     SteamAccountYears = "steam_account_years",
@@ -27,8 +32,10 @@ export interface IUserMetrics extends Document {
     pre_register_astrark: boolean,
     // 绑定钱包拥有的token价值
     wallet_token_usd_value: number,
+    wallet_nft_usd_value: number,
+    wallet_asset_usd_value: number,
     // 钱包token价值上次计算时间
-    wallet_token_value_last_calc_time: number,
+    wallet_asset_value_last_refresh_time: number,
     // Steam账号年限
     steam_account_years: number,
     // Steam账号游戏数
@@ -45,7 +52,9 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
     user_id: {type: String, required: true},
     pre_register_astrark: {type: Boolean},
     wallet_token_usd_value: {Type: Number},
-    wallet_token_value_last_calc_time: {Type: Number},
+    wallet_nft_usd_value: {Type: Number},
+    wallet_asset_usd_value: {Type: Number},
+    wallet_asset_value_last_refresh_time: {Type: Number},
     steam_account_years: {Type: Number},
     steam_account_game_count: {Type: Number},
     steam_account_usd_value: {Type: Number},
