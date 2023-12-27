@@ -53,6 +53,7 @@ async function queryQuestList(pageNum: number, pageSize: number): Promise<{ tota
                 'deleted_time': 0,
                 'created_time': 0,
                 'updated_time': 0,
+                'reward.range_reward_ids': 0,
             }
         },
         {

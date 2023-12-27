@@ -11,6 +11,8 @@ import {notFound} from "@/lib/response/response";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import logger from "@/lib/logger/winstonLogger";
 import {checkUserQuestClaimable} from "@/lib/quests/verification";
+import {claimQuestReward} from "@/lib/quests/claim";
+import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -26,27 +28,20 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.notFound("Unknown quest."));
         return;
     }
-    // 检查用户是否已经完成该任务
     const userId = req.userId!;
-    const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: quest_id});
-    if (achievement) {
+    // 检查用户是否已经完成该任务, 注意此处使用的是ConnectDiscordQuest，但我们实际是为了使用他基类的方法
+    const verified = await new ConnectDiscordQuest(quest).checkVerified(userId);
+    if (verified) {
         logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
         res.json(response.success({
             verified: true,
         }));
         return;
     }
-    // 检查用户是否完成任务，与用户获取的经验
+    // 申领任务奖励
     await getMongoConnection();
-    const verifyQuestResult = await checkUserQuestClaimable(userId, quest);
-    if (!verifyQuestResult.claimable) {
-        res.json(response.success({
-            verified: verifyQuestResult.claimable,
-            require_authorization: verifyQuestResult.require_authorization,
-        }));
-        return;
-    }
-    res.json(response.success({}));
+    const result = await claimQuestReward(userId, quest);
+    res.json(response.success(result));
 });
 
 // this will run if none of the above matches

@@ -24,6 +24,8 @@ export interface IQuest extends Document {
         amount: number,
         // 当任务奖励为range时，最大可以获得的奖励数量
         max_amount: number,
+        // 任务关联的动态奖励ids，关联UserMetricReward
+        range_reward_ids: string[],
     },
     // 创建时间毫秒时间戳
     created_time: number,
@@ -44,6 +46,7 @@ const QuestSchema = new Schema<IQuest>({
         type: {type: String},
         amount: {type: Number},
         max_amount: {type: Number},
+        range_reward_ids: [String],
     },
     created_time: {type: Number},
     updated_time: {type: Number},

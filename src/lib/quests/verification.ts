@@ -1,12 +1,12 @@
 import {IQuest} from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {verifyConnectWalletQuest} from "@/lib/quests/implementations/connectWallet";
-import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitter";
-import {verifyConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscord";
-import {verifyConnectSteamQuest} from "@/lib/quests/implementations/connectSteam";
+import {verifyConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
+import {queryUserTwitterAuthorization, verifyConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
+import {verifyConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
+import {verifyConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
 import {QuestType, checkClaimableResult} from "@/lib/quests/types";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {verifyHoldDiscordRoleQuest} from "@/lib/quests/implementations/holdDiscordRole";
+import {verifyHoldDiscordRoleQuest} from "@/lib/quests/implementations/holdDiscordRoleQuest";
 
 // 检查用户是否可以申请特定任务
 export async function checkUserQuestClaimable(userId: string, quest: IQuest): Promise<checkClaimableResult> {
@@ -28,7 +28,7 @@ export async function checkUserQuestClaimable(userId: string, quest: IQuest): Pr
             return verifyHoldDiscordRoleQuest(userId, quest);
         case QuestType.Whitelist:
             break;
-        case QuestType.GamePreRegister:
+        case QuestType.UserMetric:
             break;
         case QuestType.HoldNFT:
             break;

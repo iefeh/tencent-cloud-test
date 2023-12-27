@@ -4,7 +4,7 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
 import {generateAuthorizationURL} from "@/lib/authorization/provider/discord";
-import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscord";
+import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 

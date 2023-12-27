@@ -1,6 +1,6 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import getMongoConnection from "@/lib/mongodb/client";
+import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/utils/url";
 import * as response from "@/lib/response/response";
 import {generateUserSession} from "@/lib/middleware/session";
@@ -82,7 +82,7 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.success());
         res.redirect(landing_url);
     } catch (error: any) {
-        if (error.code === 11000) {
+        if (isDuplicateKeyError(error)) {
             logger.warn('唯一性键冲突：', error);
             const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());
             res.redirect(landing_url);

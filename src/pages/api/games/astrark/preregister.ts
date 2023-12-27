@@ -1,22 +1,16 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
+import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {generateAuthorizationURL} from "@/lib/authorization/provider/twitter";
-import getMongoConnection from "@/lib/mongodb/client";
-import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitterQuest";
+import {createUserMetric, Metric} from "@/lib/models/UserMetrics";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
-    // 检查用户是否已经绑定，不允许重复绑定
+router.use(mustAuthInterceptor).post(async (req, res) => {
     await getMongoConnection();
-    const twitterAuth = await queryUserTwitterAuthorization(req.userId!);
-    if (twitterAuth) {
-        res.json(response.accountAlreadyBoundMedia());
-        return;
-    }
-    await generateAuthorizationURL(req, res);
+    await createUserMetric(req.userId!, Metric.PreRegisterAstrArk, true);
+    res.json(response.success());
 });
 
 // this will run if none of the above matches
