@@ -87,10 +87,10 @@ export function useConnectAndVerify(options: CVOptions) {
 
   useConnectDialog(dialogWindowRef, () => {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
-    const { token, code, msg } = tokens[type] || {};
-    setConnected(+code !== -1 && !!token);
-
-    if (+code === 1) return;
+    const { code, msg } = tokens[type] || {};
+    const isConnected = +code === 1;
+    setConnected(isConnected);
+    if (isConnected) return;
 
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);

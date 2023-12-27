@@ -24,6 +24,18 @@ export default function RegularTasks() {
     pageIndex: 1,
     pageSize: 9,
   });
+  const connectAPIs: { [key: string]: () => Promise<{ authorization_url: string } | undefined> } = {
+    [QuestType.ConnectTwitter as string]: connectTwitterAPI,
+    [QuestType.ConnectSteam as string]: connectSteamAPI,
+    [QuestType.ConnectDiscord as string]: connectDiscordAPI,
+  };
+
+  async function onBaseConnectClick(item: TaskItem) {
+    const api = connectAPIs[item.type];
+    const res = await api();
+    if (!res?.authorization_url) throw new Error('Get authorization url failed!');
+    return res.authorization_url;
+  }
 
   async function queryTasks() {
     try {
@@ -41,25 +53,9 @@ export default function RegularTasks() {
     list.forEach((item) => {
       switch (item.id) {
         case QuestType.ConnectTwitter:
-          item.onConnectClick = async () => {
-            const res = await connectTwitterAPI();
-            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
-            return res.authorization_url;
-          };
-          break;
         case QuestType.ConnectSteam:
-          item.onConnectClick = async () => {
-            const res = await connectSteamAPI();
-            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
-            return res.authorization_url;
-          };
-          break;
         case QuestType.ConnectDiscord:
-          item.onConnectClick = async () => {
-            const res = await connectDiscordAPI();
-            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
-            return res.authorization_url;
-          };
+          item.onConnectClick = onBaseConnectClick;
           break;
         case QuestType.RetweetTweet:
           item.connectTexts = { label: 'Rwtweet', loadingLabel: 'Retweeting', finishedLabel: 'Retweeted' };
