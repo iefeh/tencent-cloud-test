@@ -68,6 +68,7 @@ import { useStore } from '@/store';
 import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '@/styles/toastify.css';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -281,7 +282,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </MobxContext.Provider>
       )}
 
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick />
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 
       <Script id="google-analytics">
         {`
