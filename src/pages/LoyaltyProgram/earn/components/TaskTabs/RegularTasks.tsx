@@ -7,13 +7,14 @@ import { TaskListItem, TaskReward, queryTaskListAPI } from '@/http/services/task
 import { useEffect, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
   showConnectButton?: boolean;
   verifyTexts?: VerifyTexts;
   showVerifyButton?: boolean;
-  onConnectClick?: (item: TaskItem) => string | undefined | Promise<string | undefined>;
+  onConnectClick?: (type: QuestType) => string | undefined | Promise<string | undefined>;
   onVerifyClick?: (item: TaskItem) => undefined;
 }
 
@@ -24,6 +25,22 @@ export default function RegularTasks() {
     pageIndex: 1,
     pageSize: 9,
   });
+  const connectAPIs: { [key: string]: () => Promise<{ authorization_url: string } | undefined> } = {
+    [QuestType.ConnectTwitter as string]: connectTwitterAPI,
+    [QuestType.ConnectSteam as string]: connectSteamAPI,
+    [QuestType.ConnectDiscord as string]: connectDiscordAPI,
+  };
+  const { open } = useWeb3Modal();
+  const { address, chainId, isConnected } = useWeb3ModalAccount();
+
+  async function onBaseConnectClick(type: QuestType) {
+    const api = connectAPIs[type];
+    if (!api) return '';
+
+    const res = await api();
+    if (!res?.authorization_url) throw new Error('Get authorization url failed!');
+    return res.authorization_url;
+  }
 
   async function queryTasks() {
     try {
@@ -39,30 +56,30 @@ export default function RegularTasks() {
 
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
-      switch (item.id) {
+      switch (item.type) {
         case QuestType.ConnectTwitter:
-          item.onConnectClick = async () => {
-            const res = await connectTwitterAPI();
-            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
-            return res.authorization_url;
-          };
-          break;
         case QuestType.ConnectSteam:
-          item.onConnectClick = async () => {
-            const res = await connectSteamAPI();
-            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
-            return res.authorization_url;
-          };
-          break;
         case QuestType.ConnectDiscord:
-          item.onConnectClick = async () => {
-            const res = await connectDiscordAPI();
-            if (!res?.authorization_url) throw new Error('Get authorization link failed!');
-            return res.authorization_url;
-          };
+          item.onConnectClick = onBaseConnectClick;
           break;
         case QuestType.RetweetTweet:
-          item.connectTexts = { label: 'Rwtweet', loadingLabel: 'Retweeting', finishedLabel: 'Retweeted' };
+          item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweeted' };
+          break;
+        case QuestType.JOIN_DISCORD_SERVER:
+          item.connectTexts = { label: 'Join', loadingLabel: 'Join', finishedLabel: 'Joined' };
+          break;
+        case QuestType.FollowOnTwitter:
+          item.connectTexts = { label: 'Follow', loadingLabel: 'Follow', finishedLabel: 'Followed' };
+          break;
+        case QuestType.ASTRARK_PRE_REGISTER:
+          item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Registered' };
+          break;
+        case QuestType.ConnectWallet:
+          item.achieved = isConnected;
+          item.onConnectClick = () => {
+            open();
+            return '';
+          };
           break;
       }
     });
@@ -84,6 +101,18 @@ export default function RegularTasks() {
     }
   }
 
+  function onInit(item: TaskItem) {
+    return { connected: !!item.achieved, verified: !!item.verified };
+  }
+
+  // useEffect(() => {
+  //   const item = tasks.find((i) => i.id === QuestType.ConnectWallet);
+  //   if (!item || item.achieved === isConnected) return;
+
+  //   item.achieved = isConnected;
+  //   setTasks(structuredClone(tasks));
+  // }, [isConnected]);
+
   useEffect(() => {
     queryTasks();
   }, []);
@@ -94,10 +123,10 @@ export default function RegularTasks() {
         <CircularProgress aria-label="Loading..." />
       ) : (
         <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full">
-          {tasks.map((task, index) => {
+          {tasks.map((task) => {
             return (
               <div
-                key={index}
+                key={`${task.id}_${task.achieved}`}
                 className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-between hover:border-basic-yellow transition-[border-color] duration-500"
               >
                 <div>
@@ -119,6 +148,7 @@ export default function RegularTasks() {
                   <div className="mt-5">
                     <ConnectAndVerify
                       type={task.type}
+                      // init={() => onInit(task)}
                       connectTexts={task.connectTexts}
                       verifyTexts={task.verifyTexts}
                       connect={task.onConnectClick}
