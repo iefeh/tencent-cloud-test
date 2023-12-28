@@ -32,14 +32,20 @@ export enum QuestRewardType {
 
 // 关注
 export type FollowOnTwitter = {
-    // 关注的目标用户
+    // 关注的目标用户，用于构建intent地址
     username: string;
+    // 任务地址
+    url: string;
 }
 
 // 转推
 export type RetweetTweet = {
     // 目标推文地址
     tweet_url: string;
+    // 推文id，用于构建intent地址
+    tweet_id: string;
+    // 任务地址
+    url: string;
 }
 
 // 持有discord角色
@@ -50,12 +56,16 @@ export type HoldDiscordRole = {
     guild_id: string;
     // 拥有的角色
     role_ids: string[];
+    // 任务地址
+    url: string;
 }
 
 // 白名单
 export type Whitelist = {
     // 白名单id
     whitelist_id: string;
+    // 任务地址，可能为空
+    url: string;
 }
 
 // 持有NFT
@@ -66,6 +76,8 @@ export type HoldNFT = {
     contract_addr: string;
     // NFT的token id
     token_id: number | null;
+    // 任务地址，可为空
+    url: string;
 }
 
 // 用户指标
