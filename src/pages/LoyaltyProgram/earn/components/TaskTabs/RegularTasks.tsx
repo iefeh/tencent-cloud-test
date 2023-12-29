@@ -2,13 +2,17 @@ import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
 import { CircularProgress, Pagination, cn } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import ConnectAndVerify, { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
-import { TaskListItem, TaskReward, queryTaskListAPI } from '@/http/services/task';
+import type { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
+import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import { toast } from 'react-toastify';
+import useConnectDialog from '@/hooks/useConnectDialog';
+import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
@@ -102,21 +106,135 @@ export default function RegularTasks() {
     }
   }
 
-  function onInit(item: TaskItem) {
-    return { connected: !!item.achieved, verified: !!item.verified };
-  }
-
-  // useEffect(() => {
-  //   const item = tasks.find((i) => i.id === QuestType.ConnectWallet);
-  //   if (!item || item.achieved === isConnected) return;
-
-  //   item.achieved = isConnected;
-  //   setTasks(structuredClone(tasks));
-  // }, [isConnected]);
-
   useEffect(() => {
     queryTasks();
   }, []);
+
+  const TaskButtons = (props: { task: TaskItem }) => {
+    const { task } = props;
+    const { connectTexts, verifyTexts, achieved } = task;
+    const [connected, setConnected] = useState(!!achieved);
+    const [verified, setVerified] = useState(!!task.verified);
+    const [connectLoading, setConnectLoading] = useState(false);
+    const [verifyLoading, setVerifyLoading] = useState(false);
+    const [verifiable, setVerifiable] = useState(connected && !verified);
+    const dialogWindowRef = useRef<Window | null>(null);
+
+    useConnectDialog(dialogWindowRef, () => {
+      const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
+      const { code, msg } = tokens[task.type] || {};
+      const isConnected = +code === 1;
+      setConnected(isConnected);
+      if (isConnected) return;
+  
+      delete tokens[task.type];
+      localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
+      toast.error(msg);
+    });
+  
+    const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
+      const { label, loadingLabel, finishedLabel } = texts;
+      return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
+    };
+
+    function openAuthWindow(authURL: string) {
+      const dialog = window.open(
+        authURL,
+        'Authrization',
+        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      );
+      dialogWindowRef.current = dialog;
+      dialog?.addEventListener('close', () => {
+        dialogWindowRef.current = null;
+      });
+    }
+
+    async function onBaseConnectClick() {
+      const api = connectAPIs[task.type];
+      if (!api) return;
+
+      setConnectLoading(true);
+
+      const res = await api();
+      if (!res?.authorization_url) {
+        toast.error('Get authorization url failed!');
+        setConnectLoading(false);
+        return;
+      }
+
+      openAuthWindow(res.authorization_url);
+      setConnectLoading(false);
+    }
+
+    function onConnect() {
+      switch (task.type) {
+        case QuestType.ConnectTwitter:
+        case QuestType.ConnectSteam:
+        case QuestType.ConnectDiscord:
+          onBaseConnectClick();
+          break;
+        case QuestType.RetweetTweet:
+          break;
+        case QuestType.JOIN_DISCORD_SERVER:
+          break;
+        case QuestType.FollowOnTwitter:
+          break;
+        case QuestType.ASTRARK_PRE_REGISTER:
+          break;
+        case QuestType.ConnectWallet:
+          open();
+          break;
+      }
+    }
+
+    async function onVerify() {
+      setVerifyLoading(true);
+
+      try {
+        setVerifiable(false);
+        const res = await verifyTaskAPI({ quest_id: task.type });
+        setVerified(!!res.verified);
+
+        if (!res.verified) {
+          setTimeout(() => {
+            setVerifiable(true);
+          }, 10000);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setVerifyLoading(false);
+      }
+    }
+
+    return (
+      <div className="mt-5 flex items-center">
+        <LGButton
+          label={getButtonLabel(
+            connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
+            connectLoading,
+            connected,
+          )}
+          actived
+          loading={connectLoading}
+          disabled={connected || verified}
+          onClick={onConnect}
+        />
+
+        <LGButton
+          className="ml-2"
+          label={getButtonLabel(
+            verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
+            verifyLoading,
+            verified,
+          )}
+          loading={verifyLoading}
+          disabled={!connected || verified || !verifiable}
+          onClick={onVerify}
+        />
+      </div>
+    );
+  };
 
   const Task = (props: { task: TaskItem }) => {
     const { task } = props;
@@ -175,16 +293,7 @@ export default function RegularTasks() {
               </span>
             </div>
 
-            <div className="mt-5">
-              <ConnectAndVerify
-                type={task.type}
-                // init={() => onInit(task)}
-                connectTexts={task.connectTexts}
-                verifyTexts={task.verifyTexts}
-                connect={task.onConnectClick}
-                verify={task.onVerifyClick}
-              />
-            </div>
+            <TaskButtons task={task} />
           </div>
 
           <div
