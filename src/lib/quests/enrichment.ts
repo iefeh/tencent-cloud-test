@@ -5,6 +5,7 @@ import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connec
 import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectSteamQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {QuestType} from "@/lib/quests/types";
+import UserMetrics from "@/lib/models/UserMetrics";
 
 export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加verified字段
@@ -15,6 +16,36 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     enrichQuestAuthorization(quests);
     // 校正任务中的user_authorized字段，标识用户真实授权情况
     await enrichQuestUserAuthorization(userId, quests);
+    // 过滤任务中的property，仅返回URL
+    filterQuestProperty(quests);
+    // 丰富任务属性
+    await enrichQuestCustomProperty(userId, quests);
+}
+
+// 丰富特定于任务的属性，如wallet任务额外返回上次钱包资产同步时间
+async function enrichQuestCustomProperty(userId: string, quests: any[]) {
+    for (let quest of quests) {
+        if (quest.type != QuestType.ConnectWallet || !quest.verified) {
+            continue
+        }
+        // 用户已经完成钱包任务，获取钱包资产上次同步时间
+        const metrics = await UserMetrics.findOne({user_id: userId}, {_id: 0, wallet_asset_value_last_refresh_time: 1});
+        if (quest.properties) {
+            quest.properties.last_verified_time = metrics.wallet_asset_value_last_refresh_time;
+        } else {
+            quest.properties = {last_verified_time: metrics.wallet_asset_value_last_refresh_time};
+        }
+    }
+}
+
+// 过滤任务中的property，仅返回URL
+function filterQuestProperty(quests: any[]) {
+    for (let quest of quests) {
+        if (!quest.properties) {
+            continue
+        }
+        quest.properties = {url: quest.properties.url}
+    }
 }
 
 // 为任务添加verified字段，标识当前用户是否已经校验任务
