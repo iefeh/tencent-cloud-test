@@ -6,8 +6,8 @@ import type { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVe
 import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
-import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
-import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI, connectWalletAPI } from '@/http/services/login';
+import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
@@ -15,6 +15,7 @@ import useConnectDialog from '@/hooks/useConnectDialog';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import loadingImg from 'img/loyalty/earn/loading.png';
 import { MobxContext } from '@/pages/_app';
+import { BrowserProvider } from 'ethers';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
@@ -26,7 +27,8 @@ interface TaskItem extends TaskListItem {
 }
 
 export default function RegularTasks() {
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const store = useContext(MobxContext);
+  const { toggleLoginModal } = store;
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
@@ -41,6 +43,7 @@ export default function RegularTasks() {
   };
   const { open } = useWeb3Modal();
   const { address, chainId, isConnected } = useWeb3ModalAccount();
+  const { walletProvider } = useWeb3ModalProvider();
 
   async function queryTasks(pagi: PagiInfo = pagiInfo) {
     setTaskListLoading(true);
@@ -158,8 +161,28 @@ export default function RegularTasks() {
       setConnectLoading(false);
     }
 
+    async function onConnectWallet() {
+      const provider = new BrowserProvider(walletProvider!);
+      const signer = await provider.getSigner();
+      const signature = await signer?.signMessage('Hello Web3Modal Ethers');
+
+      const data = {
+        address: address as `0x${string}`,
+        message:
+          'Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: 1703126275000',
+        signature,
+      };
+
+      try {
+        await connectWalletAPI(data);
+        setConnected(true);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     function onConnect() {
-      if (task.authorization && !userInfo) {
+      if (!store.userInfo) {
         toggleLoginModal();
         return;
       }
@@ -180,6 +203,7 @@ export default function RegularTasks() {
           break;
         case QuestType.ConnectWallet:
           if (isConnected) {
+            onConnectWallet();
           } else {
             open();
           }

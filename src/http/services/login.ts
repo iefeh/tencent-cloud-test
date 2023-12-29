@@ -50,3 +50,11 @@ export function connectSteamAPI(): Promise<AuthDto> {
 export function connectDiscordAPI(): Promise<AuthDto> {
   return http.get('/api/auth/connect/discord', { params: getAuthParams(`/connect?type=${QuestType.ConnectDiscord}`) });
 }
+
+export function connectWalletAPI(data: {
+  address: string;
+  signature: string;
+  message: string;
+}): Promise<boolean | null> {
+  return http.post('/api/auth/connect/wallet', JSON.stringify(data));
+}
