@@ -18,6 +18,8 @@ export interface IUserMoonBeamAudit extends Document {
     corr_id: String;
     // 审计时间
     created_time: Number;
+    // 删除时间，比如重新验证钱包时，会把该用户之前领取的奖励删除
+    deleted_time: Number;
 }
 
 const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
@@ -27,11 +29,12 @@ const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
     reward_taint: {type: String, default: null},
     corr_id: {type: String},
     created_time: {type: Number},
+    deleted_time: {type: Number},
 });
 
 UserMoonBeamAuditSchema.index({uid: 1, type: 1});
 UserMoonBeamAuditSchema.index({corr_id: 1});
-UserMoonBeamAuditSchema.index({reward_taint: 1}, {unique: true});
+UserMoonBeamAuditSchema.index({reward_taint: 1, deleted_time: 1}, {unique: true});
 
 const UserMoonBeamAudit = models.UserMoonBeamAudit || model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');
 export default UserMoonBeamAudit;

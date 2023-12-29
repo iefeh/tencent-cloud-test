@@ -8,6 +8,11 @@ import logger from "@/lib/logger/winstonLogger";
 import {claimQuestReward} from "@/lib/quests/claim";
 import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
 import {redis} from "@/lib/redis/client";
+import {QuestType} from "@/lib/quests/types";
+import {invalidParams} from "@/lib/response/response";
+import QuestAchievement from "@/lib/models/QuestAchievement";
+import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
+import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -23,19 +28,27 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.notFound("Unknown quest."));
         return;
     }
+    switch (quest.type) {
+        case QuestType.ConnectWallet:
+            await reverifyConnectWallet(quest, req, res);
+            return;
+        default:
+            res.json(response.invalidParams("Quest does not support reverification."));
+            return;
+    }
+});
+
+async function reverifyConnectWallet(quest: any, req: any, res: any) {
     const userId = req.userId!;
-    // 检查用户是否已经完成该任务, 注意此处使用的是ConnectDiscordQuest，但我们实际是为了使用他基类的方法
-    const verified = await new ConnectDiscordQuest(quest).checkVerified(userId);
-    if (verified) {
-        logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
-        res.json(response.success({
-            verified: true,
-        }));
+    // 检查用户是否完成任务
+    const achieved = await QuestAchievement.findOne({quest_id: quest.id, user_id: userId});
+    if (!achieved) {
+        res.json(response.invalidParams("You have not verified quest."));
         return;
     }
-    const lockKey = `claim_quest_lock:${quest_id}:${userId}`;
+    const lockKey = `claim_quest_lock:${quest.id}:${userId}`;
     try {
-        // 每隔30秒允许校验一次相同任务
+        // 每隔10秒允许校验一次相同任务
         const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
         if (!locked) {
             res.json(response.success({
@@ -44,8 +57,9 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             }));
             return;
         }
-        // 申领任务奖励
-        const result = await claimQuestReward(userId, quest);
+        // 尝试领取奖励
+        const questImpl = new ConnectWalletQuest(quest);
+        const result = await questImpl.reClaimReward(userId);
         res.json(response.success(result));
     } catch (error) {
         console.error(error);
@@ -54,10 +68,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             tip: "Network busy, please try again later.",
         }));
     }
-    // finally {
-    //     await redis.del(lockKey);
-    // }
-});
+
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {

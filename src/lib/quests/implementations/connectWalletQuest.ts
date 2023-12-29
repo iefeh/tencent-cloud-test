@@ -8,6 +8,10 @@ import logger from "@/lib/logger/winstonLogger";
 import WalletAsset, {WalletNFT, WalletToken} from "@/lib/models/WalletAsset";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
+import UserMoonBeamAudit, {IUserMoonBeamAudit, UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
+import User from "@/lib/models/User";
+import {isDuplicateKeyError} from "@/lib/mongodb/client";
+import * as response from "@/lib/response/response";
 
 const Debank = require('debank')
 
@@ -28,6 +32,114 @@ export class ConnectWalletQuest extends QuestBase {
         }
     }
 
+    async reClaimReward(userId: string): Promise<claimRewardResult> {
+        // 检查用户上次校验时间
+        const metrics = await UserMetrics.findOne({user_id: userId}, {
+            _id: 0,
+            [Metric.WalletAssetUsdValue]: 1,
+            [Metric.WalletAssetValueLastRefreshTime]: 1
+        });
+        if (metrics.wallet_asset_value_last_refresh_time) {
+            // 计算是否满足重新校验的间隔，必须间隔12小时
+            const reverifyAfter = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
+            if (Date.now() < reverifyAfter) {
+                logger.warn(`user ${userId} reclaim quest ${this.quest.id} but cooling down.`);
+                return {
+                    verified: false,
+                    tip: "Verify cooling down, please try again later.",
+                };
+            }
+        }
+        // 检查是否可以领取奖励
+        const claimableResult = await this.checkClaimable(userId);
+        if (!claimableResult.claimable) {
+            return {
+                verified: false,
+                require_authorization: claimableResult.require_authorization,
+                tip: claimableResult.require_authorization ? "You should connect your Wallet Address first." : undefined,
+            }
+        }
+        // 检查当前钱包是否存在历史奖励
+        const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
+        let historyReward = await UserMoonBeamAudit.findOne({reward_taint: taint, deleted_time: null});
+        if (historyReward && historyReward.user_id != userId) {
+            logger.warn(`user ${userId} trying to reclaim reward from taint address ${this.user_wallet_addr}`);
+            return {
+                verified: false,
+                tip: "The Wallet Address reward has been claimed by other user.",
+            }
+        }
+        if (!historyReward) {
+            logger.debug(`user ${userId} using different address ${this.user_wallet_addr} trying to query user last reward.`);
+            // 当前是绑定的全新的钱包且没有被领取过奖励，检查当前用户的历史奖励
+            historyReward = await UserMoonBeamAudit.findOne({
+                user_id: userId,
+                corr_id: this.quest.id,
+                deleted_time: null
+            });
+        }
+        if (!historyReward) {
+            throw new Error(`user ${userId} and wallet ${this.user_wallet_addr} MB audit should but not found.`);
+        }
+
+        // 刷新钱包资产
+        const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr);
+        if (refreshResult) {
+            return refreshResult;
+        }
+        const rewardDelta = await this.checkUserRewardDelta(userId);
+        if (rewardDelta <= historyReward.moon_beam_delta) {
+            return {
+                verified: true,
+                claimed_amount: 0,
+                tip: `You have claimed 0 MBs.`,
+            }
+        }
+        // 保存用户的增量奖励
+        return this.saveUserIncreasedReward(userId, rewardDelta, historyReward);
+    }
+
+    async saveUserIncreasedReward(userId: string, rewardDelta: number, historyReward: IUserMoonBeamAudit): Promise<claimRewardResult> {
+        const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
+        // 保存用户的增量奖励
+        const increasedReward = rewardDelta - Number(historyReward.moon_beam_delta);
+        const now = Date.now();
+        const audit = new UserMoonBeamAudit({
+            user_id: userId,
+            type: UserMoonBeamAuditType.Quests,
+            moon_beam_delta: rewardDelta,
+            reward_taint: taint,
+            corr_id: this.quest.id,
+            created_time: now,
+        });
+        historyReward.deleted_time = now;
+        try {
+            await doTransaction(async (session) => {
+                const opts = {session};
+                await historyReward.save(opts);
+                await audit.save(opts);
+                await User.updateOne({user_id: userId}, {$inc: {moon_beam: increasedReward}}, opts);
+            })
+            return {
+                verified: true,
+                claimed_amount: increasedReward,
+                tip: `Congratulations, you have claimed ${increasedReward} MBs.`,
+            }
+        } catch (error) {
+            if (isDuplicateKeyError(error)) {
+                return {
+                    verified: false,
+                    tip: "The Wallet Address reward has been claimed by other user.",
+                }
+            }
+            console.error(error);
+            return {
+                verified: false,
+                tip: "Server Internal Error.",
+            }
+        }
+    }
+
     async claimReward(userId: string): Promise<claimRewardResult> {
         const claimableResult = await this.checkClaimable(userId);
         if (!claimableResult.claimable) {
@@ -37,7 +149,10 @@ export class ConnectWalletQuest extends QuestBase {
                 tip: claimableResult.require_authorization ? "You should connect your Wallet Address first." : undefined,
             }
         }
-        await this.refreshUserWalletMetric(userId, this.user_wallet_addr);
+        const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr);
+        if (refreshResult) {
+            return refreshResult;
+        }
         // 按 任务/钱包 进行污染，防止同一个钱包多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
@@ -81,30 +196,21 @@ export class ConnectWalletQuest extends QuestBase {
             return sum + nft.usd_price * nft.amount;
         }, 0);
         totalNFTValue = Number(totalNFTValue.toFixed(2));
+        const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));
         const now = Date.now();
+        const walletAsset = new WalletAsset({
+            "wallet_addr": wallet,
+            "total_usd_value": totalValue,
+            "token_usd_value": totalTokenValue,
+            "nft_usd_value": totalNFTValue,
+            "tokens": tokens,
+            "nfts": nfts,
+            "created_time": now,
+        });
         // 执行数据入库
         await doTransaction(async (session) => {
             // 保存用户的资产凭证
-            await WalletAsset.updateOne(
-                {wallet_addr: wallet},
-                {
-                    $set: {
-                        "total_usd_value": totalNFTValue + totalTokenValue,
-                        "token_usd_value": totalTokenValue,
-                        "nft_usd_value": totalNFTValue,
-                        "tokens": tokens,
-                        "nfts": nfts,
-                        "updated_time": now,
-                    },
-                    $setOnInsert: {
-                        "created_time": now,
-                    }
-                },
-                {
-                    session: session,
-                    upsert: true
-                }
-            );
+            await walletAsset.save({session});
             // 保存用户的指标信息
             await UserMetrics.updateOne(
                 {user_id: userId},
@@ -112,7 +218,7 @@ export class ConnectWalletQuest extends QuestBase {
                     $set: {
                         [Metric.WalletTokenUsdValue]: totalTokenValue,
                         [Metric.WalletNftUsdValue]: totalNFTValue,
-                        [Metric.WalletAssetUsdValue]: totalNFTValue + totalTokenValue,
+                        [Metric.WalletAssetUsdValue]: totalValue,
                         [Metric.WalletAssetValueLastRefreshTime]: now,
                     },
                     $setOnInsert: {
