@@ -13,6 +13,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import useConnectDialog from '@/hooks/useConnectDialog';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
+import loadingImg from 'img/loyalty/earn/loading.png';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
@@ -126,12 +127,12 @@ export default function RegularTasks() {
       const isConnected = +code === 1;
       setConnected(isConnected);
       if (isConnected) return;
-  
+
       delete tokens[task.type];
       localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
       toast.error(msg);
     });
-  
+
     const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
       const { label, loadingLabel, finishedLabel } = texts;
       return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
@@ -319,10 +320,21 @@ export default function RegularTasks() {
     );
   };
 
+  const CircularLoading = () => {
+    return (
+      <div className="relative w-[8.125rem] h-[8.125rem] text-center leading-[8.125rem]" aria-label="Loading...">
+        <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill />
+        <span className="relative z-0 font-semakin text-basic-yellow">Loading</span>
+      </div>
+    );
+  };
+
   return (
     <div className="mt-7 flex flex-col items-center">
       {tasks.length < 1 ? (
-        <CircularProgress aria-label="Loading..." />
+        <div className="w-full h-[25rem] flex items-center justify-center">
+          <CircularLoading />
+        </div>
       ) : (
         <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full">
           {tasks.map((task) => (
