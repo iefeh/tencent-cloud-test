@@ -17,10 +17,10 @@ const mainnet = {
 
 // 3. Create modal
 const metadata = {
-  name: 'My Website',
-  description: 'My Website description',
-  url: 'https://mywebsite.com',
-  icons: ['https://avatars.mywebsite.com/'],
+  name: 'Moonveil',
+  description: 'The official website of Moonveil',
+  url: 'https://moonveil.gg',
+  icons: ['https://www.moonveil.gg/img/favicon.png'],
 };
 
 createWeb3Modal({
