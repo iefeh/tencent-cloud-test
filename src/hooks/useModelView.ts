@@ -33,7 +33,8 @@ export class ModelViewer {
   }
 
   initCamera() {
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    const { clientWidth, clientHeight } = this.container;
+    const camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 1, 1000);
     camera.position.set(0, 0, 500);
     return camera;
   }
@@ -41,7 +42,7 @@ export class ModelViewer {
   initLight() {
     // 半球光
     const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-    // hemisphereLight.position.set(0, 200, 0);
+    hemisphereLight.position.set(0, 200, 0);
     this.scene.add(hemisphereLight);
 
     // 点光源
@@ -124,10 +125,10 @@ export class ModelViewer {
     if (isTrackballControlls) {
       controls = new TrackballControls(this.camera, this.renderer.domElement);
       controls.noPan = true;
-      // controls.noZoom = true;
+      controls.noZoom = true;
     } else {
       controls = new OrbitControls(this.camera, this.renderer.domElement);
-      // controls.enableZoom = false;
+      controls.enableZoom = false;
     }
 
     controls.rotateSpeed = 16;

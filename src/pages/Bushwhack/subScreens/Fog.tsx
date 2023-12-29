@@ -3,8 +3,9 @@ import fogImg from 'img/bushwhack/fog/fog.jpg';
 import sceneImg from 'img/bushwhack/fog/scene.jpg';
 import hintImg from 'img/bushwhack/fog/hint.png';
 import { useEffect, useRef, useState } from 'react';
-import { Modal, ModalBody, ModalContent, cn, useDisclosure } from '@nextui-org/react';
+import { Modal, ModalBody, ModalContent, ModalFooter, cn, useDisclosure } from '@nextui-org/react';
 import ModelView3D from '@/pages/components/common/model/ModelView3D';
+import BasicButton from '@/pages/components/common/BasicButton';
 
 interface MaskItem {
   x: number;
@@ -39,7 +40,7 @@ export default function FogScreen() {
         // },
         offsetPower: {
           x: -0.5,
-          y: -4,
+          y: -4.5,
           z: 0,
         },
         // zoom: 6,
@@ -167,7 +168,7 @@ export default function FogScreen() {
       context.globalCompositeOperation = 'destination-out';
     }, 100);
 
-    window.addEventListener('mousemove', onFogMousemove);
+    // window.addEventListener('mousemove', onFogMousemove);
   }
 
   function onViewMask(item: MaskItem) {
@@ -183,6 +184,18 @@ export default function FogScreen() {
     setTimeout(() => {
       isRunning.current = true;
     }, 1600);
+  }
+
+  function onFogClick() {
+    if (!isRunning.current) return;
+    setFinished(true);
+    setTimeout(() => {
+      const newMasks = structuredClone(maskVal.current);
+      newMasks.forEach((mask) => {
+        mask.visible = true;
+      });
+      setMasks((maskVal.current = newMasks));
+    }, 2500);
   }
 
   useEffect(() => {
@@ -208,6 +221,7 @@ export default function FogScreen() {
           'absolute w-full h-full left-0 top-0 z-10 transition-opacity !duration-[3000ms]',
           finished && 'opacity-0',
         ])}
+        onClick={onFogClick}
       ></canvas>
 
       {masks.map((mask, index) => (
@@ -228,9 +242,10 @@ export default function FogScreen() {
       <div
         className={cn([
           'absolute left-1/2 top-1/2 z-30 font-semakin text-[5.625rem] drop-shadow-[0_0_20px_rgba(0,0,0,0.4)] -translate-x-1/2 -translate-y-1/2 transition-opacity !duration-[1500ms]',
-          isStarting && 'opacity-0',
+          isStarting && 'opacity-0 pointer-events-none',
         ])}
-        onMouseEnter={onGameTitleMouseEnter}
+        // onMouseEnter={onGameTitleMouseEnter}
+        onClick={onGameTitleMouseEnter}
       >
         Hunt in the Mist
       </div>
@@ -240,6 +255,8 @@ export default function FogScreen() {
         onOpenChange={onOpenChange}
         classNames={{
           base: 'bg-black max-w-[43.75rem] w-[43.75rem] h-[43.75rem] border-3 border-[#4051F4] rounded-[0.625rem] shadow-[0_0_24px_2px_#4051F4]',
+          footer: 'justify-center',
+          closeButton: 'text-[#4051F4] text-[1.75rem]'
         }}
         onClose={() => (isViewing.current = false)}
       >
@@ -249,11 +266,10 @@ export default function FogScreen() {
               <ModalBody>
                 <ModelView3D info={maskInfo} />
               </ModalBody>
-              {/* <ModalFooter>
-                <Button color="danger" variant="light" onPress={onReset}>
-                  Reset
-                </Button>
-              </ModalFooter> */}
+              <ModalFooter>
+                <span className="text-2xl font-poppins">Mask Name</span>
+                {/* <BasicButton label='Reset' onClick={onReset} /> */}
+              </ModalFooter>
             </>
           )}
         </ModalContent>
