@@ -5,16 +5,219 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import UserMetricReward, {RewardItem, UserMetricRewardType} from "@/lib/models/UserMetricReward";
 import {Metric} from "@/lib/models/UserMetrics";
+import Quest, {IQuest} from "@/lib/models/Quest";
+import {Schema} from "mongoose";
+import {v4 as uuidv4} from "uuid";
+import {QuestRewardType, QuestType} from "@/lib/quests/types";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
     await getMongoConnection();
-    await saveWalletTokenReward();
-    await saveWalletNftReward();
-    await saveSteamReward();
+    await saveQuests();
+    // await saveWalletTokenReward();
+    // await saveWalletNftReward();
+    // await saveSteamReward();
     res.json(response.success());
 });
+
+async function saveQuests() {
+    const now = Date.now();
+    const quests = [
+        {
+            id: uuidv4(),
+            name: "Connect Your Wallet",
+            description: "Connect to your crypto wallet",
+            tip: "Be sure to use the most valuable wallet to connect. MBs will be rewarded based on the value of crypto assets in your wallet.",
+            type: QuestType.ConnectWallet,
+            properties: null,
+            reward: {
+                type: QuestRewardType.Range,
+                amount: 10,
+                max_amount: 7500,
+                range_reward_ids: ["8610c3a9-6477-4bf0-9228-cf2bc0c9d965", "be3ed7bc-104b-4499-9b26-940608b11bb0"],
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Connect Your Twitter",
+            description: "Connect to your Twitter account.",
+            tip: "",
+            type: QuestType.ConnectTwitter,
+            properties: null,
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Connect Your Discord",
+            description: "Connect to your Discord account.",
+            tip: "",
+            type: QuestType.ConnectDiscord,
+            properties: null,
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Join Discord Server",
+            description: "Join Moonveil‘s official Discord server.",
+            tip: "",
+            type: QuestType.JoinDiscordServer,
+            properties: {
+                guild_url: "https://discord.gg/moonveil",
+                guild_id: "1139446473642217502",
+                url: "https://discord.gg/moonveil",
+            },
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Twitter Follow @Moonveil_Studio",
+            description: "Follow @Moonveil_Studio on Twitter.",
+            tip: "",
+            type: QuestType.FollowOnTwitter,
+            properties: {
+                username: "Moonveil_Studio",
+                url: "https://twitter.com/intent/follow?screen_name=Moonveil_Studio",
+            },
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Twitter Follow @AstrArk_World",
+            description: "Follow @AstrArk_World on Twitter.",
+            tip: "",
+            type: QuestType.FollowOnTwitter,
+            properties: {
+                username: "AstrArk_World",
+                url: "https://twitter.com/intent/follow?screen_name=AstrArk_World",
+            },
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Twitter Retweet",
+            description: "Click 'Retweet' to verify your reward.",
+            tip: "",
+            type: QuestType.RetweetTweet,
+            properties: {
+                tweet_url: "https://twitter.com/AstrArk_World/status/1739647932520108394",
+                tweet_id: "1739647932520108394",
+                url: "https://twitter.com/intent/retweet?tweet_id=1739647932520108394",
+            },
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "Connect Your Steam",
+            description: "Step 1: Sign in with your Steam. Step 2: Set your profile to \"Public\".",
+            tip: "In order to view your profile, please go to Privacy Settings and set all profile items to \"Public\".",
+            type: QuestType.ConnectSteam,
+            properties: null,
+            reward: {
+                type: QuestRewardType.Range,
+                amount: 0,
+                max_amount: 800,
+                range_reward_ids: ["bfd884ab-25ac-4095-94f6-61957dcb68a7"],
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "1st Membership Verifications",
+            description: "If you are an early supporter who received the \"1st Membership\" role in our Discord community, please verify to receive your reward.",
+            tip: "",
+            type: QuestType.JoinDiscordServer,
+            properties: {
+                guild_url: "https://discord.gg/moonveil",
+                guild_id: "1139446473642217502",
+                url: "https://discord.gg/moonveil",
+            },
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+                range_reward_ids: null,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "AstrArk Pre-register",
+            description: "Click to pre-register the AstrArk game and claim your in-game rewards.",
+            tip: "",
+            type: QuestType.UserMetric,
+            properties: {
+                metric: Metric.PreRegisterAstrArk,
+                value: true,
+                operator: "==",
+                url: "https://google.com",
+            },
+            reward: {
+                type: QuestRewardType.Fixed,
+                amount: 10,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+        {
+            id: uuidv4(),
+            name: "DC Community Early Support",
+            description: "If you're an early supporter of our DC community and have earned MBs, please kindly verify to claim your MBs.",
+            tip: "",
+            type: QuestType.Whitelist,
+            properties: {
+                whitelist_id: "discord_community_early_support",
+            },
+            reward: {
+                type: QuestRewardType.Range,
+                amount: 10,
+                max_amount: 5000,
+            },
+            created_time: now,
+            updated_time: now,
+        },
+    ];
+    await Quest.insertMany(quests);
+}
 
 async function saveSteamReward() {
     // 创建steam连接的奖励规则，每个阶段额外给10的基础奖励加成

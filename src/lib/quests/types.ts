@@ -9,6 +9,7 @@ export enum QuestType {
     ConnectSteam = "connect_steam",
     FollowOnTwitter = "follow_on_twitter",
     RetweetTweet = "retweet_tweet",
+    JoinDiscordServer = "join_discord_server",
     HoldDiscordRole = "hold_discord_role",
     Whitelist = "whitelist",
     UserMetric = "user_metric",
@@ -44,6 +45,16 @@ export type RetweetTweet = {
     tweet_url: string;
     // 推文id，用于构建intent地址
     tweet_id: string;
+    // 任务地址
+    url: string;
+}
+
+// 加入discord社区
+export type JoinDiscordServer = {
+    // discord的邀请链接，用户可以通过该链接加入DC
+    guild_url: string;
+    // 在指定的工会
+    guild_id: string;
     // 任务地址
     url: string;
 }

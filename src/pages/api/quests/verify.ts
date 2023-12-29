@@ -35,6 +35,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     }
     const lockKey = `claim_quest_lock:${quest_id}:${userId}`;
     try {
+        // 每隔10秒允许校验一次相同任务
         const locked = await redis.set(lockKey, Date.now(), "EX", 10, "NX");
         if (!locked) {
             res.json(response.success({
@@ -52,9 +53,10 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             verified: false,
             tip: "Network busy, please try again later.",
         }));
-    } finally {
-        await redis.del(lockKey);
     }
+    // finally {
+    //     await redis.del(lockKey);
+    // }
 });
 
 // this will run if none of the above matches

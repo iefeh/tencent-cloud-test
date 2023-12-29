@@ -6,6 +6,7 @@ import getMongoConnection from "@/lib/mongodb/client";
 import * as Debank from "debank";
 import Quest from "@/lib/models/Quest";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
+import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -17,9 +18,9 @@ router.get(async (req, res) => {
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
-        const quest = await Quest.findOne({id: "connect_wallet"});
-        const questWrapper = new ConnectWalletQuest(quest);
-        const result = await questWrapper.checkUserRewardDelta("test_user_2");
+        const quest = await Quest.findOne({id: "14b7f2c6-9b29-4ff9-8c4d-48cc5897ca84"});
+        const questWrapper = new JoinDiscordServerQuest(quest);
+        const result = await questWrapper.claimReward("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5");
         console.log(result);
     } catch (error) {
         console.error(error)
