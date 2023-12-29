@@ -104,8 +104,7 @@ const MoreLinks = () => {
 };
 
 const Header = () => {
-  const { userInfo } = useContext(MobxContext);
-  const [loginVisible, setLoginVisible] = useState(false);
+  const { userInfo, loginModelVisible, toggleLoginModal } = useContext(MobxContext);
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
 
@@ -173,7 +172,7 @@ const Header = () => {
           <BasicButton
             className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8 ' + (listOpen ? 'hidden' : '')}
             label="login"
-            onClick={() => setLoginVisible(true)}
+            onClick={toggleLoginModal}
           />
         )}
 
@@ -186,7 +185,7 @@ const Header = () => {
         )}
       </div>
 
-      <LoginDialog visible={loginVisible} onClose={() => setLoginVisible(false)} />
+      <LoginDialog visible={loginModelVisible} onClose={toggleLoginModal} />
 
       <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
     </section>

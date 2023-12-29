@@ -8,6 +8,7 @@ class UserStore {
   userInfo: UserInfo | null = null;
   jwtToken = '';
   particle: ParticleNetwork;
+  loginModelVisible = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -86,6 +87,10 @@ class UserStore {
     const res = await signInParticleAPI(data);
     return res;
   };
+
+  toggleLoginModal() {
+    this.loginModelVisible = !this.loginModelVisible;
+  }
 }
 
 export default UserStore;
