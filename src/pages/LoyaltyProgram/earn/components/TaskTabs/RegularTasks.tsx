@@ -4,7 +4,7 @@ import { CircularProgress, Pagination, cn } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import ConnectAndVerify, { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
 import { TaskListItem, TaskReward, queryTaskListAPI } from '@/http/services/task';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -121,6 +121,8 @@ export default function RegularTasks() {
   const Task = (props: { task: TaskItem }) => {
     const { task } = props;
     const [isContentVisible, setIsContentVisibble] = useState(false);
+    const [needEllipsis, setNeedEllipsis] = useState(false);
+    const shadowTextRef = useRef<HTMLDivElement>(null);
 
     function showContent() {
       setIsContentVisibble(true);
@@ -130,6 +132,14 @@ export default function RegularTasks() {
       setIsContentVisibble(false);
     }
 
+    useLayoutEffect(() => {
+      if (!shadowTextRef.current) return;
+
+      const shadowWidth = shadowTextRef.current.clientWidth;
+      const parentWidth = shadowTextRef.current.parentElement?.clientWidth || 0;
+      if (shadowWidth > parentWidth) setNeedEllipsis(true);
+    }, []);
+
     return (
       <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500">
         <div className="text-xl">{task.name}</div>
@@ -138,10 +148,19 @@ export default function RegularTasks() {
           <div className="text-sm">
             <div className="text-[#999]">{task.description}</div>
             {task.tip && (
-              <div className="flex items-center">
+              <div className="flex items-center relative">
                 <div className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
-                <div className="text-basic-yellow shrink-0 cursor-pointer leading-6 border-b-1 border-basic-yellow" onClick={showContent}>
-                  View More
+                {needEllipsis && (
+                  <div
+                    className="text-basic-yellow shrink-0 cursor-pointer leading-6 border-b-1 border-basic-yellow"
+                    onClick={showContent}
+                  >
+                    View More
+                  </div>
+                )}
+
+                <div ref={shadowTextRef} className="absolute invisible w-max whitespace-nowrap">
+                  {task.tip}
                 </div>
               </div>
             )}
