@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
-import { CircularProgress, Pagination, cn } from '@nextui-org/react';
+import { Pagination, cn } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import type { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
 import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import useConnectDialog from '@/hooks/useConnectDialog';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import loadingImg from 'img/loyalty/earn/loading.png';
+import { MobxContext } from '@/pages/_app';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
@@ -25,6 +26,7 @@ interface TaskItem extends TaskListItem {
 }
 
 export default function RegularTasks() {
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
@@ -39,15 +41,6 @@ export default function RegularTasks() {
   };
   const { open } = useWeb3Modal();
   const { address, chainId, isConnected } = useWeb3ModalAccount();
-
-  async function onBaseConnectClick(type: QuestType) {
-    const api = connectAPIs[type];
-    if (!api) return '';
-
-    const res = await api();
-    if (!res?.authorization_url) throw new Error('Get authorization url failed!');
-    return res.authorization_url;
-  }
 
   async function queryTasks(pagi: PagiInfo = pagiInfo) {
     setTaskListLoading(true);
@@ -68,11 +61,6 @@ export default function RegularTasks() {
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
       switch (item.type) {
-        case QuestType.ConnectTwitter:
-        case QuestType.ConnectSteam:
-        case QuestType.ConnectDiscord:
-          item.onConnectClick = onBaseConnectClick;
-          break;
         case QuestType.RetweetTweet:
           item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweeted' };
           break;
@@ -84,13 +72,6 @@ export default function RegularTasks() {
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
           item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Registered' };
-          break;
-        case QuestType.ConnectWallet:
-          item.achieved = isConnected;
-          item.onConnectClick = () => {
-            open();
-            return '';
-          };
           break;
       }
     });
@@ -178,6 +159,11 @@ export default function RegularTasks() {
     }
 
     function onConnect() {
+      if (task.authorization && !userInfo) {
+        toggleLoginModal();
+        return;
+      }
+
       switch (task.type) {
         case QuestType.ConnectTwitter:
         case QuestType.ConnectSteam:
@@ -193,7 +179,10 @@ export default function RegularTasks() {
         case QuestType.ASTRARK_PRE_REGISTER:
           break;
         case QuestType.ConnectWallet:
-          open();
+          if (isConnected) {
+          } else {
+            open();
+          }
           break;
       }
     }

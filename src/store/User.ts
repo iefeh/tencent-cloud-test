@@ -88,7 +88,7 @@ class UserStore {
     return res;
   };
 
-  toggleLoginModal() {
+  toggleLoginModal = () => {
     this.loginModelVisible = !this.loginModelVisible;
   }
 }
