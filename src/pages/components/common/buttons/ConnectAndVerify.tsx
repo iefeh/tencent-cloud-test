@@ -47,7 +47,7 @@ export function useConnectAndVerify(options: CVOptions) {
   } = useCheck({
     check: async () => {
       if (!connect) return false;
-      const path = await connect();
+      const path = await connect(type);
       if (!path) return false;
       openAuthWindow(path);
     },
@@ -76,9 +76,9 @@ export function useConnectAndVerify(options: CVOptions) {
 
     try {
       const initRes = await init();
-      setConnectable(!!initRes?.connectable);
+      setConnectable(initRes?.connectable !== false);
       setConnected(!!initRes?.connected);
-      setVerifiable(!!initRes?.verifiable);
+      setVerifiable(initRes?.verifiable !== false);
       setVerified(!!initRes?.verified);
     } catch (error) {}
   }
@@ -87,10 +87,10 @@ export function useConnectAndVerify(options: CVOptions) {
 
   useConnectDialog(dialogWindowRef, () => {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
-    const { token, code, msg } = tokens[type] || {};
-    setConnected(+code !== -1 && !!token);
-
-    if (+code === 1) return;
+    const { code, msg } = tokens[type] || {};
+    const isConnected = +code === 1;
+    setConnected(isConnected);
+    if (isConnected) return;
 
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
@@ -119,8 +119,8 @@ export function useCheck(options?: CheckOptions) {
 
     try {
       const initRes = await init();
-      setEnabled(!!initRes?.connectable);
-      setChecked(!!initRes?.connected);
+      setEnabled(initRes?.connectable !== false);
+      setChecked(initRes?.connected !== false);
     } catch (error) {}
   }
 
@@ -201,8 +201,9 @@ export default function ConnectAndVerify(props: Props & CVOptions) {
           connectLoading,
           connected,
         )}
+        actived
         loading={connectLoading}
-        disabled={!connectable || connected}
+        disabled={!connectable || connected || verified}
         onClick={onConnect}
       />
 

@@ -1,0 +1,48 @@
+:root {
+  --toastify-color-dark: #000;
+  --toastify-toast-min-height: 80px;
+  --toastify-toast-max-width: 431px;
+  /* --toastify-color-info: ; */
+  --toastify-color-success: #4DDE6B;
+  /* --toastify-color-warning: ; */
+  --toastify-color-error: #FF4848;
+}
+
+.Toastify__toast-container {
+  max-width: var(--toastify-toast-max-width);
+}
+
+.Toastify__toast-container--top-right {
+  top: 7.5rem;
+  right: 3.125rem;
+}
+
+.Toastify__toast {
+  border: 1px solid currentColor;
+  border-radius: 0.625rem;
+  font-family: poppins-medium;
+}
+
+.Toastify__toast-icon {
+  position: relative;
+}
+
+.Toastify__toast.Toastify__toast--info {
+  border-color: var(--toastify-color-info);
+}
+
+.Toastify__toast.Toastify__toast--success {
+  border-color: var(--toastify-color-success);
+}
+
+.Toastify__toast.Toastify__toast--warning {
+  border-color: var(--toastify-color-warning);
+}
+
+.Toastify__toast.Toastify__toast--error {
+  border-color: var(--toastify-color-error);
+}
+
+.Toastify__toast:is(.Toastify__toast--success, .Toastify__toast--error) .Toastify__toast-icon > svg {
+  display: none;
+}

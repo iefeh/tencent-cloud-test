@@ -33,4 +33,5 @@ UserMoonBeamAuditSchema.index({uid: 1, type: 1});
 UserMoonBeamAuditSchema.index({corr_id: 1});
 UserMoonBeamAuditSchema.index({reward_taint: 1}, {unique: true});
 
-export default models.UserMoonBeamAudit || model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');
+const UserMoonBeamAudit = models.UserMoonBeamAudit || model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');
+export default UserMoonBeamAudit;

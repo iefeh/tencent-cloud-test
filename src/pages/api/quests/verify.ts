@@ -2,17 +2,12 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import User from "@/lib/models/User";
-import UserGoogle from "@/lib/models/UserGoogle";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import UserTwitter from "@/lib/models/UserTwitter";
 import Quest from "@/lib/models/Quest";
-import {notFound} from "@/lib/response/response";
-import QuestAchievement from "@/lib/models/QuestAchievement";
 import logger from "@/lib/logger/winstonLogger";
-import {checkUserQuestClaimable} from "@/lib/quests/verification";
 import {claimQuestReward} from "@/lib/quests/claim";
 import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
+import {redis} from "@/lib/redis/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -38,10 +33,30 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         }));
         return;
     }
-    // 申领任务奖励
-    await getMongoConnection();
-    const result = await claimQuestReward(userId, quest);
-    res.json(response.success(result));
+    const lockKey = `claim_quest_lock:${quest_id}:${userId}`;
+    try {
+        // 每隔10秒允许校验一次相同任务
+        const locked = await redis.set(lockKey, Date.now(), "EX", 10, "NX");
+        if (!locked) {
+            res.json(response.success({
+                verified: false,
+                tip: "Network busy, please try again later.",
+            }));
+            return;
+        }
+        // 申领任务奖励
+        const result = await claimQuestReward(userId, quest);
+        res.json(response.success(result));
+    } catch (error) {
+        console.error(error);
+        res.json(response.success({
+            verified: false,
+            tip: "Network busy, please try again later.",
+        }));
+    }
+    // finally {
+    //     await redis.del(lockKey);
+    // }
 });
 
 // this will run if none of the above matches

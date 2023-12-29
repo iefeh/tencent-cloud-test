@@ -6,7 +6,7 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {HttpsProxyGet} from "@/lib/utils/request";
 import SteamGame, {SteamGameFilter, SteamGamePriceOverview} from "@/lib/models/SteamGame";
 import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
-import UserMetrics from "@/lib/models/UserMetrics";
+import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import {chunkArray} from "@/lib/utils/url";
 import SteamUserGame, {ISteamUserGame} from "@/lib/models/SteamUserGame";
 import logger from "@/lib/logger/winstonLogger";
@@ -48,6 +48,7 @@ export class ConnectSteamQuest extends QuestBase {
         return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
     }
 
+    // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功
     async refreshUserSteamMetric(userId: string, userSteam: IUserSteam): Promise<claimRewardResult | null> {
         // 校验用户的游戏数
         const refreshGameStats = await this.refreshUserGameStats(userSteam.steam_id);
@@ -74,10 +75,10 @@ export class ConnectSteamQuest extends QuestBase {
             {user_id: userId},
             {
                 $set: {
-                    "steam_account_years": Number(accountYears.toFixed(2)),
-                    "steam_account_game_count": gameCount,
-                    "steam_account_usd_value": Number(accountValue.toFixed(2)),
-                    "steam_account_rating": steamRating,
+                    [Metric.SteamAccountYears]: Number(accountYears.toFixed(2)),
+                    [Metric.SteamAccountGameCount]: gameCount,
+                    [Metric.SteamAccountUSDValue]: Number(accountValue.toFixed(2)),
+                    [Metric.SteamAccountRating]: steamRating,
                 },
                 $setOnInsert: {
                     "created_time": Date.now(),
@@ -99,7 +100,7 @@ export class ConnectSteamQuest extends QuestBase {
                 refreshed: false,
                 interrupted: {
                     verified: false,
-                    tip: "You have not make your game profile public, or you have no games yet."
+                    tip: "No game info detected, please make sure your profile is public and there is at least 1 game on your Steam account."
                 }
             }
         }

@@ -17,6 +17,8 @@ export const enum QuestType {
   Whitelist = 'whitelist',
   GamePreRegister = 'game_pre_register',
   HoldNFT = 'hold_nft',
+  JOIN_DISCORD_SERVER = 'join_discord_server',
+  ASTRARK_PRE_REGISTER = 'user_metric',
 }
 
 export const enum QuestRewardType {

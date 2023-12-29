@@ -6,6 +6,9 @@ import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
 
 export class ConnectDiscordQuest extends QuestBase {
+    // 用户的授权discord_id，在checkClaimable()时设置
+    protected user_discord_id = "";
+
     constructor(quest: IQuest) {
         super(quest);
     }
@@ -13,6 +16,7 @@ export class ConnectDiscordQuest extends QuestBase {
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
         // 此处只要用户绑定了discord账号就行，不强求授权token的有效性
         const userDiscord = await UserDiscord.findOne({user_id: userId, deleted_time: null});
+        this.user_discord_id = userDiscord?.discord_id;
         return {
             claimable: !!userDiscord,
             require_authorization: userDiscord ? undefined : AuthorizationType.Discord,
@@ -20,17 +24,16 @@ export class ConnectDiscordQuest extends QuestBase {
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
-        // 获取用户的discord
-        const userDiscord = await UserDiscord.findOne({user_id: userId, deleted_time: null});
-        if (!userDiscord) {
+        const claimableResult = await this.checkClaimable(userId);
+        if (!claimableResult.claimable) {
             return {
                 verified: false,
-                require_authorization: AuthorizationType.Discord,
-                tip: "You should connect your Discord Account first."
+                require_authorization: claimableResult.require_authorization,
+                tip: claimableResult.require_authorization ? "You should connect your Discord Account first." : undefined,
             }
         }
         // 污染discord，确保同一个discord单任务只能获取一次奖励
-        const taint = `${this.quest.id},${AuthorizationType.Discord},${userDiscord.discord_id}`;
+        const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         const result = await this.saveUserReward(userId, taint, rewardDelta);
         if (result.duplicated) {

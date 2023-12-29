@@ -68,6 +68,8 @@ import { useStore } from '@/store';
 import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '@/styles/toastify.css';
+import { Web3ModalProvider } from '@/store/Web3Modal';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -186,6 +188,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
+  const host = typeof window !== 'undefined' ? window.location.host : 'defaultHost';
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
@@ -282,17 +285,20 @@ export default function App({ Component, pageProps }: AppProps) {
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
       </Head>
-      {!isInWhiteList && loading ? (
-        <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-      ) : (
-        <MobxContext.Provider value={store}>
-          <RootLayout isInWhiteList={isInWhiteList}>
-            <Component {...pageProps} />
-          </RootLayout>
-        </MobxContext.Provider>
-      )}
 
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick />
+      <Web3ModalProvider>
+        {!isInWhiteList && loading ? (
+          <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+        ) : (
+          <MobxContext.Provider value={store}>
+            <RootLayout isInWhiteList={isInWhiteList}>
+              <Component {...pageProps} />
+            </RootLayout>
+          </MobxContext.Provider>
+        )}
+      </Web3ModalProvider>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 
       <Script id="google-analytics">
         {`

@@ -29,8 +29,9 @@ export default function LGButton(props: Props) {
   return (
     <Button
       className={cn([
-        'lg-button h-auto uppercase text-sm px-6 py-1 border-2 border-solid rounded-3xl text-white transition-all duration-1000 font-poppins-medium bg-transparent hover:border-transparent hover:text-black hover:bg-[linear-gradient(80deg,#D9A970,#EFEBC5)] cursor-pointer',
-        actived && 'border-transparent text-black bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
+        'lg-button h-auto uppercase text-sm px-6 py-1 border-2 border-solid rounded-3xl text-white transition-all duration-1000 font-poppins-medium bg-transparent cursor-pointer box-border',
+        'hover:border-none hover:px-[calc(1.5rem_+_2px)] hover:py-[calc(0.25rem_+_2px)] hover:text-black hover:bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
+        !disabled && actived && 'border-none px-[calc(1.5rem_+_2px)] py-[calc(0.25rem_+_2px)] text-black bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
         disabled && 'text-[#999] border-[#999] opacity-100',
         props.className,
       ])}
