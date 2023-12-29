@@ -26,7 +26,8 @@ interface TaskItem extends TaskListItem {
 
 export default function RegularTasks() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [pagiInfo, setPagiInto] = useState({
+  const [taskListLoading, setTaskListLoading] = useState(false);
+  const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
     total: 0,
     pageIndex: 1,
     pageSize: 9,
@@ -48,15 +49,19 @@ export default function RegularTasks() {
     return res.authorization_url;
   }
 
-  async function queryTasks() {
+  async function queryTasks(pagi: PagiInfo = pagiInfo) {
+    setTaskListLoading(true);
+
     try {
-      const { pageIndex, pageSize } = pagiInfo;
+      const { pageIndex, pageSize } = pagi;
       const res = await queryTaskListAPI({ page_num: pageIndex, page_size: pageSize });
       const { quests, total } = res;
-      setPagiInto({ ...pagiInfo, total: Math.ceil((+total || 0) / pagiInfo.pageSize) });
+      setPagiInfo({ ...pagi, total: Math.ceil((+total || 0) / pagi.pageSize) });
       handleQuests(quests);
     } catch (error) {
       console.log(error);
+    } finally {
+      setTaskListLoading(false);
     }
   }
 
@@ -105,6 +110,11 @@ export default function RegularTasks() {
       default:
         return '???';
     }
+  }
+
+  function onPagiChange(page: number) {
+    const pagi = { ...pagiInfo, pageIndex: page };
+    queryTasks(pagi);
   }
 
   useEffect(() => {
@@ -331,17 +341,22 @@ export default function RegularTasks() {
 
   return (
     <div className="mt-7 flex flex-col items-center">
-      {tasks.length < 1 ? (
-        <div className="w-full h-[25rem] flex items-center justify-center">
-          <CircularLoading />
-        </div>
-      ) : (
-        <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full">
-          {tasks.map((task) => (
-            <Task key={`${task.id}_${task.achieved}`} task={task} />
-          ))}
-        </div>
-      )}
+      <div
+        className={cn([
+          'content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
+          tasks.length < 1 && 'h-[37.5rem]',
+        ])}
+      >
+        {tasks.map((task) => (
+          <Task key={`${task.id}_${task.achieved}`} task={task} />
+        ))}
+
+        {taskListLoading && (
+          <div className="absolute left-0 top-0 w-full h-full flex items-center justify-center backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-0">
+            <CircularLoading />
+          </div>
+        )}
+      </div>
 
       {pagiInfo.total > 0 && (
         <Pagination
@@ -359,6 +374,7 @@ export default function RegularTasks() {
           disableCursorAnimation
           radius="full"
           variant="light"
+          onChange={onPagiChange}
         />
       )}
     </div>
