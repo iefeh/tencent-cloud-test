@@ -40,4 +40,5 @@ OAuthTokenSchema.index({platform: 1, platform_id: 1, deleted_time: 1}, {unique: 
 OAuthTokenSchema.index({platform_id: 1});
 
 // 使用既有模型或者新建模型
-export default models.OAuthToken || model<IOAuthToken>('OAuthToken', OAuthTokenSchema, 'oauth_tokens');
+const OAuthToken = models.OAuthToken || model<IOAuthToken>('OAuthToken', OAuthTokenSchema, 'oauth_tokens');
+export default OAuthToken;

@@ -15,15 +15,17 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
+    const pageNum = Number(page_num);
+    const pageSize = Number(page_size);
     const userId = req.userId;
     await getMongoConnection();
-    const result = await queryQuestList(Number(page_num), Number(page_size));
+    const result = await queryQuestList(pageNum, pageSize);
     if (result.total == 0) {
         // 当前没有匹配的数据
         res.json(response.success({
             total: 0,
-            page_num: page_num,
-            page_size: page_size,
+            page_num: pageNum,
+            page_size: pageSize,
             quests: result.quests,
         }));
         return;
@@ -33,8 +35,8 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     await enrichUserQuests(userId!, quests);
     res.json(response.success({
         total: result.total,
-        page_num: page_num,
-        page_size: page_size,
+        page_num: pageNum,
+        page_size: pageSize,
         quests: quests,
     }));
 });

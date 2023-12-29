@@ -9,6 +9,7 @@ export enum QuestType {
     ConnectSteam = "connect_steam",
     FollowOnTwitter = "follow_on_twitter",
     RetweetTweet = "retweet_tweet",
+    JoinDiscordServer = "join_discord_server",
     HoldDiscordRole = "hold_discord_role",
     Whitelist = "whitelist",
     UserMetric = "user_metric",
@@ -18,7 +19,7 @@ export enum QuestType {
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
 export const QuestMetrics = new Map<QuestType, Metric[]>([
     // 连接钱包时，可用的指标是钱包代币价值
-    [QuestType.ConnectWallet, [Metric.WalletTokenUSDValue]],
+    [QuestType.ConnectWallet, [Metric.WalletTokenUsdValue, Metric.WalletNftUsdValue, Metric.WalletAssetUsdValue]],
     // 连接steam时，可用指标为：账号年限、游戏数量、账号价值、账号综合评分
     [QuestType.ConnectSteam, [Metric.SteamAccountYears, Metric.SteamAccountGameCount, Metric.SteamAccountUSDValue, Metric.SteamAccountRating]]
 ]);
@@ -32,14 +33,30 @@ export enum QuestRewardType {
 
 // 关注
 export type FollowOnTwitter = {
-    // 关注的目标用户
+    // 关注的目标用户，用于构建intent地址
     username: string;
+    // 任务地址
+    url: string;
 }
 
 // 转推
 export type RetweetTweet = {
     // 目标推文地址
     tweet_url: string;
+    // 推文id，用于构建intent地址
+    tweet_id: string;
+    // 任务地址
+    url: string;
+}
+
+// 加入discord社区
+export type JoinDiscordServer = {
+    // discord的邀请链接，用户可以通过该链接加入DC
+    guild_url: string;
+    // 在指定的工会
+    guild_id: string;
+    // 任务地址
+    url: string;
 }
 
 // 持有discord角色
@@ -50,12 +67,16 @@ export type HoldDiscordRole = {
     guild_id: string;
     // 拥有的角色
     role_ids: string[];
+    // 任务地址
+    url: string;
 }
 
 // 白名单
 export type Whitelist = {
     // 白名单id
     whitelist_id: string;
+    // 任务地址，可能为空
+    url: string;
 }
 
 // 持有NFT
@@ -66,6 +87,8 @@ export type HoldNFT = {
     contract_addr: string;
     // NFT的token id
     token_id: number | null;
+    // 任务地址，可为空
+    url: string;
 }
 
 // 用户指标

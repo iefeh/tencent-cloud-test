@@ -20,4 +20,5 @@ QuestAchievementSchema.index({quest_id: 1, user_id: 1}, {unique: true});
 QuestAchievementSchema.index({user_id: 1});
 
 // 使用既有模型或者新建模型
-export default models.QuestAchievement || model<IQuestAchievement>('QuestAchievement', QuestAchievementSchema, 'quest_achievements');
+const QuestAchievement = models.QuestAchievement || model<IQuestAchievement>('QuestAchievement', QuestAchievementSchema, 'quest_achievements');
+export default QuestAchievement;

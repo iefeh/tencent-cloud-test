@@ -37,4 +37,5 @@ const SteamUserGameSchema = new Schema<ISteamUserGame>({
 SteamUserGameSchema.index({steam_id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.SteamUserGame || model<ISteamUserGame>('SteamUserGame', SteamUserGameSchema, 'steam_user_games');
+const SteamUserGame = models.SteamUserGame || model<ISteamUserGame>('SteamUserGame', SteamUserGameSchema, 'steam_user_games');
+export default SteamUserGame;

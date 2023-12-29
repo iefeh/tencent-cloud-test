@@ -2,19 +2,11 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
-import {RestClient} from "okx-api";
-import {AxiosRequestConfig} from "axios";
-import {CovalentClient} from "@covalenthq/client-sdk";
-import {Web3} from "web3";
-import {ethers} from "ethers";
-import UserMetricReward, {checkMetricReward} from "@/lib/models/UserMetricReward";
-import UserMetrics from "@/lib/models/UserMetrics";
 import getMongoConnection from "@/lib/mongodb/client";
-import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
-import Quest from "@/lib/models/Quest";
-import UserSteam from "@/lib/models/UserSteam";
 import * as Debank from "debank";
-// const Debank = require('debank')
+import Quest from "@/lib/models/Quest";
+import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
+import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -25,14 +17,11 @@ router.get(async (req, res) => {
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
-        // console.log(resp.data);
-        const debank = new Debank(process.env.DEBANK_ACCESS_KEY);
-        const data = await debank.user.total_balance({id: '0x1260b33a7b1Ca6919c74d6212f2D17945222827f'})
-        const tokens = {
-            total_usd_value: data.total_usd_value,
-            chain_list: data.chain_list.filter(chain => chain.usd_value > 0),
-        };
-        console.log(tokens);
+        // console.log(resp.data);.
+        const quest = await Quest.findOne({id: "14b7f2c6-9b29-4ff9-8c4d-48cc5897ca84"});
+        const questWrapper = new JoinDiscordServerQuest(quest);
+        const result = await questWrapper.claimReward("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5");
+        console.log(result);
     } catch (error) {
         console.error(error)
     }

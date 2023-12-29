@@ -59,4 +59,5 @@ UserSteamSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserSteamSchema.index({steam_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.UserSteam || model<IUserSteam>('UserSteam', UserSteamSchema, 'user_steams');
+const UserSteam = models.UserSteam || model<IUserSteam>('UserSteam', UserSteamSchema, 'user_steams');
+export default UserSteam;

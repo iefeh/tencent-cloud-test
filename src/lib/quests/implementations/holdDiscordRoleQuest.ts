@@ -1,17 +1,12 @@
 import {IQuest} from "@/lib/models/Quest";
 import {HoldDiscordRole, checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
-import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
+import {ConnectDiscordQuest, queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
 import logger from "@/lib/logger/winstonLogger";
 import {deleteAuthToken, isDiscordAuthRevokedError} from "@/lib/authorization/provider/util";
-import {QuestBase} from "@/lib/quests/implementations/base";
-import UserDiscord from "@/lib/models/UserDiscord";
-import OAuthToken, {IOAuthToken} from "@/lib/models/OAuthToken";
 
-export class HoldDiscordRoleQuest extends QuestBase {
-    // 用户的授权discord_id，在checkClaimable()时设置
-    private user_discord_id = "";
+export class HoldDiscordRoleQuest extends ConnectDiscordQuest {
 
     constructor(quest: IQuest) {
         super(quest);
@@ -54,28 +49,6 @@ export class HoldDiscordRoleQuest extends QuestBase {
             console.error(error);
         }
         return {claimable: false}
-    }
-
-    async claimReward(userId: string): Promise<claimRewardResult> {
-        const claimableResult = await this.checkClaimable(userId);
-        if (!claimableResult.claimable) {
-            return {
-                verified: false,
-                require_authorization: claimableResult.require_authorization,
-                tip: claimableResult.require_authorization ? "You should connect your Discord Account first." : undefined,
-            }
-        }
-        // 污染discord，确保同一个discord单任务只能获取一次奖励
-        const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
-        const rewardDelta = await this.checkUserRewardDelta(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta);
-        if (result.duplicated) {
-            return {
-                verified: false,
-                tip: "The Discord Account has already claimed reward.",
-            }
-        }
-        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
     }
 }
 

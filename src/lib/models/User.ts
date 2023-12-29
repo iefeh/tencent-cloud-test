@@ -48,4 +48,5 @@ const UserSchema = new Schema<IUser>({
 UserSchema.index({email: 1}, {unique: true, partialFilterExpression: {email: {$exists: true}}});
 
 // 使用既有模型或者新建模型
-export default models.User || model<IUser>('User', UserSchema, 'users');
+const User = models.User || model<IUser>('User', UserSchema, 'users');
+export default User;
