@@ -24,4 +24,5 @@ UserWalletSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserWalletSchema.index({wallet_addr: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.UserWallet || model<IUserWallet>('UserWallet', UserWalletSchema, 'user_wallets');
+const UserWallet = models.UserWallet || model<IUserWallet>('UserWallet', UserWalletSchema, 'user_wallets');
+export default UserWallet;

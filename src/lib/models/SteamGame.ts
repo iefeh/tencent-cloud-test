@@ -99,45 +99,5 @@ const SteamGameSchema = new Schema<ISteamGame>({
 SteamGameSchema.index({steam_appid: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.SteamGame || model<ISteamGame>('SteamGame', SteamGameSchema, 'steam_games');
-
-// new SteamGame({
-//     steam_appid: steamId,
-//     // 需要的年龄
-//     required_age: app.required_age,
-//     // 是否免费
-//     is_free: app.is_free,
-//     detailed_description: app.detailed_description,
-//     about_the_game: app.about_the_game,
-//     short_description: app.short_description,
-//     supported_languages: app.supported_languages,
-//     header_image: app.header_image,
-//     capsule_image: app.capsule_image,
-//     capsule_imagev5: app.capsule_imagev5,
-//     website: app.website,
-//     pc_requirements: app.pc_requirements,
-//     mac_requirements: app.mac_requirements,
-//     linux_requirements: app.linux_requirements,
-//     developers: app.developers,
-//     publishers: app.publishers,
-//     price_overview: {
-//         currency: app.price_overview,
-//         initial: app.initial,
-//         final: app.final,
-//         discount_percent: app.discount_percent,
-//         initial_formatted: app.initial_formatted,
-//         final_formatted: app.final_formatted,
-//     },
-//     packages: app.packages,
-//     package_groups: app.package_groups,
-//     platforms: app.platforms,
-//     metacritic: app.metacritic,
-//     categories: app.categories,
-//     genres: app.genres,
-//     release_date: app.release_date,
-//     support_info: app.support_info,
-//     background: app.background,
-//     background_raw: app.background_raw,
-//     content_descriptors: app.content_descriptors,
-//     created_time: Date.now(),
-// })
+const SteamGame = models.SteamGame || model<ISteamGame>('SteamGame', SteamGameSchema, 'steam_games');
+export default SteamGame;

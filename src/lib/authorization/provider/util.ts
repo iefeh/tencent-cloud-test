@@ -80,3 +80,21 @@ export function isDiscordAuthRevokedError(error: any): boolean {
     const responseData = error.response.data;
     return responseData.error == 'invalid_grant';
 }
+
+export function isDiscordRateLimitError(error: any): { is: boolean, resetAfter?: number } {
+    if (!error) {
+        return {is: false};
+    }
+    if (!axios.isAxiosError(error)) {
+        return {is: false};
+    }
+    if (!error.response) {
+        return {is: false};
+    }
+    const status = error.response.status;
+    if (status != 429) {
+        return {is: false};
+    }
+    const resetAfter = error.response.headers['x-ratelimit-reset-after'];
+    return {is: true, resetAfter: resetAfter};
+}

@@ -56,7 +56,8 @@ UserMetricRewardSchema.index({id: 1}, {unique: true});
 UserMetricRewardSchema.index({require_metric: 1, reward_type: 1});
 
 // 使用既有模型或者新建模型
-export default models.UserMetricReward || model<IUserMetricReward>('UserMetricReward', UserMetricRewardSchema, 'user_metric_rewards');
+const UserMetricReward = models.UserMetricReward || model<IUserMetricReward>('UserMetricReward', UserMetricRewardSchema, 'user_metric_rewards');
+export default UserMetricReward;
 
 // 检查用户指标满足的奖励设置
 export function checkMetricReward(metricValue: boolean | number | string, reward: IUserMetricReward): RewardItem | null {

@@ -100,7 +100,7 @@ export class ConnectSteamQuest extends QuestBase {
                 refreshed: false,
                 interrupted: {
                     verified: false,
-                    tip: "You have not make your game profile public, or you have no games yet."
+                    tip: "No game info detected, please make sure your profile is public and there is at least 1 game on your Steam account."
                 }
             }
         }
