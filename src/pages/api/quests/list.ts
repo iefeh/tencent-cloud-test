@@ -33,21 +33,11 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     // 目前有足够的任务数，丰富响应的数据
     const quests = result.quests;
     await enrichUserQuests(userId!, quests);
-    // 过滤properties中的非URL属性
-    const filteredQuests = quests.map(quest => {
-        if (quest.properties) {
-            return {
-                ...quest,
-                properties: {url: quest.properties.url}
-            };
-        }
-        return quest;
-    });
     res.json(response.success({
         total: result.total,
         page_num: pageNum,
         page_size: pageSize,
-        quests: filteredQuests,
+        quests: quests,
     }));
 });
 

@@ -19,7 +19,7 @@ interface IProjection {
 export abstract class QuestBase {
     quest: IQuest;
 
-    constructor(quest: IQuest) {
+    protected constructor(quest: IQuest) {
         this.quest = quest;
     }
 
