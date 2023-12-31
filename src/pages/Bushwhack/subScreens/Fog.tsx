@@ -33,18 +33,12 @@ export default function FogScreen() {
       mask: {
         source: '/models/chaowan_mianju.fbx',
         texture: '/models/textures/chaowan.tga',
-        // rotate: {
-        //   // x: Math.PI / 4,
-        //   y: -Math.PI / 4,
-        //   z: -Math.PI / 6,
-        // },
         offsetPower: {
           x: -0.5,
-          y: -4.5,
+          y: -5,
           z: 0,
         },
-        // zoom: 6,
-        zoom: 5,
+        zoom: 6,
       },
     },
     // doctor
@@ -100,10 +94,14 @@ export default function FogScreen() {
   const [isStarting, setIsStarting] = useState(false);
   const isRunning = useRef(false);
   const [finished, setFinished] = useState(false);
+  const x = useRef(0);
+  const y = useRef(0);
 
-  const RADIUS_MIN = 50;
+  const RADIUS_MIN = 20;
   const RADIUS_MAX = 100;
-  const DENSITY = 0.01;
+  const DENSITY = 0.1;
+  const MAX_ERASE_TIMES = 20;
+  const MAX_ERASE_FPS = 10;
 
   function init() {
     const { innerWidth, innerHeight } = window;
@@ -117,20 +115,35 @@ export default function FogScreen() {
     window.addEventListener('resize', init);
   }
 
+  function eraseFog(context: CanvasRenderingContext2D, pX: number, pY: number, times = MAX_ERASE_TIMES, fps = 0) {
+    if (times <= 0) return;
+
+    if (fps === 0) {
+      const dx = pX + Math.random() * 50 - 100;
+      const dy = pY + Math.random() * 50 - 100;
+      const radGrd = context.createRadialGradient(dx, dy, RADIUS_MIN, dx, dy, RADIUS_MAX);
+      radGrd.addColorStop(0, 'rgba(0, 0, 0, 0.05)');
+      radGrd.addColorStop(0.9, 'rgba(0, 0, 0, 0)');
+      radGrd.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      context.fillStyle = radGrd;
+      context.fillRect(dx - RADIUS_MAX, dy - RADIUS_MAX, RADIUS_MAX * 2, RADIUS_MAX * 2);
+
+      times--;
+      fps = MAX_ERASE_FPS;
+    }
+
+    requestAnimationFrame(() => eraseFog(context, pX, pY, times, fps - 1));
+  }
+
   function onFogMousemove(e: MouseEvent) {
     e.preventDefault();
     if (!ctx.current || isViewing.current || !isRunning.current) return;
 
     let { x: pX, y: pY } = e;
-
-    // reveal wherever we drag
-    const radGrd = ctx.current.createRadialGradient(pX, pY, RADIUS_MIN, pX, pY, RADIUS_MAX);
-    radGrd.addColorStop(0, 'rgba(0, 0, 0, 1)');
-    radGrd.addColorStop(DENSITY, 'rgba(0, 0, 0, 0.2)');
-    radGrd.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-    ctx.current.fillStyle = radGrd;
-    ctx.current.fillRect(pX - RADIUS_MAX, pY - RADIUS_MAX, RADIUS_MAX * 2, RADIUS_MAX * 2);
+    x.current = pX;
+    y.current = pY;
+    eraseFog(ctx.current, pX, pY);
 
     const newMasks = structuredClone(maskVal.current);
     let visibleCount = 0;
@@ -168,7 +181,7 @@ export default function FogScreen() {
       context.globalCompositeOperation = 'destination-out';
     }, 100);
 
-    // window.addEventListener('mousemove', onFogMousemove);
+    window.addEventListener('mousemove', onFogMousemove);
   }
 
   function onViewMask(item: MaskItem) {
@@ -244,8 +257,8 @@ export default function FogScreen() {
           'absolute left-1/2 top-1/2 z-30 font-semakin text-[5.625rem] drop-shadow-[0_0_20px_rgba(0,0,0,0.4)] -translate-x-1/2 -translate-y-1/2 transition-opacity !duration-[1500ms]',
           isStarting && 'opacity-0 pointer-events-none',
         ])}
-        // onMouseEnter={onGameTitleMouseEnter}
-        onClick={onGameTitleMouseEnter}
+        onMouseEnter={onGameTitleMouseEnter}
+        // onClick={onGameTitleMouseEnter}
       >
         Hunt in the Mist
       </div>
