@@ -27,7 +27,7 @@ export default function CountdownScreen() {
     <div className="w-screen h-screen flex flex-col items-center justify-center relative">
       <Image className="object-cover z-[-1] opacity-25" src={fogImg} alt="" fill />
 
-      <Image className="w-[15.1875rem] h-[15.375rem] -mt-7" src={logoImg} alt="" />
+      <Image className="w-auto h-[15.375rem] -mt-7" src={logoImg} alt="" />
 
       <PageDesc
         needAni
