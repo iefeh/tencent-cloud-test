@@ -163,7 +163,11 @@ export class ConnectWalletQuest extends QuestBase {
                 tip: "The Wallet Address has already claimed reward.",
             }
         }
-        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
+        return {
+            verified: result.done,
+            claimed_amount: result.done ? rewardDelta : undefined,
+            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+        }
     }
 
     // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功

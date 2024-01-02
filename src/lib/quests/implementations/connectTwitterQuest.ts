@@ -40,7 +40,11 @@ export class ConnectTwitterQuest extends QuestBase {
                 tip: "The twitter Account has already claimed reward.",
             }
         }
-        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
+        return {
+            verified: result.done,
+            claimed_amount: result.done ? rewardDelta : undefined,
+            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+        }
     }
 }
 
