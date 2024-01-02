@@ -16,13 +16,11 @@ router.get(async (req, res) => {
     }
     // 检查邮件是否是测试邮件
     if (email == process.env.APPLE_REVIEW_USERNAME) {
-        const captcha = Math.floor(100000 + Math.random() * 900000);
         await redis.setex(`login_captcha:${email}`, 60 * 60 * 15, process.env.APPLE_REVIEW_PASSWORD!);
         res.json(response.success());
         return;
     }
     if (email == process.env.GOOGLE_REVIEW_USERNAME) {
-        const captcha = Math.floor(100000 + Math.random() * 900000);
         await redis.setex(`login_captcha:${email}`, 60 * 60 * 15, process.env.GOOGLE_REVIEW_PASSWORD!);
         res.json(response.success());
         return;
