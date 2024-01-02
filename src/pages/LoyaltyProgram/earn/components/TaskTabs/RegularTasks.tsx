@@ -11,7 +11,6 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import type { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
 import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
@@ -30,6 +29,12 @@ import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
+
+interface VerifyTexts {
+  label: string;
+  loadingLabel: string;
+  finishedLabel: string;
+}
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
