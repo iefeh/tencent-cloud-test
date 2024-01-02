@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Modal, ModalBody, ModalContent, ModalFooter, cn, useDisclosure } from '@nextui-org/react';
 import ModelView3D from '@/pages/components/common/model/ModelView3D';
 import BasicButton from '@/pages/components/common/BasicButton';
+import { debounce } from 'lodash';
 
 interface MaskItem {
   x: number;
@@ -16,17 +17,12 @@ interface MaskItem {
   mask: ModelInfo;
 }
 
-export default function FogScreen() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fogImgRef = useRef<HTMLImageElement>(null);
-  const ctx = useRef<CanvasRenderingContext2D | null>(null);
-  const [width, setWidth] = useState(1920);
-  const [height, setHeight] = useState(1080);
-  const [masks, setMasks] = useState<MaskItem[]>([
+function getBaseMasks(): MaskItem[] {
+  return [
     // thief
     {
-      x: 336,
-      y: 419,
+      x: 373,
+      y: 507,
       w: 70,
       h: 94,
       visible: false,
@@ -43,8 +39,8 @@ export default function FogScreen() {
     },
     // doctor
     {
-      x: 733,
-      y: 770,
+      x: 778,
+      y: 823,
       w: 88,
       h: 100,
       visible: false,
@@ -64,8 +60,8 @@ export default function FogScreen() {
     },
     // rhea
     {
-      x: 1318,
-      y: 542,
+      x: 1362,
+      y: 628,
       w: 81,
       h: 94,
       visible: false,
@@ -83,7 +79,16 @@ export default function FogScreen() {
         zoom: 6,
       },
     },
-  ]);
+  ];
+}
+
+export default function FogScreen() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fogImgRef = useRef<HTMLImageElement>(null);
+  const ctx = useRef<CanvasRenderingContext2D | null>(null);
+  const [width, setWidth] = useState(1920);
+  const [height, setHeight] = useState(1080);
+  const [masks, setMasks] = useState<MaskItem[]>(getBaseMasks());
   const maskVal = useRef<MaskItem[]>(masks);
   const [maskInfo, setMaskInfo] = useState<ModelInfo>({
     source: '/models/rhea_mask.fbx',
@@ -94,22 +99,38 @@ export default function FogScreen() {
   const [isStarting, setIsStarting] = useState(false);
   const isRunning = useRef(false);
   const [finished, setFinished] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const x = useRef(0);
   const y = useRef(0);
 
   const RADIUS_MIN = 20;
   const RADIUS_MAX = 100;
-  const DENSITY = 0.1;
   const MAX_ERASE_TIMES = 20;
   const MAX_ERASE_FPS = 10;
 
+  // 初始化计算面具坐标
+  function initMasks() {
+    const { innerWidth: w, innerHeight: h } = window;
+    const ratio = Math.min(w / 1920, h / 1080);
+
+    const newMasks = getBaseMasks();
+    newMasks.forEach((m) => {
+      m.x = w / 2 - (1920 / 2 - m.x) * ratio;
+      m.y = h / 2 - (1080 / 2 - m.y) * ratio;
+    });
+    setMasks((maskVal.current = newMasks));
+  }
+
   function init() {
+    setIsResizing(true);
     const { innerWidth, innerHeight } = window;
     setWidth(innerWidth);
     setHeight(innerHeight);
 
+    initMasks();
+
     setTimeout(() => {
-      initCanvas();
+      initCanvas(innerWidth, innerHeight);
     }, 100);
 
     window.addEventListener('resize', init);
@@ -168,21 +189,23 @@ export default function FogScreen() {
     }, 500);
   }
 
-  function initCanvas(w = width, h = height) {
+  const initCanvas = debounce(function (w = width, h = height) {
     if (!canvasRef.current || !fogImgRef.current) return;
 
     const context = canvasRef.current.getContext('2d')!;
     ctx.current = context;
 
     const { width: fogWidth, height: fogHeight } = fogImgRef.current;
-    context.drawImage(fogImgRef.current, 0, 0, fogWidth, fogHeight, 0, 0, width, height);
+    context.drawImage(fogImgRef.current, 0, 0, fogWidth, fogHeight);
 
     setTimeout(() => {
       context.globalCompositeOperation = 'destination-out';
     }, 100);
 
     window.addEventListener('mousemove', onFogMousemove);
-  }
+
+    setIsResizing(false);
+  }, 300);
 
   function onViewMask(item: MaskItem) {
     if (!item.visible) return;
@@ -224,7 +247,7 @@ export default function FogScreen() {
     <div className="w-screen h-screen relative select-none overflow-hidden flex justify-center items-center">
       <Image ref={fogImgRef} className="invisible" src={fogImg} alt="" fill />
 
-      <Image className="object-contain" src={sceneImg} alt="" />
+      <Image className={cn(['w-full h-full object-contain', isResizing && 'invisible'])} src={sceneImg} alt="" />
 
       <canvas
         ref={canvasRef}
@@ -240,8 +263,11 @@ export default function FogScreen() {
       {masks.map((mask, index) => (
         <div
           key={index}
-          className={cn(['flex flex-col items-center absolute z-20', mask.visible || 'hidden'])}
-          style={{ left: `${((mask.x / 1920) * width) / 16}rem`, top: `${((mask.y / 1080) * height) / 16}rem` }}
+          className={cn([
+            'flex flex-col items-center absolute z-20 -translate-x-1/2 -translate-y-1/2',
+            mask.visible || 'hidden',
+          ])}
+          style={{ left: `${mask.x}px`, top: `${mask.y}px` }}
         >
           <Image className="w-[3.75rem] h-[3.75rem] animate-bounce" src={hintImg} alt="" />
           <div
@@ -269,7 +295,7 @@ export default function FogScreen() {
         classNames={{
           base: 'bg-black max-w-[43.75rem] w-[43.75rem] h-[43.75rem] border-3 border-[#4051F4] rounded-[0.625rem] shadow-[0_0_24px_2px_#4051F4]',
           footer: 'justify-center',
-          closeButton: 'text-[#4051F4] text-[1.75rem]'
+          closeButton: 'text-[#4051F4] text-[1.75rem]',
         }}
         onClose={() => (isViewing.current = false)}
       >
