@@ -1,48 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import bgImg from 'img/loyalty/earn/bg_rank.jpg';
 import Image from 'next/image';
 import leftDecoImg from 'img/loyalty/earn/leaderbord_deco_left.png';
 import rightDecoImg from 'img/loyalty/earn/leaderbord_deco_right.png';
-import avatarImg1 from 'img/loyalty/earn/avatar_1.png';
-import avatarImg2 from 'img/loyalty/earn/avatar_2.png';
-import avatarImg3 from 'img/loyalty/earn/avatar_3.png';
 import { cn } from '@nextui-org/react';
 import MyRanking from '@/pages/components/common/MyRanking';
+import { LeaderBoardItem, leaderBoardRankAPI } from '@/http/services/task';
 
 export default function Rank() {
-  const [topRanks, setTopRanks] = useState([
-    {
-      nickname: 'mason',
-      points: 4665779,
-      rankBg: '/img/loyalty/earn/bg_rank_champion.png',
-    },
-    {
-      nickname: 'mj',
-      points: 4665778,
-      rankBg: '/img/loyalty/earn/bg_rank_not_champion.png',
-    },
-    {
-      nickname: 'jw',
-      points: 4665777,
-      rankBg: '/img/loyalty/earn/bg_rank_not_champion.png',
-    },
-  ]);
+  const [topRanks, setTopRanks] = useState<LeaderBoardItem[]>([]);
+  const [myRankInfo, setMyRankInfo] = useState<LeaderBoardItem | null>();
+  const [rankList, setRankList] = useState<LeaderBoardItem[]>([]);
 
-  const [myRankInfo, setMyRankInfo] = useState({ rank: 68, points: 2546 });
-  // const [myRankInfo, setMyRankInfo] = useState(null);
+  async function queryRank() {
+    const res = await leaderBoardRankAPI();
+    const { leaderboard, me } = res;
+    setRankList(leaderboard);
+    setMyRankInfo(me);
+    setTopRanks(leaderboard.slice(0, 3));
+  }
 
-  const [rankList, setRankList] = useState(
-    Array(20)
-      .fill(null)
-      .map((_, index) => {
-        return {
-          rank: index + 4,
-          avatar: [avatarImg1, avatarImg2, avatarImg3][index % 3],
-          nickname: ['Tiger', 'puff', '0xe7d560a9a8aa4b633f99'][index % 3],
-          points: 4665779,
-        };
-      }),
-  );
+  useEffect(() => {
+    queryRank();
+  }, []);
 
   return (
     <div className="w-[28.125rem] h-[37.5rem] overflow-hidden rounded-[0.625rem] relative flex flex-col items-center pt-[1.9375rem]">
@@ -69,13 +49,7 @@ export default function Rank() {
               ])}
             >
               <div className="relative">
-                <Image
-                  className="w-[3.75rem] h-[3.75rem]"
-                  src={`/img/loyalty/earn/avatar_${rank.nickname}.png`}
-                  alt=""
-                  width={60}
-                  height={60}
-                />
+                <Image className="w-[3.75rem] h-[3.75rem]" src={rank.avatar_url} alt="" width={60} height={60} />
 
                 <Image
                   className="w-7 h-[1.6875rem] absolute -top-[0.8125rem] -left-[0.8125rem]"
@@ -85,8 +59,8 @@ export default function Rank() {
                   height={29}
                 />
               </div>
-              <div className="font-poppins-medium text-base">{rank.nickname}</div>
-              <div className="font-semakin text-base text-basic-yellow">{rank.points}</div>
+              <div className="font-poppins-medium text-base">{rank.username}</div>
+              <div className="font-semakin text-base text-basic-yellow">{rank.moon_beam}</div>
               <div
                 className={cn([
                   'rank relative font-semakin text-basic-yellow text-center',
@@ -125,13 +99,13 @@ export default function Rank() {
                 >
                   <span className="w-[2.625rem]">{rank.rank}</span>
 
-                  <Image className="border-1 border-basic-yellow rounded-full" src={rank.avatar} alt="" />
+                  <Image className="border-1 border-basic-yellow rounded-full" src={rank.avatar_url} alt="" />
 
                   <span className="flex-1 ml-[0.875rem] text-ellipsis overflow-hidden whitespace-nowrap">
-                    {rank.nickname}
+                    {rank.username}
                   </span>
 
-                  <span className="ml-[1.5rem]">{rank.points}</span>
+                  <span className="ml-[1.5rem]">{rank.moon_beam}</span>
                 </div>
               );
             })}

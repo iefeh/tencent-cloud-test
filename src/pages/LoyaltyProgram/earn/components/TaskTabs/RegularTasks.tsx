@@ -25,6 +25,11 @@ import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import loadingImg from 'img/loyalty/earn/loading.png';
 import { MobxContext } from '@/pages/_app';
 import { BrowserProvider } from 'ethers';
+import { delay } from 'lodash';
+import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
+import { observer } from 'mobx-react-lite';
+import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
+import dayjs from 'dayjs';
 
 interface TaskItem extends TaskListItem {
   connectTexts?: VerifyTexts;
@@ -35,7 +40,7 @@ interface TaskItem extends TaskListItem {
   onVerifyClick?: (item: TaskItem) => undefined;
 }
 
-export default function RegularTasks() {
+function RegularTasks() {
   const store = useContext(MobxContext);
   const { toggleLoginModal } = store;
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -151,7 +156,13 @@ export default function RegularTasks() {
       dialogWindowRef.current = dialog;
       dialog?.addEventListener('close', () => {
         dialogWindowRef.current = null;
+        queryTasks();
       });
+    }
+
+    function handleConnected() {
+      setConnected(true);
+      setVerifiable(true);
     }
 
     async function onBaseConnectClick() {
@@ -185,11 +196,21 @@ export default function RegularTasks() {
 
       try {
         await connectWalletAPI(data);
-        setConnected(true);
-        setVerifiable(true);
+        handleConnected();
       } catch (error) {
         console.log(error);
       }
+    }
+
+    async function onConnectURL() {
+      if (!task.properties?.url) return;
+
+      setConnectLoading(true);
+      window.open(task.properties.url, '_blank');
+      delay(() => {
+        handleConnected();
+        setConnectLoading(false);
+      }, 500);
     }
 
     function onConnect() {
@@ -205,10 +226,10 @@ export default function RegularTasks() {
           onBaseConnectClick();
           break;
         case QuestType.RetweetTweet:
+        case QuestType.FollowOnTwitter:
+          onConnectURL();
           break;
         case QuestType.JOIN_DISCORD_SERVER:
-          break;
-        case QuestType.FollowOnTwitter:
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
           break;
@@ -227,10 +248,13 @@ export default function RegularTasks() {
 
       try {
         setVerifiable(false);
-        const res = await verifyTaskAPI({ quest_id: task.type });
+        const res = await verifyTaskAPI({ quest_id: task.id });
         setVerified(!!res.verified);
 
         if (!res.verified) {
+          if (res.tip) {
+            toast.error(res.tip);
+          }
           setTimeout(() => {
             setVerifiable(true);
           }, 10000);
@@ -258,13 +282,21 @@ export default function RegularTasks() {
 
         <LGButton
           className="ml-2"
-          label={getButtonLabel(
-            verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
-            verifyLoading,
-            verified,
-          )}
+          label={
+            task.type === QuestType.ConnectWallet && verified
+              ? 'Reverify'
+              : getButtonLabel(
+                  verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
+                  verifyLoading,
+                  verified,
+                )
+          }
           loading={verifyLoading}
-          disabled={!connected || verified || !verifiable}
+          disabled={
+            !connected ||
+            (verified && task.type !== QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) > 0) ||
+            !verifiable
+          }
           onClick={onVerify}
         />
 
@@ -299,6 +331,33 @@ export default function RegularTasks() {
             )}
           </ModalContent>
         </Modal>
+      </div>
+    );
+  };
+
+  const ReverifyCountdown = (props: { task: TaskItem }) => {
+    const {
+      task: { properties },
+    } = props;
+    const { can_reverify_after } = properties || {};
+    const [cdText, setCdText] = useState('');
+
+    useCountdown(can_reverify_after || 0, 0, (leftTime) => {
+      const du = dayjs.duration(leftTime);
+      setCdText(du.format('HH:mm:ss'));
+
+      if (leftTime <= 0) {
+        queryTasks();
+      }
+    });
+
+    return (
+      <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[25.75rem] h-[5.625rem] border-2 border-[#DAAC74] rounded-[0.625rem] bg-[#070707] flex justify-between pt-[1.375rem] pl-[1.0625rem]">
+        <Image className="w-[1.125rem] h-[1.125rem]" src={reverifyTipImg} alt="" />
+        <div className="font-poppins text-sm text-[#999] ml-[0.8125rem]">
+          If your wallet assets have increased, you can reverify your assets in{' '}
+          <span className="text-[#DAAC74]">{cdText}</span> to earn more MBs.
+        </div>
       </div>
     );
   };
@@ -351,7 +410,7 @@ export default function RegularTasks() {
             )}
           </div>
 
-          <div className="footer">
+          <div className="footer relative">
             <div className="flex items-center">
               <Image className="w-8 h-8" src={mbImg} alt="" />
 
@@ -361,11 +420,15 @@ export default function RegularTasks() {
             </div>
 
             <TaskButtons task={task} />
+
+            {task.type === QuestType.ConnectWallet &&
+              !task.verified &&
+              (task.properties?.can_reverify_after || 0) > 0 && <ReverifyCountdown task={task} />}
           </div>
 
           <div
             className={cn([
-              'absolute z-0 w-full h-full left-0 top-0 overflow-hidden bg-black transition-[max-height] ease-in-out !duration-500',
+              'absolute z-0 h-full top-0 left-1/2 -translate-x-1/2 w-[25.875rem] overflow-hidden bg-black transition-[max-height] ease-in-out !duration-500',
               isContentVisible ? 'max-h-full' : 'max-h-0 pointer-events-none',
             ])}
           >
@@ -436,3 +499,5 @@ export default function RegularTasks() {
     </div>
   );
 }
+
+export default observer(RegularTasks);

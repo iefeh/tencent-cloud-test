@@ -28,8 +28,9 @@ router.post(async (req, res) => {
     }
     // 执行用户登录
     await getMongoConnection();
-    let user = await User.findOne({'email': email})
-    if (!user) {
+    let user = await User.findOne({'email': email});
+    const isNewUser = !user;
+    if (isNewUser) {
         user = new User({
             user_id: uuidv4(),
             email: email,
@@ -46,6 +47,7 @@ router.post(async (req, res) => {
     res.json(response.success({
         token: token,
         particle_jwt: genLoginJWT(user.user_id),
+        is_new_user: isNewUser,
     }));
 });
 

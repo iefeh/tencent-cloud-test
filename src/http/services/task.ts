@@ -2,9 +2,9 @@ import { QuestType } from '@/constant/task';
 import http from '../index';
 
 export interface TaskProperties {
-  guild_id: string;
-  role_ids: string[];
-  guild_url: string;
+  url?: string;
+  last_verified_time?: number;
+  can_reverify_after?: number;
 }
 
 export interface TaskReward {
@@ -48,4 +48,21 @@ interface VerifyTaskResDTO {
 
 export function verifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskResDTO> {
   return http.post('/api/quests/verify', JSON.stringify(data));
+}
+
+export interface LeaderBoardItem {
+  user_id: string;
+  username: string;
+  avatar_url: string;
+  rank: number;
+  moon_beam: number;
+}
+
+interface LeaderBoardRank {
+  leaderboard: LeaderBoardItem[];
+  me: LeaderBoardItem;
+}
+
+export function leaderBoardRankAPI(): Promise<LeaderBoardRank> {
+  return http.get('/api/quests/leaderboard');
 }
