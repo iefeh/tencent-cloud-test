@@ -172,20 +172,21 @@ export default function RegularTasks() {
     }
 
     async function onConnectWallet() {
+      const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
       const provider = new BrowserProvider(walletProvider!);
       const signer = await provider.getSigner();
-      const signature = await signer?.signMessage('Hello Web3Modal Ethers');
+      const signature = await signer?.signMessage(message);
 
       const data = {
         address: address as `0x${string}`,
-        message:
-          'Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: 1703126275000',
+        message,
         signature,
       };
 
       try {
         await connectWalletAPI(data);
         setConnected(true);
+        setVerifiable(true);
       } catch (error) {
         console.log(error);
       }
