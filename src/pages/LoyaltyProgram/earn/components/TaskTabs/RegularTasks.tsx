@@ -1,6 +1,15 @@
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
-import { Pagination, cn } from '@nextui-org/react';
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Pagination,
+  cn,
+  useDisclosure,
+} from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import type { VerifyTexts } from '@/pages/components/common/buttons/ConnectAndVerify';
 import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
@@ -114,6 +123,7 @@ export default function RegularTasks() {
     const [verifyLoading, setVerifyLoading] = useState(false);
     const [verifiable, setVerifiable] = useState(connected && !verified);
     const dialogWindowRef = useRef<Window | null>(null);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     useConnectDialog(dialogWindowRef, () => {
       const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
@@ -183,7 +193,7 @@ export default function RegularTasks() {
 
     function onConnect() {
       if (!store.userInfo) {
-        toggleLoginModal();
+        onOpen();
         return;
       }
 
@@ -256,6 +266,38 @@ export default function RegularTasks() {
           disabled={!connected || verified || !verifiable}
           onClick={onVerify}
         />
+
+        <Modal
+          backdrop="blur"
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          classNames={{ base: 'bg-[#070707] border-1 border-[#1D1D1D] rounded-[0.625rem]' }}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader className="font-poppins text-3xl">Welcome to Moonveil</ModalHeader>
+                <ModalBody>
+                  <p className="font-poppins-medium text-base">
+                    It seems you haven&apos;t logged in to the website. Please log in first to access the content.
+                  </p>
+                </ModalBody>
+                <ModalFooter>
+                  <LGButton squared label="Close" onClick={onClose} />
+                  <LGButton
+                    actived
+                    squared
+                    label="Login"
+                    onClick={() => {
+                      onClose();
+                      toggleLoginModal();
+                    }}
+                  />
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
       </div>
     );
   };
