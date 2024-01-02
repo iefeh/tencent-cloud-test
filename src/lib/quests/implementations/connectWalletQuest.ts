@@ -50,6 +50,10 @@ export class ConnectWalletQuest extends QuestBase {
                 };
             }
         }
+        if (!metrics.wallet_asset_usd_value) {
+            // 如果db中没有值，则设置为-1，以确保refreshUserWalletMetric时保存用户的指标值
+            metrics.wallet_asset_usd_value = -1
+        }
         // 检查是否可以领取奖励
         const claimableResult = await this.checkClaimable(userId);
         if (!claimableResult.claimable) {
@@ -83,7 +87,7 @@ export class ConnectWalletQuest extends QuestBase {
         }
 
         // 刷新钱包资产
-        const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr);
+        const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr, metrics.wallet_asset_usd_value);
         if (refreshResult) {
             return refreshResult;
         }
@@ -171,7 +175,7 @@ export class ConnectWalletQuest extends QuestBase {
     }
 
     // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功
-    async refreshUserWalletMetric(userId: string, wallet: string): Promise<claimRewardResult | null> {
+    async refreshUserWalletMetric(userId: string, wallet: string, historyTotalValue: number = -1): Promise<claimRewardResult | null> {
         // 检查用户资产的token价值
         let allowed = await retryAllowToSendRequest2Debank(3);
         if (!allowed) {
@@ -201,6 +205,7 @@ export class ConnectWalletQuest extends QuestBase {
         }, 0);
         totalNFTValue = Number(totalNFTValue.toFixed(2));
         const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));
+        // 填充需要保存的对象
         const now = Date.now();
         const walletAsset = new WalletAsset({
             "wallet_addr": wallet,
@@ -211,6 +216,17 @@ export class ConnectWalletQuest extends QuestBase {
             "nfts": nfts,
             "created_time": now,
         });
+        const userMetric = {
+            [Metric.WalletAssetValueLastRefreshTime]: now
+        }
+        if (totalValue > historyTotalValue) {
+            logger.warn(`user ${userId} wallet ${wallet} asset ${totalValue} gt history ${historyTotalValue}`)
+            userMetric[Metric.WalletTokenUsdValue] = totalTokenValue
+            userMetric[Metric.WalletNftUsdValue] = totalNFTValue
+            userMetric[Metric.WalletAssetUsdValue] = totalValue
+        } else {
+            logger.warn(`user ${userId} wallet ${wallet} asset ${totalValue} lt history ${historyTotalValue}`)
+        }
         // 执行数据入库
         await doTransaction(async (session) => {
             // 保存用户的资产凭证
@@ -219,12 +235,7 @@ export class ConnectWalletQuest extends QuestBase {
             await UserMetrics.updateOne(
                 {user_id: userId},
                 {
-                    $set: {
-                        [Metric.WalletTokenUsdValue]: totalTokenValue,
-                        [Metric.WalletNftUsdValue]: totalNFTValue,
-                        [Metric.WalletAssetUsdValue]: totalValue,
-                        [Metric.WalletAssetValueLastRefreshTime]: now,
-                    },
+                    $set: userMetric,
                     $setOnInsert: {
                         "created_time": now,
                     }

@@ -51,6 +51,7 @@ async function reverifyConnectWallet(quest: any, req: any, res: any) {
         // 每隔10秒允许校验一次相同任务
         const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
         if (!locked) {
+            logger.warn(`user ${userId} reverifying quest ${quest.id} when cooling down.`);
             res.json(response.success({
                 verified: false,
                 tip: "Verify cooling down, please try again later.",
