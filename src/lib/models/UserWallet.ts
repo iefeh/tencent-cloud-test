@@ -1,5 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 
+// TODO：用户钱包需要添加资产同步标识？后台根据标识同步用户的资产，下发徽章？
 export interface IUserWallet extends Document {
     // 用户id
     user_id: string,
