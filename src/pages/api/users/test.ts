@@ -30,8 +30,7 @@ router.get(async (req, res) => {
         await try2AddUser2MBLeaderboard("78c3003c-d2a7-40aa-89dc-2839a9a6cf52");
         await try2AddUser2MBLeaderboard("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5");
 
-        const leaderboard = await getMBLeaderboardTopUsers("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5");
-        console.log(leaderboard);
+        const leaderboard = await getMBLeaderboardTopUsers("");
         res.json(response.success(leaderboard));
         return;
     } catch (error) {

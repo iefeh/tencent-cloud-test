@@ -27,10 +27,11 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
             me: null,
         };
     }
-    // 查询用户排名
-    let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
     // 查询所有用户信息
-    const userIds = [userId];
+    const userIds = [];
+    if (userId) {
+        userIds.push(userId);
+    }
     for (let i = 0; i < topUsers.length; i += 2) {
         userIds.push(topUsers[i]);
     }
@@ -39,7 +40,7 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         user_id: 1,
         username: 1,
         avatar_url: 1
-    });
+    }).lean();
     const userMap = new Map<String, mbLeaderboardUser>(users.map(user => [user.user_id, user]));
 
     // 构建排行榜
@@ -47,13 +48,17 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         leaderboard: [],
         me: null,
     }
-    if (userRank != null) {
-        // 用户存在排名时，设置用户的排名信息
-        userRank = Number(userRank) + 1;
-        const me = userMap.get(userId);
-        if (me) {
-            me.rank = userRank;
-            lb.me = me;
+    if (userId) {
+        // 查询用户排名
+        let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
+        if (userRank != null) {
+            // 用户存在排名时，设置用户的排名信息
+            userRank = Number(userRank) + 1;
+            const me = userMap.get(userId);
+            if (me) {
+                me.rank = userRank;
+                lb.me = me;
+            }
         }
     }
     // 设置排行榜信息
