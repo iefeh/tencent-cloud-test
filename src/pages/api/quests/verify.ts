@@ -8,6 +8,7 @@ import logger from "@/lib/logger/winstonLogger";
 import {claimQuestReward} from "@/lib/quests/claim";
 import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
 import {redis} from "@/lib/redis/client";
+import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -46,6 +47,9 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         }
         // 申领任务奖励
         const result = await claimQuestReward(userId, quest);
+        if (result.claimed_amount > 0) {
+            await try2AddUser2MBLeaderboard(userId);
+        }
         res.json(response.success(result));
     } catch (error) {
         console.error(error);
