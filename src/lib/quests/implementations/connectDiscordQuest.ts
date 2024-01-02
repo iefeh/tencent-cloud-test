@@ -42,7 +42,7 @@ export class ConnectDiscordQuest extends QuestBase {
                 tip: "The Discord Account has already claimed reward.",
             }
         }
-        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined}
+        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined, tip: ``}
     }
 }
 
