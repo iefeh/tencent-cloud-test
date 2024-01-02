@@ -120,7 +120,7 @@ export class ModelViewer {
   }
 
   initControls() {
-    let controls;
+    let controls: TrackballControls | OrbitControls;
     const { isTrackballControlls } = this.modelInfo;
     if (isTrackballControlls) {
       controls = new TrackballControls(this.camera, this.renderer.domElement);
@@ -129,12 +129,13 @@ export class ModelViewer {
     } else {
       controls = new OrbitControls(this.camera, this.renderer.domElement);
       controls.enableZoom = false;
-      controls.maxPolarAngle = Math.PI / 2;
-      controls.minAzimuthAngle = -Math.PI * 0.375;
-      controls.maxAzimuthAngle = Math.PI * 0.375;
+      controls.minPolarAngle = Math.PI / 2;
+      controls.maxPolarAngle = 0;
+      controls.minAzimuthAngle = -Math.PI / 4;
+      controls.maxAzimuthAngle = Math.PI / 4;
     }
 
-    controls.rotateSpeed = 16;
+    controls.rotateSpeed = 0.5;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 1;
 

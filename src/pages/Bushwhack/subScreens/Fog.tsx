@@ -22,7 +22,7 @@ function getBaseMasks(): MaskItem[] {
   return [
     // thief
     {
-      name: 'Thief',
+      name: 'Loki',
       x: 373,
       y: 507,
       w: 70,
