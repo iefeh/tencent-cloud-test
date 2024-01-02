@@ -1,4 +1,3 @@
-import { Swiper } from 'swiper/react';
 import HotBanner from './HotBanner';
 import Rank from './Rank';
 
