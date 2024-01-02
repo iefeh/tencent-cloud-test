@@ -129,6 +129,9 @@ export class ModelViewer {
     } else {
       controls = new OrbitControls(this.camera, this.renderer.domElement);
       controls.enableZoom = false;
+      controls.maxPolarAngle = Math.PI / 2;
+      controls.minAzimuthAngle = -Math.PI * 0.375;
+      controls.maxAzimuthAngle = Math.PI * 0.375;
     }
 
     controls.rotateSpeed = 16;

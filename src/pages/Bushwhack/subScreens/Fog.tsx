@@ -9,6 +9,7 @@ import BasicButton from '@/pages/components/common/BasicButton';
 import { debounce } from 'lodash';
 
 interface MaskItem {
+  name: string;
   x: number;
   y: number;
   w: number;
@@ -21,6 +22,7 @@ function getBaseMasks(): MaskItem[] {
   return [
     // thief
     {
+      name: 'Thief',
       x: 373,
       y: 507,
       w: 70,
@@ -29,6 +31,7 @@ function getBaseMasks(): MaskItem[] {
       mask: {
         source: '/models/chaowan_mianju.fbx',
         texture: '/models/textures/chaowan.tga',
+        isTrackballControlls: false,
         offsetPower: {
           x: -0.5,
           y: -5,
@@ -39,6 +42,7 @@ function getBaseMasks(): MaskItem[] {
     },
     // doctor
     {
+      name: 'Lewis',
       x: 778,
       y: 823,
       w: 88,
@@ -47,6 +51,7 @@ function getBaseMasks(): MaskItem[] {
       mask: {
         source: '/models/lewis_mask.fbx',
         texture: '/models/textures/Lewis.tga',
+        isTrackballControlls: false,
         rotate: {
           x: Math.PI / 4,
           y: -Math.PI / 6,
@@ -60,6 +65,7 @@ function getBaseMasks(): MaskItem[] {
     },
     // rhea
     {
+      name: 'Rhea',
       x: 1362,
       y: 628,
       w: 81,
@@ -68,6 +74,7 @@ function getBaseMasks(): MaskItem[] {
       mask: {
         source: '/models/rhea_mask.fbx',
         texture: '/models/textures/T_Rhea.tga',
+        isTrackballControlls: false,
         rotate: {
           x: Math.PI / 4,
           y: -Math.PI / 6,
@@ -90,10 +97,7 @@ export default function FogScreen() {
   const [height, setHeight] = useState(1080);
   const [masks, setMasks] = useState<MaskItem[]>(getBaseMasks());
   const maskVal = useRef<MaskItem[]>(masks);
-  const [maskInfo, setMaskInfo] = useState<ModelInfo>({
-    source: '/models/rhea_mask.fbx',
-    texture: '/models/textures/T_Rhea.tga',
-  });
+  const [maskInfo, setMaskInfo] = useState<MaskItem | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const isViewing = useRef(false);
   const [isStarting, setIsStarting] = useState(false);
@@ -210,7 +214,7 @@ export default function FogScreen() {
   function onViewMask(item: MaskItem) {
     if (!item.visible) return;
 
-    setMaskInfo(item.mask);
+    setMaskInfo(item);
     onOpen();
     isViewing.current = true;
   }
@@ -303,10 +307,10 @@ export default function FogScreen() {
           {(onClose) => (
             <>
               <ModalBody>
-                <ModelView3D info={maskInfo} />
+                {maskInfo && <ModelView3D info={maskInfo.mask} />}
               </ModalBody>
               <ModalFooter>
-                <span className="text-2xl font-poppins">Mask Name</span>
+                <span className="text-2xl font-poppins">{maskInfo?.name}</span>
                 {/* <BasicButton label='Reset' onClick={onReset} /> */}
               </ModalFooter>
             </>
