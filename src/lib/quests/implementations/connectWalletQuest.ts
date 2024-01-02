@@ -41,8 +41,8 @@ export class ConnectWalletQuest extends QuestBase {
         });
         if (metrics.wallet_asset_value_last_refresh_time) {
             // 计算是否满足重新校验的间隔，必须间隔12小时
-            const reverifyAfter = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
-            if (Date.now() < reverifyAfter) {
+            const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
+            if (Date.now() < reverifyAt) {
                 logger.warn(`user ${userId} reclaim quest ${this.quest.id} but cooling down.`);
                 return {
                     verified: false,
