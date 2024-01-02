@@ -21,20 +21,20 @@ export default function CountdownScreen() {
     window.addEventListener('scroll', onScroll);
 
     return () => window.removeEventListener('scroll', onScroll);
-  }, [])
+  }, []);
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center relative">
       <Image className="object-cover z-[-1] opacity-25" src={fogImg} alt="" fill />
 
-      <Image className="w-auto h-[15.375rem] -mt-7" src={logoImg} alt="" />
+      <Image className="w-[20.875rem] h-[12.625rem] -mt-7" src={logoImg} alt="" />
 
       <PageDesc
         needAni
         baseAniTY
         title={
           <div className="mt-2 font-semakin text-[5.625rem] text-transparent bg-clip-text bg-gradient-to-b from-[#3C6EFF] via-[#B6DCFF] via-[49.7314453125%] to-[#3E70FF]">
-            in 9 days…
+            in 14 days…
           </div>
         }
         subtitle={
@@ -45,7 +45,8 @@ export default function CountdownScreen() {
         }
       />
 
-      {isTouchBottom || createPortal(<ScrollDownArrow icon={arrowImg} className="!fixed !text-[#CFD9FF]" />, document.body)}
+      {isTouchBottom ||
+        createPortal(<ScrollDownArrow icon={arrowImg} className="!fixed !text-[#CFD9FF]" />, document.body)}
     </div>
   );
 }

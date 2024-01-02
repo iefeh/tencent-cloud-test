@@ -261,7 +261,7 @@ export default function FogScreen() {
           'absolute w-full h-full left-0 top-0 z-10 transition-opacity !duration-[3000ms]',
           finished && 'opacity-0',
         ])}
-        onClick={onFogClick}
+        onTouchEnd={onFogClick}
       ></canvas>
 
       {masks.map((mask, index) => (
@@ -289,6 +289,7 @@ export default function FogScreen() {
         ])}
         onMouseEnter={onGameTitleMouseEnter}
         // onClick={onGameTitleMouseEnter}
+        onTouchEnd={onGameTitleMouseEnter}
       >
         Hunt in the Mist
       </div>
@@ -297,7 +298,8 @@ export default function FogScreen() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         classNames={{
-          base: 'bg-black max-w-[43.75rem] w-[43.75rem] h-[43.75rem] border-3 border-[#4051F4] rounded-[0.625rem] shadow-[0_0_24px_2px_#4051F4]',
+          wrapper: 'items-center',
+          base: 'bg-black max-w-[43.75rem] w-[43.75rem] h-[43.75rem] border-3 border-[#4051F4] rounded-[0.625rem] shadow-[0_0_24px_2px_#4051F4] max-[960px]:max-w-[20rem] max-[960px]:max-h-[20rem]',
           footer: 'justify-center',
           closeButton: 'text-[#4051F4] text-[1.75rem]',
         }}
