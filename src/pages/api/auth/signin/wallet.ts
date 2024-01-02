@@ -23,7 +23,8 @@ router.post(async (req, res) => {
     await getMongoConnection();
     // 检查用户是否历史用户
     let userWallet = await UserWallet.findOne({wallet_addr: address.toLowerCase(), deleted_time: null});
-    if (!userWallet) {
+    const isNewUser = !userWallet;
+    if (isNewUser) {
         // 用户不存在，需要创建新的用户与钱包绑定
         userWallet = await createUserAndWallet(address);
     }
@@ -31,6 +32,7 @@ router.post(async (req, res) => {
     res.json(response.success({
         token: token,
         particle_jwt: genLoginJWT(userWallet.user_id),
+        is_new_user: isNewUser,
     }));
 });
 

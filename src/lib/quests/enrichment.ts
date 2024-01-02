@@ -30,10 +30,18 @@ async function enrichQuestCustomProperty(userId: string, quests: any[]) {
         }
         // 用户已经完成钱包任务，获取钱包资产上次同步时间
         const metrics = await UserMetrics.findOne({user_id: userId}, {_id: 0, wallet_asset_value_last_refresh_time: 1});
+        // 用服务器时间进行校验行为矫正
+        const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
+        let reverifyAfter = reverifyAt - Date.now();
+        reverifyAfter = reverifyAfter > 0 ? reverifyAfter : 0;
         if (quest.properties) {
             quest.properties.last_verified_time = metrics.wallet_asset_value_last_refresh_time;
+            quest.properties.can_reverify_after = reverifyAfter;
         } else {
-            quest.properties = {last_verified_time: metrics.wallet_asset_value_last_refresh_time};
+            quest.properties = {
+                last_verified_time: metrics.wallet_asset_value_last_refresh_time,
+                can_reverify_after: reverifyAfter,
+            };
         }
     }
 }

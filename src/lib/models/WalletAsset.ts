@@ -76,8 +76,6 @@ export interface IWalletAsset extends Document {
     nfts: WalletNFT[],
     // 创建时间毫秒时间戳
     created_time: number,
-    // 更新时间毫秒时间戳
-    updated_time: number | null,
 }
 
 const WalletAssetSchema = new Schema<IWalletAsset>({
@@ -88,10 +86,9 @@ const WalletAssetSchema = new Schema<IWalletAsset>({
     tokens: Schema.Types.Mixed,
     nfts: Schema.Types.Mixed,
     created_time: {type: Number},
-    updated_time: {type: Number},
 });
 
-WalletAssetSchema.index({wallet_addr: 1}, {unique: true});
+WalletAssetSchema.index({wallet_addr: 1});
 
 // 使用既有模型或者新建模型
 const WalletAsset = models.WalletAsset || model<IWalletAsset>('WalletAsset', WalletAssetSchema, 'wallet_assets');

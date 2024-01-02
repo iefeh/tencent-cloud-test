@@ -97,7 +97,8 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
 async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any): Promise<void> {
     // 默认当前是登录流程，如果用户不存在，则需要创建新的用户与用户绑定
     let userConnection = await authFlow.queryUserConnectionFromParty(authParty);
-    if (!userConnection) {
+    const isNewUser = !userConnection;
+    if (isNewUser) {
         // 新创建用户与其社交绑定
         const newUser = authFlow.constructNewUser(authParty);
         userConnection = authFlow.constructUserConnection(newUser.user_id, authParty);
@@ -116,6 +117,7 @@ async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: Authoriz
         msg: loginSuccess.msg,
         token: token,
         particle_jwt: genLoginJWT(userId),
+        is_new_user: isNewUser,
     });
     res.redirect(landing_url);
 }
