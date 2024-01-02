@@ -28,7 +28,7 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         };
     }
     // 查询用户排名
-    let userRank: number = await redis.zrevrank("moon_beam_lb", userId);
+    let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
     // 查询所有用户信息
     const userIds = [userId];
     for (let i = 0; i < topUsers.length; i += 2) {
@@ -51,8 +51,10 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         // 用户存在排名时，设置用户的排名信息
         userRank = Number(userRank) + 1;
         const me = userMap.get(userId);
-        me.rank = userRank;
-        lb.me = me;
+        if (me) {
+            me.rank = userRank;
+            lb.me = me;
+        }
     }
     // 设置排行榜信息
     for (let i = 0; i < topUsers.length; i += 2) {

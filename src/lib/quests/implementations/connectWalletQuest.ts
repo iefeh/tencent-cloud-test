@@ -216,7 +216,7 @@ export class ConnectWalletQuest extends QuestBase {
             "nfts": nfts,
             "created_time": now,
         });
-        const userMetric = {
+        const userMetric: any = {
             [Metric.WalletAssetValueLastRefreshTime]: now
         }
         if (totalValue > historyTotalValue) {

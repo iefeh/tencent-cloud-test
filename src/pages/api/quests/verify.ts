@@ -47,7 +47,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         }
         // 申领任务奖励
         const result = await claimQuestReward(userId, quest);
-        if (result.claimed_amount > 0) {
+        if (result.claimed_amount && result.claimed_amount > 0) {
             await try2AddUser2MBLeaderboard(userId);
         }
         res.json(response.success(result));
