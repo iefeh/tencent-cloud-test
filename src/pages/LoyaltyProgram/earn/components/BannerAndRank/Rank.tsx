@@ -99,7 +99,7 @@ export default function Rank() {
                 >
                   <span className="w-[2.625rem]">{rank.rank}</span>
 
-                  <Image className="border-1 border-basic-yellow rounded-full" src={rank.avatar_url} alt="" />
+                  <Image className="border-1 border-basic-yellow rounded-full" src={rank.avatar_url} alt="" width={48} height={48} />
 
                   <span className="flex-1 ml-[0.875rem] text-ellipsis overflow-hidden whitespace-nowrap">
                     {rank.username}
