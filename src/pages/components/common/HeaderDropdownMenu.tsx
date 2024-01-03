@@ -1,5 +1,7 @@
+import { cn } from '@nextui-org/react';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { useRef } from 'react';
+import { toast } from 'react-toastify';
 
 interface Props {
   item: RouteMenu;
@@ -12,6 +14,12 @@ export default function HeaderDropdownMenu(props: Props) {
   const menuRef = useRef(null);
   const [menuState, toggle] = useMenuState({ transition: true });
   const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
+
+  function onTextClick(item: RouteMenu) {
+    if (!item.disabled) return;
+    toast.info('Coming Soon');
+    return;
+  }
 
   return (
     <>
@@ -33,8 +41,16 @@ export default function HeaderDropdownMenu(props: Props) {
         onClose={() => toggle(false)}
       >
         {item.children!.map((child, ci) => (
-          <MenuItem key={ci} onClick={() => onLinkClick?.(child.route)}>
-            <span className="font-semakin uppercase text-lg hover:text-basic-yellow">{child.name}</span>
+          <MenuItem key={ci} disabled={child.disabled} onClick={() => onLinkClick?.(child.route)}>
+            <span
+              className={cn([
+                'font-semakin uppercase text-lg',
+                child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
+              ])}
+              onClick={() => onTextClick(child)}
+            >
+              {child.name}
+            </span>
           </MenuItem>
         ))}
       </ControlledMenu>
