@@ -7,11 +7,12 @@ import { cn } from '@nextui-org/react';
 
 interface Props {
   className?: string;
+  rank?: number;
+  points?: number;
 }
 
 export default function MyRanking(props: Props) {
-  const { className } = props;
-  const [myRankInfo, setMyRankInfo] = useState({ rank: 68, points: 2546 });
+  const { className, rank, points } = props;
 
   return (
     <div className={cn(['w-full h-[4.53125rem] relative overflow-hidden', className])}>
@@ -22,7 +23,7 @@ export default function MyRanking(props: Props) {
           <Image className="w-[2.625rem] h-[2.625rem] overflow-hidden rounded-full" src={blackMBImg} alt="" />
 
           <div className="h-full flex flex-col justify-between ml-[0.625rem]">
-            <span className="text-2xl leading-none">{myRankInfo.points || '--'}</span>
+            <span className="text-2xl leading-none">{points || '--'}</span>
             <span className="leading-none">Moon Beams</span>
           </div>
         </div>
@@ -31,7 +32,7 @@ export default function MyRanking(props: Props) {
           <Image className="w-[2.625rem] h-[2.625rem] overflow-hidden rounded-full" src={blackRankImg} alt="" />
 
           <div className="h-full flex flex-col justify-between ml-[0.625rem]">
-            <span className="text-2xl leading-none">{myRankInfo.rank || '--'}</span>
+            <span className="text-2xl leading-none">{rank || '--'}</span>
             <span className="leading-none">Ranking</span>
           </div>
         </div>
