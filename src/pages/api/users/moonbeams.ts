@@ -2,14 +2,15 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import logger from "@/lib/logger/winstonLogger";
 import Quest from "@/lib/models/Quest";
-import {PipelineStage} from 'mongoose';
-import {enrichUserQuests} from "@/lib/quests/enrichment";
+import {PipelineStage} from "mongoose";
+import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(maybeAuthInterceptor).get(async (req, res) => {
+router.use(mustAuthInterceptor).get(async (req, res) => {
     const {page_num, page_size} = req.query;
     if (!page_num || !page_size) {
         res.json(response.invalidParams());
@@ -17,45 +18,55 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     }
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
-    const userId = req.userId;
+
+    const userId = req.userId!;
     await getMongoConnection();
-    const pagination = await paginationQuests(pageNum, pageSize);
+    const pagination = await paginationUserMoonbeams(userId, pageNum, pageSize);
     if (pagination.total == 0) {
         // 当前没有匹配的数据
         res.json(response.success({
             total: 0,
             page_num: pageNum,
             page_size: pageSize,
-            quests: pagination.quests,
+            quests: pagination.mbs,
         }));
         return;
     }
-    // 目前有足够的任务数，丰富响应的数据
-    const quests = pagination.quests;
-    await enrichUserQuests(userId!, quests);
+    // 查询奖励细节
+    const mbs = pagination.mbs;
+    const questIds = mbs.filter(mb => mb.type === UserMoonBeamAuditType.Quests).map(mb => mb.quest_id);
+    const quests = await Quest.find({id: {$in: questIds}}, {_id: 0, id: 1, name: 1});
+    const questNameMap = new Map<string, string>(quests.map(quest => [quest.id, quest.name]));
+    mbs.forEach(quest => {
+        if (quest.type !== UserMoonBeamAuditType.Quests) {
+            return;
+        }
+        quest.name = questNameMap.get(quest.quest_id) || '';
+    })
     res.json(response.success({
         total: pagination.total,
         page_num: pageNum,
         page_size: pageSize,
-        quests: quests,
+        quests: mbs,
     }));
 });
 
-async function paginationQuests(pageNum: number, pageSize: number): Promise<{ total: number, quests: any[] }> {
+async function paginationUserMoonbeams(userId: string, pageNum: number, pageSize: number): Promise<{ total: number, mbs: any[] }> {
     const skip = (pageNum - 1) * pageSize;
     const aggregateQuery: PipelineStage[] = [
         {
             $match: {
-                'deleted_time': null,
+                user_id: userId,
+                deleted_time: null,
             }
         },
         {
             $project: {
-                '_id': 0,
-                'deleted_time': 0,
-                'created_time': 0,
-                'updated_time': 0,
-                'reward.range_reward_ids': 0,
+                _id: 0,
+                type: 1,
+                moon_beam_delta: 1,
+                created_time: 1,
+                quest_id: "$corr_id",
             }
         },
         {
@@ -65,11 +76,11 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
             }
         }
     ];
-    const results = await Quest.aggregate(aggregateQuery);
+    const results = await UserMoonBeamAudit.aggregate(aggregateQuery);
     if (results[0].metadata.length == 0) {
-        return {total: 0, quests: []}
+        return {total: 0, mbs: []}
     }
-    return {total: results[0].metadata[0].total, quests: results[0].data}
+    return {total: results[0].metadata[0].total, mbs: results[0].data}
 }
 
 // this will run if none of the above matches
