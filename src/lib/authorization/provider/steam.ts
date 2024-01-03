@@ -125,8 +125,12 @@ export class SteamAuthFlow extends AuthFlowBase {
         return response.data.response.players[0];
     }
 
+    getReconnectCdKey(authParty: any): string {
+        return `reconnect_cd:${AuthorizationType.Steam}:${authParty.steamid}`;
+    }
+
     async queryUserConnectionFromParty(party: any): Promise<any> {
-        return await UserSteam.findOne({'steam_id': party.id, 'deleted_time': null})
+        return await UserSteam.findOne({'steam_id': party.steamid, 'deleted_time': null})
     }
 
     constructUserConnection(userId: string, authParty: any): any {

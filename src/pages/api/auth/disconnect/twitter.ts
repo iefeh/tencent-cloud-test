@@ -2,8 +2,8 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import UserWallet from "@/lib/models/UserWallet";
 import {redis} from "@/lib/redis/client";
+import UserTwitter from "@/lib/models/UserTwitter";
 import {AuthorizationType} from "@/lib/authorization/types";
 import getMongoConnection from "@/lib/mongodb/client";
 
@@ -12,14 +12,14 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(mustAuthInterceptor).post(async (req, res) => {
     await getMongoConnection();
     // 检查用户的绑定
-    const wallet = await UserWallet.findOne({user_id: req.userId!, deleted_time: null});
-    if (!wallet) {
+    const twitter = await UserTwitter.findOne({user_id: req.userId!, deleted_time: null});
+    if (!twitter) {
         res.json(response.success());
         return;
     }
-    await UserWallet.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()});
+    await UserTwitter.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()});
     // 添加cd
-    await redis.set(`reconnect_cd:${AuthorizationType.Wallet}:${wallet.wallet_addr}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
+    await redis.set(`reconnect_cd:${AuthorizationType.Twitter}:${twitter.twitter_id}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
     res.json(response.success());
 });
 

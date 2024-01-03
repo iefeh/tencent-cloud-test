@@ -2,7 +2,6 @@ import {
     AuthenticateParams,
     AuthorizationParams,
     OAuthOptions,
-    OAuthRefreshTokenPayload,
     AuthToken
 } from "@/lib/authorization/types";
 import axios, {AxiosError} from "axios";

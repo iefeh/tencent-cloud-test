@@ -5,6 +5,8 @@ import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {verifySignWallet} from "@/lib/web3/wallet";
 import UserWallet from "@/lib/models/UserWallet";
 import {genLoginJWT} from "@/lib/particle.network/auth";
+import {redis} from "@/lib/redis/client";
+import {AuthorizationType} from "@/lib/authorization/types";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -13,6 +15,13 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     if (!address) {
         return;
     }
+    // 检查目标钱包是否存在绑定cd
+    const canReconnectAt = await redis.get(`reconnect_cd:${AuthorizationType.Wallet}:${address}`);
+    if (canReconnectAt) {
+        res.json(response.connectionCoolingDown(Number(canReconnectAt)));
+        return;
+    }
+
     // 检查当前用户是否已经绑定了钱包
     let userWallet = await UserWallet.findOne({user_id: req.userId, deleted_time: null});
     if (userWallet) {
