@@ -37,7 +37,7 @@ export default function IndexScreen() {
       </div>
 
       <PageDesc
-        title="moonveil loyalty system"
+        title="moonveil loyalty program"
         hasBelt
         needAni
         baseAniTY
