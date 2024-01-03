@@ -32,43 +32,45 @@ export default function HotBanner() {
   }, []);
 
   return (
-    <Swiper
-      className="w-[57.8125rem] h-[37.5rem] overflow-hidden rounded-[0.625rem] relative"
-      modules={[Pagination, Autoplay]}
-      slidesPerView={1}
-      loop
-      autoplay={{ delay: 5000, disableOnInteraction: false }}
-      speed={2000}
-      pagination={{
-        el: '.basic-swiper-pagination',
-        bulletClass: 'pagi',
-        bulletActiveClass: 'pagi-active',
-        type: 'bullets',
-        clickable: true,
-        renderBullet(index, className) {
-          return `<span class="${className}">${(index + 1 + '').padStart(2, '0')}</span>`;
-        },
-      }}
-    >
-      {banners.map((item, index) => (
-        <SwiperSlide key={index} className="relative cursor-pointer" onClick={() => onSlideClick(item)}>
-          <Image src={item.image_url} alt="" fill />
+    <div className="relative w-[57.8125rem] h-[37.5rem]">
+      <Swiper
+        className="w-full h-full overflow-hidden rounded-[0.625rem] relative"
+        modules={[Pagination, Autoplay]}
+        slidesPerView={1}
+        loop
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        speed={2000}
+        pagination={{
+          el: '.basic-swiper-pagination',
+          bulletClass: 'pagi',
+          bulletActiveClass: 'pagi-active',
+          type: 'bullets',
+          clickable: true,
+          renderBullet(index, className) {
+            return `<span class="${className}">${(index + 1 + '').padStart(2, '0')}</span>`;
+          },
+        }}
+      >
+        {banners.map((item, index) => (
+          <SwiperSlide key={index} className="relative cursor-pointer" onClick={() => onSlideClick(item)}>
+            <Image src={item.image_url} alt="" fill />
 
-          {item.title && (
-            <div className="absolute top-[4.1875rem] left-[3.5625rem] border-l-4 border-basic-yellow z-10 bg-gradient-to-r from-[rgba(0,0,0,0.6)] to-transparent pt-[1.9375rem] pr-[0.875rem] pb-8 pl-[2.5625rem]">
-              <div className="font-semakin text-[2.5rem] leading-[3rem] w-[29.1875rem]">{item.title}</div>
-              <div className="font-poppins text-base mt-[1.25rem]">{item.description}</div>
-            </div>
-          )}
+            {item.title && (
+              <div className="absolute top-[4.1875rem] left-[3.5625rem] border-l-4 border-basic-yellow z-10 bg-gradient-to-r from-[rgba(0,0,0,0.6)] to-transparent pt-[1.9375rem] pr-[0.875rem] pb-8 pl-[2.5625rem]">
+                <div className="font-semakin text-[2.5rem] leading-[3rem] w-[29.1875rem]">{item.title}</div>
+                <div className="font-poppins text-base mt-[1.25rem]">{item.description}</div>
+              </div>
+            )}
+          </SwiperSlide>
+        ))}
 
-          {loading && <CircularLoading />}
-        </SwiperSlide>
-      ))}
+        <div
+          className="basic-swiper-pagination text-white z-10 font-decima flex"
+          style={{ left: '3.375rem', bottom: '2.1675rem' }}
+        ></div>
+      </Swiper>
 
-      <div
-        className="basic-swiper-pagination text-white z-10 font-decima flex"
-        style={{ left: '3.375rem', bottom: '2.1675rem' }}
-      ></div>
-    </Swiper>
+      {loading && <CircularLoading />}
+    </div>
   );
 }
