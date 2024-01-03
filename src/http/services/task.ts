@@ -50,6 +50,10 @@ export function verifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskRes
   return http.post('/api/quests/verify', JSON.stringify(data));
 }
 
+export function reverifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskResDTO> {
+  return http.post('/api/quests/reverify', JSON.stringify(data));
+}
+
 export interface LeaderBoardItem {
   user_id: string;
   username: string;
@@ -65,4 +69,15 @@ interface LeaderBoardRank {
 
 export function leaderBoardRankAPI(): Promise<LeaderBoardRank> {
   return http.get('/api/quests/leaderboard');
+}
+
+export interface TaskAdItem {
+  image_url: string;
+  link_url: string;
+  title: string;
+  description: string;
+}
+
+export function taskAdListAPI(): Promise<TaskAdItem[]> {
+  return http.get('/api/quests/advertisements');
 }
