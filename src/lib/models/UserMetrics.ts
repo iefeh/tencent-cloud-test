@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
 
 // TODO：添加新的metric，一定需要同时修改IUserMetrics与UserMetricsSchema
 export enum Metric {
@@ -25,7 +26,12 @@ export enum Metric {
     // Steam账户的美金价值，按照游戏的价格+当前用户拥有的游戏进行价值计算
     SteamAccountUSDValue = "steam_account_usd_value",
     // Steam账户评分
-    SteamAccountRating = "steam_account_rating"
+    SteamAccountRating = "steam_account_rating",
+
+    // 初出茅庐徽章，其他的加入社区/关注某人，按照完成任务算.
+
+    // 奔走相告徽章，完成转推次数
+    RetweetCount = "retweet_count",
 }
 
 // 用户内部指标，存放单独的集合
@@ -51,6 +57,10 @@ export interface IUserMetrics extends Document {
     steam_account_usd_value: number,
     // Steam账户评分
     steam_account_rating: number,
+
+    // 转推次数
+    retweet_count: number,
+
     // 创建时间毫秒时间戳
     created_time: number,
 }
@@ -68,6 +78,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
     steam_account_game_count: {Type: Number},
     steam_account_usd_value: {Type: Number},
     steam_account_rating: {Type: Number},
+    retweet_count: {Type: Number},
     created_time: {type: Number, required: true},
 });
 

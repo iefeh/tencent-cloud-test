@@ -72,8 +72,8 @@ export abstract class QuestBase {
         return !!achievement;
     }
 
-    // 保存用户的奖励
-    async saveUserReward(userId: string, taint: string, moonBeamDelta: number): Promise<{ done: boolean, duplicated: boolean }> {
+    // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
+    async saveUserReward<T>(userId: string, taint: string, moonBeamDelta: number, extraTxOps: (session: any) => Promise<T> = null): Promise<{ done: boolean, duplicated: boolean }> {
         const now = Date.now();
         const achievement = new QuestAchievement({
             quest_id: this.quest.id,
@@ -90,6 +90,9 @@ export abstract class QuestBase {
         });
         try {
             await doTransaction(async (session) => {
+                if (extraTxOps) {
+                    await extraTxOps(session);
+                }
                 const opts = {session};
                 await achievement.save(opts);
                 await audit.save(opts);

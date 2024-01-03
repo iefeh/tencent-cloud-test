@@ -1,6 +1,7 @@
 import {IQuest} from "@/lib/models/Quest";
 import {claimRewardResult} from "@/lib/quests/types";
 import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
+import {promiseSleep} from "@/lib/utils/sleep";
 
 
 export class FollowOnTwitterQuest extends ConnectTwitterQuest {
