@@ -14,6 +14,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(mustAuthInterceptor).post(async (req, res) => {
     try {
         await getMongoConnection();
+        
         const form = new formidable.IncomingForm();
         console.log("parsing request:");
         const [fields, files] = await form.parse(req);
