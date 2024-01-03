@@ -23,7 +23,7 @@ router.get(async (req, res) => {
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
 
-        const quest = await Quest.findOne({id: "8ef84fa5-6b5b-4340-a143-93e66abe80c2"});
+        const quest = await Quest.findOne({id: "9d407683-65c2-4cf0-98cc-cce765bbf107"});
         const questWrapper = new ConnectSteamQuest(quest);
         const result = await questWrapper.refreshUserSteamMetric("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5", new UserSteam({
             steam_id: "76561198157621569",

@@ -30,7 +30,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     if (verified) {
         logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
         res.json(response.success({
-            verified: true,
+            verified: false,
+            tip: "You have already claimed quest reward.",
         }));
         return;
     }
