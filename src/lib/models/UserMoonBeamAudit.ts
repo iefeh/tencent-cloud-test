@@ -14,8 +14,12 @@ export interface IUserMoonBeamAudit extends Document {
     moon_beam_delta: Number;
     // MB奖励的污点，确保对应类型的奖励不会重复生成，如邀请任务中对单个用户进行反复邀请
     reward_taint: String;
-    // 关联的记录id
+    // 关联的记录id，如type=quests时是任务id
     corr_id: String;
+    // 额外信息，
+    // 如 type=quests && quest_type=connect_wallet时，存放用户的钱包资产(WalletAsset)id
+    // 如 type=quests && quest_type=connect_steam时，存放用户的游戏资产(SteamUserGame)id
+    extra_info: string;
     // 审计时间
     created_time: Number;
     // 删除时间，比如重新验证钱包时，会把该用户之前领取的奖励删除

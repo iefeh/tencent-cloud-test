@@ -64,6 +64,10 @@ export class GoogleAuthFlow extends AuthFlowBase {
         return await googleOAuthProvider.createRequest(authToken).get('https://openidconnect.googleapis.com/v1/userinfo');
     }
 
+    getReconnectCdKey(authParty: any): string {
+        return `reconnect_cd:${AuthorizationType.Google}:${authParty.sub}`;
+    }
+
     async queryUserConnectionFromParty(party: any): Promise<any> {
         return await UserGoogle.findOne({'google_id': party.sub, 'deleted_time': null})
     }
