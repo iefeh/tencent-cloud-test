@@ -11,7 +11,7 @@ import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit, {IUserMoonBeamAudit, UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
 import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
-import * as response from "@/lib/response/response";
+import {v4 as uuidv4} from "uuid";
 
 const Debank = require('debank')
 
@@ -208,19 +208,22 @@ export class ConnectWalletQuest extends QuestBase {
         // 填充需要保存的对象
         const now = Date.now();
         const walletAsset = new WalletAsset({
-            "wallet_addr": wallet,
-            "total_usd_value": totalValue,
-            "token_usd_value": totalTokenValue,
-            "nft_usd_value": totalNFTValue,
-            "tokens": tokens,
-            "nfts": nfts,
-            "created_time": now,
+            id: uuidv4(),
+            user_id: userId,
+            wallet_addr: wallet,
+            total_usd_value: totalValue,
+            token_usd_value: totalTokenValue,
+            nft_usd_value: totalNFTValue,
+            tokens: tokens,
+            nfts: nfts,
+            created_time: now,
         });
         const userMetric: any = {
             [Metric.WalletAssetValueLastRefreshTime]: now
         }
         if (totalValue > historyTotalValue) {
             logger.warn(`user ${userId} wallet ${wallet} asset ${totalValue} gt history ${historyTotalValue}`)
+            userMetric[Metric.WalletAssetId] = walletAsset.id
             userMetric[Metric.WalletTokenUsdValue] = totalTokenValue
             userMetric[Metric.WalletNftUsdValue] = totalNFTValue
             userMetric[Metric.WalletAssetUsdValue] = totalValue

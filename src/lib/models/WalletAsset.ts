@@ -64,6 +64,10 @@ type PayToken = {
 
 
 export interface IWalletAsset extends Document {
+    // 资产id，每次资产校验都会生成一份id，集合唯一
+    id: string,
+    // 校验资产的用户
+    user_id: string,
     // 用户绑定的钱包地址
     wallet_addr: string,
     // 美金价值
@@ -79,6 +83,8 @@ export interface IWalletAsset extends Document {
 }
 
 const WalletAssetSchema = new Schema<IWalletAsset>({
+    id: {type: String, required: true},
+    user_id: {type: String, required: true},
     wallet_addr: {type: String, required: true},
     total_usd_value: {type: Number},
     token_usd_value: {type: Number},
@@ -88,7 +94,9 @@ const WalletAssetSchema = new Schema<IWalletAsset>({
     created_time: {type: Number},
 });
 
+WalletAssetSchema.index({id: 1}, {unique: true});
 WalletAssetSchema.index({wallet_addr: 1});
+WalletAssetSchema.index({user_id: 1});
 
 // 使用既有模型或者新建模型
 const WalletAsset = models.WalletAsset || model<IWalletAsset>('WalletAsset', WalletAssetSchema, 'wallet_assets');
