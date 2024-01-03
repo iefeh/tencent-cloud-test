@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import bgImg from 'img/loyalty/earn/bg_rank.jpg';
 import Image from 'next/image';
 import leftDecoImg from 'img/loyalty/earn/leaderbord_deco_left.png';
@@ -9,8 +9,11 @@ import { LeaderBoardItem, leaderBoardRankAPI } from '@/http/services/task';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
+import { observer } from 'mobx-react-lite';
+import { MobxContext } from '@/pages/_app';
 
-export default function Rank() {
+const Rank = function () {
+  const { userInfo } = useContext(MobxContext);
   const [topRanks, setTopRanks] = useState<LeaderBoardItem[]>([]);
   const [myRankInfo, setMyRankInfo] = useState<LeaderBoardItem | null>();
   const [rankList, setRankList] = useState<LeaderBoardItem[]>([]);
@@ -45,6 +48,10 @@ export default function Rank() {
   useEffect(() => {
     queryRank();
   }, []);
+
+  useEffect(() => {
+    queryRank();
+  }, [userInfo]);
 
   return (
     <div className="w-[28.125rem] h-[37.5rem] overflow-hidden rounded-[0.625rem] relative flex flex-col items-center pt-[1.9375rem]">
@@ -165,4 +172,6 @@ export default function Rank() {
       {loading && <CircularLoading />}
     </div>
   );
-}
+};
+
+export default observer(Rank);

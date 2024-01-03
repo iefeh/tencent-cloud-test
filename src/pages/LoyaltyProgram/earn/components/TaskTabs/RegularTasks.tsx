@@ -47,8 +47,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const store = useContext(MobxContext);
-  const { toggleLoginModal } = store;
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
@@ -124,6 +123,10 @@ function RegularTasks() {
   useEffect(() => {
     queryTasks();
   }, []);
+
+  useEffect(() => {
+    queryTasks();
+  }, [userInfo]);
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
@@ -220,7 +223,7 @@ function RegularTasks() {
     }
 
     function onConnect() {
-      if (!store.userInfo) {
+      if (!userInfo) {
         onOpen();
         return;
       }
