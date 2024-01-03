@@ -10,6 +10,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
+    console.log(process.env.MONGODB_URI!);
     await getMongoConnection();
     const aggregation = [
         {$match: {'user_id': userId, 'deleted_time': null}},
@@ -105,12 +106,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         user.twitter = user.twitter[0] || null;
         user.discord = user.discord[0] || null;
         user.steam = user.steam[0] || null;
-        res.json(response.success(user));
+        return res.json(response.success(user));
     } else {
         logger.error(`user ${userId} not found from db`);
-        res.json(response.success(null));
+        return res.json(response.success(null));
     }
-
 });
 
 // this will run if none of the above matches
