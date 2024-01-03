@@ -6,7 +6,7 @@ import IconLink from '@/pages/components/common/buttons/IconLink';
 export default function ProfileHeader() {
   return (
     <div className="w-full flex justify-between items-center">
-      <UserProfile />
+      <UserProfile avatarClassName="w-[6.875rem] h-[6.875rem]" walletClassName='mt-4' />
 
       <span>
         <IconLink icon={editImg} label="Edit" />
