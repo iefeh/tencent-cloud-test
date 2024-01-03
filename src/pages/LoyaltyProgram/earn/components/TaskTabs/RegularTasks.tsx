@@ -29,6 +29,7 @@ import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface VerifyTexts {
   label: string;
@@ -454,15 +455,6 @@ function RegularTasks() {
     );
   };
 
-  const CircularLoading = () => {
-    return (
-      <div className="relative w-[8.125rem] h-[8.125rem] text-center leading-[8.125rem]" aria-label="Loading...">
-        <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill />
-        <span className="relative z-0 font-semakin text-basic-yellow">Loading</span>
-      </div>
-    );
-  };
-
   return (
     <div className="mt-7 flex flex-col items-center">
       <div
@@ -475,11 +467,7 @@ function RegularTasks() {
           <Task key={`${task.id}_${task.achieved}`} task={task} />
         ))}
 
-        {taskListLoading && (
-          <div className="absolute left-0 top-0 w-full h-full flex items-center justify-center backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-0">
-            <CircularLoading />
-          </div>
-        )}
+        {taskListLoading && <CircularLoading />}
       </div>
 
       {pagiInfo.total > 0 && (
