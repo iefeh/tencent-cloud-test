@@ -3,17 +3,6 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
-import * as Debank from "debank";
-import Quest from "@/lib/models/Quest";
-import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
-import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
-import {redis} from "@/lib/redis/client";
-import {getMBLeaderboardTopUsers, try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
-import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
-import UserSteam from "@/lib/models/UserSteam";
-import formidable, {errors as formidableErrors} from 'formidable';
-import sharp from 'sharp';
-import {upload2public} from "@/lib/aws/s3";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -25,24 +14,6 @@ router.post(async (req, res) => {
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
-        const form = formidable({});
-        console.log("parsing request:");
-        const [fields, files] = await form.parse(req);
-        const avatarFile = files.avatar;
-        console.log("avatarFile:", avatarFile[0].filepath);
-        const image = sharp(avatarFile[0].filepath);
-        const metadata = await image.metadata();
-        console.log("metadata:", metadata);
-        let buffer;
-        if (metadata.format !== 'webp') {
-            // 如果图片不是webp格式，转换为webp
-            buffer = await image.webp().toBuffer();
-        } else {
-            // 如果图片已经是webp格式，直接读取文件
-            buffer = await image.toBuffer();
-        }
-        console.log("uploading to s3");
-        await upload2public("moonveil-public", `avatar/test.webp`, buffer, "image/webp");
         res.json(response.success());
         return;
     } catch (error) {

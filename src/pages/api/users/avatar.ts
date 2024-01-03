@@ -3,17 +3,18 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
-import formidable from 'formidable';
 import sharp from 'sharp';
 import {v4 as uuidv4} from "uuid";
 import {upload2public} from "@/lib/aws/s3";
+
+const formidable = require('formidable');
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
     try {
         await getMongoConnection();
-        const form = formidable({});
+        const form = new formidable.IncomingForm();
         console.log("parsing request:");
         const [fields, files] = await form.parse(req);
         const avatarFile = files.avatar;
