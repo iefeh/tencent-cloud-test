@@ -6,18 +6,28 @@ import rightDecoImg from 'img/loyalty/earn/leaderbord_deco_right.png';
 import { cn } from '@nextui-org/react';
 import MyRanking from '@/pages/components/common/MyRanking';
 import { LeaderBoardItem, leaderBoardRankAPI } from '@/http/services/task';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 export default function Rank() {
   const [topRanks, setTopRanks] = useState<LeaderBoardItem[]>([]);
   const [myRankInfo, setMyRankInfo] = useState<LeaderBoardItem | null>();
   const [rankList, setRankList] = useState<LeaderBoardItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   async function queryRank() {
-    const res = await leaderBoardRankAPI();
-    const { leaderboard, me } = res;
-    setRankList(leaderboard);
-    setMyRankInfo(me);
-    setTopRanks(leaderboard.slice(0, 3));
+    setLoading(true);
+
+    try {
+      const res = await leaderBoardRankAPI();
+      const { leaderboard, me } = res;
+      setRankList(leaderboard);
+      setMyRankInfo(me);
+      setTopRanks(leaderboard.slice(0, 3));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -99,7 +109,13 @@ export default function Rank() {
                 >
                   <span className="w-[2.625rem]">{rank.rank}</span>
 
-                  <Image className="border-1 border-basic-yellow rounded-full" src={rank.avatar_url} alt="" width={48} height={48} />
+                  <Image
+                    className="border-1 border-basic-yellow rounded-full"
+                    src={rank.avatar_url}
+                    alt=""
+                    width={48}
+                    height={48}
+                  />
 
                   <span className="flex-1 ml-[0.875rem] text-ellipsis overflow-hidden whitespace-nowrap">
                     {rank.username}
@@ -112,6 +128,8 @@ export default function Rank() {
           </div>
         </div>
       </div>
+
+      {loading && <CircularLoading />}
     </div>
   );
 }
