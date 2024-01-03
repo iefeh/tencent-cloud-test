@@ -67,6 +67,9 @@ import usePostMessage from '@/hooks/usePostMessage';
 import { useStore } from '@/store';
 import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '@/styles/toastify.css';
+import { Web3ModalProvider } from '@/store/Web3Modal';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -143,6 +146,8 @@ function loadImage(path: string) {
   document.body.appendChild(img);
 
   return new Promise((resolve) => {
+    // 兼容safari图片资源加载逻辑
+    if (img.complete) return resolve(true);
     img.onload = function () {
       document.body.removeChild(img);
       resolve(true);
@@ -152,28 +157,38 @@ function loadImage(path: string) {
 
 function loadVideo(path: string) {
   const video = document.createElement('video');
+  video.autoplay = true;
+  video.preload = 'auto';
+  video.muted = true;
   video.src = path;
   video.style.display = 'none';
   document.body.appendChild(video);
 
   return new Promise((resolve) => {
-    video.addEventListener('canplay', () => {
-      document.body.removeChild(video);
-      resolve(true);
-    });
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.userAgent.indexOf('Mac') > -1) {
+      setTimeout(() => {
+        resolve(true);
+      }, 1000);
+    } else {
+      video.addEventListener('canplay', () => {
+        document.body.removeChild(video);
+        resolve(true);
+      });
+    }
   });
 }
 
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
+  const host = typeof window !== 'undefined' ? window.location.host : 'defaultHost';
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
@@ -250,6 +265,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     store.init();
+
+    window.Storage.prototype.read = function <T>(key: string) {
+      const val = this.getItem(key);
+      if (!val) return null;
+      return JSON.parse(val) as T;
+    };
+
+    window.Storage.prototype.save = function <T>(key: string, val: T) {
+      this.setItem(key, JSON.stringify(val || ''));
+    };
   }, []);
 
   return (
@@ -260,17 +285,20 @@ export default function App({ Component, pageProps }: AppProps) {
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
       </Head>
-      {!isInWhiteList && loading ? (
-        <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-      ) : (
-        <MobxContext.Provider value={store}>
-          <RootLayout isInWhiteList={isInWhiteList}>
-            <Component {...pageProps} />
-          </RootLayout>
 
-          <ToastContainer />
-        </MobxContext.Provider>
-      )}
+      <Web3ModalProvider>
+        {!isInWhiteList && loading ? (
+          <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+        ) : (
+          <MobxContext.Provider value={store}>
+            <RootLayout isInWhiteList={isInWhiteList}>
+              <Component {...pageProps} />
+            </RootLayout>
+          </MobxContext.Provider>
+        )}
+      </Web3ModalProvider>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 
       <Script id="google-analytics">
         {`

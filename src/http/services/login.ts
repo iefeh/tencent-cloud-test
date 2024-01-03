@@ -1,4 +1,14 @@
+import { QuestType } from '@/constant/task';
 import http from '../index';
+
+function getAuthParams(path = '') {
+  const { origin } = location;
+  const params = {
+    landing_url: `${origin}/auth${path}`,
+  };
+
+  return params;
+}
 
 export function sendEmailCodeAPI(params: SendEmailCodeParamsDto) {
   params.quick_fill_url = `${location.origin}/email/captcha/quickfill`;
@@ -17,24 +27,34 @@ export function logoutAPI() {
   return http.post('/api/auth/signout');
 }
 
-export function getGoogleAuthLinkAPI(): Promise<GoogleAuthDto> {
-  const { origin } = location;
-  const params = {
-    landing_url: `${origin}/auth`,
-  };
-
-  return http.get('/api/auth/signin/google', { params });
+export function getGoogleAuthLinkAPI(): Promise<AuthDto> {
+  return http.get('/api/auth/signin/google', { params: getAuthParams() });
 }
 
-export function getTwitterAuthLinkAPI(): Promise<GoogleAuthDto> {
-  const { origin } = location;
-  const params = {
-    landing_url: `${origin}/auth`,
-  };
-
-  return http.get('/api/auth/signin/twitter', { params });
+export function getTwitterAuthLinkAPI(): Promise<AuthDto> {
+  return http.get('/api/auth/signin/twitter', { params: getAuthParams() });
 }
 
 export function signInParticleAPI(data: ParticleAuthDto) {
   return http.post('/api/auth/signin/particle', JSON.stringify(data));
+}
+
+export function connectTwitterAPI(): Promise<AuthDto> {
+  return http.get('/api/auth/connect/twitter', { params: getAuthParams(`/connect?type=${QuestType.ConnectTwitter}`) });
+}
+
+export function connectSteamAPI(): Promise<AuthDto> {
+  return http.get('/api/auth/connect/steam', { params: getAuthParams(`/connect?type=${QuestType.ConnectSteam}`) });
+}
+
+export function connectDiscordAPI(): Promise<AuthDto> {
+  return http.get('/api/auth/connect/discord', { params: getAuthParams(`/connect?type=${QuestType.ConnectDiscord}`) });
+}
+
+export function connectWalletAPI(data: {
+  address: string;
+  signature: string;
+  message: string;
+}): Promise<boolean | null> {
+  return http.post('/api/auth/connect/wallet', JSON.stringify(data));
 }

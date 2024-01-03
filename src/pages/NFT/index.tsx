@@ -11,7 +11,7 @@ export default function Page({
     return (
       <section>
         <Head>
-          <title>NFT | Moonveil</title>
+          <title>NFT | Moonveil Entertainment</title>
         </Head>
 
         <NftHome></NftHome>

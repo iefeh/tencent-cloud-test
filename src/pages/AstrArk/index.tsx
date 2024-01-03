@@ -26,7 +26,7 @@ export default function Home() {
     <>
       <section ref={scrollWrapper} id="luxy" className="scroll-wrapper w-full relative flex flex-col z-10">
         <Head>
-          <title>AstrArk | Moonveil</title>
+          <title>AstrArk | Moonveil Entertainment</title>
         </Head>
 
         <div className="scroll-container flex flex-col z-10">

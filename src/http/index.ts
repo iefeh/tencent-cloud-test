@@ -1,6 +1,7 @@
 import { KEY_AUTHORIZATION } from '@/constant/storage';
 import { useStore } from '@/store';
 import { Axios } from 'axios';
+import { toast } from 'react-toastify';
 
 const axios = new Axios({
   responseType: 'json',
@@ -15,6 +16,11 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use((res) => {
+  if (Math.floor(res.status / 100) !== 2) {
+    toast.error(res.statusText);
+    return null;
+  }
+
   if (!res.data) return null;
 
   const data = JSON.parse(res.data);
@@ -28,10 +34,13 @@ axios.interceptors.response.use((res) => {
         break;
       }
     }
-    throw new Error(data.msg);
+    // throw new Error(data.msg);
+    toast.error(data.msg);
   }
 
   return data.data;
+}, (error) => {
+  toast.error(error);
 });
 
 export default axios;
