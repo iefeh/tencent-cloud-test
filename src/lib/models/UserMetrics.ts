@@ -5,6 +5,8 @@ export enum Metric {
     // 预约AstrArk
     PreRegisterAstrArk = "pre_register_astrark",
 
+    // 钱包指标使用的资产id
+    WalletAssetId = "wallet_asset_id",
     // 钱包token价值
     WalletTokenUsdValue = "wallet_token_usd_value",
     // 钱包NFT价值
@@ -14,6 +16,8 @@ export enum Metric {
     // 钱包资产价值上次刷新时间(可用该时间限制客户端计算钱包价值的间隔)
     WalletAssetValueLastRefreshTime = "wallet_asset_value_last_refresh_time",
 
+    // 用户steam资产id
+    SteamAssetId = "steam_asset_id",
     // Steam账号年限
     SteamAccountYears = "steam_account_years",
     // Steam账号游戏数
@@ -31,11 +35,14 @@ export interface IUserMetrics extends Document {
     // 是否预约astrark游戏
     pre_register_astrark: boolean,
     // 绑定钱包拥有的token价值
+    wallet_asset_id: string,
     wallet_token_usd_value: number,
     wallet_nft_usd_value: number,
     wallet_asset_usd_value: number,
     // 钱包token价值上次计算时间
     wallet_asset_value_last_refresh_time: number,
+
+    steam_asset_id: string,
     // Steam账号年限
     steam_account_years: number,
     // Steam账号游戏数
@@ -51,10 +58,12 @@ export interface IUserMetrics extends Document {
 const UserMetricsSchema = new Schema<IUserMetrics>({
     user_id: {type: String, required: true},
     pre_register_astrark: {type: Boolean},
+    wallet_asset_id: {type: String},
     wallet_token_usd_value: {Type: Number},
     wallet_nft_usd_value: {Type: Number},
     wallet_asset_usd_value: {Type: Number},
     wallet_asset_value_last_refresh_time: {Type: Number},
+    steam_asset_id: {type: String},
     steam_account_years: {Type: Number},
     steam_account_game_count: {Type: Number},
     steam_account_usd_value: {Type: Number},

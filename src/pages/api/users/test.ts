@@ -9,6 +9,8 @@ import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQues
 import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 import {redis} from "@/lib/redis/client";
 import {getMBLeaderboardTopUsers, try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
+import UserSteam from "@/lib/models/UserSteam";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -21,17 +23,15 @@ router.get(async (req, res) => {
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
 
-        // const quest = await Quest.findOne({id: "14b7f2c6-9b29-4ff9-8c4d-48cc5897ca84"});
-        // const questWrapper = new JoinDiscordServerQuest(quest);
-        // const result = await questWrapper.claimReward("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5");
-        // console.log(result);
+        const quest = await Quest.findOne({id: "8ef84fa5-6b5b-4340-a143-93e66abe80c2"});
+        const questWrapper = new ConnectSteamQuest(quest);
+        const result = await questWrapper.refreshUserSteamMetric("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5", new UserSteam({
+            steam_id: "76561198157621569",
+            timecreated: 1692696816
+        }));
+        console.log(result);
 
-        await try2AddUser2MBLeaderboard("d3dcf9e4-bf8c-4d66-87e7-12d4bf6aebe5")
-        await try2AddUser2MBLeaderboard("78c3003c-d2a7-40aa-89dc-2839a9a6cf52");
-        await try2AddUser2MBLeaderboard("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5");
-
-        const leaderboard = await getMBLeaderboardTopUsers("");
-        res.json(response.success(leaderboard));
+        res.json(response.success());
         return;
     } catch (error) {
         console.error(error)
