@@ -27,7 +27,7 @@ export default function IndexScreen() {
         </div>
       </div>
 
-      <div className="absolute top-[55%] left-[67.97%] z-20">
+      <div className="absolute top-[55%] left-[67.97%] z-20 hidden sm:block">
         <div
           className="relative"
           ref={bigTriangleShakeRef}
@@ -42,7 +42,7 @@ export default function IndexScreen() {
         needAni
         baseAniTY
         subtitle={
-          <div className="max-w-[35rem] font-decima text-lg">
+          <div className="max-w-[35rem] font-decima text-lg px-8 sm:px-0">
             At Moonveil, player experience is of paramount importance. We are dedicated to recognizing and rewarding
             players&#39; contributions in our ecosystem by introducing the Moonveil Loyalty Program, centered around
             Moon Beam (MB) points.

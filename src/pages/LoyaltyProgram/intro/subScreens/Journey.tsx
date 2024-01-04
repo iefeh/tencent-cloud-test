@@ -52,7 +52,7 @@ export default function JourneyScreen() {
 
         <Image src={triangleImg} alt="" fill />
 
-        <div className="absolute left-1/2 bottom-[15.375rem] -translate-x-1/2 w-max z-10">
+        <div className="absolute left-1/2 -translate-x-1/2 max-w-full bottom-[6rem] lg:bottom-[15.375rem] lg:w-max z-10">
           <PageDesc
             className="flex flex-col justify-center items-center text-center"
             needAni
@@ -60,6 +60,7 @@ export default function JourneyScreen() {
             title={
               <div className="font-semakin text-6xl">
                 <span className="text-basic-yellow">More Surprises</span>
+                <br className="sm:hidden" />
                 <span> Coming Soon...</span>
               </div>
             }

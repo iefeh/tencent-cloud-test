@@ -10,18 +10,18 @@ export default function WhatIsMBScreen() {
   useShake(shakeRef);
 
   return (
-    <div className="w-full h-screen flex justify-center items-center relative">
-      <div className="flex justify-center gap-[5.625rem] w-auto">
+    <div className="w-full h-auto flex justify-center items-center relative sm:h-screen">
+      <div className="flex justify-center gap-[5.625rem] w-auto flex-col sm:flex-row sm:items-center">
         <div>
           <div className="relative hover:shadow-[0_0_8px_4px_rgba(246,199,153,0.1)] transition-shadow" ref={shakeRef}>
-            <Image className="w-[45.3125rem] h-[40rem]" src={mbImg} alt="" />
+            <Image className="w-[45.3125rem] h-[40rem] object-contain" src={mbImg} alt="" />
             <div className="mask absolute w-full h-full left-0 top-0 z-0 transition-shadow duration-300 will-change-transform"></div>
           </div>
         </div>
 
         <PageDesc
           hasBelt
-          className="text-left max-w-[32.125rem] mt-[2rem]"
+          className="text-left max-w-[32.125rem] mt-[2rem] px-8 sm:px-0"
           needAni
           baseAniTY
           title={
