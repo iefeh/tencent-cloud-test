@@ -11,7 +11,7 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
+import { TaskListItem, TaskReward, queryTaskListAPI, reverifyTaskAPI, verifyTaskAPI } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI, connectWalletAPI } from '@/http/services/login';
@@ -266,7 +266,8 @@ function RegularTasks() {
 
       try {
         setVerifiable(false);
-        const res = await verifyTaskAPI({ quest_id: task.id });
+        const api = task.properties?.last_verified_time ? reverifyTaskAPI : verifyTaskAPI;
+        const res = await api({ quest_id: task.id });
         setVerified(!!res.verified);
 
         if (!res.verified) {
@@ -276,6 +277,8 @@ function RegularTasks() {
           setTimeout(() => {
             setVerifiable(true);
           }, 10000);
+        } else {
+          queryTasks();
         }
       } catch (error) {
         console.log(error);
@@ -287,6 +290,7 @@ function RegularTasks() {
     return (
       <div className="mt-5 flex items-center">
         <LGButton
+          className="uppercase"
           label={getButtonLabel(
             connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
             connectLoading,
@@ -299,7 +303,7 @@ function RegularTasks() {
         />
 
         <LGButton
-          className="ml-2"
+          className="ml-2 uppercase"
           label={
             task.type === QuestType.ConnectWallet && verified
               ? 'Reverify'
@@ -440,7 +444,7 @@ function RegularTasks() {
             <TaskButtons task={task} />
 
             {task.type === QuestType.ConnectWallet &&
-              !task.verified &&
+              task.verified &&
               (task.properties?.can_reverify_after || 0) > 0 && <ReverifyCountdown task={task} />}
           </div>
 
