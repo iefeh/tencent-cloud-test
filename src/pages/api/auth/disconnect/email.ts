@@ -14,11 +14,15 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     await getMongoConnection();
     // 检查用户的绑定
     const user = await User.findOne({user_id: req.userId!, deleted_time: null}, {_id: 0, email: 1});
+    console.log(user);
     if (!user || !user.email) {
         res.json(response.success());
         return;
     }
-    await UserWallet.updateOne({user_id: req.userId!}, {email: null});
+    const result = await UserWallet.updateOne({user_id: req.userId!, deleted_time: null}, {email: null});
+    console.log(result);
+    // 添加cd
+    await redis.set(`reconnect_cd:${AuthorizationType.Email}:${user.email}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
     res.json(response.success());
 });
 

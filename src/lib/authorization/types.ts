@@ -58,6 +58,7 @@ export enum AuthorizationType {
     Wallet = "wallet",
     Google = "google",
     Steam = "steam",
+    Email = "email",
 }
 
 export enum CaptchaType {
