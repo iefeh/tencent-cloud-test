@@ -21,7 +21,7 @@ export default function WhatIsMBScreen() {
 
         <PageDesc
           hasBelt
-          className="text-left max-w-[32.125rem] mt-[2rem] px-8 sm:px-0"
+          className="text-left max-w-[32.125rem] mt-[3rem] px-16 sm:px-0"
           needAni
           baseAniTY
           title={
@@ -30,7 +30,7 @@ export default function WhatIsMBScreen() {
               <div className="text-basic-yellow">Moon Beam</div>
             </div>
           }
-          subtitle="Moon Beams are the native points of Moonveil’s ecosystem, which symbolizes player contribution and participation. Moon Beams can be earned by engaging with the community, fantastic in-game performance, and completing tasks from the website. As the central point system, Moon Beams ensures lasting benefits to the most loyal community members in the Moonveil ecosystem. Players can exchange their accumulated Moon Beams for a variety of rewards, including exclusive in-game assets and on-chain assets. Accumulating more MBs will also grant access to our NFT whitelist events, token airdrops, and other premium rewards."
+          subtitle="Moon Beams are the native points of Moonveil’s ecosystem that symbolize player contribution and participation. Moon Beams can be earned by engaging with the community, fantastic in-game performance, and completing tasks from the website. As the central point system, Moon Beams ensures lasting benefits to the most loyal community members in the Moonveil ecosystem. Players can exchange their Moon Beams for a variety of rewards, including exclusive in-game assets and on-chain assets. Collecting additional MBs will also provide opportunities for our NFT whitelist events, token airdrops, and various premium perks."
         />
       </div>
     </div>

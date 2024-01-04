@@ -14,10 +14,15 @@ export default function BadgeScreen() {
       <div className="flex justify-center gap-[5.625rem] w-auto flex-col sm:flex-row sm:items-center">
         <PageDesc
           hasBelt
-          className="text-left max-w-[36rem] mt-[6rem] order-2 sm:order-1 px-8 sm:px-0"
+          className="text-left max-w-[36rem] mt-[4rem] order-2 sm:order-1 px-16 sm:px-0"
           needAni
           baseAniTY
-          title="Moonveil Badge System"
+          title={
+            <div className="font-semakin text-6xl mb-12">
+              <div>What is</div>
+              <div className="text-basic-yellow">Moonveil Badge System</div>
+            </div>
+          }
           subtitle="In collaboration with Moon Beams, we proudly present the Moonveil Badge System as part of our Loyalty Program. A diverse range of badges have been meticulously crafted to track and reward player engagement. These badges not only commemorate players' achievements but also unlock additional exclusive perks, including MBs and exciting bonuses yet to be revealed."
         />
 

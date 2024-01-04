@@ -66,8 +66,8 @@ export default function JourneyScreen() {
             }
             subtitle={
               <span className="mt-[3rem] font-decima text-lg text-center max-w-[45.625rem]">
-                The full-fledged Moonveil Loyalty Program of the future will consist of three phases. All players can
-                exchange their accumulated Moon Beams for substantial rewards soon.
+                The future Moonveil Loyalty Program will unfold in three phases, providing everyone with an exciting
+                opportunity to redeem Moon Beams for substantial rewards soon.
               </span>
             }
           />

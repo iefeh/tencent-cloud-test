@@ -101,3 +101,11 @@ body {
 .shake-hover-out {
   transition: transform 0.2s ease-in;
 }
+
+@media (max-width: 640px) {
+  .page-desc {
+    .text-6xl {
+      font-size: 3rem;
+    }
+  }
+}
