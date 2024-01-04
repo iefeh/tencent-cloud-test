@@ -4,7 +4,7 @@ import {v4 as uuidv4} from "uuid";
 import {redis} from "@/lib/redis/client";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import User from "@/lib/models/User";
-import {appendQueryParamsToUrl} from "@/lib/utils/url";
+import {appendQueryParamsToUrl} from "@/lib/common/url";
 import axios from "axios";
 import logger from "@/lib/logger/winstonLogger";
 import {NextApiResponse} from "next";

@@ -23,6 +23,7 @@ export enum ResponseCode {
     ERROR_WALLET_ALREADY_BOUND_TO_OTHERS = -13,
     ERROR_ACCOUNT_ALREADY_BOUND_WALLET = -14,
     ERROR_CONNECTION_COOLING_DOWN = -15,
+    ERROR_EMAIL_BOUND_TO_OTHERS = -16,
     // 添加对应的响应码
 }
 
@@ -54,6 +55,8 @@ const ResponseMessages = {
     [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET]: "Account already bound wallet",
     // 重连的目标账户冷却中
     [ResponseCode.ERROR_CONNECTION_COOLING_DOWN]: "Connection cooling down",
+    // 邮件已经被其他人绑定
+    [ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS]: "Email already bound to others",
     // 添加响应码对应的msg
 }
 
@@ -84,3 +87,4 @@ export const walletSignatureExpired = build(ResponseCode.ERROR_WALLET_SIGNATURE_
 export const walletAlreadyBoundToOthers = build(ResponseCode.ERROR_WALLET_ALREADY_BOUND_TO_OTHERS);
 export const accountAlreadyBoundWallet = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET);
 export const connectionCoolingDown = build(ResponseCode.ERROR_CONNECTION_COOLING_DOWN);
+export const emailAlreadyBoundToOthers = build(ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS);

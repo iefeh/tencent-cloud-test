@@ -3,7 +3,7 @@ import {claimRewardResult} from "@/lib/quests/types";
 import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
 import UserTwitter from "@/lib/models/UserTwitter";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {promiseSleep} from "@/lib/utils/sleep";
+import {promiseSleep} from "@/lib/common/sleep";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 
 
@@ -27,7 +27,7 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         // retweet时额外添加用户的转推次数
-        const result = await this.saveUserReward(userId, taint, rewardDelta, async (session) => {
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
             await UserMetrics.updateOne(
                 {user_id: userId},
                 {

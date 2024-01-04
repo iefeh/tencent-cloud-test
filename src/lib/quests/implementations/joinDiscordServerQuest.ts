@@ -5,7 +5,6 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
 import logger from "@/lib/logger/winstonLogger";
 import {deleteAuthToken, isDiscordAuthRevokedError, isDiscordRateLimitError} from "@/lib/authorization/provider/util";
-import {QuestBase} from "@/lib/quests/implementations/base";
 
 export class JoinDiscordServerQuest extends ConnectDiscordQuest {
 

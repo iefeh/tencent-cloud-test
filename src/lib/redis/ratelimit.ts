@@ -2,18 +2,19 @@ import {RateLimiter} from "@koshnic/ratelimit";
 import {redis} from "@/lib/redis/client";
 import {v4 as uuidv4} from "uuid";
 import logger from "@/lib/logger/winstonLogger";
-import {promiseSleep} from "@/lib/utils/sleep";
+import {promiseSleep} from "@/lib/common/sleep";
+import {CaptchaType} from "@/lib/authorization/types";
 
 const limiter = new RateLimiter(redis);
 
-export const allowToSendLoginCaptcha = async (email: string, ip: string) => {
+export const allowToSendCaptcha = async (captchaTyp: CaptchaType, email: string, ip: string) => {
     // 检查邮件单次发送间隔
-    const emailRes = await limiter.allowPerMinute(`login_captcha:${email}`, 1);
+    const emailRes = await limiter.allowPerMinute(`${captchaTyp}:${email}`, 1);
     if (!emailRes.allowed) {
         return false;
     }
     // 检查IP当天发送次数
-    const ipRes = await limiter.allowPerHour(`login_captcha:${ip}`, 30, 24);
+    const ipRes = await limiter.allowPerHour(`email_captcha:${ip}`, 30, 24);
     return ipRes.allowed > 0
 }
 

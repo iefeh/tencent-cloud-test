@@ -88,8 +88,8 @@ export class ConnectWalletQuest extends QuestBase {
 
         // 刷新钱包资产
         const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr, metrics.wallet_asset_usd_value);
-        if (refreshResult) {
-            return refreshResult;
+        if (refreshResult.interrupted) {
+            return refreshResult.interrupted;
         }
         const rewardDelta = await this.checkUserRewardDelta(userId);
         if (rewardDelta <= historyReward.moon_beam_delta) {
@@ -100,10 +100,11 @@ export class ConnectWalletQuest extends QuestBase {
             }
         }
         // 保存用户的增量奖励
-        return this.saveUserIncreasedReward(userId, rewardDelta, historyReward);
+        const assetId = refreshResult.userMetric[Metric.WalletAssetId];
+        return this.saveUserIncreasedReward(userId, rewardDelta, historyReward, assetId);
     }
 
-    async saveUserIncreasedReward(userId: string, rewardDelta: number, historyReward: IUserMoonBeamAudit): Promise<claimRewardResult> {
+    async saveUserIncreasedReward(userId: string, rewardDelta: number, historyReward: IUserMoonBeamAudit, assetId: string): Promise<claimRewardResult> {
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         // 保存用户的增量奖励
         const increasedReward = rewardDelta - Number(historyReward.moon_beam_delta);
@@ -154,13 +155,14 @@ export class ConnectWalletQuest extends QuestBase {
             }
         }
         const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr);
-        if (refreshResult) {
-            return refreshResult;
+        if (refreshResult.interrupted) {
+            return refreshResult.interrupted;
         }
         // 按 任务/钱包 进行污染，防止同一个钱包多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta);
+        const assetId = refreshResult.userMetric[Metric.WalletAssetId];
+        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
         if (result.duplicated) {
             return {
                 verified: false,
@@ -175,12 +177,15 @@ export class ConnectWalletQuest extends QuestBase {
     }
 
     // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功
-    async refreshUserWalletMetric(userId: string, wallet: string, historyTotalValue: number = -1): Promise<claimRewardResult | null> {
+    async refreshUserWalletMetric(userId: string, wallet: string, historyTotalValue: number = -1): Promise<refreshUserWalletMetricResult> {
         // 检查用户资产的token价值
         let allowed = await retryAllowToSendRequest2Debank(3);
         if (!allowed) {
             logger.warn(`refresh wallet ${wallet} token assets did not get request cred after 3 seconds.`);
-            return {verified: false, tip: "Network busy, please try again later."};
+            return {
+                interrupted: {verified: false, tip: "Network busy, please try again later."},
+                userMetric: null,
+            };
         }
         const debank = new Debank(process.env.DEBANK_ACCESS_KEY);
         const tokenData = await debank.user.total_balance({id: wallet})
@@ -188,7 +193,10 @@ export class ConnectWalletQuest extends QuestBase {
         allowed = await retryAllowToSendRequest2Debank(3);
         if (!allowed) {
             logger.warn(`refresh wallet ${wallet} nft assets did not get request cred after 3 seconds.`);
-            return {verified: false, tip: "Network busy, please try again later."};
+            return {
+                interrupted: {verified: false, tip: "Network busy, please try again later."},
+                userMetric: null,
+            };
         }
         // 各字段含义：https://docs.cloud.debank.com/en/readme/api-pro-reference/user#returns-10
         const nftData = await debank.user.all_nft_list({
@@ -249,8 +257,16 @@ export class ConnectWalletQuest extends QuestBase {
                 }
             );
         });
-        return null;
+        return {
+            userMetric: userMetric,
+        };
     }
+}
+
+type refreshUserWalletMetricResult = {
+    interrupted?: claimRewardResult;
+    // 用户的指标信息
+    userMetric: any;
 }
 
 export async function queryUserWalletAuthorization(userId: string): Promise<any> {
