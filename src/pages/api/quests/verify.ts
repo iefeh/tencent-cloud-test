@@ -5,8 +5,7 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {claimQuestReward} from "@/lib/quests/claim";
-import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
+import {constructQuest} from "@/lib/quests/constructor";
 import {redis} from "@/lib/redis/client";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
@@ -24,9 +23,10 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.notFound("Unknown quest."));
         return;
     }
+    const questImpl = await constructQuest(quest);
     const userId = req.userId!;
-    // 检查用户是否已经完成该任务, 注意此处使用的是ConnectDiscordQuest，但我们实际是为了使用他基类的方法
-    const verified = await new ConnectDiscordQuest(quest).checkVerified(userId);
+    // 检查用户是否已经完成该任务
+    const verified = await questImpl.checkVerified(userId);
     if (verified) {
         logger.warn(`user ${userId} duplicate verify quest ${quest_id}`);
         res.json(response.success({
@@ -47,7 +47,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             return;
         }
         // 申领任务奖励
-        const result = await claimQuestReward(userId, quest);
+        const result = await questImpl.claimReward(userId);
         if (result.claimed_amount && result.claimed_amount > 0) {
             await try2AddUser2MBLeaderboard(userId);
         }
@@ -59,9 +59,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             tip: "Network busy, please try again later.",
         }));
     }
-    // finally {
-    //     await redis.del(lockKey);
-    // }
 });
 
 // this will run if none of the above matches

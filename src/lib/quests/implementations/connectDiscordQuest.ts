@@ -42,7 +42,11 @@ export class ConnectDiscordQuest extends QuestBase {
                 tip: "The Discord Account has already claimed reward.",
             }
         }
-        return {verified: result.done, claimed_amount: result.done ? rewardDelta : undefined, tip: ``}
+        return {
+            verified: result.done,
+            claimed_amount: result.done ? rewardDelta : undefined,
+            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+        }
     }
 }
 

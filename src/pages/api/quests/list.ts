@@ -52,6 +52,7 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
         {
             $project: {
                 '_id': 0,
+                '__v': 0,
                 'deleted_time': 0,
                 'created_time': 0,
                 'updated_time': 0,

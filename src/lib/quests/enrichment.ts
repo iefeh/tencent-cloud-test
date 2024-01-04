@@ -6,6 +6,7 @@ import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectS
 import {AuthorizationType} from "@/lib/authorization/types";
 import {QuestType} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
+import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
 
 export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加verified字段
@@ -64,12 +65,16 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
     }
     // 获取用户已经校验的任务
     const questIds = quests.map(quest => quest.id);
-    const achievedQuests = await QuestAchievement.find({user_id: userId, quest_id: {$in: questIds}}, {
+    const verifiedQuests = await UserMoonBeamAudit.find({
+        user_id: userId,
+        corr_id: {$in: questIds},
+        deleted_time: null
+    }, {
         _id: 0,
-        quest_id: 1
+        quest_id: "$corr_id"
     });
     const achievements = new Map<string, boolean>();
-    achievedQuests.forEach(q => achievements.set(q.quest_id, true));
+    verifiedQuests.forEach(q => achievements.set(q.quest_id, true));
     // 添加任务校验标识
     quests.forEach(quest => quest.verified = achievements.has(quest.id));
 }
@@ -80,9 +85,11 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
         // 用户未登录，跳过设置
         return;
     }
-    // 理论不会出现多个连接任务，此处直接在循环内部查询.
+    // 检查任务是否完成
+    const checkAchievementsQuestIds = [];
     for (const quest of quests) {
-        if (quest.achieved || quest.verified) {
+        if (quest.verified) {
+            quest.achieved = true;
             continue;
         }
         switch (quest.type) {
@@ -102,8 +109,31 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
             case QuestType.ConnectSteam:
                 const steam = await queryUserSteamAuthorization(userId);
                 quest.achieved = !!steam;
+                break;
+            default:
+                // 默认当前任务未完成，待后续进行检查
+                quest.achieved = false;
+                checkAchievementsQuestIds.push(quest.id);
         }
     }
+    // 检查是否有任务完成标识
+    if (checkAchievementsQuestIds.length == 0) {
+        return;
+    }
+    const achievedQuests = await QuestAchievement.find({
+        user_id: userId,
+        quest_id: {$in: checkAchievementsQuestIds}
+    }, {_id: 0, quest_id: 1});
+    if (!achievedQuests || achievedQuests.length == 0) {
+        return;
+    }
+    const userQuests = new Map<string, boolean>(achievedQuests.map(quest => [quest.quest_id, true]));
+    quests.forEach(quest => {
+        if (quest.achieved) {
+            return;
+        }
+        quest.achieved = userQuests.get(quest.id);
+    })
 }
 
 
@@ -141,15 +171,15 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
     }
     if (checkDiscord) {
         const discordAuth = await queryUserDiscordAuthorization(userId);
-        authorized.set(AuthorizationType.Discord, discordAuth && discordAuth.token)
+        authorized.set(AuthorizationType.Discord, !!discordAuth && !!discordAuth.token)
     }
     if (checkTwitter) {
         const twitterAuth = await queryUserTwitterAuthorization(userId);
-        authorized.set(AuthorizationType.Twitter, twitterAuth && twitterAuth.token)
+        authorized.set(AuthorizationType.Twitter, !!twitterAuth && !!twitterAuth.token)
     }
     quests.forEach(quest => {
-        if (quest.achieved || quest.verified) {
-            // 任务已完成，无需检查授权
+        if (quest.verified) {
+            // 任务已校验，无需检查授权
             return;
         }
         switch (quest.type) {

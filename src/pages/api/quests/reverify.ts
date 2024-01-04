@@ -5,8 +5,6 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {claimQuestReward} from "@/lib/quests/claim";
-import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
 import {redis} from "@/lib/redis/client";
 import {QuestType} from "@/lib/quests/types";
 import {invalidParams} from "@/lib/response/response";

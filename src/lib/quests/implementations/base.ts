@@ -68,8 +68,8 @@ export abstract class QuestBase {
 
     // 检查用户是否已经领取任务奖励
     async checkVerified(userId: string): Promise<boolean> {
-        const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: this.quest.id});
-        return !!achievement;
+        const reward = await UserMoonBeamAudit.findOne({user_id: userId, corr_id: this.quest.id, deleted_time: null});
+        return !!reward;
     }
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
