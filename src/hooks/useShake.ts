@@ -1,4 +1,5 @@
 import { RefObject, useLayoutEffect, useRef } from 'react';
+import { isMobile } from 'react-device-detect';
 
 interface ShakeOptions {
   maxDegX?: number;
@@ -66,7 +67,7 @@ export default function useShake(nodeRef: RefObject<HTMLDivElement>, options?: S
   }
 
   useLayoutEffect(() => {
-    if (!nodeRef.current) return;
+    if (!nodeRef.current || isMobile) return;
     const pe = nodeRef.current.parentElement;
     if (!pe) return;
 
