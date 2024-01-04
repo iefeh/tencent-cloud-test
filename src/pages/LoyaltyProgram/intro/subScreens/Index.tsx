@@ -36,7 +36,7 @@ export default function IndexScreen() {
         needAni
         baseAniTY
         subtitle={
-          <div className="max-w-[35rem] font-decima text-lg px-8 sm:px-0">
+          <div className="max-w-[36rem] font-decima text-lg px-8 sm:px-0">
             At Moonveil, we prioritize player experience above all. We are dedicated to acknowledging and rewarding the
             contribution of our players to our ecosystem. Central to this program are Moon Beams (MBs) which are
             designed to reward community members who help in the growth of the Moonveil community.

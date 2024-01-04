@@ -30,7 +30,22 @@ export default function WhatIsMBScreen() {
               <div className="text-basic-yellow">Moon Beam</div>
             </div>
           }
-          subtitle="Moon Beams are the native points of Moonveil’s ecosystem that symbolize player contribution and participation. Moon Beams can be earned by engaging with the community, fantastic in-game performance, and completing tasks from the website. As the central point system, Moon Beams ensures lasting benefits to the most loyal community members in the Moonveil ecosystem. Players can exchange their Moon Beams for a variety of rewards, including exclusive in-game assets and on-chain assets. Collecting additional MBs will also provide opportunities for our NFT whitelist events, token airdrops, and various premium perks."
+          subtitle={
+            <div className="text-lg font-decima mb-10 tracking-tighter">
+              <div>
+                Moon Beams are the native points of Moonveil’s ecosystem that symbolize player contribution and
+                participation. Moon Beams can be earned by engaging with the community, fantastic in-game performance,
+                and completing tasks from the website.
+              </div>
+              <br />
+              <div>
+                As the central point system, Moon Beams ensures lasting benefits to the most loyal community members in
+                the Moonveil ecosystem. Players can exchange their Moon Beams for a variety of rewards, including
+                exclusive in-game assets and on-chain assets. Collecting additional MBs will also provide opportunities
+                for our NFT whitelist events, token airdrops, and various premium perks.
+              </div>
+            </div>
+          }
         />
       </div>
     </div>
