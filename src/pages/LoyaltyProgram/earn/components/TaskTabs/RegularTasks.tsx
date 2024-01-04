@@ -143,8 +143,10 @@ function RegularTasks() {
       const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
       const { code, msg } = tokens[task.type] || {};
       const isConnected = +code === 1;
-      setConnected(isConnected);
-      if (isConnected) return;
+      if (isConnected) {
+        handleConnected();
+        return;
+      }
 
       delete tokens[task.type];
       localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
@@ -165,7 +167,6 @@ function RegularTasks() {
       dialogWindowRef.current = dialog;
       dialog?.addEventListener('close', () => {
         dialogWindowRef.current = null;
-        queryTasks();
       });
     }
 
@@ -226,6 +227,7 @@ function RegularTasks() {
           }, 500);
         default:
           queryTasks();
+          setConnectLoading(false);
           break;
       }
     }
