@@ -216,10 +216,18 @@ function RegularTasks() {
 
       setConnectLoading(true);
       window.open(task.properties.url, '_blank');
-      delay(() => {
-        handleConnected();
-        setConnectLoading(false);
-      }, 500);
+
+      switch (task.type) {
+        case QuestType.RetweetTweet:
+        case QuestType.FollowOnTwitter:
+          delay(() => {
+            handleConnected();
+            setConnectLoading(false);
+          }, 500);
+        default:
+          queryTasks();
+          break;
+      }
     }
 
     function onConnect() {
@@ -236,9 +244,8 @@ function RegularTasks() {
           break;
         case QuestType.RetweetTweet:
         case QuestType.FollowOnTwitter:
-          onConnectURL();
-          break;
         case QuestType.JOIN_DISCORD_SERVER:
+          onConnectURL();
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
           break;
