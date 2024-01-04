@@ -19,7 +19,7 @@ interface ParticleUserInfo {
   web_token: string;
 }
 
-interface TwitterUserInfo {
+interface BaseMediaInfo {
   username: string;
   avatar_url: string;
 }
@@ -33,7 +33,8 @@ interface UserInfo {
   google?: GoogleUserInfo;
   particle?: ParticleUserInfo;
   moon_beam: number;
-  steam: null;
-  twitter?: TwitterUserInfo;
+  steam?: BaseMediaInfo;
+  twitter?: BaseMediaInfo;
+  discord?: BaseMediaInfo;
   wallet?: string;
 }

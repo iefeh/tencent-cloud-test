@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import {Divider} from "@nextui-org/react";
 import ProfileEdit from './components/ProfileEdit';
+import SocialMediaAccounts from './components/SocialMediaAccounts';
 
 export default function ProfileEditPage() {
   return (
@@ -20,6 +21,8 @@ export default function ProfileEditPage() {
       <Divider />
 
       <ProfileEdit />
+
+      <SocialMediaAccounts />
     </section>
   );
 }
