@@ -76,7 +76,7 @@ const UserAvatar = () => {
         </div>
       </div>
 
-      <ControlledMenu {...hoverProps} {...menuState} anchorRef={ref} theming="dark" onClose={() => toggle(false)}>
+      <ControlledMenu className="right-12" {...hoverProps} {...menuState} anchorRef={ref} theming="dark" onClose={() => toggle(false)}>
         <MenuItem>
           <UserProfile
             avatarClassName="w-12 h-12"
