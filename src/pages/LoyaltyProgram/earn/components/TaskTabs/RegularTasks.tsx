@@ -218,18 +218,10 @@ function RegularTasks() {
       setConnectLoading(true);
       window.open(task.properties.url, '_blank');
 
-      switch (task.type) {
-        case QuestType.RetweetTweet:
-        case QuestType.FollowOnTwitter:
-          delay(() => {
-            handleConnected();
-            setConnectLoading(false);
-          }, 500);
-        default:
-          queryTasks();
-          setConnectLoading(false);
-          break;
-      }
+      delay(() => {
+        handleConnected();
+        setConnectLoading(false);
+      }, 500);
     }
 
     function onConnect() {
@@ -247,9 +239,8 @@ function RegularTasks() {
         case QuestType.RetweetTweet:
         case QuestType.FollowOnTwitter:
         case QuestType.JOIN_DISCORD_SERVER:
-          onConnectURL();
-          break;
         case QuestType.ASTRARK_PRE_REGISTER:
+          onConnectURL();
           break;
         case QuestType.ConnectWallet:
           if (isConnected) {
