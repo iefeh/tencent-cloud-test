@@ -11,7 +11,7 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import { TaskListItem, TaskReward, queryTaskListAPI, verifyTaskAPI } from '@/http/services/task';
+import { TaskListItem, TaskReward, queryTaskListAPI, reverifyTaskAPI, verifyTaskAPI } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI, connectWalletAPI } from '@/http/services/login';
@@ -29,6 +29,7 @@ import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface VerifyTexts {
   label: string;
@@ -46,8 +47,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const store = useContext(MobxContext);
-  const { toggleLoginModal } = store;
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
@@ -124,6 +124,10 @@ function RegularTasks() {
     queryTasks();
   }, []);
 
+  useEffect(() => {
+    queryTasks();
+  }, [userInfo]);
+
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
     const { connectTexts, verifyTexts, achieved } = task;
@@ -139,8 +143,10 @@ function RegularTasks() {
       const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
       const { code, msg } = tokens[task.type] || {};
       const isConnected = +code === 1;
-      setConnected(isConnected);
-      if (isConnected) return;
+      if (isConnected) {
+        handleConnected();
+        return;
+      }
 
       delete tokens[task.type];
       localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
@@ -161,7 +167,6 @@ function RegularTasks() {
       dialogWindowRef.current = dialog;
       dialog?.addEventListener('close', () => {
         dialogWindowRef.current = null;
-        queryTasks();
       });
     }
 
@@ -212,14 +217,23 @@ function RegularTasks() {
 
       setConnectLoading(true);
       window.open(task.properties.url, '_blank');
-      delay(() => {
-        handleConnected();
-        setConnectLoading(false);
-      }, 500);
+
+      switch (task.type) {
+        case QuestType.RetweetTweet:
+        case QuestType.FollowOnTwitter:
+          delay(() => {
+            handleConnected();
+            setConnectLoading(false);
+          }, 500);
+        default:
+          queryTasks();
+          setConnectLoading(false);
+          break;
+      }
     }
 
     function onConnect() {
-      if (!store.userInfo) {
+      if (!userInfo) {
         onOpen();
         return;
       }
@@ -232,9 +246,8 @@ function RegularTasks() {
           break;
         case QuestType.RetweetTweet:
         case QuestType.FollowOnTwitter:
-          onConnectURL();
-          break;
         case QuestType.JOIN_DISCORD_SERVER:
+          onConnectURL();
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
           break;
@@ -253,7 +266,8 @@ function RegularTasks() {
 
       try {
         setVerifiable(false);
-        const res = await verifyTaskAPI({ quest_id: task.id });
+        const api = task.properties?.last_verified_time ? reverifyTaskAPI : verifyTaskAPI;
+        const res = await api({ quest_id: task.id });
         setVerified(!!res.verified);
 
         if (!res.verified) {
@@ -263,6 +277,8 @@ function RegularTasks() {
           setTimeout(() => {
             setVerifiable(true);
           }, 10000);
+        } else {
+          queryTasks();
         }
       } catch (error) {
         console.log(error);
@@ -274,6 +290,7 @@ function RegularTasks() {
     return (
       <div className="mt-5 flex items-center">
         <LGButton
+          className="uppercase"
           label={getButtonLabel(
             connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
             connectLoading,
@@ -286,7 +303,7 @@ function RegularTasks() {
         />
 
         <LGButton
-          className="ml-2"
+          className="ml-2 uppercase"
           label={
             task.type === QuestType.ConnectWallet && verified
               ? 'Reverify'
@@ -427,7 +444,7 @@ function RegularTasks() {
             <TaskButtons task={task} />
 
             {task.type === QuestType.ConnectWallet &&
-              !task.verified &&
+              task.verified &&
               (task.properties?.can_reverify_after || 0) > 0 && <ReverifyCountdown task={task} />}
           </div>
 
@@ -454,15 +471,6 @@ function RegularTasks() {
     );
   };
 
-  const CircularLoading = () => {
-    return (
-      <div className="relative w-[8.125rem] h-[8.125rem] text-center leading-[8.125rem]" aria-label="Loading...">
-        <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill />
-        <span className="relative z-0 font-semakin text-basic-yellow">Loading</span>
-      </div>
-    );
-  };
-
   return (
     <div className="mt-7 flex flex-col items-center">
       <div
@@ -475,11 +483,7 @@ function RegularTasks() {
           <Task key={`${task.id}_${task.achieved}`} task={task} />
         ))}
 
-        {taskListLoading && (
-          <div className="absolute left-0 top-0 w-full h-full flex items-center justify-center backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-0">
-            <CircularLoading />
-          </div>
-        )}
+        {taskListLoading && <CircularLoading />}
       </div>
 
       {pagiInfo.total > 0 && (

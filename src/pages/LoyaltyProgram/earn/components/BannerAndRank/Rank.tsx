@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import bgImg from 'img/loyalty/earn/bg_rank.jpg';
 import Image from 'next/image';
 import leftDecoImg from 'img/loyalty/earn/leaderbord_deco_left.png';
@@ -6,23 +6,52 @@ import rightDecoImg from 'img/loyalty/earn/leaderbord_deco_right.png';
 import { cn } from '@nextui-org/react';
 import MyRanking from '@/pages/components/common/MyRanking';
 import { LeaderBoardItem, leaderBoardRankAPI } from '@/http/services/task';
+import CircularLoading from '@/pages/components/common/CircularLoading';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import { observer } from 'mobx-react-lite';
+import { MobxContext } from '@/pages/_app';
 
-export default function Rank() {
+const Rank = function () {
+  const { userInfo } = useContext(MobxContext);
   const [topRanks, setTopRanks] = useState<LeaderBoardItem[]>([]);
   const [myRankInfo, setMyRankInfo] = useState<LeaderBoardItem | null>();
   const [rankList, setRankList] = useState<LeaderBoardItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   async function queryRank() {
-    const res = await leaderBoardRankAPI();
-    const { leaderboard, me } = res;
-    setRankList(leaderboard);
-    setMyRankInfo(me);
-    setTopRanks(leaderboard.slice(0, 3));
+    setLoading(true);
+
+    try {
+      const res = await leaderBoardRankAPI();
+      const { leaderboard, me } = res;
+
+      // slidesPerView设置为2，因此长度小于4时，可能无法持续滚动
+      const minLen = me ? 2 : 3;
+      setRankList(
+        leaderboard.length < minLen ** 2
+          ? Array(minLen)
+              .fill(null)
+              .map(() => leaderboard)
+              .flat()
+          : leaderboard,
+      );
+      setMyRankInfo(me);
+      setTopRanks(leaderboard.slice(0, 3));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     queryRank();
   }, []);
+
+  useEffect(() => {
+    queryRank();
+  }, [userInfo]);
 
   return (
     <div className="w-[28.125rem] h-[37.5rem] overflow-hidden rounded-[0.625rem] relative flex flex-col items-center pt-[1.9375rem]">
@@ -46,6 +75,7 @@ export default function Rank() {
                 index === 0 && 'order-2',
                 index === 1 && 'order-1',
                 index > 1 && 'order-3',
+                index === 0 && 'translate-x-3',
               ])}
             >
               <div className="relative">
@@ -82,7 +112,9 @@ export default function Rank() {
 
       <div className="flex flex-col w-[25.625rem] h-[14.6875rem] overflow-hidden">
         {/* My Rank */}
-        {myRankInfo && <MyRanking className="rounded-t-[2.25rem]" />}
+        {myRankInfo && (
+          <MyRanking className="rounded-t-[2.25rem]" rank={myRankInfo.rank} points={myRankInfo.moon_beam} />
+        )}
 
         <div
           className={cn([
@@ -90,28 +122,56 @@ export default function Rank() {
             myRankInfo || 'rounded-t-[2.25rem]',
           ])}
         >
-          <div className="animate-[scrollUp_30s_linear_infinite]">
-            {rankList.map((rank, index) => {
-              return (
-                <div
-                  key={index}
-                  className="flex items-center h-[5.0625rem] font-poppins-medium text-basic-yellow text-base border-b-1 border-[rgba(246,199,153,0.1)]"
-                >
-                  <span className="w-[2.625rem]">{rank.rank}</span>
+          {/* 有数据后立即初始化，否则将提前滚动 */}
+          {rankList.length > 0 && (
+            <Swiper
+              className="w-full h-full overflow-hidden rounded-[0.625rem] relative"
+              wrapperClass="!ease-linear"
+              modules={[Autoplay]}
+              loop
+              slidesPerView={myRankInfo ? 2 : 3}
+              direction="vertical"
+              freeMode
+              autoplay={{ delay: 0, disableOnInteraction: false }}
+              speed={2000}
+            >
+              {rankList.map((rank, index) => (
+                <SwiperSlide key={index} className="relative cursor-pointer">
+                  <div
+                    key={index}
+                    className="flex items-center h-[5.0625rem] font-poppins-medium text-basic-yellow text-base border-b-1 border-[rgba(246,199,153,0.1)]"
+                  >
+                    <span className="w-[2.625rem]">{rank.rank}</span>
 
-                  <Image className="border-1 border-basic-yellow rounded-full" src={rank.avatar_url} alt="" width={48} height={48} />
+                    <Image
+                      className="border-1 border-basic-yellow rounded-full"
+                      src={rank.avatar_url}
+                      alt=""
+                      width={48}
+                      height={48}
+                    />
 
-                  <span className="flex-1 ml-[0.875rem] text-ellipsis overflow-hidden whitespace-nowrap">
-                    {rank.username}
-                  </span>
+                    <span className="flex-1 ml-[0.875rem] text-ellipsis overflow-hidden whitespace-nowrap">
+                      {rank.username}
+                    </span>
 
-                  <span className="ml-[1.5rem]">{rank.moon_beam}</span>
-                </div>
-              );
-            })}
-          </div>
+                    <span className="ml-[1.5rem]">{rank.moon_beam}</span>
+                  </div>
+                </SwiperSlide>
+              ))}
+
+              <div
+                className="basic-swiper-pagination text-white z-10 font-decima flex"
+                style={{ left: '3.375rem', bottom: '2.1675rem' }}
+              ></div>
+            </Swiper>
+          )}
         </div>
       </div>
+
+      {loading && <CircularLoading />}
     </div>
   );
-}
+};
+
+export default observer(Rank);

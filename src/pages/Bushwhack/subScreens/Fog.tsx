@@ -34,7 +34,7 @@ function getBaseMasks(): MaskItem[] {
         isTrackballControlls: false,
         offsetPower: {
           x: -0.5,
-          y: -5,
+          y: -5.4,
           z: 0,
         },
         zoom: 6,
@@ -53,9 +53,9 @@ function getBaseMasks(): MaskItem[] {
         texture: '/models/textures/Lewis.tga',
         isTrackballControlls: false,
         rotate: {
-          x: Math.PI / 4,
-          y: -Math.PI / 6,
-          z: Math.PI / 6,
+          x: Math.PI / 2,
+          //   y: -Math.PI / 6,
+          //   z: Math.PI / 6,
         },
         offsetPower: {
           y: -0.5,
@@ -76,9 +76,9 @@ function getBaseMasks(): MaskItem[] {
         texture: '/models/textures/T_Rhea.tga',
         isTrackballControlls: false,
         rotate: {
-          x: Math.PI / 4,
-          y: -Math.PI / 6,
-          z: Math.PI / 6,
+          x: Math.PI / 2,
+          // y: -Math.PI / 6,
+          // z: Math.PI / 6,
         },
         offsetPower: {
           y: -0.5,
@@ -90,11 +90,13 @@ function getBaseMasks(): MaskItem[] {
 }
 
 export default function FogScreen() {
+  const BASE_WIDTH = 1920;
+  const BASE_HEIGHT = 1080;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fogImgRef = useRef<HTMLImageElement>(null);
   const ctx = useRef<CanvasRenderingContext2D | null>(null);
-  const [width, setWidth] = useState(1920);
-  const [height, setHeight] = useState(1080);
+  const [width, setWidth] = useState(BASE_WIDTH);
+  const [height, setHeight] = useState(BASE_HEIGHT);
   const [masks, setMasks] = useState<MaskItem[]>(getBaseMasks());
   const maskVal = useRef<MaskItem[]>(masks);
   const [maskInfo, setMaskInfo] = useState<MaskItem | null>(null);
@@ -106,6 +108,10 @@ export default function FogScreen() {
   const [isResizing, setIsResizing] = useState(false);
   const x = useRef(0);
   const y = useRef(0);
+  const [shadowWidth, setShadowWidth] = useState(BASE_WIDTH);
+  const [shadowHeight, setShadowHeight] = useState(BASE_HEIGHT);
+  const [isShadowX, setIsShadowX] = useState(false);
+  const [isShadowY, setIsShadowY] = useState(false);
 
   const RADIUS_MIN = 20;
   const RADIUS_MAX = 100;
@@ -115,12 +121,12 @@ export default function FogScreen() {
   // 初始化计算面具坐标
   function initMasks() {
     const { innerWidth: w, innerHeight: h } = window;
-    const ratio = Math.min(w / 1920, h / 1080);
+    const ratio = Math.min(w / BASE_WIDTH, h / BASE_HEIGHT);
 
     const newMasks = getBaseMasks();
     newMasks.forEach((m) => {
-      m.x = w / 2 - (1920 / 2 - m.x) * ratio;
-      m.y = h / 2 - (1080 / 2 - m.y) * ratio;
+      m.x = w / 2 - (BASE_WIDTH / 2 - m.x) * ratio;
+      m.y = h / 2 - (BASE_HEIGHT / 2 - m.y) * ratio;
     });
     setMasks((maskVal.current = newMasks));
   }
@@ -130,6 +136,20 @@ export default function FogScreen() {
     const { innerWidth, innerHeight } = window;
     setWidth(innerWidth);
     setHeight(innerHeight);
+    const ratio = Math.min(innerWidth / BASE_WIDTH, innerHeight / BASE_HEIGHT);
+    setShadowWidth(innerWidth * ratio);
+    setShadowHeight(innerHeight * ratio);
+    if (innerWidth / BASE_WIDTH > innerHeight / BASE_HEIGHT) {
+      setShadowWidth(innerHeight * BASE_WIDTH / BASE_HEIGHT);
+      setShadowHeight(innerHeight);
+      setIsShadowX(false);
+      setIsShadowY(true);
+    } else {
+      setShadowWidth(innerWidth);
+      setShadowHeight(innerWidth * BASE_HEIGHT / BASE_WIDTH);
+      setIsShadowX(true);
+      setIsShadowY(false);
+    }
 
     initMasks();
 
@@ -253,6 +273,14 @@ export default function FogScreen() {
 
       <Image className={cn(['w-full h-full object-contain', isResizing && 'invisible'])} src={sceneImg} alt="" />
 
+      <div
+        className={cn([
+          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 shadow-[inset_0_0_4rem_2rem_#000]',
+          isResizing && 'invisible',
+        ])}
+        style={{ width: `${shadowWidth}px`, height: `${shadowHeight}px`}}
+      ></div>
+
       <canvas
         ref={canvasRef}
         width={width}
@@ -308,9 +336,7 @@ export default function FogScreen() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalBody>
-                {maskInfo && <ModelView3D info={maskInfo.mask} />}
-              </ModalBody>
+              <ModalBody>{maskInfo && <ModelView3D info={maskInfo.mask} />}</ModalBody>
               <ModalFooter>
                 <span className="text-2xl font-poppins">{maskInfo?.name}</span>
                 {/* <BasicButton label='Reset' onClick={onReset} /> */}
