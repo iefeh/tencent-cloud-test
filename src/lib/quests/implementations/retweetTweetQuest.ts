@@ -27,7 +27,7 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         // retweet时额外添加用户的转推次数
-        const result = await this.saveUserReward(userId, taint, rewardDelta, async (session) => {
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
             await UserMetrics.updateOne(
                 {user_id: userId},
                 {
