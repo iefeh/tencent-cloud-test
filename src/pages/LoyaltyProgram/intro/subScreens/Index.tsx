@@ -42,7 +42,7 @@ export default function IndexScreen() {
         needAni
         baseAniTY
         subtitle={
-          <div className="max-w-[32.0625rem] font-decima text-lg">
+          <div className="max-w-[35rem] font-decima text-lg">
             At Moonveil, player experience is of paramount importance. We are dedicated to recognizing and rewarding
             players&#39; contributions in our ecosystem by introducing the Moonveil Loyalty Program, centered around
             Moonveil Beam (MB) points.
