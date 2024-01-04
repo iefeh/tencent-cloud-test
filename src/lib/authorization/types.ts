@@ -59,3 +59,8 @@ export enum AuthorizationType {
     Google = "google",
     Steam = "steam",
 }
+
+export enum CaptchaType {
+    LoginCaptcha = "login_captcha",
+    ConnectCaptcha = "connect_captcha",
+}

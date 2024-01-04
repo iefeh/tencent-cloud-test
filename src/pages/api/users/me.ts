@@ -10,7 +10,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
-    console.log(process.env.MONGODB_URI!);
     await getMongoConnection();
     const aggregation = [
         {$match: {'user_id': userId, 'deleted_time': null}},
