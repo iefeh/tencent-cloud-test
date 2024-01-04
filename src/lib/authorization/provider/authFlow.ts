@@ -1,7 +1,7 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
 import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
-import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/utils/url";
+import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/common/url";
 import * as response from "@/lib/response/response";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";

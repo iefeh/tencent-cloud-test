@@ -1,7 +1,7 @@
 import * as response from "@/lib/response/response";
 import {redis} from "@/lib/redis/client";
 import {AuthorizationPayload} from "@/lib/models/authentication";
-import {appendQueryParamsToUrl} from "@/lib/utils/url";
+import {appendQueryParamsToUrl} from "@/lib/common/url";
 import {AuthorizationType, AuthToken} from "@/lib/authorization/types";
 import OAuthToken from "@/lib/models/OAuthToken";
 import axios from "axios";

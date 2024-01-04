@@ -2,7 +2,7 @@ import {RateLimiter} from "@koshnic/ratelimit";
 import {redis} from "@/lib/redis/client";
 import {v4 as uuidv4} from "uuid";
 import logger from "@/lib/logger/winstonLogger";
-import {promiseSleep} from "@/lib/utils/sleep";
+import {promiseSleep} from "@/lib/common/sleep";
 import {CaptchaType} from "@/lib/authorization/types";
 
 const limiter = new RateLimiter(redis);

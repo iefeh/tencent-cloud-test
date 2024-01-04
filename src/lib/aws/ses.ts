@@ -1,5 +1,5 @@
 import {SendEmailCommand, SESClient} from "@aws-sdk/client-ses";
-import {appendQueryParamToUrl} from "@/lib/utils/url";
+import {appendQueryParamToUrl} from "@/lib/common/url";
 import * as sgMail from '@sendgrid/mail';
 import {generateCaptchaEmailHTML} from "@/lib/templates/email";
 
