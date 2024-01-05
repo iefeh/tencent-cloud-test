@@ -30,12 +30,12 @@ export const enum QuestRewardType {
 
 /** 媒体连接类型 */
 export const enum MediaType {
-  EMAIL,
-  TWITTER,
-  DISCORD,
-  FACEBOOK,
-  TELEGRAM,
-  STEAM,
-  GOOGLE,
-  METAMASK,
+  EMAIL = 'email',
+  TWITTER = 'twitter',
+  DISCORD = 'discord',
+  FACEBOOK = 'facebook',
+  TELEGRAM = 'telegram',
+  STEAM = 'steam',
+  GOOGLE = 'google',
+  METAMASK = 'metamask',
 }

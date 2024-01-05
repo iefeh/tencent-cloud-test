@@ -22,6 +22,7 @@ import {
   disconnectSteamAPI,
   disconnectTwitterAPI,
 } from '@/http/services/login';
+import useConnect from '@/hooks/useConnect';
 
 interface MAItem {
   title: string;
@@ -32,7 +33,7 @@ interface MAItem {
 }
 
 const SocialMediaAccounts = function () {
-  const { userInfo } = useContext(MobxContext);
+  const { userInfo, getUserInfo } = useContext(MobxContext);
   const accounts: MAItem[] = [
     {
       title: 'Email',
@@ -86,8 +87,6 @@ const SocialMediaAccounts = function () {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [disconnectLoading, setDisconnectLoading] = useState(false);
 
-  function onConnect(item: MAItem) {}
-
   function onDisconnectClick(item: MAItem) {
     setCurrentItem(item);
     onOpen();
@@ -108,33 +107,41 @@ const SocialMediaAccounts = function () {
     }
   }
 
+  const MediaItem = function (props: { item: MAItem }) {
+    const { item } = props;
+    const { onConnect } = useConnect(item.type, () => {
+      getUserInfo();
+    });
+
+    return (
+      <div className="flex items-center py-[1.0625rem] pl-[1.6875rem] pr-[1.875rem] border-1 border-[#252525] rounded-base bg-black hover:border-basic-yellow transition-[border-color] !duration-500">
+        <Image className="w-[1.625rem] h-[1.625rem] object-contain" src={item.icon} alt="" width={26} height={26} />
+
+        <div className="ml-4 flex-1 font-poppins-medium text-base">{item.title}</div>
+
+        <div className="cursor-pointer">
+          {item.connected ? (
+            <span className="relative" onClick={() => onDisconnectClick(item)}>
+              Connected
+              <span className="absolute right-0 z-0 text-transparent hover:bg-black hover:text-basic-yellow transition-all !duration-500">
+                Disconnect
+              </span>
+            </span>
+          ) : (
+            <Image className="w-[1.375rem] h-4" src={rightArrowIconImg} alt="" onClick={onConnect} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className="text-2xl">Social Media Accounts</div>
 
       <div className="grid grid-cols-3 gap-[1.875rem] relative">
         {accounts.map((item, index) => (
-          <div
-            key={index}
-            className="flex items-center py-[1.0625rem] pl-[1.6875rem] pr-[1.875rem] border-1 border-[#252525] rounded-base bg-black hover:border-basic-yellow transition-[border-color] !duration-500"
-          >
-            <Image className="w-[1.625rem] h-[1.625rem] object-contain" src={item.icon} alt="" width={26} height={26} />
-
-            <div className="ml-4 flex-1 font-poppins-medium text-base">{item.title}</div>
-
-            <div className="cursor-pointer">
-              {item.connected ? (
-                <span className="relative" onClick={() => onDisconnectClick(item)}>
-                  Connected
-                  <span className="absolute right-0 z-0 text-transparent hover:bg-black hover:text-basic-yellow transition-all !duration-500">
-                    Disconnect
-                  </span>
-                </span>
-              ) : (
-                <Image className="w-[1.375rem] h-4" src={rightArrowIconImg} alt="" onClick={() => onConnect(item)} />
-              )}
-            </div>
-          </div>
+          <MediaItem key={index} item={item} />
         ))}
       </div>
 

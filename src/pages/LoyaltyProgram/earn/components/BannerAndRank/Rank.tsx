@@ -11,6 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { observer } from 'mobx-react-lite';
 import { MobxContext } from '@/pages/_app';
+import { throttle } from 'lodash';
 
 const Rank = function () {
   const { userInfo } = useContext(MobxContext);
@@ -19,7 +20,7 @@ const Rank = function () {
   const [rankList, setRankList] = useState<LeaderBoardItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  async function queryRank() {
+  const queryRank = throttle(async function () {
     setLoading(true);
 
     try {
@@ -43,7 +44,7 @@ const Rank = function () {
     } finally {
       setLoading(false);
     }
-  }
+  }, 500);
 
   useEffect(() => {
     queryRank();
