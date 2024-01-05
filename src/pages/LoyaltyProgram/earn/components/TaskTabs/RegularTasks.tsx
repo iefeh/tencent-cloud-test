@@ -280,7 +280,7 @@ function RegularTasks() {
 
       try {
         setVerifiable(false);
-        const api = task.properties?.last_verified_time ? reverifyTaskAPI : verifyTaskAPI;
+        const api = canReverify ? reverifyTaskAPI : verifyTaskAPI;
         const res = await api({ quest_id: task.id });
         setVerified(!!res.verified);
 
