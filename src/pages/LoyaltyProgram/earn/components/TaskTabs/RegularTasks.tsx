@@ -35,6 +35,7 @@ import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { throttle } from 'lodash';
 
 interface VerifyTexts {
   label: string;
@@ -69,7 +70,7 @@ function RegularTasks() {
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  async function queryTasks(pagi: PagiInfo = pagiInfo.current) {
+  const queryTasks = throttle(async function (pagi: PagiInfo = pagiInfo.current) {
     setTaskListLoading(true);
 
     try {
@@ -84,22 +85,22 @@ function RegularTasks() {
     } finally {
       setTaskListLoading(false);
     }
-  }
+  }, 500);
 
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
       switch (item.type) {
         case QuestType.RetweetTweet:
-          item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweeted' };
+          item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweet' };
           break;
         case QuestType.JOIN_DISCORD_SERVER:
-          item.connectTexts = { label: 'Join', loadingLabel: 'Join', finishedLabel: 'Joined' };
+          item.connectTexts = { label: 'Join', loadingLabel: 'Join', finishedLabel: 'Join' };
           break;
         case QuestType.FollowOnTwitter:
-          item.connectTexts = { label: 'Follow', loadingLabel: 'Follow', finishedLabel: 'Followed' };
+          item.connectTexts = { label: 'Follow', loadingLabel: 'Follow', finishedLabel: 'Follow' };
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
-          item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Registered' };
+          item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Register' };
           break;
       }
     });
@@ -128,9 +129,9 @@ function RegularTasks() {
     queryTasks(pagi);
   }
 
-  useEffect(() => {
-    queryTasks();
-  }, []);
+  // useEffect(() => {
+  //   queryTasks();
+  // }, []);
 
   useEffect(() => {
     queryTasks();
@@ -143,7 +144,10 @@ function RegularTasks() {
     const [verified, setVerified] = useState(!!task.verified);
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
-    const [verifiable, setVerifiable] = useState(connected && !verified);
+    const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
+    const isNotNeedConnect = task.properties.is_prepared && !task.properties.url;
+    const initVerifiable = !isNotNeedConnect ? connected && (!verified || canReverify) : !verified;
+    const [verifiable, setVerifiable] = useState(initVerifiable);
     const dialogWindowRef = useRef<Window | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -299,38 +303,26 @@ function RegularTasks() {
 
     return (
       <div className="mt-5 flex items-center">
-        <LGButton
-          className="uppercase"
-          label={getButtonLabel(
-            connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
-            connectLoading,
-            connected,
-          )}
-          actived
-          loading={connectLoading}
-          disabled={connected || verified}
-          onClick={onConnect}
-        />
+        {!isNotNeedConnect && (
+          <LGButton
+            className="uppercase"
+            label={getButtonLabel(
+              connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
+              connectLoading,
+              connected,
+            )}
+            actived
+            loading={connectLoading}
+            disabled={connected || verified}
+            onClick={onConnect}
+          />
+        )}
 
         <LGButton
           className="ml-2 uppercase"
-          label={
-            task.type === QuestType.ConnectWallet && task.properties.can_reverify_after === 0
-              ? 'Reverify'
-              : getButtonLabel(
-                  verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
-                  verifyLoading,
-                  verified,
-                )
-          }
+          label={canReverify ? 'Reverify' : 'Verify'}
           loading={verifyLoading}
-          disabled={
-            !task.properties.is_prepared
-              ? !connected ||
-                (verified && task.type !== QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) > 0) ||
-                !verifiable
-              : false
-          }
+          disabled={!verifiable}
           onClick={onVerify}
         />
 
@@ -508,8 +500,8 @@ function RegularTasks() {
           classNames={{
             wrapper: 'gap-3',
             item: 'w-12 h-12 font-poppins-medium text-base text-white',
-            prev: 'w-12 h-12 border-1 border-white bg-transparent',
-            next: 'w-12 h-12 border-1 border-white bg-transparent',
+            // prev: 'w-12 h-12 border-1 border-white bg-transparent',
+            chevronNext: 'w-12 h-12 border-1 border-white bg-red',
           }}
           disableCursorAnimation
           radius="full"
