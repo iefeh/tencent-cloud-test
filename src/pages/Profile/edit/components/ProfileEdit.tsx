@@ -10,19 +10,19 @@ const ProfileEdit = function () {
   const { avatar_url } = userInfo || {};
 
   return (
-    <div>
+    <div className='mt-[3.4375rem]'>
       <div className="flex items-center font-semibold">
         <div className="w-[6.875rem] h-[6.875rem] relative overflow-hidden rounded-full">
           {avatar_url && <Image className="object-cover" src={avatar_url} alt="" fill />}
         </div>
 
-        <div className="text-2xl">Change profile photo</div>
+        <div className="text-2xl ml-5">Change profile photo</div>
       </div>
 
-      <div>
+      <div className='mt-[3.4375rem]'>
         <div className="text-2xl">User Name</div>
 
-        <div className="flex gap-2 h-[3.75rem]">
+        <div className="flex gap-2 h-[3.75rem] mt-[1.4375rem]">
           <Input
             classNames={{ base: 'w-[23.75rem]', inputWrapper: 'h-full bg-black !rounded-base border-[#252525]' }}
             type="text"

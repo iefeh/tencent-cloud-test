@@ -136,10 +136,10 @@ const SocialMediaAccounts = function () {
   };
 
   return (
-    <div>
+    <div className='mt-[4.1875rem]'>
       <div className="text-2xl">Social Media Accounts</div>
 
-      <div className="grid grid-cols-3 gap-[1.875rem] relative">
+      <div className="grid grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
         {accounts.map((item, index) => (
           <MediaItem key={index} item={item} />
         ))}
