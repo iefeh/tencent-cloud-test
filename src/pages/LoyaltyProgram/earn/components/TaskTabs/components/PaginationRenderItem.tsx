@@ -17,7 +17,11 @@ export default function PaginationRenderItem({
     return (
       <button
         key={key}
-        className={cn(className, activePage === total && 'text-basic-gray border-basic-gray')}
+        className={cn([
+          'border-1 border-white bg-transparent',
+          className,
+          activePage < total ? 'border-white text-white' : 'border-[#333333] text-[#333333]',
+        ])}
         onClick={onNext}
       >
         <ChevronIcon className="rotate-180" />
@@ -27,7 +31,15 @@ export default function PaginationRenderItem({
 
   if (value === PaginationItemType.PREV) {
     return (
-      <button key={key} className={cn(className, isActive && 'border-white text-white')} onClick={onPrevious}>
+      <button
+        key={key}
+        className={cn([
+          'border-1 bg-transparent',
+          className,
+          activePage > 1 ? 'border-white text-white' : 'border-[#333333] text-[#333333]',
+        ])}
+        onClick={onPrevious}
+      >
         <ChevronIcon />
       </button>
     );

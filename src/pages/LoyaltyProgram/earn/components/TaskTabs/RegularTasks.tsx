@@ -500,8 +500,6 @@ function RegularTasks() {
           classNames={{
             wrapper: 'gap-3',
             item: 'w-12 h-12 font-poppins-medium text-base text-white',
-            // prev: 'w-12 h-12 border-1 border-white bg-transparent',
-            chevronNext: 'w-12 h-12 border-1 border-white bg-red',
           }}
           disableCursorAnimation
           radius="full"
