@@ -15,8 +15,13 @@ import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
-import { disconnectDiscordAPI, disconnectEmailAPI, disconnectGoogleAPI, disconnectSteamAPI, disconnectTwitterAPI } from '@/http/services/login';
-import CircularLoading from '@/pages/components/common/CircularLoading';
+import {
+  disconnectDiscordAPI,
+  disconnectEmailAPI,
+  disconnectGoogleAPI,
+  disconnectSteamAPI,
+  disconnectTwitterAPI,
+} from '@/http/services/login';
 
 interface MAItem {
   title: string;
@@ -131,8 +136,6 @@ const SocialMediaAccounts = function () {
             </div>
           </div>
         ))}
-
-        {disconnectLoading && <CircularLoading />}
       </div>
 
       <Modal
@@ -150,7 +153,7 @@ const SocialMediaAccounts = function () {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <LGButton className="uppercase" label="Yes" onClick={onDisconnect} />
+                <LGButton loading={disconnectLoading} className="uppercase" label="Yes" onClick={onDisconnect} />
                 <LGButton className="uppercase" label="No" actived onClick={onClose} />
               </ModalFooter>
             </>
