@@ -28,10 +28,8 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import useConnectDialog from '@/hooks/useConnectDialog';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
-import loadingImg from 'img/loyalty/earn/loading.png';
 import { MobxContext } from '@/pages/_app';
 import { BrowserProvider } from 'ethers';
-import { delay } from 'lodash';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
@@ -146,7 +144,7 @@ function RegularTasks() {
     const dialogWindowRef = useRef<Window | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    useConnectDialog(dialogWindowRef, () => {
+    useConnectDialog(dialogWindowRef, task.type, () => {
       const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
       const { code, msg } = tokens[task.type] || {};
       const isConnected = +code === 1;
@@ -314,7 +312,7 @@ function RegularTasks() {
         <LGButton
           className="ml-2 uppercase"
           label={
-            task.type === QuestType.ConnectWallet && verified
+            task.type === QuestType.ConnectWallet && task.properties.can_reverify_after === 0
               ? 'Reverify'
               : getButtonLabel(
                   verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
