@@ -14,12 +14,15 @@ import rightArrowIconImg from 'img/profile/edit/icon_arrow_right.png';
 import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import { toast } from 'react-toastify';
+import { disconnectDiscordAPI, disconnectEmailAPI, disconnectGoogleAPI, disconnectSteamAPI, disconnectTwitterAPI } from '@/http/services/login';
 
 interface MAItem {
   title: string;
   icon: string | StaticImageData;
   type: MediaType;
   connected?: boolean;
+  disconnectAPI?: () => Promise<boolean | null>;
 }
 
 const SocialMediaAccounts = function () {
@@ -30,29 +33,32 @@ const SocialMediaAccounts = function () {
       icon: emailIconImg,
       type: MediaType.EMAIL,
       connected: !!userInfo?.email,
+      disconnectAPI: disconnectEmailAPI,
     },
     {
       title: 'Twitter',
       icon: xIconImg,
       type: MediaType.TWITTER,
       connected: !!userInfo?.twitter,
+      disconnectAPI: disconnectTwitterAPI,
     },
     {
       title: 'Discord',
       icon: discordIconImg,
       type: MediaType.DISCORD,
       connected: !!userInfo?.discord,
+      disconnectAPI: disconnectDiscordAPI,
     },
     // {
     //   title: 'Facebook',
     //   icon: facebookIconImg,
-    // type: MediaType.FACEBOOK,
+    //   type: MediaType.FACEBOOK,
     //   connected: !!userInfo?.facebook,
     // },
     // {
     //   title: ' Telegram',
     //   icon: telegramIconImg,
-    // type: MediaType.TELEGRAM,
+    //   type: MediaType.TELEGRAM,
     //   connected: !!userInfo?.telegram,
     // },
     {
@@ -60,22 +66,37 @@ const SocialMediaAccounts = function () {
       icon: steamIconImg,
       type: MediaType.STEAM,
       connected: !!userInfo?.steam,
+      disconnectAPI: disconnectSteamAPI,
     },
     {
       title: 'Google',
       icon: googleIconImg,
       type: MediaType.GOOGLE,
       connected: !!userInfo?.google,
+      disconnectAPI: disconnectGoogleAPI,
     },
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  // const;
 
   function onConnect(item: MAItem) {}
 
   function onDisconnectClick(item: MAItem) {
     setCurrentItem(item);
     onOpen();
+  }
+
+  async function onDisconnect() {
+    const { disconnectAPI } = currentItem || {};
+    if (!disconnectAPI) return;
+
+    try {
+      await disconnectAPI();
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.message || error);
+    }
   }
 
   return (
@@ -108,19 +129,23 @@ const SocialMediaAccounts = function () {
         ))}
       </div>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ base: 'bg-[#141414]', body: 'px-8 pt-[3.625rem]' }}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        classNames={{ base: 'bg-[#141414] !rounded-base', body: 'px-8 pt-[3.625rem]' }}
+      >
         <ModalContent>
           {(onClose) => (
             <>
               <ModalBody>
-                <p>
+                <p className="text-center">
                   Please note that after disconnecting your account, you&apos;ll need to wait for 24 hours before
                   re-connecting. Are you sure you want to disconnect?
                 </p>
               </ModalBody>
               <ModalFooter>
-                <LGButton label="Yes" />
-                <LGButton label="No" actived />
+                <LGButton className="uppercase" label="Yes" onClick={onDisconnect} />
+                <LGButton className="uppercase" label="No" actived onClick={onClose} />
               </ModalFooter>
             </>
           )}

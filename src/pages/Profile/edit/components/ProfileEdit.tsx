@@ -7,15 +7,13 @@ import { useContext } from 'react';
 
 const ProfileEdit = function () {
   const { userInfo } = useContext(MobxContext);
-  if (!userInfo) return null;
-
-  const { avatar_url } = userInfo;
+  const { avatar_url } = userInfo || {};
 
   return (
     <div>
       <div className="flex items-center font-semibold">
         <div className="w-[6.875rem] h-[6.875rem] relative overflow-hidden rounded-full">
-          <Image className="object-cover" src={avatar_url} alt="" fill />
+          {avatar_url && <Image className="object-cover" src={avatar_url} alt="" fill />}
         </div>
 
         <div className="text-2xl">Change profile photo</div>
@@ -32,7 +30,7 @@ const ProfileEdit = function () {
             fullWidth={false}
             placeholder="Your name"
           />
-          <LGButton className="w-[7.5rem] h-full" label="Save" actived squared />
+          <LGButton className="w-[7.5rem] h-full" label="Save" actived squared disabled={!userInfo} />
         </div>
       </div>
     </div>
