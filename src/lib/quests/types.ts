@@ -24,6 +24,12 @@ export const QuestMetrics = new Map<QuestType, Metric[]>([
     [QuestType.ConnectSteam, [Metric.SteamAccountYears, Metric.SteamAccountGameCount, Metric.SteamAccountUSDValue, Metric.SteamAccountRating]]
 ]);
 
+// 允许预备完成的任务
+export const preparedQuests = new Map<QuestType, boolean>([
+    [QuestType.RetweetTweet, true],
+    [QuestType.FollowOnTwitter, true],
+]);
+
 export enum QuestRewardType {
     // 固定奖励，奖励数量配置于当前任务中
     Fixed = "fixed",

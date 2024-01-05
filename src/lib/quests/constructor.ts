@@ -13,44 +13,27 @@ import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQues
 
 // TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
 //       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
-export async function claimQuestReward(userId: string, quest: IQuest): Promise<claimRewardResult> {
-    let baseQuest: QuestBase | undefined;
+export function constructQuest(quest: IQuest): QuestBase {
     switch (quest.type) {
         case QuestType.ConnectWallet:
-            baseQuest = new ConnectWalletQuest(quest)
-            break;
+            return new ConnectWalletQuest(quest);
         case QuestType.ConnectDiscord:
-            baseQuest = new ConnectDiscordQuest(quest)
-            break;
+            return new ConnectDiscordQuest(quest);
         case QuestType.FollowOnTwitter:
-            baseQuest = new FollowOnTwitterQuest(quest)
-            break;
+            return new FollowOnTwitterQuest(quest);
         case QuestType.RetweetTweet:
-            baseQuest = new RetweetTweetQuest(quest)
-            break;
+            return new RetweetTweetQuest(quest);
         case QuestType.ConnectTwitter:
-            baseQuest = new ConnectTwitterQuest(quest)
-            break;
+            return new ConnectTwitterQuest(quest);
         case QuestType.ConnectSteam:
-            baseQuest = new ConnectSteamQuest(quest)
-            break;
+            return new ConnectSteamQuest(quest);
         case QuestType.HoldDiscordRole:
-            baseQuest = new HoldDiscordRoleQuest(quest)
-            break;
-        case QuestType.Whitelist:
-            break;
+            return new HoldDiscordRoleQuest(quest);
         case QuestType.UserMetric:
-            baseQuest = new UserMetricQuest(quest)
-            break;
+            return new UserMetricQuest(quest)
+        case QuestType.Whitelist:
         case QuestType.HoldNFT:
-            break;
         default:
-            logger.error(`quest ${quest.id} type ${quest.type} not implemented`);
-            return {verified: false}
+            throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }
-    if (!baseQuest) {
-        logger.error(`base quest not initialized`);
-        return {verified: false}
-    }
-    return baseQuest.claimReward(userId);
 }

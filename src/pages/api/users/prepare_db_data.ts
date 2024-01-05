@@ -37,6 +37,7 @@ async function saveQuests() {
                 max_amount: 7500,
                 range_reward_ids: ["8610c3a9-6477-4bf0-9228-cf2bc0c9d965", "be3ed7bc-104b-4499-9b26-940608b11bb0"],
             },
+            active: true,
             created_time: now,
             updated_time: now,
         },
@@ -45,6 +46,7 @@ async function saveQuests() {
             name: "Connect Your Twitter",
             description: "Connect to your Twitter account.",
             tip: "",
+            active: true,
             type: QuestType.ConnectTwitter,
             properties: null,
             reward: {
@@ -57,6 +59,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "Connect Your Discord",
             description: "Connect to your Discord account.",
             tip: "",
@@ -72,6 +75,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "Join Discord Server",
             description: "Join Moonveil‘s official Discord server.",
             tip: "",
@@ -91,6 +95,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "Twitter Follow @Moonveil_Studio",
             description: "Follow @Moonveil_Studio on Twitter.",
             tip: "",
@@ -109,6 +114,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "Twitter Follow @AstrArk_World",
             description: "Follow @AstrArk_World on Twitter.",
             tip: "",
@@ -127,6 +133,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "Twitter Retweet",
             description: "Click 'Retweet' to verify your reward.",
             tip: "",
@@ -146,6 +153,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "Connect Your Steam",
             description: "Step 1: Sign in with your Steam. Step 2: Set your profile to \"Public\".",
             tip: "In order to view your profile, please go to Privacy Settings and set all profile items to \"Public\".",
@@ -162,6 +170,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "1st Membership Verifications",
             description: "If you are an early supporter who received the \"1st Membership\" role in our Discord community, please verify to receive your reward.",
             tip: "",
@@ -181,6 +190,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "AstrArk Pre-register",
             description: "Click to pre-register the AstrArk game and claim your in-game rewards.",
             tip: "",
@@ -200,6 +210,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
+            active: true,
             name: "DC Community Early Support",
             description: "If you're an early supporter of our DC community and have earned MBs, please kindly verify to claim your MBs.",
             tip: "",
