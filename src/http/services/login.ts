@@ -1,4 +1,4 @@
-import { QuestType } from '@/constant/task';
+import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
 
 function getAuthParams(path = '') {
@@ -37,6 +37,10 @@ export function getTwitterAuthLinkAPI(): Promise<AuthDto> {
 
 export function signInParticleAPI(data: ParticleAuthDto) {
   return http.post('/api/auth/signin/particle', JSON.stringify(data));
+}
+
+export function connectGoogleAPI(): Promise<AuthDto> {
+  return http.get('/api/auth/connect/google', { params: getAuthParams(`/connect?type=${MediaType.GOOGLE}`) });
 }
 
 export function connectTwitterAPI(): Promise<AuthDto> {
