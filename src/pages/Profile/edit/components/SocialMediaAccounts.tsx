@@ -16,6 +16,7 @@ import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nex
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import { disconnectDiscordAPI, disconnectEmailAPI, disconnectGoogleAPI, disconnectSteamAPI, disconnectTwitterAPI } from '@/http/services/login';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface MAItem {
   title: string;
@@ -78,7 +79,7 @@ const SocialMediaAccounts = function () {
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  // const;
+  const [disconnectLoading, setDisconnectLoading] = useState(false);
 
   function onConnect(item: MAItem) {}
 
@@ -91,11 +92,14 @@ const SocialMediaAccounts = function () {
     const { disconnectAPI } = currentItem || {};
     if (!disconnectAPI) return;
 
+    setDisconnectLoading(true);
     try {
       await disconnectAPI();
       onClose();
     } catch (error: any) {
       toast.error(error?.message || error);
+    } finally {
+      setDisconnectLoading(false);
     }
   }
 
@@ -103,7 +107,7 @@ const SocialMediaAccounts = function () {
     <div>
       <div className="text-2xl">Social Media Accounts</div>
 
-      <div className="grid grid-cols-3 gap-[1.875rem]">
+      <div className="grid grid-cols-3 gap-[1.875rem] relative">
         {accounts.map((item, index) => (
           <div
             key={index}
@@ -127,6 +131,8 @@ const SocialMediaAccounts = function () {
             </div>
           </div>
         ))}
+
+        {disconnectLoading && <CircularLoading />}
       </div>
 
       <Modal
