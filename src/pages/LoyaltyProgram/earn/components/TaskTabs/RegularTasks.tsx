@@ -168,7 +168,7 @@ function RegularTasks() {
     const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
       const { label, loadingLabel, finishedLabel } = texts;
       // return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
-      return isFinished ? finishedLabel : label;
+      return isFinished ? (canReverify ? 'Reverify' : finishedLabel) : label;
     };
 
     function openAuthWindow(authURL: string) {
@@ -320,7 +320,11 @@ function RegularTasks() {
 
         <LGButton
           className="ml-2 uppercase"
-          label={canReverify ? 'Reverify' : 'Verify'}
+          label={getButtonLabel(
+            verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
+            verifyLoading,
+            verified,
+          )}
           loading={verifyLoading}
           disabled={!verifiable}
           onClick={onVerify}
