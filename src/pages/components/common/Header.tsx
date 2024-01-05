@@ -40,7 +40,7 @@ const routeText: RouteMenu[] = [
       {
         name: 'Earn Moon Beams',
         route: '/LoyaltyProgram/earn',
-        disabled: true,
+        // disabled: true,
       },
       // {
       //   name: 'MB=MVP',
