@@ -17,6 +17,7 @@ import {
   prepareTaskAPI,
   queryTaskListAPI,
   reverifyTaskAPI,
+  taskDetailsAPI,
   verifyTaskAPI,
 } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -87,6 +88,15 @@ function RegularTasks() {
     }
   }, 500);
 
+  function updateTaskById(id: string, item: TaskListItem) {
+    const list = tasks.slice();
+    const index = list.findIndex((task) => task.id === id);
+    if (index < 0) return;
+
+    list[index] = item;
+    handleQuests(list);
+  }
+
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
       switch (item.type) {
@@ -156,7 +166,7 @@ function RegularTasks() {
       const { code, msg } = tokens[task.type] || {};
       const isConnected = +code === 1;
       if (isConnected) {
-        handleConnected();
+        updateTask();
         return;
       }
 
@@ -183,9 +193,13 @@ function RegularTasks() {
       });
     }
 
-    function handleConnected() {
-      setConnected(true);
-      setVerifiable(true);
+    async function updateTask() {
+      try {
+        const res = await taskDetailsAPI({ quest_id: task.id });
+        updateTaskById(task.id, res.quest);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     async function onBaseConnectClick() {
@@ -219,7 +233,7 @@ function RegularTasks() {
 
       try {
         await connectWalletAPI(data);
-        handleConnected();
+        updateTask();
       } catch (error) {
         console.log(error);
       }
@@ -234,6 +248,7 @@ function RegularTasks() {
       setConnectLoading(true);
       try {
         await prepareTaskAPI({ quest_id: task.id });
+        await updateTask();
       } catch (error) {
         console.log(error);
       } finally {
@@ -292,7 +307,7 @@ function RegularTasks() {
             setVerifiable(true);
           }, 10000);
         } else {
-          queryTasks(pagiInfo.current, true);
+          updateTask();
         }
       } catch (error) {
         console.log(error);
