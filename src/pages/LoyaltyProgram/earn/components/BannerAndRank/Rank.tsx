@@ -81,7 +81,7 @@ const Rank = function () {
             >
               <div className="relative">
                 <Image
-                  className="w-[3.75rem] h-[3.75rem] rounded-full object-cover"
+                  className="w-[3.75rem] h-[3.75rem] border-1 border-basic-yellow rounded-full object-cover"
                   src={rank.avatar_url}
                   alt=""
                   width={60}
