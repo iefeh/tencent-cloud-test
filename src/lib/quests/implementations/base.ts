@@ -65,21 +65,21 @@ export abstract class QuestBase {
         return totalReward;
     }
 
-
-    // 检查用户是否已经领取任务奖励
-    async checkVerified(userId: string): Promise<boolean> {
+    // 检查用户是否达成任务
+    async checkAchieved(userId: string): Promise<boolean> {
         const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: this.quest.id});
         return !!achievement;
     }
 
+    // 检查用户是否已经领取任务奖励
+    async checkVerified(userId: string): Promise<boolean> {
+        const reward = await UserMoonBeamAudit.findOne({user_id: userId, corr_id: this.quest.id, deleted_time: null});
+        return !!reward;
+    }
+
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
-    async saveUserReward<T>(userId: string, taint: string, moonBeamDelta: number, extraTxOps: (session: any) => Promise<T> = null): Promise<{ done: boolean, duplicated: boolean }> {
+    async saveUserReward<T>(userId: string, taint: string, moonBeamDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean }> {
         const now = Date.now();
-        const achievement = new QuestAchievement({
-            quest_id: this.quest.id,
-            user_id: userId,
-            created_time: now,
-        });
         const audit = new UserMoonBeamAudit({
             user_id: userId,
             type: UserMoonBeamAuditType.Quests,
@@ -89,12 +89,16 @@ export abstract class QuestBase {
             created_time: now,
         });
         try {
+            // 保存用户任务达成记录、任务奖励记录、用户MB奖励
             await doTransaction(async (session) => {
                 if (extraTxOps) {
+                    // 执行额外的事务操作
                     await extraTxOps(session);
                 }
                 const opts = {session};
-                await achievement.save(opts);
+                await QuestAchievement.updateOne({user_id: userId, quest_id: this.quest.id}, {
+                    $setOnInsert: {created_time: Date.now()},
+                }, {upsert: true, session: session});
                 await audit.save(opts);
                 await User.updateOne({user_id: userId}, {$inc: {moon_beam: audit.moon_beam_delta}}, opts);
             })

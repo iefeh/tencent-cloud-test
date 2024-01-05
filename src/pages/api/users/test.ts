@@ -3,34 +3,17 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
-import * as Debank from "debank";
-import Quest from "@/lib/models/Quest";
-import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
-import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
-import {redis} from "@/lib/redis/client";
-import {getMBLeaderboardTopUsers, try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
-import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
-import UserSteam from "@/lib/models/UserSteam";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
-router.get(async (req, res) => {
+router.post(async (req, res) => {
     try {
         await getMongoConnection();
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
-
-        const quest = await Quest.findOne({id: "8ef84fa5-6b5b-4340-a143-93e66abe80c2"});
-        const questWrapper = new ConnectSteamQuest(quest);
-        const result = await questWrapper.refreshUserSteamMetric("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5", new UserSteam({
-            steam_id: "76561198157621569",
-            timecreated: 1692696816
-        }));
-        console.log(result);
-
         res.json(response.success());
         return;
     } catch (error) {
@@ -52,3 +35,8 @@ export default router.handler({
         res.status(500).json(response.serverError());
     },
 });
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};

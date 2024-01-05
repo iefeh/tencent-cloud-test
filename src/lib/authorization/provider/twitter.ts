@@ -88,6 +88,10 @@ export class TwitterAuthFlow extends AuthFlowBase {
         return connection;
     }
 
+    getReconnectCdKey(authParty: any): string {
+        return `reconnect_cd:${AuthorizationType.Twitter}:${authParty.id}`;
+    }
+
     async queryUserConnectionFromParty(party: any): Promise<any> {
         return await UserTwitter.findOne({'twitter_id': party.id, 'deleted_time': null})
     }

@@ -32,7 +32,7 @@ export default function MediaIconBar(props: Props) {
     >
       <XSvg className={sizeClass} onClick={() => openURL('https://twitter.com/Moonveil_Studio')} />
       <MediumSvg className={svgClass} onClick={() => openURL('https://medium.com/@Moonveil_Studio')} />
-      <DiscordSvg className={svgClass} onClick={() => openURL('https://discord.com/invite/NyECfU5XFX')} />
+      <DiscordSvg className={svgClass} onClick={() => openURL('https://discord.gg/moonveil')} />
       <TelegramSvg className={svgClass} onClick={() => openURL('https://t.me/+AeiqS8o2YmswYTgx')} />
       <YoutubeSvg className={svgClass} onClick={() => openURL('https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A')} />
     </div>

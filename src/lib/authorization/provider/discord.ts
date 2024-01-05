@@ -91,6 +91,10 @@ export class DiscordAuthFlow extends AuthFlowBase {
         return connection;
     }
 
+    getReconnectCdKey(authParty: any): string {
+        return `reconnect_cd:${AuthorizationType.Discord}:${authParty.id}`;
+    }
+
     async queryUserConnectionFromParty(party: any): Promise<any> {
         return await UserDiscord.findOne({'discord_id': party.id, 'deleted_time': null})
     }

@@ -4,7 +4,7 @@ import {v4 as uuidv4} from "uuid";
 import {redis} from "@/lib/redis/client";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import User from "@/lib/models/User";
-import {appendQueryParamsToUrl} from "@/lib/utils/url";
+import {appendQueryParamsToUrl} from "@/lib/common/url";
 import axios from "axios";
 import logger from "@/lib/logger/winstonLogger";
 import {NextApiResponse} from "next";
@@ -125,8 +125,12 @@ export class SteamAuthFlow extends AuthFlowBase {
         return response.data.response.players[0];
     }
 
+    getReconnectCdKey(authParty: any): string {
+        return `reconnect_cd:${AuthorizationType.Steam}:${authParty.steamid}`;
+    }
+
     async queryUserConnectionFromParty(party: any): Promise<any> {
-        return await UserSteam.findOne({'steam_id': party.id, 'deleted_time': null})
+        return await UserSteam.findOne({'steam_id': party.steamid, 'deleted_time': null})
     }
 
     constructUserConnection(userId: string, authParty: any): any {

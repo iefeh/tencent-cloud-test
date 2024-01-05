@@ -1,12 +1,14 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
 import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
-import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/utils/url";
+import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/common/url";
 import * as response from "@/lib/response/response";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
+import {redis} from "@/lib/redis/client";
+import {connectionCoolingDown} from "@/lib/response/response";
 
 export interface ValidationResult {
     passed: boolean,
@@ -19,6 +21,9 @@ export abstract class AuthFlowBase {
 
     // 获取授权的第三方用户
     abstract getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any>;
+
+    // 获取重连的cd键
+    abstract getReconnectCdKey(authParty: any): string;
 
     // 从数据库中查找第三方绑定的用户
     abstract queryUserConnectionFromParty(authParty: any): Promise<any>;
@@ -60,6 +65,14 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
 }
 
 async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any): Promise<void> {
+    // 检查当前是否存在授权cd
+    const reconnectCdKey = authFlow.getReconnectCdKey(authParty);
+    const canReconnectAt = await redis.get(reconnectCdKey);
+    if (canReconnectAt) {
+        const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.connectionCoolingDown(canReconnectAt));
+        res.redirect(landing_url);
+        return;
+    }
     const userConnection = await authFlow.queryUserConnectionFromParty(authParty);
     if (userConnection && userConnection.user_id != authPayload.authorization_user_id) {
         // 账号已经绑定到其他用户

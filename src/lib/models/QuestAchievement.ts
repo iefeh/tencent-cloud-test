@@ -16,8 +16,8 @@ const QuestAchievementSchema = new Schema<IQuestAchievement>({
     created_time: {type: Number},
 });
 
-QuestAchievementSchema.index({quest_id: 1, user_id: 1}, {unique: true});
-QuestAchievementSchema.index({user_id: 1});
+QuestAchievementSchema.index({user_id: 1, quest_id: 1}, {unique: true});
+QuestAchievementSchema.index({quest_id: 1});
 
 // 使用既有模型或者新建模型
 const QuestAchievement = models.QuestAchievement || model<IQuestAchievement>('QuestAchievement', QuestAchievementSchema, 'quest_achievements');

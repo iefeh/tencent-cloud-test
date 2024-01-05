@@ -24,7 +24,7 @@ export default function LimitedTestSlide(props: Props) {
         baseAniTY
         subtitle="Click to enter Moonveil Discord to sign up."
         buttonLabel="Sign Up"
-        buttonLink="https://discord.com/invite/NyECfU5XFX"
+        buttonLink="https://discord.gg/moonveil"
       />
     </div>
   );

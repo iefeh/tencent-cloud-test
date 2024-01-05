@@ -7,6 +7,7 @@ import getMongoConnection from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
+import {CaptchaType} from "@/lib/authorization/types";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -17,7 +18,7 @@ router.post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    const historyCaptcha = await redis.get(`login_captcha:${email}`);
+    const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${email}`);
     if (!historyCaptcha) {
         res.json(response.captchaExpired());
         return
@@ -41,7 +42,7 @@ router.post(async (req, res) => {
         await user.save();
     }
     // 删除验证码
-    await redis.del(`login_captcha:${email}`);
+    await redis.del(`${CaptchaType.LoginCaptcha}:${email}`);
     // 生成登录token
     const token = await generateUserSession(user.user_id);
     res.json(response.success({

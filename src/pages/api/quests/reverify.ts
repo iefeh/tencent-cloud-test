@@ -5,8 +5,6 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {claimQuestReward} from "@/lib/quests/claim";
-import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
 import {redis} from "@/lib/redis/client";
 import {QuestType} from "@/lib/quests/types";
 import {invalidParams} from "@/lib/response/response";
@@ -23,7 +21,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         return;
     }
     await getMongoConnection();
-    const quest = await Quest.findOne({id: quest_id});
+    const quest = await Quest.findOne({id: quest_id, active: true, deleted_time: null});
     if (!quest) {
         res.json(response.notFound("Unknown quest."));
         return;

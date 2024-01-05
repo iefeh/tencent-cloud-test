@@ -3,11 +3,11 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, QuestRewardType} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {HttpsProxyGet} from "@/lib/utils/request";
+import {HttpsProxyGet} from "@/lib/common/request";
 import SteamGame, {SteamGameFilter, SteamGamePriceOverview} from "@/lib/models/SteamGame";
 import {v4 as uuidv4} from "uuid";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
-import {chunkArray} from "@/lib/utils/url";
+import {chunkArray} from "@/lib/common/url";
 import SteamUserGame, {ISteamUserGame} from "@/lib/models/SteamUserGame";
 import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
@@ -35,11 +35,15 @@ export class ConnectSteamQuest extends QuestBase {
                 tip: "You should connect your Steam Account first."
             }
         }
-        await this.refreshUserSteamMetric(userId, userSteam);
+        const refreshResult = await this.refreshUserSteamMetric(userId, userSteam);
+        if (refreshResult.interrupted) {
+            return refreshResult.interrupted;
+        }
         const rewardDelta = await this.checkUserRewardDelta(userId);
         // 按 任务/steam id 进行污染，防止同一个steam账号多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Steam},${userSteam.steam_id}`
-        const result = await this.saveUserReward(userId, taint, rewardDelta);
+        const assetId = refreshResult.userMetric[Metric.SteamAssetId];
+        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
         if (result.duplicated) {
             return {
                 verified: false,
@@ -54,11 +58,14 @@ export class ConnectSteamQuest extends QuestBase {
     }
 
     // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功
-    async refreshUserSteamMetric(userId: string, userSteam: IUserSteam): Promise<claimRewardResult | null> {
+    async refreshUserSteamMetric(userId: string, userSteam: IUserSteam): Promise<refreshUserSteamMetricResult> {
         // 校验用户的游戏数
         const refreshGameStats = await this.refreshUserGameStats(userId, userSteam.steam_id);
         if (refreshGameStats.interrupted) {
-            return refreshGameStats.interrupted;
+            return {
+                interrupted: refreshGameStats.interrupted,
+                userMetric: null,
+            };
         }
         const userSteamGame = refreshGameStats.userSteamGame!;
         const gameCount = userSteamGame.game_count!;
@@ -77,6 +84,13 @@ export class ConnectSteamQuest extends QuestBase {
         });
         const steamRating = this.calcUserSteamRating(accountYears, gameCount, accountValue);
         // 保存用户steam游戏与指标
+        const userMetric = {
+            [Metric.SteamAssetId]: userSteamGame.id,
+            [Metric.SteamAccountYears]: Number(accountYears.toFixed(2)),
+            [Metric.SteamAccountGameCount]: gameCount,
+            [Metric.SteamAccountUSDValue]: Number(accountValue.toFixed(2)),
+            [Metric.SteamAccountRating]: steamRating,
+        }
         await doTransaction(async (session) => {
             // 保存用户的资产凭证
             await userSteamGame.save({session});
@@ -84,13 +98,7 @@ export class ConnectSteamQuest extends QuestBase {
             await UserMetrics.updateOne(
                 {user_id: userId},
                 {
-                    $set: {
-                        [Metric.SteamAssetId]: userSteamGame.id,
-                        [Metric.SteamAccountYears]: Number(accountYears.toFixed(2)),
-                        [Metric.SteamAccountGameCount]: gameCount,
-                        [Metric.SteamAccountUSDValue]: Number(accountValue.toFixed(2)),
-                        [Metric.SteamAccountRating]: steamRating,
-                    },
+                    $set: userMetric,
                     $setOnInsert: {
                         "created_time": Date.now(),
                     }
@@ -99,11 +107,13 @@ export class ConnectSteamQuest extends QuestBase {
             );
         });
 
-        return null;
+        return {
+            userMetric: userMetric
+        };
     }
 
     // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功
-    async refreshUserGameStats(userId: string, steamId: string): Promise<{ refreshed: boolean, userSteamGame?: ISteamUserGame, interrupted?: claimRewardResult }> {
+    async refreshUserGameStats(userId: string, steamId: string): Promise<refreshUserGameStatsResult> {
         // 校验用户的游戏数据
         const userGamesURL = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${process.env.STEAM_CLIENT_SECRET}&steamid=${steamId}&include_played_free_games=true&include_appinfo=true`
         const response = await HttpsProxyGet(userGamesURL);
@@ -260,6 +270,16 @@ export class ConnectSteamQuest extends QuestBase {
     }
 }
 
+type refreshUserGameStatsResult = {
+    refreshed: boolean;
+    userSteamGame?: ISteamUserGame;
+    interrupted?: claimRewardResult
+}
+
+type refreshUserSteamMetricResult = {
+    interrupted?: claimRewardResult;
+    userMetric: any;
+}
 
 export async function queryUserSteamAuthorization(userId: string): Promise<any> {
     return await UserSteam.findOne({user_id: userId, deleted_time: null});
