@@ -50,6 +50,9 @@ export abstract class QuestBase {
     private async checkUserRewardDeltaFromWhitelist(userId: string): Promise<number> {
         const whitelist = this.quest.properties as Whitelist;
         const userWl = await getUserFirstWhitelist(userId, whitelist.whitelist_id);
+        if (!userWl || !userWl.reward || !userWl.reward.moon_beams) {
+            throw new Error(`quest ${this.quest.id} user ${userId} whitelist ${whitelist.whitelist_id} reward not properly configured`);
+        }
         return userWl?.reward?.moon_beams!;
     }
 

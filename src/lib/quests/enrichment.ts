@@ -7,6 +7,7 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {preparedQuests, QuestType} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
+import {getUserFirstWhitelist, queryUserAuth} from "@/lib/common/user";
 
 export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加verified字段
@@ -14,17 +15,16 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加achieved字段
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
-    enrichQuestAuthorization(quests);
-    // 校正任务中的user_authorized字段，标识用户真实授权情况
-    await enrichQuestUserAuthorization(userId, quests);
-    // 过滤任务中的property，返回URL与prepare标识
-    filterQuestProperty(quests);
+    await enrichQuestAuthorization(userId, quests);
     // 丰富任务属性
     await enrichQuestCustomProperty(userId, quests);
 }
 
 // 丰富特定于任务的属性，如wallet任务额外返回上次钱包资产同步时间
 async function enrichQuestCustomProperty(userId: string, quests: any[]) {
+    // 过滤任务中的property，返回URL与prepare标识
+    filterQuestProperty(quests);
+
     for (let quest of quests) {
         if (quest.type != QuestType.ConnectWallet || !quest.verified) {
             continue
@@ -89,8 +89,20 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
         // 用户未登录，跳过设置
         return;
     }
-    // 检查任务是否完成
-    const checkAchievementsQuestIds = [];
+    // 检查任务完成标识
+    const questIds = quests.map(quest => quest.id);
+    const achievedQuests = await QuestAchievement.find({
+        user_id: userId,
+        quest_id: {$in: questIds}
+    }, {_id: 0, quest_id: 1});
+    const userQuests = new Map<string, boolean>(achievedQuests.map(quest => [quest.quest_id, true]));
+    quests.forEach(quest => {
+        if (quest.achieved) {
+            return;
+        }
+        quest.achieved = userQuests.has(quest.id);
+    })
+    // 手动检查特殊任务类型完成标识.
     for (const quest of quests) {
         if (quest.verified) {
             quest.achieved = true;
@@ -114,30 +126,12 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
                 const steam = await queryUserSteamAuthorization(userId);
                 quest.achieved = !!steam;
                 break;
-            default:
-                // 默认当前任务未完成，待后续进行检查
-                quest.achieved = false;
-                checkAchievementsQuestIds.push(quest.id);
+            case QuestType.Whitelist:
+                const userWl = await getUserFirstWhitelist(userId, quest.properties.whitelist_id);
+                quest.achieved = !!userWl;
+                break;
         }
     }
-    // 检查是否有任务完成标识
-    if (checkAchievementsQuestIds.length == 0) {
-        return;
-    }
-    const achievedQuests = await QuestAchievement.find({
-        user_id: userId,
-        quest_id: {$in: checkAchievementsQuestIds}
-    }, {_id: 0, quest_id: 1});
-    if (!achievedQuests || achievedQuests.length == 0) {
-        return;
-    }
-    const userQuests = new Map<string, boolean>(achievedQuests.map(quest => [quest.quest_id, true]));
-    quests.forEach(quest => {
-        if (quest.achieved) {
-            return;
-        }
-        quest.achieved = userQuests.has(quest.id);
-    })
 }
 
 
@@ -146,85 +140,66 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
     if (!userId) {
         return;
     }
-    // 检查需要执行的授权检查
-    let checkDiscord = false;
-    let checkTwitter = false;
-    let checkWallet = false;
+    // 检查用户授权
+    const userAuth = await getUserAuth(userId);
     quests.forEach(quest => {
-        if (quest.achieved || quest.verified) {
-            // 任务已完成，无需检查授权
+        if (!quest.authorization) {
             return;
         }
-        switch (quest.authorization) {
-            case AuthorizationType.Twitter:
-                checkTwitter = true;
-                break;
-            case AuthorizationType.Discord:
-                checkDiscord = true;
-                break;
-            case AuthorizationType.Wallet:
-                checkWallet = true;
-                break;
-        }
-    });
-    // 检查用户授权
-    const authorized = new Map<AuthorizationType, boolean>();
-    if (checkWallet) {
-        const walletAuth = await queryUserWalletAuthorization(userId);
-        authorized.set(AuthorizationType.Wallet, !!walletAuth)
-    }
-    if (checkDiscord) {
-        const discordAuth = await queryUserDiscordAuthorization(userId);
-        authorized.set(AuthorizationType.Discord, !!discordAuth && !!discordAuth.token)
-    }
-    if (checkTwitter) {
-        const twitterAuth = await queryUserTwitterAuthorization(userId);
-        authorized.set(AuthorizationType.Twitter, !!twitterAuth && !!twitterAuth.token)
-    }
-    quests.forEach(quest => {
         if (quest.verified) {
             // 任务已校验，无需检查授权
             return;
         }
-        switch (quest.type) {
-            case QuestType.FollowOnTwitter:
-            case QuestType.RetweetTweet:
-                quest.user_authorized = authorized.has(AuthorizationType.Twitter);
-                break;
-            case QuestType.HoldDiscordRole:
-                quest.user_authorized = authorized.has(AuthorizationType.Discord);
-                break;
-            case QuestType.HoldNFT:
-                quest.user_authorized = authorized.has(AuthorizationType.Wallet);
-                break;
-        }
+        quest.user_authorized = userAuth.get(quest.authorization) || false;
     });
 }
 
+async function getUserAuth(userId: string): Promise<Map<AuthorizationType, boolean>> {
+    const userAuth = await queryUserAuth(userId);
+    return new Map<AuthorizationType, boolean>([
+        [AuthorizationType.Twitter, !!userAuth.twitter],
+        [AuthorizationType.Discord, !!userAuth.discord],
+        [AuthorizationType.Wallet, !!userAuth.wallet],
+        [AuthorizationType.Google, !!userAuth.google],
+        [AuthorizationType.Steam, !!userAuth.steam],
+        [AuthorizationType.Email, !!userAuth.email],
+    ]);
+}
+
 // 为任务添加authorization、user_authorized字段，标识任务需要的前置授权类型
-function enrichQuestAuthorization(quests: any[]) {
+async function enrichQuestAuthorization(userId: string, quests: any[]) {
     quests.forEach(quest => {
-        if (quest.achieved || quest.verified) {
+        if (quest.verified) {
             // 任务已完成，无需检查授权
             return;
         }
         // 设置任务授权，且默认设置当前用户未授权
         switch (quest.type) {
+            case QuestType.ConnectTwitter:
             case QuestType.FollowOnTwitter:
             case QuestType.RetweetTweet:
                 quest.authorization = AuthorizationType.Twitter;
                 quest.user_authorized = false;
                 break;
+            case QuestType.ConnectDiscord:
             case QuestType.HoldDiscordRole:
+            case QuestType.JoinDiscordServer:
                 quest.authorization = AuthorizationType.Discord;
                 quest.user_authorized = false;
                 break;
+            case QuestType.ConnectWallet:
             case QuestType.HoldNFT:
                 quest.authorization = AuthorizationType.Wallet;
+                quest.user_authorized = false;
+                break;
+            case QuestType.ConnectSteam:
+                quest.authorization = AuthorizationType.Steam;
                 quest.user_authorized = false;
                 break;
             default:
                 quest.authorization = null;
         }
     })
+    // 校正任务中的user_authorized字段，标识用户真实授权情况
+    await enrichQuestUserAuthorization(userId, quests);
 }
