@@ -14,7 +14,7 @@ export default function ProfileEditPage() {
       </Head>
 
       <div>
-        <span>User Center &gt;</span>
+        <span>User Center &gt; </span>
         <span>Edit</span>
       </div>
 

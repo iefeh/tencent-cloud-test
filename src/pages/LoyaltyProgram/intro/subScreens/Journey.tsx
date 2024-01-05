@@ -74,14 +74,14 @@ export default function JourneyScreen() {
         </div>
       </div>
 
-      {/* <div
+      <div
         ref={journeyWrapperRef}
         className="w-[87.5rem] h-[58.8125rem] relative mb-[12.5625rem] -translate-y-[8.4375rem]"
         onMouseMove={onJourneyMouseMove}
         onMouseLeave={onJourneyMouseLeave}
       >
         <Image src={journeyImg} alt="" fill />
-      </div> */}
+      </div>
     </div>
   );
 }

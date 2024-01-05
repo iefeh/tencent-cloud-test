@@ -58,3 +58,27 @@ export function connectWalletAPI(data: {
 }): Promise<boolean | null> {
   return http.post('/api/auth/connect/wallet', JSON.stringify(data));
 }
+
+export function disconnectWalletAPI(): Promise<boolean | null> {
+  return http.post('/api/auth/disconnect/wallet');
+}
+
+export function disconnectTwitterAPI(): Promise<boolean | null> {
+  return http.post('/api/auth/disconnect/twitter');
+}
+
+export function disconnectSteamAPI(): Promise<boolean | null> {
+  return http.post('/api/auth/disconnect/steam');
+}
+
+export function disconnectGoogleAPI(): Promise<boolean | null> {
+  return http.post('/api/auth/disconnect/google');
+}
+
+export function disconnectDiscordAPI(): Promise<boolean | null> {
+  return http.post('/api/auth/disconnect/discord');
+}
+
+export function disconnectEmailAPI(): Promise<boolean | null> {
+  return http.post('/api/auth/disconnect/email');
+}

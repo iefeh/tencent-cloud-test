@@ -11,7 +11,14 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import { TaskListItem, TaskReward, queryTaskListAPI, reverifyTaskAPI, verifyTaskAPI } from '@/http/services/task';
+import {
+  TaskListItem,
+  TaskReward,
+  prepareTaskAPI,
+  queryTaskListAPI,
+  reverifyTaskAPI,
+  verifyTaskAPI,
+} from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI, connectWalletAPI } from '@/http/services/login';
@@ -21,15 +28,14 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import useConnectDialog from '@/hooks/useConnectDialog';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
-import loadingImg from 'img/loyalty/earn/loading.png';
 import { MobxContext } from '@/pages/_app';
 import { BrowserProvider } from 'ethers';
-import { delay } from 'lodash';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { throttle } from 'lodash';
 
 interface VerifyTexts {
   label: string;
@@ -50,11 +56,11 @@ function RegularTasks() {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
-  const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
-    total: 0,
+  const pagiInfo = useRef<PagiInfo>({
     pageIndex: 1,
     pageSize: 9,
   });
+  const [pagiTotal, setPagiTotal] = useState(0);
   const connectAPIs: { [key: string]: () => Promise<{ authorization_url: string } | undefined> } = {
     [QuestType.ConnectTwitter as string]: connectTwitterAPI,
     [QuestType.ConnectSteam as string]: connectSteamAPI,
@@ -64,36 +70,37 @@ function RegularTasks() {
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  async function queryTasks(pagi: PagiInfo = pagiInfo) {
-    setTaskListLoading(true);
+  const queryTasks = throttle(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
+    if (!noLoading) setTaskListLoading(true);
 
     try {
       const { pageIndex, pageSize } = pagi;
       const res = await queryTaskListAPI({ page_num: pageIndex, page_size: pageSize });
       const { quests, total } = res;
-      setPagiInfo({ ...pagi, total: Math.ceil((+total || 0) / pagi.pageSize) });
+      Object.assign(pagiInfo.current, pagi);
+      setPagiTotal(Math.ceil((+total || 0) / pageSize));
       handleQuests(quests);
     } catch (error) {
       console.log(error);
     } finally {
       setTaskListLoading(false);
     }
-  }
+  }, 500);
 
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
       switch (item.type) {
         case QuestType.RetweetTweet:
-          item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweeted' };
+          item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweet' };
           break;
         case QuestType.JOIN_DISCORD_SERVER:
-          item.connectTexts = { label: 'Join', loadingLabel: 'Join', finishedLabel: 'Joined' };
+          item.connectTexts = { label: 'Join', loadingLabel: 'Join', finishedLabel: 'Join' };
           break;
         case QuestType.FollowOnTwitter:
-          item.connectTexts = { label: 'Follow', loadingLabel: 'Follow', finishedLabel: 'Followed' };
+          item.connectTexts = { label: 'Follow', loadingLabel: 'Follow', finishedLabel: 'Follow' };
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
-          item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Registered' };
+          item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Register' };
           break;
       }
     });
@@ -116,13 +123,15 @@ function RegularTasks() {
   }
 
   function onPagiChange(page: number) {
-    const pagi = { ...pagiInfo, pageIndex: page };
+    if (page === pagiInfo.current.pageIndex) return;
+
+    const pagi = { ...pagiInfo.current, pageIndex: page };
     queryTasks(pagi);
   }
 
-  useEffect(() => {
-    queryTasks();
-  }, []);
+  // useEffect(() => {
+  //   queryTasks();
+  // }, []);
 
   useEffect(() => {
     queryTasks();
@@ -135,11 +144,14 @@ function RegularTasks() {
     const [verified, setVerified] = useState(!!task.verified);
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
-    const [verifiable, setVerifiable] = useState(connected && !verified);
+    const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
+    const isNotNeedConnect = task.properties.is_prepared && !task.properties.url;
+    const initVerifiable = !isNotNeedConnect ? connected && (!verified || canReverify) : !verified;
+    const [verifiable, setVerifiable] = useState(initVerifiable);
     const dialogWindowRef = useRef<Window | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    useConnectDialog(dialogWindowRef, () => {
+    useConnectDialog(dialogWindowRef, task.type, () => {
       const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
       const { code, msg } = tokens[task.type] || {};
       const isConnected = +code === 1;
@@ -155,7 +167,8 @@ function RegularTasks() {
 
     const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
       const { label, loadingLabel, finishedLabel } = texts;
-      return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
+      // return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
+      return isFinished ? finishedLabel : label;
     };
 
     function openAuthWindow(authURL: string) {
@@ -214,27 +227,29 @@ function RegularTasks() {
 
     async function onConnectURL() {
       if (!task.properties?.url) return;
-
-      setConnectLoading(true);
       window.open(task.properties.url, '_blank');
+    }
 
-      switch (task.type) {
-        case QuestType.RetweetTweet:
-        case QuestType.FollowOnTwitter:
-          delay(() => {
-            handleConnected();
-            setConnectLoading(false);
-          }, 500);
-        default:
-          queryTasks();
-          setConnectLoading(false);
-          break;
+    async function onPrepare() {
+      setConnectLoading(true);
+      try {
+        await prepareTaskAPI({ quest_id: task.id });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setConnectLoading(false);
       }
     }
 
     function onConnect() {
       if (!userInfo) {
         onOpen();
+        return;
+      }
+
+      if (task.properties.is_prepared) {
+        onPrepare();
+        onConnectURL();
         return;
       }
 
@@ -247,9 +262,8 @@ function RegularTasks() {
         case QuestType.RetweetTweet:
         case QuestType.FollowOnTwitter:
         case QuestType.JOIN_DISCORD_SERVER:
-          onConnectURL();
-          break;
         case QuestType.ASTRARK_PRE_REGISTER:
+          onConnectURL();
           break;
         case QuestType.ConnectWallet:
           if (isConnected) {
@@ -278,7 +292,7 @@ function RegularTasks() {
             setVerifiable(true);
           }, 10000);
         } else {
-          queryTasks();
+          queryTasks(pagiInfo.current, true);
         }
       } catch (error) {
         console.log(error);
@@ -289,36 +303,26 @@ function RegularTasks() {
 
     return (
       <div className="mt-5 flex items-center">
-        <LGButton
-          className="uppercase"
-          label={getButtonLabel(
-            connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
-            connectLoading,
-            connected,
-          )}
-          actived
-          loading={connectLoading}
-          disabled={connected || verified}
-          onClick={onConnect}
-        />
+        {!isNotNeedConnect && (
+          <LGButton
+            className="uppercase"
+            label={getButtonLabel(
+              connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
+              connectLoading,
+              connected,
+            )}
+            actived
+            loading={connectLoading}
+            disabled={connected || verified}
+            onClick={onConnect}
+          />
+        )}
 
         <LGButton
           className="ml-2 uppercase"
-          label={
-            task.type === QuestType.ConnectWallet && verified
-              ? 'Reverify'
-              : getButtonLabel(
-                  verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
-                  verifyLoading,
-                  verified,
-                )
-          }
+          label={canReverify ? 'Reverify' : 'Verify'}
           loading={verifyLoading}
-          disabled={
-            !connected ||
-            (verified && task.type !== QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) > 0) ||
-            !verifiable
-          }
+          disabled={!verifiable}
           onClick={onVerify}
         />
 
@@ -486,18 +490,16 @@ function RegularTasks() {
         {taskListLoading && <CircularLoading />}
       </div>
 
-      {pagiInfo.total > 0 && (
+      {pagiTotal > 0 && (
         <Pagination
           className="mt-[4.6875rem] mb-[8.75rem]"
           showControls
-          total={pagiInfo.total}
+          total={pagiTotal}
           initialPage={1}
           renderItem={PaginationRenderItem}
           classNames={{
             wrapper: 'gap-3',
             item: 'w-12 h-12 font-poppins-medium text-base text-white',
-            prev: 'w-12 h-12 border-1 border-white bg-transparent',
-            next: 'w-12 h-12 border-1 border-white bg-transparent',
           }}
           disableCursorAnimation
           radius="full"

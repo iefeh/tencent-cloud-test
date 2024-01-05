@@ -27,7 +27,7 @@ import { cn } from '@nextui-org/react';
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   { name: 'AstrArk', route: '/AstrArk' },
-  { name: 'Bushwhack', route: '/Bushwhack' },
+  // { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
   {
@@ -40,7 +40,7 @@ const routeText: RouteMenu[] = [
       {
         name: 'Earn Moon Beams',
         route: '/LoyaltyProgram/earn',
-        disabled: true,
+        // disabled: true,
       },
       // {
       //   name: 'MB=MVP',
