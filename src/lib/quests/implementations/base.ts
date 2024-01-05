@@ -1,13 +1,14 @@
 import {IQuest} from "@/lib/models/Quest";
-import {checkClaimableResult, claimRewardResult, QuestRewardType} from "@/lib/quests/types";
+import {checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist} from "@/lib/quests/types";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
-import UserMetricReward, {checkMetricReward, IUserMetricReward, RewardItem} from "@/lib/models/UserMetricReward";
+import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/models/UserMetricReward";
 import UserMetrics from "@/lib/models/UserMetrics";
 import logger from "@/lib/logger/winstonLogger";
+import {getUserFirstWhitelist} from "@/lib/common/user";
 
 interface IProjection {
     [key: string]: number;
@@ -30,11 +31,29 @@ export abstract class QuestBase {
     abstract claimReward(userId: string): Promise<claimRewardResult>;
 
     async checkUserRewardDelta(userId: string): Promise<number> {
-        // 静态任务奖励
+        // 检查静态任务奖励
         if (this.quest.reward.type == QuestRewardType.Fixed) {
             return this.quest.reward.amount;
         }
+        // 检查是否指标奖励
+        if (this.quest.reward.range_reward_ids && this.quest.reward.range_reward_ids.length > 0) {
+            return this.checkUserRewardDeltaFromUserMetric(userId);
+        }
+        // 检查是否白名单奖励，
+        // 注意最后检查的白名单奖励，即白名单类型任务可以通过名单发放奖励，也可以通过指标发放奖励
+        if (this.quest.type == QuestType.Whitelist) {
+            return this.checkUserRewardDeltaFromWhitelist(userId);
+        }
+        throw new Error(`unknown ${this.quest.type} quest ${this.quest.id} reward delta`);
+    }
 
+    private async checkUserRewardDeltaFromWhitelist(userId: string): Promise<number> {
+        const whitelist = this.quest.properties as Whitelist;
+        const userWl = await getUserFirstWhitelist(userId, whitelist.whitelist_id);
+        return userWl?.reward?.moon_beams!;
+    }
+
+    private async checkUserRewardDeltaFromUserMetric(userId: string): Promise<number> {
         // 动态任务奖励，查询关联的奖励设置，根据设置计算用户奖励
         const rewardIds = this.quest.reward.range_reward_ids;
         const rewards = await UserMetricReward.find({id: {$in: rewardIds}});

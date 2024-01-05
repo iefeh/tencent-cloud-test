@@ -58,7 +58,7 @@ function filterQuestProperty(quests: any[]) {
         // 只保留url属性
         quest.properties = {url: quest.properties.url};
         // 添加或更新is_prepared属性
-        quest.properties.is_prepared = preparedQuests.get(quest.type) || false;
+        quest.properties.is_prepared = preparedQuests.has(quest.type);
     }
 }
 
@@ -76,12 +76,12 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         deleted_time: null
     }, {
         _id: 0,
-        quest_id: "$corr_id"
+        corr_id: 1,
     });
-    const achievements = new Map<string, boolean>();
-    verifiedQuests.forEach(q => achievements.set(q.quest_id, true));
+    const verified = new Map<string, boolean>(verifiedQuests.map(q => [q.corr_id, true]));
+    console.log(verified);
     // 添加任务校验标识
-    quests.forEach(quest => quest.verified = achievements.has(quest.id));
+    quests.forEach(quest => quest.verified = verified.has(quest.id));
 }
 
 // 为任务添加achieved字段，标识当前用户是否已经达成任务
@@ -137,7 +137,7 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
         if (quest.achieved) {
             return;
         }
-        quest.achieved = userQuests.get(quest.id);
+        quest.achieved = userQuests.has(quest.id);
     })
 }
 
@@ -190,13 +190,13 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
         switch (quest.type) {
             case QuestType.FollowOnTwitter:
             case QuestType.RetweetTweet:
-                quest.user_authorized = authorized.get(AuthorizationType.Twitter);
+                quest.user_authorized = authorized.has(AuthorizationType.Twitter);
                 break;
             case QuestType.HoldDiscordRole:
-                quest.user_authorized = authorized.get(AuthorizationType.Discord);
+                quest.user_authorized = authorized.has(AuthorizationType.Discord);
                 break;
             case QuestType.HoldNFT:
-                quest.user_authorized = authorized.get(AuthorizationType.Wallet);
+                quest.user_authorized = authorized.has(AuthorizationType.Wallet);
                 break;
         }
     });
