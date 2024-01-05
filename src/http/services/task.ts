@@ -86,3 +86,7 @@ export interface TaskAdItem {
 export function taskAdListAPI(): Promise<TaskAdItem[]> {
   return http.get('/api/quests/advertisements');
 }
+
+export function taskDetailsAPI(params: { quest_id: string }): Promise<{ quest: TaskListItem }> {
+  return http.get('/api/quests/profile', { params });
+}
