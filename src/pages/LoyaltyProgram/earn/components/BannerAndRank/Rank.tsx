@@ -80,7 +80,13 @@ const Rank = function () {
               ])}
             >
               <div className="relative">
-                <Image className="w-[3.75rem] h-[3.75rem]" src={rank.avatar_url} alt="" width={60} height={60} />
+                <Image
+                  className="w-[3.75rem] h-[3.75rem] rounded-full object-cover"
+                  src={rank.avatar_url}
+                  alt=""
+                  width={60}
+                  height={60}
+                />
 
                 <Image
                   className="w-7 h-[1.6875rem] absolute -top-[0.8125rem] -left-[0.8125rem]"
@@ -145,7 +151,7 @@ const Rank = function () {
                     <span className="w-[2.625rem]">{rank.rank}</span>
 
                     <Image
-                      className="border-1 border-basic-yellow rounded-full"
+                      className="w-12 h-12 border-1 border-basic-yellow rounded-full object-cover"
                       src={rank.avatar_url}
                       alt=""
                       width={48}
