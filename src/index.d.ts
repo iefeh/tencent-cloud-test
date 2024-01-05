@@ -20,7 +20,7 @@ interface Dict<T> {
 }
 
 interface PagiInfo {
-  total: number;
+  total?: number;
   pageIndex: number;
   pageSize: number;
 }

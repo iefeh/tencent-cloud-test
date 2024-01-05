@@ -55,11 +55,11 @@ function RegularTasks() {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
-  const [pagiInfo, setPagiInfo] = useState<PagiInfo>({
-    total: 0,
+  const pagiInfo = useRef<PagiInfo>({
     pageIndex: 1,
     pageSize: 9,
   });
+  const [pagiTotal, setPagiTotal] = useState(0);
   const connectAPIs: { [key: string]: () => Promise<{ authorization_url: string } | undefined> } = {
     [QuestType.ConnectTwitter as string]: connectTwitterAPI,
     [QuestType.ConnectSteam as string]: connectSteamAPI,
@@ -69,14 +69,15 @@ function RegularTasks() {
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  async function queryTasks(pagi: PagiInfo = pagiInfo) {
+  async function queryTasks(pagi: PagiInfo = pagiInfo.current) {
     setTaskListLoading(true);
 
     try {
       const { pageIndex, pageSize } = pagi;
       const res = await queryTaskListAPI({ page_num: pageIndex, page_size: pageSize });
       const { quests, total } = res;
-      setPagiInfo({ ...pagi, total: Math.ceil((+total || 0) / pagi.pageSize) });
+      Object.assign(pagiInfo.current, pagi);
+      setPagiTotal(Math.ceil((+total || 0) / pageSize));
       handleQuests(quests);
     } catch (error) {
       console.log(error);
@@ -121,7 +122,9 @@ function RegularTasks() {
   }
 
   function onPagiChange(page: number) {
-    const pagi = { ...pagiInfo, pageIndex: page };
+    if (page === pagiInfo.current.pageIndex) return;
+
+    const pagi = { ...pagiInfo.current, pageIndex: page };
     queryTasks(pagi);
   }
 
@@ -495,11 +498,11 @@ function RegularTasks() {
         {taskListLoading && <CircularLoading />}
       </div>
 
-      {pagiInfo.total > 0 && (
+      {pagiTotal > 0 && (
         <Pagination
           className="mt-[4.6875rem] mb-[8.75rem]"
           showControls
-          total={pagiInfo.total}
+          total={pagiTotal}
           initialPage={1}
           renderItem={PaginationRenderItem}
           classNames={{
