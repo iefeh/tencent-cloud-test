@@ -1,10 +1,7 @@
 import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
 import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, Whitelist} from "@/lib/quests/types";
-import {promiseSleep} from "@/lib/common/sleep";
 import {getUserFirstWhitelist} from "@/lib/common/user";
-import UserTwitter from "@/lib/models/UserTwitter";
-import {AuthorizationType} from "@/lib/authorization/types";
 
 export class WhitelistQuest extends ConnectTwitterQuest {
     constructor(quest: IQuest) {
@@ -30,7 +27,7 @@ export class WhitelistQuest extends ConnectTwitterQuest {
             }
         }
         // 污染用户的白名单，确保单个白名单只能获取一次奖励
-        const taint = `${this.quest.id},${whitelist.whitelist_entity_type},${whitelist.whitelist_entity_id}`;
+        const taint = `${this.quest.id},${userWl.whitelist_entity_type},${userWl.whitelist_entity_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {

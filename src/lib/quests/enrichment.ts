@@ -79,7 +79,6 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         corr_id: 1,
     });
     const verified = new Map<string, boolean>(verifiedQuests.map(q => [q.corr_id, true]));
-    console.log(verified);
     // 添加任务校验标识
     quests.forEach(quest => quest.verified = verified.has(quest.id));
 }
