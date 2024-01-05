@@ -10,6 +10,7 @@ export async function try2AddUser2MBLeaderboard(userId: string) {
             return;
         }
         if (!user.moon_beam) {
+            logger.warn(`user ${userId} moon beam should but not found.`);
             return;
         }
         redis.zadd("moon_beam_lb", user.moon_beam, userId);
@@ -40,9 +41,8 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         user_id: 1,
         username: 1,
         avatar_url: 1
-    });
+    }).lean();
     const userMap = new Map<String, mbLeaderboardUser>(users.map(user => [user.user_id, user]));
-
     // 构建排行榜
     const lb: mbLeaderboard = {
         leaderboard: [],
@@ -71,7 +71,6 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         currUser.rank = i / 2 + 1;
         currUser.moon_beam = Number(topUsers[i + 1]);
         lb.leaderboard.push(currUser);
-        console.log(currUser.rank);
     }
     return lb;
 }

@@ -1,29 +1,127 @@
 import getMongoConnection from "@/lib/mongodb/client";
 import User from "@/lib/models/User";
 import logger from "@/lib/logger/winstonLogger";
+import Whitelist, {IWhitelist} from "@/lib/models/Whitelist";
 
-export async function checkUserConnectionCount(userId: string): Promise<number> {
-    const user = await queryUser(userId);
-    let connection = 0;
-    if (user.email) {
-        connection++;
+// 获取用户的首个白名单记录
+export async function getUserFirstWhitelist(userId: string, whitelistId: string): Promise<IWhitelist | null> {
+    const userAuth = await queryUserAuth(userId);
+    // 根据 WhitelistEntityType 构建查询数组
+    const entities = [userId];
+    if (userAuth.wallet) {
+        entities.push(userAuth.wallet)
     }
-    if (user.wallet) {
-        connection++;
+    if (userAuth.discord) {
+        entities.push(userAuth.discord.id)
     }
-    if (user.google) {
-        connection++;
+    if (userAuth.twitter) {
+        entities.push(userAuth.twitter.id)
     }
-    if (user.twitter) {
-        connection++;
+    if (userAuth.google) {
+        entities.push(userAuth.google.id)
     }
-    if (user.discord) {
-        connection++;
+    if (userAuth.steam) {
+        entities.push(userAuth.steam.id)
     }
-    if (user.steam) {
-        connection++;
+    if (userAuth.discord) {
+        entities.push(userAuth.discord.id)
     }
-    return connection;
+    if (userAuth.email) {
+        entities.push(userAuth.email)
+    }
+    // 检查用户的首个白名单记录
+    return Whitelist.findOne({whitelist_id: whitelistId, whitelist_entity_id: {$in: entities}});
+}
+
+// 检查用户的授权信息
+export async function queryUserAuth(userId: string): Promise<any> {
+    await getMongoConnection();
+    const aggregation = [
+        {$match: {'user_id': userId, 'deleted_time': null}},
+        {
+            $project: {
+                _id: 0,
+                user_id: 1,
+                email: 1,
+            }
+        },
+        {
+            $lookup: {
+                from: 'user_wallets',
+                localField: 'user_id',
+                foreignField: 'user_id',
+                as: 'wallet',
+                pipeline: [{$match: {'deleted_time': null}}, {
+                    $project: {
+                        _id: 0,
+                        wallet_addr: 1,
+                    }
+                }],
+            }
+        },
+        {
+            $lookup: {
+                from: 'user_googles',
+                localField: 'user_id',
+                foreignField: 'user_id',
+                as: 'google',
+                pipeline: [{$match: {'deleted_time': null}}, {
+                    $project: {
+                        _id: 0,
+                        id: "$google_id",
+                    }
+                }],
+            }
+        },
+        {
+            $lookup: {
+                from: 'user_twitters',
+                localField: 'user_id',
+                foreignField: 'user_id',
+                as: 'twitter',
+                pipeline: [{$match: {'deleted_time': null}}, {
+                    $project: {
+                        _id: 0,
+                        id: "$twitter_id",
+                    }
+                }],
+            }
+        },
+        {
+            $lookup: {
+                from: 'user_discords',
+                localField: 'user_id',
+                foreignField: 'user_id',
+                as: 'discord',
+                pipeline: [{$match: {'deleted_time': null}}, {
+                    $project: {
+                        _id: 0,
+                        id: "$discord_id",
+                    }
+                }],
+            }
+        },
+        {
+            $lookup: {
+                from: 'user_steams',
+                localField: 'user_id',
+                foreignField: 'user_id',
+                as: 'steam',
+                pipeline: [{$match: {'deleted_time': null}}, {
+                    $project: {
+                        _id: 0,
+                        id: "$steam_id",
+                    }
+                }],
+            }
+        }
+    ];
+    const results = await User.aggregate(aggregation);
+    const userAuth = constructUserAuth(results);
+    if (!userAuth) {
+        logger.error(`user ${userId} not found from db`);
+    }
+    return userAuth;
 }
 
 export async function queryUser(userId: string): Promise<any> {
@@ -114,17 +212,22 @@ export async function queryUser(userId: string): Promise<any> {
     ];
 
     const results = await User.aggregate(aggregation);
-    // 由于 $lookup 返回的是数组，我们需要从数组中取出单个对象
-    if (results.length > 0) {
-        const user = results[0];
+    const userAuth = constructUserAuth(results);
+    if (!userAuth) {
+        logger.error(`user ${userId} not found from db`);
+    }
+    return userAuth;
+}
+
+function constructUserAuth(userAggResult: any): any {
+    if (userAggResult.length > 0) {
+        const user = userAggResult[0];
         user.wallet = user.wallet[0]?.wallet_addr || null;
         user.google = user.google[0] || null;
         user.twitter = user.twitter[0] || null;
         user.discord = user.discord[0] || null;
         user.steam = user.steam[0] || null;
         return user;
-    } else {
-        logger.error(`user ${userId} not found from db`);
-        return null;
     }
+    return null;
 }
