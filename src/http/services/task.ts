@@ -3,6 +3,7 @@ import http from '../index';
 
 export interface TaskProperties {
   url?: string;
+  is_prepared?: boolean;
   last_verified_time?: number;
   can_reverify_after?: number;
 }
@@ -18,7 +19,7 @@ export interface TaskListItem {
   id: string;
   description: string;
   name: string;
-  properties: TaskProperties | null;
+  properties: TaskProperties;
   reward: TaskReward;
   tip: string;
   type: QuestType;
@@ -52,6 +53,10 @@ export function verifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskRes
 
 export function reverifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskResDTO> {
   return http.post('/api/quests/reverify', JSON.stringify(data));
+}
+
+export function prepareTaskAPI(data: { quest_id: string }): Promise<void> {
+  return http.post('/api/quests/prepare', JSON.stringify(data));
 }
 
 export interface LeaderBoardItem {

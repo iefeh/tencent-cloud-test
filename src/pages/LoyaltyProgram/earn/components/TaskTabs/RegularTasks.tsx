@@ -11,7 +11,14 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import { TaskListItem, TaskReward, queryTaskListAPI, reverifyTaskAPI, verifyTaskAPI } from '@/http/services/task';
+import {
+  TaskListItem,
+  TaskReward,
+  prepareTaskAPI,
+  queryTaskListAPI,
+  reverifyTaskAPI,
+  verifyTaskAPI,
+} from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI, connectWalletAPI } from '@/http/services/login';
@@ -155,7 +162,8 @@ function RegularTasks() {
 
     const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
       const { label, loadingLabel, finishedLabel } = texts;
-      return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
+      // return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
+      return isFinished ? finishedLabel : label;
     };
 
     function openAuthWindow(authURL: string) {
@@ -214,19 +222,29 @@ function RegularTasks() {
 
     async function onConnectURL() {
       if (!task.properties?.url) return;
-
-      setConnectLoading(true);
       window.open(task.properties.url, '_blank');
+    }
 
-      delay(() => {
-        handleConnected();
+    async function onPrepare() {
+      setConnectLoading(true);
+      try {
+        await prepareTaskAPI({ quest_id: task.id });
+      } catch (error) {
+        console.log(error);
+      } finally {
         setConnectLoading(false);
-      }, 500);
+      }
     }
 
     function onConnect() {
       if (!userInfo) {
         onOpen();
+        return;
+      }
+
+      if (task.properties.is_prepared) {
+        onPrepare();
+        onConnectURL();
         return;
       }
 
@@ -306,9 +324,11 @@ function RegularTasks() {
           }
           loading={verifyLoading}
           disabled={
-            !connected ||
-            (verified && task.type !== QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) > 0) ||
-            !verifiable
+            !task.properties.is_prepared
+              ? !connected ||
+                (verified && task.type !== QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) > 0) ||
+                !verifiable
+              : false
           }
           onClick={onVerify}
         />
