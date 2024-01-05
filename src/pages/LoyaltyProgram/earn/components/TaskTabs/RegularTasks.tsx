@@ -70,8 +70,8 @@ function RegularTasks() {
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  const queryTasks = throttle(async function (pagi: PagiInfo = pagiInfo.current) {
-    setTaskListLoading(true);
+  const queryTasks = throttle(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
+    if (!noLoading) setTaskListLoading(true);
 
     try {
       const { pageIndex, pageSize } = pagi;
@@ -292,7 +292,7 @@ function RegularTasks() {
             setVerifiable(true);
           }, 10000);
         } else {
-          queryTasks();
+          queryTasks(pagiInfo.current, true);
         }
       } catch (error) {
         console.log(error);
