@@ -30,6 +30,16 @@ export const preparedQuests = new Map<QuestType, boolean>([
     [QuestType.FollowOnTwitter, true],
 ]);
 
+export enum WhitelistEntityType {
+    WalletAddr = "wallet_addr",
+    DiscordId = "discord_id",
+    TwitterId = "twitter_id",
+    GoogleId = "google_id",
+    SteamId = "steam_id",
+    UserId = "user_id",
+    Email = "email",
+}
+
 export enum QuestRewardType {
     // 固定奖励，奖励数量配置于当前任务中
     Fixed = "fixed",

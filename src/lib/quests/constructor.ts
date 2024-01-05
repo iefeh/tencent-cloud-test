@@ -10,6 +10,7 @@ import {FollowOnTwitterQuest} from "@/lib/quests/implementations/followOnTwitter
 import {RetweetTweetQuest} from "@/lib/quests/implementations/retweetTweetQuest";
 import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
+import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
 
 // TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
 //       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
@@ -30,8 +31,9 @@ export function constructQuest(quest: IQuest): QuestBase {
         case QuestType.HoldDiscordRole:
             return new HoldDiscordRoleQuest(quest);
         case QuestType.UserMetric:
-            return new UserMetricQuest(quest)
+            return new UserMetricQuest(quest);
         case QuestType.Whitelist:
+            return new WhitelistQuest(quest);
         case QuestType.HoldNFT:
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
