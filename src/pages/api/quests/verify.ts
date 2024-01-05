@@ -18,7 +18,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         return;
     }
     await getMongoConnection();
-    const quest = await Quest.findOne({id: quest_id});
+    const quest = await Quest.findOne({id: quest_id, active: true, deleted_time: null});
     if (!quest) {
         res.json(response.notFound("Unknown quest."));
         return;

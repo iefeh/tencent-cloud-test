@@ -27,6 +27,8 @@ export interface IQuest extends Document {
         // 任务关联的动态奖励ids，关联UserMetricReward
         range_reward_ids: string[],
     },
+    // 任务是否激活，不展示未激活
+    active: boolean;
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -48,6 +50,7 @@ const QuestSchema = new Schema<IQuest>({
         max_amount: {type: Number},
         range_reward_ids: [String],
     },
+    active: {type: Boolean, default: false},
     created_time: {type: Number},
     updated_time: {type: Number},
     deleted_time: {type: Number},

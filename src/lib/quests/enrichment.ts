@@ -4,7 +4,7 @@ import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connec
 import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectSteamQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {QuestType} from "@/lib/quests/types";
+import {preparedQuests, QuestType} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
 
@@ -17,7 +17,7 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     enrichQuestAuthorization(quests);
     // 校正任务中的user_authorized字段，标识用户真实授权情况
     await enrichQuestUserAuthorization(userId, quests);
-    // 过滤任务中的property，仅返回URL
+    // 过滤任务中的property，返回URL与prepare标识
     filterQuestProperty(quests);
     // 丰富任务属性
     await enrichQuestCustomProperty(userId, quests);
@@ -47,13 +47,18 @@ async function enrichQuestCustomProperty(userId: string, quests: any[]) {
     }
 }
 
-// 过滤任务中的property，仅返回URL
+// 过滤任务中的property，返回URL与prepare标识
+// URL是用户完成任务的地址，prepare标识任务可以通过上报完成
 function filterQuestProperty(quests: any[]) {
     for (let quest of quests) {
+        // 如果quest.properties不存在，则初始化为一个空对象
         if (!quest.properties) {
-            continue
+            quest.properties = {};
         }
-        quest.properties = {url: quest.properties.url}
+        // 只保留url属性
+        quest.properties = {url: quest.properties.url};
+        // 添加或更新is_prepared属性
+        quest.properties.is_prepared = preparedQuests.get(quest.type) || false;
     }
 }
 
