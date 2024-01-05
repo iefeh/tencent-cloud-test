@@ -41,7 +41,7 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
         user_id: 1,
         username: 1,
         avatar_url: 1
-    }).lean();
+    }).lean() as mbLeaderboardUser[];
     const userMap = new Map<String, mbLeaderboardUser>(users.map(user => [user.user_id, user]));
     // 构建排行榜
     const lb: mbLeaderboard = {
