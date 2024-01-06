@@ -22,7 +22,7 @@ import {
 } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { QuestRewardType, QuestType } from '@/constant/task';
-import { connectDiscordAPI, connectSteamAPI, connectTwitterAPI, connectWalletAPI } from '@/http/services/login';
+import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -36,18 +36,11 @@ import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
-import { throttle } from 'lodash';
-
-interface VerifyTexts {
-  label: string;
-  loadingLabel: string;
-  finishedLabel: string;
-}
+import { debounce } from 'lodash';
 
 interface TaskItem extends TaskListItem {
-  connectTexts?: VerifyTexts;
+  connectText?: string;
   showConnectButton?: boolean;
-  verifyTexts?: VerifyTexts;
   showVerifyButton?: boolean;
   onConnectClick?: (type: QuestType) => string | undefined | Promise<string | undefined>;
   onVerifyClick?: (item: TaskItem) => undefined;
@@ -62,16 +55,11 @@ function RegularTasks() {
     pageSize: 9,
   });
   const [pagiTotal, setPagiTotal] = useState(0);
-  const connectAPIs: { [key: string]: () => Promise<{ authorization_url: string } | undefined> } = {
-    [QuestType.ConnectTwitter as string]: connectTwitterAPI,
-    [QuestType.ConnectSteam as string]: connectSteamAPI,
-    [QuestType.ConnectDiscord as string]: connectDiscordAPI,
-  };
   const { open } = useWeb3Modal();
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  const queryTasks = throttle(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
+  const queryTasks = debounce(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
     if (!noLoading) setTaskListLoading(true);
 
     try {
@@ -101,16 +89,16 @@ function RegularTasks() {
     list.forEach((item) => {
       switch (item.type) {
         case QuestType.RetweetTweet:
-          item.connectTexts = { label: 'Retweet', loadingLabel: 'Retweet', finishedLabel: 'Retweet' };
+          item.connectText = 'Retweet';
           break;
         case QuestType.JOIN_DISCORD_SERVER:
-          item.connectTexts = { label: 'Join', loadingLabel: 'Join', finishedLabel: 'Join' };
+          item.connectText = 'Join';
           break;
         case QuestType.FollowOnTwitter:
-          item.connectTexts = { label: 'Follow', loadingLabel: 'Follow', finishedLabel: 'Follow' };
+          item.connectText = 'Follow';
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
-          item.connectTexts = { label: 'Start', loadingLabel: 'Start', finishedLabel: 'Register' };
+          item.connectText = 'Start';
           break;
       }
     });
@@ -149,15 +137,12 @@ function RegularTasks() {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectTexts, verifyTexts, achieved } = task;
-    const [connected, setConnected] = useState(!!achieved);
-    const [verified, setVerified] = useState(!!task.verified);
+    const { connectText, achieved, verified } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
-    const isNotNeedConnect = task.properties.is_prepared && !task.properties.url;
-    const initVerifiable = !isNotNeedConnect ? connected && (!verified || canReverify) : !verified;
-    const [verifiable, setVerifiable] = useState(initVerifiable);
+    const isNeedConnect = !!task.properties.url;
+    const [verifiable, setVerifiable] = useState(!verified || canReverify);
     const dialogWindowRef = useRef<Window | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -174,12 +159,6 @@ function RegularTasks() {
       localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
       toast.error(msg);
     });
-
-    const getButtonLabel = (texts: VerifyTexts, isLoading: boolean, isFinished: boolean) => {
-      const { label, loadingLabel, finishedLabel } = texts;
-      // return isLoading ? loadingLabel : isFinished ? finishedLabel : label;
-      return isFinished ? (canReverify ? 'Reverify' : finishedLabel) : label;
-    };
 
     function openAuthWindow(authURL: string) {
       const dialog = window.open(
@@ -202,13 +181,21 @@ function RegularTasks() {
       }
     }
 
-    async function onBaseConnectClick() {
-      const api = connectAPIs[task.type];
-      if (!api) return;
+    async function onBaseConnect() {
+      if (task.type === QuestType.ConnectWallet) {
+        if (isConnected) {
+          await onConnectWallet();
+        } else {
+          open();
+        }
+
+        return;
+      }
+      if (!task.authorization) return;
 
       setConnectLoading(true);
 
-      const res = await api();
+      const res = await connectMediaAPI(task.authorization);
       if (!res?.authorization_url) {
         toast.error('Get authorization url failed!');
         setConnectLoading(false);
@@ -248,6 +235,7 @@ function RegularTasks() {
       setConnectLoading(true);
       try {
         await prepareTaskAPI({ quest_id: task.id });
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         await updateTask();
       } catch (error) {
         console.log(error);
@@ -264,45 +252,31 @@ function RegularTasks() {
 
       if (task.properties.is_prepared) {
         onPrepare();
+      } else {
         onConnectURL();
-        return;
-      }
-
-      switch (task.type) {
-        case QuestType.ConnectTwitter:
-        case QuestType.ConnectSteam:
-        case QuestType.ConnectDiscord:
-          onBaseConnectClick();
-          break;
-        case QuestType.RetweetTweet:
-        case QuestType.FollowOnTwitter:
-        case QuestType.JOIN_DISCORD_SERVER:
-        case QuestType.ASTRARK_PRE_REGISTER:
-          onConnectURL();
-          break;
-        case QuestType.ConnectWallet:
-          if (isConnected) {
-            onConnectWallet();
-          } else {
-            open();
-          }
-          break;
       }
     }
 
     async function onVerify() {
+      if (task.authorization && !task.user_authorized) {
+        onOpen();
+        return;
+      }
+
       setVerifyLoading(true);
 
       try {
         setVerifiable(false);
         const api = canReverify ? reverifyTaskAPI : verifyTaskAPI;
         const res = await api({ quest_id: task.id });
-        setVerified(!!res.verified);
 
         if (!res.verified) {
-          if (res.tip) {
+          if (res.require_authorization) {
+            onOpen();
+          } else if (res.tip) {
             toast.error(res.tip);
           }
+
           setTimeout(() => {
             setVerifiable(true);
           }, 10000);
@@ -318,28 +292,20 @@ function RegularTasks() {
 
     return (
       <div className="mt-5 flex items-center">
-        {!isNotNeedConnect && (
+        {isNeedConnect && (
           <LGButton
             className="uppercase"
-            label={getButtonLabel(
-              connectTexts || { label: 'Connect', loadingLabel: 'Connecting', finishedLabel: 'Connected' },
-              connectLoading,
-              connected,
-            )}
+            label={connectText || 'Connect'}
             actived
             loading={connectLoading}
-            disabled={connected || verified}
+            disabled={achieved || verified}
             onClick={onConnect}
           />
         )}
 
         <LGButton
           className="ml-2 uppercase"
-          label={getButtonLabel(
-            verifyTexts || { label: 'Verify', loadingLabel: 'Verifying', finishedLabel: 'Verified' },
-            verifyLoading,
-            verified,
-          )}
+          label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
           loading={verifyLoading}
           disabled={!verifiable}
           onClick={onVerify}
@@ -357,7 +323,9 @@ function RegularTasks() {
                 <ModalHeader className="font-poppins text-3xl">Welcome to Moonveil</ModalHeader>
                 <ModalBody>
                   <p className="font-poppins-medium text-base">
-                    It seems you haven&apos;t logged in to the website. Please log in first to access the content.
+                    {userInfo
+                      ? "It seems you haven't connect your account. Please connect it at first."
+                      : "It seems you haven't logged in to the website. Please log in first to access the content."}
                   </p>
                 </ModalBody>
                 <ModalFooter>
@@ -365,10 +333,14 @@ function RegularTasks() {
                   <LGButton
                     actived
                     squared
-                    label="Login"
+                    label={userInfo ? 'Connect' : 'Login'}
                     onClick={() => {
                       onClose();
-                      toggleLoginModal();
+                      if (userInfo) {
+                        onBaseConnect();
+                      } else {
+                        toggleLoginModal();
+                      }
                     }}
                   />
                 </ModalFooter>

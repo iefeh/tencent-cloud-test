@@ -55,6 +55,10 @@ export function connectDiscordAPI(): Promise<AuthDto> {
   return http.get('/api/auth/connect/discord', { params: getAuthParams(`/connect?type=${QuestType.ConnectDiscord}`) });
 }
 
+export function connectMediaAPI(type: string): Promise<AuthDto> {
+  return http.get(`/api/auth/connect/${type}`, { params: getAuthParams(`/connect?type=${type}`) });
+}
+
 export function connectWalletAPI(data: {
   address: string;
   signature: string;
