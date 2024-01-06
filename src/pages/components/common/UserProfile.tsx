@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useContext } from 'react';
 import copyImg from 'img/profile/copy.png';
 import { cn } from '@nextui-org/react';
+import { toast } from 'react-toastify';
 
 interface Props {
   className?: string;
@@ -25,6 +26,15 @@ export default function UserProfile(props: Props) {
     return wallet.substring(0, 10) + '...' + wallet.substring(wallet.length - 4);
   }
 
+  async function onCopyWallet() {
+    try {
+      await navigator.clipboard.writeText(wallet || '');
+      toast.success('Copied!');
+    } catch (error: any) {
+      toast.error(error?.message || error);
+    }
+  }
+
   return (
     <div className={cn(['inline-flex items-center', className])}>
       <div className={cn(['relative rounded-full overflow-hidden', avatarClassName])}>
@@ -35,7 +45,14 @@ export default function UserProfile(props: Props) {
         <div className={cn(['text-4xl leading-none', usernameClassName])}>{username}</div>
         <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
           <span>{getWallet()}</span>
-          {hideCopy || <Image className="w-auto h-[calc(1em_+_2px)] ml-2 cursor-pointer" src={copyImg} alt="" />}
+          {hideCopy || (
+            <Image
+              className="w-auto h-[calc(1em_+_2px)] ml-2 cursor-pointer"
+              src={copyImg}
+              alt=""
+              onClick={onCopyWallet}
+            />
+          )}
         </div>
       </div>
     </div>
