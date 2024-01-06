@@ -12,7 +12,7 @@ export default function LoyaltyEarn() {
 
       <BannerAndRank />
 
-      <EarnBanner />
+      {/* <EarnBanner /> */}
 
       <TaskTabs />
     </section>
