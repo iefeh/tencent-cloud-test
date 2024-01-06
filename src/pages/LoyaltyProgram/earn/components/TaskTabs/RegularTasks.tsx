@@ -181,7 +181,16 @@ function RegularTasks() {
       }
     }
 
-    async function onBaseConnectClick() {
+    async function onBaseConnect() {
+      if (task.type === QuestType.ConnectWallet) {
+        if (isConnected) {
+          await onConnectWallet();
+        } else {
+          open();
+        }
+
+        return;
+      }
       if (!task.authorization) return;
 
       setConnectLoading(true);
@@ -226,6 +235,7 @@ function RegularTasks() {
       setConnectLoading(true);
       try {
         await prepareTaskAPI({ quest_id: task.id });
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         await updateTask();
       } catch (error) {
         console.log(error);
@@ -242,29 +252,8 @@ function RegularTasks() {
 
       if (task.properties.is_prepared) {
         onPrepare();
+      } else {
         onConnectURL();
-        return;
-      }
-
-      switch (task.type) {
-        case QuestType.ConnectTwitter:
-        case QuestType.ConnectSteam:
-        case QuestType.ConnectDiscord:
-          onBaseConnectClick();
-          break;
-        case QuestType.RetweetTweet:
-        case QuestType.FollowOnTwitter:
-        case QuestType.JOIN_DISCORD_SERVER:
-        case QuestType.ASTRARK_PRE_REGISTER:
-          onConnectURL();
-          break;
-        case QuestType.ConnectWallet:
-          if (isConnected) {
-            onConnectWallet();
-          } else {
-            open();
-          }
-          break;
       }
     }
 
@@ -283,10 +272,7 @@ function RegularTasks() {
 
         if (!res.verified) {
           if (res.require_authorization) {
-            await updateTask();
-            setTimeout(() => {
-              onOpen();
-            }, 0);
+            onOpen();
           } else if (res.tip) {
             toast.error(res.tip);
           }
@@ -351,7 +337,7 @@ function RegularTasks() {
                     onClick={() => {
                       onClose();
                       if (userInfo) {
-                        onBaseConnectClick();
+                        onBaseConnect();
                       } else {
                         toggleLoginModal();
                       }
