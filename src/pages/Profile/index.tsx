@@ -22,14 +22,14 @@ export default function ProfilePage() {
       <div className="flex flex-wrap gap-10 mt-[2.8125rem]">
         <MoonBeams />
 
-        <MyBadges />
+        {/* <MyBadges /> */}
 
-        <DailyCheckIn />
+        {/* <DailyCheckIn /> */}
 
-        <Invite />
+        {/* <Invite /> */}
       </div>
       
-      <MyNFT />
+      {/* <MyNFT /> */}
 
       <EventsParticipated />
     </section>
