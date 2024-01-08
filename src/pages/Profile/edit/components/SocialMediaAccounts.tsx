@@ -155,9 +155,9 @@ const SocialMediaAccounts = function () {
           {(onClose) => (
             <>
               <ModalBody>
-                <p className="text-center">
+                <p className="text-justify">
                   {accounts.filter((a) => a.connected).length < 2
-                    ? 'Please be aware that this is the last account connected on our website. Disconnecting it will result in permanent loss of this account and all associated rewards, with no possibility of recovery. Are you sure you want to proceed with this operation?'
+                    ? 'Please be aware that this is the last account connected on our website. Disconnecting it will result in PERMANENT LOSS of this account and all associated rewards, with no possibility of recovery. Are you sure you want to proceed with this operation?'
                     : 'Please note that if you choose to disconnect this account now, a 12-hour waiting period will be required before you can reconnect it. Are you sure you want to disconnect?'}
                 </p>
               </ModalBody>
