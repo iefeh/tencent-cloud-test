@@ -6,6 +6,7 @@ interface Props {
   label: string;
   link?: string;
   active?: boolean;
+  disabled?: boolean;
   className?: string;
   onClick?: () => void;
 }
@@ -25,10 +26,15 @@ export default function BasicButton(props: Props) {
   return (
     <button
       className={[
-        'basic-button uppercase text-sm px-6 py-1 border border-solid rounded-3xl hover:border-basic-yellow hover:text-basic-yellow hover:shadow-basic-yellow hover:shadow-[0_0_0.375rem_#F6C799] transition-all duration-500 delay-75 font-poppins-medium',
+        'basic-button uppercase text-sm px-6 py-1 border border-solid rounded-3xl transition-all duration-500 delay-75 font-poppins-medium',
         props.className,
-        props.active ? 'border-basic-yellow text-basic-yellow shadow-basic-yellow shadow-[0_0_0.375rem_#F6C799]' : 'text-white',
+        props.disabled
+          ? 'text-[#666] border-[#666]'
+          : props.active
+          ? 'border-basic-yellow text-basic-yellow shadow-basic-yellow shadow-[0_0_0.375rem_#F6C799]'
+          : 'text-white hover:border-basic-yellow hover:text-basic-yellow hover:shadow-basic-yellow hover:shadow-[0_0_0.375rem_#F6C799]',
       ].join(' ')}
+      disabled={props.disabled}
       onClick={props.onClick || (props.link && onLinkClick) || undefined}
     >
       {props.label}
