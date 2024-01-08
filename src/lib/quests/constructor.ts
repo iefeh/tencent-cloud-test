@@ -1,6 +1,5 @@
 import {IQuest} from "@/lib/models/Quest";
-import {QuestType, claimRewardResult} from "@/lib/quests/types";
-import logger from "@/lib/logger/winstonLogger";
+import {QuestType} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
 import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
@@ -11,6 +10,7 @@ import {RetweetTweetQuest} from "@/lib/quests/implementations/retweetTweetQuest"
 import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
 import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
+import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 
 // TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
 //       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
@@ -28,6 +28,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new ConnectTwitterQuest(quest);
         case QuestType.ConnectSteam:
             return new ConnectSteamQuest(quest);
+        case QuestType.JoinDiscordServer:
+            return new JoinDiscordServerQuest(quest);
         case QuestType.HoldDiscordRole:
             return new HoldDiscordRoleQuest(quest);
         case QuestType.UserMetric:

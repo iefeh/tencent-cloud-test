@@ -8,6 +8,7 @@ import logger from "@/lib/logger/winstonLogger";
 import {constructQuest} from "@/lib/quests/constructor";
 import {redis} from "@/lib/redis/client";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import * as Sentry from "@sentry/nextjs";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -54,6 +55,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.success(result));
     } catch (error) {
         console.error(error);
+        Sentry.captureException(error);
         res.json(response.success({
             verified: false,
             tip: "Network busy, please try again later.",
