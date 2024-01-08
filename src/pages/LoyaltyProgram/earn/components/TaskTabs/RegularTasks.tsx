@@ -406,7 +406,7 @@ function RegularTasks() {
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">
-            <div className="text-[#999]">{task.description}</div>
+            <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
             {task.tip && (
               <div className="flex items-center relative">
                 <div className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
@@ -449,7 +449,7 @@ function RegularTasks() {
             ])}
           >
             <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
-              <div className="text-sm text-white">{task.description}</div>
+              <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
               <div className="text-sm text-[#999] mt-[0.625rem]">{task.tip}</div>
             </div>
 
