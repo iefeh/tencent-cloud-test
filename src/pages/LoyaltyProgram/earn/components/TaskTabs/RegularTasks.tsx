@@ -21,7 +21,7 @@ import {
   verifyTaskAPI,
 } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { QuestRewardType, QuestType } from '@/constant/task';
+import { MediaType, QuestRewardType, QuestType } from '@/constant/task';
 import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
@@ -312,6 +312,22 @@ function RegularTasks() {
       return label;
     }
 
+    function getAccountText() {
+      let text = 'account';
+
+      if (task.type === QuestType.ConnectWallet) {
+        text = 'crypto address';
+      } else if (task.type === QuestType.ConnectDiscord || task.authorization === MediaType.DISCORD) {
+        text = 'Discord account';
+      } else if (task.type === QuestType.ConnectTwitter || task.authorization === MediaType.TWITTER) {
+        text = 'Twitter account';
+      } else if (task.type === QuestType.ConnectSteam || task.authorization === MediaType.STEAM) {
+        text = 'Steam account';
+      }
+
+      return text;
+    }
+
     return (
       <div className="mt-5 flex items-center">
         {isNeedConnect && (
@@ -346,7 +362,7 @@ function RegularTasks() {
                 <ModalBody>
                   <p className="font-poppins-medium text-base">
                     {userInfo
-                      ? "It seems you haven't connect your account. Please connect it at first."
+                      ? `It seems you haven't connect your ${getAccountText()}. Please connect it at first.`
                       : "It seems you haven't logged in to the website. Please log in first to access the content."}
                   </p>
                 </ModalBody>
