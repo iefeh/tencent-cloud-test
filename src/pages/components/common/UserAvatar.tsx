@@ -1,4 +1,4 @@
-import { useRef, useContext } from 'react';
+import { useRef, useContext, useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { ControlledMenu, MenuItem, useMenuState, useHover, MenuDivider } from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
@@ -14,6 +14,8 @@ import checkinImg from 'img/header/icon_checkin.png';
 import inviteImg from 'img/header/icon_invite.png';
 import settingsImg from 'img/header/icon_settings.png';
 import logoutImg from 'img/header/icon_logout.png';
+import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
+import LGButton from './buttons/LGButton';
 
 interface HeaderMenuItem {
   title: string;
@@ -28,7 +30,10 @@ const UserAvatar = () => {
   const ref = useRef(null);
   const [menuState, toggle] = useMenuState({ transition: true });
   const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [logoutLoading, setLogoutLoading] = useState(false);
   if (!userInfo) return null;
+
   const menus: HeaderMenuItem[] = [
     {
       title: 'Personal Center',
@@ -54,7 +59,7 @@ const UserAvatar = () => {
     {
       title: 'Log Out',
       icon: logoutImg,
-      onClick: () => logout(),
+      onClick: onOpen,
     },
   ];
 
@@ -68,6 +73,12 @@ const UserAvatar = () => {
     router.push(item.path);
   }
 
+  async function onLogout() {
+    setLogoutLoading(true);
+    await logout();
+    setLogoutLoading(false);
+  }
+
   return (
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
@@ -76,7 +87,14 @@ const UserAvatar = () => {
         </div>
       </div>
 
-      <ControlledMenu className="[&>.szh-menu]:-translate-x-12" {...hoverProps} {...menuState} anchorRef={ref} theming="dark" onClose={() => toggle(false)}>
+      <ControlledMenu
+        className="[&>.szh-menu]:-translate-x-12"
+        {...hoverProps}
+        {...menuState}
+        anchorRef={ref}
+        theming="dark"
+        onClose={() => toggle(false)}
+      >
         <MenuItem>
           <UserProfile
             avatarClassName="w-12 h-12"
@@ -95,6 +113,27 @@ const UserAvatar = () => {
           </MenuItem>
         ))}
       </ControlledMenu>
+
+      <Modal
+        backdrop='blur'
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem]' }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <p>Are you sure you want to log out?</p>
+              </ModalBody>
+              <ModalFooter>
+                <LGButton loading={logoutLoading} className="uppercase" label="Yes" onClick={onLogout} />
+                <LGButton className="uppercase" label="No" actived onClick={onClose} />
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 };
