@@ -1,6 +1,7 @@
 import { KEY_AUTHORIZATION } from '@/constant/storage';
 import { getUserInfoAPI, loginByEmailAPI, logoutAPI, signInParticleAPI } from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
+import { debounce } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 
 class UserStore {
@@ -33,10 +34,10 @@ class UserStore {
     await this.getUserInfo();
   };
 
-  getUserInfo = async () => {
+  getUserInfo = debounce(async () => {
     const res = await getUserInfoAPI();
     this.userInfo = res;
-  };
+  }, 500);
 
   logout = async (needRequest = true) => {
     if (this.particle.auth.isLogin()) {
@@ -70,7 +71,7 @@ class UserStore {
 
   loginParticle = async () => {
     const particleUserInfo = await this.getParticleUserInfo();
-    console.log('particle user info(return when it\'s null): ', particleUserInfo);
+    console.log("particle user info(return when it's null): ", particleUserInfo);
     if (!particleUserInfo) return;
 
     const { token, uuid } = particleUserInfo!;
@@ -90,7 +91,7 @@ class UserStore {
 
   toggleLoginModal = () => {
     this.loginModelVisible = !this.loginModelVisible;
-  }
+  };
 }
 
 export default UserStore;

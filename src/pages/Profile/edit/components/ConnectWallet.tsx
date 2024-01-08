@@ -1,7 +1,7 @@
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import Image, { StaticImageData } from 'next/image';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import metamaskIconImg from 'img/profile/edit/icon_metamask.png';
 import rightArrowIconImg from 'img/profile/edit/icon_arrow_right.png';
 import { MediaType } from '@/constant/task';
@@ -10,6 +10,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import { disconnectWalletAPI } from '@/http/services/login';
 import useConnect from '@/hooks/useConnect';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 interface MAItem {
   title: string;
@@ -33,6 +34,7 @@ const ConnectWallet = function () {
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [disconnectLoading, setDisconnectLoading] = useState(false);
+  const { isConnected } = useWeb3ModalAccount();
 
   function onDisconnectClick(item: MAItem) {
     setCurrentItem(item);
@@ -47,12 +49,17 @@ const ConnectWallet = function () {
     try {
       await disconnectAPI();
       onClose();
+      getUserInfo();
     } catch (error: any) {
       toast.error(error?.message || error);
     } finally {
       setDisconnectLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (isConnected) getUserInfo();
+  }, [isConnected]);
 
   const MediaItem = function (props: { item: MAItem }) {
     const { item } = props;

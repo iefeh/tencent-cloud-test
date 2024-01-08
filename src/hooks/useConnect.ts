@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { MediaType, QuestType } from '@/constant/task';
 import { connectDiscordAPI, connectGoogleAPI, connectSteamAPI, connectTwitterAPI } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
+import { useWeb3Modal } from '@web3modal/ethers/react';
 
 const connectAPIs: { [key: string | MediaType | QuestType]: () => Promise<{ authorization_url: string } | undefined> } =
   {
@@ -17,6 +18,7 @@ const connectAPIs: { [key: string | MediaType | QuestType]: () => Promise<{ auth
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
   const dialogWindowRef = useRef<Window | null>(null);
+  const { open } = useWeb3Modal();
 
   function authConnect() {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
@@ -24,8 +26,12 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     if (!dialogWindowRef.current) return;
     dialogWindowRef.current.close();
     dialogWindowRef.current = null;
-    const { code } = tokens[type] || {};
-    if (+code === 1) callback?.();
+    const { code, msg } = tokens[type] || {};
+    if (+code === 1) {
+      callback?.();
+    } else {
+      toast.error(msg);
+    }
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
   }
@@ -43,6 +49,11 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   }
 
   async function onConnect() {
+    if (type === MediaType.METAMASK) {
+      open();
+      return;
+    }
+
     const api = connectAPIs[type];
     if (!api) return;
 
