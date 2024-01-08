@@ -14,7 +14,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
     await getMongoConnection();
-    await saveQuests();
+    // await saveQuests();
     // await saveWalletTokenReward();
     // await saveWalletNftReward();
     // await saveSteamReward();
