@@ -8,7 +8,7 @@ import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
-  const { toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
@@ -46,18 +46,18 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     setLoading(true);
     const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
     const provider = new BrowserProvider(walletProvider!);
-    const signer = await provider.getSigner();
-    const signature = await signer?.signMessage(message);
-
-    const data = {
-      address: address as `0x${string}`,
-      message,
-      signature,
-    };
 
     try {
+      const signer = await provider.getSigner();
+      const signature = await signer?.signMessage(message);
+
+      const data = {
+        address: address as `0x${string}`,
+        message,
+        signature,
+      };
       await connectWalletAPI(data);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
     } finally {
       setLoading(false);
@@ -65,6 +65,11 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   }
 
   async function onConnect() {
+    if (!userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
+
     if (type === MediaType.EMAIL) {
       toggleLoginModal(true);
       return;
@@ -73,6 +78,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     if (type === MediaType.METAMASK) {
       if (isConnected) {
         await onConnectWallet();
+        callback?.();
       } else {
         open();
       }
