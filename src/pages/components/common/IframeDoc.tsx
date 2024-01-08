@@ -41,7 +41,9 @@ export default function IframeDoc(props: Props) {
         font-family: Semakin;
         src: url("/fonts/Semakin.ttf");
       }
-      
+      :root {
+        background-color: currentColor;
+      }
     `;
     iframeRef.current.contentWindow.document.head.appendChild(style);
 

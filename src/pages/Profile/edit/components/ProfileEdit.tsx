@@ -19,7 +19,7 @@ const ProfileEdit = function () {
         <div className="text-2xl ml-5">Change profile photo</div>
       </div>
 
-      <div className='mt-[3.4375rem]'>
+      {/* <div className='mt-[3.4375rem]'>
         <div className="text-2xl">User Name</div>
 
         <div className="flex gap-2 h-[3.75rem] mt-[1.4375rem]">
@@ -32,7 +32,7 @@ const ProfileEdit = function () {
           />
           <LGButton className="w-[7.5rem] h-full" label="Save" actived squared disabled={!userInfo} />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

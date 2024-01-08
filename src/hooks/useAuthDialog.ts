@@ -16,7 +16,7 @@ export default function useAuthDialog(dialog: MutableRefObject<Window | null>, c
     store.token = token;
     store.jwtToken = jwt || '';
     store.loginParticle();
-    store.getUserInfo().catch(() => void 0);
+    store.getUserInfo()?.catch(() => void 0);
     if (!dialog.current) return;
     dialog.current.close();
     dialog.current = null;

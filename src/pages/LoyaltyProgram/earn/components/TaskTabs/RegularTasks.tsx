@@ -21,14 +21,12 @@ import {
   verifyTaskAPI,
 } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { QuestRewardType, QuestType } from '@/constant/task';
-import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
+import { MediaType, QuestRewardType, QuestType } from '@/constant/task';
+import { connectWalletAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
-import useConnectDialog from '@/hooks/useConnectDialog';
-import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import { MobxContext } from '@/pages/_app';
 import { BrowserProvider } from 'ethers';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
@@ -37,9 +35,15 @@ import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';
+import useConnect from '@/hooks/useConnect';
+
+interface VerifyTexts {
+  label: string;
+  finishedLable: string;
+}
 
 interface TaskItem extends TaskListItem {
-  connectText?: string;
+  connectTexts?: VerifyTexts;
   showConnectButton?: boolean;
   showVerifyButton?: boolean;
   onConnectClick?: (type: QuestType) => string | undefined | Promise<string | undefined>;
@@ -56,7 +60,7 @@ function RegularTasks() {
   });
   const [pagiTotal, setPagiTotal] = useState(0);
   const { open } = useWeb3Modal();
-  const { address, chainId, isConnected } = useWeb3ModalAccount();
+  const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
   const queryTasks = debounce(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
@@ -89,16 +93,28 @@ function RegularTasks() {
     list.forEach((item) => {
       switch (item.type) {
         case QuestType.RetweetTweet:
-          item.connectText = 'Retweet';
+          item.connectTexts = {
+            label: 'Repost',
+            finishedLable: 'Reposted',
+          };
           break;
         case QuestType.JOIN_DISCORD_SERVER:
-          item.connectText = 'Join';
+          item.connectTexts = {
+            label: 'Join',
+            finishedLable: 'Joined',
+          };
           break;
         case QuestType.FollowOnTwitter:
-          item.connectText = 'Follow';
+          item.connectTexts = {
+            label: 'Follow',
+            finishedLable: 'Followed',
+          };
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
-          item.connectText = 'Start';
+          item.connectTexts = {
+            label: 'Start',
+            finishedLable: 'Started',
+          };
           break;
       }
     });
@@ -137,40 +153,17 @@ function RegularTasks() {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectText, achieved, verified } = task;
+    const { connectTexts, achieved, verified } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
     const [verifiable, setVerifiable] = useState(!verified || canReverify);
-    const dialogWindowRef = useRef<Window | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    useConnectDialog(dialogWindowRef, task.type, () => {
-      const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
-      const { code, msg } = tokens[task.type] || {};
-      const isConnected = +code === 1;
-      if (isConnected) {
-        updateTask();
-        return;
-      }
-
-      delete tokens[task.type];
-      localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
-      toast.error(msg);
+    const { onConnect, loading: mediaLoading } = useConnect(task.authorization || '', () => {
+      updateTask();
     });
-
-    function openAuthWindow(authURL: string) {
-      const dialog = window.open(
-        authURL,
-        'Authrization',
-        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
-      );
-      dialogWindowRef.current = dialog;
-      dialog?.addEventListener('close', () => {
-        dialogWindowRef.current = null;
-      });
-    }
 
     async function updateTask() {
       try {
@@ -191,19 +184,12 @@ function RegularTasks() {
 
         return;
       }
-      if (!task.authorization) return;
-
-      setConnectLoading(true);
-
-      const res = await connectMediaAPI(task.authorization);
-      if (!res?.authorization_url) {
-        toast.error('Get authorization url failed!');
-        setConnectLoading(false);
+      if (!task.authorization) {
+        toast.error('Invalid authorization type!');
         return;
       }
 
-      openAuthWindow(res.authorization_url);
-      setConnectLoading(false);
+      await onConnect();
     }
 
     async function onConnectWallet() {
@@ -243,7 +229,7 @@ function RegularTasks() {
       }
     }
 
-    function onConnect() {
+    function onConnectClick() {
       if (!userInfo) {
         onOpen();
         return;
@@ -289,23 +275,45 @@ function RegularTasks() {
       }
     }
 
+    function getConnectLabel(texts?: VerifyTexts) {
+      const { label, finishedLable } = texts || { label: 'Connect', finishedLable: 'Connected' };
+      if (task.verified || (task.achieved && !task.properties.is_prepared)) return finishedLable;
+      return label;
+    }
+
+    function getAccountText() {
+      let text = 'account';
+
+      if (task.type === QuestType.ConnectWallet) {
+        text = 'crypto address';
+      } else if (task.type === QuestType.ConnectDiscord || task.authorization === MediaType.DISCORD) {
+        text = 'Discord account';
+      } else if (task.type === QuestType.ConnectTwitter || task.authorization === MediaType.TWITTER) {
+        text = 'Twitter account';
+      } else if (task.type === QuestType.ConnectSteam || task.authorization === MediaType.STEAM) {
+        text = 'Steam account';
+      }
+
+      return text;
+    }
+
     return (
       <div className="mt-5 flex items-center">
         {isNeedConnect && (
           <LGButton
             className="uppercase"
-            label={connectText || 'Connect'}
+            label={getConnectLabel(connectTexts)}
             actived
-            loading={connectLoading}
+            loading={connectLoading || mediaLoading}
             disabled={achieved || verified}
-            onClick={onConnect}
+            onClick={onConnectClick}
           />
         )}
 
         <LGButton
           className="ml-2 uppercase"
           label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
-          loading={verifyLoading}
+          loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           onClick={onVerify}
         />
@@ -323,7 +331,7 @@ function RegularTasks() {
                 <ModalBody>
                   <p className="font-poppins-medium text-base">
                     {userInfo
-                      ? "It seems you haven't connect your account. Please connect it at first."
+                      ? `It seems you haven't connect your ${getAccountText()}. Please connect it at first.`
                       : "It seems you haven't logged in to the website. Please log in first to access the content."}
                   </p>
                 </ModalBody>
@@ -406,7 +414,7 @@ function RegularTasks() {
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">
-            <div className="text-[#999]">{task.description}</div>
+            <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
             {task.tip && (
               <div className="flex items-center relative">
                 <div className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
@@ -449,7 +457,7 @@ function RegularTasks() {
             ])}
           >
             <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
-              <div className="text-sm text-white">{task.description}</div>
+              <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
               <div className="text-sm text-[#999] mt-[0.625rem]">{task.tip}</div>
             </div>
 
