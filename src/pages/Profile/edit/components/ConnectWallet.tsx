@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { disconnectWalletAPI } from '@/http/services/login';
 import useConnect from '@/hooks/useConnect';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import errorIconImg from 'img/icon/icon_error.png';
 
 interface MAItem {
   title: string;
@@ -102,13 +103,15 @@ const ConnectWallet = function () {
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        classNames={{ base: 'bg-[#141414] !rounded-base', body: 'px-8 pt-[3.625rem]' }}
+        classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] flex-row' }}
       >
         <ModalContent>
           {(onClose) => (
             <>
               <ModalBody>
-                <p className="text-center">
+                <Image className="w-8 h-8 object-contain align-bottom mr-2" src={errorIconImg} alt="" />
+
+                <p>
                   Please note that if you choose to disconnect this account now, a 12-hour waiting period will be
                   required before you can reconnect it. Are you sure you want to disconnect?
                 </p>

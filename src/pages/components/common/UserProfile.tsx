@@ -45,7 +45,7 @@ export default function UserProfile(props: Props) {
         <div className={cn(['text-4xl leading-none', usernameClassName])}>{username}</div>
         <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
           <span>{getWallet()}</span>
-          {hideCopy || (
+          {!hideCopy && wallet && (
             <Image
               className="w-auto h-[calc(1em_+_2px)] ml-2 cursor-pointer"
               src={copyImg}
