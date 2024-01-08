@@ -109,8 +109,8 @@ const ConnectWallet = function () {
             <>
               <ModalBody>
                 <p className="text-center">
-                  Please note that after disconnecting your account, you&apos;ll need to wait for 24 hours before
-                  re-connecting. Are you sure you want to disconnect?
+                  Please note that if you choose to disconnect this account now, a 12-hour waiting period will be
+                  required before you can reconnect it. Are you sure you want to disconnect?
                 </p>
               </ModalBody>
               <ModalFooter>

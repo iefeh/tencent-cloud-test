@@ -137,7 +137,7 @@ const SocialMediaAccounts = function () {
   };
 
   return (
-    <div className='mt-[4.1875rem]'>
+    <div className="mt-[4.1875rem]">
       <div className="text-2xl">Social Media Accounts</div>
 
       <div className="grid grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
@@ -156,8 +156,9 @@ const SocialMediaAccounts = function () {
             <>
               <ModalBody>
                 <p className="text-center">
-                  Please note that after disconnecting your account, you&apos;ll need to wait for 24 hours before
-                  re-connecting. Are you sure you want to disconnect?
+                  {accounts.filter((a) => a.connected).length < 2
+                    ? 'Please be aware that this is the last account connected on our website. Disconnecting it will result in permanent loss of this account and all associated rewards, with no possibility of recovery. Are you sure you want to proceed with this operation?'
+                    : 'Please note that if you choose to disconnect this account now, a 12-hour waiting period will be required before you can reconnect it. Are you sure you want to disconnect?'}
                 </p>
               </ModalBody>
               <ModalFooter>
