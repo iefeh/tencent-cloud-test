@@ -100,6 +100,7 @@ const SocialMediaAccounts = function () {
     try {
       await disconnectAPI();
       onClose();
+      getUserInfo();
     } catch (error: any) {
       toast.error(error?.message || error);
     } finally {

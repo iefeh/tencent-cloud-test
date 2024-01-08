@@ -30,11 +30,11 @@ const UserAvatar = () => {
   const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
   if (!userInfo) return null;
   const menus: HeaderMenuItem[] = [
-    // {
-    //   title: 'Personal Center',
-    //   icon: profileImg,
-    //   path: '/Profile',
-    // },
+    {
+      title: 'Personal Center',
+      icon: profileImg,
+      path: '/Profile',
+    },
     // {
     //   title: 'My Badges',
     //   icon: badgeImg,
