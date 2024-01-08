@@ -3,26 +3,11 @@ import earnMBsBgImg from 'img/profile/bg_earn_mbs.png';
 import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import MBHistoryButton from './MBHistoryButton';
-import { LeaderBoardItem, leaderBoardRankAPI } from '@/http/services/task';
-import { useEffect, useState } from 'react';
-import { throttle } from 'lodash';
+import { useContext } from 'react';
+import { MobxContext } from '@/pages/_app';
 
 export default function MoonBeams() {
-  const [myRankInfo, setMyRankInfo] = useState<LeaderBoardItem | null>();
-
-  const queryRank = throttle(async function () {
-    try {
-      const res = await leaderBoardRankAPI();
-      const { me } = res;
-      setMyRankInfo(me);
-    } catch (error) {
-      console.log(error);
-    }
-  }, 500);
-
-  useEffect(() => {
-    queryRank();
-  }, []);
+  const {userInfo} = useContext(MobxContext);
 
   return (
     <div className="w-[42.5rem] h-[15rem] relative overflow-hidden rounded-[0.625rem] border-1 border-[#1D1D1D] flex flex-col justify-between pt-[2.375rem] pb-[3.25rem] pr-[10.5rem] pl-[2.1875rem] hover:border-basic-yellow transition-[border-color] duration-500">
@@ -35,8 +20,7 @@ export default function MoonBeams() {
         </div>
 
         <div className="text-right">
-          <div className="text-5xl">{myRankInfo?.moon_beam || '--'}</div>
-          <div className="text-sm leading-none mt-[0.9375rem]">Ranking: {myRankInfo?.rank || '--'}</div>
+          <div className="text-5xl">{userInfo?.moon_beam || '--'}</div>
         </div>
       </div>
 
