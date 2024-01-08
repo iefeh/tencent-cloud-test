@@ -152,7 +152,7 @@ function RegularTasks() {
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
-    const [verifiable, setVerifiable] = useState(!verified || canReverify);
+    const [verifiable, setVerifiable] = useState(verified ? canReverify : !task.properties.is_prepared || achieved);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
