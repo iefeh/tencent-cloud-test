@@ -22,13 +22,10 @@ import {
 } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MediaType, QuestRewardType, QuestType } from '@/constant/task';
-import { connectWalletAPI } from '@/http/services/login';
-import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
-import { BrowserProvider } from 'ethers';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
@@ -59,9 +56,6 @@ function RegularTasks() {
     pageSize: 9,
   });
   const [pagiTotal, setPagiTotal] = useState(0);
-  const { open } = useWeb3Modal();
-  const { address, isConnected } = useWeb3ModalAccount();
-  const { walletProvider } = useWeb3ModalProvider();
 
   const queryTasks = debounce(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
     if (!noLoading) setTaskListLoading(true);
@@ -161,7 +155,8 @@ function RegularTasks() {
     const [verifiable, setVerifiable] = useState(!verified || canReverify);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    const { onConnect, loading: mediaLoading } = useConnect(task.authorization || '', () => {
+    const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
+    const { onConnect, loading: mediaLoading } = useConnect(connectType, () => {
       updateTask();
     });
 
@@ -169,44 +164,6 @@ function RegularTasks() {
       try {
         const res = await taskDetailsAPI({ quest_id: task.id });
         updateTaskById(task.id, res.quest);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    async function onBaseConnect() {
-      if (task.type === QuestType.ConnectWallet) {
-        if (isConnected) {
-          await onConnectWallet();
-        } else {
-          open();
-        }
-
-        return;
-      }
-      if (!task.authorization) {
-        toast.error('Invalid authorization type!');
-        return;
-      }
-
-      await onConnect();
-    }
-
-    async function onConnectWallet() {
-      const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
-      const provider = new BrowserProvider(walletProvider!);
-      const signer = await provider.getSigner();
-      const signature = await signer?.signMessage(message);
-
-      const data = {
-        address: address as `0x${string}`,
-        message,
-        signature,
-      };
-
-      try {
-        await connectWalletAPI(data);
-        updateTask();
       } catch (error) {
         console.log(error);
       }
@@ -235,10 +192,12 @@ function RegularTasks() {
         return;
       }
 
+      if (task.properties.url) {
+        onConnectURL();
+      }
+
       if (task.properties.is_prepared) {
         onPrepare();
-      } else {
-        onConnectURL();
       }
     }
 
@@ -344,7 +303,7 @@ function RegularTasks() {
                     onClick={() => {
                       onClose();
                       if (userInfo) {
-                        onBaseConnect();
+                        onConnect();
                       } else {
                         toggleLoginModal();
                       }
