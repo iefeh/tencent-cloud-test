@@ -26,7 +26,7 @@ export default function HeaderDropdownMenu(props: Props) {
       <div
         ref={menuRef}
         {...anchorProps}
-        className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
+        className={`cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] ${
           isActive && 'text-[#F6C799] border-[#F6C799] border-b-2'
         } text-[22px] ml-8`}
       >

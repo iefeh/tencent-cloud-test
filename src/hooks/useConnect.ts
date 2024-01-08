@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { connectMediaAPI } from '@/http/services/login';
+import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
-import { useWeb3Modal } from '@web3modal/ethers/react';
+import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { BrowserProvider } from 'ethers';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
   const dialogWindowRef = useRef<Window | null>(null);
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
+  const { address, isConnected } = useWeb3ModalAccount();
+  const { walletProvider } = useWeb3ModalProvider();
 
   function authConnect() {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
@@ -37,9 +40,41 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     });
   }
 
+  async function onConnectWallet() {
+    setLoading(true);
+    const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
+    const provider = new BrowserProvider(walletProvider!);
+    const signer = await provider.getSigner();
+    const signature = await signer?.signMessage(message);
+
+    const data = {
+      address: address as `0x${string}`,
+      message,
+      signature,
+    };
+
+    try {
+      await connectWalletAPI(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function onConnect() {
     if (type === MediaType.METAMASK) {
-      open();
+      if (isConnected) {
+        await onConnectWallet();
+      } else {
+        open();
+      }
+
+      return;
+    }
+
+    if (!type) {
+      toast.error('Invalid authorization type!');
       return;
     }
 

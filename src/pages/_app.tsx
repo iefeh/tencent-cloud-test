@@ -188,7 +188,6 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
-  const host = typeof window !== 'undefined' ? window.location.host : 'defaultHost';
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
