@@ -22,7 +22,7 @@ import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
-// import UserInfo from './UserInfo';
+import UserInfo from './UserInfo';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -167,7 +167,7 @@ const Header = () => {
           <MoreLinks />
         </div>
 
-        {userInfo ? (
+        {/* {userInfo ? (
           <UserAvatar />
         ) : (
           <BasicButton
@@ -175,9 +175,9 @@ const Header = () => {
             label="login"
             onClick={toggleLoginModal}
           />
-        )}
+        )} */}
 
-        {/* {listOpen || <UserInfo />} */}
+        <UserInfo />
 
         {listOpen ? (
           <Close onClick={() => setListOpen(false)} className="max-lg:block mr6 hidden w-[3rem] h-[3rem]" />

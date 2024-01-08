@@ -59,6 +59,18 @@ export function connectMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/connect/${type}`, { params: getAuthParams(`/connect?type=${type}`) });
 }
 
+export function loginByMediaAPI(type: string): Promise<AuthDto> {
+  return http.get(`/api/auth/signin/${type}`, { params: getAuthParams(`?type=${type}`) });
+}
+
+export function loginByWalletAPI(data: {
+  address: string;
+  signature: string;
+  message: string;
+}): Promise<boolean | null> {
+  return http.post('/api/auth/signin/wallet', JSON.stringify(data));
+}
+
 export function connectWalletAPI(data: {
   address: string;
   signature: string;
