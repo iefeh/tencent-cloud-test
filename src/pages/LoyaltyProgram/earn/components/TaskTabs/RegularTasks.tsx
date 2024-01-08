@@ -235,7 +235,6 @@ function RegularTasks() {
       setConnectLoading(true);
       try {
         await prepareTaskAPI({ quest_id: task.id });
-        await new Promise((resolve) => setTimeout(resolve, 2000));
         await updateTask();
       } catch (error) {
         console.log(error);
