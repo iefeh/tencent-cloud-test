@@ -38,8 +38,13 @@ import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';
 
+interface VerifyTexts {
+  label: string;
+  finishedLable: string;
+}
+
 interface TaskItem extends TaskListItem {
-  connectText?: string;
+  connectTexts?: VerifyTexts;
   showConnectButton?: boolean;
   showVerifyButton?: boolean;
   onConnectClick?: (type: QuestType) => string | undefined | Promise<string | undefined>;
@@ -89,16 +94,28 @@ function RegularTasks() {
     list.forEach((item) => {
       switch (item.type) {
         case QuestType.RetweetTweet:
-          item.connectText = 'Retweet';
+          item.connectTexts = {
+            label: 'Repost',
+            finishedLable: 'Reposted',
+          };
           break;
         case QuestType.JOIN_DISCORD_SERVER:
-          item.connectText = 'Join';
+          item.connectTexts = {
+            label: 'Join',
+            finishedLable: 'Joined',
+          };
           break;
         case QuestType.FollowOnTwitter:
-          item.connectText = 'Follow';
+          item.connectTexts = {
+            label: 'Follow',
+            finishedLable: 'Followed',
+          };
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
-          item.connectText = 'Start';
+          item.connectTexts = {
+            label: 'Start',
+            finishedLable: 'Started',
+          };
           break;
       }
     });
@@ -137,7 +154,7 @@ function RegularTasks() {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectText, achieved, verified } = task;
+    const { connectTexts, achieved, verified } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
@@ -289,12 +306,18 @@ function RegularTasks() {
       }
     }
 
+    function getConnectLabel(texts?: VerifyTexts) {
+      const { label, finishedLable } = texts || { label: 'Connect', finishedLable: 'Connected' };
+      if (task.verified || (task.achieved && !task.properties.is_prepared)) return finishedLable;
+      return label;
+    }
+
     return (
       <div className="mt-5 flex items-center">
         {isNeedConnect && (
           <LGButton
             className="uppercase"
-            label={connectText || 'Connect'}
+            label={getConnectLabel(connectTexts)}
             actived
             loading={connectLoading}
             disabled={achieved || verified}
