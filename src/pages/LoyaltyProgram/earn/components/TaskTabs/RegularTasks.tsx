@@ -223,8 +223,9 @@ function RegularTasks() {
 
           setTimeout(() => {
             setVerifiable(true);
-          }, 10000);
+          }, 30000);
         } else {
+          if (res.tip) toast.success(res.tip);
           updateTask();
         }
       } catch (error) {
