@@ -3,33 +3,39 @@ import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from 
 import { useState } from 'react';
 import styles from './index.module.css';
 
+interface EventItem {
+  event: string;
+  status: EventsStatus;
+  time: string;
+}
+
 export default function EventsParticipated() {
-  const [tableData, setTableData] = useState([
-    {
-      event: 'AstrArk Character Voice Rally',
-      status: EventsStatus.IN_PROGRESS,
-      time: 'January 30, 2024',
-    },
-    {
-      event: 'AstrArk Character Voice Rally',
-      status: EventsStatus.IN_PROGRESS,
-      time: 'January 30, 2024',
-    },
-    {
-      event: 'AstrArk Character Voice Rally',
-      status: EventsStatus.IN_PROGRESS,
-      time: 'January 30, 2024',
-    },
-    {
-      event: 'AstrArk Character Voice Rally',
-      status: EventsStatus.COMPLETED,
-      time: 'January 30, 2024',
-    },
-    {
-      event: 'AstrArk Character Voice Rally',
-      status: EventsStatus.COMPLETED,
-      time: 'January 30, 2024',
-    },
+  const [tableData, setTableData] = useState<EventItem[]>([
+    // {
+    //   event: 'AstrArk Character Voice Rally',
+    //   status: EventsStatus.IN_PROGRESS,
+    //   time: 'January 30, 2024',
+    // },
+    // {
+    //   event: 'AstrArk Character Voice Rally',
+    //   status: EventsStatus.IN_PROGRESS,
+    //   time: 'January 30, 2024',
+    // },
+    // {
+    //   event: 'AstrArk Character Voice Rally',
+    //   status: EventsStatus.IN_PROGRESS,
+    //   time: 'January 30, 2024',
+    // },
+    // {
+    //   event: 'AstrArk Character Voice Rally',
+    //   status: EventsStatus.COMPLETED,
+    //   time: 'January 30, 2024',
+    // },
+    // {
+    //   event: 'AstrArk Character Voice Rally',
+    //   status: EventsStatus.COMPLETED,
+    //   time: 'January 30, 2024',
+    // },
   ]);
 
   return (
@@ -53,7 +59,7 @@ export default function EventsParticipated() {
           <TableColumn>Status</TableColumn>
           <TableColumn>Time</TableColumn>
         </TableHeader>
-        <TableBody>
+        <TableBody emptyContent={'Coming Soon.'}>
           {tableData.map((row, index) => (
             <TableRow key={index}>
               <TableCell>{row.event}</TableCell>

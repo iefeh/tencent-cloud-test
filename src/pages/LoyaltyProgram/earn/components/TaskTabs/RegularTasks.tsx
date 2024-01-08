@@ -93,6 +93,7 @@ function RegularTasks() {
           };
           break;
         case QuestType.JOIN_DISCORD_SERVER:
+        case QuestType.HoldDiscordRole:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',

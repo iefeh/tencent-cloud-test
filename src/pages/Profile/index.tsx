@@ -29,9 +29,9 @@ export default function ProfilePage() {
         {/* <Invite /> */}
       </div>
       
-      {/* <MyNFT /> */}
+      <MyNFT />
 
-      {/* <EventsParticipated /> */}
+      <EventsParticipated />
     </section>
   );
 }
