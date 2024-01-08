@@ -89,8 +89,12 @@ class UserStore {
     return res;
   };
 
-  toggleLoginModal = () => {
-    this.loginModelVisible = !this.loginModelVisible;
+  toggleLoginModal = (visible?: boolean) => {
+    if (typeof visible === 'boolean') {
+      this.loginModelVisible = visible;
+    } else {
+      this.loginModelVisible = !this.loginModelVisible;
+    }
   };
 }
 
