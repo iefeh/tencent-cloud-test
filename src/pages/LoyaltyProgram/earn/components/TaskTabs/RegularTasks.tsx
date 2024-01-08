@@ -22,13 +22,11 @@ import {
 } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MediaType, QuestRewardType, QuestType } from '@/constant/task';
-import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
+import { connectWalletAPI } from '@/http/services/login';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
-import useConnectDialog from '@/hooks/useConnectDialog';
-import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import { MobxContext } from '@/pages/_app';
 import { BrowserProvider } from 'ethers';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
@@ -37,6 +35,7 @@ import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';
+import useConnect from '@/hooks/useConnect';
 
 interface VerifyTexts {
   label: string;
@@ -61,7 +60,7 @@ function RegularTasks() {
   });
   const [pagiTotal, setPagiTotal] = useState(0);
   const { open } = useWeb3Modal();
-  const { address, chainId, isConnected } = useWeb3ModalAccount();
+  const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
   const queryTasks = debounce(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
@@ -160,34 +159,11 @@ function RegularTasks() {
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
     const [verifiable, setVerifiable] = useState(!verified || canReverify);
-    const dialogWindowRef = useRef<Window | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    useConnectDialog(dialogWindowRef, task.type, () => {
-      const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
-      const { code, msg } = tokens[task.type] || {};
-      const isConnected = +code === 1;
-      if (isConnected) {
-        updateTask();
-        return;
-      }
-
-      delete tokens[task.type];
-      localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
-      toast.error(msg);
+    const { onConnect, loading: mediaLoading } = useConnect(task.authorization || '', () => {
+      updateTask();
     });
-
-    function openAuthWindow(authURL: string) {
-      const dialog = window.open(
-        authURL,
-        'Authrization',
-        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
-      );
-      dialogWindowRef.current = dialog;
-      dialog?.addEventListener('close', () => {
-        dialogWindowRef.current = null;
-      });
-    }
 
     async function updateTask() {
       try {
@@ -208,19 +184,12 @@ function RegularTasks() {
 
         return;
       }
-      if (!task.authorization) return;
-
-      setConnectLoading(true);
-
-      const res = await connectMediaAPI(task.authorization);
-      if (!res?.authorization_url) {
-        toast.error('Get authorization url failed!');
-        setConnectLoading(false);
+      if (!task.authorization) {
+        toast.error('Invalid authorization type!');
         return;
       }
 
-      openAuthWindow(res.authorization_url);
-      setConnectLoading(false);
+      await onConnect();
     }
 
     async function onConnectWallet() {
@@ -260,7 +229,7 @@ function RegularTasks() {
       }
     }
 
-    function onConnect() {
+    function onConnectClick() {
       if (!userInfo) {
         onOpen();
         return;
@@ -335,16 +304,16 @@ function RegularTasks() {
             className="uppercase"
             label={getConnectLabel(connectTexts)}
             actived
-            loading={connectLoading}
+            loading={connectLoading || mediaLoading}
             disabled={achieved || verified}
-            onClick={onConnect}
+            onClick={onConnectClick}
           />
         )}
 
         <LGButton
           className="ml-2 uppercase"
           label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
-          loading={verifyLoading}
+          loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           onClick={onVerify}
         />
