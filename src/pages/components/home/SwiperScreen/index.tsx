@@ -51,20 +51,20 @@ export default function SwiperScreen() {
       >
         {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
 
-        {/* <SwiperSlide>
-          <IndexSlide needAni={activeIndex === 0} />
-        </SwiperSlide> */}
+        <SwiperSlide>
+          <IndexSlide needAni={needAnis[0]} />
+        </SwiperSlide>
 
         {/* <SwiperSlide>
-          <LimitedTestSlide needAni={needAnis[0]} />
+          <LimitedTestSlide needAni={needAnis[1]} />
         </SwiperSlide> */}
 
         <SwiperSlide>
-          <RaceSlide needAni={needAnis[0]} />
+          <RaceSlide needAni={needAnis[2]} />
         </SwiperSlide>
 
         <SwiperSlide>
-          <EntertainmentSlide needAni={needAnis[1]} />
+          <EntertainmentSlide needAni={needAnis[3]} />
         </SwiperSlide>
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
