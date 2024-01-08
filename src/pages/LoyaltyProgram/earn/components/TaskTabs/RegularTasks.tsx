@@ -192,10 +192,12 @@ function RegularTasks() {
         return;
       }
 
+      if (task.properties.url) {
+        onConnectURL();
+      }
+
       if (task.properties.is_prepared) {
         onPrepare();
-      } else {
-        onConnectURL();
       }
     }
 
