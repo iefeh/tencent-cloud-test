@@ -43,6 +43,27 @@
   border-color: var(--toastify-color-error);
 }
 
+.Toastify__toast .Toastify__toast-icon {
+  width: 1.5rem;
+}
+
+.Toastify__toast:is(.Toastify__toast--success, .Toastify__toast--error) .Toastify__toast-icon::after {
+  content: '';
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
+.Toastify__toast.Toastify__toast--success .Toastify__toast-icon::after {
+  background-image: url('/img/icon/icon_success.png');
+}
+
+.Toastify__toast.Toastify__toast--error .Toastify__toast-icon::after {
+  background-image: url('/img/icon/icon_error.png');
+}
+
 .Toastify__toast:is(.Toastify__toast--success, .Toastify__toast--error) .Toastify__toast-icon > svg {
   display: none;
 }
