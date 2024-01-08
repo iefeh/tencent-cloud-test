@@ -34,7 +34,7 @@ export class FollowOnTwitterQuest extends ConnectTwitterQuest {
                 tip: "Please click follow to complete task first."
             }
         }
-        await promiseSleep(1200);
+        await promiseSleep(2000);
         return super.claimReward(userId);
     }
 }

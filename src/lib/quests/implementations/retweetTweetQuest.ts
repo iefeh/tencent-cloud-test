@@ -45,7 +45,7 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
             }
         }
         // 伪装在验证
-        await promiseSleep(1200);
+        await promiseSleep(2000);
 
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;

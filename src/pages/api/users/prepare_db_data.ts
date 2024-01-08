@@ -134,8 +134,8 @@ async function saveQuests() {
         {
             id: uuidv4(),
             active: true,
-            name: "Twitter Retweet",
-            description: "Click 'Retweet' to verify your reward.",
+            name: "Twitter Repost Task",
+            description: "Please repost a specified tweet to complete the task.",
             tip: "",
             type: QuestType.RetweetTweet,
             properties: {
@@ -174,10 +174,11 @@ async function saveQuests() {
             name: "1st Membership Verifications",
             description: "If you are an early supporter who received the \"1st Membership\" role in our Discord community, please verify to receive your reward.",
             tip: "",
-            type: QuestType.JoinDiscordServer,
+            type: QuestType.HoldDiscordRole,
             properties: {
                 guild_url: "https://discord.gg/moonveil",
                 guild_id: "1139446473642217502",
+                role_ids: ["1164813166300114954"],
                 url: "https://discord.gg/moonveil",
             },
             reward: {
@@ -211,7 +212,7 @@ async function saveQuests() {
         {
             id: uuidv4(),
             active: true,
-            name: "DC Community Early Support",
+            name: "DC Community Early Supporter",
             description: "If you're an early supporter of our DC community and have earned MBs, please kindly verify to claim your MBs.",
             tip: "",
             type: QuestType.Whitelist,
