@@ -11,7 +11,6 @@ import Telegram from 'img/header/telegram.svg';
 import X from 'img/header/x.svg';
 import List from 'svg/list.svg';
 import Close from 'svg/close.svg';
-import LoginDialog from './LoginDialog';
 import Sidebar from './Sidebar';
 import { useRouter } from 'next/router';
 import { MobxContext } from '@/pages/_app';
@@ -167,16 +166,6 @@ const Header = () => {
           <MoreLinks />
         </div>
 
-        {/* {userInfo ? (
-          <UserAvatar />
-        ) : (
-          <BasicButton
-            className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8 ' + (listOpen ? 'hidden' : '')}
-            label="login"
-            onClick={toggleLoginModal}
-          />
-        )} */}
-
         <UserInfo />
 
         {listOpen ? (
@@ -185,8 +174,6 @@ const Header = () => {
           <List onClick={() => setListOpen(true)} className="max-lg:block mr-6 hidden w-[3rem] h-[3rem]" />
         )}
       </div>
-
-      <LoginDialog visible={loginModelVisible} onClose={toggleLoginModal} />
 
       <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
     </section>

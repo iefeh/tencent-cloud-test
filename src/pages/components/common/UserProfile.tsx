@@ -51,7 +51,14 @@ export default function UserProfile(props: Props) {
       </div>
 
       <div className="ml-4 font-poppins flex flex-col">
-        <div className={cn(['text-4xl leading-none', usernameClassName])}>{username}</div>
+        <div
+          className={cn([
+            'text-4xl leading-none w-48 text-ellipsis overflow-hidden whitespace-nowrap',
+            usernameClassName,
+          ])}
+        >
+          {username}
+        </div>
         <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
           <span>{desc || getWallet()}</span>
           {!hideCopy && (desc || wallet) && (

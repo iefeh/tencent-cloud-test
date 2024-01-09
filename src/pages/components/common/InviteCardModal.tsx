@@ -91,7 +91,7 @@ const InviteCardModal = function () {
                 />
               </div>
 
-              {!userInfo ? (
+              {userInfo ? (
                 <>
                   <LGButton
                     className="uppercase w-[20.375rem] h-9 mx-auto"

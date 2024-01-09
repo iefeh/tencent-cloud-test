@@ -18,11 +18,6 @@ import { MobxContext } from '@/pages/_app';
 import { KEY_EMAIL } from '@/constant/storage';
 import { sendEmailCodeAPI } from '@/http/services/login';
 
-interface Props {
-  isOpen?: boolean;
-  onOpenChange: () => void;
-}
-
 interface BtnGroup {
   title: string;
   btns: {
@@ -131,8 +126,8 @@ export function useEmail() {
   };
 }
 
-export default function LoginModal(props: Props) {
-  const { isOpen, onOpenChange } = props;
+export default function LoginModal() {
+  const { loginModelVisible, toggleLoginModal } = useContext(MobxContext);
   const [emailLoginVisible, setEmailLoginVisible] = useState(false);
   const connectList: BtnGroup[] = [
     {
@@ -283,8 +278,8 @@ export default function LoginModal(props: Props) {
         header: 'pt-7 pl-10 pr-[2.6875rem]',
         body: 'pl-10 pr-[2.6875rem] pb-[3.125rem]',
       }}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      isOpen={loginModelVisible}
+      onOpenChange={toggleLoginModal}
       isDismissable={false}
     >
       <ModalContent>{emailLoginVisible ? emailLoginContent : baseLoginContent}</ModalContent>
