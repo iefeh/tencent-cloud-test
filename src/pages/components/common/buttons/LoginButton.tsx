@@ -3,6 +3,8 @@ import BasicButton from '../BasicButton';
 import { cn } from '@nextui-org/react';
 import useConnect from '@/hooks/useConnect';
 import useAuth from '@/hooks/useAuth';
+import { MobxContext } from '@/pages/_app';
+import { useContext } from 'react';
 
 interface Props {
   className?: string;
@@ -15,9 +17,13 @@ interface Props {
 }
 
 export default function LoginButton(props: Props) {
+  const { getUserInfo } = useContext(MobxContext);
   const { type, className, label, icon, onClick, callback } = props;
 
-  const { onConnect } = useAuth(type, callback);
+  const { onConnect } = useAuth(type, () => {
+    getUserInfo();
+    callback?.();
+  });
 
   return (
     <BasicButton

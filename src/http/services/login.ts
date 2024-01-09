@@ -67,7 +67,7 @@ export function loginByWalletAPI(data: {
   address: string;
   signature: string;
   message: string;
-}): Promise<boolean | null> {
+}): Promise<TokenDto | null> {
   return http.post('/api/auth/signin/wallet', JSON.stringify(data));
 }
 
@@ -75,7 +75,7 @@ export function connectWalletAPI(data: {
   address: string;
   signature: string;
   message: string;
-}): Promise<boolean | null> {
+}): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/wallet', JSON.stringify(data));
 }
 

@@ -9,7 +9,7 @@ import { MobxContext } from '@/pages/_app';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
   const store = useContext(MobxContext);
-  const { userInfo, toggleLoginModal } = store;
+  const { userInfo, getUserInfo, toggleLoginModal } = store;
   const dialogWindowRef = useRef<Window | null>(null);
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
@@ -70,7 +70,13 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
         message,
         signature,
       };
-      await loginByWalletAPI(data);
+      const res = await loginByWalletAPI(data);
+      if (!res) return;
+      const { token, particle_jwt, is_new_user } = res || {};
+      store.token = token;
+      store.jwtToken = particle_jwt;
+      localStorage.setItem(KEY_AUTHORIZATION, token);
+      localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -86,6 +92,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     if (type === MediaType.METAMASK) {
       if (isConnected) {
         await onConnectWallet();
+        callback?.();
       } else {
         open();
       }

@@ -9,6 +9,7 @@ declare interface LoginByEmailBodyDto {
 }
 
 declare interface TokenDto {
+  is_new_user: boolean;
   token: string;
   particle_jwt: string;
 }
