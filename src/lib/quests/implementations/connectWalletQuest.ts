@@ -96,7 +96,7 @@ export class ConnectWalletQuest extends QuestBase {
             return {
                 verified: true,
                 claimed_amount: 0,
-                tip: `You have claimed 0 MBs.`,
+                tip: `You have claimed 0 extra MBs.`,
             }
         }
         // 保存用户的增量奖励
@@ -161,6 +161,13 @@ export class ConnectWalletQuest extends QuestBase {
         // 按 任务/钱包 进行污染，防止同一个钱包多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
+        if (!rewardDelta) {
+            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
+            return {
+                verified: false,
+                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
+            }
+        }
         const assetId = refreshResult.userMetric[Metric.WalletAssetId];
         const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
         if (result.duplicated) {

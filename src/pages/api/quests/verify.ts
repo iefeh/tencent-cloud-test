@@ -9,10 +9,12 @@ import {constructQuest} from "@/lib/quests/constructor";
 import {redis} from "@/lib/redis/client";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 import * as Sentry from "@sentry/nextjs";
+import {errorInterceptor} from "@/lib/middleware/error";
+import {timeoutInterceptor} from "@/lib/middleware/timeout";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).post(async (req, res) => {
+router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).post(async (req, res) => {
     const {quest_id} = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
@@ -70,9 +72,4 @@ router.all((req, res) => {
     });
 });
 
-export default router.handler({
-    onError(err, req, res) {
-        console.error(err);
-        res.status(500).json(response.serverError());
-    },
-});
+export default router.handler();
