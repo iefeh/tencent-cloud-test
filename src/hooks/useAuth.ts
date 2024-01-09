@@ -45,15 +45,17 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
   }
 
   function openAuthWindow(authURL: string) {
-    const dialog = window.open(
-      authURL,
-      'Authrization',
-      'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
-    );
-    dialogWindowRef.current = dialog;
-    dialog?.addEventListener('close', () => {
-      dialogWindowRef.current = null;
-    });
+    setTimeout(() => {
+      const dialog = window.open(
+        authURL,
+        'Authrization',
+        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      );
+      dialogWindowRef.current = dialog;
+      dialog?.addEventListener('close', () => {
+        dialogWindowRef.current = null;
+      });
+    }, 0);
   }
 
   async function onConnectWallet() {
