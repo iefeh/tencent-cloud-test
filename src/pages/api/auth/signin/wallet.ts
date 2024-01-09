@@ -11,6 +11,7 @@ import User from "@/lib/models/User";
 import {v4 as uuidv4} from "uuid";
 import getMongoConnection from "@/lib/mongodb/client";
 import doTransaction from "@/lib/mongodb/transaction";
+import UserInvite from "@/lib/models/UserInvite";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -19,14 +20,23 @@ router.post(async (req, res) => {
     if (!address) {
         return;
     }
-
+    // 检查邀请码
+    const {invite_code} = req.body;
     await getMongoConnection();
+    let inviter: any;
+    if (invite_code) {
+        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        if (!inviter) {
+            res.json(response.unknownInviteCode());
+            return
+        }
+    }
     // 检查用户是否历史用户
     let userWallet = await UserWallet.findOne({wallet_addr: address.toLowerCase(), deleted_time: null});
     const isNewUser = !userWallet;
     if (isNewUser) {
         // 用户不存在，需要创建新的用户与钱包绑定
-        userWallet = await createUserAndWallet(address);
+        userWallet = await createUserAndWallet(address, inviter);
     }
     const token = await generateUserSession(userWallet.user_id);
     res.json(response.success({
@@ -36,7 +46,7 @@ router.post(async (req, res) => {
     }));
 });
 
-async function createUserAndWallet(address: string): Promise<IUserWallet> {
+async function createUserAndWallet(address: string, inviter: any): Promise<IUserWallet> {
     const user = new User({
         user_id: uuidv4(),
         username: address,
@@ -52,6 +62,14 @@ async function createUserAndWallet(address: string): Promise<IUserWallet> {
         const opts = {session};
         await user.save(opts);
         await userWallet.save(opts);
+        if (inviter) {
+            const invite = new UserInvite({
+                user_id: inviter.user_id,
+                invitee_id: user.user_id,
+                created_time: Date.now(),
+            });
+            await invite.save(opts);
+        }
     });
     return userWallet;
 }

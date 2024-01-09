@@ -4,6 +4,7 @@ import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
 import {queryUserAuth} from "@/lib/common/user";
+import {HttpsProxyGet} from "@/lib/common/request";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -15,7 +16,9 @@ router.get(async (req, res) => {
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
-        console.log(await queryUserAuth("4fa8b6f9-d296-4e63-af85-19ce2d9c2cfa"));
+        // console.log(await queryUserAuth("4fa8b6f9-d296-4e63-af85-19ce2d9c2cfa"));
+        const response1 = await HttpsProxyGet("https://ip.smartproxy.com/json");
+        console.log(response1.data);
         res.json(response.success());
         return;
     } catch (error) {

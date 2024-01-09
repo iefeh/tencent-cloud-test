@@ -29,6 +29,8 @@ export interface IQuest extends Document {
     },
     // 任务是否激活，不展示未激活
     active: boolean;
+    // 任务排序，按升序排列
+    order: number;
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -51,6 +53,7 @@ const QuestSchema = new Schema<IQuest>({
         range_reward_ids: [String],
     },
     active: {type: Boolean, default: false},
+    order: {type: Number},
     created_time: {type: Number},
     updated_time: {type: Number},
     deleted_time: {type: Number},

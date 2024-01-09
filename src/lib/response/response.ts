@@ -24,6 +24,8 @@ export enum ResponseCode {
     ERROR_ACCOUNT_ALREADY_BOUND_WALLET = -14,
     ERROR_CONNECTION_COOLING_DOWN = -15,
     ERROR_EMAIL_BOUND_TO_OTHERS = -16,
+    ERROR_TOO_MANY_REQUESTS = -17,
+    ERROR_UNKNOWN_INVITE_CODE = -18,
     // 添加对应的响应码
 }
 
@@ -54,9 +56,13 @@ const ResponseMessages = {
     // 账户已经绑定了钱包
     [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET]: "Account already bound wallet",
     // 重连的目标账户冷却中
-    [ResponseCode.ERROR_CONNECTION_COOLING_DOWN]: "Connection cooling down",
+    [ResponseCode.ERROR_CONNECTION_COOLING_DOWN]: "The third-party account is under a 12-hour reconnection wait.",
     // 邮件已经被其他人绑定
     [ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS]: "Email already bound to others",
+    // 请求过多
+    [ResponseCode.ERROR_TOO_MANY_REQUESTS]: "Too many requests.",
+    // 未知邀请码
+    [ResponseCode.ERROR_UNKNOWN_INVITE_CODE]: "Unknown invite code.",
     // 添加响应码对应的msg
 }
 
@@ -88,3 +94,5 @@ export const walletAlreadyBoundToOthers = build(ResponseCode.ERROR_WALLET_ALREAD
 export const accountAlreadyBoundWallet = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET);
 export const connectionCoolingDown = build(ResponseCode.ERROR_CONNECTION_COOLING_DOWN);
 export const emailAlreadyBoundToOthers = build(ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS);
+export const tooManyRequests = build(ResponseCode.ERROR_TOO_MANY_REQUESTS);
+export const unknownInviteCode = build(ResponseCode.ERROR_UNKNOWN_INVITE_CODE);
