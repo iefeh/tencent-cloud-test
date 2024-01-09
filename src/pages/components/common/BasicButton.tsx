@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 interface Props {
+  prefix?: JSX.Element;
   label: string;
   link?: string;
   active?: boolean;
@@ -37,6 +38,7 @@ export default function BasicButton(props: Props) {
       disabled={props.disabled}
       onClick={props.onClick || (props.link && onLinkClick) || undefined}
     >
+      {props.prefix}
       {props.label}
     </button>
   );

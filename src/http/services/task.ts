@@ -90,3 +90,7 @@ export function taskAdListAPI(): Promise<TaskAdItem[]> {
 export function taskDetailsAPI(params: { quest_id: string }): Promise<{ quest: TaskListItem }> {
   return http.get('/api/quests/profile', { params });
 }
+
+export function queryInviteCodeAPI(): Promise<{ invite_code: string }> {
+  return http.get('/api/users/invite');
+}

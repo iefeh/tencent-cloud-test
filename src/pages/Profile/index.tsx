@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
         {/* <DailyCheckIn /> */}
 
-        {/* <Invite /> */}
+        <Invite />
       </div>
       
       <MyNFT />

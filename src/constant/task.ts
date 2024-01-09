@@ -38,4 +38,5 @@ export const enum MediaType {
   STEAM = 'steam',
   GOOGLE = 'google',
   METAMASK = 'metamask',
+  APPLE = 'apple',
 }

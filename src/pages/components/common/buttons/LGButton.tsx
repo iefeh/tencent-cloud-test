@@ -12,10 +12,12 @@ interface Props {
   disabled?: boolean;
   squared?: boolean;
   onClick?: () => void;
+  prefix?: string | JSX.Element;
+  suffix?: string | JSX.Element;
 }
 
 export default function LGButton(props: Props) {
-  const { loading, actived, disabled, onClick, link, squared } = props;
+  const { loading, actived, disabled, onClick, link, squared, prefix, suffix } = props;
   const router = useRouter();
   const onLinkClick = () => {
     if (!link) return;
@@ -43,7 +45,7 @@ export default function LGButton(props: Props) {
       isDisabled={disabled}
       onPress={onClick || (link && onLinkClick) || undefined}
     >
-      {props.label}
+      {prefix}{props.label}{suffix}
     </Button>
   );
 }
