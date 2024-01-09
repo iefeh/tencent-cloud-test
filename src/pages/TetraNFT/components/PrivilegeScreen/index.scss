@@ -1,0 +1,91 @@
+@keyframes ani_card_throw_1 {
+  0% {
+    transform: rotate(-8deg) translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(12deg) translate3d(0, -480px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes ani_card_throw_2 {
+  0% {
+    transform: rotate(8deg) translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(28deg) translate3d(0, -480px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes ani_card_throw_3 {
+  0% {
+    transform: rotate(-1deg) translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(19deg) translate3d(0, -480px, 0);
+    opacity: 0;
+  }
+}
+
+.screen-privilege {
+  .card-level-1 {
+    transform: rotate(-8deg);
+    z-index: 3;
+  }
+
+  .card-level-2 {
+    transform: rotate(8deg);
+    z-index: 2;
+  }
+
+  .card-level-3 {
+    transform: rotate(-1deg);
+    z-index: 1;
+  }
+
+  .card-enter {
+    opacity: 0;
+  }
+
+  .card-enter-active {
+    &.card-level-1 {
+      animation: ani_card_throw_1 800ms ease-in-out reverse;
+    }
+
+    &.card-level-2 {
+      animation: ani_card_throw_2 800ms ease-in-out reverse;
+    }
+
+    &.card-level-3 {
+      animation: ani_card_throw_3 800ms ease-in-out reverse;
+    }
+  }
+
+  .card-exit {
+    opacity: 1;
+  }
+
+  .card-exit-active {
+    opacity: 0;
+
+    &.card-level-1 {
+      animation: ani_card_throw_1 800ms ease-in-out;
+    }
+
+    &.card-level-2 {
+      animation: ani_card_throw_2 800ms ease-in-out;
+    }
+
+    &.card-level-3 {
+      animation: ani_card_throw_3 800ms ease-in-out;
+    }
+  }
+
+  .card-exit-done {
+    opacity: 0;
+  }
+}

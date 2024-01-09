@@ -26,7 +26,7 @@ export default function RootLayout({
         <Suspense fallback={<Loading />}>
           {isInWhiteList || <Header />}
 
-          <section className="page-container w-full h-full">{children}</section>
+          <main className="dark page-container w-full h-full">{children}</main>
         </Suspense>
       {/* </main> */}
     </React.Fragment>
