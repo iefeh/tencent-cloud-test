@@ -46,10 +46,10 @@ const InviteCardModal = function () {
     }
   }, 500);
 
-  // useEffect(() => {
-  //   if (!userInfo || inviteCode) return;
-  //   queryInviteCode();
-  // }, [userInfo])
+  useEffect(() => {
+    if (!userInfo || inviteCode) return;
+    queryInviteCode();
+  }, [userInfo]);
 
   return (
     <>
@@ -71,21 +71,23 @@ const InviteCardModal = function () {
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center pt-7 pb-5 pl-[2.375rem] pr-7">
-                  <UserProfile
-                    avatarClassName="w-[3.75rem] h-[3.75rem]"
-                    usernameClassName="text-xl"
-                    walletClassName="text-[#999] mt-2"
-                    desc={`Invite Code: ${inviteCode || '--'}`}
-                    copyText={inviteCode}
-                    copyIcon={copyIconImg}
-                  />
+                {userInfo && (
+                  <div className="flex justify-between items-center pt-7 pl-[2.375rem] pr-7">
+                    <UserProfile
+                      avatarClassName="w-[3.75rem] h-[3.75rem]"
+                      usernameClassName="text-xl"
+                      walletClassName="text-[#999] mt-2"
+                      desc={`Invite Code: ${inviteCode || '--'}`}
+                      copyText={inviteCode}
+                      copyIcon={copyIconImg}
+                    />
 
-                  <Image className="w-[3.75rem] h-[3.75rem]" src={qrImg} alt="" />
-                </div>
+                    <Image className="w-[3.75rem] h-[3.75rem]" src={qrImg} alt="" />
+                  </div>
+                )}
 
                 <Image
-                  className="w-[23.125rem] h-[24.4375rem] mx-auto border-1 border-basic-gray rounded-[1.1875rem]"
+                  className="w-[23.125rem] h-[24.4375rem] mx-auto border-1 border-basic-gray rounded-[1.1875rem] mt-5"
                   src={contentImg}
                   alt=""
                 />

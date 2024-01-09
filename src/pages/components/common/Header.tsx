@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import BasicButton from './BasicButton';
 import logo from 'img/header/logo.png';
 import Discord from 'img/header/discord.svg';
 import Youtube from 'img/header/Youtube.svg';
@@ -13,9 +12,6 @@ import List from 'svg/list.svg';
 import Close from 'svg/close.svg';
 import Sidebar from './Sidebar';
 import { useRouter } from 'next/router';
-import { MobxContext } from '@/pages/_app';
-import { observer } from 'mobx-react-lite';
-import UserAvatar from './UserAvatar';
 import HeaderDropdownMenu from './HeaderDropdownMenu';
 import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
@@ -104,7 +100,6 @@ const MoreLinks = () => {
 };
 
 const Header = () => {
-  const { userInfo, loginModalVisible, toggleLoginModal } = useContext(MobxContext);
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
 
@@ -180,4 +175,4 @@ const Header = () => {
   );
 };
 
-export default observer(Header);
+export default Header;

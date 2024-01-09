@@ -17,6 +17,7 @@ import LGButton from './buttons/LGButton';
 import { MobxContext } from '@/pages/_app';
 import { KEY_EMAIL } from '@/constant/storage';
 import { sendEmailCodeAPI } from '@/http/services/login';
+import { observer } from 'mobx-react-lite';
 
 interface BtnGroup {
   title: string;
@@ -29,7 +30,7 @@ interface BtnGroup {
 }
 
 export function useEmail() {
-  const { loginByEmail } = useContext(MobxContext);
+  const { loginByEmail, toggleLoginModal } = useContext(MobxContext);
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [codeBtnText, setCodeBtnText] = useState('Send');
@@ -98,6 +99,7 @@ export function useEmail() {
     setIsLoading(true);
     try {
       await loginByEmail?.({ email, captcha: code });
+      toggleLoginModal();
     } catch (error: any) {
       setDesc(error?.message || error);
     } finally {
@@ -126,7 +128,7 @@ export function useEmail() {
   };
 }
 
-export default function LoginModal() {
+const LoginModal = function () {
   const { loginModalVisible, toggleLoginModal } = useContext(MobxContext);
   const [emailLoginVisible, setEmailLoginVisible] = useState(false);
   const connectList: BtnGroup[] = [
@@ -285,4 +287,6 @@ export default function LoginModal() {
       <ModalContent>{emailLoginVisible ? emailLoginContent : baseLoginContent}</ModalContent>
     </Modal>
   );
-}
+};
+
+export default observer(LoginModal);

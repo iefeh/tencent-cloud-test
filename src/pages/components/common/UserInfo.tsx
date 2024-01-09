@@ -3,8 +3,9 @@ import { MobxContext } from '@/pages/_app';
 import UserAvatar from './UserAvatar';
 import BasicButton from './BasicButton';
 import LoginModal from './LoginModal';
+import { observer } from 'mobx-react-lite';
 
-export default function UserInfo() {
+const UserInfo = function () {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
 
   return (
@@ -12,14 +13,18 @@ export default function UserInfo() {
       {userInfo ? (
         <UserAvatar />
       ) : (
-        <BasicButton
-          className="text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8"
-          label="login"
-          onClick={toggleLoginModal}
-        />
-      )}
+        <>
+          <BasicButton
+            className="text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8"
+            label="login"
+            onClick={toggleLoginModal}
+          />
 
-      <LoginModal />
+          <LoginModal />
+        </>
+      )}
     </>
   );
-}
+};
+
+export default observer(UserInfo);

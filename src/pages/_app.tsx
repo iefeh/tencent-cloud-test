@@ -190,8 +190,8 @@ export default function App({ Component, pageProps }: AppProps) {
   const [scale, setScale] = useState('1');
   const store = useStore();
 
-  if (router.query.inviteCode) {
-    localStorage.setItem(KEY_INVITE_CODE, (router.query?.inviteCode as string) || '');
+  if (router.query.invite_code) {
+    localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
   }
 
   function resetRem() {

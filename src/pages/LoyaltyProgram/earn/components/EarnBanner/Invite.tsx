@@ -10,11 +10,11 @@ import { observer } from 'mobx-react-lite';
 import InviteCardModal from '@/pages/components/common/InviteCardModal';
 
 const Invite = function () {
-  const store = useContext(MobxContext);
+  const { toggleInviteModal } = useContext(MobxContext);
 
   function onInviteClick() {
     // if (!inviteCode) return;
-    store.toggleInviteModal();
+    toggleInviteModal();
   }
 
   return (
