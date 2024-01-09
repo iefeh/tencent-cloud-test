@@ -17,7 +17,7 @@ export default function SwiperScreen() {
   return (
     <div className="swiper-screen w-full h-screen overflow-hidden z-20 relative ">
       <Swiper
-        modules={[Pagination, Autoplay, Navigation]}
+        modules={[Pagination, Navigation]}
         className="w-full h-full"
         loop
         // 视频10s自动切换，图片5s自动切换
