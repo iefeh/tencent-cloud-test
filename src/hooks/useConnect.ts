@@ -66,11 +66,13 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
   async function onConnect() {
     if (!userInfo) {
+      console.log('connect no userInfo');
       toggleLoginModal(true);
       return;
     }
 
     if (type === MediaType.EMAIL) {
+      console.log('connect email');
       toggleLoginModal(true);
       return;
     }

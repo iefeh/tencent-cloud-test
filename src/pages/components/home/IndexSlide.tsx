@@ -24,8 +24,8 @@ export default function IndexSlide(props: Props) {
         needAni={props.needAni}
         baseAniTY
         className="relative top-[20%] items-center text-center"
-        title="800 Exclusive<br>Destiny TETRA NFTs Awaits"
-        subtitle="Get ready for the Moonveil Destiny TETRA NFT Free Mint Event beginning on October 1st!<br>Click to join our whitelist tasks and secure your spot now."
+        title="Moonveil’s Exclusive Free Mint Genesis Collection — Destiny TETRA NFT"
+        subtitle="The whitelist journey of Moonveil’s Genesis NFT——Destiny TETRA NFT——will officially commence on January 10th."
         buttonLabel="click to explore"
         buttonLink="/NFT"
       />

@@ -212,7 +212,7 @@ function RegularTasks() {
 
       try {
         setVerifiable(false);
-        const api = canReverify ? reverifyTaskAPI : verifyTaskAPI;
+        const api = verified ? reverifyTaskAPI : verifyTaskAPI;
         const res = await api({ quest_id: task.id });
 
         if (!res.verified) {
@@ -265,7 +265,7 @@ function RegularTasks() {
             className="uppercase"
             label={getConnectLabel(connectTexts)}
             actived
-            loading={connectLoading || mediaLoading}
+            loading={connectLoading}
             disabled={achieved || verified}
             onClick={onConnectClick}
           />
@@ -273,7 +273,7 @@ function RegularTasks() {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
+          label={verified ? 'Reverify' : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           onClick={onVerify}
@@ -307,6 +307,7 @@ function RegularTasks() {
                       if (userInfo) {
                         onConnect();
                       } else {
+                        console.log('connect click');
                         toggleLoginModal();
                       }
                     }}

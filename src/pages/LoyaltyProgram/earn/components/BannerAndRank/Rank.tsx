@@ -148,7 +148,7 @@ const Rank = function () {
                     key={index}
                     className="flex items-center h-[5.0625rem] font-poppins-medium text-basic-yellow text-base border-b-1 border-[rgba(246,199,153,0.1)]"
                   >
-                    <span className="w-[2.625rem]">{rank.rank}</span>
+                    {/* <span className="w-[2.625rem]">{rank.rank}</span> */}
 
                     <Image
                       className="w-12 h-12 border-1 border-basic-yellow rounded-full object-cover"
