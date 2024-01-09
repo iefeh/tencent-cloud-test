@@ -379,7 +379,10 @@ function RegularTasks() {
             <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
             {task.tip && (
               <div className="flex items-center relative">
-                <div className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
+                <div
+                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis"
+                  dangerouslySetInnerHTML={{ __html: task.tip }}
+                ></div>
                 {needEllipsis && (
                   <div
                     className="text-basic-yellow shrink-0 cursor-pointer leading-6 border-b-1 border-basic-yellow"
@@ -389,9 +392,11 @@ function RegularTasks() {
                   </div>
                 )}
 
-                <div ref={shadowTextRef} className="absolute invisible w-max whitespace-nowrap">
-                  {task.tip}
-                </div>
+                <div
+                  ref={shadowTextRef}
+                  className="absolute invisible w-max whitespace-nowrap"
+                  dangerouslySetInnerHTML={{ __html: task.tip }}
+                ></div>
               </div>
             )}
           </div>
@@ -420,7 +425,7 @@ function RegularTasks() {
           >
             <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
               <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
-              <div className="text-sm text-[#999] mt-[0.625rem]">{task.tip}</div>
+              <div className="text-sm text-[#999] mt-[0.625rem]" dangerouslySetInnerHTML={{ __html: task.tip }}></div>
             </div>
 
             <Image
