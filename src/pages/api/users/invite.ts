@@ -21,7 +21,10 @@ router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).get(asyn
     try {
         await getMongoConnection();
         // 获取用户的邀请码
-        const user = await User.findOne({user_id: userId, deleted_time: null}, {_id: 0, invite_code: 1}).lean();
+        const user = await User.findOne({user_id: userId, deleted_time: null}, {_id: 0, invite_code: 1});
+        if (!user) {
+            throw new Error(`user ${userId} should but not found`);
+        }
         if (!user.invite_code) {
             // 添加用户的邀请码
             for (let i = 0; i < 5; i++) {
