@@ -15,17 +15,6 @@ export default function HotBanner() {
 
     try {
       const res = await taskAdListAPI();
-      const list = res || [];
-      if (list.length < 1) {
-        list.push({
-          image_url: '/img/loyalty/earn/banner_02.png',
-          link_url: 'https://discord.gg/moonveil',
-          title: 'Join Discord for AstrArk School Cup',
-          description:
-            'From Jan 16 to Jan 28<br />Reward: Guaranteed TETRA Whitelist Spots*5 + FCFS TETRA Whitelist Spots*8',
-        });
-      }
-
       setBanners(res || []);
     } catch (error) {
       console.log(error);

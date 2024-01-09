@@ -26,17 +26,7 @@ const Rank = function () {
     try {
       const res = await leaderBoardRankAPI();
       const { leaderboard, me } = res;
-
-      // slidesPerView设置为2，因此长度小于4时，可能无法持续滚动
-      const minLen = me ? 2 : 3;
-      const list =
-        leaderboard.length < minLen ** 2
-          ? Array(minLen)
-              .fill(null)
-              .map(() => leaderboard)
-              .flat()
-          : leaderboard;
-      setRankList(shuffle(list));
+      setRankList(shuffle(leaderboard || []));
       setMyRankInfo(me);
       setTopRanks(leaderboard.slice(0, 3));
     } catch (error) {

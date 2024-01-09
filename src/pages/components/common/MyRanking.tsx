@@ -28,14 +28,14 @@ export default function MyRanking(props: Props) {
           </div>
         </div>
 
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <Image className="w-[2.625rem] h-[2.625rem] overflow-hidden rounded-full" src={blackRankImg} alt="" />
 
           <div className="h-full flex flex-col justify-between ml-[0.625rem]">
             <span className="text-2xl leading-none">--</span>
             <span className="leading-none">Ranking</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
