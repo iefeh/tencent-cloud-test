@@ -183,7 +183,7 @@ async function saveQuests() {
             },
             reward: {
                 type: QuestRewardType.Fixed,
-                amount: 10,
+                amount: 100,
                 range_reward_ids: null,
             },
             created_time: now,
@@ -191,7 +191,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
-            active: true,
+            active: false,
             name: "AstrArk Pre-register",
             description: "Click to pre-register the AstrArk game and claim your in-game rewards.",
             tip: "",
@@ -222,7 +222,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Range,
                 amount: 10,
-                max_amount: 5000,
+                max_amount: 3000,
             },
             created_time: now,
             updated_time: now,

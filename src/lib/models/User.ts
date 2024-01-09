@@ -17,11 +17,13 @@ export interface IUser extends Document {
         user_id: string,
         // web端的token
         web_token: string,
-        ios_token: {type: String},
-        android_token: {type: String},
+        ios_token: { type: String },
+        android_token: { type: String },
         // 用户的托管钱包
         evm_wallet: string
-    }
+    },
+    // 用户邀请码
+    invite_code: string;
     // 用户创建时间，毫秒时间戳
     created_time: number,
     // 申请账号自毁时间
@@ -43,6 +45,7 @@ const UserSchema = new Schema<IUser>({
         android_token: {type: String},
         evm_wallet: {type: String}
     },
+    invite_code: {type: String},
     created_time: {type: Number, required: true},
     selfdestruct_request_time: {type: Number},
     deleted_time: {type: Number, default: null},
@@ -50,7 +53,8 @@ const UserSchema = new Schema<IUser>({
 
 // 用户邮件，同一个邮件不允许多次绑定
 UserSchema.index({email: 1}, {unique: true, partialFilterExpression: {email: {$exists: true}}});
-
+// 邀请码全局唯一
+UserSchema.index({invite_code: 1}, {unique: true, partialFilterExpression: {email: {$exists: true}}});
 // 使用既有模型或者新建模型
 const User = models.User || model<IUser>('User', UserSchema, 'users');
 export default User;
