@@ -51,6 +51,12 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
             }
         },
         {
+            $sort: {
+                // 按照'order'升序排序
+                'order': 1
+            }
+        },
+        {
             $project: {
                 '_id': 0,
                 '__v': 0,
@@ -58,6 +64,7 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
                 'created_time': 0,
                 'updated_time': 0,
                 'active': 0,
+                'order': 0,
                 'reward.range_reward_ids': 0,
             }
         },

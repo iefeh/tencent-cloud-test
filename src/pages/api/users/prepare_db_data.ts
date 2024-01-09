@@ -14,7 +14,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
     await getMongoConnection();
-    // await saveQuests();
+    await saveQuests();
     // await saveWalletTokenReward();
     // await saveWalletNftReward();
     // await saveSteamReward();
@@ -38,6 +38,7 @@ async function saveQuests() {
                 range_reward_ids: ["8610c3a9-6477-4bf0-9228-cf2bc0c9d965", "be3ed7bc-104b-4499-9b26-940608b11bb0"],
             },
             active: true,
+            order: 1,
             created_time: now,
             updated_time: now,
         },
@@ -54,6 +55,7 @@ async function saveQuests() {
                 amount: 10,
                 range_reward_ids: null,
             },
+            order: 2,
             created_time: now,
             updated_time: now,
         },
@@ -70,6 +72,7 @@ async function saveQuests() {
                 amount: 10,
                 range_reward_ids: null,
             },
+            order: 3,
             created_time: now,
             updated_time: now,
         },
@@ -90,6 +93,7 @@ async function saveQuests() {
                 amount: 10,
                 range_reward_ids: null,
             },
+            order: 4,
             created_time: now,
             updated_time: now,
         },
@@ -109,6 +113,7 @@ async function saveQuests() {
                 amount: 10,
                 range_reward_ids: null,
             },
+            order: 4,
             created_time: now,
             updated_time: now,
         },
@@ -128,6 +133,7 @@ async function saveQuests() {
                 amount: 10,
                 range_reward_ids: null,
             },
+            order: 5,
             created_time: now,
             updated_time: now,
         },
@@ -148,6 +154,7 @@ async function saveQuests() {
                 amount: 10,
                 range_reward_ids: null,
             },
+            order: 6,
             created_time: now,
             updated_time: now,
         },
@@ -165,6 +172,7 @@ async function saveQuests() {
                 max_amount: 800,
                 range_reward_ids: ["bfd884ab-25ac-4095-94f6-61957dcb68a7"],
             },
+            order: 7,
             created_time: now,
             updated_time: now,
         },
@@ -186,6 +194,7 @@ async function saveQuests() {
                 amount: 100,
                 range_reward_ids: null,
             },
+            order: 8,
             created_time: now,
             updated_time: now,
         },
@@ -206,6 +215,7 @@ async function saveQuests() {
                 type: QuestRewardType.Fixed,
                 amount: 10,
             },
+            order: 9,
             created_time: now,
             updated_time: now,
         },
@@ -224,6 +234,7 @@ async function saveQuests() {
                 amount: 10,
                 max_amount: 3000,
             },
+            order: 10,
             created_time: now,
             updated_time: now,
         },
