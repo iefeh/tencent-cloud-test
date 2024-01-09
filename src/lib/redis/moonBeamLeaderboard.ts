@@ -21,7 +21,8 @@ export async function try2AddUser2MBLeaderboard(userId: string) {
 
 
 export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeaderboard> {
-    const topUsers = await redis.zrevrange("moon_beam_lb", 0, 99, 'WITHSCORES');
+    // 暂时只展示前3名的信息
+    const topUsers = await redis.zrevrange("moon_beam_lb", 0, 2, 'WITHSCORES');
     if (!topUsers || topUsers.length == 0) {
         return {
             leaderboard: [],
