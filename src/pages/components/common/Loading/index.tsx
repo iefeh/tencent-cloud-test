@@ -48,7 +48,7 @@ export default function Loading(props: Props) {
   }, [props.resLoading]);
 
   return (
-    <div className="loading fixed z-50 w-full h-screen flex justify-center items-center">
+    <div id="luxy" className="loading fixed z-50 w-full h-screen flex justify-center items-center">
       <div className="moon w-[19.875rem] h-[34.5rem] absolute top-1/2 left-[36.67%] -translate-y-1/2">
         <Image
           className="object-contain"
