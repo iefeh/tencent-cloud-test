@@ -1,3 +1,4 @@
+import MyBadges from "@/pages/Profile/components/MyBadges";
 import DailyCheckIn from "./DailyCheckIn";
 import Invite from "./Invite";
 
@@ -7,9 +8,11 @@ export default function EarnBanner() {
       <div className="font-semakin text-basic-yellow text-4xl">Earn Moon Beams</div>
 
       <div className="mt-[2.625rem] flex justify-between items-center gap-10">
-        <DailyCheckIn />
+        {/* <DailyCheckIn /> */}
 
         <Invite />
+
+        <MyBadges />
       </div>
     </div>
   );
