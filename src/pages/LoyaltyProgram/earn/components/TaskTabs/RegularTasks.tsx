@@ -273,7 +273,7 @@ function RegularTasks() {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? 'Reverify' : 'Verify'}
+          label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           onClick={onVerify}
