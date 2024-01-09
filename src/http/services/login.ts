@@ -1,5 +1,6 @@
 import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
+import { KEY_INVITE_CODE } from '@/constant/storage';
 
 function getAuthParams(path = '') {
   const { origin } = location;
@@ -16,6 +17,7 @@ export function sendEmailCodeAPI(params: SendEmailCodeParamsDto) {
 }
 
 export function loginByEmailAPI(data: LoginByEmailBodyDto): Promise<TokenDto> {
+  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
   return http.post('/api/auth/signin/email', JSON.stringify(data));
 }
 
@@ -39,66 +41,32 @@ export function signInParticleAPI(data: ParticleAuthDto) {
   return http.post('/api/auth/signin/particle', JSON.stringify(data));
 }
 
-export function connectGoogleAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/google', { params: getAuthParams(`/connect?type=${MediaType.GOOGLE}`) });
-}
-
-export function connectTwitterAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/twitter', { params: getAuthParams(`/connect?type=${QuestType.ConnectTwitter}`) });
-}
-
-export function connectSteamAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/steam', { params: getAuthParams(`/connect?type=${QuestType.ConnectSteam}`) });
-}
-
-export function connectDiscordAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/discord', { params: getAuthParams(`/connect?type=${QuestType.ConnectDiscord}`) });
-}
-
 export function connectMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/connect/${type}`, { params: getAuthParams(`/connect?type=${type}`) });
 }
 
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
-  return http.get(`/api/auth/signin/${type}`, { params: getAuthParams(`?type=${type}`) });
+  return http.get(`/api/auth/signin/${type}`, {
+    params: { ...getAuthParams(`?type=${type}`), invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined },
+  });
 }
 
-export function loginByWalletAPI(data: {
+interface WalletReqDto {
   address: string;
   signature: string;
   message: string;
-}): Promise<TokenDto | null> {
+  invite_code?: string;
+}
+
+export function loginByWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
+  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
   return http.post('/api/auth/signin/wallet', JSON.stringify(data));
 }
 
-export function connectWalletAPI(data: {
-  address: string;
-  signature: string;
-  message: string;
-}): Promise<TokenDto | null> {
+export function connectWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/wallet', JSON.stringify(data));
 }
 
-export function disconnectWalletAPI(): Promise<boolean | null> {
-  return http.post('/api/auth/disconnect/wallet');
-}
-
-export function disconnectTwitterAPI(): Promise<boolean | null> {
-  return http.post('/api/auth/disconnect/twitter');
-}
-
-export function disconnectSteamAPI(): Promise<boolean | null> {
-  return http.post('/api/auth/disconnect/steam');
-}
-
-export function disconnectGoogleAPI(): Promise<boolean | null> {
-  return http.post('/api/auth/disconnect/google');
-}
-
-export function disconnectDiscordAPI(): Promise<boolean | null> {
-  return http.post('/api/auth/disconnect/discord');
-}
-
-export function disconnectEmailAPI(): Promise<boolean | null> {
-  return http.post('/api/auth/disconnect/email');
+export function disconnectMediaAPI(type: string): Promise<boolean | null> {
+  return http.post(`/api/auth/disconnect/${type}`);
 }

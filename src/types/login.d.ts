@@ -6,6 +6,7 @@ declare interface SendEmailCodeParamsDto {
 declare interface LoginByEmailBodyDto {
   email: string;
   captcha: string;
+  invite_code?: string;
 }
 
 declare interface TokenDto {

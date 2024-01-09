@@ -70,6 +70,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/toastify.css';
 import { Web3ModalProvider } from '@/store/Web3Modal';
+import { KEY_INVITE_CODE } from '@/constant/storage';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -188,6 +189,10 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
+
+  if (router.query.inviteCode) {
+    localStorage.setItem(KEY_INVITE_CODE, (router.query?.inviteCode as string) || '');
+  }
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
