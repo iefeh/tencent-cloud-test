@@ -439,7 +439,7 @@ function RegularTasks() {
     <div className="mt-7 flex flex-col items-center">
       <div
         className={cn([
-          'content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
+          'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
           tasks.length < 1 && 'h-[37.5rem]',
         ])}
       >

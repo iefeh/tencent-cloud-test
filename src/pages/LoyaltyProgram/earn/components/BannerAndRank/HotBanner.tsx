@@ -43,7 +43,7 @@ export default function HotBanner() {
   }, []);
 
   return (
-    <div className="relative w-[57.8125rem] h-[37.5rem]">
+    <div className="relative w-[57.8125rem] h-[37.5rem] hidden lg:block">
       <Swiper
         className="w-full h-full overflow-hidden rounded-[0.625rem] relative"
         modules={[Pagination, Autoplay]}

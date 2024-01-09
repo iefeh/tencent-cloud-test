@@ -11,7 +11,7 @@ export default function useAuthDialog(dialog: MutableRefObject<Window | null>, c
     const jwt = localStorage.getItem(KEY_PARTICLE_TOKEN);
     console.log('token at thirdparty-login callback url search params', token);
     console.log('jwt-token at thirdparty-login callback url search params', jwt);
-    if (!token) return;
+    if (!token || store.token === token) return;
 
     store.token = token;
     store.jwtToken = jwt || '';

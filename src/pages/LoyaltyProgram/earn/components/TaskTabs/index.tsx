@@ -16,7 +16,7 @@ export default function TaskTabs() {
   ];
 
   return (
-    <div className="w-full flex flex-col mt-[4.25rem]">
+    <div className="w-full flex flex-col mt-[4.25rem] px-8 lg:px-0">
       <Tabs
         aria-label="Options"
         color="primary"

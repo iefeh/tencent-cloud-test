@@ -23,7 +23,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     const { code, msg } = tokens[type] || {};
     if (+code === 1) {
       callback?.();
-    } else {
+    } else if (msg) {
       toast.error(msg);
     }
     delete tokens[type];

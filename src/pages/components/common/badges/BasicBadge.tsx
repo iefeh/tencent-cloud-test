@@ -12,7 +12,7 @@ export default function BasicBadge(props: BasicBadgeProps) {
   return (
     <div
       className={cn([
-        'inline-flex justify-center items-center w-[6.25rem] h-[6.25rem] relative bg-black',
+        'inline-flex justify-center items-center w-[6.25rem] h-[6.25rem] relative bg-black shrink-0',
         src || 'border-1 border-basic-gray rounded-base',
       ])}
     >
