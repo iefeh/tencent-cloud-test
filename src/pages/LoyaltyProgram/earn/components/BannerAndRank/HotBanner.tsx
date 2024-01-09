@@ -15,6 +15,17 @@ export default function HotBanner() {
 
     try {
       const res = await taskAdListAPI();
+      const list = res || [];
+      if (list.length < 1) {
+        list.push({
+          image_url: '/img/loyalty/earn/banner_02.png',
+          link_url: 'https://discord.gg/moonveil',
+          title: 'Join Discord for AstrArk School Cup',
+          description:
+            'From Jan 16 to Jan 28<br />Reward: Guaranteed TETRA Whitelist Spots*5 + FCFS TETRA Whitelist Spots*8',
+        });
+      }
+
       setBanners(res || []);
     } catch (error) {
       console.log(error);
@@ -53,12 +64,15 @@ export default function HotBanner() {
       >
         {banners.map((item, index) => (
           <SwiperSlide key={index} className="relative cursor-pointer" onClick={() => onSlideClick(item)}>
-            <Image src={item.image_url} alt="" fill />
+            <Image className='object-cover' src={item.image_url} alt="" fill />
 
             {item.title && (
               <div className="absolute top-[4.1875rem] left-[3.5625rem] border-l-4 border-basic-yellow z-10 bg-gradient-to-r from-[rgba(0,0,0,0.6)] to-transparent pt-[1.9375rem] pr-[0.875rem] pb-8 pl-[2.5625rem]">
-                <div className="font-semakin text-[2.5rem] leading-[3rem] w-[29.1875rem]">{item.title}</div>
-                <div className="font-poppins text-base mt-[1.25rem]">{item.description}</div>
+                <div className="font-semakin text-[2.5rem] leading-[3rem] w-[31rem]">{item.title}</div>
+                <div
+                  className="font-poppins text-base mt-[1.25rem]"
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                ></div>
               </div>
             )}
           </SwiperSlide>
