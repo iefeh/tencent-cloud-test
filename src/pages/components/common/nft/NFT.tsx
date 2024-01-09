@@ -11,7 +11,7 @@ export default function NFT(props: NFTProps) {
   const { src } = props;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center shrink-0">
       <div className="relative w-[16.5rem] h-[16.5rem] flex justify-center items-center bg-black">
         <Image src={src ? activeBgImg : bgImg} alt="" fill />
 

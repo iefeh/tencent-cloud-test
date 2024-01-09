@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import { useRef, useState, useEffect, useContext } from 'react';
 import SwiperScreen from './components/home/SwiperScreen';
 import Character from './components/character/character';
 import Footer from './components/home/Footer';
@@ -8,8 +8,27 @@ import StarScreen from './components/home/StarScreen';
 import Head from 'next/head';
 import SloganScreen from './components/home/SloganScreen';
 import SloganDescScreen from './components/home/SloganDescScreen';
+import { MobxContext } from './_app';
+import { observer } from 'mobx-react-lite';
+import { useRouter } from 'next/router';
+import { KEY_INVITE_CODE } from '@/constant/storage';
+import InviteCardModal from './components/common/InviteCardModal';
 
-export default function Home() {
+function useInvite() {
+  const router = useRouter();
+  const { token, userInfo, toggleInviteModal } = useContext(MobxContext);
+
+  useEffect(() => {
+    if (token || userInfo) return;
+    if (router.query.invite_code) {
+      localStorage.setItem(KEY_INVITE_CODE, router.query.invite_code as string);
+      toggleInviteModal(true);
+    }
+  }, []);
+}
+
+const Home = function () {
+  useInvite();
   const scrollWrapper = useRef<HTMLDivElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
@@ -65,7 +84,14 @@ export default function Home() {
 
       <StarScreen />
 
-      <div ref={maskRef} className="swiper-mask absolute left-0 top-0 w-full h-[60vh] translate-y-[calc(100vh_+_8rem)] z-20"></div>
+      <div
+        ref={maskRef}
+        className="swiper-mask absolute left-0 top-0 w-full h-[60vh] translate-y-[calc(100vh_+_8rem)] z-20"
+      ></div>
+
+      <InviteCardModal />
     </section>
   );
-}
+};
+
+export default observer(Home);

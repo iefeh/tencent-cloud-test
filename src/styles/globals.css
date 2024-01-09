@@ -6,6 +6,7 @@
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
   --basic-yellow: #f6c799;
+  background-color: #000;
 }
 
 body {
@@ -75,8 +76,7 @@ body {
 }
 
 .szh-menu-container--theme-dark .szh-menu__item--hover.szh-menu__item--hover {
-  background-color: #1a1917;
-  color: #f6c799;
+  background-color: #1f1f1f;
 }
 
 .szh-menu.szh-menu {
@@ -101,4 +101,20 @@ body {
 
 .shake-hover-out {
   transition: transform 0.2s ease-in;
+}
+
+@media (max-width: 640px) {
+  .page-desc {
+    .text-6xl {
+      font-size: 3rem;
+    }
+  }
+}
+
+*::-webkit-scrollbar{
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
 }

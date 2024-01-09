@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import BasicButton from './BasicButton';
 import logo from 'img/header/logo.png';
 import Discord from 'img/header/discord.svg';
 import Youtube from 'img/header/Youtube.svg';
@@ -11,23 +10,19 @@ import Telegram from 'img/header/telegram.svg';
 import X from 'img/header/x.svg';
 import List from 'svg/list.svg';
 import Close from 'svg/close.svg';
-import LoginDialog from './LoginDialog';
 import Sidebar from './Sidebar';
 import { useRouter } from 'next/router';
-import { MobxContext } from '@/pages/_app';
-import { observer } from 'mobx-react-lite';
-import UserAvatar from './UserAvatar';
 import HeaderDropdownMenu from './HeaderDropdownMenu';
 import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
-// import UserInfo from './UserInfo';
+import UserInfo from './UserInfo';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   { name: 'AstrArk', route: '/AstrArk' },
-  { name: 'Bushwhack', route: '/Bushwhack' },
+  // { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
   {
@@ -40,11 +35,12 @@ const routeText: RouteMenu[] = [
       {
         name: 'Earn Moon Beams',
         route: '/LoyaltyProgram/earn',
+        // disabled: true,
       },
-      {
-        name: 'MB=MVP',
-        route: '/LoyaltyProgram/Exchange',
-      },
+      // {
+      //   name: 'MB=MVP',
+      //   route: '/LoyaltyProgram/Exchange',
+      // },
     ],
   },
 ];
@@ -104,7 +100,6 @@ const MoreLinks = () => {
 };
 
 const Header = () => {
-  const { userInfo, loginModelVisible, toggleLoginModal } = useContext(MobxContext);
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
 
@@ -140,8 +135,8 @@ const Header = () => {
             <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} onLinkClick={onLinkClick} />
           ) : (
             <div
-              className={`cursor-pointer m-2 transition-all duration-300 hover:border-b-2 border-[#F6C799] hover:text-[#F6C799] ${
-                isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799] border-b-2'
+              className={`cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] ${
+                isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799]'
               } text-[22px] ml-8`}
               key={index}
               onClick={() => onLinkClick(value.route)}
@@ -166,17 +161,7 @@ const Header = () => {
           <MoreLinks />
         </div>
 
-        {userInfo ? (
-          <UserAvatar />
-        ) : (
-          <BasicButton
-            className={'text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8 ' + (listOpen ? 'hidden' : '')}
-            label="login"
-            onClick={toggleLoginModal}
-          />
-        )}
-
-        {/* {listOpen || <UserInfo />} */}
+        <UserInfo />
 
         {listOpen ? (
           <Close onClick={() => setListOpen(false)} className="max-lg:block mr6 hidden w-[3rem] h-[3rem]" />
@@ -185,11 +170,9 @@ const Header = () => {
         )}
       </div>
 
-      <LoginDialog visible={loginModelVisible} onClose={toggleLoginModal} />
-
       <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
     </section>
   );
 };
 
-export default observer(Header);
+export default Header;

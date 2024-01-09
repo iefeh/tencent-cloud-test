@@ -19,17 +19,10 @@ import './NFT/components/home.scss';
 import './AstrArk/components/schoolDesc/index.scss';
 import './AstrArk/components/school/Mystery/index.scss';
 import './AstrArk/components/school/SchoolIcons/index.scss';
+import './TetraNFT/components/PrivilegeScreen/index.scss';
+import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
 import homePlanetBg from 'img/home/planet.png';
 import loadingImg from 'img/loading/bg_moon.png';
-import ntf_halo1 from 'img/nft/home/halo1.png';
-import ntf_halo2 from 'img/nft/home/halo2.png';
-import ntf_meteor from 'img/nft/home/meteor.png';
-import ntf_planet1 from 'img/nft/home/planet1.png';
-import ntf_planet2 from 'img/nft/home/planet2.png';
-import ntf_planet3 from 'img/nft/home/planet3.png';
-import ntf_stars1 from 'img/nft/home/stars1.png';
-import ntf_stars2 from 'img/nft/home/stars2.png';
-import ntf_stars3 from 'img/nft/home/stars3.png';
 import about_c1 from 'img/about/1@2x.png';
 import about_c2 from 'img/about/2@2x.png';
 import about_c3 from 'img/about/3@2x.png';
@@ -70,6 +63,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/toastify.css';
 import { Web3ModalProvider } from '@/store/Web3Modal';
+import { NextUIProvider } from '@nextui-org/react';
+import { KEY_INVITE_CODE } from '@/constant/storage';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -82,19 +77,7 @@ async function initResources(path: string) {
       promises.push(loadVideo('/video/ntfbg.webm'));
       break;
     case '/ntf':
-      promises.push(
-        ...[
-          ntf_halo1.src,
-          ntf_halo2.src,
-          ntf_meteor.src,
-          ntf_planet1.src,
-          ntf_planet2.src,
-          ntf_planet3.src,
-          ntf_stars1.src,
-          ntf_stars2.src,
-          ntf_stars3.src,
-        ].map((path) => loadImage(path)),
-      );
+      promises.push(...[].map((path) => loadImage(path)));
       break;
     case '/about':
       promises.push(
@@ -188,7 +171,10 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
-  const host = typeof window !== 'undefined' ? window.location.host : 'defaultHost';
+
+  if (router.query.invite_code) {
+    localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
+  }
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
@@ -287,15 +273,17 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <Web3ModalProvider>
-        {!isInWhiteList && loading ? (
-          <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-        ) : (
-          <MobxContext.Provider value={store}>
-            <RootLayout isInWhiteList={isInWhiteList}>
-              <Component {...pageProps} />
-            </RootLayout>
-          </MobxContext.Provider>
-        )}
+        <NextUIProvider>
+          {!isInWhiteList && loading ? (
+            <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+          ) : (
+            <MobxContext.Provider value={store}>
+              <RootLayout isInWhiteList={isInWhiteList}>
+                <Component {...pageProps} />
+              </RootLayout>
+            </MobxContext.Provider>
+          )}
+        </NextUIProvider>
       </Web3ModalProvider>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />

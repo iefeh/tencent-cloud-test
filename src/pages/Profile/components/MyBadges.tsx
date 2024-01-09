@@ -13,16 +13,17 @@ export default function MyBadges() {
         <div className="flex items-center">
           <Image className="w-[2.625rem] h-[2.625rem]" src={mbImg} alt="" />
           <span className="text-2xl ml-[0.625rem]">
-            My Badges<span className="text-lg ml-[0.5625rem]">( 32 )</span>
+            My Badges<span className="text-lg ml-[0.5625rem] hidden lg:inline">( 0 )</span>
           </span>
         </div>
 
         <div className="text-right">
-          <Link href="">More Badges &gt;&gt;</Link>
+          {/* <Link href="">More Badges &gt;&gt;</Link> */}
+          <span>Coming Soon</span>
         </div>
       </div>
 
-      <div className="w-full flex justify-between items-center relative z-0">
+      <div className="w-full flex justify-between items-center relative z-0 gap-[1.125rem]">
         <BasicBadge />
         <BasicBadge />
         <BasicBadge />

@@ -4,23 +4,32 @@ import inviteImg from 'img/loyalty/earn/invite.png';
 import BasicButton from '@/pages/components/common/BasicButton';
 import mbImg from 'img/loyalty/earn/mb.png';
 import circleOutsideImg from 'img/loyalty/earn/circle_outside.png';
+import { useContext } from 'react';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
+import InviteCardModal from '@/pages/components/common/InviteCardModal';
 
-export default function Invite() {
+const Invite = function () {
+  const { toggleInviteModal } = useContext(MobxContext);
+
+  function onInviteClick() {
+    // if (!inviteCode) return;
+    toggleInviteModal();
+  }
+
   return (
     <div className="w-[42.5rem] h-[13.75rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2.75rem] pr-[4.375rem] pb-[3.0625rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500">
       <Image src={inviteBgImg} alt="" fill />
 
       <div className="flex flex-col justify-between relative z-0 h-full">
-        <Image className="w-[11.125rem] h-[2.625rem] mt-[0.4375rem] ml-[0.3125rem] relative z-0" src={inviteImg} alt="" />
+        <Image
+          className="w-[11.125rem] h-[2.625rem] mt-[0.4375rem] ml-[0.3125rem] relative z-0"
+          src={inviteImg}
+          alt=""
+        />
 
         <div className="flex items-center relative z-0">
-          <BasicButton label="Invite Now" />
-
-          <span className="text-sm font-poppins ml-4">
-            Successfully invited
-            <span className="text-basic-yellow"> 3 </span>
-            people.
-          </span>
+          <BasicButton label="Invite Now" onClick={onInviteClick} />
         </div>
       </div>
 
@@ -29,6 +38,10 @@ export default function Invite() {
 
         <Image className="relative z-0" src={mbImg} alt="" />
       </div>
+
+      <InviteCardModal />
     </div>
   );
-}
+};
+
+export default observer(Invite);

@@ -16,14 +16,16 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use((res) => {
-  if (Math.floor(res.status / 100) !== 2) {
-    toast.error(res.statusText);
-    return null;
-  }
-
   if (!res.data) return null;
 
-  const data = JSON.parse(res.data);
+  let data: any;
+
+  try {
+    data = JSON.parse(res.data);
+  } catch (error) {
+    console.log('Data Parse Error: ', error);
+    return data;
+  }
 
   if (data.code !== 1) {
     switch (data.code) {
@@ -35,7 +37,7 @@ axios.interceptors.response.use((res) => {
       }
     }
     // throw new Error(data.msg);
-    toast.error(data.msg);
+    if (data.msg) toast.error(data.msg);
   }
 
   return data.data;

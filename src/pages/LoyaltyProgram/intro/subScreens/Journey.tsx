@@ -52,7 +52,7 @@ export default function JourneyScreen() {
 
         <Image src={triangleImg} alt="" fill />
 
-        <div className="absolute left-1/2 bottom-[15.375rem] -translate-x-1/2 w-max z-10">
+        <div className="absolute left-1/2 -translate-x-1/2 max-w-full bottom-[6rem] lg:bottom-[15.375rem] lg:w-max z-10">
           <PageDesc
             className="flex flex-col justify-center items-center text-center"
             needAni
@@ -60,15 +60,14 @@ export default function JourneyScreen() {
             title={
               <div className="font-semakin text-6xl">
                 <span className="text-basic-yellow">More Surprises</span>
+                <br className="sm:hidden" />
                 <span> Coming Soon...</span>
               </div>
             }
             subtitle={
               <span className="mt-[3rem] font-decima text-lg text-center max-w-[45.625rem]">
-                The full-fledged Moonveil Loyalty Program of the future will consist of three phases. Phase I activities
-                are now live. Phase II and Phase III will soon be announced, and all players can exchange their
-                accumulated Moon Beams for substantial rewards, including cash rebates based on player’s ecosystem
-                contribution.
+                The future Moonveil Loyalty Program will unfold in three phases, providing everyone with an exciting
+                opportunity to redeem Moon Beams for substantial rewards soon.
               </span>
             }
           />
@@ -77,7 +76,7 @@ export default function JourneyScreen() {
 
       <div
         ref={journeyWrapperRef}
-        className="w-[87.5rem] h-[58.8125rem] relative mb-[12.5625rem] -translate-y-[8.4375rem]"
+        className="w-[87.5rem] h-[58.8125rem] relative mb-[12.5625rem] -translate-y-[8.4375rem] hidden lg:block"
         onMouseMove={onJourneyMouseMove}
         onMouseLeave={onJourneyMouseLeave}
       >

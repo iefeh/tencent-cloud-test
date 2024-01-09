@@ -1,5 +1,6 @@
-import { QuestType } from '@/constant/task';
+import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
+import { KEY_INVITE_CODE } from '@/constant/storage';
 
 function getAuthParams(path = '') {
   const { origin } = location;
@@ -16,6 +17,7 @@ export function sendEmailCodeAPI(params: SendEmailCodeParamsDto) {
 }
 
 export function loginByEmailAPI(data: LoginByEmailBodyDto): Promise<TokenDto> {
+  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
   return http.post('/api/auth/signin/email', JSON.stringify(data));
 }
 
@@ -39,22 +41,32 @@ export function signInParticleAPI(data: ParticleAuthDto) {
   return http.post('/api/auth/signin/particle', JSON.stringify(data));
 }
 
-export function connectTwitterAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/twitter', { params: getAuthParams(`/connect?type=${QuestType.ConnectTwitter}`) });
+export function connectMediaAPI(type: string): Promise<AuthDto> {
+  return http.get(`/api/auth/connect/${type}`, { params: getAuthParams(`/connect?type=${type}`) });
 }
 
-export function connectSteamAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/steam', { params: getAuthParams(`/connect?type=${QuestType.ConnectSteam}`) });
+export function loginByMediaAPI(type: string): Promise<AuthDto> {
+  return http.get(`/api/auth/signin/${type}`, {
+    params: { ...getAuthParams(`?type=${type}`), invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined },
+  });
 }
 
-export function connectDiscordAPI(): Promise<AuthDto> {
-  return http.get('/api/auth/connect/discord', { params: getAuthParams(`/connect?type=${QuestType.ConnectDiscord}`) });
-}
-
-export function connectWalletAPI(data: {
+interface WalletReqDto {
   address: string;
   signature: string;
   message: string;
-}): Promise<boolean | null> {
+  invite_code?: string;
+}
+
+export function loginByWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
+  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
+  return http.post('/api/auth/signin/wallet', JSON.stringify(data));
+}
+
+export function connectWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/wallet', JSON.stringify(data));
+}
+
+export function disconnectMediaAPI(type: string): Promise<boolean | null> {
+  return http.post(`/api/auth/disconnect/${type}`);
 }

@@ -19,33 +19,27 @@ export default function IndexScreen() {
       <Image className="object-cover" src={bgImg} alt="" fill />
 
       <div className="absolute top-[22.5%] left-[22.34%] z-10">
-        <div
-          className="relative"
-          ref={smallTriangleShakeRef}
-        >
+        <div className="relative" ref={smallTriangleShakeRef}>
           <Image className="w-[3.4375rem] h-[3.5rem]" src={smallTriangleImg} alt="" />
         </div>
       </div>
 
-      <div className="absolute top-[55%] left-[67.97%] z-20">
-        <div
-          className="relative"
-          ref={bigTriangleShakeRef}
-        >
+      <div className="absolute top-[55%] left-[67.97%] z-20 hidden sm:block">
+        <div className="relative" ref={bigTriangleShakeRef}>
           <Image className="w-[9.5625rem] h-[5.875rem]" src={bigTriangleImg} alt="" />
         </div>
       </div>
 
       <PageDesc
-        title="moonveil loyalty system"
+        title="moonveil loyalty program"
         hasBelt
         needAni
         baseAniTY
         subtitle={
-          <div className="max-w-[32.0625rem] font-decima text-lg">
-            At Moonveil, player experience is of paramount importance. We are dedicated to recognizing and rewarding
-            players&#39; contributions in our ecosystem by introducing the Moonveil Loyalty Program, centered around
-            Moonveil Beam (MB) points.
+          <div className="max-w-[36rem] font-decima text-lg px-8 sm:px-0">
+            At Moonveil, we prioritize player experience above all. We are dedicated to acknowledging and rewarding the
+            contribution of our players to our ecosystem. Central to this program are Moon Beams (MBs) which are
+            designed to reward community members who help in the growth of the Moonveil community.
           </div>
         }
       />

@@ -27,3 +27,16 @@ export const enum QuestRewardType {
   // 范围奖励，奖励数量特定于任务进行动态分配
   Range = 'range',
 }
+
+/** 媒体连接类型 */
+export const enum MediaType {
+  EMAIL = 'email',
+  TWITTER = 'twitter',
+  DISCORD = 'discord',
+  FACEBOOK = 'facebook',
+  TELEGRAM = 'telegram',
+  STEAM = 'steam',
+  GOOGLE = 'google',
+  METAMASK = 'metamask',
+  APPLE = 'apple',
+}
