@@ -18,6 +18,7 @@ import { MobxContext } from '@/pages/_app';
 import { KEY_EMAIL } from '@/constant/storage';
 import { sendEmailCodeAPI } from '@/http/services/login';
 import { observer } from 'mobx-react-lite';
+import { toast } from 'react-toastify';
 
 interface BtnGroup {
   title: string;
@@ -40,7 +41,7 @@ export function useEmail() {
   const [isLoading, setIsLoading] = useState(false);
   const timer = useRef(0);
   const [isCounting, setIsCounting] = useState(false);
-  const [desc, setDesc] = useState('Please type in your email to get the verification code.');
+  const [desc, setDesc] = useState('');
 
   function listenEmail() {
     localStorage.setItem(KEY_EMAIL, email);
@@ -61,15 +62,16 @@ export function useEmail() {
       setDesc('Please enter a valid email address, then try again.');
       return;
     }
+    
+    setDesc('');
     if (isLoading || isCounting || (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS)) return;
 
     setIsSendLoading(true);
-    setDesc('Sending. . .');
     listenEmail();
     try {
       await sendEmailCodeAPI({ email });
     } catch (error: any) {
-      setDesc(error?.message || error);
+      toast.error(error?.message || error);
       return;
     } finally {
       setIsSendLoading(false);
@@ -78,7 +80,7 @@ export function useEmail() {
     leftSeconds.current = MAX_LEFT_SECONDS;
     setCodeBtnText(`${leftSeconds.current}s`);
     setIsCounting(true);
-    setDesc('Verification code has been sent, please check your email.');
+    toast.info('Verification code has been sent, please check your email.');
 
     timer.current = window.setInterval(() => {
       leftSeconds.current--;
@@ -101,7 +103,8 @@ export function useEmail() {
       await loginByEmail?.({ email, captcha: code });
       toggleLoginModal();
     } catch (error: any) {
-      setDesc(error?.message || error);
+      toast.error(error?.message || error);
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -251,7 +254,7 @@ const LoginModal = function () {
           <LGButton label={codeBtnText} squared loading={isSendLoading} disabled={isCounting} onClick={onSendClick} />
         </div>
 
-        <div>Verification Code</div>
+        <div className="mt-5">Verification Code</div>
         <div className="h-[3.125rem] flex justify-between gap-1">
           <Input
             isClearable

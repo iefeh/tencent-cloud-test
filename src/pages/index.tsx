@@ -24,7 +24,7 @@ function useInvite() {
       localStorage.setItem(KEY_INVITE_CODE, router.query.invite_code as string);
       toggleInviteModal(true);
     }
-  }, [userInfo]);
+  }, []);
 }
 
 const Home = function () {
