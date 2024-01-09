@@ -81,9 +81,6 @@ export abstract class QuestBase {
                 totalReward += rewardItem.reward_moon_beam!;
             }
         });
-        if (!totalReward) {
-            throw new Error(`user ${userId} quest ${this.quest.id} reward amount zero`);
-        }
         return totalReward;
     }
 
