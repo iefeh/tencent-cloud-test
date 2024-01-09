@@ -26,7 +26,7 @@ async function saveQuests() {
     const quests = [
         {
             id: uuidv4(),
-            name: "Connect Your Wallet",
+            name: "Verify Your Wallet",
             description: "Connect to your crypto wallet",
             tip: "Be sure to use the most valuable wallet to connect. MBs will be rewarded based on the value of crypto assets in your wallet.",
             type: QuestType.ConnectWallet,
@@ -44,7 +44,7 @@ async function saveQuests() {
         },
         {
             id: uuidv4(),
-            name: "Connect Your Twitter",
+            name: "Verify Your Twitter",
             description: "Connect to your Twitter account.",
             tip: "",
             active: true,
@@ -62,7 +62,7 @@ async function saveQuests() {
         {
             id: uuidv4(),
             active: true,
-            name: "Connect Your Discord",
+            name: "Verify Your Discord",
             description: "Connect to your Discord account.",
             tip: "",
             type: QuestType.ConnectDiscord,
@@ -161,7 +161,7 @@ async function saveQuests() {
         {
             id: uuidv4(),
             active: true,
-            name: "Connect Your Steam",
+            name: "Verify Your Steam",
             description: "Step 1: Sign in with your Steam. Step 2: Set your profile to \"Public\".",
             tip: "In order to view your profile, please go to Privacy Settings and set all profile items to \"Public\".",
             type: QuestType.ConnectSteam,
