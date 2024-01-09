@@ -285,6 +285,7 @@ export default function LoginModal(props: Props) {
       }}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      isDismissable={false}
     >
       <ModalContent>{emailLoginVisible ? emailLoginContent : baseLoginContent}</ModalContent>
     </Modal>

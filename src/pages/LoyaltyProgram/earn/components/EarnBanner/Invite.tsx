@@ -4,32 +4,18 @@ import inviteImg from 'img/loyalty/earn/invite.png';
 import BasicButton from '@/pages/components/common/BasicButton';
 import mbImg from 'img/loyalty/earn/mb.png';
 import circleOutsideImg from 'img/loyalty/earn/circle_outside.png';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
-import { queryInviteCodeAPI } from '@/http/services/task';
 import { observer } from 'mobx-react-lite';
-import { throttle } from 'lodash';
+import InviteCardModal from '@/pages/components/common/InviteCardModal';
 
 const Invite = function () {
-  const { userInfo } = useContext(MobxContext);
-  const [inviteCode, setInviteCode] = useState('');
-
-  const queryInviteCode = throttle(async function () {
-    try {
-      const res = await queryInviteCodeAPI();
-      setInviteCode(res.invite_code || '');
-    } catch (error) {
-      console.log(error);
-    }
-  }, 500);
+  const store = useContext(MobxContext);
 
   function onInviteClick() {
-    if (!inviteCode) return;
+    // if (!inviteCode) return;
+    store.toggleInviteModal();
   }
-
-  useEffect(() => {
-    if (userInfo) queryInviteCode();
-  }, [userInfo]);
 
   return (
     <div className="w-[42.5rem] h-[13.75rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2.75rem] pr-[4.375rem] pb-[3.0625rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500">
@@ -44,12 +30,6 @@ const Invite = function () {
 
         <div className="flex items-center relative z-0">
           <BasicButton label="Invite Now" onClick={onInviteClick} />
-
-          <span className="text-sm font-poppins ml-4">
-            Successfully invited
-            <span className="text-basic-yellow"> 3 </span>
-            people.
-          </span>
         </div>
       </div>
 
@@ -58,6 +38,8 @@ const Invite = function () {
 
         <Image className="relative z-0" src={mbImg} alt="" />
       </div>
+
+      <InviteCardModal />
     </div>
   );
 };

@@ -10,6 +10,7 @@ class UserStore {
   jwtToken = '';
   particle: ParticleNetwork;
   loginModelVisible = false;
+  inviteModalVisible = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -97,6 +98,14 @@ class UserStore {
       this.loginModelVisible = visible;
     } else {
       this.loginModelVisible = !this.loginModelVisible;
+    }
+  };
+
+  toggleInviteModal = (visible?: boolean) => {
+    if (typeof visible === 'boolean') {
+      this.inviteModalVisible = visible;
+    } else {
+      this.inviteModalVisible = !this.inviteModalVisible;
     }
   };
 }
