@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { observer } from 'mobx-react-lite';
 import { MobxContext } from '@/pages/_app';
-import { throttle } from 'lodash';
+import { shuffle, throttle } from 'lodash';
 
 const Rank = function () {
   const { userInfo } = useContext(MobxContext);
@@ -29,14 +29,14 @@ const Rank = function () {
 
       // slidesPerView设置为2，因此长度小于4时，可能无法持续滚动
       const minLen = me ? 2 : 3;
-      setRankList(
+      const list =
         leaderboard.length < minLen ** 2
           ? Array(minLen)
               .fill(null)
               .map(() => leaderboard)
               .flat()
-          : leaderboard,
-      );
+          : leaderboard;
+      setRankList(shuffle(list));
       setMyRankInfo(me);
       setTopRanks(leaderboard.slice(0, 3));
     } catch (error) {
@@ -44,11 +44,11 @@ const Rank = function () {
     } finally {
       setLoading(false);
     }
-  }, 500);
+  }, 1000);
 
-  useEffect(() => {
-    queryRank();
-  }, []);
+  // useEffect(() => {
+  //   queryRank();
+  // }, []);
 
   useEffect(() => {
     queryRank();
