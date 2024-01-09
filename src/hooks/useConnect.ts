@@ -23,6 +23,8 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     const { code, msg } = tokens[type] || {};
     if (+code === 1) {
       callback?.();
+    } else if (+code === -15 && msg === 'Connection cooling down') {
+      toast.error('The third-party account is under a 12-hour reconnection wait.');
     } else if (msg) {
       toast.error(msg);
     }
