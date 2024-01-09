@@ -15,13 +15,7 @@ import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
-import {
-  disconnectDiscordAPI,
-  disconnectEmailAPI,
-  disconnectGoogleAPI,
-  disconnectSteamAPI,
-  disconnectTwitterAPI,
-} from '@/http/services/login';
+import { disconnectMediaAPI } from '@/http/services/login';
 import useConnect from '@/hooks/useConnect';
 import errorIconImg from 'img/icon/icon_error.png';
 
@@ -41,21 +35,18 @@ const SocialMediaAccounts = function () {
       icon: emailIconImg,
       type: MediaType.EMAIL,
       connected: !!userInfo?.email,
-      disconnectAPI: disconnectEmailAPI,
     },
     {
       title: 'Twitter',
       icon: xIconImg,
       type: MediaType.TWITTER,
       connected: !!userInfo?.twitter,
-      disconnectAPI: disconnectTwitterAPI,
     },
     {
       title: 'Discord',
       icon: discordIconImg,
       type: MediaType.DISCORD,
       connected: !!userInfo?.discord,
-      disconnectAPI: disconnectDiscordAPI,
     },
     // {
     //   title: 'Facebook',
@@ -74,14 +65,12 @@ const SocialMediaAccounts = function () {
       icon: steamIconImg,
       type: MediaType.STEAM,
       connected: !!userInfo?.steam,
-      disconnectAPI: disconnectSteamAPI,
     },
     {
       title: 'Google',
       icon: googleIconImg,
       type: MediaType.GOOGLE,
       connected: !!userInfo?.google,
-      disconnectAPI: disconnectGoogleAPI,
     },
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
@@ -94,12 +83,11 @@ const SocialMediaAccounts = function () {
   }
 
   async function onDisconnect() {
-    const { disconnectAPI } = currentItem || {};
-    if (!disconnectAPI) return;
+    if (!currentItem) return;
 
     setDisconnectLoading(true);
     try {
-      await disconnectAPI();
+      await disconnectMediaAPI(currentItem.type);
       onClose();
       getUserInfo();
     } catch (error: any) {

@@ -1,4 +1,4 @@
-import { KEY_AUTHORIZATION } from '@/constant/storage';
+import { KEY_AUTHORIZATION, KEY_INVITE_CODE } from '@/constant/storage';
 import { getUserInfoAPI, loginByEmailAPI, logoutAPI, signInParticleAPI } from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
 import { debounce } from 'lodash';
@@ -9,7 +9,8 @@ class UserStore {
   userInfo: UserInfo | null = null;
   jwtToken = '';
   particle: ParticleNetwork;
-  loginModelVisible = false;
+  loginModalVisible = false;
+  inviteModalVisible = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -37,6 +38,9 @@ class UserStore {
   getUserInfo = debounce(async () => {
     const res = await getUserInfoAPI();
     this.userInfo = res;
+
+    // 成功登录后清除邀请码
+    localStorage.removeItem(KEY_INVITE_CODE);
   }, 500);
 
   logout = async (needRequest = true) => {
@@ -91,9 +95,17 @@ class UserStore {
 
   toggleLoginModal = (visible?: boolean) => {
     if (typeof visible === 'boolean') {
-      this.loginModelVisible = visible;
+      this.loginModalVisible = visible;
     } else {
-      this.loginModelVisible = !this.loginModelVisible;
+      this.loginModalVisible = !this.loginModalVisible;
+    }
+  };
+
+  toggleInviteModal = (visible?: boolean) => {
+    if (typeof visible === 'boolean') {
+      this.inviteModalVisible = visible;
+    } else {
+      this.inviteModalVisible = !this.inviteModalVisible;
     }
   };
 }
