@@ -37,5 +37,6 @@ export const enum MediaType {
   TELEGRAM = 'telegram',
   STEAM = 'steam',
   GOOGLE = 'google',
-  METAMASK = 'metamask',
+  METAMASK = 'wallet',
+  APPLE = 'apple',
 }
