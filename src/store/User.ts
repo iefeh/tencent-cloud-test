@@ -9,7 +9,7 @@ class UserStore {
   userInfo: UserInfo | null = null;
   jwtToken = '';
   particle: ParticleNetwork;
-  loginModelVisible = false;
+  loginModalVisible = false;
   inviteModalVisible = false;
 
   constructor() {
@@ -95,9 +95,9 @@ class UserStore {
 
   toggleLoginModal = (visible?: boolean) => {
     if (typeof visible === 'boolean') {
-      this.loginModelVisible = visible;
+      this.loginModalVisible = visible;
     } else {
-      this.loginModelVisible = !this.loginModelVisible;
+      this.loginModalVisible = !this.loginModalVisible;
     }
   };
 

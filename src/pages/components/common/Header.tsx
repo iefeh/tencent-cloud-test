@@ -104,7 +104,7 @@ const MoreLinks = () => {
 };
 
 const Header = () => {
-  const { userInfo, loginModelVisible, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, loginModalVisible, toggleLoginModal } = useContext(MobxContext);
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
 

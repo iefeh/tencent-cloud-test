@@ -127,7 +127,7 @@ export function useEmail() {
 }
 
 export default function LoginModal() {
-  const { loginModelVisible, toggleLoginModal } = useContext(MobxContext);
+  const { loginModalVisible, toggleLoginModal } = useContext(MobxContext);
   const [emailLoginVisible, setEmailLoginVisible] = useState(false);
   const connectList: BtnGroup[] = [
     {
@@ -278,7 +278,7 @@ export default function LoginModal() {
         header: 'pt-7 pl-10 pr-[2.6875rem]',
         body: 'pl-10 pr-[2.6875rem] pb-[3.125rem]',
       }}
-      isOpen={loginModelVisible}
+      isOpen={loginModalVisible}
       onOpenChange={toggleLoginModal}
       isDismissable={false}
     >
