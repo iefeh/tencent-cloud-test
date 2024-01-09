@@ -57,7 +57,7 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
             userRank = Number(userRank) + 1;
             const me = userMap.get(userId);
             if (me) {
-                me.rank = userRank;
+                // me.rank = userRank;
                 lb.me = me;
             }
         }
