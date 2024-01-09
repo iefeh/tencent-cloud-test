@@ -28,12 +28,14 @@ export default function LoginDialog({ visible, onClose }: Props) {
   useAuthDialog(dialogWindowRef, () => onCloseClick());
 
   function openAuthWindow(authURL: string) {
-    const dialog = window.open(
-      authURL,
-      'Authrization',
-      'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
-    );
-    dialogWindowRef.current = dialog;
+    setTimeout(() => {
+      const dialog = window.open(
+        authURL,
+        'Authrization',
+        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      );
+      dialogWindowRef.current = dialog;
+    }, 0);
   }
 
   const onGoogleLoginClick = throttle(async () => {
