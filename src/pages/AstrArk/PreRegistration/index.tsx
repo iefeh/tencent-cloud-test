@@ -1,3 +1,4 @@
+import IndexScreen from './subScreens/IndexScreen';
 import Head from 'next/head';
 
 export default function PreRegistrationPage() {
@@ -7,6 +8,8 @@ export default function PreRegistrationPage() {
         <Head>
           <title>Pre-Registration | Moonveil Entertainment</title>
         </Head>
+
+        <IndexScreen />
       </section>
     </>
   );
