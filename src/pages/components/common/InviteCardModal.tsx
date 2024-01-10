@@ -94,6 +94,7 @@ const InviteCardModal = function () {
   return (
     <>
       <Modal
+        placement="center"
         backdrop="blur"
         isOpen={inviteModalVisible}
         onOpenChange={toggleInviteModal}

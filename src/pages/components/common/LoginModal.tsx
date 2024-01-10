@@ -62,7 +62,7 @@ export function useEmail() {
       setDesc('Please enter a valid email address, then try again.');
       return;
     }
-    
+
     setDesc('');
     if (isLoading || isCounting || (leftSeconds.current !== 0 && leftSeconds.current < MAX_LEFT_SECONDS)) return;
 
