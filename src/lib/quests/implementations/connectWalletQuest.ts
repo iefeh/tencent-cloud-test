@@ -12,6 +12,7 @@ import UserMoonBeamAudit, {IUserMoonBeamAudit, UserMoonBeamAuditType} from "@/li
 import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {v4 as uuidv4} from "uuid";
+import * as Sentry from "@sentry/nextjs";
 
 const Debank = require('debank')
 
@@ -217,12 +218,22 @@ export class ConnectWalletQuest extends QuestBase {
         // 要求用户的NFT价值至少大于1刀
         const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price >= 1);
         let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
+            // 如果NFT的数量超过100，且NFT的单价不超过20则过滤
+            if (nft.amount > 100 && nft.usd_price < 20) {
+                return sum;
+            }
+            if (nft.amount > 100) {
+                Sentry.captureMessage(`user ${userId} wallet ${wallet} suspicious NFT ${nft}`);
+            }
             // NFT的价值保留4位小数
             const nftVal = Number(nft.usd_price.toFixed(4));
             // 根据最新成交价格评估NFT价值
             return sum + nftVal * nft.amount;
         }, 0);
         totalNFTValue = Number(totalNFTValue.toFixed(2));
+        if (totalNFTValue > 10000000) {
+            Sentry.captureMessage(`user ${userId} wallet ${wallet} suspicious total NFT value ${totalNFTValue}`);
+        }
         const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));
         // 填充需要保存的对象
         const now = Date.now();
