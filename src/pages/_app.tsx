@@ -218,6 +218,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
       window.luxy = res.default;
       window.luxy.getWrapperTranslateY = function () {
+        if (!this.wrapper) return;
         const { transform } = this.wrapper.style;
         const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
         return -y || 0;
