@@ -18,6 +18,7 @@
     "luxy.js": "^0.1.0",
     "next": "13.5.4",
     "react": "^18",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18",
     "react-transition-group": "^4.4.5",
     "swiper": "^10.3.1",
