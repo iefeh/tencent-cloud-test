@@ -21,7 +21,7 @@ export default function ProfileEditPage() {
 
       <Divider className="mt-[1.1875rem] bg-[rgba(255,255,255,0.1)]" />
 
-      {/* <ProfileEdit /> */}
+      <ProfileEdit />
 
       <SocialMediaAccounts />
 
