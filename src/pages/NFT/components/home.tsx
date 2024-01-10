@@ -22,7 +22,7 @@ const NftHome: React.FC = () => {
         hasBelt
         needAni
         baseAniTY
-        className='px-8'
+        className='px-8 items-center text-center'
         title="A DYNAMIC NFT ECOSYSTEM"
         subtitle={
           <div className="max-w-[32rem] font-decima">

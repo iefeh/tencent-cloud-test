@@ -15,8 +15,7 @@ const routeText = [
   { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
-  { name: 'Loyalty System', route: '/LoyaltyProgram/intro' },
-  { name: 'Earn Moon Beams', route: '/LoyaltyProgram/earn' },
+  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
 ];
 
 export default function Sidebar({ visible, onClose }: Props) {
