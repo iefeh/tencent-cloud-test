@@ -115,6 +115,7 @@ export class ConnectWalletQuest extends QuestBase {
             moon_beam_delta: rewardDelta,
             reward_taint: taint,
             corr_id: this.quest.id,
+            extra_info: assetId,
             created_time: now,
         });
         historyReward.deleted_time = now;
@@ -213,10 +214,13 @@ export class ConnectWalletQuest extends QuestBase {
         // 计算指标值
         const totalTokenValue = Number(tokenData.total_usd_value.toFixed(2));
         const tokens = tokenData.chain_list.filter((token: WalletToken) => token.usd_value > 0);
-        const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price > 0);
+        // 要求用户的NFT价值至少大于1刀
+        const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price >= 1);
         let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
+            // NFT的价值保留4位小数
+            const nftVal = Number(nft.usd_price.toFixed(4));
             // 根据最新成交价格评估NFT价值
-            return sum + nft.usd_price * nft.amount;
+            return sum + nftVal * nft.amount;
         }, 0);
         totalNFTValue = Number(totalNFTValue.toFixed(2));
         const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));
