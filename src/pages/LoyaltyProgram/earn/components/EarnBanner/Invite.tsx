@@ -18,7 +18,7 @@ const Invite = function () {
   }
 
   return (
-    <div className="w-[42.5rem] h-[15rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2rem] pr-[4.375rem] pb-[2.5rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500">
+    <div className="w-[42.5rem] h-[15rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2rem] pr-[2rem] pb-[2.5rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500">
       <Image src={inviteBgImg} alt="" fill />
 
       <div className="flex flex-col justify-between relative z-0 h-full">
@@ -27,9 +27,9 @@ const Invite = function () {
           src={inviteImg}
           alt=""
         />
-        <div className="font-poppins text-sm text-basic-yellow max-w-[26rem]">
-          Please be aware that invitation rewards will be distributed afterward and will NOT be included in the current
-          Whitelist Journey.
+        <div className="font-poppins text-[0.625rem] lg:text-sm text-basic-yellow max-w-[26rem]">
+          Please note that invitation rewards will be distributed later and are NOT included in the current Whitelist
+          Journey.
         </div>
 
         <div className="flex items-center relative z-0">
