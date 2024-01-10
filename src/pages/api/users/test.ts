@@ -5,6 +5,8 @@ import {UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
 import {queryUserAuth} from "@/lib/common/user";
 import {HttpsProxyGet} from "@/lib/common/request";
+import Quest from "@/lib/models/Quest";
+import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -17,8 +19,15 @@ router.get(async (req, res) => {
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");
         // console.log(resp.data);.
         // console.log(await queryUserAuth("4fa8b6f9-d296-4e63-af85-19ce2d9c2cfa"));
-        const response1 = await HttpsProxyGet("https://ip.smartproxy.com/json");
-        console.log(response1.data);
+
+        const quest = await Quest.findOne({id: "9d407683-65c2-4cf0-98cc-cce765bbf107"});
+        const questWrapper = new ConnectSteamQuest(quest);
+        const result = await questWrapper.refreshUserSteamMetric("8fd6aee0-fc87-46c5-96fe-4bb733cdbed5", new UserSteam({
+            steam_id: "76561198157621569",
+            timecreated: 1692696816
+        }));
+        console.log(result);
+
         res.json(response.success());
         return;
     } catch (error) {
