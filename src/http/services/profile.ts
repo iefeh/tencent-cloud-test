@@ -18,3 +18,12 @@ export interface MBHistoryListDto {
 export function queryMBHistoryListAPI(params: PageQueryDto): Promise<MBHistoryListDto> {
   return http.get('/api/users/moonbeams', { params });
 }
+
+interface UpdateUserInfoDto {
+  avatar_url?: string;
+  username?: string;
+}
+
+export function updateUserInfoAPI(data: UpdateUserInfoDto): Promise<boolean | null> {
+  return http.post('/api/users/profile', JSON.stringify(data));
+}
