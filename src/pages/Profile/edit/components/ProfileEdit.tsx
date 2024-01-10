@@ -6,6 +6,7 @@ import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { useContext, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const ProfileEdit = function () {
   const { userInfo, getUserInfo } = useContext(MobxContext);
@@ -13,12 +14,19 @@ const ProfileEdit = function () {
   const [avatarURL, setAvatarURL] = useState(avatar_url);
   const [name, setName] = useState(username);
   const [loading, setLoading] = useState(false);
+  const [nameError, setNameError] = useState('');
 
   function onValueChange(val: string) {
     setName(val.replace(/\s/g, ''));
+    setNameError('');
   }
 
   const updateUserInfo = throttle(async () => {
+    if (!name) {
+      setNameError('Please enter your nickname.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -54,6 +62,7 @@ const ProfileEdit = function () {
             placeholder="Your name"
             defaultValue={username}
             value={name}
+            errorMessage={nameError}
             onValueChange={onValueChange}
           />
 
@@ -63,7 +72,7 @@ const ProfileEdit = function () {
             actived
             squared
             loading={loading}
-            disabled={!userInfo || (avatar_url === avatarURL && username === name)}
+            disabled={!userInfo || (avatar_url === avatarURL && username === name) || !name}
             onClick={updateUserInfo}
           />
         </div>
