@@ -36,8 +36,10 @@ axios.interceptors.response.use((res) => {
         break;
       }
     }
-    // throw new Error(data.msg);
-    if (data.msg) toast.error(data.msg);
+    if (data.msg) {
+      toast.error(data.msg);
+      throw new Error(data.msg);
+    }
   }
 
   return data.data;

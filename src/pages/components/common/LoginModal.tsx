@@ -71,7 +71,6 @@ export function useEmail() {
     try {
       await sendEmailCodeAPI({ email });
     } catch (error: any) {
-      toast.error(error?.message || error);
       return;
     } finally {
       setIsSendLoading(false);
