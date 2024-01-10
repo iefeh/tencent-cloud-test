@@ -115,6 +115,7 @@ const UserAvatar = () => {
       </ControlledMenu>
 
       <Modal
+        placement="center"
         backdrop='blur'
         isOpen={isOpen}
         onOpenChange={onOpenChange}

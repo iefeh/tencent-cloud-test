@@ -136,6 +136,7 @@ const SocialMediaAccounts = function () {
       </div>
 
       <Modal
+        placement="center"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] flex-row' }}

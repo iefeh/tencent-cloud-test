@@ -117,20 +117,6 @@ function RegularTasks() {
     setTasks(list);
   }
 
-  function getRewardText(reward: TaskReward) {
-    const { amount, type, max_amount, min_amount } = reward || {};
-    if (!reward || isNaN(amount)) return '???';
-
-    switch (type) {
-      case QuestRewardType.Fixed:
-        return `${amount} MBs`;
-      case QuestRewardType.Range:
-        return max_amount ? `${max_amount} MBs Max` : `${min_amount} MBs Max`;
-      default:
-        return '???';
-    }
-  }
-
   function onPagiChange(page: number) {
     if (page === pagiInfo.current.pageIndex) return;
 
@@ -280,6 +266,7 @@ function RegularTasks() {
         />
 
         <Modal
+          placement="center"
           backdrop="blur"
           isOpen={isOpen}
           onOpenChange={onOpenChange}
@@ -406,7 +393,7 @@ function RegularTasks() {
               <Image className="w-8 h-8" src={mbImg} alt="" />
 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-                {getRewardText(task.reward)}
+                {task.reward.amount_formatted} MBs
               </span>
             </div>
 

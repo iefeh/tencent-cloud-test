@@ -59,7 +59,12 @@ export default function MBHistoryButton() {
     <>
       <LGButton label="Moon Beams History >>" actived onClick={onOpen} />
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ base: 'bg-[#070707] !rounded-base' }}>
+      <Modal
+        placement="center"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        classNames={{ base: 'bg-[#070707] !rounded-base' }}
+      >
         <ModalContent>
           {(onClose) => (
             <>
