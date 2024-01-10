@@ -20,11 +20,12 @@ export interface IQuest extends Document {
     reward: {
         // 奖励类型
         type: QuestRewardType,
-        // 任务奖励数量，当奖励类型为range时表示最少可以获得的奖励
+        // 固定奖励时的任务奖励数量
         amount: number,
-        // 当任务奖励为range时，最大可以获得的奖励数量
-        max_amount: number,
-        // 任务关联的动态奖励ids，关联UserMetricReward
+        // 格式化的奖励，用于定制化的展示任务奖励
+        amount_formatted: number,
+        // 当奖励类型为range时，任务关联的动态奖励ids，关联UserMetricReward
+        // 注意，当任务类型为whitelist时，会最后尝试根据白名单的奖励进行下发
         range_reward_ids: string[],
     },
     // 任务是否激活，不展示未激活
@@ -49,7 +50,7 @@ const QuestSchema = new Schema<IQuest>({
     reward: {
         type: {type: String},
         amount: {type: Number},
-        max_amount: {type: Number},
+        amount_formatted: {type: String},
         range_reward_ids: [String],
     },
     active: {type: Boolean, default: false},

@@ -33,8 +33,7 @@ async function saveQuests() {
             properties: null,
             reward: {
                 type: QuestRewardType.Range,
-                amount: 10,
-                max_amount: 7500,
+                amount_formatted: "???",
                 range_reward_ids: ["8610c3a9-6477-4bf0-9228-cf2bc0c9d965", "be3ed7bc-104b-4499-9b26-940608b11bb0"],
             },
             active: true,
@@ -53,6 +52,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
             order: 5,
@@ -70,6 +70,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
             order: 6,
@@ -91,6 +92,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
             order: 7,
@@ -111,6 +113,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
             order: 8,
@@ -131,6 +134,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
             order: 9,
@@ -152,6 +156,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
             order: 10,
@@ -168,8 +173,7 @@ async function saveQuests() {
             properties: null,
             reward: {
                 type: QuestRewardType.Range,
-                amount: 0,
-                max_amount: 800,
+                amount_formatted: "800",
                 range_reward_ids: ["bfd884ab-25ac-4095-94f6-61957dcb68a7"],
             },
             order: 4,
@@ -192,6 +196,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 100,
+                amount_formatted: "100",
                 range_reward_ids: null,
             },
             order: 2,
@@ -214,6 +219,7 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
             },
             order: 9,
             created_time: now,
@@ -231,8 +237,7 @@ async function saveQuests() {
             },
             reward: {
                 type: QuestRewardType.Range,
-                amount: 10,
-                max_amount: 3000,
+                amount_formatted: "???",
             },
             order: 1,
             created_time: now,
