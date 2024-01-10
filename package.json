@@ -21,6 +21,7 @@
     "@szhsin/react-menu": "^4.1.0",
     "@web3modal/ethers": "^3.5.3",
     "axios": "^1.5.1",
+    "bignumber.js": "^9.1.2",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.0.1",
     "dayjs": "^1.11.10",
