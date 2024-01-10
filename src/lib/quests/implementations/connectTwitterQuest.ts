@@ -45,7 +45,7 @@ export class ConnectTwitterQuest extends QuestBase {
         if (result.duplicated) {
             return {
                 verified: false,
-                tip: "The twitter Account has already claimed reward.",
+                tip: "The Twitter Account has already claimed reward.",
             }
         }
         return {

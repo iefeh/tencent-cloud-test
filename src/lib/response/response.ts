@@ -44,9 +44,9 @@ const ResponseMessages = {
     // 不允许发送验证码，间隔不对或者IP受限
     [ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED]: 'Sending Captcha Temporarily Disallowed',
     // 社媒重复绑定，当前社媒已经绑定到其他账号
-    [ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND]: 'Media Already Bound To Others',
+    [ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND]: 'The platform is already connected to another account.',
     // 当前账户已绑定对应社媒
-    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA]: 'Account Already Bound Media',
+    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA]: 'Account already connected the platform.',
     // 钱包签名不匹配
     [ResponseCode.ERROR_WALLET_SIGNATURE_MISMATCH]: "Wallet Signature Mismatch",
     // 钱包签名已过期
