@@ -210,13 +210,13 @@ const InviteCardModal = function () {
                     prefix={<Image className="w-4 h-4" src={linkIconImg} alt="" />}
                     onClick={onShareLink}
                   />
-                  <div
+                  {/* <div
                     className="mx-auto mt-[1.375rem] cursor-pointer font-poppins text-base"
                     onClick={onDownloadClick}
                   >
                     <Image className="w-4 h-4 inline mr-[0.625rem]" src={downloadIconImg} alt="" />
                     SAVE IMAGE
-                  </div>
+                  </div> */}
                 </>
               ) : (
                 <>
