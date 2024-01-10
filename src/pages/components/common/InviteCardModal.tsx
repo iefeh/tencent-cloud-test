@@ -1,17 +1,17 @@
 import { MobxContext } from '@/pages/_app';
-import { Modal, ModalBody, ModalContent } from '@nextui-org/react';
+import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import LGButton from './buttons/LGButton';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import logoImg from 'img/invite/logo.png';
 import copyIconImg from 'img/invite/icon_copy.png';
-import qrImg from 'img/invite/icon_qr.png';
 import contentImg from 'img/invite/bg_content.png';
 import linkIconImg from 'img/invite/icon_link.png';
 import arrowRightIconImg from 'img/invite/icon_arrow_right.png';
 import downloadIconImg from 'img/invite/icon_download.png';
 import helpIconImg from 'img/invite/icon_help.png';
+import coloredHelpIconImg from 'img/invite/icon_help_colored.png';
 import UserProfile from './UserProfile';
 import { throttle } from 'lodash';
 import { queryInviteCodeAPI } from '@/http/services/task';
@@ -27,6 +27,65 @@ function downloadFile(url: string, filename?: string) {
   document.body.appendChild(eleLink);
   eleLink.click();
   document.body.removeChild(eleLink);
+}
+
+function InvitationRulesModal() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  return (
+    <>
+      <div className="mx-auto mt-[1.375rem] cursor-pointer font-poppins text-base" onClick={onOpen}>
+        Check Rules
+        <Image className="w-4 h-4 inline ml-[0.625rem]" src={helpIconImg} alt="" />
+      </div>
+
+      <Modal
+        backdrop="blur"
+        placement="center"
+        isOpen={isOpen}
+        classNames={{
+          base: 'bg-black',
+          header: 'p-0',
+          closeButton: 'z-10',
+          body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-8 pb-[5] px-10',
+        }}
+        onOpenChange={onOpenChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>
+                <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
+                  <Image className="w-8 h-8" src={coloredHelpIconImg} alt="" />
+                  <div className="font-semakin text-basic-yellow text-2xl">User Invitation Rules</div>
+                </div>
+              </ModalHeader>
+
+              <ModalBody>
+                <p>· New users registered through an invitation code or link receives a reward of 25 Moon Beams.</p>
+
+                <p>
+                  · Upon successful registration of each new user, the inviter receives a reward of 50 Moon Beams, with
+                  no upper limit.
+                </p>
+
+                <p>· New users who receive the Novice Notch Badge are counted as successful registration.</p>
+
+                <p>· The Novice Notch Badge can be obtained by completing Social Media Connection tasks.</p>
+
+                <p>
+                  · If the invitee completes the Wallet Connection task, the inviter also receives an additional Moon
+                  Beams based on the level of Badges rewarded.{' '}
+                </p>
+
+                <p>· The inviter will receive continuous rewards for invitees’ in-game engagements and achievements.</p>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }
 
 const InviteCardModal = function () {
@@ -168,10 +227,7 @@ const InviteCardModal = function () {
                     suffix={<Image className="w-4 h-4" src={arrowRightIconImg} alt="" />}
                     onClick={onJoinClick}
                   />
-                  <div className="mx-auto mt-[1.375rem] cursor-pointer font-poppins text-base">
-                    Check Rules
-                    <Image className="w-4 h-4 inline ml-[0.625rem]" src={helpIconImg} alt="" />
-                  </div>
+                  <InvitationRulesModal />
                 </>
               )}
             </ModalBody>
