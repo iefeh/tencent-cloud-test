@@ -280,6 +280,7 @@ function RegularTasks() {
         />
 
         <Modal
+          placement="center"
           backdrop="blur"
           isOpen={isOpen}
           onOpenChange={onOpenChange}

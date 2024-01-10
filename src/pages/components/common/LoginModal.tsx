@@ -21,6 +21,7 @@ export default function LoginModal(props: Props) {
 
   return (
     <Modal
+      placement="center"
       backdrop="blur"
       classNames={{
         base: 'rounded-[0.625rem] bg-[#070707]',
