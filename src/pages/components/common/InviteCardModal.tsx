@@ -227,7 +227,7 @@ const InviteCardModal = function () {
                     suffix={<Image className="w-4 h-4" src={arrowRightIconImg} alt="" />}
                     onClick={onJoinClick}
                   />
-                  <InvitationRulesModal />
+                  {/* <InvitationRulesModal /> */}
                 </>
               )}
             </ModalBody>
