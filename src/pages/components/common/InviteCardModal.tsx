@@ -186,7 +186,7 @@ const InviteCardModal = function () {
                       copyIcon={copyIconImg}
                     />
 
-                    {qrURL && <Image className="w-[3.75rem] h-[3.75rem]" src={qrURL} alt="" width={120} height={120} />}
+                    {/* {qrURL && <Image className="w-[3.75rem] h-[3.75rem]" src={qrURL} alt="" width={120} height={120} />} */}
                   </div>
                 )}
 
