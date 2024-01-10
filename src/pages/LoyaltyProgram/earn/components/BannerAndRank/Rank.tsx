@@ -66,7 +66,6 @@ const Rank = function () {
                 index === 0 && 'order-2',
                 index === 1 && 'order-1',
                 index > 1 && 'order-3',
-                index === 0 && '-translate-x-1',
               ])}
             >
               <div className="relative">
