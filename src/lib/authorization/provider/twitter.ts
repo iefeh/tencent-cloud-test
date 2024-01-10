@@ -2,14 +2,15 @@ import * as response from "@/lib/response/response";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
 import {v4 as uuidv4} from "uuid";
 import {redis} from "@/lib/redis/client";
-import {AuthProvider, OAuthOptions} from "@/lib/authorization/types";
+import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
-import {validateCallbackState} from "@/lib/authorization/provider/validator";
+import {validateCallbackState} from "@/lib/authorization/provider/util";
 import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
+import getMongoConnection from "@/lib/mongodb/client";
 
 const twitterOAuthOps: OAuthOptions = {
     clientId: process.env.TWITTER_CLIENT_ID!,
@@ -24,10 +25,21 @@ export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);
 
 export async function generateAuthorizationURL(req: any, res: any) {
     // 检查用户的授权落地页
-    const landing_url = req.query.landing_url as string;
-    if (!req.query.landing_url) {
+    const {landing_url, invite_code} = req.query;
+    if (!landing_url) {
         res.json(response.invalidParams());
         return;
+    }
+
+    // 检查注册邀请码
+    await getMongoConnection();
+    let inviter: any;
+    if (!req.userId && invite_code) {
+        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        if (!inviter) {
+            res.json(response.unknownInviteCode());
+            return
+        }
     }
 
     // 生成授权的状态字段
@@ -37,9 +49,10 @@ export async function generateAuthorizationURL(req: any, res: any) {
         flow: currFlow,
         code_challenge: uuidv4(),
         authorization_user_id: req.userId,
+        inviter_id: inviter ? inviter.user_id : undefined,
     };
     const state = uuidv4();
-    await redis.setex(`authorization_state:twitter:${state}`, 60 * 60 * 12, JSON.stringify(payload));
+    await redis.setex(`authorization_state:${AuthorizationType.Twitter}:${state}`, 60 * 60 * 12, JSON.stringify(payload));
 
     // twitter授权必须要传递code_challenge，并且在获取访问token时回传.
     const authorizationUri = twitterOAuthProvider.authorizationURL({
@@ -56,7 +69,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
 export class TwitterAuthFlow extends AuthFlowBase {
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
-        return validateCallbackState(AuthProvider.TWITTER, req, res);
+        return validateCallbackState(AuthorizationType.Twitter, req, res);
     }
 
     async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
@@ -81,11 +94,15 @@ export class TwitterAuthFlow extends AuthFlowBase {
             updated_time: now,
         };
         await OAuthToken.findOneAndUpdate({
-            platform: "twitter",
+            platform: AuthorizationType.Twitter,
             platform_id: connection.id,
             deleted_time: null
         }, {$set: userTokenUpdates}, {upsert: true});
         return connection;
+    }
+
+    getReconnectCdKey(authParty: any): string {
+        return `reconnect_cd:${AuthorizationType.Twitter}:${authParty.id}`;
     }
 
     async queryUserConnectionFromParty(party: any): Promise<any> {

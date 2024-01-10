@@ -8,7 +8,7 @@ export interface IUserGoogle extends Document {
     // 用户的谷歌email
     email: string,
     // 邮件是否校验
-    email_verified: boolean | false;
+    email_verified: boolean;
     // 名
     given_name: string | '',
     // 姓
@@ -47,4 +47,5 @@ UserGoogleSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserGoogleSchema.index({google_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-export default models.UserGoogle || model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
+const UserGoogle = models.UserGoogle || model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
+export default UserGoogle;

@@ -142,7 +142,7 @@ export default function About({
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
       <Head>
-        <title>About | Moonveil</title>
+        <title>About | Moonveil Entertainment</title>
       </Head>
 
       <Swiper
