@@ -74,7 +74,7 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
         if (result.duplicated) {
             return {
                 verified: false,
-                tip: "The twitter Account has already claimed reward.",
+                tip: "The Twitter Account has already claimed reward.",
             }
         }
         return {
