@@ -36,7 +36,7 @@ const UserAvatar = () => {
 
   const menus: HeaderMenuItem[] = [
     {
-      title: 'Personal Center',
+      title: 'User Center',
       icon: profileImg,
       path: '/Profile',
     },
