@@ -115,6 +115,7 @@ export class ConnectWalletQuest extends QuestBase {
             moon_beam_delta: rewardDelta,
             reward_taint: taint,
             corr_id: this.quest.id,
+            extra_info: assetId,
             created_time: now,
         });
         historyReward.deleted_time = now;

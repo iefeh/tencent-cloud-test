@@ -9,7 +9,7 @@ export async function try2AddUser2MBLeaderboard(userId: string) {
         if (!user) {
             return;
         }
-        if (!user.moon_beam) {
+        if (user.moon_beam == undefined) {
             logger.warn(`user ${userId} moon beam should but not found.`);
             return;
         }
