@@ -173,7 +173,7 @@ async function saveQuests() {
             properties: null,
             reward: {
                 type: QuestRewardType.Range,
-                amount_formatted: "0-800",
+                amount_formatted: "0-810",
                 range_reward_ids: ["bfd884ab-25ac-4095-94f6-61957dcb68a7"],
             },
             order: 4,
