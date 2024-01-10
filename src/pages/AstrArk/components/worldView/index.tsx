@@ -20,6 +20,7 @@ const WorldView: React.FC = () => {
 
       <PageDesc
         hasBelt
+        className="items-center text-center relative min-[2400px]:-top-[20vh]"
         title={<div className='title text-[6.25rem] uppercase font-semakin mb-4 max-md:text-6xl'>What happened...</div>}
         subtitle={
           <div className="title text-lg font-decima mb-10 tracking-tighter">
@@ -48,15 +49,15 @@ const WorldView: React.FC = () => {
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
       <div
-        className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center hidden p-8 min-[2560px]:flex "
+        className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center hidden p-8 min-[2400px]:flex"
         data-speed-y="8"
-        data-offset="-400"
+        data-offset="-600"
       >
         {Content}
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_400px)] justify-center items-center min-[768px]:max-[2560px]:flex hidden p-8"
+        className="luxy-el w-full h-[calc(100vh_+_400px)] justify-center items-center min-[768px]:max-[2399px]:flex hidden p-8"
         data-speed-y="8"
         data-offset="-300"
       >
@@ -64,7 +65,7 @@ const WorldView: React.FC = () => {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_200px)] justify-center items-center max-[768px]:flex hidden p-8"
+        className="luxy-el w-full h-[calc(100vh_+_200px)] justify-center items-center max-[767px]:flex hidden p-8"
         data-speed-y="2"
         data-offset="-100"
       >

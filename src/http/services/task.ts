@@ -13,6 +13,7 @@ export interface TaskReward {
   amount: number;
   max_amount: number;
   min_amount: number;
+  amount_formatted: string;
 }
 
 export interface TaskListItem {

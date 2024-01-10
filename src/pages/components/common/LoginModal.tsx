@@ -276,6 +276,7 @@ const LoginModal = function () {
 
   return (
     <Modal
+      placement="center"
       backdrop="blur"
       classNames={{
         base: 'max-w-[32.25rem] rounded-[0.625rem] bg-[#070707]',

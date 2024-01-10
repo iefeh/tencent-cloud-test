@@ -19,6 +19,7 @@
     "@sentry/nextjs": "^7.92.0",
     "@svgr/webpack": "^8.1.0",
     "@szhsin/react-menu": "^4.1.0",
+    "@vercel/speed-insights": "^1.0.2",
     "@web3modal/ethers": "^3.5.3",
     "axios": "^1.5.1",
     "bignumber.js": "^9.1.2",

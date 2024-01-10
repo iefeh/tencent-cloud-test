@@ -36,7 +36,7 @@ const UserAvatar = () => {
 
   const menus: HeaderMenuItem[] = [
     {
-      title: 'Personal Center',
+      title: 'User Center',
       icon: profileImg,
       path: '/Profile',
     },
@@ -115,6 +115,7 @@ const UserAvatar = () => {
       </ControlledMenu>
 
       <Modal
+        placement="center"
         backdrop='blur'
         isOpen={isOpen}
         onOpenChange={onOpenChange}

@@ -3,8 +3,15 @@ import { Divider } from '@nextui-org/react';
 import ProfileEdit from './components/ProfileEdit';
 import SocialMediaAccounts from './components/SocialMediaAccounts';
 import ConnectWallet from './components/ConnectWallet';
+import { useRouter } from 'next/router';
 
 export default function ProfileEditPage() {
+  const router = useRouter();
+
+  function onUserCenterClick() {
+    router.push('/Profile');
+  }
+
   return (
     <section
       id="luxy"
@@ -15,7 +22,9 @@ export default function ProfileEditPage() {
       </Head>
 
       <div className="text-base">
-        <span className="text-[#666666]">User Center &gt; </span>
+        <span className="text-[#666666] hover:text-white transition-colors cursor-pointer" onClick={onUserCenterClick}>
+          User Center &gt;{' '}
+        </span>
         <span>Edit</span>
       </div>
 

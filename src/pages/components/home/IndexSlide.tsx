@@ -23,7 +23,7 @@ export default function IndexSlide(props: Props) {
         hasBelt
         needAni={props.needAni}
         baseAniTY
-        className="relative top-[15%] lg:top-[20%] items-center text-center"
+        className="relative top-[15%] lg:top-[20%] items-center text-center px-8"
         title="Moonveil’s Exclusive Free Mint<br />Genesis Collection — Destiny TETRA NFT"
         subtitle="The whitelist journey of Moonveil’s Genesis NFT, Destiny TETRA NFT<br />will officially commence on January 10th."
         buttonLabel="click to explore"
