@@ -26,6 +26,7 @@ export enum ResponseCode {
     ERROR_EMAIL_BOUND_TO_OTHERS = -16,
     ERROR_TOO_MANY_REQUESTS = -17,
     ERROR_UNKNOWN_INVITE_CODE = -18,
+    ERROR_USERNAME_TOO_LONG = -19,
     // 添加对应的响应码
 }
 
@@ -63,6 +64,8 @@ const ResponseMessages = {
     [ResponseCode.ERROR_TOO_MANY_REQUESTS]: "Too many requests.",
     // 未知邀请码
     [ResponseCode.ERROR_UNKNOWN_INVITE_CODE]: "Unknown invite code.",
+    // 昵称过长
+    [ResponseCode.ERROR_USERNAME_TOO_LONG]: "Username too long.",
     // 添加响应码对应的msg
 }
 
@@ -96,3 +99,4 @@ export const connectionCoolingDown = build(ResponseCode.ERROR_CONNECTION_COOLING
 export const emailAlreadyBoundToOthers = build(ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS);
 export const tooManyRequests = build(ResponseCode.ERROR_TOO_MANY_REQUESTS);
 export const unknownInviteCode = build(ResponseCode.ERROR_UNKNOWN_INVITE_CODE);
+export const usernameTooLong = build(ResponseCode.ERROR_USERNAME_TOO_LONG);

@@ -32,6 +32,7 @@ const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
     moon_beam_delta: {type: Number, required: true},
     reward_taint: {type: String, default: null},
     corr_id: {type: String},
+    extra_info: {type: String},
     created_time: {type: Number},
     deleted_time: {type: Number},
 });
