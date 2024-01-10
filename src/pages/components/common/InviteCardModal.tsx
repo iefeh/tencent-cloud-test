@@ -180,7 +180,7 @@ const InviteCardModal = function () {
                     <UserProfile
                       avatarClassName="w-[3.75rem] h-[3.75rem] inline-block"
                       usernameClassName="text-xl leading-none overflow-visible !whitespace-normal !break-words flex-1"
-                      walletClassName="text-[#999] mt-2"
+                      walletClassName="text-[#999] mt-2 invisible"
                       desc={`Invite Code: ${inviteCode || '--'}`}
                       copyText={inviteCode}
                       copyIcon={copyIconImg}
