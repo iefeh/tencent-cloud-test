@@ -108,18 +108,18 @@ const InviteCardModal = function () {
           {() => (
             <ModalBody>
               <div ref={contentRef} className="pb-[1.8125rem] bg-black">
-                <div className="relative w-full h-[6.625rem] bg-no-repeat bg-[url('/img/invite/bg_head.png')] bg-contain flex justify-between items-center gap-4 px-6">
-                  <Image className="w-[5.625rem] h-[3.3125rem]" src={logoImg} alt="" />
-                  <div className="font-semakin text-basic-yellow text-2xl max-w-60">
+                <div className="relative w-full py-[1.625rem] bg-no-repeat bg-[url('/img/invite/bg_head.png')] bg-contain flex justify-between items-center gap-4 px-6">
+                  <Image className="w-[5.625rem] h-[3.3125rem] inline-block" src={logoImg} alt="" />
+                  <div className="font-semakin text-basic-yellow text-2xl max-w-60 leading-none">
                     Invite friends to join Moonveil
                   </div>
                 </div>
 
                 {userInfo && (
-                  <div className="flex justify-between items-center h-[3.75rem] mt-7 ml-[2.375rem] mr-7">
+                  <div className="flex justify-between items-center mt-7 ml-[2.375rem] mr-7">
                     <UserProfile
-                      avatarClassName="w-[3.75rem] h-[3.75rem]"
-                      usernameClassName="text-xl leading-none"
+                      avatarClassName="w-[3.75rem] h-[3.75rem] inline-block"
+                      usernameClassName="text-xl leading-none overflow-visible !whitespace-normal !break-words flex-1"
                       walletClassName="text-[#999] mt-2"
                       desc={`Invite Code: ${inviteCode || '--'}`}
                       copyText={inviteCode}
@@ -130,11 +130,15 @@ const InviteCardModal = function () {
                   </div>
                 )}
 
-                <Image
-                  className="w-[23.125rem] h-[24.4375rem] mx-auto border-1 border-basic-gray rounded-[1.1875rem] mt-5"
-                  src={contentImg}
-                  alt=""
-                />
+                <div className="w-[23.125rem] h-[24.4375rem] mx-auto border-1 border-basic-gray rounded-[1.1875rem] mt-5 overflow-hidden relative">
+                  <Image className="object-cover" src={contentImg} alt="" fill />
+
+                  <div className="absolute left-1/2 -translate-x-1/2 top-[2.625rem] font-poppins text-base text-basic-yellow w-[18.5rem] text-center">
+                    Own Your Destiny——
+                    <br />
+                    Join Moonveil to claim your limited on-chain and in-game rewards now!
+                  </div>
+                </div>
               </div>
 
               {userInfo ? (
