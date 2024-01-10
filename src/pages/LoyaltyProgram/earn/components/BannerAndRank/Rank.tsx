@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { observer } from 'mobx-react-lite';
 import { MobxContext } from '@/pages/_app';
-import { throttle } from 'lodash';
+import { shuffle, throttle } from 'lodash';
 
 const Rank = function () {
   const { userInfo } = useContext(MobxContext);
@@ -26,17 +26,7 @@ const Rank = function () {
     try {
       const res = await leaderBoardRankAPI();
       const { leaderboard, me } = res;
-
-      // slidesPerView设置为2，因此长度小于4时，可能无法持续滚动
-      const minLen = me ? 2 : 3;
-      setRankList(
-        leaderboard.length < minLen ** 2
-          ? Array(minLen)
-              .fill(null)
-              .map(() => leaderboard)
-              .flat()
-          : leaderboard,
-      );
+      setRankList(shuffle(leaderboard || []));
       setMyRankInfo(me);
       setTopRanks(leaderboard.slice(0, 3));
     } catch (error) {
@@ -44,11 +34,11 @@ const Rank = function () {
     } finally {
       setLoading(false);
     }
-  }, 500);
+  }, 1000);
 
-  useEffect(() => {
-    queryRank();
-  }, []);
+  // useEffect(() => {
+  //   queryRank();
+  // }, []);
 
   useEffect(() => {
     queryRank();
@@ -76,7 +66,7 @@ const Rank = function () {
                 index === 0 && 'order-2',
                 index === 1 && 'order-1',
                 index > 1 && 'order-3',
-                index === 0 && 'translate-x-3',
+                index === 0 && '-translate-x-1 lg:translate-x-3',
               ])}
             >
               <div className="relative">
@@ -148,7 +138,7 @@ const Rank = function () {
                     key={index}
                     className="flex items-center h-[5.0625rem] font-poppins-medium text-basic-yellow text-base border-b-1 border-[rgba(246,199,153,0.1)]"
                   >
-                    <span className="w-[2.625rem]">{rank.rank}</span>
+                    {/* <span className="w-[2.625rem]">{rank.rank}</span> */}
 
                     <Image
                       className="w-12 h-12 border-1 border-basic-yellow rounded-full object-cover"

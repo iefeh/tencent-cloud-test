@@ -36,7 +36,7 @@ export default function MyNFT() {
 
       <Divider className="my-[1.875rem]" />
 
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-[1.6875rem]">
         {nfts.map((nft, index) => (
           <NFT src={nft?.cover} key={index} />
         ))}

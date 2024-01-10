@@ -5,7 +5,7 @@ import TaskTabs from "./components/TaskTabs";
 
 export default function LoyaltyEarn() {
   return (
-    <section id="luxy" className="w-full flex flex-col px-[16.25rem] [&>div]:mx-auto">
+    <section id="luxy" className="w-full flex flex-col lg:px-[16.25rem] [&>div]:mx-auto">
       <Head>
         <title>Earn Moon Beams | Moonveil Entertainment</title>
       </Head>

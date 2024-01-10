@@ -4,6 +4,7 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
+import logger from "@/lib/logger/winstonLogger";
 
 
 export class ConnectTwitterQuest extends QuestBase {
@@ -33,11 +34,18 @@ export class ConnectTwitterQuest extends QuestBase {
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
+        if (!rewardDelta) {
+            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
+            return {
+                verified: false,
+                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
+            }
+        }
         const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {
             return {
                 verified: false,
-                tip: "The twitter Account has already claimed reward.",
+                tip: "The Twitter Account has already claimed reward.",
             }
         }
         return {

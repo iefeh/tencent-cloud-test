@@ -212,7 +212,7 @@ function RegularTasks() {
 
       try {
         setVerifiable(false);
-        const api = canReverify ? reverifyTaskAPI : verifyTaskAPI;
+        const api = verified ? reverifyTaskAPI : verifyTaskAPI;
         const res = await api({ quest_id: task.id });
 
         if (!res.verified) {
@@ -265,7 +265,7 @@ function RegularTasks() {
             className="uppercase"
             label={getConnectLabel(connectTexts)}
             actived
-            loading={connectLoading || mediaLoading}
+            loading={connectLoading}
             disabled={achieved || verified}
             onClick={onConnectClick}
           />
@@ -307,6 +307,7 @@ function RegularTasks() {
                       if (userInfo) {
                         onConnect();
                       } else {
+                        console.log('connect click');
                         toggleLoginModal();
                       }
                     }}
@@ -438,7 +439,7 @@ function RegularTasks() {
     <div className="mt-7 flex flex-col items-center">
       <div
         className={cn([
-          'content grid grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
+          'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
           tasks.length < 1 && 'h-[37.5rem]',
         ])}
       >

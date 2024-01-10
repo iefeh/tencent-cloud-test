@@ -32,7 +32,7 @@ export default function HotBanner() {
   }, []);
 
   return (
-    <div className="relative w-[57.8125rem] h-[37.5rem]">
+    <div className="relative w-[57.8125rem] h-[37.5rem] hidden lg:block">
       <Swiper
         className="w-full h-full overflow-hidden rounded-[0.625rem] relative"
         modules={[Pagination, Autoplay]}
@@ -53,12 +53,15 @@ export default function HotBanner() {
       >
         {banners.map((item, index) => (
           <SwiperSlide key={index} className="relative cursor-pointer" onClick={() => onSlideClick(item)}>
-            <Image src={item.image_url} alt="" fill />
+            <Image className='object-cover' src={item.image_url} alt="" fill />
 
             {item.title && (
               <div className="absolute top-[4.1875rem] left-[3.5625rem] border-l-4 border-basic-yellow z-10 bg-gradient-to-r from-[rgba(0,0,0,0.6)] to-transparent pt-[1.9375rem] pr-[0.875rem] pb-8 pl-[2.5625rem]">
-                <div className="font-semakin text-[2.5rem] leading-[3rem] w-[29.1875rem]">{item.title}</div>
-                <div className="font-poppins text-base mt-[1.25rem]">{item.description}</div>
+                <div className="font-semakin text-[2.5rem] leading-[3rem] w-[31rem]">{item.title}</div>
+                <div
+                  className="font-poppins text-base mt-[1.25rem]"
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                ></div>
               </div>
             )}
           </SwiperSlide>

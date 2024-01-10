@@ -23,7 +23,9 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     const { code, msg } = tokens[type] || {};
     if (+code === 1) {
       callback?.();
-    } else {
+    } else if (+code === -15 && msg === 'Connection cooling down') {
+      toast.error('The third-party account is under a 12-hour reconnection wait.');
+    } else if (msg) {
       toast.error(msg);
     }
     delete tokens[type];
@@ -31,15 +33,17 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   }
 
   function openAuthWindow(authURL: string) {
-    const dialog = window.open(
-      authURL,
-      'Authrization',
-      'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
-    );
-    dialogWindowRef.current = dialog;
-    dialog?.addEventListener('close', () => {
-      dialogWindowRef.current = null;
-    });
+    setTimeout(() => {
+      const dialog = window.open(
+        authURL,
+        'Authrization',
+        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      );
+      dialogWindowRef.current = dialog;
+      dialog?.addEventListener('close', () => {
+        dialogWindowRef.current = null;
+      });
+    }, 0);
   }
 
   async function onConnectWallet() {
@@ -66,11 +70,13 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
   async function onConnect() {
     if (!userInfo) {
+      console.log('connect no userInfo');
       toggleLoginModal(true);
       return;
     }
 
     if (type === MediaType.EMAIL) {
+      console.log('connect email');
       toggleLoginModal(true);
       return;
     }

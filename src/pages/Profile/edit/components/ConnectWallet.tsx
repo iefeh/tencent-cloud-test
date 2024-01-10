@@ -92,7 +92,7 @@ const ConnectWallet = function () {
     <div className="mt-[4.1875rem]">
       <div className="text-2xl">Connect Wallet</div>
 
-      <div className="grid grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
         {accounts.map((item, index) => (
           <MediaItem key={index} item={item} />
         ))}

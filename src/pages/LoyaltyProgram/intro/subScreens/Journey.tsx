@@ -76,7 +76,7 @@ export default function JourneyScreen() {
 
       <div
         ref={journeyWrapperRef}
-        className="w-[87.5rem] h-[58.8125rem] relative mb-[12.5625rem] -translate-y-[8.4375rem]"
+        className="w-[87.5rem] h-[58.8125rem] relative mb-[12.5625rem] -translate-y-[8.4375rem] hidden lg:block"
         onMouseMove={onJourneyMouseMove}
         onMouseLeave={onJourneyMouseLeave}
       >
