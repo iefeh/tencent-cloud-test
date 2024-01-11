@@ -54,6 +54,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             }));
             return;
         }
+
         // 申领任务奖励
         const result = await questImpl.claimReward(userId);
         if (result.claimed_amount && result.claimed_amount > 0) {
