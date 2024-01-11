@@ -81,9 +81,6 @@ export abstract class QuestBase {
                 totalReward += rewardItem.reward_moon_beam!;
             }
         });
-        if (!totalReward) {
-            throw new Error(`user ${userId} quest ${this.quest.id} reward amount zero`);
-        }
         return totalReward;
     }
 
@@ -108,6 +105,7 @@ export abstract class QuestBase {
             moon_beam_delta: moonBeamDelta,
             reward_taint: taint,
             corr_id: this.quest.id,
+            extra_info: extra_info,
             created_time: now,
         });
         try {

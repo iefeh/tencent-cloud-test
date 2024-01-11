@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 export function isDuplicateKeyError(error: any): boolean {
-    return error && error == 11000
+    return error && error.code == 11000
 }
 
 declare global {

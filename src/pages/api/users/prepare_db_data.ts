@@ -14,7 +14,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
     await getMongoConnection();
-    await saveQuests();
+    // await saveQuests();
     // await saveWalletTokenReward();
     // await saveWalletNftReward();
     // await saveSteamReward();
@@ -26,24 +26,24 @@ async function saveQuests() {
     const quests = [
         {
             id: uuidv4(),
-            name: "Connect Your Wallet",
+            name: "Verify Your Wallet",
             description: "Connect to your crypto wallet",
             tip: "Be sure to use the most valuable wallet to connect. MBs will be rewarded based on the value of crypto assets in your wallet.",
             type: QuestType.ConnectWallet,
             properties: null,
             reward: {
                 type: QuestRewardType.Range,
-                amount: 10,
-                max_amount: 7500,
+                amount_formatted: "Variable",
                 range_reward_ids: ["8610c3a9-6477-4bf0-9228-cf2bc0c9d965", "be3ed7bc-104b-4499-9b26-940608b11bb0"],
             },
             active: true,
+            order: 3,
             created_time: now,
             updated_time: now,
         },
         {
             id: uuidv4(),
-            name: "Connect Your Twitter",
+            name: "Verify Your Twitter",
             description: "Connect to your Twitter account.",
             tip: "",
             active: true,
@@ -52,15 +52,17 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
+            order: 5,
             created_time: now,
             updated_time: now,
         },
         {
             id: uuidv4(),
             active: true,
-            name: "Connect Your Discord",
+            name: "Verify Your Discord",
             description: "Connect to your Discord account.",
             tip: "",
             type: QuestType.ConnectDiscord,
@@ -68,8 +70,10 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
+            order: 6,
             created_time: now,
             updated_time: now,
         },
@@ -88,8 +92,10 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
+            order: 7,
             created_time: now,
             updated_time: now,
         },
@@ -107,8 +113,10 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
+            order: 8,
             created_time: now,
             updated_time: now,
         },
@@ -126,8 +134,10 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
+            order: 9,
             created_time: now,
             updated_time: now,
         },
@@ -146,25 +156,27 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
                 range_reward_ids: null,
             },
+            order: 10,
             created_time: now,
             updated_time: now,
         },
         {
             id: uuidv4(),
             active: true,
-            name: "Connect Your Steam",
+            name: "Verify Your Steam",
             description: "Step 1: Sign in with your Steam. Step 2: Set your profile to \"Public\".",
             tip: "In order to view your profile, please go to Privacy Settings and set all profile items to \"Public\".",
             type: QuestType.ConnectSteam,
             properties: null,
             reward: {
                 type: QuestRewardType.Range,
-                amount: 0,
-                max_amount: 800,
+                amount_formatted: "0-810",
                 range_reward_ids: ["bfd884ab-25ac-4095-94f6-61957dcb68a7"],
             },
+            order: 4,
             created_time: now,
             updated_time: now,
         },
@@ -183,15 +195,17 @@ async function saveQuests() {
             },
             reward: {
                 type: QuestRewardType.Fixed,
-                amount: 10,
+                amount: 100,
+                amount_formatted: "100",
                 range_reward_ids: null,
             },
+            order: 2,
             created_time: now,
             updated_time: now,
         },
         {
             id: uuidv4(),
-            active: true,
+            active: false,
             name: "AstrArk Pre-register",
             description: "Click to pre-register the AstrArk game and claim your in-game rewards.",
             tip: "",
@@ -205,7 +219,9 @@ async function saveQuests() {
             reward: {
                 type: QuestRewardType.Fixed,
                 amount: 10,
+                amount_formatted: "10",
             },
+            order: 9,
             created_time: now,
             updated_time: now,
         },
@@ -221,9 +237,9 @@ async function saveQuests() {
             },
             reward: {
                 type: QuestRewardType.Range,
-                amount: 10,
-                max_amount: 5000,
+                amount_formatted: "0-3000",
             },
+            order: 1,
             created_time: now,
             updated_time: now,
         },

@@ -2,35 +2,20 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
-import {OAuthOptions} from "@/lib/authorization/types";
-import {OAuthProvider} from "@/lib/authorization/oauth";
-import logger from "@/lib/logger/winstonLogger";
-import OAuthToken from "@/lib/models/OAuthToken";
+import {AuthorizationType} from "@/lib/authorization/types";
+import {redis} from "@/lib/redis/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    const authToken = await OAuthToken.findOne({platform_id: "1622609841528385536"});
-
-    const oauthOps: OAuthOptions = {
-        clientId: process.env.TWITTER_CLIENT_ID!,
-        clientSecret: process.env.TWITTER_CLIENT_SECRET!,
-        scope: 'offline.access tweet.read users.read follows.read like.read',
-        redirectURI: "http://127.0.0.1:3000/api/auth/callback/twitter",
-        authEndpoint: "https://twitter.com/i/oauth2/authorize",
-        tokenEndpoint: "https://api.twitter.com/2/oauth2/token",
-        enableBasicAuth: true,
-        onAccessTokenRefreshed: async newToken => {
-            logger.debug("access token refreshed:", newToken)
-        },
-        onRefreshTokenExpired: async newToken => {
-            logger.debug("access token revoked:", newToken)
-        }
-    }
-    const provider = new OAuthProvider(oauthOps);
-    // 获取绑定用户
-    const data = await provider.createRequest(authToken).get('https://api.twitter.com/2/users/me?expansions=pinned_tweet_id&user.fields=created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified');
-    console.log(data);
+    // 撤销用户的cd
+    // await redis.del([
+    //     `reconnect_cd:${AuthorizationType.Wallet}:0x58a7f8e93900a1a820b46c23df3c0d9783b24d05`,
+    //     `reconnect_cd:${AuthorizationType.Twitter}:1622609841528385536`,
+    //     `reconnect_cd:${AuthorizationType.Discord}:820332439892262912`,
+    //     `reconnect_cd:${AuthorizationType.Steam}:76561199543367461`,
+    //     `reconnect_cd:${AuthorizationType.Google}:101001953857805044141`,
+    // ]);
     res.json(response.success());
 });
 

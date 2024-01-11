@@ -9,6 +9,7 @@ import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
 import {redis} from "@/lib/redis/client";
 import {connectionCoolingDown} from "@/lib/response/response";
+import UserInvite from "@/lib/models/UserInvite";
 
 export interface ValidationResult {
     passed: boolean,
@@ -119,6 +120,15 @@ async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: Authoriz
             const opts = {session};
             await userConnection.save(opts);
             await newUser.save(opts);
+            // 添加邀请记录
+            if (authPayload.inviter_id) {
+                const invite = new UserInvite({
+                    user_id: authPayload.inviter_id,
+                    invitee_id: newUser.user_id,
+                    created_time: Date.now(),
+                });
+                await invite.save(opts);
+            }
         });
     }
     // 执行用户登录

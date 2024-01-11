@@ -7,10 +7,9 @@ import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
 import {redis} from "@/lib/redis/client";
 import {QuestType} from "@/lib/quests/types";
-import {invalidParams} from "@/lib/response/response";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
+import * as Sentry from "@sentry/nextjs";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -26,13 +25,22 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.notFound("Unknown quest."));
         return;
     }
-    switch (quest.type) {
-        case QuestType.ConnectWallet:
-            await reverifyConnectWallet(quest, req, res);
-            return;
-        default:
-            res.json(response.invalidParams("Quest does not support reverification."));
-            return;
+    try {
+        switch (quest.type) {
+            case QuestType.ConnectWallet:
+                await reverifyConnectWallet(quest, req, res);
+                return;
+            default:
+                res.json(response.invalidParams("Quest does not support reverification."));
+                return;
+        }
+    } catch (error) {
+        console.error(error);
+        Sentry.captureException(error);
+        res.json(response.success({
+            verified: false,
+            tip: "Network busy, please try again later.",
+        }));
     }
 });
 
@@ -45,29 +53,20 @@ async function reverifyConnectWallet(quest: any, req: any, res: any) {
         return;
     }
     const lockKey = `claim_quest_lock:${quest.id}:${userId}`;
-    try {
-        // 每隔10秒允许校验一次相同任务
-        const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
-        if (!locked) {
-            logger.warn(`user ${userId} reverifying quest ${quest.id} when cooling down.`);
-            res.json(response.success({
-                verified: false,
-                tip: "Verify cooling down, please try again later.",
-            }));
-            return;
-        }
-        // 尝试领取奖励
-        const questImpl = new ConnectWalletQuest(quest);
-        const result = await questImpl.reClaimReward(userId);
-        res.json(response.success(result));
-    } catch (error) {
-        console.error(error);
+    // 每隔30秒允许校验一次相同任务
+    const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
+    if (!locked) {
+        logger.warn(`user ${userId} reverifying quest ${quest.id} when cooling down.`);
         res.json(response.success({
             verified: false,
-            tip: "Network busy, please try again later.",
+            tip: "Verify cooling down, please try again later.",
         }));
+        return;
     }
-
+    // 尝试领取奖励
+    const questImpl = new ConnectWalletQuest(quest);
+    const result = await questImpl.reClaimReward(userId);
+    res.json(response.success(result));
 }
 
 // this will run if none of the above matches

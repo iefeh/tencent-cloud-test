@@ -24,6 +24,9 @@ export enum ResponseCode {
     ERROR_ACCOUNT_ALREADY_BOUND_WALLET = -14,
     ERROR_CONNECTION_COOLING_DOWN = -15,
     ERROR_EMAIL_BOUND_TO_OTHERS = -16,
+    ERROR_TOO_MANY_REQUESTS = -17,
+    ERROR_UNKNOWN_INVITE_CODE = -18,
+    ERROR_USERNAME_TOO_LONG = -19,
     // 添加对应的响应码
 }
 
@@ -42,9 +45,9 @@ const ResponseMessages = {
     // 不允许发送验证码，间隔不对或者IP受限
     [ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED]: 'Sending Captcha Temporarily Disallowed',
     // 社媒重复绑定，当前社媒已经绑定到其他账号
-    [ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND]: 'Media Already Bound To Others',
+    [ResponseCode.ERROR_ACCOUNT_DUPLICATE_BOUND]: 'The platform is already connected to another account.',
     // 当前账户已绑定对应社媒
-    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA]: 'Account Already Bound Media',
+    [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_MEDIA]: 'Account already connected the platform.',
     // 钱包签名不匹配
     [ResponseCode.ERROR_WALLET_SIGNATURE_MISMATCH]: "Wallet Signature Mismatch",
     // 钱包签名已过期
@@ -54,9 +57,15 @@ const ResponseMessages = {
     // 账户已经绑定了钱包
     [ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET]: "Account already bound wallet",
     // 重连的目标账户冷却中
-    [ResponseCode.ERROR_CONNECTION_COOLING_DOWN]: "Connection cooling down",
+    [ResponseCode.ERROR_CONNECTION_COOLING_DOWN]: "The third-party account is under a 12-hour reconnection wait.",
     // 邮件已经被其他人绑定
     [ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS]: "Email already bound to others",
+    // 请求过多
+    [ResponseCode.ERROR_TOO_MANY_REQUESTS]: "Too many requests.",
+    // 未知邀请码
+    [ResponseCode.ERROR_UNKNOWN_INVITE_CODE]: "Unknown invite code.",
+    // 昵称过长
+    [ResponseCode.ERROR_USERNAME_TOO_LONG]: "Username too long.",
     // 添加响应码对应的msg
 }
 
@@ -88,3 +97,6 @@ export const walletAlreadyBoundToOthers = build(ResponseCode.ERROR_WALLET_ALREAD
 export const accountAlreadyBoundWallet = build(ResponseCode.ERROR_ACCOUNT_ALREADY_BOUND_WALLET);
 export const connectionCoolingDown = build(ResponseCode.ERROR_CONNECTION_COOLING_DOWN);
 export const emailAlreadyBoundToOthers = build(ResponseCode.ERROR_EMAIL_BOUND_TO_OTHERS);
+export const tooManyRequests = build(ResponseCode.ERROR_TOO_MANY_REQUESTS);
+export const unknownInviteCode = build(ResponseCode.ERROR_UNKNOWN_INVITE_CODE);
+export const usernameTooLong = build(ResponseCode.ERROR_USERNAME_TOO_LONG);

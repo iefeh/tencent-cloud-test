@@ -8,12 +8,13 @@ import RobinZ from "img/about/4@2x.png";
 import PuffZ from "img/about/5@2x.png";
 import leftArrows from "img/about/arrow_1.png";
 import rightArrows from "img/about/arrow_2.png";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
 import EntertainmentSlide from "../components/home/EntertainmentSlide";
+import { scrollRef, scrollStart } from "../../hooks/scroll";
 
 interface Figure {
   img: StaticImageData;
@@ -56,7 +57,7 @@ const figureArray: Figure[] = [
     subTitle: 'Executive Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
-  <p>- Formerly Head of a game studio of the Tecent family</p>
+  <p>- Formerly Head of a game studio of the Tencent family</p>
   <p>- Bacon evangelist</p>
   <p>- Sarcastic Master</p>
   <p>- Foe of Fats for Life</p>
@@ -99,6 +100,8 @@ export default function About({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const containerRef = useRef(null);
+  const transverseRef = useRef<scrollRef>({ lastTime: 0, scrollSpeed: 0, cancelId: 0, lastScroll: 0 });
+  const longitudinalRef = useRef<scrollRef>({ lastTime: 0, scrollSpeed: 0, cancelId: 0, lastScroll: 0 });
   const isVisiable = IntersectionObserverHook({ currentRef: containerRef });
   const [curFigure, setCurFigure] = useState<Figure>(figureArray[0]);
   const [open, setOpen] = useState<boolean | null>(null);
@@ -106,6 +109,8 @@ export default function About({
   const [swiperFigure, setSwiperFigure] = useState<SwiperClass>();
 
   function onSlideScrollWrapper(swiper: SwiperClass, event: WheelEvent) {
+    scrollStart(event, longitudinalRef, swiper);
+
     if (swiper.translate === 0) {
       swiperFigure?.mousewheel.enable();
     } else {
@@ -114,12 +119,25 @@ export default function About({
   }
 
   function onSlideScroll(swiper: SwiperClass, event: WheelEvent) {
+    scrollStart(event, transverseRef, swiper);
+
     if (swiper.isEnd) {
       swiperWrapper?.mousewheel.enable();
     } else {
       swiperWrapper?.mousewheel.disable();
     }
   }
+
+
+
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      cancelAnimationFrame(transverseRef.current.cancelId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      cancelAnimationFrame(longitudinalRef.current.cancelId);
+    }
+  }, [])
 
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
@@ -139,9 +157,8 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${
-                open ? 'referralInAnim' : 'referralOutAnim'
-              } ${open === null ? 'hidden' : ''}`}
+              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${open ? 'referralInAnim' : 'referralOutAnim'
+                } ${open === null ? 'hidden' : ''}`}
             >
               <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
                 <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem] max-md:pl-8 max-md:pr-4 max-md:w-full">
@@ -249,9 +266,8 @@ export default function About({
             className="w-full friendLink_wrap bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
-                isVisiable && 'slideInAnim'
-              }`}
+              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'
+                }`}
             >
               Investors & Partners
             </div>

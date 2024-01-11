@@ -24,7 +24,7 @@ export const QuestMetrics = new Map<QuestType, Metric[]>([
     [QuestType.ConnectSteam, [Metric.SteamAccountYears, Metric.SteamAccountGameCount, Metric.SteamAccountUSDValue, Metric.SteamAccountRating]]
 ]);
 
-// 允许预备完成的任务
+// 允许预备完成的任务，前端在任务有该标识时，当用户点击任务按钮执行上报.
 export const preparedQuests = new Map<QuestType, boolean>([
     [QuestType.RetweetTweet, true],
     [QuestType.FollowOnTwitter, true],
