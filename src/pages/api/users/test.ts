@@ -4,7 +4,7 @@ import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
 import {queryUserAuth} from "@/lib/common/user";
-import {HttpsProxyGet} from "@/lib/common/request";
+import {getClientIP, HttpsProxyGet} from "@/lib/common/request";
 import Quest from "@/lib/models/Quest";
 import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
@@ -33,13 +33,13 @@ router.get(async (req, res) => {
         // const result = await questWrapper.refreshUserWalletMetric("check_user_1", "0x8728c811f93eb6ac47d375e6a62df552d62ed284");
         // console.log(result);
 
-        const asset = await WalletAsset.findOne({user_id: "155b6465-3f06-4678-a275-ad8621511942"});
-        await checkUserAsset(asset);
+        // const asset = await WalletAsset.findOne({user_id: "155b6465-3f06-4678-a275-ad8621511942"});
+        // await checkUserAsset(asset);
         // await checkUserAssets();
 
         // await loadMoonbeamIntoCache();
-
-        res.json(response.success());
+        const clientIP = getClientIP(req);
+        res.json(response.success(clientIP));
         return;
     } catch (error) {
         console.error(error)
