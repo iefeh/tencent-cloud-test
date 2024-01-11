@@ -37,6 +37,8 @@ router.get(async (req, res) => {
         // await checkUserAsset(asset);
         // await checkUserAssets();
 
+        // await loadMoonbeamIntoCache();
+
         res.json(response.success());
         return;
     } catch (error) {
@@ -44,6 +46,14 @@ router.get(async (req, res) => {
     }
     res.json(response.success());
 });
+
+
+async function loadMoonbeamIntoCache() {
+    const users = await User.find({moon_beam: {$gte: 0}}, {_id: 0, user_id: 1});
+    for (let user of users) {
+        await try2AddUser2MBLeaderboard(user.user_id);
+    }
+}
 
 
 async function checkUserAssets() {
