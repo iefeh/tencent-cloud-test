@@ -33,9 +33,11 @@ router.get(async (req, res) => {
         // const result = await questWrapper.refreshUserWalletMetric("check_user_1", "0x8728c811f93eb6ac47d375e6a62df552d62ed284");
         // console.log(result);
 
-        // const asset = await WalletAsset.findOne({user_id: "69fabaf2-d49c-4d23-aed1-8caa558c26bc"});
+        // const asset = await WalletAsset.findOne({user_id: "a61d11c8-92a9-428c-b34d-937fa18bfab8"});
         // await checkUserAsset(asset);
         // await checkUserAssets();
+
+        // await loadMoonbeamIntoCache();
 
         res.json(response.success());
         return;
@@ -44,6 +46,14 @@ router.get(async (req, res) => {
     }
     res.json(response.success());
 });
+
+
+async function loadMoonbeamIntoCache() {
+    const users = await User.find({moon_beam: {$gte: 0}}, {_id: 0, user_id: 1});
+    for (let user of users) {
+        await try2AddUser2MBLeaderboard(user.user_id);
+    }
+}
 
 
 async function checkUserAssets() {
@@ -91,44 +101,44 @@ async function checkUserAsset(asset: any) {
     console.log(`=====================================`);
     // 当前用户的差异较大
     const userId = asset.user_id;
-    console.log(`user ${userId} ${totalValue} VS ${asset.total_usd_value}`);
     const walletQuestId = "331a0cfd-0393-4c07-a7f9-91c56d709748";
     // 查找用户的奖励
-    // const audit = await UserMoonBeamAudit.findOne({
-    //     user_id: userId,
-    //     corr_id: walletQuestId,
-    //     deleted_time: null,
-    // });
-    // if (!audit) {
-    //     console.log(`user ${userId} quest audit maybe cleared`);
-    //     return;
-    // }
+    const audit = await UserMoonBeamAudit.findOne({
+        user_id: userId,
+        corr_id: walletQuestId,
+        deleted_time: null,
+    });
+    if (!audit) {
+        // console.log(`user ${userId} quest audit maybe cleared`);
+        return;
+    }
+    console.log(`user ${userId} ${totalValue} VS ${asset.total_usd_value}`);
 
-    // await doTransaction(async function (session) {
-    //     const opts = {session: session};
-    //     // 移除用户的MB奖励
-    //     await UserMoonBeamAudit.updateOne({
-    //         user_id: asset.user_id,
-    //         corr_id: walletQuestId,
-    //     }, {deleted_time: Date.now()}, opts);
-    //     // 移除用户的任务达成
-    //     await QuestAchievement.deleteOne({user_id: userId, quest_id: walletQuestId}, opts);
-    //     // 移除用户的任务指标
-    //     await UserMetrics.updateOne({user_id: userId}, {
-    //         $unset: {
-    //             wallet_asset_id: "",
-    //             wallet_asset_usd_value: "",
-    //             wallet_asset_value_last_refresh_time: "",
-    //             wallet_nft_usd_value: "",
-    //             wallet_token_usd_value: ""
-    //         }
-    //     }, opts);
-    //     // 减少用户的MB
-    //     await User.updateOne({user_id: userId}, {$inc: {moon_beam: -audit.moon_beam_delta}}, opts);
-    // });
-    // // 重新加载用户的MB记录
-    // await try2AddUser2MBLeaderboard(userId);
-    // console.log(`user ${userId} data cleared.`);
+    await doTransaction(async function (session) {
+        const opts = {session: session};
+        // 移除用户的MB奖励
+        await UserMoonBeamAudit.updateOne({
+            user_id: asset.user_id,
+            corr_id: walletQuestId,
+        }, {deleted_time: Date.now()}, opts);
+        // 移除用户的任务达成
+        await QuestAchievement.deleteOne({user_id: userId, quest_id: walletQuestId}, opts);
+        // 移除用户的任务指标
+        await UserMetrics.updateOne({user_id: userId}, {
+            $unset: {
+                wallet_asset_id: "",
+                wallet_asset_usd_value: "",
+                wallet_asset_value_last_refresh_time: "",
+                wallet_nft_usd_value: "",
+                wallet_token_usd_value: ""
+            }
+        }, opts);
+        // 减少用户的MB
+        await User.updateOne({user_id: userId}, {$inc: {moon_beam: -audit.moon_beam_delta}}, opts);
+    });
+    // 重新加载用户的MB记录
+    await try2AddUser2MBLeaderboard(userId);
+    console.log(`user ${userId} data cleared.`);
 }
 
 

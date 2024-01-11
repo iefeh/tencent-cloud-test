@@ -231,7 +231,7 @@ export class ConnectWalletQuest extends QuestBase {
             return sum + nftVal * nft.amount;
         }, 0);
         totalNFTValue = Number(totalNFTValue.toFixed(2));
-        if (totalNFTValue > 10000000) {
+        if (totalNFTValue > 1000000) {
             Sentry.captureMessage(`user ${userId} wallet ${wallet} suspicious total NFT value ${totalNFTValue}`);
         }
         const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));

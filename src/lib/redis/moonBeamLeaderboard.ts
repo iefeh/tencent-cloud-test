@@ -51,15 +51,16 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
     }
     if (userId) {
         // 查询用户排名
-        // let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
-        // 查询用户的mb值
-        let userScore = await redis.zscore("moon_beam_lb", userId);
-        if (userScore) {
+        let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
+        if (userRank) {
             // 用户存在排名时，设置用户的排名信息
-            // userRank = Number(userRank) + 1;
+            userRank = Number(userRank) + 1;
+            // 查询用户的mb值
+            let userScore = await redis.zscore("moon_beam_lb", userId);
             const me = userMap.get(userId);
             if (me) {
                 // me.rank = userRank;
+                me.is_top50 = userRank <= 50;
                 me.moon_beam = Number(userScore);
                 lb.me = me;
             }

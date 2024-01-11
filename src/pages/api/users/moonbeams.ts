@@ -61,6 +61,11 @@ async function paginationUserMoonbeams(userId: string, pageNum: number, pageSize
             }
         },
         {
+            $sort: {
+                created_time: -1
+            }
+        },
+        {
             $project: {
                 _id: 0,
                 type: 1,
