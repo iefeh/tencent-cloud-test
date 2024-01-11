@@ -196,8 +196,10 @@ export class ConnectWalletQuest extends QuestBase {
                 userMetric: null,
             };
         }
+        logger.debug(`querying user token data.`);
         const debank = new Debank(process.env.DEBANK_ACCESS_KEY);
         const tokenData = await debank.user.total_balance({id: wallet})
+        logger.debug(`got user ${userId} wallet ${wallet} total balance ${tokenData.total_usd_value}.`);
         // 检查用户资产的NFT价值
         allowed = await retryAllowToSendRequest2Debank(3);
         if (!allowed) {
@@ -207,6 +209,7 @@ export class ConnectWalletQuest extends QuestBase {
                 userMetric: null,
             };
         }
+        logger.debug(`querying user nft data.`);
         // 各字段含义：https://docs.cloud.debank.com/en/readme/api-pro-reference/user#returns-10
         const nftData = await debank.user.all_nft_list({
             id: wallet,
@@ -217,6 +220,7 @@ export class ConnectWalletQuest extends QuestBase {
         const tokens = tokenData.chain_list.filter((token: WalletToken) => token.usd_value > 0);
         // 要求用户的NFT价值至少大于1刀
         const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price >= 1);
+        logger.debug(`got user ${userId} wallet ${wallet} nft count ${nfts.length}.`);
         let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
             // 如果NFT的数量超过100，且NFT的单价不超过20则过滤
             if (nft.amount > 100 && nft.usd_price < 20) {

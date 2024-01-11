@@ -14,7 +14,12 @@ import {timeoutInterceptor} from "@/lib/middleware/timeout";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).post(async (req, res) => {
+const defaultErrorResponse = {
+    verified: false,
+    tip: "Network busy, please try again later.",
+}
+
+router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse)).post(async (req, res) => {
     const {quest_id} = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
@@ -58,10 +63,7 @@ router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).post(asy
     } catch (error) {
         console.error(error);
         Sentry.captureException(error);
-        res.json(response.success({
-            verified: false,
-            tip: "Network busy, please try again later.",
-        }));
+        res.status(500).json(defaultErrorResponse);
     }
 });
 
