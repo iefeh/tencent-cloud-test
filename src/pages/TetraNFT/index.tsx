@@ -14,7 +14,7 @@ export default function TetraNFT() {
           <title>NFT | Moonveil Entertainment</title>
         </Head>
 
-        <div className="page-container w-full">
+        <div className="page-container w-full px-16 lg:px-0">
           <IndexScreen />
 
           <TrifleScren />

@@ -45,13 +45,18 @@ export default function TrifleScren() {
   return (
     <div
       ref={descRef}
-      className="w-full bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000] pt-[9.0625rem] px-8"
+      className="w-full bg-black flex flex-col justify-center items-center shadow-[0_-2rem_4rem_4rem_#000] pt-[9.0625rem]"
     >
       <PageDesc
         needAni={visible}
         baseAniTY
         className="w-full text-center items-center"
-        title="Collect, Synthesize and Upgrade"
+        // title="Collect, Synthesize and Upgrade"
+        title={
+          <div className="font-semakin">
+            <div className="text-[3rem] lg:text-[6.25rem]">Collect, Synthesize and Upgrade</div>
+          </div>
+        }
         subtitle={
           <>
             <div className="max-w-full w-[54rem] font-decima text-lg">
@@ -142,7 +147,7 @@ export default function TrifleScren() {
         })}
       </div>
 
-      <BasicButton className="mt-[8.1875rem]" label="Get Involved" />
+      <BasicButton className="mt-[8.1875rem]" label="Get Involved" link="/LoyaltyProgram/earn" />
     </div>
   );
 }

@@ -47,7 +47,7 @@ export default function MainTitle() {
   return (
     <div
       className={
-        'page-tetra-nft-main-title fixed left-0 top-0 z-10 w-full h-screen flex justify-center items-center ' +
+        'page-tetra-nft-main-title fixed left-0 top-0 z-10 w-full h-screen flex justify-center items-center px-8 lg:px-0 ' +
         (descVisible.current || isAniRunning ? 'block' : 'hidden')
       }
     >
@@ -66,7 +66,7 @@ export default function MainTitle() {
           title={
             <div className="font-semakin text-center">
               <div className="text-4xl">Introducing The</div>
-              <div className="text-[6.25rem]">TETRA NFT Series</div>
+              <div className="text-[4rem] lg:text-[6.25rem]">TETRA NFT Series</div>
             </div>
           }
         />
