@@ -26,7 +26,7 @@ export default function IndexScreen() {
     <div className="page-tetra-nft-index-screen w-full">
       <div className="w-full h-screen relative flex justify-center items-center"></div>
 
-      <div className="w-full h-screen flex justify-center items-center">
+      <div className="w-full h-screen flex justify-center items-center px-8">
         <div className="w-[48.1875rem] font-decima text-lg text-justify">
           <div>
             Introducing the TETRA NFT Series, the groundbreaking and strategic ecosystem NFTs by Moonveil. The

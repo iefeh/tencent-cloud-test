@@ -47,8 +47,8 @@ export default function PrivilegeScreen() {
   }, [currentIndex]);
 
   return (
-    <div className="screen-privilege w-full bg-black flex flex-col justify-center items-center pt-[21.3125rem] pb-[17.375rem] relative">
-      <div className="bg-box absolute left-0 top-0 w-full h-full">
+    <div className="screen-privilege w-full bg-black flex flex-col justify-center items-center pt-[21.3125rem] pb-2 lg:pb-[17.375rem] relative px-8">
+      <div className="bg-box absolute left-0 top-0 w-full h-full hidden lg:block">
         <div className="top-box absolute top-0 left-1/2 -translate-x-1/2">
           <Image className="w-[55rem] h-[55rem]" src={topBgImg} alt="" />
 
@@ -93,7 +93,7 @@ export default function PrivilegeScreen() {
             height: cardContainerHeight,
           }}
         >
-          <div ref={cardsContainerRef} className="flex justify-center">
+          <div ref={cardsContainerRef} className="flex flex-col lg:flex-row items-center lg:items-start justify-center mr-16 lg:mr-0">
             <div className="cards relative w-[22.75rem] h-[27.75rem]">
               {TrifleCards.map(({ isActive, activeImg, inactiveImg }, index) => (
                 <CSSTransition
@@ -116,7 +116,7 @@ export default function PrivilegeScreen() {
               ))}
             </div>
 
-            <div className="pl-[6.25rem] ml-[5.375rem] border-l border-[rgba(246,199,153,0.2)] h-full">
+            <div className="lg:pl-[6.25rem] lg:ml-[5.375rem] lg:border-l mt-8 lg:mt-0 border-[rgba(246,199,153,0.2)] h-full">
               <div className="title font-semakin text-3xl text-basic-yellow mb-[3.375rem]">
                 Privileges of Destiny TETRA
               </div>
@@ -125,7 +125,7 @@ export default function PrivilegeScreen() {
             </div>
           </div>
 
-          <div className="rocket absolute right-0 top-[6.25rem] font-poppins-medium text-sm mr-[3rem] z-0">
+          <div className="rocket absolute right-0 top-1/2 lg:top-[6.25rem] font-poppins-medium text-sm mr-2 lg:mr-[3rem] z-10">
             {TrifleCards.map(({ rocketLevelText, rocketTitle }, index) => (
               <div
                 key={index}
@@ -159,7 +159,7 @@ export default function PrivilegeScreen() {
           </div>
         </div>
 
-        <div className="font-decima text-base w-[62.5rem] pt-6 pr-[2.375rem] pb-[2.1875rem] pl-[1.9375rem] border border-[#3E3123] rounded-[1.25rem] bg-[rgba(246,199,153,0.06)] text-justify mt-[7.25rem]">
+        <div className="font-decima text-base w-[62.5rem] pt-6 pr-[2.375rem] pb-[2.1875rem] pl-[1.9375rem] border border-[#3E3123] rounded-[1.25rem] bg-[rgba(246,199,153,0.06)] text-justify mt-[7.25rem] max-w-full">
           In the future, securing an upgraded Level II Eternity TETRA NFT or Level III Infinity TETRA NFT will
           exponentially boost your benefits and unlock a more diverse range of gameplay and reward.
         </div>
