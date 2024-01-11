@@ -38,7 +38,7 @@ const MBHistoryButton = function () {
       setPagiTotal(Math.ceil((+total || 0) / pageSize));
       setItems(quests || []);
     } catch (error: any) {
-      toast.error(error?.message || error);
+      // toast.error(error?.message || error);
       console.log(error);
     }
   }

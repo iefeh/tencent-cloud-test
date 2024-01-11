@@ -91,7 +91,8 @@ const SocialMediaAccounts = function () {
       onClose();
       getUserInfo();
     } catch (error: any) {
-      toast.error(error?.message || error);
+      // toast.error(error?.message || error);
+      console.log(error);
     } finally {
       setDisconnectLoading(false);
     }
