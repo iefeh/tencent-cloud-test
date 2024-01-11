@@ -40,9 +40,6 @@ export default function useConnect(type: string, callback?: (args?: any) => void
         'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
       );
       dialogWindowRef.current = dialog;
-      dialog?.addEventListener('close', () => {
-        dialogWindowRef.current = null;
-      });
     }, 0);
   }
 

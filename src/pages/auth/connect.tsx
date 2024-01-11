@@ -1,8 +1,8 @@
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
-import { useEffect } from 'react';
+import { startTransition } from 'react';
 
 export default function Auth() {
-  useEffect(() => {
+  startTransition(() => {
     const query = new URLSearchParams(location.search);
     const type = query.get('type') || '';
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
@@ -13,7 +13,7 @@ export default function Auth() {
     tokens[type] = obj;
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
     window.close();
-  }, []);
+  });
 
   return null;
 }

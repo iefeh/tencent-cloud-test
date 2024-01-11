@@ -1,8 +1,8 @@
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN } from '@/constant/storage';
-import { useEffect } from 'react';
+import { startTransition } from 'react';
 
 export default function Auth() {
-  useEffect(() => {
+  startTransition(() => {
     const query = new URLSearchParams(location.search);
     const token = query.get('token') || '';
     const jwt = query.get('particle_jwt') || '';
@@ -21,7 +21,7 @@ export default function Auth() {
     localStorage.save(KEY_AUTHORIZATION_AUTH, tokens);
 
     window.close();
-  }, []);
+  });
 
   return null;
 }
