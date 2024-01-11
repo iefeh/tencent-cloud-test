@@ -86,6 +86,7 @@ export type mbLeaderboardUser = {
     username: string;
     avatar_url: string;
     moon_beam: number;
+    is_top50: boolean;
 }
 
 export type mbLeaderboard = {
