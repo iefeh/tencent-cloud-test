@@ -13,6 +13,7 @@ import {validateCallbackState} from "@/lib/authorization/provider/util";
 // import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
 import {da} from "date-fns/locale";
+import getMongoConnection from "@/lib/mongodb/client";
 
 const SteamWebAPI = require('steamapi');
 
@@ -24,10 +25,21 @@ const OPENID_CHECK = {
 
 export async function generateAuthorizationURL(req: any, res: any) {
     // 检查用户的授权落地页
-    const landing_url = req.query.landing_url as string;
-    if (!req.query.landing_url) {
+    const {landing_url, invite_code} = req.query;
+    if (!landing_url) {
         res.json(response.invalidParams());
         return;
+    }
+
+    // 检查注册邀请码
+    await getMongoConnection();
+    let inviter: any;
+    if (!req.userId && invite_code) {
+        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        if (!inviter) {
+            res.json(response.unknownInviteCode());
+            return
+        }
     }
 
     // 生成授权的状态字段
@@ -36,6 +48,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
         landing_url: landing_url,
         flow: currFlow,
         authorization_user_id: req.userId,
+        inviter_id: inviter ? inviter.user_id : undefined,
     };
     const state = uuidv4();
     await redis.setex(`authorization_state:${AuthorizationType.Steam}:${state}`, 60 * 60 * 12, JSON.stringify(payload));

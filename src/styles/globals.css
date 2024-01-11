@@ -6,6 +6,7 @@
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
   --basic-yellow: #f6c799;
+  background-color: #000;
 }
 
 body {
@@ -108,4 +109,12 @@ body {
       font-size: 3rem;
     }
   }
+}
+
+*::-webkit-scrollbar{
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
 }

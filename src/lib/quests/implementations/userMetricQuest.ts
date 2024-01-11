@@ -2,6 +2,7 @@ import {QuestBase} from "@/lib/quests/implementations/base";
 import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, UserMetric} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
+import logger from "@/lib/logger/winstonLogger";
 
 
 export class UserMetricQuest extends QuestBase {
@@ -48,6 +49,13 @@ export class UserMetricQuest extends QuestBase {
         // 污染用户，确保同一个用户单任务只能获取一次奖励
         const taint = `${this.quest.id},user,${userId}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
+        if (!rewardDelta) {
+            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
+            return {
+                verified: false,
+                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
+            }
+        }
         const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {
             return {

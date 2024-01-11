@@ -14,8 +14,9 @@ export const allowToSendCaptcha = async (captchaTyp: CaptchaType, email: string,
         return false;
     }
     // 检查IP当天发送次数
-    const ipRes = await limiter.allowPerHour(`email_captcha:${ip}`, 30, 24);
-    return ipRes.allowed > 0
+    // const ipRes = await limiter.allowPerHour(`email_captcha:${ip}`, 30, 24);
+    // return ipRes.allowed > 0
+    return true;
 }
 
 // 获取debank请求权限

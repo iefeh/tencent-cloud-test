@@ -1,3 +1,4 @@
+import MyBadges from "@/pages/Profile/components/MyBadges";
 import DailyCheckIn from "./DailyCheckIn";
 import Invite from "./Invite";
 
@@ -10,6 +11,8 @@ export default function EarnBanner() {
         {/* <DailyCheckIn /> */}
 
         <Invite />
+
+        <MyBadges />
       </div>
     </div>
   );

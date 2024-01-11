@@ -3,25 +3,28 @@ import { MobxContext } from '@/pages/_app';
 import UserAvatar from './UserAvatar';
 import BasicButton from './BasicButton';
 import LoginModal from './LoginModal';
-import { cn, useDisclosure } from '@nextui-org/react';
+import { observer } from 'mobx-react-lite';
 
-export default function UserInfo() {
-  const { userInfo } = useContext(MobxContext);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+const UserInfo = function () {
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
 
   return (
     <>
       {userInfo ? (
         <UserAvatar />
       ) : (
-        <BasicButton
-          className="text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8"
-          label="login"
-          onClick={onOpen}
-        />
-      )}
+        <>
+          <BasicButton
+            className="text-[14px] leading-[20px] px-[18px] rounded-[24px] mr-8"
+            label="login"
+            onClick={toggleLoginModal}
+          />
 
-      <LoginModal isOpen={isOpen} onOpenChange={onOpenChange} />
+          <LoginModal />
+        </>
+      )}
     </>
   );
-}
+};
+
+export default observer(UserInfo);
