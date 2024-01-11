@@ -111,7 +111,7 @@ const Rank = function () {
       <div className="flex flex-col w-[25.625rem] h-[14.6875rem] overflow-hidden">
         {/* My Rank */}
         {myRankInfo && (
-          <MyRanking className="rounded-t-[2.25rem]" rank={myRankInfo.rank} points={myRankInfo.moon_beam} />
+          <MyRanking className="rounded-t-[2.25rem]" rank={myRankInfo.rank} points={myRankInfo.moon_beam} is_top50={myRankInfo.is_top50} />
         )}
 
         <div
