@@ -1,3 +1,4 @@
+import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
 import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
@@ -15,7 +16,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  function authConnect() {
+  const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
     if (!tokens[type]) return;
     dialogWindowRef.current?.close();
@@ -23,14 +24,12 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     const { code, msg } = tokens[type] || {};
     if (+code === 1) {
       callback?.();
-    } else if (+code === -15 && msg === 'Connection cooling down') {
-      toast.error('The third-party account is under a 12-hour reconnection wait.');
     } else if (msg) {
       toast.error(msg);
     }
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
-  }
+  }, 300);
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {

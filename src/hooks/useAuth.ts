@@ -1,3 +1,4 @@
+import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
 import { connectMediaAPI, connectWalletAPI, loginByMediaAPI, loginByWalletAPI } from '@/http/services/login';
@@ -16,7 +17,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
   const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
-  function authConnect() {
+  const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_AUTH) || {};
     if (!tokens[type]) return;
     const { code, msg } = tokens[type] || {};
@@ -42,7 +43,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     if (!dialogWindowRef.current) return;
     dialogWindowRef.current.close();
     dialogWindowRef.current = null;
-  }
+  }, 300);
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {
