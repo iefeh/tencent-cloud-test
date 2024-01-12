@@ -17,7 +17,7 @@ const router = createRouter<NextApiRequest, NextApiResponse>();
 router.post(async (req, res) => {
     const {email, captcha, invite_code} = req.body;
     if (!email || !captcha) {
-        logger.warn(req.body);
+        console.log("request body:", req.body);
         res.json(response.invalidParams());
         return
     }
