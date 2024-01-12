@@ -12,13 +12,14 @@ interface Props {
   label: string;
   icon?: string | StaticImageData;
   loading?: boolean;
+  disabled?: boolean;
   callback?: () => void;
   onClick?: () => void;
 }
 
 export default function LoginButton(props: Props) {
   const { getUserInfo } = useContext(MobxContext);
-  const { type, className, label, icon, onClick, callback } = props;
+  const { type, className, label, icon, disabled, onClick, callback } = props;
 
   const { onConnect } = useAuth(type, () => {
     getUserInfo();
@@ -31,6 +32,7 @@ export default function LoginButton(props: Props) {
         'h-[3.125rem] rounded-base border-[#252525] hover:shadow-none font-poppins-medium normal-case',
         className,
       ])}
+      disabled={disabled}
       label={label}
       prefix={icon ? <Image className="inline-block w-[1.625rem] h-[1.625rem] mr-2" src={icon} alt="" /> : undefined}
       onClick={onClick || onConnect}

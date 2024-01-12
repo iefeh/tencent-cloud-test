@@ -47,7 +47,7 @@ export default function UserProfile(props: Props) {
   return (
     <div className={cn(['inline-flex items-center', className])}>
       <div className={cn(['relative rounded-full overflow-hidden', avatarClassName])}>
-        <Image className="object-cover" src={avatar_url} alt="" fill />
+        <Image className="object-cover" src={avatar_url} alt="" fill crossOrigin="anonymous" />
       </div>
 
       <div className="ml-4 font-poppins flex flex-col">

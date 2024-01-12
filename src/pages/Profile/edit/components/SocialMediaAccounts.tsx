@@ -91,7 +91,8 @@ const SocialMediaAccounts = function () {
       onClose();
       getUserInfo();
     } catch (error: any) {
-      toast.error(error?.message || error);
+      // toast.error(error?.message || error);
+      console.log(error);
     } finally {
       setDisconnectLoading(false);
     }
@@ -136,6 +137,7 @@ const SocialMediaAccounts = function () {
       </div>
 
       <Modal
+        placement="center"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] flex-row' }}
