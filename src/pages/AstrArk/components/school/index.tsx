@@ -30,9 +30,9 @@ export default function AstrArkSchool() {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_400px)] flex-col justify-center items-center min-[768px]:max-[2399px]:flex hidden relative top-[20vh]"
+        className="luxy-el w-full h-[calc(100vh_+_540px)] flex-col justify-center items-center min-[768px]:max-[2399px]:flex hidden relative top-[20vh]"
         data-speed-y="4"
-        data-offset="-440"
+        data-offset="-480"
       >
         {Content}
       </div>
