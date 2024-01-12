@@ -6,13 +6,13 @@ import {UserContextRequest} from "@/lib/middleware/auth";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
-    console.log("Received request:", {
-        url: req.url,
-        method: req.method,
-        headers: req.headers,
-        body: req.body
-    });
-    res.json(response.success());
+    // console.log("Received request:", {
+    //     url: req.url,
+    //     method: req.method,
+    //     headers: req.headers,
+    //     body: req.body
+    // });
+    res.json(req.body);
 });
 
 // this will run if none of the above matches
