@@ -147,7 +147,11 @@ export default function SchoolDesc() {
   useLayoutEffect(() => {
     if (sketch.current) return;
 
-    initSketch();
+    try {
+      initSketch();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   useEffect(() => {

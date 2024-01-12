@@ -10,15 +10,18 @@ import {
   ScrollShadow,
   useDisclosure,
 } from '@nextui-org/react';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
 import { MBHistoryRecord, queryMBHistoryListAPI } from '@/http/services/profile';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import PaginationRenderItem from '@/pages/LoyaltyProgram/earn/components/TaskTabs/components/PaginationRenderItem';
+import { observer } from 'mobx-react-lite';
+import { MobxContext } from '@/pages/_app';
 
-export default function MBHistoryButton() {
+const MBHistoryButton = function () {
+  const { userInfo } = useContext(MobxContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [items, setItems] = useState<MBHistoryRecord[]>([]);
   const pagiInfo = useRef<PagiInfo>({ pageIndex: 1, pageSize: 10 });
@@ -35,7 +38,7 @@ export default function MBHistoryButton() {
       setPagiTotal(Math.ceil((+total || 0) / pageSize));
       setItems(quests || []);
     } catch (error: any) {
-      toast.error(error?.message || error);
+      // toast.error(error?.message || error);
       console.log(error);
     }
   }
@@ -52,14 +55,26 @@ export default function MBHistoryButton() {
   }
 
   useEffect(() => {
+    if (!userInfo) {
+      setItems([]);
+      setPagiTotal(0);
+      Object.assign(pagiInfo.current, { pageIndex: 1, pageSize: 10 });
+      return;
+    }
+
     queryItems();
-  }, []);
+  }, [userInfo]);
 
   return (
     <>
       <LGButton label="Moon Beams History >>" actived onClick={onOpen} />
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ base: 'bg-[#070707] !rounded-base' }}>
+      <Modal
+        placement="center"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        classNames={{ base: 'bg-[#070707] !rounded-base' }}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -115,4 +130,6 @@ export default function MBHistoryButton() {
       </Modal>
     </>
   );
-}
+};
+
+export default observer(MBHistoryButton);

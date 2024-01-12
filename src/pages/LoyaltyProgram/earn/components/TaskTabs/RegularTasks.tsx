@@ -117,20 +117,6 @@ function RegularTasks() {
     setTasks(list);
   }
 
-  function getRewardText(reward: TaskReward) {
-    const { amount, type, max_amount, min_amount } = reward || {};
-    if (!reward || isNaN(amount)) return '???';
-
-    switch (type) {
-      case QuestRewardType.Fixed:
-        return `${amount} MBs`;
-      case QuestRewardType.Range:
-        return max_amount ? `${max_amount} MBs Max` : `${min_amount} MBs Max`;
-      default:
-        return '???';
-    }
-  }
-
   function onPagiChange(page: number) {
     if (page === pagiInfo.current.pageIndex) return;
 
@@ -229,7 +215,10 @@ function RegularTasks() {
           if (res.tip) toast.success(res.tip);
           updateTask();
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (error.tip) {
+          toast.error(error.tip);
+        }
         console.log(error);
       } finally {
         setVerifyLoading(false);
@@ -280,6 +269,7 @@ function RegularTasks() {
         />
 
         <Modal
+          placement="center"
           backdrop="blur"
           isOpen={isOpen}
           onOpenChange={onOpenChange}
@@ -379,7 +369,10 @@ function RegularTasks() {
             <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
             {task.tip && (
               <div className="flex items-center relative">
-                <div className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis">{task.tip}</div>
+                <div
+                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis"
+                  dangerouslySetInnerHTML={{ __html: task.tip }}
+                ></div>
                 {needEllipsis && (
                   <div
                     className="text-basic-yellow shrink-0 cursor-pointer leading-6 border-b-1 border-basic-yellow"
@@ -389,9 +382,11 @@ function RegularTasks() {
                   </div>
                 )}
 
-                <div ref={shadowTextRef} className="absolute invisible w-max whitespace-nowrap">
-                  {task.tip}
-                </div>
+                <div
+                  ref={shadowTextRef}
+                  className="absolute invisible w-max whitespace-nowrap"
+                  dangerouslySetInnerHTML={{ __html: task.tip }}
+                ></div>
               </div>
             )}
           </div>
@@ -401,7 +396,7 @@ function RegularTasks() {
               <Image className="w-8 h-8" src={mbImg} alt="" />
 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-                {getRewardText(task.reward)}
+                {task.reward.amount_formatted} MBs
               </span>
             </div>
 
@@ -420,7 +415,7 @@ function RegularTasks() {
           >
             <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
               <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
-              <div className="text-sm text-[#999] mt-[0.625rem]">{task.tip}</div>
+              <div className="text-sm text-[#999] mt-[0.625rem]" dangerouslySetInnerHTML={{ __html: task.tip }}></div>
             </div>
 
             <Image

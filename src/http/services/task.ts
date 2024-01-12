@@ -13,6 +13,7 @@ export interface TaskReward {
   amount: number;
   max_amount: number;
   min_amount: number;
+  amount_formatted: string;
 }
 
 export interface TaskListItem {
@@ -65,6 +66,7 @@ export interface LeaderBoardItem {
   avatar_url: string;
   rank: number;
   moon_beam: number;
+  is_top50?: boolean;
 }
 
 interface LeaderBoardRank {

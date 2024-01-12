@@ -36,8 +36,16 @@ axios.interceptors.response.use((res) => {
         break;
       }
     }
-    // throw new Error(data.msg);
-    if (data.msg) toast.error(data.msg);
+    if (data.msg) {
+      toast.error(data.msg);
+    }
+    
+    if (Math.floor(res.status / 100) !== 2 && data.msg) {
+      toast.error(data.msg);
+      return data;
+    } else {
+      return Promise.reject(data);
+    }
   }
 
   return data.data;
