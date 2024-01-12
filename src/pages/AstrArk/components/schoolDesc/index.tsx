@@ -12,8 +12,6 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { throttle } from 'lodash';
 
 export default function SchoolDesc() {
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const bgContainerRef = useRef<HTMLDivElement>(null);
   const sketch = useRef<Sketch>();
@@ -100,11 +98,6 @@ export default function SchoolDesc() {
     });
   }
 
-  function setSize() {
-    setWidth(window.innerWidth);
-    setHeight(window.innerHeight);
-  }
-
   function switchSketch(index: number) {
     if (activeIndex === 0 && isTouchedBottom) {
       document.documentElement.style.overflow = 'hidden';
@@ -137,13 +130,6 @@ export default function SchoolDesc() {
   function onSwiperWheel(e: WheelEvent) {
     e.stopPropagation();
   }
-
-  useLayoutEffect(() => {
-    setSize();
-
-    window.addEventListener('resize', setSize);
-    return () => window.removeEventListener('resize', setSize);
-  }, []);
 
   useLayoutEffect(() => {
     if (sketch.current) return;
