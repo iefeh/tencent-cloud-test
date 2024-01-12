@@ -4,7 +4,7 @@ import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
 import {queryUserAuth} from "@/lib/common/user";
-import {HttpsProxyGet} from "@/lib/common/request";
+import {getClientIP, HttpsProxyGet} from "@/lib/common/request";
 import Quest from "@/lib/models/Quest";
 import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
@@ -15,6 +15,9 @@ import QuestAchievement from "@/lib/models/QuestAchievement";
 import UserMetrics from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import {allowIP2VerifyWalletAsset} from "@/lib/redis/ratelimit";
+import logger from "@/lib/logger/winstonLogger";
+import {redis} from "@/lib/redis/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -33,17 +36,55 @@ router.get(async (req, res) => {
         // const result = await questWrapper.refreshUserWalletMetric("check_user_1", "0x8728c811f93eb6ac47d375e6a62df552d62ed284");
         // console.log(result);
 
-        // const asset = await WalletAsset.findOne({user_id: "69fabaf2-d49c-4d23-aed1-8caa558c26bc"});
+        // const asset = await WalletAsset.findOne({user_id: "155b6465-3f06-4678-a275-ad8621511942"});
         // await checkUserAsset(asset);
         // await checkUserAssets();
+
+        // await loadMoonbeamIntoCache();
+
+        // await refreshUserMoonbeamCache();
 
         res.json(response.success());
         return;
     } catch (error) {
-        console.error(error)
+        logger.error(error)
     }
     res.json(response.success());
 });
+
+async function refreshUserMoonbeamCache() {
+    const limit = 2000; // 每页显示的记录数，可以根据需要调整
+    let skip = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+        const users = await User.find({moon_beam: {$gt: 0}}, {
+            _id: 0,
+            moon_beam: 1,
+            user_id: 1
+        }).skip(skip).limit(limit);
+
+        // 处理当前批次的记录
+        for (let user of users) {
+            // console.log(user);
+            // throw new Error(`test interrupted`);
+            redis.zadd("moon_beam_lb", user.moon_beam, user.user_id);
+        }
+        // 更新 skip 值，准备读取下一页
+        skip += users.length;
+        // 检查是否还有更多记录
+        if (users.length < limit) {
+            hasMore = false;
+        }
+    }
+}
+
+async function loadMoonbeamIntoCache() {
+    const users = await User.find({moon_beam: {$gte: 0}}, {_id: 0, user_id: 1});
+    for (let user of users) {
+        await try2AddUser2MBLeaderboard(user.user_id);
+    }
+}
 
 
 async function checkUserAssets() {
@@ -72,6 +113,7 @@ async function checkUserAsset(asset: any) {
     // 要求用户的NFT价值至少大于1刀
     const nfts = asset.nfts.filter((nft: WalletNFT) => nft.usd_price >= 1);
     let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
+        console.log(nft.usd_price, "   ", nft.amount);
         // 如果NFT的数量超过100，且NFT的单价不超过20则过滤
         if (nft.amount > 100 && nft.usd_price < 20) {
             return sum;
@@ -84,26 +126,26 @@ async function checkUserAsset(asset: any) {
     totalNFTValue = Number(totalNFTValue.toFixed(2));
     const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));
     // 检查总价值差距
-    const valueDiff = Math.abs(asset.total_usd_value - totalValue);
-    if (valueDiff < 1000) {
-        return;
-    }
-    console.log(`=====================================`);
-    // 当前用户的差异较大
-    const userId = asset.user_id;
-    console.log(`user ${userId} ${totalValue} VS ${asset.total_usd_value}`);
-    const walletQuestId = "331a0cfd-0393-4c07-a7f9-91c56d709748";
-    // 查找用户的奖励
+    // const valueDiff = Math.abs(asset.total_usd_value - totalValue);
+    // if (valueDiff < 1000) {
+    //     return;
+    // }
+    // console.log(`=====================================`);
+    // // 当前用户的差异较大
+    // const userId = asset.user_id;
+    // const walletQuestId = "331a0cfd-0393-4c07-a7f9-91c56d709748";
+    // // 查找用户的奖励
     // const audit = await UserMoonBeamAudit.findOne({
     //     user_id: userId,
     //     corr_id: walletQuestId,
     //     deleted_time: null,
     // });
     // if (!audit) {
-    //     console.log(`user ${userId} quest audit maybe cleared`);
+    //     // console.log(`user ${userId} quest audit maybe cleared`);
     //     return;
     // }
-
+    // console.log(`user ${userId} ${totalValue} VS ${asset.total_usd_value}`);
+    //
     // await doTransaction(async function (session) {
     //     const opts = {session: session};
     //     // 移除用户的MB奖励

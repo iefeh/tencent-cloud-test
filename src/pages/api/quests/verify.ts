@@ -11,10 +11,17 @@ import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 import * as Sentry from "@sentry/nextjs";
 import {errorInterceptor} from "@/lib/middleware/error";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
+import {QuestType} from "@/lib/quests/types";
+import {addWalletVerificationCDForIP, checkWalletVerificationCDForIP} from "@/lib/redis/verifyWallet";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).post(async (req, res) => {
+const defaultErrorResponse = {
+    verified: false,
+    tip: "Network busy, please try again later.",
+}
+
+router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse, 15000)).post(async (req, res) => {
     const {quest_id} = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
@@ -45,25 +52,34 @@ router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).post(asy
         if (!locked) {
             res.json(response.success({
                 verified: false,
-                tip: "Verify cooling down, please try again later.",
+                tip: "Verification is under a 30s waiting period, please try again later.",
             }));
             return;
+        }
+        // 钱包资产任务需要额外检查CD
+        if (quest.type == QuestType.ConnectWallet) {
+            const verifiable = await checkWalletVerificationCDForIP(req, res);
+            if (!verifiable) {
+                return;
+            }
         }
         // 申领任务奖励
         const result = await questImpl.claimReward(userId);
         if (result.claimed_amount && result.claimed_amount > 0) {
             await try2AddUser2MBLeaderboard(userId);
         }
+        // 钱包资产任务添加检查CD
+        if (quest.type == QuestType.ConnectWallet) {
+            await addWalletVerificationCDForIP(req);
+        }
         res.json(response.success(result));
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         Sentry.captureException(error);
-        res.json(response.success({
-            verified: false,
-            tip: "Network busy, please try again later.",
-        }));
+        res.status(500).json(defaultErrorResponse);
     }
 });
+
 
 // this will run if none of the above matches
 router.all((req, res) => {

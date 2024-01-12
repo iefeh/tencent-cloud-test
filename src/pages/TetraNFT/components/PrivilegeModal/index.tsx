@@ -6,6 +6,7 @@ import BasicButton from '@/pages/components/common/BasicButton';
 import { TrifleCards } from '@/constant/card';
 import closeImg from 'img/nft/trifle/close.png';
 import { createPortal } from 'react-dom';
+import { isMobile } from 'react-device-detect';
 
 const PrivilegeModal: React.FC = (props: any) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -19,12 +20,12 @@ const PrivilegeModal: React.FC = (props: any) => {
         isOpen={isOpen}
         isDismissable={false}
         scrollBehavior="outside"
-        hideCloseButton
+        hideCloseButton={!isMobile}
         onOpenChange={onOpenChange}
       >
         <ModalContent>
           <ModalHeader>
-            <div className="flex-1 flex flex-col items-center text-center pt-[5.3125rem] pb-[4.5rem]">
+            <div className="flex-1 flex flex-col items-center text-center pt-[5.3125rem] pb-[4.5rem] px-8 lg:px-0">
               <div className="font-semakin text-basic-yellow text-4xl">Previleges of the TETRA NFT Series</div>
               <div className="font-decima text-base max-w-[50rem] text-center mt-[1.75rem]">
                 In the future, if you successfully obtain the upgraded Level Level II-Enterity TETRA NFT or Level
@@ -35,12 +36,12 @@ const PrivilegeModal: React.FC = (props: any) => {
           </ModalHeader>
 
           <ModalBody className="p-0">
-            <div className="cards relative flex mx-[2.625rem] border-t-5 border-x-1 border-[#31281F]">
+            <div className="cards relative flex flex-col lg:flex-row mx-[2.625rem] border-t-5 border-x-1 border-[#31281F] max-h-[40vh] overflow-y-auto lg:h-auto lg:max-h-none">
               {TrifleCards.map(({ isActive, activeImg, inactiveImg }, index) => {
                 return (
                   <div
                     key={index}
-                    className="flex-1 w-[33.33%] flex flex-col items-center [&:not(:first-child)]:border-l border-[#31281F] pt-[2.625rem]"
+                    className="flex-1 w-full lg:w-[33.33%] flex flex-col items-center [&:not(:first-child)]:border-l border-[#31281F] pt-[2.625rem]"
                   >
                     <Image className="w-[15.9375rem] h-[19.4375rem]" src={isActive ? activeImg : inactiveImg} alt="" />
 
@@ -56,6 +57,7 @@ const PrivilegeModal: React.FC = (props: any) => {
       </Modal>
 
       {isOpen &&
+        !isMobile &&
         createPortal(
           <div
             className="fixed right-[20rem] min-[640px]:top-[4.25rem] translate-x-full flex items-center z-[100] cursor-pointer"

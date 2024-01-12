@@ -28,13 +28,10 @@ export default function BreathBackground() {
   }, []);
 
   return (
-    <div ref={bgRef} className="fixed w-screen h-screen left-0 top-0 z-0 flex justify-center items-center">
-      <Image className="w-[44.875rem] h-[41.5rem]" src={triangleImg} alt="" />
+    <div ref={bgRef} className="fixed w-screen h-screen left-0 top-0 z-0 flex justify-center items-center px-8">
+      <Image className="w-[44.875rem] h-auto" src={triangleImg} alt="" />
       <Image
-        className={
-          'w-[120rem] absolute left-0 top-[61.5%] origin-center ' +
-          styles.breath
-        }
+        className={'w-[120rem] absolute left-0 top-[61.5%] origin-center hidden lg:block ' + styles.breath}
         src={breathImg}
         alt=""
       />
