@@ -25,6 +25,10 @@ const routeText: RouteMenu[] = [
     name: 'AstrArk',
     children: [
       {
+        name: 'Game Download',
+        route: '/AstrArk/Download',
+      },
+      {
         name: 'Pre-Registration',
         route: '/AstrArk/PreRegistration',
       },
