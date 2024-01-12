@@ -97,7 +97,7 @@ export class ConnectWalletQuest extends QuestBase {
             return {
                 verified: true,
                 claimed_amount: 0,
-                tip: `You have claimed 0 extra MBs.`,
+                tip: `You have claimed 0 extra MB.`,
             }
         }
         // 保存用户的增量奖励
@@ -130,7 +130,7 @@ export class ConnectWalletQuest extends QuestBase {
             return {
                 verified: true,
                 claimed_amount: increasedReward,
-                tip: `Congratulations, you have claimed ${increasedReward} MBs.`,
+                tip: `You have claimed ${increasedReward} MB.`,
             }
         } catch (error) {
             if (isDuplicateKeyError(error)) {
@@ -163,13 +163,6 @@ export class ConnectWalletQuest extends QuestBase {
         // 按 任务/钱包 进行污染，防止同一个钱包多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        if (!rewardDelta) {
-            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
-            return {
-                verified: false,
-                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
-            }
-        }
         const assetId = refreshResult.userMetric[Metric.WalletAssetId];
         const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
         if (result.duplicated) {
@@ -181,7 +174,7 @@ export class ConnectWalletQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+            tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
         }
     }
 
@@ -196,8 +189,10 @@ export class ConnectWalletQuest extends QuestBase {
                 userMetric: null,
             };
         }
+        logger.debug(`querying user token data.`);
         const debank = new Debank(process.env.DEBANK_ACCESS_KEY);
         const tokenData = await debank.user.total_balance({id: wallet})
+        logger.debug(`got user ${userId} wallet ${wallet} total balance ${tokenData.total_usd_value}.`);
         // 检查用户资产的NFT价值
         allowed = await retryAllowToSendRequest2Debank(3);
         if (!allowed) {
@@ -207,6 +202,7 @@ export class ConnectWalletQuest extends QuestBase {
                 userMetric: null,
             };
         }
+        logger.debug(`querying user nft data.`);
         // 各字段含义：https://docs.cloud.debank.com/en/readme/api-pro-reference/user#returns-10
         const nftData = await debank.user.all_nft_list({
             id: wallet,
@@ -217,6 +213,7 @@ export class ConnectWalletQuest extends QuestBase {
         const tokens = tokenData.chain_list.filter((token: WalletToken) => token.usd_value > 0);
         // 要求用户的NFT价值至少大于1刀
         const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price >= 1);
+        logger.debug(`got user ${userId} wallet ${wallet} nft count ${nfts.length}.`);
         let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
             // 如果NFT的数量超过100，且NFT的单价不超过20则过滤
             if (nft.amount > 100 && nft.usd_price < 20) {
@@ -231,7 +228,7 @@ export class ConnectWalletQuest extends QuestBase {
             return sum + nftVal * nft.amount;
         }, 0);
         totalNFTValue = Number(totalNFTValue.toFixed(2));
-        if (totalNFTValue > 10000000) {
+        if (totalNFTValue > 1000000) {
             Sentry.captureMessage(`user ${userId} wallet ${wallet} suspicious total NFT value ${totalNFTValue}`);
         }
         const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));

@@ -10,10 +10,19 @@ import {QuestType} from "@/lib/quests/types";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
 import * as Sentry from "@sentry/nextjs";
+import {addWalletVerificationCDForIP, checkWalletVerificationCDForIP} from "@/lib/redis/verifyWallet";
+import {errorInterceptor} from "@/lib/middleware/error";
+import {timeoutInterceptor} from "@/lib/middleware/timeout";
+import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).post(async (req, res) => {
+const defaultErrorResponse = {
+    verified: false,
+    tip: "Network busy, please try again later.",
+}
+
+router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse, 15000)).post(async (req, res) => {
     const {quest_id} = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
@@ -35,12 +44,9 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
                 return;
         }
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         Sentry.captureException(error);
-        res.json(response.success({
-            verified: false,
-            tip: "Network busy, please try again later.",
-        }));
+        res.json(response.success(defaultErrorResponse));
     }
 });
 
@@ -63,9 +69,20 @@ async function reverifyConnectWallet(quest: any, req: any, res: any) {
         }));
         return;
     }
+    // 钱包资产任务需要额外检查CD
+    const verifiable = await checkWalletVerificationCDForIP(req, res);
+    if (!verifiable) {
+        return;
+    }
     // 尝试领取奖励
     const questImpl = new ConnectWalletQuest(quest);
     const result = await questImpl.reClaimReward(userId);
+    // 刷新MB缓存
+    if (result.claimed_amount && result.claimed_amount > 0) {
+        await try2AddUser2MBLeaderboard(userId);
+    }
+    // 钱包资产任务添加检查CD
+    await addWalletVerificationCDForIP(req);
     res.json(response.success(result));
 }
 

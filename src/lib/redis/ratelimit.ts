@@ -7,6 +7,30 @@ import {CaptchaType} from "@/lib/authorization/types";
 
 const limiter = new RateLimiter(redis);
 
+// 检查当前IP是否允许校验钱包资产
+// cost表示当前是否真实的尝试消耗一次限流桶里面的令牌
+export const allowIP2VerifyWalletAsset = async (ip: string, cost: boolean = true) => {
+    // 每12小时允许同1个IP校验3次
+    return await limiter.allow(`wallet_asset_cd:ip:${ip}`, {
+        burst: 3,
+        ratePerPeriod: 3,
+        period: 12 * 60 * 60,
+        cost: cost ? 1 : 0,
+    });
+}
+
+// 检查当前用户是否允许校验钱包资产
+// cost表示当前是否真实的尝试消耗一次限流桶里面的令牌
+export const allowUser2VerifyWalletAsset = async (userId: string, cost: boolean = true) => {
+    // 每12小时允许同1个用户校验1次
+    return await limiter.allow(`wallet_asset_cd:user:${userId}`, {
+        burst: 1,
+        ratePerPeriod: 1,
+        period: 12 * 60 * 60,
+        cost: cost ? 1 : 0,
+    });
+}
+
 export const allowToSendCaptcha = async (captchaTyp: CaptchaType, email: string, ip: string) => {
     // 检查邮件单次发送间隔
     const emailRes = await limiter.allowPerMinute(`${captchaTyp}:${email}`, 1);
