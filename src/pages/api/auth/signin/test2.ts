@@ -2,15 +2,18 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
+import getRawBody from 'raw-body';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
+    // 获取原始请求体作为Buffer
+    const buf = await getRawBody(req);
     console.log("Received request:", {
         url: req.url,
         method: req.method,
         headers: req.headers,
-        body: req.body
+        body: buf.toString()
     });
     res.json(response.success());
 });
