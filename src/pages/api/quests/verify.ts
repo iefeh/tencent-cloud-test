@@ -16,7 +16,6 @@ import {addWalletVerificationCDForIP, checkWalletVerificationCDForIP} from "@/li
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-
 const defaultErrorResponse = response.success({
     verified: false,
     tip: "Network busy, please try again later.",
