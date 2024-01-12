@@ -1,17 +1,43 @@
 import Image from 'next/image';
 import roleImg from 'img/astrark/pre-register/index_role.png';
 import arrowLRImg from 'img/astrark/pre-register/arrow_lr.png';
-import shareIconImg from 'img/astrark/pre-register/icon_share.png';
 import RewardSwiper from '../components/RewardSwiper';
-import { Button } from '@nextui-org/react';
+import { Button, Modal, ModalBody, ModalContent, useDisclosure } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import arrowIconImg from 'img/astrark/icon_arrow.png';
+import shardImg from 'img/astrark/pre-register/shard.png';
+import { preRegisterAPI } from '@/http/services/astrark';
+import { useContext, useState } from 'react';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
+import ShareButton from '../components/ShareButton';
 
-export default function IndexScreen() {
+function IndexScreen() {
   const router = useRouter();
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [preRegLoading, setPreRegLoading] = useState(false);
 
   function onFloatClick() {
     router.push('/AstrArk/Download');
+  }
+
+  async function onPreRegisterClick() {
+    if (!userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
+
+    setPreRegLoading(true);
+
+    try {
+      await preRegisterAPI();
+      onOpen();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPreRegLoading(false);
+    }
   }
 
   return (
@@ -38,23 +64,17 @@ export default function IndexScreen() {
 
         <Image className="mt-6 w-9 h-9 object-cover select-none" src={arrowLRImg} alt="" />
 
-        <div className="mt-8">
+        <div className="mt-8 flex items-center">
           <Button
             className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
             disableRipple
+            isLoading={preRegLoading}
+            onPress={onPreRegisterClick}
           >
             Pre-Registration
           </Button>
 
-          <Button
-            className="ml-[0.875rem] w-[12.0625rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_bordered.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
-            disableRipple
-            endContent={
-              <Image className="w-[1.375rem] h-[1.625rem] relative -top-[0.125rem]" src={shareIconImg} alt="" />
-            }
-          >
-            share
-          </Button>
+          <ShareButton />
         </div>
       </div>
 
@@ -77,6 +97,31 @@ export default function IndexScreen() {
         <br />
         Download
       </Button>
+
+      <Modal
+        placement="center"
+        backdrop="blur"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] items-center' }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <p className="font-poppins">
+                  Hello Commander, thanks for pre-registering! Your exclusive in-game reward will be delivered upon the
+                  official launch of AstrArk. Excited to embark on this adventure together!
+                </p>
+
+                <Image className="w-[8.625rem] h-[5.125rem]" src={shardImg} alt="" />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
+
+export default observer(IndexScreen);
