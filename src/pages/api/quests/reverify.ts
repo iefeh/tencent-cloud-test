@@ -13,6 +13,7 @@ import * as Sentry from "@sentry/nextjs";
 import {addWalletVerificationCDForIP, checkWalletVerificationCDForIP} from "@/lib/redis/verifyWallet";
 import {errorInterceptor} from "@/lib/middleware/error";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
+import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -76,6 +77,10 @@ async function reverifyConnectWallet(quest: any, req: any, res: any) {
     // 尝试领取奖励
     const questImpl = new ConnectWalletQuest(quest);
     const result = await questImpl.reClaimReward(userId);
+    // 刷新MB缓存
+    if (result.claimed_amount && result.claimed_amount > 0) {
+        await try2AddUser2MBLeaderboard(userId);
+    }
     // 钱包资产任务添加检查CD
     await addWalletVerificationCDForIP(req);
     res.json(response.success(result));
