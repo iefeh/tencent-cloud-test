@@ -28,3 +28,9 @@ export default router.handler({
         res.status(500).json(response.serverError());
     },
 });
+
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
