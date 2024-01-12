@@ -10,6 +10,8 @@ import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { throttle } from 'lodash';
+import intros from './index.json';
+import BasicButton from '@/pages/components/common/BasicButton';
 
 export default function SchoolDesc() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -96,38 +98,6 @@ export default function SchoolDesc() {
     <section className="school-desc w-full h-screen relative overflow-hidden">
       <div ref={bgContainerRef} className="w-full h-full"></div>
 
-      <div className="school w-full h-screen absolute left-0 top-0 z-10">
-        <SwitchTransition mode="out-in">
-          <CSSTransition classNames="desc" nodeRef={nodeRef} key={activeIndex} timeout={800} unmountOnExit>
-            {() => (
-              <div
-                ref={nodeRef}
-                className="desc uppercase absolute w-[29.3125rem] h-[11.25rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border max-md:hidden"
-              >
-                <div className="flex items-center">
-                  <div className="w-[3.875rem] h-[3.875rem] relative">
-                    <Image
-                      className="object-cover"
-                      src={`/img/astrark/school/${swipers[activeIndex].name}.png`}
-                      alt=""
-                      fill
-                    />
-                  </div>
-
-                  <div className="h-12 uppercase text-5xl font-semakin ml-[0.625rem] leading-[3.875rem]">
-                    {swipers[activeIndex].name}
-                  </div>
-                </div>
-
-                <div className="font-semakin text-2xl text-basic-yellow mt-3">
-                  Home Planet : {swipers[activeIndex].homeplanet}
-                </div>
-              </div>
-            )}
-          </CSSTransition>
-        </SwitchTransition>
-      </div>
-
       <div
         className="absolute left-0 top-0 w-full h-screen overflow-hidden z-10"
         onWheel={(e) => onSwiperWheel(e as any)}
@@ -150,6 +120,42 @@ export default function SchoolDesc() {
       </div>
 
       {isTouchedBottom || <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-20"></div>}
+
+      <SwitchTransition mode="out-in">
+        <CSSTransition classNames="desc" nodeRef={nodeRef} key={activeIndex} timeout={800} unmountOnExit>
+          {() => (
+            <div
+              ref={nodeRef}
+              className="desc uppercase absolute w-[41.25rem] h-[21.875rem] left-[18.75%] top-[27.25%] border-[#F4C699] border-l-[3px] px-[2.625rem] pt-[2.625rem] pb-[3rem] box-border max-md:hidden z-20"
+            >
+              <div className="flex items-center">
+                <div className="w-[3.875rem] h-[3.875rem] relative">
+                  <Image
+                    className="object-cover"
+                    src={`/img/astrark/school/${swipers[activeIndex].name}.png`}
+                    alt=""
+                    fill
+                  />
+                </div>
+
+                <div className="h-12 uppercase text-5xl font-semakin ml-[0.625rem] leading-[3.875rem]">
+                  {swipers[activeIndex].name}
+                </div>
+              </div>
+
+              <div className="font-semakin text-2xl text-basic-yellow mt-3">
+                Home Planet : {swipers[activeIndex].homeplanet}
+              </div>
+
+              <div className="normal-case line-clamp-3 mt-[1.875rem] max-w-[29rem]">
+                {(intros as any)[swipers[activeIndex].name]}
+              </div>
+
+              <BasicButton className="mt-[1.875rem]" label="View More" />
+            </div>
+          )}
+        </CSSTransition>
+      </SwitchTransition>
 
       <SchoolIcons
         className="absolute left-1/2 bottom-12 -translate-x-1/2 z-20"
