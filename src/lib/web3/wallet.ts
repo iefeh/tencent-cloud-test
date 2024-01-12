@@ -1,6 +1,7 @@
 import {ethers} from "ethers";
 import * as response from "@/lib/response/response";
 import logger from "@/lib/logger/winstonLogger";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * 校验当前签名的钱包
@@ -55,6 +56,7 @@ export function verifySignature(address: string, message: string, signature: str
         return recoveredAddress.toLowerCase() === address.toLowerCase();
     } catch (error) {
         console.error("签名验证错误:", error);
+        Sentry.captureException(error);
         return false;
     }
 }

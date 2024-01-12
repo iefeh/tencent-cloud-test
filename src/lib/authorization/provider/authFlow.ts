@@ -8,7 +8,7 @@ import {genLoginJWT} from "@/lib/particle.network/auth";
 import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
 import {redis} from "@/lib/redis/client";
-import {connectionCoolingDown} from "@/lib/response/response";
+import * as Sentry from '@sentry/nextjs';
 import UserInvite from "@/lib/models/UserInvite";
 
 export interface ValidationResult {
@@ -60,6 +60,7 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
         await handleUserLoginFlow(authFlow, authPayload, authParty, res);
     } catch (e) {
         console.error(e);
+        Sentry.captureException(e);
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.serverError());
         res.redirect(landing_url);
     }
@@ -103,6 +104,7 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
             return;
         }
         logger.error(error);
+        Sentry.captureException(error);
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.serverError());
         res.redirect(landing_url);
     }
