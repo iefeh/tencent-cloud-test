@@ -51,13 +51,6 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        if (!rewardDelta) {
-            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
-            return {
-                verified: false,
-                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
-            }
-        }
         // retweet时额外添加用户的转推次数
         const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
             await UserMetrics.updateOne(
