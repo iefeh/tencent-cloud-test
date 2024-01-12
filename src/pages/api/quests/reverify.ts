@@ -17,10 +17,10 @@ import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-const defaultErrorResponse = {
+const defaultErrorResponse = response.success({
     verified: false,
     tip: "Network busy, please try again later.",
-}
+})
 
 router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse, 15000)).post(async (req, res) => {
     const {quest_id} = req.body;
