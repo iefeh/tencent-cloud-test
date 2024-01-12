@@ -215,7 +215,10 @@ function RegularTasks() {
           if (res.tip) toast.success(res.tip);
           updateTask();
         }
-      } catch (error) {
+      } catch (error: any) {
+        if (error.tip) {
+          toast.error(error.tip);
+        }
         console.log(error);
       } finally {
         setVerifyLoading(false);
