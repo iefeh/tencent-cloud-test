@@ -1,11 +1,15 @@
 import Image from 'next/image';
 import roleImg from 'img/astrark/pre-register/index_role.png';
+import arrowLRImg from 'img/astrark/pre-register/arrow_lr.png';
+import shareIconImg from 'img/astrark/pre-register/icon_share.png';
+import RewardSwiper from '../components/RewardSwiper';
+import { Button } from '@nextui-org/react';
 
 export default function IndexScreen() {
   return (
-    <div className="w-full h-screen bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative">
+    <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
       <div className="absolute right-0 top-0 z-0 w-[54.125rem] h-[67.5rem]">
-        <Image src={roleImg} alt="" fill />
+        <Image className="object-cover" src={roleImg} alt="" fill />
       </div>
 
       <div className="relative w-full h-full z-10 flex flex-col justify-center items-center text-center">
@@ -16,7 +20,42 @@ export default function IndexScreen() {
             Rewards
           </div>
         </div>
+
+        <div className="font-poppins text-lg mt-[1.375rem]">
+          Join the adventure with <span className="font-semakin text-basic-yellow text-2xl">9,999</span> Commanders
+          registered for AstrArk! Let&apos;s embark together!
+        </div>
+
+        <RewardSwiper />
+
+        <Image className="mt-6 w-9 h-9 object-cover select-none" src={arrowLRImg} alt="" />
+
+        <div className="mt-8">
+          <Button
+            className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
+            disableRipple
+          >
+            Pre-Registration
+          </Button>
+
+          <Button
+            className="ml-[0.875rem] w-[12.0625rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_bordered.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
+            disableRipple
+            endContent={
+              <Image className="w-[1.375rem] h-[1.625rem] relative -top-[0.125rem]" src={shareIconImg} alt="" />
+            }
+          >
+            share
+          </Button>
+        </div>
       </div>
+
+      <Button
+        className="w-[17.75rem] h-[10.25rem] bg-[url('/img/astrark/pre-register/bg_view_game_lore.png')] bg-cover bg-no-repeat bg-transparent absolute left-[4.875rem] bottom-[4.875rem] z-20 font-semakin text-[1.75rem] text-left"
+        disableRipple
+      >
+        View<br/>Game Lore
+      </Button>
     </div>
   );
 }

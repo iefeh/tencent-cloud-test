@@ -1,5 +1,7 @@
 import IndexScreen from './subScreens/IndexScreen';
 import Head from 'next/head';
+import KVScreen from './subScreens/KVScreen';
+import FeatureScreen from './subScreens/FeatureScreen';
 
 export default function PreRegistrationPage() {
   return (
@@ -10,6 +12,10 @@ export default function PreRegistrationPage() {
         </Head>
 
         <IndexScreen />
+
+        <KVScreen />
+
+        <FeatureScreen />
       </section>
     </>
   );

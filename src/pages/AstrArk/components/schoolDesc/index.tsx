@@ -59,10 +59,11 @@ export default function SchoolDesc() {
   function initSketch() {
     if (!bgContainerRef.current) return;
 
-    sketch.current = new Sketch(bgContainerRef.current, [gBG.src, mBG.src, sBG.src, nBG.src], width, height, {
+    sketch.current = new Sketch(bgContainerRef.current, [gBG.src, mBG.src, sBG.src, nBG.src], {
       // debug: true,
       uniforms: {
-        intensity: { value: 0.3, type: 'f', min: 0, max: 2 },
+        // intensity: { value: 0.3, type: 'f', min: 0, max: 2 },
+        intensity: { value: 0.3 },
       },
       fragment: `
           uniform float time;
