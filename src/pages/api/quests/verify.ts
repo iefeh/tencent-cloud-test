@@ -69,8 +69,8 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         if (result.claimed_amount && result.claimed_amount > 0) {
             await try2AddUser2MBLeaderboard(userId);
         }
-        // 钱包资产任务添加检查CD
-        if (quest.type == QuestType.ConnectWallet) {
+        if (result.claimed_amount >= 0 && quest.type == QuestType.ConnectWallet) {
+            // 钱包资产任务添加检查CD
             await addWalletVerificationCDForIP(req);
         }
         res.json(response.success(result));
