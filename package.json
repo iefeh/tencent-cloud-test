@@ -56,7 +56,8 @@
     "three": "^0.159.0",
     "uuid": "^9.0.1",
     "web3": "^4.3.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "winston-transport": "^4.6.0"
   },
   "devDependencies": {
     "@auth/mongodb-adapter": "^2.0.2",

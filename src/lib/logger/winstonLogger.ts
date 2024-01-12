@@ -1,10 +1,11 @@
 import * as winston from 'winston';
 import {format} from 'date-fns';
 import * as Sentry from '@sentry/nextjs';
+import Transport from 'winston-transport';
 
 // 创建一个自定义的Winston Transport
-class SentryTransport extends winston.Transport {
-    log(info, callback) {
+class SentryTransport extends Transport {
+    log(info: any, callback: any) {
         if (info.level === 'error') {
             // 当日志级别是 'error' 时，发送日志到Sentry
             Sentry.captureException(new Error(info.message));
