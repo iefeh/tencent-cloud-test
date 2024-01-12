@@ -140,6 +140,7 @@ export class ConnectWalletQuest extends QuestBase {
                 }
             }
             console.error(error);
+            Sentry.captureException(error);
             return {
                 verified: false,
                 tip: "Server Internal Error.",

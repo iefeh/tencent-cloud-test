@@ -9,6 +9,7 @@ import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/mode
 import UserMetrics from "@/lib/models/UserMetrics";
 import logger from "@/lib/logger/winstonLogger";
 import {getUserFirstWhitelist} from "@/lib/common/user";
+import * as Sentry from "@sentry/nextjs";
 
 interface IProjection {
     [key: string]: number;
@@ -128,6 +129,7 @@ export abstract class QuestBase {
                 return {done: false, duplicated: true}
             }
             console.error(error);
+            Sentry.captureException(error);
             return {done: false, duplicated: false}
         }
     }
