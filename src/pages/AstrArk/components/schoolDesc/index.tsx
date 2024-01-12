@@ -5,7 +5,7 @@ import gBG from 'img/astrark/school/bg_genetic.jpg';
 import mBG from 'img/astrark/school/bg_mechanoid.jpg';
 import sBG from 'img/astrark/school/bg_spiritual.jpg';
 import nBG from 'img/astrark/school/bg_natural.jpg';
-import { Sketch } from '@/hooks/sketch';
+import useSketch, { Sketch } from '@/hooks/sketch';
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
@@ -13,8 +13,6 @@ import { throttle } from 'lodash';
 
 export default function SchoolDesc() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const bgContainerRef = useRef<HTMLDivElement>(null);
-  const sketch = useRef<Sketch>();
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isTouchedBottom, setIsTouchedBottom] = useState(false);
   const swiperRef = useRef<SwiperClass>();
@@ -53,50 +51,7 @@ export default function SchoolDesc() {
       bg: nBG,
     },
   ];
-
-  function initSketch() {
-    if (!bgContainerRef.current) return;
-
-    sketch.current = new Sketch(bgContainerRef.current, [gBG.src, mBG.src, sBG.src, nBG.src], {
-      // debug: true,
-      uniforms: {
-        // intensity: { value: 0.3, type: 'f', min: 0, max: 2 },
-        intensity: { value: 0.3 },
-      },
-      fragment: `
-          uniform float time;
-          uniform float progress;
-          uniform float width;
-          uniform float scaleX;
-          uniform float scaleY;
-          uniform float transition;
-          uniform float radius;
-          uniform float intensity;
-          uniform sampler2D texture1;
-          uniform sampler2D texture2;
-          uniform sampler2D displacement;
-          uniform vec4 resolution;
-          varying vec2 vUv;
-
-          void main()	{
-            vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
-
-              vec4 d1 = texture2D(texture1, newUV);
-              vec4 d2 = texture2D(texture2, newUV);
-
-              float displace1 = (d1.r + d1.g + d1.b)*0.33;
-              float displace2 = (d2.r + d2.g + d2.b)*0.33;
-              
-              vec4 t1 = texture2D(texture1, vec2(newUV.x + progress * (displace2 * intensity), newUV.y));
-              vec4 t2 = texture2D(texture2, vec2(newUV.x + (1.0 - progress) * (displace1 * intensity), newUV.y));
-
-              gl_FragColor = mix(t1, t2, progress);
-
-          }
-
-        `,
-    });
-  }
+  const { nodeRef: bgContainerRef, sketch } = useSketch<HTMLDivElement>(swipers.map((item) => item.bg.src));
 
   function switchSketch(index: number) {
     if (activeIndex === 0 && isTouchedBottom) {
@@ -131,14 +86,10 @@ export default function SchoolDesc() {
     e.stopPropagation();
   }
 
-  useLayoutEffect(() => {
-    if (sketch.current) return;
-
-    initSketch();
-  }, []);
-
   useEffect(() => {
-    return () => { document.documentElement.style.overflow = 'unset' };
+    return () => {
+      document.documentElement.style.overflow = 'unset';
+    };
   }, []);
 
   return (
