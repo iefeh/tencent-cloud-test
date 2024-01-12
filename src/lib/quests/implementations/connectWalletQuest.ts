@@ -97,7 +97,7 @@ export class ConnectWalletQuest extends QuestBase {
             return {
                 verified: true,
                 claimed_amount: 0,
-                tip: `You have claimed 0 extra MBs.`,
+                tip: `You have claimed 0 extra MB.`,
             }
         }
         // 保存用户的增量奖励
@@ -130,7 +130,7 @@ export class ConnectWalletQuest extends QuestBase {
             return {
                 verified: true,
                 claimed_amount: increasedReward,
-                tip: `Congratulations, you have claimed ${increasedReward} MBs.`,
+                tip: `You have claimed ${increasedReward} MB.`,
             }
         } catch (error) {
             if (isDuplicateKeyError(error)) {
@@ -181,7 +181,7 @@ export class ConnectWalletQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+            tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
         }
     }
 

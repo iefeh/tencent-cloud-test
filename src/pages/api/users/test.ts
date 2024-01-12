@@ -15,6 +15,8 @@ import QuestAchievement from "@/lib/models/QuestAchievement";
 import UserMetrics from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import {allowIP2VerifyWalletAsset} from "@/lib/redis/ratelimit";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -38,11 +40,12 @@ router.get(async (req, res) => {
         // await checkUserAssets();
 
         // await loadMoonbeamIntoCache();
-        const clientIP = getClientIP(req);
-        res.json(response.success(clientIP));
+
+        throw new Error(`test error`);
+        res.json(response.success());
         return;
     } catch (error) {
-        console.error(error)
+        logger.error(error)
     }
     res.json(response.success());
 });
