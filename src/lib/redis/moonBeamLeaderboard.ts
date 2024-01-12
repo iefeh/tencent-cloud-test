@@ -1,7 +1,7 @@
 import User, {IUser} from "@/lib/models/User";
 import {redis} from "@/lib/redis/client";
-import {SteamGamePriceOverview} from "@/lib/models/SteamGame";
 import logger from "@/lib/logger/winstonLogger";
+import * as Sentry from "@sentry/nextjs";
 
 export async function try2AddUser2MBLeaderboard(userId: string) {
     try {
@@ -16,6 +16,7 @@ export async function try2AddUser2MBLeaderboard(userId: string) {
         redis.zadd("moon_beam_lb", user.moon_beam, userId);
     } catch (e) {
         console.error("try to add user to MB leaderboard:", e)
+        Sentry.captureException(e);
     }
 }
 
