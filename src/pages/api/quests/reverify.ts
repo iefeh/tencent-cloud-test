@@ -81,8 +81,10 @@ async function reverifyConnectWallet(quest: any, req: any, res: any) {
     if (result.claimed_amount && result.claimed_amount > 0) {
         await try2AddUser2MBLeaderboard(userId);
     }
-    // 钱包资产任务添加检查CD
-    await addWalletVerificationCDForIP(req);
+    if (result.claimed_amount != undefined && quest.type == QuestType.ConnectWallet) {
+        // 钱包资产任务添加检查CD
+        await addWalletVerificationCDForIP(req);
+    }
     res.json(response.success(result));
 }
 
