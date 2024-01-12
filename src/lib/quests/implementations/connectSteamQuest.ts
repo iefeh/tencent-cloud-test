@@ -40,13 +40,6 @@ export class ConnectSteamQuest extends QuestBase {
             return refreshResult.interrupted;
         }
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        if (!rewardDelta) {
-            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
-            return {
-                verified: false,
-                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
-            }
-        }
         // 按 任务/steam id 进行污染，防止同一个steam账号多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Steam},${userSteam.steam_id}`
         const assetId = refreshResult.userMetric[Metric.SteamAssetId];
@@ -60,7 +53,7 @@ export class ConnectSteamQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+            tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
         }
     }
 

@@ -36,13 +36,6 @@ export class ConnectDiscordQuest extends QuestBase {
         // 污染discord，确保同一个discord单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        if (!rewardDelta) {
-            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
-            return {
-                verified: false,
-                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
-            }
-        }
         const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {
             return {
@@ -53,7 +46,7 @@ export class ConnectDiscordQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `Congratulations, you have claimed ${rewardDelta} MBs.` : "Server Internal Error",
+            tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
         }
     }
 }

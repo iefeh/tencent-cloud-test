@@ -15,6 +15,9 @@ import QuestAchievement from "@/lib/models/QuestAchievement";
 import UserMetrics from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import {allowIP2VerifyWalletAsset} from "@/lib/redis/ratelimit";
+import logger from "@/lib/logger/winstonLogger";
+import {redis} from "@/lib/redis/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -38,15 +41,43 @@ router.get(async (req, res) => {
         // await checkUserAssets();
 
         // await loadMoonbeamIntoCache();
-        const clientIP = getClientIP(req);
-        res.json(response.success(clientIP));
+
+        // await refreshUserMoonbeamCache();
+
+        res.json(response.success());
         return;
     } catch (error) {
-        console.error(error)
+        logger.error(error)
     }
     res.json(response.success());
 });
 
+async function refreshUserMoonbeamCache() {
+    const limit = 2000; // 每页显示的记录数，可以根据需要调整
+    let skip = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+        const users = await User.find({moon_beam: {$gt: 0}}, {
+            _id: 0,
+            moon_beam: 1,
+            user_id: 1
+        }).skip(skip).limit(limit);
+
+        // 处理当前批次的记录
+        for (let user of users) {
+            // console.log(user);
+            // throw new Error(`test interrupted`);
+            redis.zadd("moon_beam_lb", user.moon_beam, user.user_id);
+        }
+        // 更新 skip 值，准备读取下一页
+        skip += users.length;
+        // 检查是否还有更多记录
+        if (users.length < limit) {
+            hasMore = false;
+        }
+    }
+}
 
 async function loadMoonbeamIntoCache() {
     const users = await User.find({moon_beam: {$gte: 0}}, {_id: 0, user_id: 1});
