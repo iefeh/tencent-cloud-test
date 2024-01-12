@@ -5,7 +5,7 @@ import gBG from 'img/astrark/school/bg_genetic.jpg';
 import mBG from 'img/astrark/school/bg_mechanoid.jpg';
 import sBG from 'img/astrark/school/bg_spiritual.jpg';
 import nBG from 'img/astrark/school/bg_natural.jpg';
-import useSketch, { Sketch } from '@/hooks/sketch';
+import useSketch from '@/hooks/useSketch';
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Mousewheel } from 'swiper/modules';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
