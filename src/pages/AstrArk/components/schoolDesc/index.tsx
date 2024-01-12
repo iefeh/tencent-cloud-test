@@ -12,12 +12,17 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { throttle } from 'lodash';
 import intros from './index.json';
 import BasicButton from '@/pages/components/common/BasicButton';
+import { Modal, ModalBody, ModalContent, useDisclosure } from '@nextui-org/react';
+import PageDesc from '@/pages/components/common/PageDesc';
+import circelImg from 'img/astrark/school/circel.png';
+import arrowBackImg from 'img/astrark/school/arrow_back.png';
 
 export default function SchoolDesc() {
   const [activeIndex, setActiveIndex] = useState(0);
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isTouchedBottom, setIsTouchedBottom] = useState(false);
   const swiperRef = useRef<SwiperClass>();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const throttleSetIisTouchedBottom = throttle((isTB: boolean) => setIsTouchedBottom(isTB), 1000);
   function onLuxyScroll() {
@@ -34,21 +39,25 @@ export default function SchoolDesc() {
   const swipers = [
     {
       name: 'genetic',
+      fullname: 'Livielt',
       homeplanet: 'zenith',
       bg: gBG,
     },
     {
       name: 'mechanoid',
+      fullname: 'Mechanical Technician',
       homeplanet: 'hyperborea',
       bg: mBG,
     },
     {
       name: 'spiritual',
+      fullname: 'God Whisperer',
       homeplanet: 'aeon',
       bg: sBG,
     },
     {
       name: 'natural',
+      fullname: 'Strangler',
       homeplanet: 'aurora',
       bg: nBG,
     },
@@ -151,7 +160,7 @@ export default function SchoolDesc() {
                 {(intros as any)[swipers[activeIndex].name]}
               </div>
 
-              <BasicButton className="mt-[1.875rem]" label="View More" />
+              <BasicButton className="mt-[1.875rem]" label="View More" onClick={onOpen} />
             </div>
           )}
         </CSSTransition>
@@ -164,6 +173,69 @@ export default function SchoolDesc() {
         activeIndex={activeIndex}
         onClick={onIconClick}
       />
+
+      <Modal
+        size="full"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        motionProps={{
+          variants: {
+            enter: {
+              x: 0,
+              opacity: 1,
+              transition: {
+                duration: 0.3,
+                ease: 'easeOut',
+              },
+            },
+            exit: {
+              x: -100,
+              opacity: 0,
+              transition: {
+                duration: 0.2,
+                ease: 'easeIn',
+              },
+            },
+          },
+        }}
+        classNames={{
+          base: 'left-0 top-0 max-w-[50vw] bg-transparent h-screen pr-[1.875rem] shadow-none',
+          wrapper: 'justify-start',
+          body: 'bg-black pt-60 pl-[14.3%] pr-[12%] overflow-y-auto shadow-small',
+          closeButton: 'right-0 top-1/2 -translate-y-1/2 w-[3.75rem] h-[3.75rem] z-10 hover:bg-transparent active:bg-transparent',
+        }}
+        closeButton={
+          <div>
+            <Image src={circelImg} alt="" fill />
+
+            <Image
+              className="w-3 h-4 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              src={arrowBackImg}
+              alt=""
+            />
+          </div>
+        }
+      >
+        <ModalContent>
+          {(onClose) => (
+            <ModalBody>
+              <PageDesc
+                hasBelt
+                className="items-start max-w-[44.5rem] pl-3"
+                title={
+                  <div className="font-semakin">
+                    <div className="text-5xl">{swipers[activeIndex].fullname}</div>
+                    <div className="text-2xl text-basic-yellow mt-5">
+                      Home Planet : {swipers[activeIndex].homeplanet}
+                    </div>
+                  </div>
+                }
+                subtitle={(intros as any)[swipers[activeIndex].name]}
+              />
+            </ModalBody>
+          )}
+        </ModalContent>
+      </Modal>
     </section>
   );
 }
