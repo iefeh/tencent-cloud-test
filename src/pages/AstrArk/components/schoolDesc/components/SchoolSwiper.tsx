@@ -9,7 +9,7 @@ interface Props {
   onActiveIndexChange?: (swiper: SwiperClass) => void;
 }
 
-export default function SchoollRenderer(props: Props) {
+export default function SchoolSwiper(props: Props) {
   const { count, mousewheel, onSwiperInit, onActiveIndexChange } = props;
 
   return (

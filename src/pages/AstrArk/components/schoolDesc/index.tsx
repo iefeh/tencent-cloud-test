@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import SchoolIcons from '../school/SchoolIcons';
 import useSketch from '@/hooks/useSketch';
 import SchoolStory from './components/SchoolStory';
-import SchoollRenderer from './components/SchoolRenderer';
+import SchoolSwiper from './components/SchoolSwiper';
 
 export default function SchoolDesc() {
   const images = [
@@ -29,7 +29,7 @@ export default function SchoolDesc() {
     <section className="school-desc w-full h-screen relative overflow-hidden">
       <div ref={nodeRef} className="w-full h-full"></div>
 
-      <SchoollRenderer
+      <SchoolSwiper
         count={4}
         mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true, thresholdTime: 1200 }}
         onSwiperInit={onSwiperInit}
