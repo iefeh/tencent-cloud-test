@@ -1,7 +1,10 @@
 import { Scene, WebGLRenderer, PerspectiveCamera, Texture, ShaderMaterial, Mesh, PlaneGeometry, IUniform } from 'three';
 import * as THREE from 'three';
 import { TimelineMax, Power2 } from 'gsap';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { SwiperClass } from 'swiper/react';
+import { throttle } from 'lodash';
+import useTouchBottom from './useTouchBottom';
 
 export class Sketch {
   private width: number;
@@ -234,6 +237,9 @@ export class Sketch {
 export default function useSketch<T>(images: string[]) {
   const nodeRef = useRef<T & HTMLElement>(null);
   const sketch = useRef<Sketch>();
+  const swiperRef = useRef<SwiperClass>();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { isTouchedBottom } = useTouchBottom();
 
   function initSketch() {
     if (!nodeRef.current) return;
@@ -277,6 +283,35 @@ export default function useSketch<T>(images: string[]) {
     });
   }
 
+  function onSwiperInit(swiper: SwiperClass) {
+    swiperRef.current = swiper;
+  }
+
+  function switchSketch(index: number) {
+    if (activeIndex === 0 && isTouchedBottom) {
+      document.documentElement.style.overflow = 'hidden';
+    }
+    if (activeIndex === 1 && index === 0) {
+      setTimeout(() => {
+        document.documentElement.style.overflow = 'unset';
+      }, 1000);
+    }
+    setActiveIndex(index);
+    sketch.current?.jumpTo(index);
+    swiperRef.current?.slideTo(index, 0);
+  }
+
+  const changeBySwiper = throttle((index: number) => {
+    const nextIndex = (activeIndex + (index > activeIndex ? 1 : -1) + images.length) % images.length;
+    switchSketch(nextIndex);
+  }, 500);
+
+  function onSlideChange(swiper: SwiperClass) {
+    const index = swiper.realIndex;
+    if (index === activeIndex || sketch.current?.isRunning) return;
+    changeBySwiper(index);
+  }
+
   useLayoutEffect(() => {
     if (sketch.current || !nodeRef.current) return;
 
@@ -287,5 +322,5 @@ export default function useSketch<T>(images: string[]) {
     }
   }, []);
 
-  return { nodeRef, sketch };
+  return { nodeRef, sketch, isTouchedBottom, activeIndex, switchSketch, onSwiperInit, onSlideChange };
 }
