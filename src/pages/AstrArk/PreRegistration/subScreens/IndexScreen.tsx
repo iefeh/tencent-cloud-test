@@ -2,59 +2,25 @@ import Image from 'next/image';
 import roleImg from 'img/astrark/pre-register/index_role.png';
 import arrowLRImg from 'img/astrark/pre-register/arrow_lr.png';
 import RewardSwiper from '../components/RewardSwiper';
-import { Button, Modal, ModalBody, ModalContent, useDisclosure } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import arrowIconImg from 'img/astrark/icon_arrow.png';
-import shardImg from 'img/astrark/pre-register/shard.png';
-import { PreRegisterInfoDTO, preRegisterAPI, queryPreRegisterInfoAPI } from '@/http/services/astrark';
-import { useContext, useEffect, useState } from 'react';
-import { MobxContext } from '@/pages/_app';
-import { observer } from 'mobx-react-lite';
+import { PreRegisterInfoDTO } from '@/http/services/astrark';
 import ShareButton from '../components/ShareButton';
-import { throttle } from 'lodash';
+import PreRegisterButton from '../components/PreRegisterButton';
 
-function IndexScreen() {
+export default function IndexScreen({
+  preInfo,
+  onPreRegistered,
+}: {
+  preInfo: PreRegisterInfoDTO | null;
+  onPreRegistered?: () => void;
+}) {
   const router = useRouter();
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [preRegLoading, setPreRegLoading] = useState(false);
-  const [preInfo, setPreInfo] = useState<PreRegisterInfoDTO | null>(null);
-
-  const queryPreRegisterInfo = throttle(async () => {
-    try {
-      const res = await queryPreRegisterInfoAPI();
-      setPreInfo(res || null);
-    } catch (error) {
-      console.log(error);
-    }
-  }, 500);
 
   function onFloatClick() {
     router.push('/AstrArk/Download');
   }
-
-  async function onPreRegisterClick() {
-    if (!userInfo) {
-      toggleLoginModal(true);
-      return;
-    }
-
-    setPreRegLoading(true);
-
-    try {
-      await preRegisterAPI();
-      onOpen();
-      queryPreRegisterInfo();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setPreRegLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    queryPreRegisterInfo();
-  }, [userInfo]);
 
   return (
     <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
@@ -84,18 +50,7 @@ function IndexScreen() {
         <Image className="mt-6 w-9 h-9 object-cover select-none" src={arrowLRImg} alt="" />
 
         <div className="mt-8 flex items-center">
-          {preInfo?.preregistered ? (
-            <ShareButton />
-          ) : (
-            <Button
-              className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
-              disableRipple
-              isLoading={preRegLoading}
-              onPress={onPreRegisterClick}
-            >
-              Pre-Registration
-            </Button>
-          )}
+          {preInfo?.preregistered ? <ShareButton /> : <PreRegisterButton onPreRegistered={onPreRegistered} />}
         </div>
       </div>
 
@@ -118,31 +73,6 @@ function IndexScreen() {
         <br />
         Download
       </Button>
-
-      <Modal
-        placement="center"
-        backdrop="blur"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] items-center' }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalBody>
-                <p className="font-poppins">
-                  Hello Commander, thanks for pre-registering! Your exclusive in-game reward will be delivered upon the
-                  official launch of AstrArk. Excited to embark on this adventure together!
-                </p>
-
-                <Image className="w-[8.625rem] h-[5.125rem]" src={shardImg} alt="" />
-              </ModalBody>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
     </div>
   );
 }
-
-export default observer(IndexScreen);
