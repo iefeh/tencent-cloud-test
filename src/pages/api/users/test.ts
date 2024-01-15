@@ -19,6 +19,9 @@ import {allowIP2VerifyWalletAsset} from "@/lib/redis/ratelimit";
 import logger from "@/lib/logger/winstonLogger";
 import {redis} from "@/lib/redis/client";
 
+import Moralis from 'moralis';
+
+
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
@@ -51,6 +54,21 @@ router.get(async (req, res) => {
     }
     res.json(response.success());
 });
+
+// opensea支持的链 https://docs.opensea.io/reference/supported-chains
+//
+async function queryCollection() {
+    await Moralis.start({
+        apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6Ijk0OTU3MmZlLTg3ODMtNDExNy1iZTkzLTFmN2NkYzhjMjJhYyIsIm9yZ0lkIjoiMzcxNjkxIiwidXNlcklkIjoiMzgxOTk0IiwidHlwZUlkIjoiNGEwN2ZjM2UtMWVhZS00YTU5LWEzYjYtMjU0MjU4MWQyMjY0IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDQ5NTMxOTUsImV4cCI6NDg2MDcxMzE5NX0.35yJtJ4EfY_O7HLFr2TMuUX6XXMTCvayEiXo_6Cb-b4",
+    });
+    const response = await Moralis.EvmApi.nft.getWalletNFTs({
+        "format": "decimal",
+        "mediaItems": false,
+        "excludeSpam": true,
+        "address": "0x60d0cd7b931641d405c88712b87e610fdc47af3f"
+    });
+    console.log(response.raw);
+}
 
 async function refreshUserMoonbeamCache() {
     const limit = 2000; // 每页显示的记录数，可以根据需要调整
