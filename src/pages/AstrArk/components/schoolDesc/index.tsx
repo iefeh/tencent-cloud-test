@@ -30,24 +30,6 @@ export default function SchoolDesc() {
     canvas.width = ow;
     canvas.height = oh;
 
-    // await Promise.all(
-    //   [prevIndex, nextIndex].map((index, i) => {
-    //     const node = videoRefs.current[index];
-    //     if (!node) return;
-
-    //     const { videoWidth: vw, videoHeight: vh } = node;
-    //     node.pause();
-
-    //     if (i > 0) {
-    //       node.currentTime = 2;
-    //     }
-
-    //     ctx.clearRect(0, 0, ow, oh);
-    //     ctx.drawImage(node, (vw - ow) / 2, (vh - oh) / 2, ow, oh, 0, 0, ow, oh);
-    //     const url = canvas.toDataURL();
-    //     return sketch.current?.updateImage(index, url);
-    //   }),
-    // );
     const node = videoRefs.current[prevIndex];
     if (!node) return;
 
@@ -63,19 +45,6 @@ export default function SchoolDesc() {
   function onAfterSketch(prevIndex: number, nextIndex: number) {
     startPlay(nextIndex);
     sketch.current?.updateImage(prevIndex, images[prevIndex]);
-  }
-
-  function screenshotToURL(node: HTMLVideoElement) {
-    const { offsetWidth: ow, offsetHeight: oh } = node;
-    node.pause();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
-    canvas.width = ow;
-    canvas.height = oh;
-    ctx.drawImage(node, 0, 0, ow, oh);
-    const url = canvas.toDataURL();
-    images[activeIndex] = url;
-    return url;
   }
 
   async function onSwiperSlideChange(swiper: SwiperClass) {
