@@ -310,15 +310,10 @@ export default function useSketch<T>(
     setIsAniRunning(false);
   }
 
-  const changeBySwiper = throttle((index: number) => {
-    const nextIndex = (activeIndex + (index > activeIndex ? 1 : -1) + images.length) % images.length;
-    switchSketch(nextIndex);
-  }, 500);
-
   function onSlideChange(swiper: SwiperClass) {
     const index = swiper.realIndex;
-    if (index === activeIndex || sketch.current?.isRunning) return;
-    changeBySwiper(index);
+    if (isAniRunning || index === activeIndex || sketch.current?.isRunning) return;
+    switchSketch(index);
   }
 
   useLayoutEffect(() => {

@@ -47,11 +47,6 @@ export default function SchoolDesc() {
     sketch.current?.updateImage(prevIndex, images[prevIndex]);
   }
 
-  async function onSwiperSlideChange(swiper: SwiperClass) {
-    if (isAniRunning) return;
-    onSlideChange(swiper);
-  }
-
   function startPlay(index: number) {
     const node = videoRefs.current[index];
     if (!node) return;
@@ -92,7 +87,7 @@ export default function SchoolDesc() {
         count={4}
         mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true, thresholdTime: 1200 }}
         onSwiperInit={onSwiperInit}
-        onActiveIndexChange={onSwiperSlideChange}
+        onActiveIndexChange={onSlideChange}
       />
 
       {isTouchedBottom || <div className="absolute left-0 top-0 w-full h-screen overflow-hidden z-20"></div>}

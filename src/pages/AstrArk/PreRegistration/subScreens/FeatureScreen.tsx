@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Mousewheel } from 'swiper/modules';
 import useSketch from '@/hooks/useSketch';
 import { PreRegisterInfoDTO } from '@/http/services/astrark';
@@ -40,6 +40,8 @@ export default function FeatureScreen({
           grabCursor={true}
           centeredSlides={true}
           slidesPerView={'auto'}
+          speed={0}
+          direction="horizontal"
           loop
           coverflowEffect={{
             rotate: 50,
