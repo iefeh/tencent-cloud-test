@@ -15,12 +15,12 @@
     "name": "spiritual",
     "fullname": "God Whisperer",
     "homeplanet": "aeon",
-    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/natural.mp4"
+    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/spiritual.mp4"
   },
   {
     "name": "natural",
     "fullname": "Strangler",
     "homeplanet": "aurora",
-    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/spiritual.mp4"
+    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/natural.mp4"
   }
 ]

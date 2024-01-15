@@ -1,7 +1,7 @@
 import { Scene, WebGLRenderer, PerspectiveCamera, Texture, ShaderMaterial, Mesh, PlaneGeometry, IUniform } from 'three';
 import * as THREE from 'three';
 import { TimelineMax, Power2 } from 'gsap';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { SwiperClass } from 'swiper/react';
 import { throttle } from 'lodash';
 import useTouchBottom from './useTouchBottom';
@@ -73,14 +73,22 @@ export class Sketch {
     });
   }
 
-  initiate(cb: () => void) {
-    const promises: Promise<Texture>[] = [];
-    let that = this;
-    this.images.forEach((url, i) => {
-      let promise = new Promise<Texture>((resolve) => {
-        that.textures[i] = new THREE.TextureLoader().load(url, resolve);
+  updateImage(index: number, url: string) {
+    return new Promise((resolve) => {
+      this.images[index] = url;
+      this.textures[index] = new THREE.TextureLoader().load(url, () => {
+        this.addObjects(this.current, index);
+        this.resize(null, index);
+        resolve(true);
       });
-      promises.push(promise);
+    });
+  }
+
+  initiate(cb: () => void) {
+    const promises = this.images.map((url, i) => {
+      return new Promise((resolve) => {
+        this.textures[i] = new THREE.TextureLoader().load(url, resolve);
+      });
     });
 
     Promise.all(promises).then(() => {
@@ -97,10 +105,10 @@ export class Sketch {
   }
 
   setupResize() {
-    window.addEventListener('resize', this.resize.bind(this));
+    window.addEventListener('resize', this.resize);
   }
 
-  resize() {
+  resize = (e?: Event | null, index = 0) => {
     const { clientWidth } = document.documentElement;
     this.width = this.container.offsetWidth;
     if (clientWidth <= 768) {
@@ -112,7 +120,8 @@ export class Sketch {
     this.camera.aspect = this.width / this.height;
 
     // image cover
-    this.imageAspect = this.textures[0].image.height / this.textures[0].image.width;
+    const img = this.textures[index].image;
+    this.imageAspect = img.height / img.width;
     let a1;
     let a2;
     if (this.height / this.width > this.imageAspect) {
@@ -136,9 +145,9 @@ export class Sketch {
     this.plane.scale.y = 1;
 
     this.camera.updateProjectionMatrix();
-  }
+  };
 
-  addObjects() {
+  addObjects(prev = 0, next = 1) {
     this.material = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
       uniforms: {
@@ -152,8 +161,8 @@ export class Sketch {
         swipe: { value: 0 },
         width: { value: 0 },
         radius: { value: 0 },
-        texture1: { value: this.textures[0] },
-        texture2: { value: this.textures[1] },
+        texture1: { value: this.textures[prev] },
+        texture2: { value: this.textures[next] },
         resolution: { value: new THREE.Vector4() },
       },
       // wireframe: true,
@@ -177,23 +186,7 @@ export class Sketch {
   }
 
   next() {
-    if (this.isRunning) return;
-    this.isRunning = true;
-    let len = this.textures.length;
-    let nextTexture = this.textures[(this.current + 1) % len];
-    this.material.uniforms.texture2.value = nextTexture;
-    let tl = new TimelineMax();
-    tl.to(this.material.uniforms.progress, this.duration, {
-      value: 1,
-      ease: Power2[this.easing],
-      onComplete: () => {
-        console.log('FINISH');
-        this.current = (this.current + 1) % len;
-        this.material.uniforms.texture1.value = nextTexture;
-        this.material.uniforms.progress.value = 0;
-        this.isRunning = false;
-      },
-    });
+    return this.jumpTo((this.current + 1) % this.textures.length);
   }
 
   jumpTo(index: number) {
@@ -202,16 +195,19 @@ export class Sketch {
     let nextTexture = this.textures[index];
     this.material.uniforms.texture2.value = nextTexture;
     let tl = new TimelineMax();
-    tl.to(this.material.uniforms.progress, this.duration, {
-      value: 1,
-      ease: Power2[this.easing],
-      onComplete: () => {
-        console.log('FINISH');
-        this.current = index;
-        this.material.uniforms.texture1.value = nextTexture;
-        this.material.uniforms.progress.value = 0;
-        this.isRunning = false;
-      },
+    return new Promise((resolve) => {
+      tl.to(this.material.uniforms.progress, this.duration, {
+        value: 1,
+        ease: Power2[this.easing],
+        onComplete: () => {
+          console.log('FINISH');
+          this.current = index;
+          this.material.uniforms.texture1.value = nextTexture;
+          this.material.uniforms.progress.value = 0;
+          this.isRunning = false;
+          resolve(true);
+        },
+      });
     });
   }
 
@@ -234,12 +230,17 @@ export class Sketch {
   }
 }
 
-export default function useSketch<T>(images: string[]) {
+export default function useSketch<T>(
+  images: string[],
+  onBeforeSketch?: (prevIndex: number, nextIndex: number) => void,
+  onAfterSketch?: (prevIndex: number, nextIndex: number) => void,
+) {
   const nodeRef = useRef<T & HTMLElement>(null);
   const sketch = useRef<Sketch>();
   const swiperRef = useRef<SwiperClass>();
   const [activeIndex, setActiveIndex] = useState(0);
   const { isTouchedBottom } = useTouchBottom();
+  const [isAniRunning, setIsAniRunning] = useState(false);
 
   function initSketch() {
     if (!nodeRef.current) return;
@@ -287,7 +288,11 @@ export default function useSketch<T>(images: string[]) {
     swiperRef.current = swiper;
   }
 
-  function switchSketch(index: number) {
+  async function switchSketch(index: number) {
+    if (onBeforeSketch) {
+      await onBeforeSketch(activeIndex, index);
+    }
+    setIsAniRunning(true);
     if (activeIndex === 0 && isTouchedBottom) {
       document.documentElement.style.overflow = 'hidden';
     }
@@ -297,8 +302,12 @@ export default function useSketch<T>(images: string[]) {
       }, 1000);
     }
     setActiveIndex(index);
-    sketch.current?.jumpTo(index);
+    await sketch.current?.jumpTo(index);
     swiperRef.current?.slideTo(index, 0);
+    if (onAfterSketch) {
+      await onAfterSketch(activeIndex, index);
+    }
+    setIsAniRunning(false);
   }
 
   const changeBySwiper = throttle((index: number) => {
@@ -322,5 +331,11 @@ export default function useSketch<T>(images: string[]) {
     }
   }, []);
 
-  return { nodeRef, sketch, isTouchedBottom, activeIndex, switchSketch, onSwiperInit, onSlideChange };
+  useEffect(() => {
+    return () => {
+      document.documentElement.style.overflow = 'unset';
+    };
+  }, []);
+
+  return { nodeRef, sketch, isTouchedBottom, activeIndex, isAniRunning, switchSketch, onSwiperInit, onSlideChange };
 }
