@@ -21,7 +21,23 @@ import UserInfo from './UserInfo';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
-  { name: 'AstrArk', route: '/AstrArk' },
+  {
+    name: 'AstrArk',
+    children: [
+      {
+        name: 'Game Download',
+        route: '/AstrArk/Download',
+      },
+      {
+        name: 'Pre-Registration',
+        route: '/AstrArk/PreRegistration',
+      },
+      {
+        name: 'Game Lore',
+        route: '/AstrArk',
+      },
+    ],
+  },
   // { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },

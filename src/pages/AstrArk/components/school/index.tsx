@@ -1,13 +1,21 @@
 import PageDesc from '@/pages/components/common/PageDesc';
-import Image from 'next/image';
-import bgImg from 'img/astrark/school/bg.jpg';
 import SchoolIcons from './SchoolIcons';
 import Mystery from './Mystery';
 
 export default function AstrArkSchool() {
   const Content = (
     <>
-      <Image className="object-cover" src={bgImg} alt="" fill />
+      <video
+        className="absolute inset-0 object-cover"
+        autoPlay
+        playsInline
+        muted
+        loop
+        preload="auto"
+        poster="/img/astrark/school/bg.jpg"
+      >
+        <source src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/background/bg1.mp4" />
+      </video>
 
       <PageDesc
         className="items-center text-center -mt-[12.5rem] min-[2400px]:-mt-[28rem]"
