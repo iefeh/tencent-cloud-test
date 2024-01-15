@@ -41,7 +41,7 @@ export default function ShareButton() {
   return (
     <>
       <Button
-        className="ml-[0.875rem] w-[12.0625rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_bordered.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
+        className="w-[12.0625rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_bordered.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
         disableRipple
         endContent={<Image className="w-[1.375rem] h-[1.625rem] relative -top-[0.125rem]" src={shareIconImg} alt="" />}
         onPress={onOpen}
@@ -100,7 +100,7 @@ export default function ShareButton() {
                     </div>
                   </div>
 
-                  <div className="relative font-poppins flex-1">
+                  <div className="relative font-poppins flex-1 pr-2">
                     <div className="flex items-center bg-black">
                       <UserProfile
                         className="w-full mt-[2.375rem]"

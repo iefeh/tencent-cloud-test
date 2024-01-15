@@ -6,17 +6,28 @@ import { Button, Modal, ModalBody, ModalContent, useDisclosure } from '@nextui-o
 import { useRouter } from 'next/router';
 import arrowIconImg from 'img/astrark/icon_arrow.png';
 import shardImg from 'img/astrark/pre-register/shard.png';
-import { preRegisterAPI } from '@/http/services/astrark';
-import { useContext, useState } from 'react';
+import { PreRegisterInfoDTO, preRegisterAPI, queryPreRegisterInfoAPI } from '@/http/services/astrark';
+import { useContext, useEffect, useState } from 'react';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import ShareButton from '../components/ShareButton';
+import { throttle } from 'lodash';
 
 function IndexScreen() {
   const router = useRouter();
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [preRegLoading, setPreRegLoading] = useState(false);
+  const [preInfo, setPreInfo] = useState<PreRegisterInfoDTO | null>(null);
+
+  const queryPreRegisterInfo = throttle(async () => {
+    try {
+      const res = await queryPreRegisterInfoAPI();
+      setPreInfo(res || null);
+    } catch (error) {
+      console.log(error);
+    }
+  }, 500);
 
   function onFloatClick() {
     router.push('/AstrArk/Download');
@@ -33,12 +44,17 @@ function IndexScreen() {
     try {
       await preRegisterAPI();
       onOpen();
+      queryPreRegisterInfo();
     } catch (error) {
       console.log(error);
     } finally {
       setPreRegLoading(false);
     }
   }
+
+  useEffect(() => {
+    queryPreRegisterInfo();
+  }, [userInfo]);
 
   return (
     <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
@@ -56,8 +72,11 @@ function IndexScreen() {
         </div>
 
         <div className="font-poppins text-lg mt-[1.375rem]">
-          Join the adventure with <span className="font-semakin text-basic-yellow text-2xl">9,999</span> Commanders
-          registered for AstrArk! Let&apos;s embark together!
+          Join the adventure with{' '}
+          <span className="font-semakin text-basic-yellow text-2xl">
+            {preInfo ? preInfo.total.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') : '0'}
+          </span>{' '}
+          Commanders registered for AstrArk! Let&apos;s embark together!
         </div>
 
         <RewardSwiper />
@@ -65,16 +84,18 @@ function IndexScreen() {
         <Image className="mt-6 w-9 h-9 object-cover select-none" src={arrowLRImg} alt="" />
 
         <div className="mt-8 flex items-center">
-          <Button
-            className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
-            disableRipple
-            isLoading={preRegLoading}
-            onPress={onPreRegisterClick}
-          >
-            Pre-Registration
-          </Button>
-
-          <ShareButton />
+          {preInfo?.preregistered ? (
+            <ShareButton />
+          ) : (
+            <Button
+              className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
+              disableRipple
+              isLoading={preRegLoading}
+              onPress={onPreRegisterClick}
+            >
+              Pre-Registration
+            </Button>
+          )}
         </div>
       </div>
 
