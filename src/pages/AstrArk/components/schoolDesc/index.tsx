@@ -3,6 +3,7 @@ import SchoolIcons from '../school/SchoolIcons';
 import useSketch from '@/hooks/useSketch';
 import SchoolStory from './components/SchoolStory';
 import SchoolSwiper from './components/SchoolSwiper';
+import SchoolRenderder from './components/SchoolRenderder';
 
 export default function SchoolDesc() {
   const images = [
@@ -27,7 +28,7 @@ export default function SchoolDesc() {
 
   return (
     <section className="school-desc w-full h-screen relative overflow-hidden">
-      <div ref={nodeRef} className="w-full h-full"></div>
+      <SchoolRenderder ref={nodeRef} activeIndex={activeIndex} />
 
       <SchoolSwiper
         count={4}

@@ -7,6 +7,7 @@ import { Modal, ModalBody, ModalContent, useDisclosure } from '@nextui-org/react
 import PageDesc from '@/pages/components/common/PageDesc';
 import circelImg from 'img/astrark/school/circel.png';
 import arrowBackImg from 'img/astrark/school/arrow_back.png';
+import schools from '../schools.json';
 
 interface Props {
   activeIndex: number;
@@ -16,28 +17,6 @@ export default function SchoolStory(props: Props) {
   const { activeIndex } = props;
   const nodeRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const schools = [
-    {
-      name: 'genetic',
-      fullname: 'Livielt',
-      homeplanet: 'zenith',
-    },
-    {
-      name: 'mechanoid',
-      fullname: 'Mechanical Technician',
-      homeplanet: 'hyperborea',
-    },
-    {
-      name: 'spiritual',
-      fullname: 'God Whisperer',
-      homeplanet: 'aeon',
-    },
-    {
-      name: 'natural',
-      fullname: 'Strangler',
-      homeplanet: 'aurora',
-    },
-  ];
 
   return (
     <>

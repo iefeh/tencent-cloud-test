@@ -1,0 +1,26 @@
+[
+  {
+    "name": "genetic",
+    "fullname": "Livielt",
+    "homeplanet": "zenith",
+    "video": "/video/genetic.mp4"
+  },
+  {
+    "name": "mechanoid",
+    "fullname": "Mechanical Technician",
+    "homeplanet": "hyperborea",
+    "video": "/video/mechanoid.mp4"
+  },
+  {
+    "name": "spiritual",
+    "fullname": "God Whisperer",
+    "homeplanet": "aeon",
+    "video": "/video/spiritual.mp4"
+  },
+  {
+    "name": "natural",
+    "fullname": "Strangler",
+    "homeplanet": "aurora",
+    "video": "/video/natural.mp4"
+  }
+]
