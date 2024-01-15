@@ -13,7 +13,6 @@ import stars1 from 'img/nft/home/stars1.png';
 import stars2 from 'img/nft/home/stars2.png';
 import stars3 from 'img/nft/home/stars3.png';
 import BasicButton from '@/pages/components/common/BasicButton';
-import { isMobile } from 'react-device-detect'
 
 const NftHome: React.FC = () => {
   return (
@@ -22,7 +21,7 @@ const NftHome: React.FC = () => {
         hasBelt
         needAni
         baseAniTY
-        className='px-8'
+        className='px-8 items-center text-center'
         title="A DYNAMIC NFT ECOSYSTEM"
         subtitle={
           <div className="max-w-[32rem] font-decima">
@@ -31,7 +30,7 @@ const NftHome: React.FC = () => {
         }
         button={
           <div className="flex gap-2 mt-[7rem]">
-            <BasicButton label="TETRA NFT Series" link="/TetraNFT" disabled={isMobile} />
+            <BasicButton label="TETRA NFT Series" link="/TetraNFT" />
             <BasicButton label="Get Involved" link="/LoyaltyProgram/earn" />
             <BasicButton label="Mint Now" disabled />
           </div>

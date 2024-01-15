@@ -1,7 +1,7 @@
 import User, {IUser} from "@/lib/models/User";
 import {redis} from "@/lib/redis/client";
-import {SteamGamePriceOverview} from "@/lib/models/SteamGame";
 import logger from "@/lib/logger/winstonLogger";
+import * as Sentry from "@sentry/nextjs";
 
 export async function try2AddUser2MBLeaderboard(userId: string) {
     try {
@@ -9,13 +9,14 @@ export async function try2AddUser2MBLeaderboard(userId: string) {
         if (!user) {
             return;
         }
-        if (!user.moon_beam) {
+        if (user.moon_beam == undefined) {
             logger.warn(`user ${userId} moon beam should but not found.`);
             return;
         }
         redis.zadd("moon_beam_lb", user.moon_beam, userId);
     } catch (e) {
         console.error("try to add user to MB leaderboard:", e)
+        Sentry.captureException(e);
     }
 }
 
@@ -51,15 +52,16 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
     }
     if (userId) {
         // 查询用户排名
-        // let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
-        // 查询用户的mb值
-        let userScore = await redis.zscore("moon_beam_lb", userId);
-        if (userScore) {
+        let userRank: number | null = await redis.zrevrank("moon_beam_lb", userId);
+        if (userRank) {
             // 用户存在排名时，设置用户的排名信息
-            // userRank = Number(userRank) + 1;
+            userRank = Number(userRank) + 1;
+            // 查询用户的mb值
+            let userScore = await redis.zscore("moon_beam_lb", userId);
             const me = userMap.get(userId);
             if (me) {
                 // me.rank = userRank;
+                me.is_top50 = userRank <= 50;
                 me.moon_beam = Number(userScore);
                 lb.me = me;
             }
@@ -85,6 +87,7 @@ export type mbLeaderboardUser = {
     username: string;
     avatar_url: string;
     moon_beam: number;
+    is_top50: boolean;
 }
 
 export type mbLeaderboard = {

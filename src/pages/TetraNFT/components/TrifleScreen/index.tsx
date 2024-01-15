@@ -50,10 +50,16 @@ export default function TrifleScren() {
       <PageDesc
         needAni={visible}
         baseAniTY
-        title="Collect, Synthesize and Upgrade"
+        className="w-full text-center items-center"
+        // title="Collect, Synthesize and Upgrade"
+        title={
+          <div className="font-semakin">
+            <div className="text-[3rem] lg:text-[6.25rem]">Collect, Synthesize and Upgrade</div>
+          </div>
+        }
         subtitle={
           <>
-            <div className="w-[54rem] font-decima text-lg">
+            <div className="max-w-full w-[54rem] font-decima text-lg">
               In the TETRA NFT Series, the essence of our gameplay revolves around collecting, synthesizing, and
               upgrading. Owning higher-level TETRA NFTs not only grants you increased rights, rewards, and influence
               within our ecosystem, but also brings greater responsibilities towards the community.
@@ -62,7 +68,7 @@ export default function TrifleScren() {
         }
       />
 
-      <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1]">
+      <div className="font-semakin text-basic-yellow text-[1.75rem] mt-24 leading-[1] text-center">
         We have three levels of TETRA NFTs
       </div>
 
@@ -70,14 +76,14 @@ export default function TrifleScren() {
         Collect multiple Level I Destiny TETRA NFTs to synthesize and upgrade to higher level NFTs.
       </div>
 
-      <div className="mystery-box-list flex justify-between items-center mt-[6.625rem]">
+      <div className="mystery-box-list flex flex-col lg:flex-row justify-between items-center mt-[6.625rem]">
         {trifles.map((item, index) => {
           return (
             <Fragment key={index}>
               {index > 0 && (
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center mt-16 mb-8 lg:my-0">
                   <div className="font-semakin text-basic-yellow text-sm">Merge</div>
-                  <Image className="w-7 h-[3.1875rem] mx-[2.75rem]" src={arrowImg} alt="" />
+                  <Image className="w-7 h-[3.1875rem] mx-[2.75rem] rotate-90 lg:rotate-0" src={arrowImg} alt="" />
                 </div>
               )}
 
@@ -141,7 +147,7 @@ export default function TrifleScren() {
         })}
       </div>
 
-      <BasicButton className="mt-[8.1875rem]" label="Get Involved" />
+      <BasicButton className="mt-[8.1875rem]" label="Get Involved" link="/LoyaltyProgram/earn" />
     </div>
   );
 }

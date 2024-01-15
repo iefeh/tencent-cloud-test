@@ -71,7 +71,6 @@ export function useEmail() {
     try {
       await sendEmailCodeAPI({ email });
     } catch (error: any) {
-      toast.error(error?.message || error);
       return;
     } finally {
       setIsSendLoading(false);
@@ -103,7 +102,7 @@ export function useEmail() {
       await loginByEmail?.({ email, captcha: code });
       toggleLoginModal();
     } catch (error: any) {
-      toast.error(error?.message || error);
+      // toast.error(error?.message || error);
       console.log(error);
     } finally {
       setIsLoading(false);
@@ -258,7 +257,8 @@ const LoginModal = function () {
         <div className="h-[3.125rem] flex justify-between gap-1">
           <Input
             isClearable
-            type="email"
+            type="text"
+            maxLength={6}
             variant="bordered"
             classNames={{ inputWrapper: 'h-full !rounded-base' }}
             value={code}
@@ -269,7 +269,15 @@ const LoginModal = function () {
         <div className="h-[3.125rem] flex justify-between">
           <div></div>
 
-          <LGButton className="w-[13.125rem]" actived label="Login" loading={isLoading} squared onClick={onVerify} />
+          <LGButton
+            className="w-[13.125rem]"
+            actived
+            label="Login"
+            loading={isLoading}
+            disabled={code.length < 6 || !email}
+            squared
+            onClick={onVerify}
+          />
         </div>
       </ModalBody>
     </>

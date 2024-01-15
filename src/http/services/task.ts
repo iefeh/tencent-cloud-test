@@ -66,6 +66,7 @@ export interface LeaderBoardItem {
   avatar_url: string;
   rank: number;
   moon_beam: number;
+  is_top50?: boolean;
 }
 
 interface LeaderBoardRank {

@@ -1,22 +1,27 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {createUserMetric, Metric} from "@/lib/models/UserMetrics";
-import {redis} from "@/lib/redis/client";
+import {queryUser} from "@/lib/common/user";
+import User from "@/lib/models/User";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
-    await getMongoConnection();
-    const result = await createUserMetric(req.userId!, Metric.PreRegisterAstrArk, true);
-    // 添加预约人数缓存
-    if (result.modifiedCount > 0) {
-        await redis.incr(`astrark_preregistration_count`);
+    const {username, avatar_url} = req.body;
+    if (!username || !avatar_url) {
+        return res.json(response.invalidParams());
     }
-    res.json(response.success());
+    if (typeof username !== 'string' || typeof avatar_url !== 'string') {
+        return res.json(response.invalidParams());
+    }
+    if (username.length > 16) {
+        return res.json(response.usernameTooLong());
+    }
+    await User.updateOne({user_id: req.userId!}, {username: username, avatar_url: avatar_url});
+    return res.json(response.success());
 });
+
 
 // this will run if none of the above matches
 router.all((req, res) => {

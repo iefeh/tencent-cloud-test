@@ -10,7 +10,7 @@ import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(errorInterceptor, mustAuthInterceptor, timeoutInterceptor()).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(async (req, res) => {
     const userId = req.userId!;
     // 锁定用户避免多次生成用户的邀请码
     const lockKey = `user_invite_lock:${userId}`;

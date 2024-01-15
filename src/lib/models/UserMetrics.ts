@@ -5,6 +5,7 @@ import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQu
 export enum Metric {
     // 预约AstrArk
     PreRegisterAstrArk = "pre_register_astrark",
+    AstrarkHeroURL = "astrark_hero_url",
 
     // 钱包指标使用的资产id
     WalletAssetId = "wallet_asset_id",
@@ -40,6 +41,8 @@ export interface IUserMetrics extends Document {
     user_id: string,
     // 是否预约astrark游戏
     pre_register_astrark: boolean,
+    // astrark游戏英雄地址
+    astrark_hero_url: string,
     // 绑定钱包拥有的token价值
     wallet_asset_id: string,
     wallet_token_usd_value: number,
@@ -68,6 +71,7 @@ export interface IUserMetrics extends Document {
 const UserMetricsSchema = new Schema<IUserMetrics>({
     user_id: {type: String, required: true},
     pre_register_astrark: {type: Boolean},
+    astrark_hero_url: {type: String},
     wallet_asset_id: {type: String},
     wallet_token_usd_value: {Type: Number},
     wallet_nft_usd_value: {Type: Number},
@@ -90,8 +94,21 @@ export default UserMetrics;
 
 // 设置用户的指标
 export async function createUserMetric(userId: string, metric: Metric, value: string | number | boolean) {
-    await UserMetrics.updateOne({user_id: userId}, {
+    return UserMetrics.updateOne({user_id: userId}, {
         $set: {[metric]: value},
         $setOnInsert: {created_time: Date.now()},
+    }, {upsert: true});
+}
+
+
+// 设置用户的指标
+export async function createUserMetrics(userId: string, metrics: { [key: string]: string | number | boolean }) {
+    let setOperations: { [key: string]: string | number | boolean } = {};
+    for (const [metric, value] of Object.entries(metrics)) {
+        setOperations[metric] = value;
+    }
+    return UserMetrics.updateOne({user_id: userId}, {
+        $set: setOperations,
+        $setOnInsert: {created_time: Date.now()}
     }, {upsert: true});
 }

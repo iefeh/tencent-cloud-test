@@ -63,10 +63,9 @@ const Rank = function () {
               key={index}
               className={cn([
                 'flex flex-col items-center',
-                index === 0 && 'order-2',
-                index === 1 && 'order-1',
-                index > 1 && 'order-3',
-                index === 0 && '-translate-x-1',
+                index === 0 && 'order-2 w-[6.75rem]',
+                index === 1 && 'order-1 w-[4.0625rem]',
+                index > 1 && 'order-3 w-[4.0625rem]',
               ])}
             >
               <div className="relative">
@@ -86,7 +85,9 @@ const Rank = function () {
                   height={29}
                 />
               </div>
-              <div className="font-poppins-medium text-base">{rank.username}</div>
+              <div className="font-poppins-medium text-base w-full text-center overflow-hidden text-ellipsis whitespace-nowrap">
+                {rank.username}
+              </div>
               <div className="font-semakin text-base text-basic-yellow">{rank.moon_beam}</div>
               <div
                 className={cn([
@@ -110,7 +111,7 @@ const Rank = function () {
       <div className="flex flex-col w-[25.625rem] h-[14.6875rem] overflow-hidden">
         {/* My Rank */}
         {myRankInfo && (
-          <MyRanking className="rounded-t-[2.25rem]" rank={myRankInfo.rank} points={myRankInfo.moon_beam} />
+          <MyRanking className="rounded-t-[2.25rem]" rank={myRankInfo.rank} points={myRankInfo.moon_beam} is_top50={myRankInfo.is_top50} />
         )}
 
         <div

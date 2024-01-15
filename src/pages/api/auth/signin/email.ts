@@ -10,12 +10,14 @@ import {genLoginJWT} from "@/lib/particle.network/auth";
 import {CaptchaType} from "@/lib/authorization/types";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
     const {email, captcha, invite_code} = req.body;
     if (!email || !captcha) {
+        console.log("request body:", req.body);
         res.json(response.invalidParams());
         return
     }
