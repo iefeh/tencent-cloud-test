@@ -19,7 +19,7 @@ import searchImg from 'img/astrark/pre-register/card/search.png';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 
-function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
+function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const contentRef = useRef<HTMLDivElement>(null);
   const warpperRef = useRef<HTMLDivElement>(null);
@@ -86,34 +86,13 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
                 </div>
 
                 <div className="w-full flex flex-col lg:flex-row items-center py-[1.75rem] gap-[2.875rem] pl-[1.1875rem] pr-10">
-                  <div className="relative w-[19.0625rem] h-[26.875rem] flex justify-center items-center">
-                    <Image src="/img/astrark/pre-register/card/bg.png" alt="" fill />
-
-                    <div className="relative z-0 w-[17.5rem] h-[24.8125rem]">
-                      <Image src="/img/astrark/pre-register/card/hero.png" alt="" fill />
-
-                      <div className="absolute left-0 bottom-0 z-0 w-full flex flex-col items-end">
-                        <Image
-                          className="w-[5.1875rem] h-[5.1875rem] mb-1 mr-1"
-                          src="/img/astrark/pre-register/card/role.png"
-                          alt=""
-                          width={83}
-                          height={83}
-                        />
-
-                        <div className="w-full h-[3.3125rem] flex items-center bg-no-repeat bg-cover bg-[url('/img/astrark/pre-register/card/mask.png')]">
-                          <Image
-                            className="ml-3 w-[2.4375rem] h-8"
-                            src="/img/astrark/pre-register/card/role_flag.png"
-                            alt=""
-                            width={39}
-                            height={32}
-                          />
-
-                          <div className="flex-1 text-center">Role Name</div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="relative w-[19.0625rem] h-[26.875rem] flex justify-center items-end pb-6">
+                    <Image
+                      className="object-contain"
+                      src={preInfo?.hero_url}
+                      alt=""
+                      fill
+                    />
                   </div>
 
                   <div className="relative font-poppins flex-1 pr-2">
