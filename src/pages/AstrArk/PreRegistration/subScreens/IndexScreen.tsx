@@ -43,9 +43,15 @@ export default function IndexScreen({
 
         <Image className="mt-6 w-9 h-9 object-cover select-none hidden lg:block" src={arrowLRImg} alt="" />
 
-        <div className="mt-2 lg:mt-8 flex items-center">
-          {preInfo?.preregistered ? <ShareButton /> : <PreRegisterButton onPreRegistered={onPreRegistered} />}
-        </div>
+        {preInfo && (
+          <div className="mt-2 lg:mt-8 flex items-center">
+            {preInfo?.preregistered ? (
+              <ShareButton preInfo={preInfo} />
+            ) : (
+              <PreRegisterButton onPreRegistered={onPreRegistered} />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

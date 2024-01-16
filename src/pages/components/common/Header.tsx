@@ -153,7 +153,7 @@ const Header = () => {
             <div
               className={`cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] ${
                 isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799]'
-              } text-[22px] ml-8`}
+              } text-[22px] ml-8 relative z-10`}
               key={index}
               onClick={() => onLinkClick(value.route)}
             >
