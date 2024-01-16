@@ -2,16 +2,10 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Mousewheel } from 'swiper/modules';
 import useSketch from '@/hooks/useSketch';
-import { PreRegisterInfoDTO } from '@/http/services/astrark';
-import PreRegisterButton from '../components/PreRegisterButton';
+import leftArrows from 'img/about/arrow_1.png';
+import rightArrows from 'img/about/arrow_2.png';
 
-export default function FeatureScreen({
-  preInfo,
-  onPreRegistered,
-}: {
-  preInfo: PreRegisterInfoDTO | null;
-  onPreRegistered?: () => void;
-}) {
+export default function FeatureScreen() {
   const features = [
     '/img/astrark/pre-register/ft_ANGEL.jpg',
     '/img/astrark/pre-register/ft_FLAME_APE.jpg',
@@ -34,8 +28,7 @@ export default function FeatureScreen({
 
         <Swiper
           className="w-full mb-[5.25rem]"
-          modules={[EffectCoverflow, Mousewheel]}
-          mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true, thresholdTime: 1200 }}
+          modules={[EffectCoverflow]}
           effect={'coverflow'}
           grabCursor={true}
           centeredSlides={true}
@@ -59,7 +52,13 @@ export default function FeatureScreen({
           ))}
         </Swiper>
 
-        {preInfo?.preregistered || <PreRegisterButton onPreRegistered={onPreRegistered} />}
+        <div className="scroll_btn w-24 h-24 rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-base text-[#F6C799]">
+          <div className="relative w-full h-full flex justify-center items-center">
+            scroll
+            <Image className="absolute -left-[0.875rem] w-[0.4375rem] h-3" src={rightArrows} alt="left" />
+            <Image className="absolute -right-[0.875rem] w-[0.4375rem] h-3" src={leftArrows} alt="right" />
+          </div>
+        </div>
       </div>
     </div>
   );
