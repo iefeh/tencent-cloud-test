@@ -2,17 +2,10 @@ import Image from 'next/image';
 import maskBg from 'img/astrark/bg-mask.png';
 import styles from './index.module.css';
 import { Button, cn } from '@nextui-org/react';
-import arrowIconImg from 'img/astrark/icon_arrow.png';
-import { useRouter } from 'next/router';
 import { downloadFile } from '@/hooks/utils';
+import FloatRegisterButton from '../components/FloatRegisterButton';
 
 export default function DownloadPage() {
-  const router = useRouter();
-
-  function onFloatClick() {
-    router.push('/AstrArk/PreRegistration');
-  }
-
   function onDownloadClick() {
     downloadFile(process.env.NEXT_PUBLIC_ASTRARK_DOWNLOAD_URL!);
   }
@@ -55,22 +48,7 @@ export default function DownloadPage() {
         />
       </div>
 
-      <Button
-        className="w-[17.75rem] h-[10.25rem] bg-[url('/img/astrark/bg_register_now.png')] bg-cover bg-no-repeat bg-transparent absolute left-[4.875rem] bottom-[4.875rem] z-20 font-semakin text-[1.75rem] text-left"
-        disableRipple
-        onPress={onFloatClick}
-      >
-        <span>
-          Register
-          <br />
-          Now
-          <Image
-            className="inline-block w-[1.25rem] h-[1.25rem] align-middle relative -top-1 ml-3"
-            src={arrowIconImg}
-            alt=""
-          />
-        </span>
-      </Button>
+      <FloatRegisterButton />
     </div>
   );
 }

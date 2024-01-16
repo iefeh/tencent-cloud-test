@@ -43,16 +43,6 @@ export default function RewardSwiper() {
       type: RewardType.PACKAGE,
       desc: 'Immortal Crew Chest X 1<br/>Fuel package(medium) X 4',
     },
-    {
-      target: '500k',
-      type: RewardType.PACKAGE,
-      desc: 'Immortal Crew Chest X 1<br/>Fuel package(medium) X 4',
-    },
-    {
-      target: '500k',
-      type: RewardType.PACKAGE,
-      desc: 'Immortal Crew Chest X 1<br/>Fuel package(medium) X 4',
-    },
   ]);
 
   return (

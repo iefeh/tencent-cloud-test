@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from 'react';
 import { throttle } from 'lodash';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
+import FloatDownloadButton from '../components/FloatDownloadButton';
 
 function PreRegistrationPage() {
   const { userInfo } = useContext(MobxContext);
@@ -34,9 +35,11 @@ function PreRegistrationPage() {
 
         <IndexScreen preInfo={preInfo} onPreRegistered={queryPreRegisterInfo} />
 
-        <KVScreen />
+        {/* <KVScreen /> */}
 
         <FeatureScreen preInfo={preInfo} onPreRegistered={queryPreRegisterInfo} />
+
+        <FloatDownloadButton />
       </section>
     </>
   );

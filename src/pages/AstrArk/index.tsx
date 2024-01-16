@@ -7,6 +7,7 @@ import AstrArkSchoolDesc from './components/schoolDesc';
 import WorldView from './components/worldView';
 import SecondDesc from './components/secondDesc';
 import Head from 'next/head';
+import FloatRegisterButton from './components/FloatRegisterButton';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
@@ -40,6 +41,8 @@ export default function Home() {
 
           <AstrArkSchoolDesc />
         </div>
+
+        <FloatRegisterButton />
       </section>
 
       <AstrarkHome scrollY={scrollY} />
