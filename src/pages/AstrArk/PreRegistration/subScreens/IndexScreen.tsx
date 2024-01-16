@@ -22,7 +22,7 @@ export default function IndexScreen({
         <Image className="object-cover" src={roleImg} alt="" fill />
       </div>
 
-      <div className="relative w-full h-full z-10 flex flex-col justify-center items-center text-center">
+      <div className="relative w-full h-full z-10 flex flex-col justify-center items-center text-center mt-4 lg:mt-0">
         <div className="p-2 bg-clip-text bg-[linear-gradient(-50deg,_#DBAC73_0%,_#F1EEC9_33.203125%,_#F1EEC9_82.5927734375%,_#CFA36F_100%)]">
           <div className="font-semakin text-transparent text-6xl">
             Pre-Registration
@@ -41,9 +41,9 @@ export default function IndexScreen({
 
         <RewardSwiper />
 
-        <Image className="mt-6 w-9 h-9 object-cover select-none" src={arrowLRImg} alt="" />
+        <Image className="mt-6 w-9 h-9 object-cover select-none hidden lg:block" src={arrowLRImg} alt="" />
 
-        <div className="mt-8 flex items-center">
+        <div className="mt-2 lg:mt-8 flex items-center">
           {preInfo?.preregistered ? <ShareButton /> : <PreRegisterButton onPreRegistered={onPreRegistered} />}
         </div>
       </div>

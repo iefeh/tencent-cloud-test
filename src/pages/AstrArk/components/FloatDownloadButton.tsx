@@ -11,7 +11,7 @@ export default function FloatDownloadButton() {
 
   return createPortal(
     <Button
-      className="w-[17.75rem] h-[10.25rem] bg-[url('/img/astrark/pre-register/bg_view_game_lore.png')] bg-cover bg-no-repeat bg-transparent fixed left-[4.875rem] bottom-[4.875rem] z-20 font-semakin text-[1.75rem] text-left"
+      className="w-[17.75rem] h-[10.25rem] bg-[url('/img/astrark/pre-register/bg_view_game_lore.png')] bg-cover bg-no-repeat bg-transparent fixed left-[4.875rem] bottom-[4.875rem] z-20 font-semakin text-[1.75rem] text-left hidden md:block"
       disableRipple
       onPress={onFloatClick}
     >

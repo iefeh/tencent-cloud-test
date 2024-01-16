@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import shardBgImg from 'img/astrark/pre-register/bg_reward_shard.jpg';
@@ -47,12 +47,12 @@ export default function RewardSwiper() {
 
   return (
     <Swiper
-      className="max-w-[69.25rem] relative shrink-0 select-none"
+      className="max-w-[25rem] lg:max-w-[69.25rem] relative shrink-0 select-none"
       wrapperClass="p-8"
       modules={[FreeMode, Mousewheel]}
       mousewheel={true}
       direction="horizontal"
-      slidesPerView={4}
+      slidesPerView={window?.innerWidth >= 1024 ? 4 : 1.5}
       freeMode={true}
       spaceBetween="2.375rem"
     >
