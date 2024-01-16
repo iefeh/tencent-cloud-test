@@ -18,50 +18,17 @@ export type WalletToken = {
 }
 
 export type WalletNFT = {
-    id: string,
-    contract_id: string,
-    inner_id: string,
-    chain: string,
-    name: string,
-    description: string,
-    content_type: string,
-    content: string,
-    thumbnail_url: string,
-    total_supply: number,
-    detail_url: string,
-    attributes: any[],
-    collection_id: string,
-    pay_token: PayToken,
-    contract_name: string,
-    is_erc1155: boolean,
-    is_erc721: boolean,
-    amount: number,
-    usd_price: number
+    collection: {
+        id: string,
+        slug: string,
+        name: string,
+        floorAskPrice: any,
+    },
+    ownership: {
+        tokenCount: string,
+        onSaleCount: string,
+    }
 };
-
-type PayToken = {
-    id: string,
-    chain: string,
-    name: string,
-    symbol: string,
-    display_symbol: string | null,
-    optimized_symbol: string,
-    decimals: number,
-    logo_url: string,
-    protocol_id: string,
-    price: number,
-    price_24h_change: number | null,
-    credit_score: number,
-    is_verified: boolean,
-    is_scam: boolean,
-    is_suspicious: boolean,
-    is_core: boolean,
-    is_wallet: boolean,
-    time_at: number,
-    amount: number,
-    date_at: string
-};
-
 
 export interface IWalletAsset extends Document {
     // 资产id，每次资产校验都会生成一份id，集合唯一
@@ -78,6 +45,7 @@ export interface IWalletAsset extends Document {
     tokens: WalletToken[],
     // 钱包的nft
     nfts: WalletNFT[],
+    reservoir_value: number,
     // 创建时间毫秒时间戳
     created_time: number,
 }
@@ -91,6 +59,7 @@ const WalletAssetSchema = new Schema<IWalletAsset>({
     nft_usd_value: {type: Number},
     tokens: Schema.Types.Mixed,
     nfts: Schema.Types.Mixed,
+    reservoir_value: {type: Number},
     created_time: {type: Number},
 });
 
