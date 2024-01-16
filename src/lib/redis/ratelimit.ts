@@ -49,30 +49,41 @@ export const allowToSendRequest2Debank = async () => {
     return res.allowed > 0
 }
 
+// 获取reservoir请求权限
+export const allowToSendRequest2Reservoir = async () => {
+    const res = await limiter.allowPerSecond("reservoir_request", 120, 60)
+    return res.allowed > 0
+}
+
 // 重试获取debank请求权限
 export const retryAllowToSendRequest2Debank = async (timeoutSecond: number, intervalMillis: number = 500) => {
+    return retryAllowToSendRequest(allowToSendRequest2Debank, timeoutSecond, intervalMillis);
+}
+
+// 重试获取reservoir请求权限
+export const retryAllowToSendRequest2Reservoir = async (timeoutSecond: number, intervalMillis: number = 500) => {
+    return retryAllowToSendRequest(allowToSendRequest2Reservoir, timeoutSecond, intervalMillis);
+}
+
+// 通用重试请求权限函数
+export const retryAllowToSendRequest = async (allowToSendRequest: any, timeoutSecond: number, intervalMillis: number = 500) => {
     // 标记开始时间，用于检查当前是否已经超时
     const startTime = Date.now();
     const timeoutMilliseconds = timeoutSecond * 1000;
     const traceId = uuidv4();
     // 循环直到超时
-    while (true) {
-        // 计算已经过去的时间
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime > timeoutMilliseconds) {
-            logger.warn(`trace:${traceId}  -  retry allow to send request to debank - timeout.`);
-            // 如果已经超过了超时时间，返回false
-            return false;
-        }
-        logger.debug(`trace:${traceId}  -  retry allow to send request to debank - trying.`);
-        // 调用 allowToSendRequest2Debank 函数检查是否允许发送请求
-        const isAllowed = await allowToSendRequest2Debank();
+    while (Date.now() - startTime < timeoutMilliseconds) {
+        // logger.debug(`trace:${traceId} - retry allow to send request - trying.`);
+        // 调用传入的请求权限函数检查是否允许发送请求
+        const isAllowed = await allowToSendRequest();
         if (isAllowed) {
-            logger.debug(`trace:${traceId}  -  retry allow to send request to debank - allowed.`);
+            // logger.debug(`trace:${traceId} - retry allow to send request - allowed.`);
             return true;
         }
-
-        // 当前已经限流，则继续等待指定的间隔
+        // 如果不允许，则等待指定的间隔时间后重试
         await promiseSleep(intervalMillis);
     }
-}
+    // 超时后记录警告并返回false
+    logger.warn(`trace:${traceId} - retry allow to send request - timeout.`);
+    return false;
+};

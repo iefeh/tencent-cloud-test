@@ -4,12 +4,17 @@ import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {createUserMetric, Metric} from "@/lib/models/UserMetrics";
+import {redis} from "@/lib/redis/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
     await getMongoConnection();
-    await createUserMetric(req.userId!, Metric.PreRegisterAstrArk, true);
+    const result = await createUserMetric(req.userId!, Metric.PreRegisterAstrArk, true);
+    // 添加预约人数缓存
+    if (result.modifiedCount > 0) {
+        await redis.incr(`astrark_preregistration_count`);
+    }
     res.json(response.success());
 });
 

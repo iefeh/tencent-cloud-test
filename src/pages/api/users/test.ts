@@ -15,9 +15,15 @@ import QuestAchievement from "@/lib/models/QuestAchievement";
 import UserMetrics from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
-import {allowIP2VerifyWalletAsset} from "@/lib/redis/ratelimit";
+import {allowIP2VerifyWalletAsset, retryAllowToSendRequest2Reservoir} from "@/lib/redis/ratelimit";
 import logger from "@/lib/logger/winstonLogger";
 import {redis} from "@/lib/redis/client";
+
+import Moralis from 'moralis';
+
+const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
+sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
+sdk.server('https://api.reservoir.tools');
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -43,7 +49,6 @@ router.get(async (req, res) => {
         // await loadMoonbeamIntoCache();
 
         // await refreshUserMoonbeamCache();
-
         res.json(response.success());
         return;
     } catch (error) {
@@ -51,6 +56,168 @@ router.get(async (req, res) => {
     }
     res.json(response.success());
 });
+
+
+async function syncUserReservoirNftVal() {
+    try {
+        let pageNum = 1;
+        let pageSiz = 100;
+        while (true) {
+            const syncedCol = new Map<string, boolean>();
+            const wallets = await findDistinctWalletAddresses(pageNum, pageSiz);
+            if (!wallets) {
+                return;
+            }
+            if (wallets.length == 0) {
+                return;
+            }
+            for (let wallet of wallets) {
+                if (syncedCol.has(wallet)) {
+                    continue;
+                }
+                syncedCol.set(wallet, true);
+                const totalVal = await syncUserCollections(wallet);
+                await WalletAsset.updateMany({wallet_addr: wallet}, {reservoir_value: totalVal});
+            }
+        }
+
+    } catch (error) {
+        console.error("Failed to fetch NFTs:", error);
+    }
+}
+
+async function findDistinctWalletAddresses(pageNumber, pageSize) {
+    const skip = (pageNumber - 1) * pageSize;
+
+    try {
+        // 使用聚合管道进行查询
+        const result = await WalletAsset.aggregate([
+            {
+                '$match': {
+                    'nft_usd_value': {
+                        '$gt': 0
+                    },
+                    'reservoir_value': null
+                }
+            },
+            {
+                '$sort': {
+                    'nft_usd_value': -1
+                }
+            },
+            {
+                $skip: skip // 跳过前面的结果
+            },
+            {
+                $limit: pageSize // 限制返回的结果数量
+            },
+            {
+                $project: {wallet_addr: 1, _id: 0}
+            }
+        ]).exec();
+
+        return result.map(item => item.wallet_addr);
+    } catch (error) {
+        console.error('Error fetching distinct wallet addresses: ', error);
+        throw error;
+    }
+}
+
+// 尝试同步用户地址下的合约集合;
+async function syncUserCollections(address: string) {
+    try {
+        let verifiedNFTs = [];
+        let offset = 0;
+        let batch = 100;
+        let hasMore = true;
+        let total = 0;
+        while (hasMore) {
+            // await retryAllowToSendRequest2Reservoir(60);
+            const response = await sdk.getUsersUserCollectionsV3({
+                excludeSpam: 'true',
+                limit: batch,
+                user: address,
+                offset: offset,
+                accept: '*/*'
+            });
+            const collections = response.data.collections;
+            if (collections && collections.length > 0) {
+                collections.forEach(coll => {
+                    const col = coll.collection;
+                    /**
+                     * The collection's approval status within OpenSea.
+                     * Can be one of:
+                     * - not_requested: brand new collections
+                     * - requested: collections that requested safelisting on our site
+                     * - approved: collections that are approved on our site and can be found in search results
+                     * - verified: verified collections
+                     */
+                    if (col.openseaVerificationStatus != "verified") {
+                        return;
+                    }
+                    // 计算用户持有的NFT的价值
+                    const usdVal = col.floorAskPrice?.amount?.usd;
+                    if (!usdVal) {
+                        console.log(`col ${col.id} usd value not found`,);
+                        return;
+                    }
+                    const own = coll.ownership?.tokenCount;
+                    if (!own) {
+                        console.log(`col ${col.id} own not found`,);
+                        return;
+                    }
+                    verifiedNFTs.push(coll);
+                    total += Number(usdVal) * Number(own);
+                });
+                offset += collections.length;
+            } else {
+                // 没有更多数据时停止循环
+                hasMore = false;
+            }
+        }
+        logger.debug(`wallet: ${address},  total:, ${total},   nft:, ${verifiedNFTs.length}`);
+        return total;
+    } catch (error) {
+        console.error("Failed to fetch NFTs:", error);
+        return 0;
+    }
+}
+
+// opensea支持的链 https://docs.opensea.io/reference/supported-chains
+async function queryUserVerifiedNFTs(address: string) {
+    await Moralis.start({
+        apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6Ijk0OTU3MmZlLTg3ODMtNDExNy1iZTkzLTFmN2NkYzhjMjJhYyIsIm9yZ0lkIjoiMzcxNjkxIiwidXNlcklkIjoiMzgxOTk0IiwidHlwZUlkIjoiNGEwN2ZjM2UtMWVhZS00YTU5LWEzYjYtMjU0MjU4MWQyMjY0IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MDQ5NTMxOTUsImV4cCI6NDg2MDcxMzE5NX0.35yJtJ4EfY_O7HLFr2TMuUX6XXMTCvayEiXo_6Cb-b4",
+    });
+    try {
+        let verifiedNFTs = [];
+        let cursor = null;
+        let hasMore = true;
+
+        while (hasMore) {
+            const res = await Moralis.EvmApi.nft.getWalletNFTs({
+                format: "decimal",
+                mediaItems: false,
+                excludeSpam: true,
+                address: address,
+                cursor: cursor
+            });
+            const data = res.raw;
+            if (data && data.result) {
+                verifiedNFTs = verifiedNFTs.concat(data.result);
+                cursor = data.cursor;
+                hasMore = !!cursor;
+            } else {
+                // 没有更多数据时停止循环
+                hasMore = false;
+            }
+        }
+
+        return verifiedNFTs;
+    } catch (error) {
+        console.error("Failed to fetch NFTs:", error);
+        return [];
+    }
+}
 
 async function refreshUserMoonbeamCache() {
     const limit = 2000; // 每页显示的记录数，可以根据需要调整
