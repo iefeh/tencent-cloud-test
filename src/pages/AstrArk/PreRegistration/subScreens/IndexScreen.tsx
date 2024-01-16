@@ -2,12 +2,13 @@ import Image from 'next/image';
 import roleImg from 'img/astrark/pre-register/index_role.png';
 import arrowLRImg from 'img/astrark/pre-register/arrow_lr.png';
 import RewardSwiper from '../components/RewardSwiper';
-import { Button } from '@nextui-org/react';
+import { Button, Modal, ModalBody, ModalContent, cn, useDisclosure } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import arrowIconImg from 'img/astrark/icon_arrow.png';
 import { PreRegisterInfoDTO } from '@/http/services/astrark';
 import ShareButton from '../components/ShareButton';
 import PreRegisterButton from '../components/PreRegisterButton';
+import shardImg from 'img/astrark/pre-register/shard.png';
 
 export default function IndexScreen({
   preInfo,
@@ -16,6 +17,13 @@ export default function IndexScreen({
   preInfo: PreRegisterInfoDTO | null;
   onPreRegistered?: () => void;
 }) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  function onPreRegisterCallback() {
+    onPreRegistered?.();
+    onOpen();
+  }
+
   return (
     <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
       <div className="absolute right-0 top-0 z-0 w-[54.125rem] h-[67.5rem]">
@@ -43,15 +51,37 @@ export default function IndexScreen({
 
         <Image className="mt-6 w-9 h-9 object-cover select-none hidden lg:block" src={arrowLRImg} alt="" />
 
-        {preInfo && (
-          <div className="mt-2 lg:mt-8 flex items-center">
-            {preInfo?.preregistered ? (
+        <div className="mt-2 lg:mt-8 flex items-center h-[4.375rem]">
+          {preInfo &&
+            (preInfo?.preregistered ? (
               <ShareButton preInfo={preInfo} />
             ) : (
-              <PreRegisterButton onPreRegistered={onPreRegistered} />
+              <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
+            ))}
+        </div>
+
+        <Modal
+          placement="center"
+          backdrop="blur"
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] items-center' }}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalBody>
+                  <p className="font-poppins">
+                    Hello Commander, thanks for pre-registering! Your exclusive in-game reward will be delivered upon
+                    the official launch of AstrArk. Excited to embark on this adventure together!
+                  </p>
+
+                  <Image className="w-[8.625rem] h-[5.125rem]" src={shardImg} alt="" />
+                </ModalBody>
+              </>
             )}
-          </div>
-        )}
+          </ModalContent>
+        </Modal>
       </div>
     </div>
   );

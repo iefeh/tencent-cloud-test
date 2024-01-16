@@ -37,7 +37,7 @@ function PreRegistrationPage() {
 
         {/* <KVScreen /> */}
 
-        <FeatureScreen preInfo={preInfo} onPreRegistered={queryPreRegisterInfo} />
+        <FeatureScreen />
 
         <FloatDownloadButton />
       </section>
