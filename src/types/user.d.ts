@@ -37,4 +37,5 @@ interface UserInfo {
   twitter?: BaseMediaInfo;
   discord?: BaseMediaInfo;
   wallet?: string;
+  invite_code: string;
 }

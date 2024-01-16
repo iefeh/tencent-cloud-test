@@ -4,7 +4,7 @@ import shareIconImg from 'img/astrark/pre-register/icon_share.png';
 import iosImg from 'img/astrark/pre-register/card/ios.png';
 import googlePlayImg from 'img/astrark/pre-register/card/google_play.png';
 import tiktokImg from 'img/astrark/pre-register/card/tiktok.png';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 import UserProfile from '@/pages/components/common/UserProfile';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import linkIconImg from 'img/icon/icon_link.png';
@@ -16,14 +16,19 @@ import { PreRegisterInfoDTO } from '@/http/services/astrark';
 import discordImg from 'img/astrark/pre-register/card/discord .png';
 import xImg from 'img/astrark/pre-register/card/x .png';
 import searchImg from 'img/astrark/pre-register/card/search.png';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
-export default function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
+function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const contentRef = useRef<HTMLDivElement>(null);
   const warpperRef = useRef<HTMLDivElement>(null);
+  const { userInfo } = useContext(MobxContext);
 
   async function onShareLink() {
-    const url = location.origin;
+    if (!userInfo) return;
+
+    const url = `${location.origin}?invite_code=${userInfo?.invite_code}`;
 
     try {
       await navigator.clipboard.writeText(url || '');
@@ -189,13 +194,13 @@ export default function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO |
                         onClick={onShareLink}
                       />
 
-                      <div
+                      {/* <div
                         className="mx-auto mt-[1.625rem] cursor-pointer font-poppins text-base hidden lg:block"
                         onClick={onDownloadClick}
                       >
                         <Image className="w-4 h-4 inline mr-[0.625rem]" src={downloadIconImg} alt="" />
                         SAVE IMAGE
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -207,3 +212,5 @@ export default function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO |
     </div>
   );
 }
+
+export default observer(ShareButton);
