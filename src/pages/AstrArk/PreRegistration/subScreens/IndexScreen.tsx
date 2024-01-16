@@ -16,19 +16,13 @@ export default function IndexScreen({
   preInfo: PreRegisterInfoDTO | null;
   onPreRegistered?: () => void;
 }) {
-  const router = useRouter();
-
-  function onFloatClick() {
-    router.push('/AstrArk/Download');
-  }
-
   return (
     <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
       <div className="absolute right-0 top-0 z-0 w-[54.125rem] h-[67.5rem]">
         <Image className="object-cover" src={roleImg} alt="" fill />
       </div>
 
-      <div className="relative w-full h-full z-10 flex flex-col justify-center items-center text-center">
+      <div className="relative w-full h-full z-10 flex flex-col justify-center items-center text-center mt-4 lg:mt-0">
         <div className="p-2 bg-clip-text bg-[linear-gradient(-50deg,_#DBAC73_0%,_#F1EEC9_33.203125%,_#F1EEC9_82.5927734375%,_#CFA36F_100%)]">
           <div className="font-semakin text-transparent text-6xl">
             Pre-Registration
@@ -47,32 +41,18 @@ export default function IndexScreen({
 
         <RewardSwiper />
 
-        <Image className="mt-6 w-9 h-9 object-cover select-none" src={arrowLRImg} alt="" />
+        <Image className="mt-6 w-9 h-9 object-cover select-none hidden lg:block" src={arrowLRImg} alt="" />
 
-        <div className="mt-8 flex items-center">
-          {preInfo?.preregistered ? <ShareButton /> : <PreRegisterButton onPreRegistered={onPreRegistered} />}
-        </div>
+        {preInfo && (
+          <div className="mt-2 lg:mt-8 flex items-center">
+            {preInfo?.preregistered ? (
+              <ShareButton preInfo={preInfo} />
+            ) : (
+              <PreRegisterButton onPreRegistered={onPreRegistered} />
+            )}
+          </div>
+        )}
       </div>
-
-      <Button
-        className="w-[17.75rem] h-[10.25rem] bg-[url('/img/astrark/pre-register/bg_view_game_lore.png')] bg-cover bg-no-repeat bg-transparent absolute left-[4.875rem] bottom-[4.875rem] z-20 font-semakin text-[1.75rem] text-left"
-        disableRipple
-        onPress={onFloatClick}
-      >
-        {/* <span>
-          View
-          <Image
-            className="inline-block w-[1.25rem] h-[1.25rem] align-middle relative -top-1 ml-3"
-            src={arrowIconImg}
-            alt=""
-          />
-          <br />
-          Game Lore
-        </span> */}
-        Alpha Test
-        <br />
-        Download
-      </Button>
     </div>
   );
 }

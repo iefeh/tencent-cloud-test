@@ -12,10 +12,15 @@ import downloadIconImg from 'img/icon/icon_download.png';
 import html2canvas from 'html2canvas';
 import { downloadFile } from '@/hooks/utils';
 import { toast } from 'react-toastify';
+import { PreRegisterInfoDTO } from '@/http/services/astrark';
+import discordImg from 'img/astrark/pre-register/card/discord .png';
+import xImg from 'img/astrark/pre-register/card/x .png';
+import searchImg from 'img/astrark/pre-register/card/search.png';
 
-export default function ShareButton() {
+export default function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const contentRef = useRef<HTMLDivElement>(null);
+  const warpperRef = useRef<HTMLDivElement>(null);
 
   async function onShareLink() {
     const url = location.origin;
@@ -31,15 +36,20 @@ export default function ShareButton() {
   async function onDownloadClick() {
     if (!contentRef.current) return;
 
-    const canvas = await html2canvas(contentRef.current, {
-      ignoreElements: (el) => el.classList.contains('content-display'),
-    });
-    const url = canvas.toDataURL();
-    downloadFile(url);
+    try {
+      const canvas = await html2canvas(contentRef.current, {
+        logging: true,
+        ignoreElements: (el) => el.classList.contains('content-display'),
+      });
+      const url = canvas.toDataURL();
+      downloadFile(url);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
-    <>
+    <div ref={warpperRef}>
       <Button
         className="w-[12.0625rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_bordered.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
         disableRipple
@@ -54,10 +64,11 @@ export default function ShareButton() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         classNames={{
-          base: 'max-w-[48.25rem] bg-black border-1 border-basic-gray',
+          base: 'max-w-[48.25rem] max-h-[80vh] overflow-y-auto bg-black border-1 border-basic-gray text-left',
           body: 'p-0 gap-0',
           closeButton: 'z-10',
         }}
+        portalContainer={warpperRef.current!}
       >
         <ModalContent>
           {(onClose) => (
@@ -69,7 +80,7 @@ export default function ShareButton() {
                   </div>
                 </div>
 
-                <div className="w-full flex py-[1.75rem] gap-[2.875rem] pl-[1.1875rem] pr-10">
+                <div className="w-full flex flex-col lg:flex-row items-center py-[1.75rem] gap-[2.875rem] pl-[1.1875rem] pr-10">
                   <div className="relative w-[19.0625rem] h-[26.875rem] flex justify-center items-center">
                     <Image src="/img/astrark/pre-register/card/bg.png" alt="" fill />
 
@@ -112,26 +123,45 @@ export default function ShareButton() {
                       <div>
                         <div className="font-semakin text-lg w-full mt-[2.125rem]">Register</div>
 
-                        <div className="font-semakin text-3xl text-basic-yellow w-full mt-1">N0.9999</div>
+                        <div className="font-semakin text-3xl text-basic-yellow w-full mt-1">
+                          N0.{preInfo?.total || 1}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="w-full mt-[2.625rem]">
-                      Showcase your hero now and claim your exclusive in-game reward!
+                    <div className="w-full mt-8">Showcase your hero now and claim your exclusive in-game reward!</div>
+
+                    <div className="flex justify-between items-center mt-9 gap-[0.5625rem] h-[2.875rem]">
+                      <Button
+                        className="bg-[#358FEA] flex-[3] h-full rounded-[0.3125rem]"
+                        startContent={<Image className="w-[1.9375rem] h-6" src={discordImg} alt="" />}
+                      >
+                        Moonveil
+                      </Button>
+                      <Button
+                        className="bg-[#358FEA] flex-[4] h-full rounded-[0.3125rem]"
+                        startContent={<Image className="w-[1.625rem] h-[1.4375rem]" src={xImg} alt="" />}
+                      >
+                        @AstrArk_World
+                      </Button>
                     </div>
 
-                    <div className="flex justify-between items-center">
-                      <Button>Moonveil</Button>
-                      <Button>@AstrArk_World</Button>
-                    </div>
-
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center gap-6 mt-9">
                       <Image src={iosImg} alt="" />
                       <Image src={googlePlayImg} alt="" />
                       <Image src={tiktokImg} alt="" />
                     </div>
 
-                    <Input defaultValue="AstrArk" readOnly />
+                    <Input
+                      className="mt-6"
+                      defaultValue="AstrArk"
+                      readOnly
+                      classNames={{
+                        inputWrapper: 'bg-white h-[2.875rem] rounded-[0.3125rem]',
+                        input: 'font-poppins text-2xl !text-black',
+                      }}
+                      endContent={<Image src={searchImg} alt="" />}
+                    />
 
                     <div className="content-display w-full h-full absolute left-0 top-0 z-10 flex flex-col items-center bg-black">
                       <UserProfile
@@ -143,7 +173,9 @@ export default function ShareButton() {
 
                       <div className="font-semakin text-lg w-full mt-[2.125rem]">Register</div>
 
-                      <div className="font-semakin text-3xl text-basic-yellow w-full mt-1">N0.9999</div>
+                      <div className="font-semakin text-3xl text-basic-yellow w-full mt-1">
+                        N0.{preInfo?.total || 1}
+                      </div>
 
                       <div className="w-full mt-[2.625rem]">
                         Showcase your hero now and claim your exclusive in-game reward!
@@ -158,7 +190,7 @@ export default function ShareButton() {
                       />
 
                       <div
-                        className="mx-auto mt-[1.625rem] cursor-pointer font-poppins text-base"
+                        className="mx-auto mt-[1.625rem] cursor-pointer font-poppins text-base hidden lg:block"
                         onClick={onDownloadClick}
                       >
                         <Image className="w-4 h-4 inline mr-[0.625rem]" src={downloadIconImg} alt="" />
@@ -172,6 +204,6 @@ export default function ShareButton() {
           )}
         </ModalContent>
       </Modal>
-    </>
+    </div>
   );
 }

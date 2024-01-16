@@ -5,41 +5,57 @@ import SchoolStory from './components/SchoolStory';
 import SchoolSwiper from './components/SchoolSwiper';
 import schools from './schools.json';
 import { cn } from '@nextui-org/react';
-import { SwiperClass } from 'swiper/react';
 
 export default function SchoolDesc() {
-  const images = [
-    '/img/astrark/school/genetic.jpg',
-    '/img/astrark/school/mechanoid.jpg',
-    '/img/astrark/school/spiritual.jpg',
-    '/img/astrark/school/natural.jpg',
-  ];
+  const COUNT = 4;
+  const images = Array(COUNT).fill('');
   const videoRefs = useRef<(HTMLVideoElement | null)[]>(Array(schools.length).fill(null));
-  const { nodeRef, sketch, activeIndex, isTouchedBottom, isAniRunning, switchSketch, onSwiperInit, onSlideChange } =
-    useSketch<HTMLDivElement>(images, onBeforeSketch, onAfterSketch);
+  const {
+    nodeRef,
+    sketch,
+    activeIndex,
+    isTouchedBottom,
+    isAniRunning,
+    updateImages,
+    switchSketch,
+    onSwiperInit,
+    onSlideChange,
+  } = useSketch<HTMLDivElement>(images, onBeforeSketch, onAfterSketch);
 
   function onIconClick(index: number) {
     if (index === activeIndex || sketch.current?.isRunning) return;
     switchSketch(index);
   }
 
-  async function onBeforeSketch(prevIndex: number, nextIndex: number) {
-    const { offsetWidth: ow, offsetHeight: oh } = nodeRef.current!;
+  function getFrame(index: number, isFirst = false) {
+    const { clientWidth: ow, clientHeight: oh } = nodeRef.current!;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d')!;
     canvas.width = ow;
     canvas.height = oh;
 
-    const node = videoRefs.current[prevIndex];
+    const node = videoRefs.current[index];
     if (!node) return;
 
     const { videoWidth: vw, videoHeight: vh } = node;
     node.pause();
 
+    if (isFirst) node.currentTime = 2;
+
     ctx.clearRect(0, 0, ow, oh);
     ctx.drawImage(node, (vw - ow) / 2, (vh - oh) / 2, ow, oh, 0, 0, ow, oh);
-    const url = canvas.toDataURL();
-    await sketch.current?.updateImage(prevIndex, url);
+    return new Promise((resolve) => {
+      canvas.toBlob(async (blob) => {
+        const url = URL.createObjectURL(blob!);
+        await sketch.current?.updateImage(index, url);
+        images[index] = url;
+        resolve(url);
+      });
+    });
+  }
+
+  function onBeforeSketch(prevIndex: number, nextIndex: number) {
+    return getFrame(prevIndex);
   }
 
   function onAfterSketch(prevIndex: number, nextIndex: number) {
@@ -47,16 +63,25 @@ export default function SchoolDesc() {
     sketch.current?.updateImage(prevIndex, images[prevIndex]);
   }
 
-  function startPlay(index: number) {
+  async function startPlay(index: number) {
     const node = videoRefs.current[index];
     if (!node) return;
 
     node.pause();
     node.currentTime = 2;
-    node.play();
+    try {
+      await node.play();
+    } catch (error) {
+      console.log('play video', error);
+    }
   }
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    startPlay(activeIndex);
+    Promise.all(images.map((item, index) => getFrame(index, true))).then(async (urls) => {
+      updateImages(urls as string[]);
+    });
+  }, []);
 
   return (
     <section className="school-desc w-full h-screen relative overflow-hidden">
@@ -79,12 +104,12 @@ export default function SchoolDesc() {
 
         <div
           ref={nodeRef}
-          className={cn(['absolute inset-0 w-full h-full', isAniRunning ? 'visible' : 'invisible'])}
+          className={cn(['absolute inset-0 w-full h-full z-0', isAniRunning ? 'visible' : 'invisible'])}
         ></div>
       </div>
 
       <SchoolSwiper
-        count={4}
+        count={COUNT}
         mousewheel={!sketch.current?.isRunning && { releaseOnEdges: true, thresholdTime: 1200 }}
         onSwiperInit={onSwiperInit}
         onActiveIndexChange={onSlideChange}

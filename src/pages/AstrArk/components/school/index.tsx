@@ -6,7 +6,7 @@ export default function AstrArkSchool() {
   const Content = (
     <>
       <video
-        className="absolute inset-0 object-cover"
+        className="absolute inset-0 object-cover w-full h-full"
         autoPlay
         playsInline
         muted
@@ -30,15 +30,23 @@ export default function AstrArkSchool() {
   return (
     <section className="w-full h-screen relative overflow-hidden">
       <div
-        className="luxy-el w-full h-[calc(100vh_+_600px)] flex-col justify-center items-center min-[2400px]:flex hidden"
+        className="luxy-el w-full h-[calc(100vh_+_800px)] flex-col justify-center items-center min-[2400px]:flex hidden"
         data-speed-y="8"
-        data-offset="-960"
+        data-offset="-1200"
       >
         {Content}
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_540px)] flex-col justify-center items-center min-[768px]:max-[2399px]:flex hidden relative top-[20vh]"
+        className="luxy-el w-full h-[calc(100vh_+_600px)] flex-col justify-center items-center min-[1680px]:max-[2399px]:flex hidden relative top-[20vh]"
+        data-speed-y="4"
+        data-offset="-800"
+      >
+        {Content}
+      </div>
+
+      <div
+        className="luxy-el w-full h-[calc(100vh_+_540px)] flex-col justify-center items-center min-[768px]:max-[1679px]:flex hidden relative top-[20vh]"
         data-speed-y="4"
         data-offset="-480"
       >
