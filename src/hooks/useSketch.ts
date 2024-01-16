@@ -32,7 +32,7 @@ export class Sketch {
 
   constructor(
     private container: HTMLElement,
-    private images: string[],
+    public images: string[],
     opts: {
       fragment?: string;
       uniforms: { [uniform: string]: IUniform };
@@ -40,6 +40,7 @@ export class Sketch {
       easing?: keyof typeof Power2;
     },
   ) {
+    this.container.innerHTML = '';
     this.width = this.container.offsetWidth;
     this.height = this.container.offsetHeight;
 
@@ -56,21 +57,24 @@ export class Sketch {
 
     this.container.appendChild(this.renderer.domElement);
 
-    this.camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.001, 1000);
+    this.camera = new PerspectiveCamera(70, this.width / this.height, 0.001, 1000);
 
     this.camera.position.set(0, 0, 2);
     this.time = 0;
     this.current = 0;
     this.textures = [];
 
-    this.initiate(() => {
-      console.log(this.textures);
-      this.setupResize();
-      this.initSettings();
-      this.addObjects();
-      this.resize();
-      this.play();
-    });
+    this.initImages();
+  }
+
+  async initImages() {
+    await this.initiate();
+    console.log(this.textures);
+    this.setupResize();
+    this.initSettings();
+    this.addObjects();
+    this.resize();
+    this.play();
   }
 
   updateImage(index: number, url: string) {
@@ -84,16 +88,14 @@ export class Sketch {
     });
   }
 
-  initiate(cb: () => void) {
+  initiate() {
     const promises = this.images.map((url, i) => {
       return new Promise((resolve) => {
         this.textures[i] = new THREE.TextureLoader().load(url, resolve);
       });
     });
 
-    Promise.all(promises).then(() => {
-      cb();
-    });
+    return Promise.all(promises);
   }
 
   initSettings() {
@@ -171,7 +173,6 @@ export class Sketch {
     });
 
     this.geometry = new THREE.PlaneGeometry(1, 1, 2, 2);
-
     this.plane = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.plane);
   }
@@ -242,10 +243,13 @@ export default function useSketch<T>(
   const { isTouchedBottom } = useTouchBottom();
   const [isAniRunning, setIsAniRunning] = useState(false);
 
-  function initSketch() {
-    if (!nodeRef.current) return;
+  function updateImages(images: string[]) {
+    initSketch(images);
+  }
 
-    sketch.current = new Sketch(nodeRef.current, images, {
+  function initSketch(data = images) {
+    if (!nodeRef.current) return;
+    sketch.current = new Sketch(nodeRef.current, data, {
       uniforms: {
         intensity: { value: 0.3 },
       },
@@ -332,5 +336,15 @@ export default function useSketch<T>(
     };
   }, []);
 
-  return { nodeRef, sketch, isTouchedBottom, activeIndex, isAniRunning, switchSketch, onSwiperInit, onSlideChange };
+  return {
+    nodeRef,
+    sketch,
+    isTouchedBottom,
+    activeIndex,
+    isAniRunning,
+    updateImages,
+    switchSketch,
+    onSwiperInit,
+    onSlideChange,
+  };
 }
