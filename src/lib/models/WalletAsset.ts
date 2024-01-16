@@ -78,6 +78,7 @@ export interface IWalletAsset extends Document {
     tokens: WalletToken[],
     // 钱包的nft
     nfts: WalletNFT[],
+    reservoir_value: number,
     // 创建时间毫秒时间戳
     created_time: number,
 }
@@ -91,6 +92,7 @@ const WalletAssetSchema = new Schema<IWalletAsset>({
     nft_usd_value: {type: Number},
     tokens: Schema.Types.Mixed,
     nfts: Schema.Types.Mixed,
+    reservoir_value: {type: Number},
     created_time: {type: Number},
 });
 
