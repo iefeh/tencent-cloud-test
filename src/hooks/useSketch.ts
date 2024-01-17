@@ -29,6 +29,7 @@ export class Sketch {
   public isRunning = false;
 
   private imageAspect = 1;
+  private rafId = 0;
 
   constructor(
     private container: HTMLElement,
@@ -226,8 +227,17 @@ export class Sketch {
     // this.plane.rotation.y = 0.4*Math.sin(this.time)
     // this.plane.rotation.x = 0.5*Math.sin(0.4*this.time)
 
-    requestAnimationFrame(this.render.bind(this));
+    this.rafId = requestAnimationFrame(this.render.bind(this));
     this.renderer.render(this.scene, this.camera);
+  }
+
+  destory() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = 0;
+    }
+    this.scene.remove();
+    this.renderer.dispose();
   }
 }
 
@@ -249,6 +259,10 @@ export default function useSketch<T>(
 
   function initSketch(data = images) {
     if (!nodeRef.current) return;
+    if (sketch.current) {
+      sketch.current.destory();
+    }
+
     sketch.current = new Sketch(nodeRef.current, data, {
       uniforms: {
         intensity: { value: 0.3 },
