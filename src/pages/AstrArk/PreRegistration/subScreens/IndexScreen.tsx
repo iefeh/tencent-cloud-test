@@ -9,14 +9,18 @@ import { PreRegisterInfoDTO } from '@/http/services/astrark';
 import ShareButton from '../components/ShareButton';
 import PreRegisterButton from '../components/PreRegisterButton';
 import shardImg from 'img/astrark/pre-register/shard.png';
+import { useContext } from 'react';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
-export default function IndexScreen({
+function IndexScreen({
   preInfo,
   onPreRegistered,
 }: {
   preInfo: PreRegisterInfoDTO | null;
   onPreRegistered?: () => void;
 }) {
+  const { userInfo } = useContext(MobxContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function onPreRegisterCallback() {
@@ -47,17 +51,15 @@ export default function IndexScreen({
           Commanders registered for AstrArk! Let&apos;s embark together!
         </div>
 
-        <RewardSwiper />
+        <RewardSwiper preInfo={preInfo} />
 
         <Image className="mt-6 w-9 h-9 object-cover select-none hidden lg:block" src={arrowLRImg} alt="" />
 
         <div className="mt-2 lg:mt-8 flex items-center h-[4.375rem]">
-          {preInfo &&
-            (preInfo?.preregistered ? (
-              <ShareButton preInfo={preInfo} />
-            ) : (
-              <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
-            ))}
+          {(!userInfo || (preInfo && !preInfo.preregistered)) && (
+            <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
+          )}
+          {preInfo && preInfo.preregistered && <ShareButton preInfo={preInfo} />}
         </div>
 
         <Modal
@@ -86,3 +88,5 @@ export default function IndexScreen({
     </div>
   );
 }
+
+export default observer(IndexScreen);
