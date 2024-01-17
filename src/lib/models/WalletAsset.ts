@@ -45,6 +45,7 @@ export interface IWalletAsset extends Document {
     tokens: WalletToken[],
     // 钱包的nft
     nfts: WalletNFT[],
+    reverified: boolean,
     reservoir_value: number,
     // 创建时间毫秒时间戳
     created_time: number,
