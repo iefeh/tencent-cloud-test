@@ -98,8 +98,8 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
                 </div>
 
                 <div className="w-full flex flex-col lg:flex-row items-center py-[1.75rem] gap-[2.875rem] pl-[1.1875rem] pr-10">
-                  <div className="relative pb-6">
-                    <Image className="w-[19.0625rem] h-[26.875rem] object-contain" src={preInfo?.hero_url} alt="" />
+                  <div className="relative w-[19.0625rem] h-[26.875rem] flex justify-center items-end pb-6">
+                    <Image className="object-contain" src={preInfo?.hero_url} alt="" fill />
                   </div>
 
                   <div className="relative font-poppins flex-1 pr-2">
