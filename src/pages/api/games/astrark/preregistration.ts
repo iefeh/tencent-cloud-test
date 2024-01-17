@@ -10,7 +10,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).get(async (req, res) => {
     await getMongoConnection();
-    // // 查询当前预约人数
+    // 查询当前预约人数
     const totalCount = await redis.get(`astrark_preregistration_count`);
     // 用户预约的情况.
     let preRegistered = false;
@@ -134,6 +134,7 @@ function pickRandomHeroURL(): string {
     }
     throw new Error(`pick astrark hero url failed`);
 }
+
 
 // this will run if none of the above matches
 router.all((req, res) => {
