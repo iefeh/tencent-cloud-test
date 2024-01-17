@@ -47,7 +47,7 @@ export default function DownloadPage() {
         />
       </div>
 
-      <FloatRegisterButton />
+      {/* <FloatRegisterButton /> */}
     </div>
   );
 }
