@@ -10,9 +10,9 @@ import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest"
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
 import WalletAsset, {IWalletAsset, WalletNFT} from "@/lib/models/WalletAsset";
 import doTransaction from "@/lib/mongodb/transaction";
-import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
+import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import UserMetrics from "@/lib/models/UserMetrics";
+import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
 import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 import {allowIP2VerifyWalletAsset, retryAllowToSendRequest2Reservoir} from "@/lib/redis/ratelimit";
@@ -20,6 +20,11 @@ import logger from "@/lib/logger/winstonLogger";
 import {redis} from "@/lib/redis/client";
 
 import Moralis from 'moralis';
+
+import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/models/UserMetricReward";
+import {AuthorizationType} from "@/lib/authorization/types";
+import {promiseSleep} from "@/lib/common/sleep";
+
 
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
 sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
@@ -42,13 +47,7 @@ router.get(async (req, res) => {
         // const result = await questWrapper.refreshUserWalletMetric("check_user_1", "0x8728c811f93eb6ac47d375e6a62df552d62ed284");
         // console.log(result);
 
-        // const asset = await WalletAsset.findOne({user_id: "155b6465-3f06-4678-a275-ad8621511942"});
-        // await checkUserAsset(asset);
-        // await checkUserAssets();
 
-        // await loadMoonbeamIntoCache();
-
-        // await refreshUserMoonbeamCache();
         res.json(response.success());
         return;
     } catch (error) {
@@ -56,6 +55,163 @@ router.get(async (req, res) => {
     }
     res.json(response.success());
 });
+
+
+async function reVerifyUsersWalletQuest() {
+    // 获取基本信息
+    const quest = await Quest.findOne({id: "331a0cfd-0393-4c07-a7f9-91c56d709748"});
+    const rewards = await UserMetricReward.find({id: {$in: quest.reward.range_reward_ids}});
+
+    // 重新校验用户的资产信息
+    let pageNum = 1;
+    let pageSiz = 100;
+    while (true) {
+        const users = await findUsers2ReverifyWalletAsset(pageNum, pageSiz);
+        if (users.length == 0) {
+            return;
+        }
+        console.log(users);
+        for (let userId of users) {
+            logger.debug(`reverifing user ${userId}`);
+            await reVerifyWalletQuest(userId, quest, rewards);
+        }
+    }
+}
+
+async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
+    // 获取用户的最新资产信息
+    const asset = await WalletAsset.findOne({
+        'user_id': userId,
+        'reservoir_value': {$exists: true},
+        'reverified': null,
+    }).sort({created_time: -1})
+    const now = Date.now();
+    // 重新计算用户的资产信息
+    const userMetric: any = {
+        [Metric.WalletAssetValueLastRefreshTime]: now,
+        [Metric.WalletAssetId]: asset.id,
+        [Metric.WalletTokenUsdValue]: asset.token_usd_value,
+        [Metric.WalletNftUsdValue]: asset.reservoir_value,
+        [Metric.WalletAssetUsdValue]: asset.token_usd_value + asset.reservoir_value,
+    }
+    // 计算用户的当前奖励
+    const rewardDelta = checkUserRewardDeltaFromUserMetric(userId, userMetric, rewards);
+    // 保存用户全新奖励，移除历史奖励
+    const taint = `${quest.id},${AuthorizationType.Wallet},${asset.wallet_addr}`;
+    const audit = new UserMoonBeamAudit({
+        user_id: userId,
+        type: UserMoonBeamAuditType.Quests,
+        moon_beam_delta: rewardDelta,
+        reward_taint: taint,
+        corr_id: quest.id,
+        extra_info: asset.id,
+        created_time: now,
+    });
+    let historyReward = await UserMoonBeamAudit.findOne({user_id: userId, corr_id: quest.id, deleted_time: null});
+    if (!historyReward) {
+        logger.debug(`user ${userId} not verified`);
+        await WalletAsset.updateMany({user_id: userId}, {
+            reverified: true
+        });
+        return;
+    }
+    historyReward.deleted_time = now;
+    // 用户的MB增量
+    const increasedReward = rewardDelta - historyReward.moon_beam_delta;
+    logger.debug(`user ${userId} delta ${increasedReward}`);
+    await doTransaction(async (session) => {
+        const opts = {session};
+        // 更新用户的校验标识
+        await WalletAsset.updateMany({user_id: userId}, {
+            reverified: true,
+            total_usd_value: userMetric.wallet_asset_usd_value
+        }, opts);
+        if (increasedReward == 0) {
+            // 如果用户的更改为0则跳过处理
+            return;
+        }
+        // 保存用户最新的指标
+        await UserMetrics.updateOne(
+            {user_id: userId},
+            {
+                $set: userMetric,
+                $setOnInsert: {
+                    "created_time": now,
+                }
+            },
+            {
+                session: session,
+                upsert: true
+            }
+        )
+        // 移除用户的历史校验记录
+        await historyReward.save(opts);
+        // 添加新的校验记录
+        await audit.save(opts);
+        // 更新用户的MB
+        await User.updateOne({user_id: userId}, {$inc: {moon_beam: increasedReward}}, opts);
+    })
+    // 刷新用户的缓存
+    if (increasedReward != 0) {
+        await try2AddUser2MBLeaderboard(userId);
+    }
+    // await promiseSleep(10000);
+}
+
+function checkUserRewardDeltaFromUserMetric(userId: string, userMetric: any, rewards: any[]): number {
+    // 检查用户指标是否存在，不存在时直接报错
+    for (let reward of rewards) {
+        if (reward.require_metric in userMetric) {
+            continue;
+        }
+        throw new Error(`quest ${this.quest.id} reward ${reward.id} want metric ${reward.require_metric} but not found from user ${userId}`);
+    }
+    // 计算用户总计奖励数量
+    let totalReward = 0;
+    rewards.forEach(reward => {
+        const userMetricValue = userMetric[reward.require_metric];
+        const rewardItem = checkMetricReward(userMetricValue, reward);
+        if (rewardItem) {
+            logger.debug(`user ${userId} reached ${reward.require_metric} reward MB ${rewardItem.reward_moon_beam}`);
+            totalReward += rewardItem.reward_moon_beam!;
+        }
+    });
+    return totalReward;
+}
+
+
+async function findUsers2ReverifyWalletAsset(pageNumber, pageSize) {
+    const skip = (pageNumber - 1) * pageSize;
+
+    // 使用聚合管道进行查询
+    const result = await WalletAsset.aggregate([
+        {
+            '$match': {
+                'reservoir_value': {$exists: true},
+                'reverified': null,
+            }
+        },
+        {
+            $group: {
+                _id: "$user_id", // 使用 wallet_addr 字段的值作为去重后的_id
+            }
+        },
+        {
+            $sort: {_id: 1} // 根据 wallet_addr (_id) 排序
+        },
+        {
+            $skip: skip // 跳过前面的结果
+        },
+        {
+            $limit: pageSize // 限制返回的结果数量
+        },
+        {
+            $project: {user_id: "$_id", _id: 0}
+        }
+    ]).exec();
+
+    return result.map(item => item.user_id);
+}
 
 
 async function syncUserReservoirNftVal() {

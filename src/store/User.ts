@@ -26,6 +26,10 @@ class UserStore {
     if (this.token) this.getUserInfo();
   };
 
+  setUserInfo = (userInfo: UserInfo | null) => {
+    this.userInfo = userInfo;
+  }
+
   loginByEmail = async (data: LoginByEmailBodyDto) => {
     const res = await loginByEmailAPI(data);
     this.token = res.token || '';
@@ -37,7 +41,7 @@ class UserStore {
 
   getUserInfo = debounce(async () => {
     const res = await getUserInfoAPI();
-    this.userInfo = res;
+    this.setUserInfo(res);
 
     // 成功登录后清除邀请码
     localStorage.removeItem(KEY_INVITE_CODE);
@@ -54,7 +58,7 @@ class UserStore {
 
     this.token = '';
     localStorage.removeItem(KEY_AUTHORIZATION);
-    this.userInfo = null;
+    this.setUserInfo(null);
   };
 
   getParticleUserInfo = async () => {

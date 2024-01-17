@@ -238,7 +238,7 @@ export default function About({
                       className="transition-transform transform group w-[30.75rem]"
                     >
                       <Image
-                        className="w-[30.75rem] h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
+                        className="w-auto h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
                         src={figureData.img}
                         alt={figureData.name}
                       />
