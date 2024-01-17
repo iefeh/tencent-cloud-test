@@ -88,9 +88,14 @@ const astrarkHeroURLs = [
 async function generateAstrarkHeroURL(userId: string): Promise<string> {
     const userHeroURL = pickRandomHeroURL();
     // 保存用户的英雄地址
-    await UserMetrics.updateOne({user_id: userId, astrark_hero_url: null}, {
-        astrark_hero_url: userHeroURL,
-    });
+    await UserMetrics.updateOne(
+        {user_id: userId, astrark_hero_url: null},
+        {
+            $set: {astrark_hero_url: userHeroURL},
+            $setOnInsert: {created_time: Date.now()}
+        },
+        {upsert: true}
+    );
     return userHeroURL;
 }
 
