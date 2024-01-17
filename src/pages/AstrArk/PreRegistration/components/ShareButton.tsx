@@ -38,6 +38,14 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
     }
   }
 
+  function onShareOnTwitter() {
+    if (!userInfo) return;
+
+    const shareLink = `${location.origin}?invite_code=${userInfo?.invite_code}`;
+    const intentURL = `https://twitter.com/intent/tweet?url=${shareLink}`;
+    window.open(intentURL, '_blank');
+  }
+
   async function onDownloadClick() {
     if (!contentRef.current) return;
 
@@ -87,12 +95,7 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
 
                 <div className="w-full flex flex-col lg:flex-row items-center py-[1.75rem] gap-[2.875rem] pl-[1.1875rem] pr-10">
                   <div className="relative w-[19.0625rem] h-[26.875rem] flex justify-center items-end pb-6">
-                    <Image
-                      className="object-contain"
-                      src={preInfo?.hero_url}
-                      alt=""
-                      fill
-                    />
+                    {/* <Image className="object-contain" src={preInfo?.hero_url} alt="" fill /> */}
                   </div>
 
                   <div className="relative font-poppins flex-1 pr-2">
@@ -165,13 +168,22 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
                         Showcase your hero now and claim your exclusive in-game reward!
                       </div>
 
-                      <LGButton
-                        className="uppercase w-full h-9 mt-12"
-                        actived
-                        label="Share my link"
-                        prefix={<Image className="w-4 h-4" src={linkIconImg} alt="" />}
-                        onClick={onShareLink}
-                      />
+                      <div className="flex items-center gap-4">
+                        <LGButton
+                          className="uppercase h-9 mt-12"
+                          actived
+                          label="Share my link"
+                          prefix={<Image className="w-4 h-4" src={linkIconImg} alt="" />}
+                          onClick={onShareLink}
+                        />
+                        <LGButton
+                          className="uppercase h-9 mt-12"
+                          actived
+                          label="Share On Twitter"
+                          prefix={<Image className="w-4 h-4" src={linkIconImg} alt="" />}
+                          onClick={onShareOnTwitter}
+                        />
+                      </div>
 
                       {/* <div
                         className="mx-auto mt-[1.625rem] cursor-pointer font-poppins text-base hidden lg:block"
