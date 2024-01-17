@@ -42,7 +42,7 @@ export default function Home() {
           <AstrArkSchoolDesc />
         </div>
 
-        <FloatRegisterButton />
+        {/* <FloatRegisterButton /> */}
       </section>
 
       <AstrarkHome scrollY={scrollY} />
