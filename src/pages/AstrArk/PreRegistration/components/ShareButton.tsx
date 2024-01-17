@@ -41,8 +41,12 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
   function onShareOnTwitter() {
     if (!userInfo) return;
 
-    const shareLink = `${location.origin}?invite_code=${userInfo?.invite_code}`;
-    const intentURL = `https://twitter.com/intent/tweet?url=${shareLink}`;
+    const shareLink = `${location.origin}?invite_code=${userInfo?.invite_code}\n`;
+    const text = "Join @AstrArk_World's Alpha Test for a chance to win a Destiny TETRA NFT whitelist!\nLog in now!";
+    const hashtags = ['AstrArk'];
+    const intentURL = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(
+      text,
+    )}&hashtags=${hashtags.join(',')}`;
     window.open(intentURL, '_blank');
   }
 
@@ -95,7 +99,7 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
 
                 <div className="w-full flex flex-col lg:flex-row items-center py-[1.75rem] gap-[2.875rem] pl-[1.1875rem] pr-10">
                   <div className="relative w-[19.0625rem] h-[26.875rem] flex justify-center items-end pb-6">
-                    {/* <Image className="object-contain" src={preInfo?.hero_url} alt="" fill /> */}
+                    <Image className="object-contain" src={preInfo?.hero_url} alt="" fill />
                   </div>
 
                   <div className="relative font-poppins flex-1 pr-2">
@@ -158,10 +162,16 @@ function ShareButton({ preInfo }: { preInfo: PreRegisterInfoDTO }) {
                         walletClassName="hidden"
                       />
 
-                      <div className="font-semakin text-lg w-full mt-[2.125rem]">Register</div>
+                      {/* <div className="font-semakin text-lg w-full mt-[2.125rem]">Register</div>
 
                       <div className="font-semakin text-3xl text-basic-yellow w-full mt-1">
                         N0.{preInfo?.total || 1}
+                      </div> */}
+
+                      <div className="font-semakin text-lg w-full mt-[2.125rem]">Invite Code</div>
+
+                      <div className="font-semakin text-3xl text-basic-yellow w-full mt-1">
+                        {userInfo?.invite_code || '--'}
                       </div>
 
                       <div className="w-full mt-[2.625rem]">

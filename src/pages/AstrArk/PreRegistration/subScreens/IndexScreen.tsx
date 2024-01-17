@@ -29,7 +29,7 @@ function IndexScreen({
   }
 
   return (
-    <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
+    <div className="w-screen min-h-screen bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0 pt-[6rem] pb-[4rem]">
       <div className="absolute right-0 top-0 z-0 w-[54.125rem] h-[67.5rem]">
         <Image className="object-cover" src={roleImg} alt="" fill />
       </div>

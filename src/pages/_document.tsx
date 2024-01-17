@@ -9,14 +9,14 @@ export default function Document() {
           name="description"
           content="Empowered by cutting-edge technologies, our mission is to craft top-notch gaming experiences that seamlessly combine casual flexibility with authentic fun depth."
         />
-        <meta name="twitter:card" content="summary_large_image"></meta>
+        {/* <meta name="twitter:card" content="summary_large_image"></meta>
         <meta name="twitter:title" content="Moonveil Entertainment"></meta>
         <meta name="twitter:description" content="Moonveil Entertainment Official Website."></meta>
         <meta name="twitter:site" content="@Moonveil_Studio"></meta>
         <meta
           name="twitter:image"
           content="https://moonveil.gg/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fbg.5abd36fe.jpg&w=3840&q=75"
-        ></meta>
+        ></meta> */}
         <link rel="icon" href="/img/favicon.png" type="image/x-icon"></link>
         <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon"></link>
         <link rel="preload" as="font" href="/fonts/Semakin.woff2" crossOrigin="anonymous"></link>
