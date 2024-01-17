@@ -59,6 +59,7 @@ const WalletAssetSchema = new Schema<IWalletAsset>({
     nft_usd_value: {type: Number},
     tokens: Schema.Types.Mixed,
     nfts: Schema.Types.Mixed,
+    reverified: {type: Boolean},
     reservoir_value: {type: Number},
     created_time: {type: Number},
 });
