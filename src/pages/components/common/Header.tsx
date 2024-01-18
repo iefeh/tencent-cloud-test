@@ -28,10 +28,10 @@ const routeText: RouteMenu[] = [
         name: 'Game Download',
         route: '/AstrArk/Download',
       },
-      // {
-      //   name: 'Pre-Registration',
-      //   route: '/AstrArk/PreRegistration',
-      // },
+      {
+        name: 'Pre-Registration',
+        route: '/AstrArk/PreRegistration',
+      },
       {
         name: 'Game Lore',
         route: '/AstrArk',
