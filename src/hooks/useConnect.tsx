@@ -32,7 +32,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
         toast.error(msg);
       }
 
-      if ([-1, -9, -13, -16].includes(+code)) {
+      if ([-9, -13, -16].includes(+code)) {
         onOpen();
       }
     }
@@ -153,7 +153,13 @@ export default function useConnect(type: string, callback?: (args?: any) => void
                   4. After 12 hours, log in again and link the account you wish to use.
                 </p>
                 <br />
-                <p>If you encounter any issues, please contact our support team for assistance.</p>
+                <p>
+                  If you encounter any issues, please contact our{' '}
+                  <a className="text-basic-yellow hover:underline" href="https://discord.gg/moonveil">
+                    support team
+                  </a>{' '}
+                  for assistance.
+                </p>
 
                 <div className="mt-4 flex justify-center">
                   <LGButton actived label="Close" onClick={onClose} />

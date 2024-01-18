@@ -59,7 +59,7 @@ function IndexScreen({
           {(!userInfo || (preInfo && !preInfo.preregistered)) && (
             <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
           )}
-          {preInfo && preInfo.preregistered && <ShareButton preInfo={preInfo} />}
+          {/* {preInfo && preInfo.preregistered && <ShareButton preInfo={preInfo} />} */}
         </div>
 
         <Modal
