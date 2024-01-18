@@ -32,13 +32,13 @@ export default function DownloadPage() {
       </div>
 
       <div className=" absolute left-1/2 -translate-x-1/2 bottom-[12.6%] flex flex-col md:flex-row items-center gap-[0.625rem]">
-        <Button
+        {/* <Button
           className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
           disableRipple
           onPress={onDownloadClick}
         >
           Download Now
-        </Button>
+        </Button> */}
 
         <Button
           className="w-[13.25rem] h-[4.375rem] bg-[url('/img/astrark/btn_google_play.png')] bg-cover bg-no-repeat !bg-transparent"
