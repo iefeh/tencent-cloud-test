@@ -54,9 +54,9 @@ export default function BushwhackPage() {
 
       {/* <KeyVisionScreen /> */}
 
-      {/* <GameContent /> */}
+      <GameContent />
 
-      {/* <IntroScreen /> */}
+      <IntroScreen />
 
       <div
         ref={maskRef}

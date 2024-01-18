@@ -140,13 +140,13 @@ export default function FogScreen() {
     setShadowWidth(innerWidth * ratio);
     setShadowHeight(innerHeight * ratio);
     if (innerWidth / BASE_WIDTH > innerHeight / BASE_HEIGHT) {
-      setShadowWidth(innerHeight * BASE_WIDTH / BASE_HEIGHT);
+      setShadowWidth((innerHeight * BASE_WIDTH) / BASE_HEIGHT);
       setShadowHeight(innerHeight);
       setIsShadowX(false);
       setIsShadowY(true);
     } else {
       setShadowWidth(innerWidth);
-      setShadowHeight(innerWidth * BASE_HEIGHT / BASE_WIDTH);
+      setShadowHeight((innerWidth * BASE_HEIGHT) / BASE_WIDTH);
       setIsShadowX(true);
       setIsShadowY(false);
     }
@@ -278,7 +278,7 @@ export default function FogScreen() {
           'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 shadow-[inset_0_0_4rem_2rem_#000]',
           isResizing && 'invisible',
         ])}
-        style={{ width: `${shadowWidth}px`, height: `${shadowHeight}px`}}
+        style={{ width: `${shadowWidth}px`, height: `${shadowHeight}px` }}
       ></div>
 
       <canvas
