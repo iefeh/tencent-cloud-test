@@ -7,7 +7,7 @@ interface Props {
 
 export default function ComingSoon(props: Props) {
   return (
-    <div className="bg-coming-soon w-full h-screen relative flex justify-center items-center">
+    <div className="bg-coming-soon w-full h-screen relative flex justify-center items-center bg-black">
       <Image
         className="object-cover"
         src="/img/bg_coming_soon.jpg"

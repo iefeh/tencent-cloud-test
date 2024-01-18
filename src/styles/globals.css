@@ -6,6 +6,15 @@
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
   --basic-yellow: #f6c799;
+  background-color: #000;
+}
+
+body {
+  min-height: 100vh;
+}
+
+#__next {
+  min-height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,40 +30,91 @@ body {
 
 @font-face {
   font-family: semakin;
-  src: url("/fonts/Semakin.woff2");
+  src: url('/fonts/Semakin.woff2');
 }
 
 @font-face {
   font-family: semakin;
-  src: url("/fonts/Semakin.ttf");
+  src: url('/fonts/Semakin.ttf');
 }
 
 @font-face {
   font-family: decima;
-  src: url("/fonts/Decima-Mono-W01-Regular.woff2");
+  src: url('/fonts/Decima-Mono-W01-Regular.woff2');
 }
 
 @font-face {
   font-family: decima;
-  src: url("/fonts/Decima-Mono-W01-Regular.ttf");
+  src: url('/fonts/Decima-Mono-W01-Regular.ttf');
 }
 
 @font-face {
   font-family: poppins;
-  src: url("/fonts/Poppins-Regular.woff2");
+  src: url('/fonts/Poppins-Regular.woff2');
 }
 
 @font-face {
   font-family: poppins;
-  src: url("/fonts/Poppins-Regular.ttf");
+  src: url('/fonts/Poppins-Regular.ttf');
 }
 
 @font-face {
   font-family: poppins-medium;
-  src: url("/fonts/Poppins-Medium.woff2");
+  src: url('/fonts/Poppins-Medium.woff2');
 }
 
 @font-face {
   font-family: poppins-medium;
-  src: url("/fonts/Poppins-Medium.ttf");
+  src: url('/fonts/Poppins-Medium.ttf');
+}
+
+.szh-menu-container--theme-dark .szh-menu.szh-menu {
+  background-color: #1a1917;
+  border: none;
+  border-radius: 0.625rem;
+  margin-top: 0.9375rem !important;
+}
+
+.szh-menu-container--theme-dark .szh-menu__item--hover.szh-menu__item--hover {
+  background-color: #1f1f1f;
+}
+
+.szh-menu.szh-menu {
+  min-width: unset;
+}
+
+.basic-card {
+  background-color: #1d1d1d;
+  border-radius: 0.625rem;
+}
+
+.basic-card > div {
+  padding-top: 0.6875rem;
+  padding-bottom: 0.6875rem;
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+}
+
+.shake-hover-in {
+  transition: transform 0.2s ease-in;
+}
+
+.shake-hover-out {
+  transition: transform 0.2s ease-in;
+}
+
+@media (max-width: 640px) {
+  .page-desc {
+    .text-6xl {
+      font-size: 3rem;
+    }
+  }
+}
+
+*::-webkit-scrollbar{
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
 }

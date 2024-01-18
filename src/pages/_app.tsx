@@ -2,7 +2,7 @@ import '@/styles/globals.css';
 import '@/styles/dialog.css';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import RootLayout from './layout';
 import Loading from './components/common/Loading';
 import './page.scss';
@@ -19,17 +19,10 @@ import './NFT/components/home.scss';
 import './AstrArk/components/schoolDesc/index.scss';
 import './AstrArk/components/school/Mystery/index.scss';
 import './AstrArk/components/school/SchoolIcons/index.scss';
+import './TetraNFT/components/PrivilegeScreen/index.scss';
+import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
 import homePlanetBg from 'img/home/planet.png';
 import loadingImg from 'img/loading/bg_moon.png';
-import ntf_halo1 from 'img/nft/home/halo1.png';
-import ntf_halo2 from 'img/nft/home/halo2.png';
-import ntf_meteor from 'img/nft/home/meteor.png';
-import ntf_planet1 from 'img/nft/home/planet1.png';
-import ntf_planet2 from 'img/nft/home/planet2.png';
-import ntf_planet3 from 'img/nft/home/planet3.png';
-import ntf_stars1 from 'img/nft/home/stars1.png';
-import ntf_stars2 from 'img/nft/home/stars2.png';
-import ntf_stars3 from 'img/nft/home/stars3.png';
 import about_c1 from 'img/about/1@2x.png';
 import about_c2 from 'img/about/2@2x.png';
 import about_c3 from 'img/about/3@2x.png';
@@ -63,6 +56,15 @@ import Script from 'next/script';
 import astrark_bg_home from 'img/astrark/bg-home.jpg';
 import astrark_bg_mask from 'img/astrark/bg-mask.png';
 import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
+import usePostMessage from '@/hooks/usePostMessage';
+import { useStore } from '@/store';
+import UserStore from '@/store/User';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '@/styles/toastify.css';
+import { Web3ModalProvider } from '@/store/Web3Modal';
+import { NextUIProvider } from '@nextui-org/react';
+import { KEY_INVITE_CODE } from '@/constant/storage';
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -75,19 +77,7 @@ async function initResources(path: string) {
       promises.push(loadVideo('/video/ntfbg.webm'));
       break;
     case '/ntf':
-      promises.push(
-        ...[
-          ntf_halo1.src,
-          ntf_halo2.src,
-          ntf_meteor.src,
-          ntf_planet1.src,
-          ntf_planet2.src,
-          ntf_planet3.src,
-          ntf_stars1.src,
-          ntf_stars2.src,
-          ntf_stars3.src,
-        ].map((path) => loadImage(path)),
-      );
+      promises.push(...[].map((path) => loadImage(path)));
       break;
     case '/about':
       promises.push(
@@ -139,6 +129,8 @@ function loadImage(path: string) {
   document.body.appendChild(img);
 
   return new Promise((resolve) => {
+    // 兼容safari图片资源加载逻辑
+    if (img.complete) return resolve(true);
     img.onload = function () {
       document.body.removeChild(img);
       resolve(true);
@@ -148,23 +140,41 @@ function loadImage(path: string) {
 
 function loadVideo(path: string) {
   const video = document.createElement('video');
+  video.autoplay = true;
+  video.preload = 'auto';
+  video.muted = true;
   video.src = path;
   video.style.display = 'none';
   document.body.appendChild(video);
 
   return new Promise((resolve) => {
-    video.addEventListener('canplay', () => {
-      document.body.removeChild(video);
-      resolve(true);
-    });
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.userAgent.indexOf('Mac') > -1) {
+      setTimeout(() => {
+        resolve(true);
+      }, 1000);
+    } else {
+      video.addEventListener('canplay', () => {
+        document.body.removeChild(video);
+        resolve(true);
+      });
+    }
   });
 }
 
+export const MobxContext = createContext<UserStore>(new UserStore());
+
 export default function App({ Component, pageProps }: AppProps) {
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [resLoading, setResLoading] = useState(true);
+  const isInWhiteList = whiteList.includes(router.route);
+  const [loading, setLoading] = useState(!isInWhiteList);
+  const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
+  const store = useStore();
+
+  if (router.query.invite_code) {
+    localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
+  }
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
@@ -208,6 +218,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
       window.luxy = res.default;
       window.luxy.getWrapperTranslateY = function () {
+        if (!this.wrapper) return;
         const { transform } = this.wrapper.style;
         const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
         return -y || 0;
@@ -237,6 +248,22 @@ export default function App({ Component, pageProps }: AppProps) {
     });
   });
 
+  usePostMessage();
+
+  useEffect(() => {
+    store.init();
+
+    window.Storage.prototype.read = function <T>(key: string) {
+      const val = this.getItem(key);
+      if (!val) return null;
+      return JSON.parse(val) as T;
+    };
+
+    window.Storage.prototype.save = function <T>(key: string, val: T) {
+      this.setItem(key, JSON.stringify(val || ''));
+    };
+  }, []);
+
   return (
     <>
       <Head>
@@ -245,13 +272,22 @@ export default function App({ Component, pageProps }: AppProps) {
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
       </Head>
-      {loading ? (
-        <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-      ) : (
-        <RootLayout>
-          <Component {...pageProps} />
-        </RootLayout>
-      )}
+
+      <Web3ModalProvider>
+        <NextUIProvider>
+          {!isInWhiteList && loading ? (
+            <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+          ) : (
+            <MobxContext.Provider value={store}>
+              <RootLayout isInWhiteList={isInWhiteList}>
+                <Component {...pageProps} />
+              </RootLayout>
+            </MobxContext.Provider>
+          )}
+        </NextUIProvider>
+      </Web3ModalProvider>
+
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 
       <Script id="google-analytics">
         {`

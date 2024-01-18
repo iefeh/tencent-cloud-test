@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./components/home/Header";
+import Header from "./components/common/Header";
 import LineBorder from "./components/home/LineBorder/index";
 import { Suspense } from "react";
 import Loading from "./components/common/Loading";
@@ -9,9 +9,11 @@ import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
 
 export default function RootLayout({
-  children
+  children,
+  isInWhiteList
 }: {
   children: React.ReactNode;
+  isInWhiteList: boolean;
 }) {
   return (
     <React.Fragment>
@@ -22,9 +24,9 @@ export default function RootLayout({
         id="main-layout"
       > */}
         <Suspense fallback={<Loading />}>
-          <Header />
+          {isInWhiteList || <Header />}
 
-          <section className="page-container w-full h-full">{children}</section>
+          <main className="dark page-container w-full h-full">{children}</main>
         </Suspense>
       {/* </main> */}
     </React.Fragment>

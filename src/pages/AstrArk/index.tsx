@@ -7,6 +7,7 @@ import AstrArkSchoolDesc from './components/schoolDesc';
 import WorldView from './components/worldView';
 import SecondDesc from './components/secondDesc';
 import Head from 'next/head';
+import FloatRegisterButton from './components/FloatRegisterButton';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
@@ -26,7 +27,7 @@ export default function Home() {
     <>
       <section ref={scrollWrapper} id="luxy" className="scroll-wrapper w-full relative flex flex-col z-10">
         <Head>
-          <title>AstrArk | Moonveil</title>
+          <title>AstrArk | Moonveil Entertainment</title>
         </Head>
 
         <div className="scroll-container flex flex-col z-10">
@@ -40,6 +41,8 @@ export default function Home() {
 
           <AstrArkSchoolDesc />
         </div>
+
+        {/* <FloatRegisterButton /> */}
       </section>
 
       <AstrarkHome scrollY={scrollY} />

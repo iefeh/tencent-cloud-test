@@ -8,7 +8,7 @@ interface Props {
 export default function RaceSlide(props: Props) {
   return (
     <div className="bg-race w-full h-screen relative flex justify-center items-center">
-      <Image className="object-cover" src="/img/bg_home_swiper_race.png" alt="" fill sizes="100%"></Image>
+      <Image className="object-cover" src="/img/bg_home_swiper_race.jpg" alt="" fill sizes="100%"></Image>
 
       <div className="absolute left-0 top-0 w-full h-full bg-black/40"></div>
 
@@ -17,8 +17,10 @@ export default function RaceSlide(props: Props) {
         hasBelt
         needAni={props.needAni}
         baseAniTY
-        title="See You In Q4 2023"
-        subtitle="An immersive tower defense strategy game."
+        title="Alpha Test is live"
+        subtitle="The AstrArk Alpha Test is from Jan 19 12:00 AM EST to Jan 29 12:00 AM EST."
+        buttonLabel="Join Now"
+        buttonLink="/AstrArk/Download"
       />
     </div>
   );
