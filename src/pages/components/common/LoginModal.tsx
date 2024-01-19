@@ -16,7 +16,7 @@ import backImg from 'img/login/icon_back.png';
 import LGButton from './buttons/LGButton';
 import { MobxContext } from '@/pages/_app';
 import { KEY_EMAIL } from '@/constant/storage';
-import { sendEmailCodeAPI } from '@/http/services/login';
+import { sendEmailCodeAPI, sendEmailConnectCodeAPI } from '@/http/services/login';
 import { observer } from 'mobx-react-lite';
 import { toast } from 'react-toastify';
 
@@ -31,7 +31,7 @@ interface BtnGroup {
 }
 
 export function useEmail() {
-  const { loginByEmail, toggleLoginModal } = useContext(MobxContext);
+  const { isConnect, loginByEmail, toggleLoginModal } = useContext(MobxContext);
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [codeBtnText, setCodeBtnText] = useState('Send');
@@ -69,7 +69,8 @@ export function useEmail() {
     setIsSendLoading(true);
     listenEmail();
     try {
-      await sendEmailCodeAPI({ email });
+      const api = isConnect ? sendEmailConnectCodeAPI : sendEmailCodeAPI;
+      await api({ email });
     } catch (error: any) {
       return;
     } finally {
@@ -109,9 +110,29 @@ export function useEmail() {
     }
   }
 
+  function reset() {
+    if (timer.current > 0) {
+      clearInterval(timer.current);
+      timer.current = 0;
+      leftSeconds.current = 0;
+    }
+
+    setIsSendLoading(false);
+    setIsLoading(false);
+    setIsCounting(false);
+    setEmail('');
+    setCode('');
+    setCodeBtnText('Send');
+    setDesc('');
+  }
+
   useEffect(() => {
     return () => {
-      if (timer.current > 0) clearInterval(timer.current);
+      if (timer.current > 0) {
+        clearInterval(timer.current);
+        timer.current = 0;
+        leftSeconds.current = 0;
+      }
     };
   }, []);
 
@@ -127,12 +148,13 @@ export function useEmail() {
     isLoading,
     isCounting,
     desc,
+    reset,
   };
 }
 
 const LoginModal = function () {
-  const { loginModalVisible, toggleLoginModal } = useContext(MobxContext);
-  const [emailLoginVisible, setEmailLoginVisible] = useState(false);
+  const { isConnect, loginModalVisible, toggleLoginModal } = useContext(MobxContext);
+  const [emailLoginVisible, setEmailLoginVisible] = useState(isConnect);
   const connectList: BtnGroup[] = [
     {
       title: 'Log in with social account',
@@ -187,7 +209,15 @@ const LoginModal = function () {
     isLoading,
     isCounting,
     desc,
+    reset,
   } = useEmail();
+
+  useEffect(() => {
+    setEmailLoginVisible(isConnect);
+    if (loginModalVisible) return;
+
+    reset();
+  }, [loginModalVisible]);
 
   const baseLoginContent = (onClose: () => void) => (
     <>
@@ -229,13 +259,17 @@ const LoginModal = function () {
   const emailLoginContent = (onClose: () => void) => (
     <>
       <ModalHeader className="flex gap-[0.6875rem] pt-11">
-        <Image
-          className="w-[1.875rem] h-[1.75rem] inline-block cursor-pointer"
-          src={backImg}
-          alt=""
-          onClick={() => setEmailLoginVisible(false)}
-        />
-        <span className="font-poppins text-3xl">Welcome to Moonveil</span>
+        {isConnect || (
+          <>
+            <Image
+              className="w-[1.875rem] h-[1.75rem] inline-block cursor-pointer"
+              src={backImg}
+              alt=""
+              onClick={() => setEmailLoginVisible(false)}
+            />
+            <span className="font-poppins text-3xl">Welcome to Moonveil</span>
+          </>
+        )}
       </ModalHeader>
       <ModalBody className="font-poppins text-base">
         <div>Email Address</div>
@@ -272,7 +306,7 @@ const LoginModal = function () {
           <LGButton
             className="w-[13.125rem]"
             actived
-            label="Login"
+            label={isConnect ? 'Connect' : 'Login'}
             loading={isLoading}
             disabled={code.length < 6 || !email}
             squared

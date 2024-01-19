@@ -43,7 +43,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     if (!dialogWindowRef.current) return;
     dialogWindowRef.current.close();
     dialogWindowRef.current = null;
-  }, 300);
+  }, 500);
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {
