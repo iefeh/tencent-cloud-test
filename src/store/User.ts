@@ -1,5 +1,11 @@
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE } from '@/constant/storage';
-import { getUserInfoAPI, loginByEmailAPI, logoutAPI, signInParticleAPI } from '@/http/services/login';
+import {
+  connectByEmailAPI,
+  getUserInfoAPI,
+  loginByEmailAPI,
+  logoutAPI,
+  signInParticleAPI,
+} from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
 import { debounce } from 'lodash';
 import { makeAutoObservable } from 'mobx';
@@ -11,6 +17,7 @@ class UserStore {
   particle: ParticleNetwork;
   loginModalVisible = false;
   inviteModalVisible = false;
+  isConnect = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -28,10 +35,11 @@ class UserStore {
 
   setUserInfo = (userInfo: UserInfo | null) => {
     this.userInfo = userInfo;
-  }
+  };
 
   loginByEmail = async (data: LoginByEmailBodyDto) => {
-    const res = await loginByEmailAPI(data);
+    const api = this.isConnect ? connectByEmailAPI : loginByEmailAPI;
+    const res = await api(data);
     this.token = res.token || '';
     this.jwtToken = res.particle_jwt || '';
     localStorage.setItem(KEY_AUTHORIZATION, this.token);
@@ -97,12 +105,14 @@ class UserStore {
     return res;
   };
 
-  toggleLoginModal = (visible?: boolean) => {
+  toggleLoginModal = (visible?: boolean, isConnect?: boolean) => {
     if (typeof visible === 'boolean') {
       this.loginModalVisible = visible;
     } else {
       this.loginModalVisible = !this.loginModalVisible;
     }
+
+    this.isConnect = isConnect === true;
   };
 
   toggleInviteModal = (visible?: boolean) => {

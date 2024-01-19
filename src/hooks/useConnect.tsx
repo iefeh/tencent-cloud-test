@@ -82,7 +82,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
     if (type === MediaType.EMAIL) {
       console.log('connect email');
-      toggleLoginModal(true);
+      toggleLoginModal(true, true);
       return;
     }
 
