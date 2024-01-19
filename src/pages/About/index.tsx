@@ -68,7 +68,7 @@ const figureArray: Figure[] = [
     name: 'Robin Z',
     subTitle: 'Web 3 Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
-  <p>- Defi project builder</p>
+  <p>- DeFi project builder</p>
   <p>- Crypto native since 2014</p>
   <p>- 7 years full-stack mobile-game dev & production experience</p>
   <p>- Game collector</p>
