@@ -16,6 +16,11 @@ export function sendEmailCodeAPI(params: SendEmailCodeParamsDto) {
   return http.get('/api/auth/signin/captcha', { params });
 }
 
+export function sendEmailConnectCodeAPI(params: SendEmailCodeParamsDto) {
+  params.quick_fill_url = `${location.origin}/email/captcha/quickfill`;
+  return http.get('/api/auth/connect/captcha', { params });
+}
+
 export function loginByEmailAPI(data: LoginByEmailBodyDto): Promise<TokenDto> {
   data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
   return http.post('/api/auth/signin/email', JSON.stringify(data));

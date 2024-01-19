@@ -40,10 +40,14 @@ class UserStore {
   loginByEmail = async (data: LoginByEmailBodyDto) => {
     const api = this.isConnect ? connectByEmailAPI : loginByEmailAPI;
     const res = await api(data);
-    this.token = res.token || '';
-    this.jwtToken = res.particle_jwt || '';
-    localStorage.setItem(KEY_AUTHORIZATION, this.token);
-    this.loginParticle();
+
+    if (!this.isConnect) {
+      this.token = res.token || '';
+      this.jwtToken = res.particle_jwt || '';
+      localStorage.setItem(KEY_AUTHORIZATION, this.token);
+      this.loginParticle();
+    }
+
     await this.getUserInfo();
   };
 
