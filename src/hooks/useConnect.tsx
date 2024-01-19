@@ -38,7 +38,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     }
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
-  }, 300);
+  }, 500);
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {
