@@ -46,7 +46,7 @@ function IndexScreen({
         <div className="font-poppins text-lg mt-[1.375rem]">
           Join the adventure with{' '}
           <span className="font-semakin text-basic-yellow text-2xl">
-            {preInfo ? preInfo.total.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') : '0'}
+            {preInfo ? preInfo.total?.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') : '0'}
           </span>{' '}
           Commanders registered for AstrArk! Let&apos;s embark together!
         </div>
@@ -59,7 +59,7 @@ function IndexScreen({
           {(!userInfo || (preInfo && !preInfo.preregistered)) && (
             <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
           )}
-          {preInfo && preInfo.preregistered && <ShareButton preInfo={preInfo} />}
+          {/* {preInfo && preInfo.preregistered && <ShareButton preInfo={preInfo} />} */}
         </div>
 
         <Modal

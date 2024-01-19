@@ -63,7 +63,7 @@ const ConnectWallet = function () {
 
   const MediaItem = function (props: { item: MAItem }) {
     const { item } = props;
-    const { onConnect } = useConnect(item.type, () => {
+    const { onConnect, BindTipsModal } = useConnect(item.type, () => {
       getUserInfo();
     });
 
@@ -85,6 +85,8 @@ const ConnectWallet = function () {
             <Image className="w-[1.375rem] h-4" src={rightArrowIconImg} alt="" onClick={onConnect} />
           )}
         </div>
+
+        <BindTipsModal />
       </div>
     );
   };
