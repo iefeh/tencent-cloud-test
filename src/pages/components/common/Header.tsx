@@ -38,7 +38,7 @@ const routeText: RouteMenu[] = [
       },
     ],
   },
-  // { name: 'Bushwhack', route: '/Bushwhack' },
+  { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
   {
