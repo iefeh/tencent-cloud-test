@@ -5,7 +5,7 @@ export function preRegisterAPI(): Promise<boolean | null> {
 }
 
 export interface PreRegisterInfoDTO {
-  total: string;
+  total: string | null;
   preregistered: boolean;
   hero_url: string;
 }

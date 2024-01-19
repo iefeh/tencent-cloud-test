@@ -52,7 +52,7 @@ export default function RewardSwiper({ preInfo }: { preInfo: PreRegisterInfoDTO 
   ]);
 
   function isReached(item: RewardItem) {
-    return !!preInfo && +preInfo.total >= item.reachAmount;
+    return !!preInfo && +(preInfo.total || 0) >= item.reachAmount;
   }
 
   useEffect(() => {
