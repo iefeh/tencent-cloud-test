@@ -23,6 +23,10 @@ export default function IntroScreen() {
   const navigationNextRef = useRef(null);
   const swiperRef = useRef<SwiperClass>();
   const [activeIndex, setActiveIndex] = useState(0);
+  const orbitAngle = {
+    minPolarAngle: Math.PI / 2,
+    maxPolarAngle: Math.PI / 2,
+  };
 
   const roles: Role[] = [
     {
@@ -35,6 +39,7 @@ export default function IntroScreen() {
           y: -0.9,
         },
         zoom: 2.2,
+        orbitAngle,
       },
     },
     {
@@ -47,6 +52,7 @@ export default function IntroScreen() {
           y: -0.9,
         },
         zoom: 2.2,
+        orbitAngle,
       },
     },
     {
@@ -59,6 +65,7 @@ export default function IntroScreen() {
           y: -0.9,
         },
         zoom: 2.2,
+        orbitAngle,
       },
     },
   ];

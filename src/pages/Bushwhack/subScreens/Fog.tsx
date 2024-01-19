@@ -19,6 +19,13 @@ interface MaskItem {
 }
 
 function getBaseMasks(): MaskItem[] {
+  const orbitAngle = {
+    minPolarAngle: Math.PI / 2,
+    maxPolarAngle: Math.PI / 2,
+    minAzimuthAngle: -Math.PI / 4,
+    maxAzimuthAngle: Math.PI / 4,
+  };
+
   return [
     // thief
     {
@@ -38,6 +45,7 @@ function getBaseMasks(): MaskItem[] {
           z: 0,
         },
         zoom: 6,
+        orbitAngle,
       },
     },
     // doctor
@@ -61,6 +69,7 @@ function getBaseMasks(): MaskItem[] {
           y: -0.5,
         },
         zoom: 6,
+        orbitAngle,
       },
     },
     // rhea
@@ -84,6 +93,7 @@ function getBaseMasks(): MaskItem[] {
           y: -0.5,
         },
         zoom: 6,
+        orbitAngle,
       },
     },
   ];
