@@ -21,6 +21,10 @@ export function loginByEmailAPI(data: LoginByEmailBodyDto): Promise<TokenDto> {
   return http.post('/api/auth/signin/email', JSON.stringify(data));
 }
 
+export function connectByEmailAPI(data: LoginByEmailBodyDto): Promise<TokenDto> {
+  return http.post('/api/auth/connect/email', JSON.stringify(data));
+}
+
 export function getUserInfoAPI(): Promise<UserInfo> {
   return http.get('/api/users/me');
 }
