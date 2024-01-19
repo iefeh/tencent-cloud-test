@@ -128,6 +128,7 @@ export class ModelViewer {
       controls.noZoom = true;
     } else {
       controls = new OrbitControls(this.camera, this.renderer.domElement);
+      controls.enablePan = false;
       controls.enableZoom = false;
       controls.minPolarAngle = Math.PI / 2;
       controls.maxPolarAngle = 0;
