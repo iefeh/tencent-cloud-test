@@ -57,9 +57,23 @@ function MintTips() {
     );
   };
 
+  const SoldOutTips = () => {
+    return (
+      <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
+        <div className="text-3xl text-center">We’ve Sold OUT! </div>
+        <div className='mt-4'>
+          All 800 Genesis NFT Collection have been Minted. Thank you for your unbelievable Support. We are grateful to
+          our community and everyone who participated in the Mint.
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="mt-16">
-      {status === MintStatus.MINTED ? (
+      {status === MintStatus.SOLD_OUT ? (
+        <SoldOutTips />
+      ) : status === MintStatus.MINTED ? (
         <MintedTips />
       ) : status === MintStatus.WRONG_MINTED ? (
         <MintedFailedTips />

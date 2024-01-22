@@ -7,4 +7,5 @@ export const enum MintStatus {
   WHITELISTED,
   WRONG_MINTED,
   MINTED,
+  SOLD_OUT,
 }
