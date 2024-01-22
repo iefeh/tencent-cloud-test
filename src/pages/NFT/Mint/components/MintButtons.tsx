@@ -61,7 +61,7 @@ function MintButtons() {
         className="shrink-0 h-full normal-case"
         label={mintInfo.buttonLabel}
         active
-        disabled={+count < 1}
+        disabled={status === MintStatus.WHITELISTED && +count < 1}
         onClick={onMintOperation}
       />
     </div>

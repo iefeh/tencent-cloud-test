@@ -29,7 +29,7 @@ interface MintInfo {
 
 class MintStore {
   status = MintStatus.DEFAULT;
-  maxCount = 0;
+  maxCount = 3;
   mintNo = 3597;
   loading = false;
 
@@ -67,7 +67,7 @@ class MintStore {
       delay(() => {
         this.loading = false;
         this.status = MintStatus.MINTED;
-      }, 500);
+      }, 1500);
     } else if (this.status >= MintStatus.CORRECTED_NETWORK) {
       this.status = MintStatus.WHITELISTED;
     } else if (this.status >= MintStatus.CONNECTED) {
