@@ -22,7 +22,7 @@ function MintProgress() {
   ];
 
   return (
-    <div className="flex justify-between items-center mt-[3.875rem]">
+    <div className="flex justify-between items-center mt-12">
       {progressData.map((item, index) => (
         <Fragment key={index}>
           {index > 0 && (

@@ -7,7 +7,7 @@ function MintButtons() {
   const { status, mintInfo, onMintOperation } = useContext(MintContext);
 
   return (
-    <div className="mt-5 flex items-center">
+    <div className="mt-8 flex items-center">
       <BasicButton label={mintInfo.buttonLabel} active onClick={onMintOperation} />
     </div>
   );

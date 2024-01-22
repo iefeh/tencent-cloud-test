@@ -28,8 +28,7 @@ interface MintInfo {
 }
 
 class MintStore {
-  // status = MintStatus.DEFAULT;
-  status = MintStatus.SOLD_OUT;
+  status = MintStatus.DEFAULT;
   count = 0;
   mintNo = 3597;
   loading = false;

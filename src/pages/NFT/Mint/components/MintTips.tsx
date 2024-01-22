@@ -6,6 +6,12 @@ import { useRouter } from 'next/router';
 
 function MintTips() {
   const { status, mintNo } = useContext(MintContext);
+  const router = useRouter();
+
+  function onGotoUserCenter(e: MouseEvent) {
+    e.preventDefault();
+    router.push('/Profile');
+  }
 
   const WhitelistedTips = () => {
     return (
@@ -26,15 +32,9 @@ function MintTips() {
 
   const MintedTips = () => {
     // const nos = mintNo.toString().padStart(4, '0').split('');
-    const router = useRouter();
-
-    function onGotoUserCenter(e: MouseEvent) {
-      e.preventDefault();
-      router.push('/Profile');
-    }
 
     return (
-      <div className="font-poppins px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
+      <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
         <div className="text-lg">
           Congratulations on receiving your Destiny TETRA NFT, please check the unique identification number of each
           TETRA NFT from the{' '}
@@ -61,7 +61,7 @@ function MintTips() {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
         <div className="text-3xl text-center">We’ve Sold OUT! </div>
-        <div className='mt-4'>
+        <div className="mt-4">
           All 800 Genesis NFT Collection have been Minted. Thank you for your unbelievable Support. We are grateful to
           our community and everyone who participated in the Mint.
         </div>
@@ -70,7 +70,7 @@ function MintTips() {
   };
 
   return (
-    <div className="mt-16">
+    <div className="mt-12 font-poppins">
       {status === MintStatus.SOLD_OUT ? (
         <SoldOutTips />
       ) : status === MintStatus.MINTED ? (
@@ -80,7 +80,16 @@ function MintTips() {
       ) : status >= MintStatus.WHITELISTED ? (
         <WhitelistedTips />
       ) : (
-        false
+        <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
+          If you already own any Moonveil NFT(s), please check from the{' '}
+          <a
+            className="text-basic-yellow underline cursor-pointer"
+            onClick={(e) => onGotoUserCenter(e as any as MouseEvent)}
+          >
+            USER CENTER
+          </a>
+          .
+        </div>
       )}
     </div>
   );
