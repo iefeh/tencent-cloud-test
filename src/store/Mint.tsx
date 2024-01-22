@@ -29,7 +29,7 @@ interface MintInfo {
 
 class MintStore {
   status = MintStatus.DEFAULT;
-  count = 0;
+  maxCount = 0;
   mintNo = 3597;
   loading = false;
 
