@@ -4,10 +4,10 @@ import { MintContext } from '..';
 import { observer } from 'mobx-react-lite';
 
 function MintButtons() {
-  const { mintInfo, onMintOperation } = useContext(MintContext);
+  const { status, mintInfo, onMintOperation } = useContext(MintContext);
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 flex items-center">
       <BasicButton label={mintInfo.buttonLabel} active onClick={onMintOperation} />
     </div>
   );
