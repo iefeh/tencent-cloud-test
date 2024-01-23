@@ -142,7 +142,7 @@ function RegularTasks() {
         time = dayjs(Date.now());
       }
 
-      const expiredTime = dayjs(+(process.env.NEXT_PUBLIC_WHITELIST_EXPIRE_TIME || 0) || 1706072400);
+      const expiredTime = dayjs(+(process.env.NEXT_PUBLIC_WHITELIST_EXPIRE_TIME || 0) || 1706072400000);
       setExpired(time.isAfter(expiredTime));
       setHasGotTime(true);
     } catch (error) {
