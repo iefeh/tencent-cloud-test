@@ -29,11 +29,10 @@ import { MobxContext } from '@/pages/_app';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
 import { useCountdown } from '@/pages/LoyaltyProgram/task/components/Countdown';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';
 import useConnect from '@/hooks/useConnect';
-import { getWorldTimeAPI } from '@/http/services/common';
 
 interface VerifyTexts {
   label: string;
@@ -49,7 +48,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal, expired, timerLoading } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const pagiInfo = useRef<PagiInfo>({
@@ -57,10 +56,6 @@ function RegularTasks() {
     pageSize: 9,
   });
   const [pagiTotal, setPagiTotal] = useState(0);
-  const [timerLoading, setTimerLoading] = useState(false);
-  const [hasGotTime, setHasGotTime] = useState(false);
-  const [expired, setExpired] = useState(false);
-  const timer = useRef(0);
 
   const queryTasks = debounce(async function (pagi: PagiInfo = pagiInfo.current, noLoading = false) {
     if (!noLoading) setTaskListLoading(true);
@@ -128,41 +123,6 @@ function RegularTasks() {
     const pagi = { ...pagiInfo.current, pageIndex: page };
     queryTasks(pagi);
   }
-
-  async function getCurrentTime() {
-    setTimerLoading(true);
-
-    try {
-      const res = await getWorldTimeAPI();
-      let time: Dayjs;
-
-      if (res) {
-        time = dayjs(res.timestamp);
-      } else {
-        time = dayjs(Date.now());
-      }
-
-      const expiredTime = dayjs(+(process.env.NEXT_PUBLIC_WHITELIST_EXPIRE_TIME || 0) || 1706072400000);
-      setExpired(time.isAfter(expiredTime));
-      setHasGotTime(true);
-    } catch (error) {
-      setExpired(false);
-    } finally {
-      setTimerLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    getCurrentTime();
-    timer.current = window.setInterval(getCurrentTime, 60000);
-
-    return () => {
-      if (timer.current) {
-        window.clearInterval(timer.current);
-        timer.current = 0;
-      }
-    };
-  }, []);
 
   useEffect(() => {
     queryTasks();
@@ -467,9 +427,7 @@ function RegularTasks() {
   };
 
   return (
-    <div
-      className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', expired && 'max-h-96 overflow-hidden'])}
-    >
+    <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', expired && 'h-96 overflow-hidden'])}>
       <div
         className={cn([
           'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
