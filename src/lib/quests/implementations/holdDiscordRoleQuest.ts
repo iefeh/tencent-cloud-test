@@ -5,6 +5,7 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
 import logger from "@/lib/logger/winstonLogger";
 import {deleteAuthToken, isDiscordAuthRevokedError} from "@/lib/authorization/provider/util";
+import * as Sentry from "@sentry/nextjs";
 
 export class HoldDiscordRoleQuest extends ConnectDiscordQuest {
 
@@ -47,6 +48,7 @@ export class HoldDiscordRoleQuest extends ConnectDiscordQuest {
                 return {claimable: false, require_authorization: AuthorizationType.Discord};
             }
             console.error(error);
+            Sentry.captureException(error);
         }
         return {claimable: false}
     }

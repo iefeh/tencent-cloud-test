@@ -12,7 +12,7 @@ interface Props {
 const routeText = [
   { name: 'Home', route: '/' },
   { name: 'AstrArk', route: '/AstrArk' },
-  { name: 'Bushwhack', route: '/Bushwhack' },
+  // { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
   { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
@@ -29,17 +29,21 @@ export default function Sidebar({ visible, onClose }: Props) {
 
   function onLinkClick(path: string) {
     try {
-        window.luxy.disable();
-        router.push(path);
-        window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
-        window.luxy.enable();
+      window.luxy.disable();
+      router.push(path);
+      window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
+      window.luxy.enable();
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-}
+  }
 
   return createPortal(
-    <div onClick={onClose} className="sidebar max-sm:pt-[80px] max-sm:justify-around max-lg:flex fixed left-0 top-0 w-full h-screen bg-black z-30 flex flex-col">
+    <div
+      onClick={onClose}
+      className="sidebar max-sm:pt-[80px] max-sm:justify-around max-lg:flex fixed left-0 top-0 w-full h-screen bg-black z-30 flex flex-col"
+      onScroll={(e) => e.stopPropagation()}
+    >
       <div className="content flex-1 flex flex-col font-semakin text-center items-center justify-center">
         {routeText.map((value, index) => (
           <div
@@ -54,7 +58,7 @@ export default function Sidebar({ visible, onClose }: Props) {
         ))}
       </div>
 
-      <MediaIconBar className={"max-sm:h-48 h-60 flex justify-center items-center " + styles.sidebarMediaIcons} />
+      <MediaIconBar className={'max-sm:h-48 h-60 flex justify-center items-center ' + styles.sidebarMediaIcons} />
     </div>,
     document.body,
   );

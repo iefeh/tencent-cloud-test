@@ -1,6 +1,12 @@
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE } from '@/constant/storage';
 import { getWorldTimeAPI } from '@/http/services/common';
-import { getUserInfoAPI, loginByEmailAPI, logoutAPI, signInParticleAPI } from '@/http/services/login';
+import {
+  connectByEmailAPI,
+  getUserInfoAPI,
+  loginByEmailAPI,
+  logoutAPI,
+  signInParticleAPI,
+} from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
 import { debounce } from 'lodash';
@@ -17,6 +23,7 @@ class UserStore {
   hasGotTime = false;
   expired = false;
   timer = 0;
+  isConnect = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -58,18 +65,27 @@ class UserStore {
     }
   };
 
+  setUserInfo = (userInfo: UserInfo | null) => {
+    this.userInfo = userInfo;
+  };
+
   loginByEmail = async (data: LoginByEmailBodyDto) => {
-    const res = await loginByEmailAPI(data);
-    this.token = res.token || '';
-    this.jwtToken = res.particle_jwt || '';
-    localStorage.setItem(KEY_AUTHORIZATION, this.token);
-    this.loginParticle();
+    const api = this.isConnect ? connectByEmailAPI : loginByEmailAPI;
+    const res = await api(data);
+
+    if (!this.isConnect) {
+      this.token = res.token || '';
+      this.jwtToken = res.particle_jwt || '';
+      localStorage.setItem(KEY_AUTHORIZATION, this.token);
+      this.loginParticle();
+    }
+
     await this.getUserInfo();
   };
 
   getUserInfo = debounce(async () => {
     const res = await getUserInfoAPI();
-    this.userInfo = res;
+    this.setUserInfo(res);
 
     // 成功登录后清除邀请码
     localStorage.removeItem(KEY_INVITE_CODE);
@@ -86,7 +102,7 @@ class UserStore {
 
     this.token = '';
     localStorage.removeItem(KEY_AUTHORIZATION);
-    this.userInfo = null;
+    this.setUserInfo(null);
   };
 
   getParticleUserInfo = async () => {
@@ -125,12 +141,14 @@ class UserStore {
     return res;
   };
 
-  toggleLoginModal = (visible?: boolean) => {
+  toggleLoginModal = (visible?: boolean, isConnect?: boolean) => {
     if (typeof visible === 'boolean') {
       this.loginModalVisible = visible;
     } else {
       this.loginModalVisible = !this.loginModalVisible;
     }
+
+    this.isConnect = isConnect === true;
   };
 
   toggleInviteModal = (visible?: boolean) => {

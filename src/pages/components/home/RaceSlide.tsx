@@ -17,8 +17,10 @@ export default function RaceSlide(props: Props) {
         hasBelt
         needAni={props.needAni}
         baseAniTY
-        title="Alpha Test Coming Soon"
-        subtitle="An immersive tower defense strategy game."
+        title="Alpha Test is live"
+        subtitle="The AstrArk Alpha Test is from Jan 19 12:00 AM EST to Jan 29 12:00 AM EST."
+        buttonLabel="Join Now"
+        buttonLink="/AstrArk/Download"
       />
     </div>
   );

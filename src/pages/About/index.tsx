@@ -68,7 +68,7 @@ const figureArray: Figure[] = [
     name: 'Robin Z',
     subTitle: 'Web 3 Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
-  <p>- Defi project builder</p>
+  <p>- DeFi project builder</p>
   <p>- Crypto native since 2014</p>
   <p>- 7 years full-stack mobile-game dev & production experience</p>
   <p>- Game collector</p>
@@ -238,7 +238,7 @@ export default function About({
                       className="transition-transform transform group w-[30.75rem]"
                     >
                       <Image
-                        className="w-[30.75rem] h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
+                        className="w-auto h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
                         src={figureData.img}
                         alt={figureData.name}
                       />

@@ -3,7 +3,7 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {retryAllowToSendRequest2Debank} from "@/lib/redis/ratelimit";
+import {retryAllowToSendRequest2Debank, retryAllowToSendRequest2Reservoir} from "@/lib/redis/ratelimit";
 import logger from "@/lib/logger/winstonLogger";
 import WalletAsset, {WalletNFT, WalletToken} from "@/lib/models/WalletAsset";
 import doTransaction from "@/lib/mongodb/transaction";
@@ -14,7 +14,11 @@ import {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {v4 as uuidv4} from "uuid";
 import * as Sentry from "@sentry/nextjs";
 
-const Debank = require('debank')
+
+const Debank = require('debank');
+const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
+sdk.auth(process.env.RESERVOIR_API_KEY);
+sdk.server('https://api.reservoir.tools');
 
 export class ConnectWalletQuest extends QuestBase {
     // 用户的授权钱包地址，在checkClaimable()时设置
@@ -140,6 +144,7 @@ export class ConnectWalletQuest extends QuestBase {
                 }
             }
             console.error(error);
+            Sentry.captureException(error);
             return {
                 verified: false,
                 tip: "Server Internal Error.",
@@ -180,8 +185,11 @@ export class ConnectWalletQuest extends QuestBase {
 
     // 当返回claimRewardResult时，表示刷新有问题，返回null则表示成功
     async refreshUserWalletMetric(userId: string, wallet: string, historyTotalValue: number = -1): Promise<refreshUserWalletMetricResult> {
+        // 刷新用户资产的NFT价值
+        const userNFT = await this.refreshUserWalletNFT(userId, wallet);
+        logger.debug(`got user ${userId} wallet ${wallet} nft count ${userNFT.nfts.length} & value ${userNFT.nft_usd_value}.`);
         // 检查用户资产的token价值
-        let allowed = await retryAllowToSendRequest2Debank(3);
+        let allowed = await retryAllowToSendRequest2Debank(5);
         if (!allowed) {
             logger.warn(`refresh wallet ${wallet} token assets did not get request cred after 3 seconds.`);
             return {
@@ -193,45 +201,10 @@ export class ConnectWalletQuest extends QuestBase {
         const debank = new Debank(process.env.DEBANK_ACCESS_KEY);
         const tokenData = await debank.user.total_balance({id: wallet})
         logger.debug(`got user ${userId} wallet ${wallet} total balance ${tokenData.total_usd_value}.`);
-        // 检查用户资产的NFT价值
-        allowed = await retryAllowToSendRequest2Debank(3);
-        if (!allowed) {
-            logger.warn(`refresh wallet ${wallet} nft assets did not get request cred after 3 seconds.`);
-            return {
-                interrupted: {verified: false, tip: "Network busy, please try again later."},
-                userMetric: null,
-            };
-        }
-        logger.debug(`querying user nft data.`);
-        // 各字段含义：https://docs.cloud.debank.com/en/readme/api-pro-reference/user#returns-10
-        const nftData = await debank.user.all_nft_list({
-            id: wallet,
-            is_all: false
-        })
         // 计算指标值
         const totalTokenValue = Number(tokenData.total_usd_value.toFixed(2));
         const tokens = tokenData.chain_list.filter((token: WalletToken) => token.usd_value > 0);
-        // 要求用户的NFT价值至少大于1刀
-        const nfts = nftData.filter((nft: WalletNFT) => nft.usd_price >= 1);
-        logger.debug(`got user ${userId} wallet ${wallet} nft count ${nfts.length}.`);
-        let totalNFTValue = nfts.reduce((sum: number, nft: WalletNFT) => {
-            // 如果NFT的数量超过100，且NFT的单价不超过20则过滤
-            if (nft.amount > 100 && nft.usd_price < 20) {
-                return sum;
-            }
-            if (nft.amount > 100) {
-                Sentry.captureMessage(`user ${userId} wallet ${wallet} suspicious NFT ${nft}`);
-            }
-            // NFT的价值保留4位小数
-            const nftVal = Number(nft.usd_price.toFixed(4));
-            // 根据最新成交价格评估NFT价值
-            return sum + nftVal * nft.amount;
-        }, 0);
-        totalNFTValue = Number(totalNFTValue.toFixed(2));
-        if (totalNFTValue > 1000000) {
-            Sentry.captureMessage(`user ${userId} wallet ${wallet} suspicious total NFT value ${totalNFTValue}`);
-        }
-        const totalValue = Number((totalNFTValue + totalTokenValue).toFixed(2));
+        const totalValue = Number((userNFT.nft_usd_value + totalTokenValue).toFixed(2));
         // 填充需要保存的对象
         const now = Date.now();
         const walletAsset = new WalletAsset({
@@ -240,9 +213,9 @@ export class ConnectWalletQuest extends QuestBase {
             wallet_addr: wallet,
             total_usd_value: totalValue,
             token_usd_value: totalTokenValue,
-            nft_usd_value: totalNFTValue,
+            nft_usd_value: userNFT.nft_usd_value,
             tokens: tokens,
-            nfts: nfts,
+            nfts: userNFT.nfts,
             created_time: now,
         });
         const userMetric: any = {
@@ -252,7 +225,7 @@ export class ConnectWalletQuest extends QuestBase {
             logger.warn(`user ${userId} wallet ${wallet} asset ${totalValue} gt history ${historyTotalValue}`)
             userMetric[Metric.WalletAssetId] = walletAsset.id
             userMetric[Metric.WalletTokenUsdValue] = totalTokenValue
-            userMetric[Metric.WalletNftUsdValue] = totalNFTValue
+            userMetric[Metric.WalletNftUsdValue] = userNFT.nft_usd_value
             userMetric[Metric.WalletAssetUsdValue] = totalValue
         } else {
             logger.warn(`user ${userId} wallet ${wallet} asset ${totalValue} lt history ${historyTotalValue}`)
@@ -280,6 +253,72 @@ export class ConnectWalletQuest extends QuestBase {
             userMetric: userMetric,
         };
     }
+
+    async refreshUserWalletNFT(userId: string, wallet: string): Promise<userNFT> {
+        let verifiedNFTs: any[] = [];
+        let offset = 0;
+        let batch = 100;
+        let hasMore = true;
+        let total = 0;
+        while (hasMore) {
+            // 获取用户NFT
+            await retryAllowToSendRequest2Reservoir(10);
+            const response = await sdk.getUsersUserCollectionsV3({
+                excludeSpam: 'true',
+                limit: batch,
+                user: wallet,
+                offset: offset,
+                accept: '*/*'
+            });
+            const collections = response.data.collections;
+            // 过滤未校验的NFT集合
+            collections.forEach((coll: any) => {
+                const col = coll.collection;
+                /**
+                 * The collection's approval status within OpenSea.
+                 * Can be one of:
+                 * - not_requested: brand new collections
+                 * - requested: collections that requested safelisting on our site
+                 * - approved: collections that are approved on our site and can be found in search results
+                 * - verified: verified collections
+                 */
+                if (col.openseaVerificationStatus != "verified") {
+                    return;
+                }
+                // 计算用户持有的NFT的价值
+                const usdVal = col.floorAskPrice?.amount?.usd;
+                if (!usdVal) {
+                    logger.warn(`col ${col.id} usd value not found`);
+                    return;
+                }
+                const own = coll.ownership?.tokenCount;
+                if (!own) {
+                    logger.error(`col ${col.id} own not found`);
+                    return;
+                }
+                verifiedNFTs.push(coll);
+                total += Number(usdVal) * Number(own);
+            });
+            offset += collections.length;
+            // 获取完成，返回用户的NFT数据
+            if (!collections || collections.length < batch) {
+                return {
+                    nft_usd_value: Number(total.toFixed(2)),
+                    nfts: verifiedNFTs,
+                };
+            }
+        }
+        logger.error(`unexpected statement triggered led to user ${userId} wallet ${wallet} zero nft value`);
+        return {
+            nft_usd_value: 0,
+            nfts: [],
+        };
+    }
+}
+
+type userNFT = {
+    nft_usd_value: number,
+    nfts: any[],
 }
 
 type refreshUserWalletMetricResult = {

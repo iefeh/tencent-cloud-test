@@ -140,7 +140,11 @@ function RegularTasks() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
-    const { onConnect, loading: mediaLoading } = useConnect(connectType, () => {
+    const {
+      onConnect,
+      loading: mediaLoading,
+      BindTipsModal,
+    } = useConnect(connectType, () => {
       updateTask();
     });
 
@@ -304,6 +308,8 @@ function RegularTasks() {
             )}
           </ModalContent>
         </Modal>
+
+        <BindTipsModal />
       </div>
     );
   };

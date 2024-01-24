@@ -6,6 +6,7 @@ import getMongoConnection from "@/lib/mongodb/client";
 import sharp from 'sharp';
 import {v4 as uuidv4} from "uuid";
 import {upload2public} from "@/lib/aws/s3";
+import * as Sentry from "@sentry/nextjs";
 
 const formidable = require('formidable');
 
@@ -38,9 +39,23 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         }));
     } catch (error) {
         console.error(error)
+        Sentry.captureException(error);
     }
     res.json(response.success());
 });
+
+function getFileName(filePath: string): string {
+    // 获取文件扩展名的位置
+    const extensionIndex = filePath.lastIndexOf('.');
+
+    // 如果找到了扩展名，截取从开始到扩展名的部分
+    if (extensionIndex !== -1) {
+        return filePath.slice(0, extensionIndex);
+    }
+
+    // 如果没有找到扩展名，返回整个文件名
+    return filePath;
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {
