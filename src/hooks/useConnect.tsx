@@ -10,7 +10,7 @@ import { MobxContext } from '@/pages/_app';
 import { Modal, ModalContent, ModalBody, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 
-export default function useConnect(type: string, callback?: (args?: any) => void) {
+export default function useConnect(type: string, callback?: (args?: any) => void, isOnlySign = false) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
   const { open } = useWeb3Modal();
@@ -58,6 +58,8 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
     try {
       const signer = await provider.getSigner();
+      if (isOnlySign) return;
+
       const signature = await signer?.signMessage(message);
 
       const data = {
@@ -172,5 +174,5 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     );
   };
 
-  return { onConnect, loading, BindTipsModal };
+  return { isConnected, onConnect, loading, BindTipsModal };
 }
