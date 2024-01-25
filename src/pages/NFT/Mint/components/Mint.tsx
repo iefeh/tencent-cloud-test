@@ -4,11 +4,10 @@ import { MintContext } from '..';
 import Image from 'next/image';
 import nftBorderImg from 'img/nft/mint/nft_border.png';
 import { cn } from '@nextui-org/react';
-import { MintStatus } from '@/constant/mint';
 import MintLoading from './MintLoading';
 
 function Mint() {
-  const { mintInfo, status } = useContext(MintContext);
+  const { mintInfo, minted, isEnded } = useContext(MintContext);
 
   return (
     <div className="relative">
@@ -18,7 +17,7 @@ function Mint() {
         <video
           className={cn([
             'max-w-[calc(100%_+_4em)] h-full -translate-x-8 object-cover',
-            status >= MintStatus.MINTED || 'hidden',
+            minted || 'hidden',
           ])}
           preload="auto"
           autoPlay
@@ -29,7 +28,7 @@ function Mint() {
         </video>
 
         <Image
-          className={cn(['object-contain', status >= MintStatus.MINTED && 'hidden'])}
+          className={cn(['object-contain', minted && 'hidden'])}
           src={mintInfo.nftImg}
           alt=""
           fill

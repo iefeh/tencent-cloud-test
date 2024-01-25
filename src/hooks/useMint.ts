@@ -3,21 +3,28 @@ import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/rea
 import useConnect from './useConnect';
 import { MediaType } from '@/constant/task';
 import { throttle } from 'lodash';
-import { BrowserProvider, Contract } from 'ethers';
-import { useContext, useEffect, useState } from 'react';
+import { BrowserProvider, Contract, JsonRpcSigner } from 'ethers';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '@/pages/NFT/Mint';
 import { MintState } from '@/constant/mint';
+import { toast } from 'react-toastify';
 
 export default function useMint() {
   const {
     setState,
+    isEnded,
+    canMint,
     isConnected: isWalletConnected,
     isNetCorrected,
     isWhitelistChecked,
     toggleIsConnected,
     toggleIsNetCorrected,
     toggleIsWhitelistChecked,
+    toggleMinted,
+    toggleLoading,
     setNowCount,
+    setGRCount,
+    setFRCount,
   } = useContext(MintContext);
   const [mintCount, setMintCount] = useState('0');
   const { address } = useWeb3ModalAccount();
@@ -29,77 +36,146 @@ export default function useMint() {
     },
     true,
   );
-  // const CONTRACT_ADDRESS = '0x9CC02a70F307FB94914A9c1DCAB57D9Dbd7AffB1'; // 替换为你的 NFT 智能合约地址
-  const CONTRACT_ADDRESS = '0x9d452C3DdDc5562A7FE015dCf25e7D62282C1737';
-  // const CONTRACT_ADDRESS = '0xd89C6420A4D3ae6784754B458F50C2cb7f3b43a3';
-  
-  const provider = new BrowserProvider(walletProvider!);
 
-  const CHAIN_ID = '80001';
+  const provider = useRef(new BrowserProvider(walletProvider!));
+  const signer = useRef<JsonRpcSigner | null>(null);
+  const contract = useRef<Contract | null>(null);
+
+  async function initProvider() {
+    provider.current = new BrowserProvider(walletProvider!);
+    signer.current = await provider.current.getSigner();
+    contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
+  }
 
   const init = throttle(async function () {
     if (!isConnected) return;
     toggleIsConnected(true);
 
-    const res = await checkNetwork();
-    if (!res) return;
+    toggleLoading(true);
 
-    initMintState();
+    const res = await checkNetwork();
+    if (!res) {
+      toggleLoading(false);
+      return;
+    }
+
+    try {
+      await initMintState();
+    } catch (error: any) {
+      toast.error(error?.message || error);
+    } finally {
+      toggleLoading(false);
+    }
   }, 500);
 
   async function initMintState() {
-    const signer = await provider.getSigner();
-    const contract = new Contract(CONTRACT_ADDRESS, contractABI, signer);
-    const result = await contract.getMintState();
-    const res = parseInt(result);
-    console.log('mint state', res);
-    setState(res);
+    try {
+      await initProvider();
+      const result = await contract.current!.getMintState();
+      const res = parseInt(result);
+      console.log('mint state', res);
+      setState(res || MintState.NotStarted);
+    } catch (error: any) {
+      toast.error(error?.message || error);
+    }
   }
 
   async function checkNetwork() {
-    const chainId = (await provider.getNetwork()).chainId;
-    const isNetCorrected = chainId.toString() === CHAIN_ID;
-    toggleIsNetCorrected(isNetCorrected);
-    console.log('mint network:', chainId);
-    return isNetCorrected;
+    try {
+      const network = await provider.current.getNetwork();
+      const chainId = network.chainId;
+      const isNetCorrected = chainId.toString() === process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID;
+      toggleIsNetCorrected(isNetCorrected);
+      console.log('current mint network chainId:', chainId);
+      return isNetCorrected;
+    } catch (error: any) {
+      toast.error(error.message);
+      toggleIsConnected(false);
+      return false;
+    }
+  }
+
+  async function switchNetwork() {
+    try {
+      await walletProvider?.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16) }],
+      });
+      await initProvider();
+      init();
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   }
 
   async function checkWhitelist() {
-    const signer = await provider.getSigner();
-    const contract = new Contract(CONTRACT_ADDRESS, contractABI, signer);
-    const result = await contract.nowMintQual(address);
-    const res = parseInt(result);
-    setNowCount(res);
-    console.log('now mint count:', res);
-    toggleIsWhitelistChecked(true);
+    try {
+      const result = await contract.current!.nowMintQual(address);
+      const res = parseInt(result);
+      setNowCount(res);
+      console.log('now mint count:', res);
+      toggleIsWhitelistChecked(true);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+
+    if (!isEnded && !canMint) {
+      checkWhitelistByRound(MintState.GuaranteedRound);
+      checkWhitelistByRound(MintState.FCFS_Round);
+    }
   }
 
-  async function mint() {
-    const signer = await provider.getSigner();
+  async function checkWhitelistByRound(state: MintState) {
+    try {
+      const result = await contract.current!.whiteList(address, state);
+      const res = parseInt(result);
+      switch (state) {
+        case MintState.GuaranteedRound:
+          setGRCount(res);
+          break;
+        case MintState.FCFS_Round:
+          setFRCount(res);
+          break;
+      }
+      console.log(`mint count - ${state}:`, res);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  }
 
-    const contract = new Contract(CONTRACT_ADDRESS, contractABI, signer);
-    const transaction = await contract.mint();
+  const mint = throttle(async () => {
+    const transaction = await contract.current!.mint(mintCount);
     const result = await transaction.wait();
-    console.log('mint result:', result)
-  }
+    console.log('mint result:', result);
+    toggleMinted(true);
+    await checkWhitelist();
+  }, 500);
 
-  function onButtonClick() {
+  async function onButtonClick() {
     if (!isWalletConnected) {
       onConnect();
       return;
     }
 
+    toggleLoading(true);
+
     if (!isNetCorrected) {
-      checkNetwork();
+      const res = await checkNetwork();
+      if (!res) {
+        await switchNetwork();
+      }
+      toggleLoading(false);
       return;
     }
 
     if (!isWhitelistChecked) {
-      checkWhitelist();
+      await checkWhitelist();
+      toggleLoading(false);
       return;
     }
 
-    mint();
+    await mint();
+    toggleLoading(false);
   }
 
   useEffect(() => {

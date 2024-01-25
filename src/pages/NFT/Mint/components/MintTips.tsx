@@ -5,7 +5,7 @@ import { MintState, MintStatus } from '@/constant/mint';
 import { useRouter } from 'next/router';
 
 function MintTips() {
-  const { state, mintNo, isConnected } = useContext(MintContext);
+  const { grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
   const router = useRouter();
 
   function onGotoUserCenter(e: MouseEvent) {
@@ -31,8 +31,6 @@ function MintTips() {
   };
 
   const MintedTips = () => {
-    // const nos = mintNo.toString().padStart(4, '0').split('');
-
     return (
       <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
         <div className="text-lg">
@@ -46,13 +44,6 @@ function MintTips() {
           </a>
           .
         </div>
-        {/* <div className="flex justify-center items-center text-4xl text-basic-yellow gap-1 mt-3">
-          {nos.map((no, index) => (
-            <span key={index} className="inline-block w-[2.125rem] border-b-2 border-[#3E3123] text-center">
-              {no}
-            </span>
-          ))}
-        </div> */}
       </div>
     );
   };
@@ -69,20 +60,34 @@ function MintTips() {
     );
   };
 
+  const CheckWhitelistTips = () => {
+    return (
+      <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
+        <p>
+          Thank you for being part of our whitelist journey! Here`&apos;`s the current status of your whitelist spots:
+        </p>
+
+        <ul>
+          <li>- Guaranteed whitelist spot(s): {grCount}</li>
+          <li>- FCFS (First Come, First Served) whitelist spot(s): {frCount}</li>
+        </ul>
+
+        <p>
+          Please be informed that the official MINT will commence on January 31st at 9 pm EST. We look forward to your
+          participation! Kindly return to this page at that time.
+        </p>
+      </div>
+    );
+  };
+
   function getTips() {
-    if (state === MintState.Ended) return <SoldOutTips />;
-    if (state === MintState.Pausing) return <MintedTips />;
-    return <WhitelistedTips />;
-    // <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
-    //   If you already own any Moonveil NFT(s), please check from the{' '}
-    //   <a
-    //     className="text-basic-yellow underline cursor-pointer"
-    //     onClick={(e) => onGotoUserCenter(e as any as MouseEvent)}
-    //   >
-    //     USER CENTER
-    //   </a>
-    //   .
-    // </div>
+    if (isEnded) return <SoldOutTips />;
+    if (canMint) {
+      if (minted) return <MintedTips />;
+      if (isWhitelistChecked) return <WhitelistedTips />;
+    } else {
+      if (isWhitelistChecked) return <CheckWhitelistTips />;
+    }
   }
 
   return <div className="mt-12 font-poppins">{getTips()}</div>;

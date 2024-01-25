@@ -31,7 +31,7 @@ class MintStore {
   isConnected = false;
   isNetCorrected = false;
   isWhitelistChecked = false;
-  state = MintState.Ended;
+  state = MintState.NotStarted;
 
   /** 当前mint资格数 */
   nowCount = 0;
@@ -42,7 +42,7 @@ class MintStore {
   /** 第二轮mint资格数 */
   frCount = 0;
 
-  mintNo = 3597;
+  minted = false;
   loading = false;
 
   constructor() {
@@ -61,49 +61,47 @@ class MintStore {
     );
   }
 
+  get isEnded() {
+    return this.state === MintState.Ended;
+  }
+
   get mintInfo(): MintInfo {
+    if (this.isEnded) {
+      return {
+        buttonDisabled: true,
+        buttonLabel: 'Check Whitelist',
+        nftImg: nft1Img,
+      };
+    }
+
+    const nftImg = this.canMint ? emptyNFTImg : nft1Img;
+
     if (!this.isConnected) {
       return {
         buttonLabel: 'Connect Wallet',
-        nftImg: emptyNFTImg,
+        nftImg,
       };
     }
 
     if (!this.isNetCorrected) {
       return {
         buttonLabel: 'Switch Network',
-        nftImg: emptyNFTImg,
+        nftImg,
       };
     }
 
     if (!this.isWhitelistChecked) {
       return {
         buttonLabel: 'Check Whitelist',
-        nftImg: emptyNFTImg,
+        nftImg,
       };
     }
 
-    switch (this.state) {
-      case MintState.Ended:
-        return {
-          buttonLabel: 'Check Whitelist',
-          nftImg: emptyNFTImg,
-        };
-      case MintState.GuaranteedRound:
-      case MintState.FCFS_Round:
-      case MintState.PublicRound:
-        return {
-          buttonLabel: 'Mint Now',
-          nftImg: nft1Img,
-        };
-      case MintState.NotStarted:
-      case MintState.Pausing:
-        return {
-          buttonDisabled: true,
-          buttonLabel: 'Mint Now',
-          nftImg: nft1Img,
-        };
-    }
+    return {
+      buttonDisabled: !this.canMint,
+      buttonLabel: 'Mint Now',
+      nftImg: nft1Img,
+    };
   }
 
   setState = (val: number | typeof NaN) => {
@@ -112,6 +110,14 @@ class MintStore {
 
   setNowCount = (val: number | typeof NaN) => {
     this.nowCount = val || 0;
+  };
+
+  setGRCount = (val: number | typeof NaN) => {
+    this.grCount = val || 0;
+  };
+
+  setFRCount = (val: number | typeof NaN) => {
+    this.frCount = val || 0;
   };
 
   toggleIsConnected = (val?: boolean) => {
@@ -124,6 +130,14 @@ class MintStore {
 
   toggleIsWhitelistChecked = (val?: boolean) => {
     this.isWhitelistChecked = typeof val === 'boolean' ? val : !this.isWhitelistChecked;
+  };
+
+  toggleMinted = (val?: boolean) => {
+    this.minted = typeof val === 'boolean' ? val : !this.minted;
+  };
+
+  toggleLoading = (val?: boolean) => {
+    this.loading = typeof val === 'boolean' ? val : !this.loading;
   };
 }
 

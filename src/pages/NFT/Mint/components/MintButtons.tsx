@@ -10,7 +10,7 @@ import useMint from '@/hooks/useMint';
 
 function MintButtons() {
   const { mintCount, setMintCount, onButtonClick } = useMint();
-  const { state, isConnected, isReady, nowCount, mintInfo } = useContext(MintContext);
+  const { loading, canMint, isReady, minted, nowCount, mintInfo } = useContext(MintContext);
 
   function onValueChange(val: string | number) {
     const text = (val + '').replace(/[^0-9]/g, '').replace(/^0+/g, '') || '0';
@@ -27,7 +27,7 @@ function MintButtons() {
 
   return (
     <div className="mt-8 flex items-center font-poppins h-[2.625rem] gap-[1.125rem]">
-      {isReady && (
+      {canMint && isReady && (
         <Input
           className=""
           classNames={{
@@ -61,7 +61,7 @@ function MintButtons() {
         className="shrink-0 h-full normal-case"
         label={mintInfo.buttonLabel}
         active
-        disabled={isReady && (mintInfo.buttonDisabled || +mintCount < 1)}
+        disabled={loading || mintInfo.buttonDisabled || (canMint && isReady && !minted && +mintCount < 1)}
         onClick={onButtonClick}
       />
     </div>
