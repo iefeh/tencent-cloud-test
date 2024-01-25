@@ -16,7 +16,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    if (!platform || platform != 'web') {
+    if (!platform) {
         res.json(response.invalidParams());
         return
     }
