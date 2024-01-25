@@ -9,3 +9,12 @@ export const enum MintStatus {
   MINTED,
   SOLD_OUT,
 }
+
+export const enum MintState {
+  NotStarted,
+  Pausing,
+  GuaranteedRound,
+  FCFS_Round,
+  PublicRound,
+  Ended
+}

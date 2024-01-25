@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import { useContext } from 'react';
 import { MintContext } from '..';
-import { MintStatus } from '@/constant/mint';
+import { MintState, MintStatus } from '@/constant/mint';
 import { useRouter } from 'next/router';
 
 function MintTips() {
-  const { status, mintNo } = useContext(MintContext);
+  const { state, mintNo, isConnected } = useContext(MintContext);
   const router = useRouter();
 
   function onGotoUserCenter(e: MouseEvent) {
@@ -69,30 +69,23 @@ function MintTips() {
     );
   };
 
-  return (
-    <div className="mt-12 font-poppins">
-      {status === MintStatus.SOLD_OUT ? (
-        <SoldOutTips />
-      ) : status === MintStatus.MINTED ? (
-        <MintedTips />
-      ) : status === MintStatus.WRONG_MINTED ? (
-        <MintedFailedTips />
-      ) : status >= MintStatus.WHITELISTED ? (
-        <WhitelistedTips />
-      ) : (
-        <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
-          If you already own any Moonveil NFT(s), please check from the{' '}
-          <a
-            className="text-basic-yellow underline cursor-pointer"
-            onClick={(e) => onGotoUserCenter(e as any as MouseEvent)}
-          >
-            USER CENTER
-          </a>
-          .
-        </div>
-      )}
-    </div>
-  );
+  function getTips() {
+    if (state === MintState.Ended) return <SoldOutTips />;
+    if (state === MintState.Pausing) return <MintedTips />;
+    return <WhitelistedTips />;
+    // <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
+    //   If you already own any Moonveil NFT(s), please check from the{' '}
+    //   <a
+    //     className="text-basic-yellow underline cursor-pointer"
+    //     onClick={(e) => onGotoUserCenter(e as any as MouseEvent)}
+    //   >
+    //     USER CENTER
+    //   </a>
+    //   .
+    // </div>
+  }
+
+  return <div className="mt-12 font-poppins">{getTips()}</div>;
 }
 
 export default observer(MintTips);

@@ -5,8 +5,8 @@ import Mint from './components/Mint';
 import MintTips from './components/MintTips';
 import MintButtons from './components/MintButtons';
 import MintProgress from './components/MintProgress';
-import { MintStatus } from '@/constant/mint';
 import { observer } from 'mobx-react-lite';
+import useMint from '@/hooks/useMint';
 
 export const MintContext = createContext<MintStore>(new MintStore());
 
@@ -23,11 +23,11 @@ function MintPage() {
         <div className="w-screen min-h-screen bg-[url('/img/nft/mint/bg.jpg')] bg-cover bg-no-repeat flex flex-col items-center justify-center font-poppins">
           <Mint />
 
-          <MintTips />
+          {store.isReady && <MintTips />}
 
-          {store.status < MintStatus.MINTED && <MintButtons />}
+          <MintButtons />
 
-          {store.status < MintStatus.MINTED && <MintProgress />}
+          <MintProgress />
         </div>
       </MintContext.Provider>
     </section>

@@ -1,33 +1,33 @@
 import BasicButton from '@/pages/components/common/BasicButton';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { MintContext } from '..';
 import { observer } from 'mobx-react-lite';
 import { Input } from '@nextui-org/react';
-import { MintStatus } from '@/constant/mint';
 import Image from 'next/image';
 import plusIconImg from 'img/nft/mint/icon_plus.png';
 import minusIconImg from 'img/nft/mint/icon_minus.png';
+import useMint from '@/hooks/useMint';
 
 function MintButtons() {
-  const { status, maxCount, mintInfo, onMintOperation } = useContext(MintContext);
-  const [count, setCount] = useState('0');
+  const { mintCount, setMintCount, onButtonClick } = useMint();
+  const { state, isConnected, isReady, nowCount, mintInfo } = useContext(MintContext);
 
-  function onValueChange(val: string) {
-    const text = val.replace(/[^0-9]/g, '').replace(/^0+/g, '') || '0';
-    setCount(Math.min(Math.max(0, +text), maxCount) + '');
+  function onValueChange(val: string | number) {
+    const text = (val + '').replace(/[^0-9]/g, '').replace(/^0+/g, '') || '0';
+    setMintCount(Math.min(Math.max(0, +text), nowCount) + '');
   }
 
   function onMinus() {
-    setCount(Math.min(Math.max(0, +count - 1), maxCount) + '');
+    setMintCount(Math.min(Math.max(0, +mintCount - 1), nowCount) + '');
   }
 
   function onPlus() {
-    setCount(Math.min(Math.max(0, +count + 1), maxCount) + '');
+    setMintCount(Math.min(Math.max(0, +mintCount + 1), nowCount) + '');
   }
 
   return (
     <div className="mt-8 flex items-center font-poppins h-[2.625rem] gap-[1.125rem]">
-      {status === MintStatus.WHITELISTED && (
+      {isReady && (
         <Input
           className=""
           classNames={{
@@ -36,7 +36,7 @@ function MintButtons() {
             input: '!text-basic-yellow text-center h-full',
           }}
           type="text"
-          value={count}
+          value={mintCount}
           startContent={
             <Image
               className="w-[1.125rem] h-[1.125rem] cursor-pointer object-contain"
@@ -61,8 +61,8 @@ function MintButtons() {
         className="shrink-0 h-full normal-case"
         label={mintInfo.buttonLabel}
         active
-        disabled={status === MintStatus.WHITELISTED && +count < 1}
-        onClick={onMintOperation}
+        disabled={isReady && (mintInfo.buttonDisabled || +mintCount < 1)}
+        onClick={onButtonClick}
       />
     </div>
   );

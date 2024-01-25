@@ -1,23 +1,22 @@
 import { Fragment, useContext } from 'react';
 import { MintContext } from '..';
-import { MintStatus } from '@/constant/mint';
 import { cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 
 function MintProgress() {
-  const { status } = useContext(MintContext);
+  const { isConnected, isNetCorrected, isWhitelistChecked } = useContext(MintContext);
   const progressData = [
     {
       label: 'Connect Wallet',
-      checked: status >= MintStatus.CONNECTED,
+      checked: isConnected,
     },
     {
       label: 'Correct Network',
-      checked: status >= MintStatus.CORRECTED_NETWORK,
+      checked: isNetCorrected,
     },
     {
       label: 'Whitelisted',
-      checked: status >= MintStatus.WHITELISTED,
+      checked: isWhitelistChecked,
     },
   ];
 
