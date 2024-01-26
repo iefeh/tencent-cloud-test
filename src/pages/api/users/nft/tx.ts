@@ -25,7 +25,7 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
         'contract_address': 0,
         'created_time': 0,
         'deleted_time': 0
-    }).lean();
+    });
     if (!nft) {
         // 当前没有匹配的数据
         return res.json(response.success({
@@ -34,14 +34,15 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }
     // 查询NFT的元信息
     // TODO:此处未判断token所在的链、合约
-    nft.token_metadata = await ContractTokenMetadata.findOne({token_id: nft.token_id}, {
+    const nftObject = nft.toObject();
+    nftObject.token_metadata = await ContractTokenMetadata.findOne({token_id: nft.token_id}, {
         "_id": 0,
         "token_id": 1,
         "metadata.name": 1,
         "metadata.animation_url": 1
     });
     return res.json(response.success({
-        nft: nft,
+        nft: nftObject,
     }));
 });
 
