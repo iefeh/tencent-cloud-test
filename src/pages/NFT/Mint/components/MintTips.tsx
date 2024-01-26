@@ -10,8 +10,8 @@ function MintTips() {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
         Congratulations, you are eligible to mint{' '}
-        <span className="font-semakin text-basic-yellow underline">{nowCount}</span> Destiny Tetra NFT, click MINT NOW
-        to finish the process.
+        <span className="text-basic-yellow font-semakin underline text-xl">{nowCount}</span> Destiny Tetra NFT, click
+        MINT NOW to finish the process.
       </div>
     );
   };
