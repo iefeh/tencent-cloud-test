@@ -55,7 +55,7 @@ function Mint() {
       <Image className="w-[31.5rem] h-[31.5rem] object-contain" src={nftBorderImg} alt="" />
 
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] z-10 flex justify-center items-center overflow-hidden">
-        {minted || (
+        {minted && (
           <Video
             className="w-full h-full object-cover"
             options={{
@@ -74,7 +74,7 @@ function Mint() {
           />
         )}
 
-        {minted && <Image className="object-contain" src={mintInfo.nftImg} alt="" fill />}
+        {minted || <Image className="object-contain" src={mintInfo.nftImg} alt="" fill />}
 
         <MintLoading />
       </div>

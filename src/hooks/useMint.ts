@@ -116,7 +116,7 @@ export default function useMint() {
 
       const res = await walletProvider?.request({
         method: 'wallet_addEthereumChain',
-        params: [],
+        params: [network],
       });
       console.log('connected network', res);
       return true;
