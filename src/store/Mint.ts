@@ -99,7 +99,7 @@ class MintStore {
 
     return {
       buttonDisabled: !this.canMint,
-      buttonLabel: this.canMint ? 'Mint Now' : '',
+      buttonLabel: this.canMint && !this.minted ? 'Mint Now' : '',
       nftImg: nft1Img,
     };
   }
