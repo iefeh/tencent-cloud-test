@@ -1,0 +1,31 @@
+import {Document, Schema, models, model} from 'mongoose'
+
+// 合约NFT
+export interface IContractNFT extends Document {
+    chain_id: string;
+    block_number: number;
+    transaction_id: string;
+    transaction_status: string;
+    contract_address: string;
+    token_id: number;
+    wallet_addr: string;
+    created_time: number;
+    confirmed_time: number;
+    deleted_time: number | null
+}
+
+const ContractNFTSchema = new Schema<IContractNFT>({
+    chain_id: {type: String},
+    block_number: {type: Number},
+    transaction_id: {type: String},
+    transaction_status: {type: String},
+    contract_address: {type: String},
+    token_id: {type: Number},
+    created_time: {type: Number},
+    confirmed_time: {type: Number},
+    deleted_time: {type: Number, default: null},
+});
+
+// 使用既有模型或者新建模型
+const ContractNFT = models.ContractNFT || model<IContractNFT>('ContractNFT', ContractNFTSchema, 'contract_nft');
+export default ContractNFT;
