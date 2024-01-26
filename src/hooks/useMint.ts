@@ -6,7 +6,7 @@ import { throttle } from 'lodash';
 import { BrowserProvider, Contract, JsonRpcSigner } from 'ethers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '@/pages/NFT/Mint';
-import { MintState } from '@/constant/mint';
+import { CURRENT_CHAIN_ID, MINT_CONTRACTS, MintState, WALLECT_NETWORKS } from '@/constant/mint';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 
@@ -45,14 +45,14 @@ export default function useMint() {
   const signer = useRef<JsonRpcSigner | null>(null);
   const contract = useRef<Contract | null>(null);
 
-  function getChainId() {
-    return '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16);
-  }
-
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
-    contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
+    contract.current = new Contract(
+      MINT_CONTRACTS[process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!],
+      contractABI,
+      signer.current,
+    );
   }
 
   function toastError(error: any) {
@@ -111,24 +111,12 @@ export default function useMint() {
 
   async function addNetwork() {
     try {
-      const rpcUrls = process.env.NEXT_PUBLIC_MINT_NETWORK_RPC_URLS;
-      const explorerUrls = process.env.NEXT_PUBLIC_MINT_NETWORK_EXPLORER_URLS;
+      const network = WALLECT_NETWORKS[process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!];
+      if (!network) throw Error('Please try switching network manually.');
 
       const res = await walletProvider?.request({
         method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: getChainId(),
-            chainName: process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_NAME,
-            nativeCurrency: {
-              name: process.env.NEXT_PUBLIC_MINT_NETWORK_CURRENCY_NAME,
-              symbol: process.env.NEXT_PUBLIC_MINT_NETWORK_CURRENCY_SYMBOL,
-              decimals: 18,
-            },
-            rpcUrls: rpcUrls ? rpcUrls.split(',') : [],
-            blockExplorerUrls: explorerUrls ? explorerUrls.split(',') : [],
-          },
-        ],
+        params: [],
       });
       console.log('connected network', res);
       return true;
@@ -142,7 +130,7 @@ export default function useMint() {
     try {
       await walletProvider?.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: getChainId() }],
+        params: [{ chainId: CURRENT_CHAIN_ID }],
       });
       await initProvider();
       await init();
