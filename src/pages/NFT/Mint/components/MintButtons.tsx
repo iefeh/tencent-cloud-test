@@ -25,6 +25,8 @@ function MintButtons() {
     setMintCount(Math.min(Math.max(0, +mintCount + 1), nowCount) + '');
   }
 
+  if (!mintInfo.buttonLabel) return null;
+
   return (
     <div className="mt-8 flex items-center font-poppins h-[2.625rem] gap-[1.125rem]">
       {canMint && isReady && (

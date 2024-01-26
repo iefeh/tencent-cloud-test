@@ -8,8 +8,10 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '@/pages/NFT/Mint';
 import { MintState } from '@/constant/mint';
 import { toast } from 'react-toastify';
+import { MobxContext } from '@/pages/_app';
 
 export default function useMint() {
+  const { userInfo } = useContext(MobxContext);
   const {
     setState,
     isEnded,
@@ -25,6 +27,8 @@ export default function useMint() {
     setNowCount,
     setGRCount,
     setFRCount,
+    setTxId,
+    reset,
   } = useContext(MintContext);
   const [mintCount, setMintCount] = useState('0');
   const { address } = useWeb3ModalAccount();
@@ -41,13 +45,23 @@ export default function useMint() {
   const signer = useRef<JsonRpcSigner | null>(null);
   const contract = useRef<Contract | null>(null);
 
+  function getChainId() {
+    return '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16);
+  }
+
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
     contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
   }
 
+  function toastError(error: any) {
+    console.log('nft error', error);
+    toast.error(error?.reason || error?.data?.message || error?.message || error);
+  }
+
   const init = throttle(async function () {
+    reset();
     if (!isConnected) return;
     toggleIsConnected(true);
 
@@ -62,7 +76,7 @@ export default function useMint() {
     try {
       await initMintState();
     } catch (error: any) {
-      toast.error(error?.message || error);
+      toastError(error);
     } finally {
       toggleLoading(false);
     }
@@ -76,7 +90,7 @@ export default function useMint() {
       console.log('mint state', res);
       setState(res || MintState.NotStarted);
     } catch (error: any) {
-      toast.error(error?.message || error);
+      toastError(error);
     }
   }
 
@@ -89,8 +103,37 @@ export default function useMint() {
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
       toggleIsConnected(false);
+      return false;
+    }
+  }
+
+  async function addNetwork() {
+    try {
+      const rpcUrls = process.env.NEXT_PUBLIC_MINT_NETWORK_RPC_URLS;
+      const explorerUrls = process.env.NEXT_PUBLIC_MINT_NETWORK_EXPLORER_URLS;
+
+      const res = await walletProvider?.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: getChainId(),
+            chainName: process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_NAME,
+            nativeCurrency: {
+              name: process.env.NEXT_PUBLIC_MINT_NETWORK_CURRENCY_NAME,
+              symbol: process.env.NEXT_PUBLIC_MINT_NETWORK_CURRENCY_SYMBOL,
+              decimals: 18,
+            },
+            rpcUrls: rpcUrls ? rpcUrls.split(',') : [],
+            blockExplorerUrls: explorerUrls ? explorerUrls.split(',') : [],
+          },
+        ],
+      });
+      console.log('connected network', res);
+      return true;
+    } catch (error: any) {
+      toastError(error);
       return false;
     }
   }
@@ -99,12 +142,37 @@ export default function useMint() {
     try {
       await walletProvider?.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16) }],
+        params: [{ chainId: getChainId() }],
       });
       await initProvider();
-      init();
+      await init();
     } catch (error: any) {
-      toast.error(error.message);
+      if (error?.code === 4902) {
+        // 未添加此网络，添加后自动唤起切换
+        const res = await addNetwork();
+        if (res) {
+          await switchNetwork();
+        }
+      } else {
+        toastError(error);
+      }
+    }
+  }
+
+  async function disconnect() {
+    try {
+      await walletProvider?.request({
+        method: 'wallet_revokePermissions',
+        params: [
+          {
+            eth_accounts: {},
+          },
+        ],
+      });
+      await initProvider();
+      await init();
+    } catch (error: any) {
+      toastError(error);
     }
   }
 
@@ -116,7 +184,7 @@ export default function useMint() {
       console.log('now mint count:', res);
       toggleIsWhitelistChecked(true);
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
     }
 
     if (!isEnded && !canMint) {
@@ -139,16 +207,21 @@ export default function useMint() {
       }
       console.log(`mint count - ${state}:`, res);
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
     }
   }
 
   const mint = throttle(async () => {
-    const transaction = await contract.current!.mint(mintCount);
-    const result = await transaction.wait();
-    console.log('mint result:', result);
-    toggleMinted(true);
-    await checkWhitelist();
+    try {
+      const transaction = await contract.current!.mint(mintCount);
+      const result = await transaction.wait();
+      console.log('mint result:', result);
+      toggleMinted(true);
+      setTxId(result?.hash || '');
+      await checkWhitelist();
+    } catch (error: any) {
+      toastError(error);
+    }
   }, 500);
 
   async function onButtonClick() {
@@ -180,6 +253,21 @@ export default function useMint() {
 
   useEffect(() => {
     init();
+  }, [userInfo]);
+
+  function reload() {
+    window.location.reload();
+  }
+
+  useEffect(() => {
+    if (!window.ethereum) return;
+    window.ethereum.on('chainChanged', reload);
+    window.ethereum.on('disconnect', reload);
+
+    return () => {
+      window.ethereum.removeListener('chainChanged', reload);
+      window.ethereum.removeListener('disconnect', reload);
+    };
   }, []);
 
   return { mintCount, setMintCount, onButtonClick };

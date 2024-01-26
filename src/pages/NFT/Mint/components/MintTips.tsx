@@ -1,31 +1,17 @@
 import { observer } from 'mobx-react-lite';
 import { useContext } from 'react';
 import { MintContext } from '..';
-import { MintState, MintStatus } from '@/constant/mint';
-import { useRouter } from 'next/router';
+import TextLink from '@/pages/components/common/TextLink';
 
 function MintTips() {
-  const { grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
-  const router = useRouter();
-
-  function onGotoUserCenter(e: MouseEvent) {
-    e.preventDefault();
-    router.push('/Profile');
-  }
+  const { nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
 
   const WhitelistedTips = () => {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        Congratulations, you are eligible to mint ONE Destiny Tetra NFT, click MINT NOW to finish the process.
-      </div>
-    );
-  };
-
-  const MintedFailedTips = () => {
-    return (
-      <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        We regret to inform you that this minting process for your Destiny TETRA NFT has failed. Please consider trying
-        again next time, and we wish you the best of luck!
+        Congratulations, you are eligible to mint{' '}
+        <span className="text-basic-yellow font-semakin underline text-xl">{nowCount}</span> Destiny Tetra NFT, click
+        MINT NOW to finish the process.
       </div>
     );
   };
@@ -35,14 +21,7 @@ function MintTips() {
       <div className="px-7 py-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
         <div className="text-lg">
           Congratulations on receiving your Destiny TETRA NFT, please check the unique identification number of each
-          TETRA NFT from the{' '}
-          <a
-            className="text-basic-yellow underline cursor-pointer"
-            onClick={(e) => onGotoUserCenter(e as any as MouseEvent)}
-          >
-            USER CENTER
-          </a>
-          .
+          TETRA NFT from the <TextLink className="uppercase" label="User Center" to="/Profile" />.
         </div>
       </div>
     );
@@ -62,19 +41,26 @@ function MintTips() {
 
   const CheckWhitelistTips = () => {
     return (
-      <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
+      <div className="px-7 py-6 max-w-[62.5rem] border-1 border-[#1A1A1A] text-sm rounded-base">
         <p>
-          Thank you for being part of our whitelist journey! Here`&apos;`s the current status of your whitelist spots:
+          Thank you for being part of our whitelist journey! Here&apos;s the current status of your whitelist spots:
         </p>
 
         <ul>
-          <li>- Guaranteed whitelist spot(s): {grCount}</li>
-          <li>- FCFS (First Come, First Served) whitelist spot(s): {frCount}</li>
+          <li className="flex items-center">
+            <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>Guaranteed whitelist spot(s):
+            <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{grCount}</span>
+          </li>
+          <li className="flex items-center">
+            <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>FCFS (First Come, First Served)
+            whitelist spot(s):<span className="ml-2 text-basic-yellow font-semakin underline text-xl">{frCount}</span>
+          </li>
         </ul>
 
         <p>
-          Please be informed that the official MINT will commence on January 31st at 9 pm EST. We look forward to your
-          participation! Kindly return to this page at that time.
+          Please be informed that the official MINT will commence on{' '}
+          <span className="text-basic-yellow">Jan 31 at 9 AM EST</span>. We look forward to your participation! Kindly
+          return to this page at that time.
         </p>
       </div>
     );
@@ -90,7 +76,10 @@ function MintTips() {
     }
   }
 
-  return <div className="mt-12 font-poppins">{getTips()}</div>;
+  const tips = getTips();
+  if (!tips) return null;
+
+  return <div className="mt-10 font-poppins">{getTips()}</div>;
 }
 
 export default observer(MintTips);

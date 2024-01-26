@@ -45,6 +45,9 @@ class MintStore {
   minted = false;
   loading = false;
 
+  /** 当前mint的交易id */
+  tx_id = '';
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -69,7 +72,7 @@ class MintStore {
     if (this.isEnded) {
       return {
         buttonDisabled: true,
-        buttonLabel: 'Check Whitelist',
+        buttonLabel: '',
         nftImg: nft1Img,
       };
     }
@@ -99,7 +102,7 @@ class MintStore {
 
     return {
       buttonDisabled: !this.canMint,
-      buttonLabel: 'Mint Now',
+      buttonLabel: this.canMint && !this.minted ? 'Mint Now' : '',
       nftImg: nft1Img,
     };
   }
@@ -120,6 +123,10 @@ class MintStore {
     this.frCount = val || 0;
   };
 
+  setTxId = (val: string) => {
+    this.tx_id = val;
+  };
+
   toggleIsConnected = (val?: boolean) => {
     this.isConnected = typeof val === 'boolean' ? val : !this.isConnected;
   };
@@ -138,6 +145,18 @@ class MintStore {
 
   toggleLoading = (val?: boolean) => {
     this.loading = typeof val === 'boolean' ? val : !this.loading;
+  };
+
+  reset = () => {
+    this.setState(MintState.NotStarted);
+    this.setNowCount(0);
+    this.setGRCount(0);
+    this.setFRCount(0);
+    this.toggleIsConnected(false);
+    this.toggleIsNetCorrected(false);
+    this.toggleIsWhitelistChecked(false);
+    this.toggleMinted(false);
+    this.toggleLoading(false);
   };
 }
 
