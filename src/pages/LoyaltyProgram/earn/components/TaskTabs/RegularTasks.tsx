@@ -33,6 +33,7 @@ import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';
 import useConnect from '@/hooks/useConnect';
+import teamsImg from 'img/loyalty/task/teams.png';
 
 interface VerifyTexts {
   label: string;
@@ -48,7 +49,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal, expired, timerLoading } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const pagiInfo = useRef<PagiInfo>({
@@ -123,10 +124,6 @@ function RegularTasks() {
     const pagi = { ...pagiInfo.current, pageIndex: page };
     queryTasks(pagi);
   }
-
-  // useEffect(() => {
-  //   queryTasks();
-  // }, []);
 
   useEffect(() => {
     queryTasks();
@@ -437,7 +434,7 @@ function RegularTasks() {
   };
 
   return (
-    <div className="mt-7 flex flex-col items-center">
+    <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', expired && 'h-[36rem] overflow-hidden'])}>
       <div
         className={cn([
           'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
@@ -448,12 +445,12 @@ function RegularTasks() {
           <Task key={`${task.id}_${task.achieved}`} task={task} />
         ))}
 
-        {taskListLoading && <CircularLoading />}
+        {(taskListLoading || timerLoading) && !expired && <CircularLoading />}
       </div>
 
       {pagiTotal > 0 && (
         <Pagination
-          className="mt-[4.6875rem] mb-[8.75rem]"
+          className="mt-[4.6875rem]"
           showControls
           total={pagiTotal}
           initialPage={1}
@@ -467,6 +464,15 @@ function RegularTasks() {
           variant="light"
           onChange={onPagiChange}
         />
+      )}
+
+      {expired && (
+        <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+          <p>This event has concluded.</p>
+          <p>More exciting events coming soon.</p>
+          <p>Stay tuned!</p>
+          <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
+        </div>
       )}
     </div>
   );
