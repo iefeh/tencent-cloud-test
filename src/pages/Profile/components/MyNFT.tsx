@@ -55,7 +55,12 @@ function MyNFT() {
 
       <div className="flex justify-between items-center gap-[1.6875rem]">
         {nfts.map((nft, index) => (
-          <NFT src={nft?.token_metadata?.animation_url} isPending={nft?.transaction_status === 'pending'} key={index} />
+          <NFT
+            name={nft?.token_metadata?.name}
+            src={nft?.token_metadata?.animation_url}
+            isPending={nft?.transaction_status === 'pending'}
+            key={index}
+          />
         ))}
       </div>
     </div>

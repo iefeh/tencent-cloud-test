@@ -7,12 +7,13 @@ import pendingImg from 'img/profile/pending.png';
 
 interface NFTProps {
   className?: string;
+  name?: string;
   src?: string;
   isPending?: boolean;
 }
 
 export default function NFT(props: NFTProps) {
-  const { src, isPending } = props;
+  const { name, src, isPending } = props;
 
   return (
     <div className="flex flex-col items-center shrink-0">
@@ -48,6 +49,10 @@ export default function NFT(props: NFTProps) {
         ) : (
           <Image className="relative z-0 w-[13.125rem] h-[13.125rem]" src={emptyNFTImg} alt="" />
         )}
+      </div>
+
+      <div className="font-poppins text-base mt-3 max-w-full text-center overflow-hidden text-ellipsis whitespace-nowrap">
+        {name}
       </div>
     </div>
   );
