@@ -8,8 +8,10 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '@/pages/NFT/Mint';
 import { MintState } from '@/constant/mint';
 import { toast } from 'react-toastify';
+import { MobxContext } from '@/pages/_app';
 
 export default function useMint() {
+  const { userInfo } = useContext(MobxContext);
   const {
     setState,
     isEnded,
@@ -25,6 +27,7 @@ export default function useMint() {
     setNowCount,
     setGRCount,
     setFRCount,
+    reset,
   } = useContext(MintContext);
   const [mintCount, setMintCount] = useState('0');
   const { address } = useWeb3ModalAccount();
@@ -48,6 +51,7 @@ export default function useMint() {
   }
 
   const init = throttle(async function () {
+    reset();
     if (!isConnected) return;
     toggleIsConnected(true);
 
@@ -180,7 +184,7 @@ export default function useMint() {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [userInfo]);
 
   return { mintCount, setMintCount, onButtonClick };
 }

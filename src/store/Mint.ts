@@ -99,7 +99,7 @@ class MintStore {
 
     return {
       buttonDisabled: !this.canMint,
-      buttonLabel: 'Mint Now',
+      buttonLabel: this.canMint ? 'Mint Now' : '',
       nftImg: nft1Img,
     };
   }
@@ -138,6 +138,18 @@ class MintStore {
 
   toggleLoading = (val?: boolean) => {
     this.loading = typeof val === 'boolean' ? val : !this.loading;
+  };
+
+  reset = () => {
+    this.setState(MintState.NotStarted);
+    this.setNowCount(0);
+    this.setGRCount(0);
+    this.setFRCount(0);
+    this.toggleIsConnected(false);
+    this.toggleIsNetCorrected(false);
+    this.toggleIsWhitelistChecked(false);
+    this.toggleMinted(false);
+    this.toggleLoading(false);
   };
 }
 

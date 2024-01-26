@@ -12,6 +12,7 @@ export const MintContext = createContext<MintStore>(new MintStore());
 
 function MintPage() {
   const store = useStore();
+  const { isEnded, isWhitelistChecked, canMint, minted } = store;
 
   return (
     <section id="luxy">
@@ -23,7 +24,7 @@ function MintPage() {
         <div className="w-screen min-h-screen bg-[url('/img/nft/mint/bg.jpg')] bg-cover bg-no-repeat flex flex-col items-center justify-center font-poppins">
           <Mint />
           <MintTips />
-          {!store.isEnded && <MintButtons />}
+          {!isEnded && <MintButtons />}
 
           <div className="px-4 py-2 mt-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
             <div className="text-lg">
@@ -32,7 +33,7 @@ function MintPage() {
             </div>
           </div>
 
-          {!store.isEnded && !store.minted && <MintProgress />}
+          {!isEnded && (canMint ? !minted : !isWhitelistChecked) && <MintProgress />}
         </div>
       </MintContext.Provider>
     </section>

@@ -4,12 +4,14 @@ import { MintContext } from '..';
 import TextLink from '@/pages/components/common/TextLink';
 
 function MintTips() {
-  const { grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
+  const { nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
 
   const WhitelistedTips = () => {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        Congratulations, you are eligible to mint ONE Destiny Tetra NFT, click MINT NOW to finish the process.
+        Congratulations, you are eligible to mint{' '}
+        <span className="font-semakin text-basic-yellow underline">{nowCount}</span> Destiny Tetra NFT, click MINT NOW
+        to finish the process.
       </div>
     );
   };
@@ -39,18 +41,19 @@ function MintTips() {
 
   const CheckWhitelistTips = () => {
     return (
-      <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
+      <div className="px-7 py-6 max-w-[62.5rem] border-1 border-[#1A1A1A] text-sm rounded-base">
         <p>
-          Thank you for being part of our whitelist journey! Here`&apos;`s the current status of your whitelist spots:
+          Thank you for being part of our whitelist journey! Here&apos;s the current status of your whitelist spots:
         </p>
 
         <ul>
           <li>
-            - Guaranteed whitelist spot(s): <span className="text-basic-yellow font-semakin">{grCount}</span>
+            - Guaranteed whitelist spot(s):{' '}
+            <span className="text-basic-yellow font-semakin underline text-xl">{grCount}</span>
           </li>
           <li>
             - FCFS (First Come, First Served) whitelist spot(s):{' '}
-            <span className="text-basic-yellow font-semakin">{frCount}</span>
+            <span className="text-basic-yellow font-semakin underline text-xl">{frCount}</span>
           </li>
         </ul>
 
@@ -75,7 +78,7 @@ function MintTips() {
   const tips = getTips();
   if (!tips) return null;
 
-  return <div className="mt-12 font-poppins">{getTips()}</div>;
+  return <div className="mt-10 font-poppins">{getTips()}</div>;
 }
 
 export default observer(MintTips);
