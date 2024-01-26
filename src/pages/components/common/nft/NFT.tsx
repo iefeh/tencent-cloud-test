@@ -24,10 +24,15 @@ export default function NFT(props: NFTProps) {
             <Video
               options={{
                 sources: [
-                  {
-                    src: src || '/video/ntfbg.webm',
-                    type: 'video/webm',
-                  },
+                  src
+                    ? {
+                        src,
+                        type: 'video/webm',
+                      }
+                    : {
+                        src: '/video/NFT.mp4',
+                        type: 'video/mp4',
+                      },
                 ],
               }}
             />

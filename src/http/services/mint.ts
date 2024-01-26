@@ -26,6 +26,6 @@ export function queryMyNFTListAPI(params: PageQueryDto): Promise<NFTListDTO> {
   return http.get('/api/users/nft/list', { params });
 }
 
-export function queryNFTInfoAPI(params: { tx_id: string }) {
+export function queryNFTInfoAPI(params: { tx_id: string }): Promise<{ nft: NFTItem | null }> {
   return http.get('/api/users/nft/tx', { params });
 }

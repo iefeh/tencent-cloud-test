@@ -27,6 +27,7 @@ export default function useMint() {
     setNowCount,
     setGRCount,
     setFRCount,
+    setTxId,
     reset,
   } = useContext(MintContext);
   const [mintCount, setMintCount] = useState('0');
@@ -54,6 +55,11 @@ export default function useMint() {
     contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
   }
 
+  function toastError(error: any) {
+    console.log('nft error', error);
+    toast.error(error?.reason || error?.data?.message || error?.message || error);
+  }
+
   const init = throttle(async function () {
     reset();
     if (!isConnected) return;
@@ -70,7 +76,7 @@ export default function useMint() {
     try {
       await initMintState();
     } catch (error: any) {
-      toast.error(error?.message || error);
+      toastError(error);
     } finally {
       toggleLoading(false);
     }
@@ -84,7 +90,7 @@ export default function useMint() {
       console.log('mint state', res);
       setState(res || MintState.NotStarted);
     } catch (error: any) {
-      toast.error(error?.message || error);
+      toastError(error);
     }
   }
 
@@ -97,7 +103,7 @@ export default function useMint() {
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
       toggleIsConnected(false);
       return false;
     }
@@ -127,7 +133,7 @@ export default function useMint() {
       console.log('connected network', res);
       return true;
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
       return false;
     }
   }
@@ -148,7 +154,7 @@ export default function useMint() {
           await switchNetwork();
         }
       } else {
-        toast.error(error.message);
+        toastError(error);
       }
     }
   }
@@ -166,7 +172,7 @@ export default function useMint() {
       await initProvider();
       await init();
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
     }
   }
 
@@ -178,7 +184,7 @@ export default function useMint() {
       console.log('now mint count:', res);
       toggleIsWhitelistChecked(true);
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
     }
 
     if (!isEnded && !canMint) {
@@ -201,7 +207,7 @@ export default function useMint() {
       }
       console.log(`mint count - ${state}:`, res);
     } catch (error: any) {
-      toast.error(error.message);
+      toastError(error);
     }
   }
 
@@ -211,9 +217,10 @@ export default function useMint() {
       const result = await transaction.wait();
       console.log('mint result:', result);
       toggleMinted(true);
+      setTxId(result?.hash || '');
       await checkWhitelist();
     } catch (error: any) {
-      toast.error(error.message || error);
+      toastError(error);
     }
   }, 500);
 

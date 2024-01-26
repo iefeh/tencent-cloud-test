@@ -45,6 +45,9 @@ class MintStore {
   minted = false;
   loading = false;
 
+  /** 当前mint的交易id */
+  tx_id = '';
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -118,6 +121,10 @@ class MintStore {
 
   setFRCount = (val: number | typeof NaN) => {
     this.frCount = val || 0;
+  };
+
+  setTxId = (val: string) => {
+    this.tx_id = val;
   };
 
   toggleIsConnected = (val?: boolean) => {
