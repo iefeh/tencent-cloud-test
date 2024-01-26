@@ -29,3 +29,8 @@ function toDataURL(url: string) {
       return URL.createObjectURL(blob);
     });
 }
+
+
+export function parseChainIdToHex(val: string): `0x${string}` {
+  return `0x${parseInt(val).toString(16)}`;
+}
