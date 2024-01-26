@@ -69,7 +69,7 @@ class MintStore {
     if (this.isEnded) {
       return {
         buttonDisabled: true,
-        buttonLabel: 'Check Whitelist',
+        buttonLabel: '',
         nftImg: nft1Img,
       };
     }

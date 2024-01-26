@@ -24,7 +24,7 @@ function MintPage() {
         <div className="w-screen min-h-screen bg-[url('/img/nft/mint/bg.jpg')] bg-cover bg-no-repeat flex flex-col items-center justify-center font-poppins">
           <Mint />
           <MintTips />
-          {!isEnded && <MintButtons />}
+          <MintButtons />
 
           <div className="px-4 py-2 mt-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
             <div className="text-lg">
