@@ -47,19 +47,20 @@ function MintTips() {
         </p>
 
         <ul>
-          <li>
-            - Guaranteed whitelist spot(s):{' '}
-            <span className="text-basic-yellow font-semakin underline text-xl">{grCount}</span>
+          <li className="flex items-center">
+            <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>Guaranteed whitelist spot(s):
+            <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{grCount}</span>
           </li>
-          <li>
-            - FCFS (First Come, First Served) whitelist spot(s):{' '}
-            <span className="text-basic-yellow font-semakin underline text-xl">{frCount}</span>
+          <li className="flex items-center">
+            <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>FCFS (First Come, First Served)
+            whitelist spot(s):<span className="ml-2 text-basic-yellow font-semakin underline text-xl">{frCount}</span>
           </li>
         </ul>
 
         <p>
-          Please be informed that the official MINT will commence on January 31st at 9 pm EST. We look forward to your
-          participation! Kindly return to this page at that time.
+          Please be informed that the official MINT will commence on{' '}
+          <span className="text-basic-yellow">Jan 31 at 9 AM EST</span>. We look forward to your participation! Kindly
+          return to this page at that time.
         </p>
       </div>
     );
