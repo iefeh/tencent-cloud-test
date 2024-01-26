@@ -44,6 +44,10 @@ export default function useMint() {
   const signer = useRef<JsonRpcSigner | null>(null);
   const contract = useRef<Contract | null>(null);
 
+  function getChainId() {
+    return '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16);
+  }
+
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
@@ -99,14 +103,68 @@ export default function useMint() {
     }
   }
 
+  async function addNetwork() {
+    try {
+      const rpcUrls = process.env.NEXT_PUBLIC_MINT_NETWORK_RPC_URLS;
+      const explorerUrls = process.env.NEXT_PUBLIC_MINT_NETWORK_EXPLORER_URLS;
+
+      const res = await walletProvider?.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: getChainId(),
+            chainName: process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_NAME,
+            nativeCurrency: {
+              name: process.env.NEXT_PUBLIC_MINT_NETWORK_CURRENCY_NAME,
+              symbol: process.env.NEXT_PUBLIC_MINT_NETWORK_CURRENCY_SYMBOL,
+              decimals: 18,
+            },
+            rpcUrls: rpcUrls ? rpcUrls.split(',') : [],
+            blockExplorerUrls: explorerUrls ? explorerUrls.split(',') : [],
+          },
+        ],
+      });
+      console.log('connected network', res);
+      return true;
+    } catch (error: any) {
+      toast.error(error.message);
+      return false;
+    }
+  }
+
   async function switchNetwork() {
     try {
       await walletProvider?.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16) }],
+        params: [{ chainId: getChainId() }],
       });
       await initProvider();
-      init();
+      await init();
+    } catch (error: any) {
+      if (error?.code === 4902) {
+        // 未添加此网络，添加后自动唤起切换
+        const res = await addNetwork();
+        if (res) {
+          await switchNetwork();
+        }
+      } else {
+        toast.error(error.message);
+      }
+    }
+  }
+
+  async function disconnect() {
+    try {
+      await walletProvider?.request({
+        method: 'wallet_revokePermissions',
+        params: [
+          {
+            eth_accounts: {},
+          },
+        ],
+      });
+      await initProvider();
+      await init();
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -148,11 +206,15 @@ export default function useMint() {
   }
 
   const mint = throttle(async () => {
-    const transaction = await contract.current!.mint(mintCount);
-    const result = await transaction.wait();
-    console.log('mint result:', result);
-    toggleMinted(true);
-    await checkWhitelist();
+    try {
+      const transaction = await contract.current!.mint(mintCount);
+      const result = await transaction.wait();
+      console.log('mint result:', result);
+      toggleMinted(true);
+      await checkWhitelist();
+    } catch (error: any) {
+      toast.error(error.message || error);
+    }
   }, 500);
 
   async function onButtonClick() {
@@ -185,6 +247,21 @@ export default function useMint() {
   useEffect(() => {
     init();
   }, [userInfo]);
+
+  function reload() {
+    window.location.reload();
+  }
+
+  useEffect(() => {
+    if (!window.ethereum) return;
+    window.ethereum.on('chainChanged', reload);
+    window.ethereum.on('disconnect', reload);
+
+    return () => {
+      window.ethereum.removeListener('chainChanged', reload);
+      window.ethereum.removeListener('disconnect', reload);
+    };
+  }, []);
 
   return { mintCount, setMintCount, onButtonClick };
 }
