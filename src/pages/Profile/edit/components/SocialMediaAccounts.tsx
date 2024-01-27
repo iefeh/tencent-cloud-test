@@ -150,7 +150,7 @@ const SocialMediaAccounts = function () {
 
                 <p>
                   {accounts.filter((a) => a.connected).length < 2
-                    ? 'Please be aware that this is the last account connected on our website. Disconnecting it will result in PERMANENT LOSS of this account and all associated rewards, with no possibility of recovery. Are you sure you want to proceed with this operation?'
+                    ? 'Please be aware that this is the LAST ACCOUNT connected on our website. Disconnecting it will result in PERMANENT LOSS of this account and ALL associated rewards and game data, with NO POSSIBILITY of recovery. Are you sure you want to proceed with this operation?'
                     : 'Please note that if you choose to disconnect this account now, a 12-hour waiting period will be required before you can reconnect it. Are you sure you want to disconnect?'}
                 </p>
               </ModalBody>
