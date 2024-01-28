@@ -52,23 +52,18 @@ function Mint() {
 
   return (
     <div className="relative">
-      <Image className="w-[31.5rem] h-[31.5rem] object-contain" src={nftBorderImg} alt="" />
+      <Image className="w-[30rem] h-[30rem] object-contain" src={nftBorderImg} alt="" />
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] z-10 flex justify-center items-center overflow-hidden">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[28.5rem] h-[28.5rem] z-10 flex justify-center items-center overflow-hidden">
         {minted && (
           <Video
             className="w-full h-full object-cover"
             options={{
               sources: [
-                minted && tx_id && nftInfo?.token_metadata
-                  ? {
-                      src: nftInfo.token_metadata.animation_url,
-                      type: 'video/webm',
-                    }
-                  : {
-                      src: '/video/NFT.mp4',
-                      type: 'video/mp4',
-                    },
+                {
+                  src: (minted && tx_id && nftInfo?.token_metadata?.animation_url) || '/video/nft1.webm',
+                  type: 'video/webm',
+                },
               ],
             }}
           />

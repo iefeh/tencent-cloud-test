@@ -175,7 +175,7 @@ export default function useMint() {
       toastError(error);
     }
 
-    if (!isEnded && !canMint) {
+    if (!isEnded) {
       checkWhitelistByRound(MintState.GuaranteedRound);
       checkWhitelistByRound(MintState.FCFS_Round);
     }

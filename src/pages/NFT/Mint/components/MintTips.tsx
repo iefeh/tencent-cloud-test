@@ -2,16 +2,17 @@ import { observer } from 'mobx-react-lite';
 import { useContext } from 'react';
 import { MintContext } from '..';
 import TextLink from '@/pages/components/common/TextLink';
+import { MintState } from '@/constant/mint';
 
 function MintTips() {
-  const { nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
+  const { state, nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
 
   const WhitelistedTips = () => {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
         Congratulations, you are eligible to mint{' '}
         <span className="text-basic-yellow font-semakin underline text-xl">{nowCount}</span> Destiny Tetra NFT, click
-        MINT NOW to finish the process.
+        MINT to finish the process.
       </div>
     );
   };
@@ -35,6 +36,55 @@ function MintTips() {
           All 800 Genesis NFT Collection have been Minted. Thank you for your unbelievable Support. We are grateful to
           our community and everyone who participated in the Mint.
         </div>
+      </div>
+    );
+  };
+
+  const GuaranteedRoundTips = () => {
+    return (
+      <div className="px-7 py-6 max-w-[62.5rem] border-1 border-[#1A1A1A] text-sm rounded-base">
+        <p>
+          Welcome to the <span className="font-semakin">Guaranteed Mint Round</span>! Here is your available whitelist
+          status:
+        </p>
+
+        <ul>
+          <li className="flex items-center">
+            <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>Guaranteed whitelist spot(s):
+            <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{grCount}</span>; FCFS whitelist
+            spot(s):
+            <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{frCount}</span>;
+          </li>
+        </ul>
+
+        <p>Please select the quantity you&apos;d like to mint and click [Mint Now] to proceed.</p>
+      </div>
+    );
+  };
+
+  const FCFSRoundTips = () => {
+    return (
+      <div className="px-7 py-6 max-w-[62.5rem] border-1 border-[#1A1A1A] text-sm rounded-base">
+        <p>
+          Welcome to the <span className="font-semakin">FCFS (first-come-first-serve) Mint Round</span>! Here is your
+          available whitelist spot(s):{' '}
+          <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{nowCount}</span>
+        </p>
+
+        <p>Please select the quantity you&apos;d like to mint and click [Mint Now] to proceed.</p>
+      </div>
+    );
+  };
+
+  const PublicRoundTips = () => {
+    return (
+      <div className="px-7 py-6 max-w-[62.5rem] border-1 border-[#1A1A1A] text-sm rounded-base">
+        <p>
+          Welcome to the <span className="font-semakin">Public Mint Round</span>! Here is your available whitelist
+          spot(s): <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{nowCount}</span>
+        </p>
+
+        <p>Please select the quantity you&apos;d like to mint and click [Mint Now] to proceed.</p>
       </div>
     );
   };
@@ -70,7 +120,11 @@ function MintTips() {
     if (isEnded) return <SoldOutTips />;
     if (canMint) {
       if (minted) return <MintedTips />;
-      if (isWhitelistChecked) return <WhitelistedTips />;
+      if (!isWhitelistChecked) return null;
+
+      if (state === MintState.GuaranteedRound) return <GuaranteedRoundTips />;
+      if (state === MintState.FCFS_Round) return <FCFSRoundTips />;
+      if (state === MintState.PublicRound) return <PublicRoundTips />;
     } else {
       if (isWhitelistChecked) return <CheckWhitelistTips />;
     }

@@ -2,7 +2,7 @@ import BasicButton from '@/pages/components/common/BasicButton';
 import { useContext } from 'react';
 import { MintContext } from '..';
 import { observer } from 'mobx-react-lite';
-import { Input } from '@nextui-org/react';
+import { Input, cn } from '@nextui-org/react';
 import Image from 'next/image';
 import plusIconImg from 'img/nft/mint/icon_plus.png';
 import minusIconImg from 'img/nft/mint/icon_minus.png';
@@ -27,21 +27,29 @@ function MintButtons() {
 
   if (!mintInfo.buttonLabel) return null;
 
+  const isMintDisabled = loading || mintInfo.buttonDisabled || (canMint && isReady && !minted && +mintCount < 1);
+
   return (
     <div className="mt-8 flex items-center font-poppins h-[2.625rem] gap-[1.125rem]">
       {canMint && isReady && (
         <Input
           className=""
           classNames={{
-            inputWrapper:
+            inputWrapper: cn([
               'border border-solid border-basic-yellow rounded-3xl transition-all duration-500 delay-75 outline-none !bg-black h-full',
+              isMintDisabled && 'grayscale',
+            ]),
             input: '!text-basic-yellow text-center h-full',
           }}
           type="text"
           value={mintCount}
+          disabled={isMintDisabled}
           startContent={
             <Image
-              className="w-[1.125rem] h-[1.125rem] cursor-pointer object-contain"
+              className={cn([
+                'w-[1.125rem] h-[1.125rem] object-contain',
+                isMintDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+              ])}
               src={minusIconImg}
               alt=""
               onClick={onMinus}
@@ -49,7 +57,10 @@ function MintButtons() {
           }
           endContent={
             <Image
-              className="w-[1.125rem] h-[1.125rem] cursor-pointer object-contain"
+              className={cn([
+                'w-[1.125rem] h-[1.125rem] object-contain',
+                isMintDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+              ])}
               src={plusIconImg}
               alt=""
               onClick={onPlus}
@@ -63,7 +74,7 @@ function MintButtons() {
         className="shrink-0 h-full normal-case"
         label={mintInfo.buttonLabel}
         active
-        disabled={loading || mintInfo.buttonDisabled || (canMint && isReady && !minted && +mintCount < 1)}
+        disabled={isMintDisabled}
         onClick={onButtonClick}
       />
     </div>
