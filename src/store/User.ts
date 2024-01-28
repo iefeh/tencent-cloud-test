@@ -21,7 +21,7 @@ class UserStore {
   inviteModalVisible = false;
   timerLoading = false;
   hasGotTime = false;
-  expired = false;
+  expired = true;
   timer = 0;
   isConnect = false;
 
@@ -38,8 +38,8 @@ class UserStore {
     this.token = localStorage.getItem(KEY_AUTHORIZATION) || '';
     if (this.token) this.getUserInfo();
 
-    this.getCurrentTime();
-    this.timer = window?.setInterval(this.getCurrentTime, 60000);
+    // this.getCurrentTime();
+    // this.timer = window?.setInterval(this.getCurrentTime, 60000);
   };
 
   getCurrentTime = async () => {
