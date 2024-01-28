@@ -27,7 +27,7 @@ function MintPage() {
           <MintButtons />
 
           <div className="px-4 py-2 mt-6 max-w-[62.5rem] border-2 border-[#665C50] text-white rounded-base">
-            <div className="text-lg">
+            <div className="text-sm text-[#999]">
               If you already own any Moonveil NFT(s), please check from the{' '}
               <TextLink className="uppercase" label="User Center" to="/Profile" />.
             </div>
