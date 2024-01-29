@@ -7,6 +7,8 @@ import shardRewardImg from 'img/astrark/pre-register/reward_shard.png';
 import packageRewardImg from 'img/astrark/pre-register/reward_package.png';
 import Image from 'next/image';
 import { cn } from '@nextui-org/react';
+import { PreRegisterInfoDTO } from '@/http/services/astrark';
+import completedIconImg from 'img/astrark/pre-register/icon_completed.png';
 
 const enum RewardType {
   SHARD,
@@ -18,32 +20,48 @@ interface RewardItem {
   type: RewardType;
   desc: string;
   reached?: boolean;
+  reachAmount: number;
 }
 
-export default function RewardSwiper() {
+export default function RewardSwiper({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
   const [rewards, setRewards] = useState<RewardItem[]>([
     {
       target: '10k',
       type: RewardType.SHARD,
       desc: 'Perth Shard X 300',
-      reached: true,
+      reachAmount: 10000,
     },
     {
       target: '50k',
       type: RewardType.PACKAGE,
       desc: 'Perth Shard X 300<br./>Fuel package(small) X 4<br/>Mysterious',
+      reachAmount: 50000,
     },
     {
       target: '100k',
       type: RewardType.PACKAGE,
       desc: "Exceptional Crew's Chest X 1",
+      reachAmount: 100000,
     },
     {
       target: '500k',
       type: RewardType.PACKAGE,
       desc: 'Immortal Crew Chest X 1<br/>Fuel package(medium) X 4',
+      reachAmount: 500000,
     },
   ]);
+
+  function isReached(item: RewardItem) {
+    return !!preInfo && +(preInfo.total || 0) >= item.reachAmount;
+  }
+
+  useEffect(() => {
+    const list = rewards.map((item) => {
+      item.reached = isReached(item);
+      return item;
+    });
+    setRewards(list);
+  }, [preInfo]);
 
   return (
     <Swiper
@@ -61,7 +79,7 @@ export default function RewardSwiper() {
           <div
             className={cn([
               'w-60 h-80 relative box-border rounded-base origin-center transition-transform hover:scale-110 z-20',
-              index > 0 && rewards[index - 1].reached
+              !item.reached && (index === 0 || rewards[index - 1].reached)
                 ? 'border-3 border-basic-yellow shadow-[0_0_16px_1px_rgba(246,199,153,0.6)]'
                 : 'border-2 border-[rgba(255,255,255,0.1)]',
             ])}
@@ -72,6 +90,10 @@ export default function RewardSwiper() {
               alt=""
               fill
             />
+
+            {item.reached && (
+              <Image className="w-7 h-7 absolute top-[0.5rem] right-[0.5rem]" src={completedIconImg} alt="" />
+            )}
 
             <div className="relative z-0 flex flex-col items-center pt-8 h-full">
               <span

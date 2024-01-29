@@ -9,14 +9,18 @@ import { PreRegisterInfoDTO } from '@/http/services/astrark';
 import ShareButton from '../components/ShareButton';
 import PreRegisterButton from '../components/PreRegisterButton';
 import shardImg from 'img/astrark/pre-register/shard.png';
+import { useContext } from 'react';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
-export default function IndexScreen({
+function IndexScreen({
   preInfo,
   onPreRegistered,
 }: {
   preInfo: PreRegisterInfoDTO | null;
   onPreRegistered?: () => void;
 }) {
+  const { userInfo } = useContext(MobxContext);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function onPreRegisterCallback() {
@@ -25,7 +29,7 @@ export default function IndexScreen({
   }
 
   return (
-    <div className="w-screen h-screen 4xl:h-[67.5rem] bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0">
+    <div className="w-screen min-h-screen bg-[url('/img/astrark/pre-register/bg_index_screen.jpg')] bg-no-repeat bg-cover relative px-16 lg:px-0 pt-[6rem] pb-[4rem]">
       <div className="absolute right-0 top-0 z-0 w-[54.125rem] h-[67.5rem]">
         <Image className="object-cover" src={roleImg} alt="" fill />
       </div>
@@ -42,22 +46,20 @@ export default function IndexScreen({
         <div className="font-poppins text-lg mt-[1.375rem]">
           Join the adventure with{' '}
           <span className="font-semakin text-basic-yellow text-2xl">
-            {preInfo ? preInfo.total.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') : '0'}
+            {preInfo ? preInfo.total?.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') : '0'}
           </span>{' '}
           Commanders registered for AstrArk! Let&apos;s embark together!
         </div>
 
-        <RewardSwiper />
+        <RewardSwiper preInfo={preInfo} />
 
         <Image className="mt-6 w-9 h-9 object-cover select-none hidden lg:block" src={arrowLRImg} alt="" />
 
         <div className="mt-2 lg:mt-8 flex items-center h-[4.375rem]">
-          {preInfo &&
-            (preInfo?.preregistered ? (
-              <ShareButton preInfo={preInfo} />
-            ) : (
-              <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
-            ))}
+          {(!userInfo || (preInfo && !preInfo.preregistered)) && (
+            <PreRegisterButton onPreRegistered={onPreRegisterCallback} />
+          )}
+          {/* {preInfo && preInfo.preregistered && <ShareButton preInfo={preInfo} />} */}
         </div>
 
         <Modal
@@ -86,3 +88,5 @@ export default function IndexScreen({
     </div>
   );
 }
+
+export default observer(IndexScreen);

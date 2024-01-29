@@ -10,7 +10,7 @@ import { observer } from 'mobx-react-lite';
 import InviteCardModal from '@/pages/components/common/InviteCardModal';
 
 const Invite = function () {
-  const { userInfo, toggleInviteModal } = useContext(MobxContext);
+  const { userInfo, toggleInviteModal, expired } = useContext(MobxContext);
 
   function onInviteClick() {
     if (!userInfo) return;
@@ -27,10 +27,12 @@ const Invite = function () {
           src={inviteImg}
           alt=""
         />
-        <div className="font-poppins text-[0.625rem] lg:text-sm text-basic-yellow max-w-[26rem]">
-          Please note that invitation rewards will be distributed later and are NOT included in the current Whitelist
-          Journey.
-        </div>
+        {expired || (
+          <div className="font-poppins text-[0.625rem] lg:text-sm text-basic-yellow max-w-[26rem]">
+            Please note that invitation rewards will be distributed later and are NOT included in the current Whitelist
+            Journey.
+          </div>
+        )}
 
         <div className="flex items-center relative z-0">
           <BasicButton label="Invite Now" onClick={onInviteClick} />

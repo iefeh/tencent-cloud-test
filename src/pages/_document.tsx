@@ -11,14 +11,14 @@ export default function Document() {
         />
         <link rel="icon" href="/img/favicon.png" type="image/x-icon"></link>
         <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon"></link>
-        <link rel="preload" as="font" href="/fonts/Semakin.woff2"></link>
-        <link rel="preload" as="font" href="/fonts/Semakin.ttf"></link>
-        <link rel="preload" as="font" href="/fonts/Decima-Mono-W01-Regular.woff2"></link>
-        <link rel="preload" as="font" href="/fonts/Decima-Mono-W01-Regular.ttf"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Regular.woff2"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Regular.ttf"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Medium.woff2"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Medium.ttf"></link>
+        <link rel="preload" as="font" href="/fonts/Semakin.woff2" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Semakin.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Decima-Mono-W01-Regular.woff2" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Decima-Mono-W01-Regular.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Poppins-Regular.woff2" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Poppins-Regular.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Poppins-Medium.woff2" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="/fonts/Poppins-Medium.ttf" crossOrigin="anonymous"></link>
       </Head>
       <body className="dark">
         <Main />
