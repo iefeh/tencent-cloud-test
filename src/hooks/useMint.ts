@@ -58,6 +58,7 @@ export default function useMint() {
   }
 
   const init = throttle(async function () {
+    console.log('mint contract address:', process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS);
     reset();
     if (!isConnected) return;
     toggleIsConnected(true);
