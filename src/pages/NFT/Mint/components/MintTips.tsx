@@ -5,14 +5,15 @@ import TextLink from '@/pages/components/common/TextLink';
 import { MintState } from '@/constant/mint';
 
 function MintTips() {
-  const { state, nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked } = useContext(MintContext);
+  const { state, nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked, hasMintError } =
+    useContext(MintContext);
 
-  const WhitelistedTips = () => {
+  const MintedErrorTips = () => {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        Congratulations, you are eligible to mint{' '}
-        <span className="text-basic-yellow font-semakin underline text-xl">{nowCount}</span> Destiny Tetra NFT, click
-        MINT to finish the process.
+        Unfortunately, you were unable to mint the Destiny TETRA NFT. We genuinely appreciate your participation in our
+        whitelist player journey. Stay tuned for more exciting opportunities ahead, and we look forward to having you
+        join us again!
       </div>
     );
   };
@@ -119,7 +120,7 @@ function MintTips() {
   function getTips() {
     if (isEnded) return <SoldOutTips />;
     if (canMint) {
-      if (minted) return <MintedTips />;
+      if (minted) return hasMintError ? <MintedErrorTips /> : <MintedTips />;
       if (!isWhitelistChecked) return null;
 
       if (state === MintState.GuaranteedRound) return <GuaranteedRoundTips />;

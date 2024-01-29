@@ -48,6 +48,8 @@ class MintStore {
   /** 当前mint的交易id */
   tx_id = '';
 
+  hasMintError = false;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -147,6 +149,10 @@ class MintStore {
     this.loading = typeof val === 'boolean' ? val : !this.loading;
   };
 
+  toggleHasMintError = (val?: boolean) => {
+    this.hasMintError = typeof val === 'boolean' ? val : !this.hasMintError;
+  };
+
   reset = () => {
     this.setState(MintState.NotStarted);
     this.setNowCount(0);
@@ -157,6 +163,7 @@ class MintStore {
     this.toggleIsWhitelistChecked(false);
     this.toggleMinted(false);
     this.toggleLoading(false);
+    this.toggleHasMintError(false);
   };
 }
 

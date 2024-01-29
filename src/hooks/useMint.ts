@@ -24,6 +24,7 @@ export default function useMint() {
     toggleIsWhitelistChecked,
     toggleMinted,
     toggleLoading,
+    toggleHasMintError,
     setNowCount,
     setGRCount,
     setFRCount,
@@ -205,10 +206,12 @@ export default function useMint() {
       const result = await transaction.wait();
       console.log('mint result:', result);
       toggleMinted(true);
+      toggleHasMintError(false);
       setTxId(result?.hash || '');
       await checkWhitelist();
     } catch (error: any) {
       toastError(error);
+      toggleHasMintError(true);
     }
   }, 500);
 
