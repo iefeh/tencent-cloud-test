@@ -35,10 +35,6 @@ interface NetworkInfo {
 
 export const CURRENT_CHAIN_ID = '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16);
 
-export const MINT_CONTRACTS: { [key: string]: string } = {
-  80001: '0x0e36f9b27f225be9ba135c512158432e037106a7',
-};
-
 export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
   80001: {
     chainId: parseChainIdToHex('80001'),
@@ -50,5 +46,16 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
     },
     rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
     blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+  },
+  137: {
+    chainId: parseChainIdToHex('137'),
+    chainName: 'Polygon Mainnet',
+    nativeCurrency: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18,
+    },
+    rpcUrls: ['https://polygon-rpc.com'],
+    blockExplorerUrls: ['https://polygonscan.com'],
   },
 };
