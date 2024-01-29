@@ -1,24 +1,11 @@
 import PageDesc from '@/pages/components/common/PageDesc';
 import Image from 'next/image';
-import leftFogImg from 'img/bushwhack/content/fog_left.png';
-import rightFogImg from 'img/bushwhack/content/fog_right.png';
 import videoImg from 'img/bushwhack/content/video.jpg';
 
 export default function GameContent() {
   return (
     <div className="w-full relative z-10">
       <Image className="object-cover" src="/img/bushwhack/content/bg.jpg" alt="" fill />
-
-      <Image
-        className="w-[57.875rem] h-[50rem] object-cover absolute left-0 -top-[17rem] z-0"
-        src={leftFogImg}
-        alt=""
-      />
-      <Image
-        className="w-[68.125rem] h-[50rem] object-cover absolute right-0 -top-[26.5625rem] z-"
-        src={rightFogImg}
-        alt=""
-      />
 
       <div className="max-w-[75rem] m-auto flex flex-col pt-[26.625rem] pb-[13.625rem] relative z-0">
         <PageDesc

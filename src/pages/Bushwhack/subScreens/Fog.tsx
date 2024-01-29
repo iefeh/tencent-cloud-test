@@ -7,6 +7,8 @@ import { Modal, ModalBody, ModalContent, ModalFooter, cn, useDisclosure } from '
 import ModelView3D from '@/pages/components/common/model/ModelView3D';
 import BasicButton from '@/pages/components/common/BasicButton';
 import { debounce } from 'lodash';
+import leftFogImg from 'img/bushwhack/content/fog_left.png';
+import rightFogImg from 'img/bushwhack/content/fog_right.png';
 
 interface MaskItem {
   name: string;
@@ -278,7 +280,7 @@ export default function FogScreen() {
   }, []);
 
   return (
-    <div className="w-screen h-screen relative select-none overflow-hidden flex justify-center items-center">
+    <div className="w-screen h-screen relative select-none flex justify-center items-center">
       <Image ref={fogImgRef} className="invisible" src={fogImg} alt="" fill />
 
       <Image className={cn(['w-full h-full object-contain', isResizing && 'invisible'])} src={sceneImg} alt="" />
@@ -331,6 +333,43 @@ export default function FogScreen() {
       >
         Hunt in the Mist
       </div>
+
+      <div
+        className="absolute top-0 left-0 -translate-y-full rotate-180 w-full h-24 z-30 overflow-hidden"
+        style={{ mask: 'linear-gradient(to bottom, #000 0, rgba(0,0,0,0.3) 50%, transparent 100%)' }}
+      >
+        <Image className="w-full h-auto" src={fogImg} alt="" />
+      </div>
+
+      <div
+        className="absolute bottom-0 left-0 translate-y-full rotate-180 w-full h-24 z-30 overflow-hidden"
+        style={{ mask: 'linear-gradient(to top, rgba(0,0,0,0.9) 0, rgba(0,0,0,0.3) 50%, transparent 100%)' }}
+      >
+        <Image className="w-full h-auto relative bottom-0" src={fogImg} alt="" />
+      </div>
+
+      <Image
+        className="w-[57.875rem] h-[50rem] object-cover absolute left-0 -top-[17rem] z-40"
+        src={leftFogImg}
+        alt=""
+      />
+
+      <Image
+        className="w-[68.125rem] h-[50rem] object-cover absolute right-0 -top-[26.5625rem] z-40"
+        src={rightFogImg}
+        alt=""
+      />
+
+      <Image
+        className="w-[57.875rem] h-[50rem] object-cover absolute left-0 -bottom-[33rem] z-40"
+        src={leftFogImg}
+        alt=""
+      />
+      <Image
+        className="w-[68.125rem] h-[50rem] object-cover absolute right-0 -bottom-[23.4375rem] z-40"
+        src={rightFogImg}
+        alt=""
+      />
 
       <Modal
         isOpen={isOpen}
