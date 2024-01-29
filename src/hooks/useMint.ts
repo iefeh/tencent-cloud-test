@@ -6,7 +6,7 @@ import { throttle } from 'lodash';
 import { BrowserProvider, Contract, JsonRpcSigner } from 'ethers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '@/pages/NFT/Mint';
-import { CURRENT_CHAIN_ID, MINT_CONTRACTS, MintState, WALLECT_NETWORKS } from '@/constant/mint';
+import { CURRENT_CHAIN_ID, MintState, WALLECT_NETWORKS } from '@/constant/mint';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 
@@ -50,7 +50,7 @@ export default function useMint() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
     contract.current = new Contract(
-      MINT_CONTRACTS[process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!],
+      process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!,
       contractABI,
       signer.current,
     );
