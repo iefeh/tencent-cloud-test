@@ -5,15 +5,15 @@ import TextLink from '@/pages/components/common/TextLink';
 import { MintState } from '@/constant/mint';
 
 function MintTips() {
-  const { state, nowCount, grCount, frCount, canMint, isEnded, minted, isWhitelistChecked, hasMintError } =
+  const { state, nowCount, grCount, frCount, canMint, isEnded, isReady, minted, isWhitelistChecked, hasMintError } =
     useContext(MintContext);
 
-  const MintedErrorTips = () => {
+  const MintErrorTips = () => {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        Unfortunately, you were unable to mint the Destiny TETRA NFT. We genuinely appreciate your participation in our
-        whitelist player journey. Stay tuned for more exciting opportunities ahead, and we look forward to having you
-        join us again!
+        {isReady
+          ? 'Unfortunately, you were unable to mint the Destiny TETRA NFT. We genuinely appreciate your participation in our whitelist player journey. Stay tuned for more exciting opportunities ahead, and we look forward to having you join us again!'
+          : 'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.'}
       </div>
     );
   };
@@ -120,8 +120,9 @@ function MintTips() {
   function getTips() {
     if (isEnded) return <SoldOutTips />;
     if (canMint) {
-      if (minted) return hasMintError ? <MintedErrorTips /> : <MintedTips />;
+      if (hasMintError) return <MintErrorTips />;
       if (!isWhitelistChecked) return null;
+      if (minted) return <MintedTips />;
 
       if (state === MintState.GuaranteedRound) return <GuaranteedRoundTips />;
       if (state === MintState.FCFS_Round) return <FCFSRoundTips />;

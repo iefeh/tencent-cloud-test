@@ -49,11 +49,7 @@ export default function useMint() {
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
-    contract.current = new Contract(
-      process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!,
-      contractABI,
-      signer.current,
-    );
+    contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
   }
 
   function toastError(error: any) {
@@ -76,6 +72,7 @@ export default function useMint() {
 
     try {
       await initMintState();
+      await checkWallet();
     } catch (error: any) {
       toastError(error);
     } finally {
@@ -107,6 +104,20 @@ export default function useMint() {
       toastError(error);
       toggleIsConnected(false);
       return false;
+    }
+  }
+
+  async function checkWallet() {
+    console.log('check wallet address:', userInfo?.wallet, address);
+    if (userInfo?.wallet?.toLowerCase() !== address?.toLowerCase()) {
+      toggleHasMintError(true);
+      toast.error(
+        'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
+      );
+      return false;
+    } else {
+      toggleHasMintError(false);
+      return true;
     }
   }
 
@@ -172,13 +183,13 @@ export default function useMint() {
       setNowCount(res);
       console.log('now mint count:', res);
       toggleIsWhitelistChecked(true);
+
+      if (!isEnded) {
+        checkWhitelistByRound(MintState.GuaranteedRound);
+        checkWhitelistByRound(MintState.FCFS_Round);
+      }
     } catch (error: any) {
       toastError(error);
-    }
-
-    if (!isEnded) {
-      checkWhitelistByRound(MintState.GuaranteedRound);
-      checkWhitelistByRound(MintState.FCFS_Round);
     }
   }
 
@@ -216,7 +227,7 @@ export default function useMint() {
   }, 500);
 
   async function onButtonClick() {
-    if (!isWalletConnected) {
+    if (!isWalletConnected || !userInfo) {
       onConnect();
       return;
     }
@@ -228,6 +239,12 @@ export default function useMint() {
       if (!res) {
         await switchNetwork();
       }
+      toggleLoading(false);
+      return;
+    }
+
+    const res1 = await checkWallet();
+    if (!res1) {
       toggleLoading(false);
       return;
     }
