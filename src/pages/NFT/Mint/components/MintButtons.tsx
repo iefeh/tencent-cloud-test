@@ -27,6 +27,7 @@ function MintButtons() {
 
   if (!mintInfo.buttonLabel) return null;
 
+  const isMintInputDisabled = loading || mintInfo.buttonDisabled || !canMint || !isReady || minted || nowCount < 1;
   const isMintDisabled = loading || mintInfo.buttonDisabled || (canMint && isReady && !minted && +mintCount < 1);
 
   return (
@@ -37,18 +38,18 @@ function MintButtons() {
           classNames={{
             inputWrapper: cn([
               'border border-solid border-basic-yellow rounded-3xl transition-all duration-500 delay-75 outline-none !bg-black h-full',
-              isMintDisabled && 'grayscale',
+              isMintInputDisabled && 'grayscale',
             ]),
             input: '!text-basic-yellow text-center h-full',
           }}
           type="text"
           value={mintCount}
-          disabled={isMintDisabled}
+          disabled={isMintInputDisabled}
           startContent={
             <Image
               className={cn([
                 'w-[1.125rem] h-[1.125rem] object-contain',
-                isMintDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                isMintInputDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
               ])}
               src={minusIconImg}
               alt=""
@@ -59,7 +60,7 @@ function MintButtons() {
             <Image
               className={cn([
                 'w-[1.125rem] h-[1.125rem] object-contain',
-                isMintDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                isMintInputDisabled ? 'cursor-not-allowed' : 'cursor-pointer',
               ])}
               src={plusIconImg}
               alt=""

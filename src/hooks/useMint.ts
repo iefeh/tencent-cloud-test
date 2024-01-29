@@ -32,9 +32,8 @@ export default function useMint() {
     reset,
   } = useContext(MintContext);
   const [mintCount, setMintCount] = useState('0');
-  const { address } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
-  const { isConnected, onConnect } = useConnect(
+  const { isConnected, address, onConnect } = useConnect(
     MediaType.METAMASK,
     () => {
       toggleIsConnected(isConnected);
@@ -52,8 +51,8 @@ export default function useMint() {
     contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
   }
 
-  function toastError(error: any) {
-    console.log('nft error', error);
+  function toastError(error: any, step = '') {
+    console.log('nft error', step, error);
     toast.error(error?.reason || error?.data?.message || error?.message || error);
   }
 
@@ -75,7 +74,7 @@ export default function useMint() {
       await initMintState();
       await checkWallet();
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'init initMintState checkWallet');
     } finally {
       toggleLoading(false);
     }
@@ -89,7 +88,7 @@ export default function useMint() {
       console.log('mint state', res);
       setState(res || MintState.NotStarted);
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'initMintState');
     }
   }
 
@@ -102,19 +101,22 @@ export default function useMint() {
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'checkNetwork');
       toggleIsConnected(false);
       return false;
     }
   }
 
   async function checkWallet(showToast = false) {
+    if (!userInfo?.wallet || !address) return false;
     console.log('check wallet address:', userInfo?.wallet, address);
     if (userInfo?.wallet?.toLowerCase() !== address?.toLowerCase()) {
       toggleHasMintError(true);
-      toast.error(
-        'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
-      );
+      if (showToast) {
+        toast.error(
+          'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
+        );
+      }
       return false;
     } else {
       toggleHasMintError(false);
@@ -134,7 +136,7 @@ export default function useMint() {
       console.log('connected network', res);
       return true;
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'addNetwork');
       return false;
     }
   }
@@ -155,7 +157,7 @@ export default function useMint() {
           await switchNetwork();
         }
       } else {
-        toastError(error);
+        toastError(error, 'switchNetwork');
       }
     }
   }
@@ -173,7 +175,7 @@ export default function useMint() {
       await initProvider();
       await init();
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'disconnect');
     }
   }
 
@@ -190,7 +192,7 @@ export default function useMint() {
         checkWhitelistByRound(MintState.FCFS_Round);
       }
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'checkWhitelist');
     }
   }
 
@@ -208,7 +210,7 @@ export default function useMint() {
       }
       console.log(`mint count - ${state}:`, res);
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'checkWhitelistByRound');
     }
   }
 
@@ -222,13 +224,13 @@ export default function useMint() {
       setTxId(result?.hash || '');
       await checkWhitelist();
     } catch (error: any) {
-      toastError(error);
+      toastError(error, 'mint');
       toggleHasMintError(true);
     }
   }, 500);
 
   async function onButtonClick() {
-    if (!isWalletConnected || !userInfo) {
+    if (!isWalletConnected || !userInfo?.wallet) {
       onConnect();
       return;
     }

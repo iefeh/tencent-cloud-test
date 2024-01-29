@@ -174,5 +174,5 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     );
   };
 
-  return { isConnected, onConnect, loading, BindTipsModal };
+  return { isConnected, address, onConnect, loading, BindTipsModal };
 }
