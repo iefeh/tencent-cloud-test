@@ -2,12 +2,11 @@ import Image from 'next/image';
 import maskBg from 'img/astrark/bg-mask.png';
 import styles from './index.module.css';
 import { Button, cn } from '@nextui-org/react';
-import { downloadFile } from '@/hooks/utils';
 import FloatRegisterButton from '../components/FloatRegisterButton';
 
 export default function DownloadPage() {
   function onDownloadClick() {
-    downloadFile(process.env.NEXT_PUBLIC_ASTRARK_DOWNLOAD_URL!);
+    window.open(process.env.NEXT_PUBLIC_ASTRARK_DOWNLOAD_URL!, '_blank');
   }
 
   function onGooglePlayClick() {

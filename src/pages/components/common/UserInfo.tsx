@@ -19,10 +19,10 @@ const UserInfo = function () {
             label="login"
             onClick={toggleLoginModal}
           />
-
-          <LoginModal />
         </>
       )}
+
+      <LoginModal />
     </>
   );
 };

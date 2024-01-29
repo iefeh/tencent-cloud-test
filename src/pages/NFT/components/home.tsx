@@ -21,18 +21,20 @@ const NftHome: React.FC = () => {
         hasBelt
         needAni
         baseAniTY
-        className='px-8 items-center text-center'
+        className="px-8 items-center text-center"
         title="A DYNAMIC NFT ECOSYSTEM"
         subtitle={
           <div className="max-w-[32rem] font-decima">
-            At Moonveil, we put player experience at the heart of everything we do. We aim to build a dynamic NFT ecosystem that keeps players actively engaged with our games and provides them with ongoing rewards and returns in the future.
+            At Moonveil, we put player experience at the heart of everything we do. We aim to build a dynamic NFT
+            ecosystem that keeps players actively engaged with our games and provides them with ongoing rewards and
+            returns in the future.
           </div>
         }
         button={
           <div className="flex gap-2 mt-[7rem]">
             <BasicButton label="TETRA NFT Series" link="/TetraNFT" />
             <BasicButton label="Get Involved" link="/LoyaltyProgram/earn" />
-            <BasicButton label="Mint Now" disabled />
+            <BasicButton label="Mint Now" link="/NFT/Mint" active />
           </div>
         }
       />

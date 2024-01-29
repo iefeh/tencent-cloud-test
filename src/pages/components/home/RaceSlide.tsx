@@ -18,7 +18,7 @@ export default function RaceSlide(props: Props) {
         needAni={props.needAni}
         baseAniTY
         title="Alpha Test is live"
-        subtitle="The Astrark Alpha Test is from January 19, 12:00 AM, EST to January 29, 12:00 AM, EST."
+        subtitle="The AstrArk Alpha Test is from Jan 19 12:00 AM EST to Jan 29 12:00 AM EST."
         buttonLabel="Join Now"
         buttonLink="/AstrArk/Download"
       />

@@ -1,7 +1,6 @@
 import Image, { StaticImageData } from 'next/image';
 import BasicButton from '../BasicButton';
 import { cn } from '@nextui-org/react';
-import useConnect from '@/hooks/useConnect';
 import useAuth from '@/hooks/useAuth';
 import { MobxContext } from '@/pages/_app';
 import { useContext } from 'react';

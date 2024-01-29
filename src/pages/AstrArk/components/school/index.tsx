@@ -30,7 +30,7 @@ export default function AstrArkSchool() {
   return (
     <section className="w-full h-screen relative overflow-hidden">
       <div
-        className="luxy-el w-full h-[calc(100vh_+_800px)] flex-col justify-center items-center min-[2400px]:flex hidden"
+        className="luxy-el w-full h-[calc(100vh_+_800px)] flex-col justify-center items-center min-[2400px]:flex hidden px-8 lg:px-0"
         data-speed-y="8"
         data-offset="-1200"
       >
@@ -38,7 +38,7 @@ export default function AstrArkSchool() {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_600px)] flex-col justify-center items-center min-[1680px]:max-[2399px]:flex hidden relative top-[20vh]"
+        className="luxy-el w-full h-[calc(100vh_+_600px)] flex-col justify-center items-center min-[1680px]:max-[2399px]:flex hidden relative top-[20vh] px-8 lg:px-0"
         data-speed-y="4"
         data-offset="-800"
       >
@@ -46,7 +46,7 @@ export default function AstrArkSchool() {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_540px)] flex-col justify-center items-center min-[768px]:max-[1679px]:flex hidden relative top-[20vh]"
+        className="luxy-el w-full h-[calc(100vh_+_540px)] flex-col justify-center items-center min-[768px]:max-[1679px]:flex hidden relative top-[20vh] px-8 lg:px-0"
         data-speed-y="4"
         data-offset="-480"
       >
@@ -54,14 +54,14 @@ export default function AstrArkSchool() {
       </div>
 
       <div
-        className="luxy-el w-full h-[calc(100vh_+_400px)] flex-col justify-center items-center max-[767px]:flex hidden"
+        className="luxy-el w-full h-[calc(100vh_+_400px)] flex-col justify-center items-center max-[767px]:flex hidden px-8 lg:px-0"
         data-speed-y="8"
         data-offset="-640"
       >
         {Content}
       </div>
 
-      <Mystery className="absolute left-[4.75rem] bottom-[4.4375rem] max-md:hidden" />
+      <Mystery className="absolute left-[4.75rem] bottom-[4.4375rem] max-md:hidden px-8 lg:px-0" />
     </section>
   );
 }

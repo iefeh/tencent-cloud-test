@@ -20,9 +20,11 @@ import logger from "@/lib/logger/winstonLogger";
 import {redis} from "@/lib/redis/client";
 
 import Moralis from 'moralis';
+
 import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/models/UserMetricReward";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {promiseSleep} from "@/lib/common/sleep";
+
 
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
 sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
@@ -45,7 +47,7 @@ router.get(async (req, res) => {
         // const result = await questWrapper.refreshUserWalletMetric("check_user_1", "0x8728c811f93eb6ac47d375e6a62df552d62ed284");
         // console.log(result);
 
-        
+
         res.json(response.success());
         return;
     } catch (error) {
@@ -53,6 +55,7 @@ router.get(async (req, res) => {
     }
     res.json(response.success());
 });
+
 
 async function reVerifyUsersWalletQuest() {
     // 获取基本信息
@@ -209,6 +212,7 @@ async function findUsers2ReverifyWalletAsset(pageNumber, pageSize) {
 
     return result.map(item => item.user_id);
 }
+
 
 async function syncUserReservoirNftVal() {
     try {

@@ -55,7 +55,7 @@ export default function SchoolDesc() {
   }
 
   function onBeforeSketch(prevIndex: number, nextIndex: number) {
-    return getFrame(prevIndex);
+    return Promise.all([getFrame(prevIndex), getFrame(nextIndex, true)]);
   }
 
   function onAfterSketch(prevIndex: number, nextIndex: number) {
@@ -77,14 +77,17 @@ export default function SchoolDesc() {
   }
 
   useEffect(() => {
-    startPlay(activeIndex);
-    Promise.all(images.map((item, index) => getFrame(index, true))).then(async (urls) => {
-      updateImages(urls as string[]);
-    });
+    Promise.all(images.map((item, index) => getFrame(index, true)))
+      .then(async (urls) => {
+        updateImages(urls as string[]);
+      })
+      .finally(() => {
+        startPlay(activeIndex);
+      });
   }, []);
 
   return (
-    <section className="school-desc w-full h-screen relative overflow-hidden">
+    <section className="school-desc w-full h-screen relative overflow-hidden hidden md:block">
       <div className="w-full h-full relative">
         {schools.map((school, index) => (
           <video
