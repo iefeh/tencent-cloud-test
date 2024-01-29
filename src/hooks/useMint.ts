@@ -107,7 +107,7 @@ export default function useMint() {
     }
   }
 
-  async function checkWallet() {
+  async function checkWallet(showToast = false) {
     console.log('check wallet address:', userInfo?.wallet, address);
     if (userInfo?.wallet?.toLowerCase() !== address?.toLowerCase()) {
       toggleHasMintError(true);
@@ -243,7 +243,7 @@ export default function useMint() {
       return;
     }
 
-    const res1 = await checkWallet();
+    const res1 = await checkWallet(true);
     if (!res1) {
       toggleLoading(false);
       return;
