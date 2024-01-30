@@ -86,6 +86,7 @@ class UserStore {
   getUserInfo = debounce(async () => {
     const res = await getUserInfoAPI();
     this.setUserInfo(res);
+    this.toggleLoginModal(false);
 
     // 成功登录后清除邀请码
     localStorage.removeItem(KEY_INVITE_CODE);
