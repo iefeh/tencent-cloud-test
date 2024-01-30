@@ -165,7 +165,7 @@ export default function FogScreen() {
 
     destOutCtx.current.clip();
 
-    destOutCtx.current.globalAlpha = 1 / MAX_ERASE_TIMES;
+    // destOutCtx.current.globalAlpha = 1 / MAX_ERASE_TIMES;
     destOutCtx.current.drawImage(
       destInCanvasRef.current!,
       minX - RADIUS_MAX,
@@ -177,7 +177,7 @@ export default function FogScreen() {
       maxX - minX + RADIUS_MAX * 2,
       maxY - minY + RADIUS_MAX * 2,
     );
-    destOutCtx.current.globalAlpha = 1;
+    // destOutCtx.current.globalAlpha = 1;
     destOutCtx.current.restore();
   }
 
@@ -277,6 +277,11 @@ export default function FogScreen() {
     renderFog();
 
     return () => {
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = 0;
+      }
+
       window.removeEventListener('resize', init);
       window.removeEventListener('mousemove', onFogMousemove);
     };
