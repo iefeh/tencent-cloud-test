@@ -58,6 +58,12 @@ export default function useMint() {
     if (!isConnected) return;
     toggleIsConnected(true);
 
+    try {
+      await initProvider();
+    } catch (error) {
+      return;
+    }
+
     toggleLoading(true);
 
     const res = await checkNetwork();
@@ -78,7 +84,6 @@ export default function useMint() {
 
   async function initMintState() {
     try {
-      await initProvider();
       const result = await contract.current!.getMintState();
       const res = parseInt(result);
       console.log('mint state', res);
@@ -146,7 +151,7 @@ export default function useMint() {
       await initProvider();
       await init();
     } catch (error: any) {
-      if (error?.code === 4902) {
+      if (error?.code === 4902 || error?.code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await addNetwork();
         if (res) {
@@ -259,8 +264,9 @@ export default function useMint() {
   }
 
   useEffect(() => {
+    if (!userInfo || !walletProvider) return;
     init();
-  }, [userInfo]);
+  }, [userInfo, walletProvider]);
 
   function reload() {
     window.location.reload();
