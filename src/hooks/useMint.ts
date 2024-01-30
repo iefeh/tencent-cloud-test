@@ -33,13 +33,9 @@ export default function useMint() {
   } = useContext(MintContext);
   const [mintCount, setMintCount] = useState('0');
   const { walletProvider } = useWeb3ModalProvider();
-  const { isConnected, address, onConnect } = useConnect(
-    MediaType.METAMASK,
-    () => {
-      toggleIsConnected(isConnected);
-    },
-    true,
-  );
+  const { isConnected, address, onConnect } = useConnect(MediaType.METAMASK, () => {
+    toggleIsConnected(true);
+  });
 
   const provider = useRef(new BrowserProvider(walletProvider!));
   const signer = useRef<JsonRpcSigner | null>(null);
@@ -274,10 +270,12 @@ export default function useMint() {
     if (!window.ethereum) return;
     window.ethereum.on('chainChanged', reload);
     window.ethereum.on('disconnect', reload);
+    window.ethereum.on('accountsChanged', reload);
 
     return () => {
       window.ethereum.removeListener('chainChanged', reload);
       window.ethereum.removeListener('disconnect', reload);
+      window.ethereum.removeListener('accountsChanged', reload);
     };
   }, []);
 
