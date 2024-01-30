@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '..';
 import Image from 'next/image';
 import nftBorderImg from 'img/nft/mint/nft_border.png';
-import { cn } from '@nextui-org/react';
 import MintLoading from './MintLoading';
 import Video from '@/pages/components/common/Video';
 import { throttle } from 'lodash';

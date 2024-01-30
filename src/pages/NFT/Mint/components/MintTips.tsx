@@ -3,17 +3,31 @@ import { useContext } from 'react';
 import { MintContext } from '..';
 import TextLink from '@/pages/components/common/TextLink';
 import { MintState } from '@/constant/mint';
+import { MobxContext } from '@/pages/_app';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 function MintTips() {
   const { state, nowCount, grCount, frCount, canMint, isEnded, isReady, minted, isWhitelistChecked, hasMintError } =
     useContext(MintContext);
+  const { userInfo } = useContext(MobxContext);
+  const { address } = useWeb3ModalAccount();
 
   const MintErrorTips = () => {
     return (
-      <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        {isReady
-          ? 'Unfortunately, you were unable to mint the Destiny TETRA NFT. We genuinely appreciate your participation in our whitelist player journey. Stay tuned for more exciting opportunities ahead, and we look forward to having you join us again!'
-          : 'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.'}
+      <div className="px-7 py-6 max-w-[62.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base break-all">
+        {isReady ? (
+          <div>
+            Unfortunately, you were unable to mint the Destiny TETRA NFT. We genuinely appreciate your participation in
+            our whitelist player journey. Stay tuned for more exciting opportunities ahead, and we look forward to
+            having you join us again!
+          </div>
+        ) : (
+          <div>
+            Please make sure to connect to a wallet that corresponds to the address associated with the currently
+            logged-in account(<span className="text-basic-yellow">{userInfo?.wallet}</span>). Your currently connected
+            wallet is: <span className="text-basic-yellow">{address?.toLowerCase() || 'null'}</span>.
+          </div>
+        )}
       </div>
     );
   };
@@ -32,7 +46,7 @@ function MintTips() {
   const SoldOutTips = () => {
     return (
       <div className="px-7 py-6 max-w-[37.5rem] border-1 border-[#1A1A1A] text-sm text-[#999999] rounded-base">
-        <div className="text-3xl text-center">We’ve Sold OUT! </div>
+        <div className="text-3xl text-center font-semakin">WE MINTED OUT!</div>
         <div className="mt-4">
           All 800 Genesis NFT Collection have been Minted. Thank you for your unbelievable Support. We are grateful to
           our community and everyone who participated in the Mint.
