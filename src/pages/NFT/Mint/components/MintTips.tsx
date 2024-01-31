@@ -64,11 +64,15 @@ function MintTips() {
         </p>
 
         <ul>
-          <li className="flex items-center">
-            <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>Guaranteed whitelist spot(s):
-            <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{grCount}</span>; FCFS whitelist
-            spot(s):
-            <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{frCount}</span>;
+          <li>
+            <div>
+              <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>Guaranteed whitelist spot(s):
+              <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{grCount}</span>;
+            </div>
+            <div>
+              <span className="inline-block w-2 h-2 mr-3 rounded-full bg-current"></span>FCFS whitelist spot(s):
+              <span className="ml-2 text-basic-yellow font-semakin underline text-xl">{frCount}</span>;
+            </div>
           </li>
         </ul>
 

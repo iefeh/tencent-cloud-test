@@ -27,7 +27,7 @@ function MintProgress() {
           {index > 0 && (
             <div
               className={cn([
-                'w-[10.5625rem] h-[0.0625rem] mx-[0.9375rem]',
+                'w-28 lg:w-[10.5625rem] h-[0.0625rem] mx-[0.9375rem]',
                 item.checked ? 'bg-white' : 'bg-[rgba(255,255,255,0.2)]',
               ])}
             ></div>

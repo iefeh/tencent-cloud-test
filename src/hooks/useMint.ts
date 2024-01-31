@@ -163,23 +163,6 @@ export default function useMint() {
     }
   }
 
-  async function disconnect() {
-    try {
-      await walletProvider?.request({
-        method: 'wallet_revokePermissions',
-        params: [
-          {
-            eth_accounts: {},
-          },
-        ],
-      });
-      await initProvider();
-      await init();
-    } catch (error: any) {
-      toastError(error, 'disconnect');
-    }
-  }
-
   async function checkWhitelist() {
     try {
       const result = await contract.current!.nowMintQual(address);
