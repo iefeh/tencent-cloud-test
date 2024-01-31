@@ -34,7 +34,7 @@ export default function CountdownScreen() {
           <div className="-mt-7 flex flex-col items-center">
             <Image className="w-[20.875rem] h-[12.625rem]" src={logoImg} alt="" />
             <div className="mt-2 font-semakin text-[5.625rem] text-transparent bg-clip-text bg-gradient-to-b from-[#3C6EFF] via-[#B6DCFF] via-[49.7314453125%] to-[#3E70FF]">
-              in 14 days…
+              Coming Soon...
             </div>
           </div>
         }
