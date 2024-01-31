@@ -39,9 +39,9 @@ export default function BushwhackPage() {
 
       {/* <KeyVisionScreen /> */}
 
-      <GameContent />
+      {/* <GameContent />
 
-      <IntroScreen />
+      <IntroScreen /> */}
     </section>
   );
 }
