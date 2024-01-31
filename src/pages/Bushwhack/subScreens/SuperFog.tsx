@@ -154,40 +154,62 @@ export default function SuperFogScreen() {
 
       coord.times--;
       coord.fps = MAX_ERASE_FPS;
+
+      if (coord.times <= 0) {
+        coord.timestamp = Math.max(coord.timestamp, performance.now());
+        for (let i = scatters.length - 1; i > -1; i--) {
+          coord.timestamp += 10;
+          scatters[i].timestamp = coord.timestamp;
+          scatters[i].times = MAX_ERASE_TIMES;
+        }
+      }
     } else {
       coord.fps--;
     }
   }
 
-  function coverFogLoopAt(ctx: CanvasRenderingContext2D, coord: ArcCoord, index: number) {
+  function coverFog(ctx: CanvasRenderingContext2D, coord: ArcCoord, index: number) {
     const { times, scatters } = coord;
     if (times > 0) return;
 
-    ctx.save();
-    ctx.beginPath();
-    for (let i = scatters.length - 1; i > -1; i--) {
-      const { x: pX, y: pY } = scatters[i];
-      ctx.arc(pX, pY, RADIUS_MAX, 0, Math.PI * 2);
-    }
-    ctx.clip();
+    const now = performance.now();
 
-    const { minX, minY, maxX, maxY } = coord;
     ctx.globalCompositeOperation = 'source-over';
-    // ctx.globalAlpha = 0.1;
-    ctx.drawImage(
-      fogCanvasRef.current!,
-      minX - RADIUS_MAX,
-      minY - RADIUS_MAX,
-      maxX - minX + RADIUS_MAX * 2,
-      maxY - minY + RADIUS_MAX * 2,
-      minX - RADIUS_MAX,
-      minY - RADIUS_MAX,
-      maxX - minX + RADIUS_MAX * 2,
-      maxY - minY + RADIUS_MAX * 2,
-    );
-    // ctx.globalAlpha = 1;
+    ctx.globalAlpha = 0.2;
 
-    ctx.restore();
+    for (let i = scatters.length - 1; i > -1; i--) {
+      const { x: pX, y: pY, timestamp, times: sts, fps } = scatters[i];
+      if (now < timestamp) continue;
+      if (sts <= 0) {
+        scatters.splice(i, 1);
+        continue;
+      }
+
+      if (fps === 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(pX, pY, RADIUS_MAX, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(
+          fogCanvasRef.current!,
+          pX - RADIUS_MAX,
+          pY - RADIUS_MAX,
+          pX + RADIUS_MAX,
+          pY + RADIUS_MAX,
+          pX - RADIUS_MAX,
+          pY - RADIUS_MAX,
+          pX + RADIUS_MAX,
+          pY + RADIUS_MAX,
+        );
+        ctx.restore();
+        scatters[i].times--;
+        scatters[i].fps = MAX_ERASE_FPS;
+      } else {
+        scatters[i].fps--;
+      }
+    }
+
+    ctx.globalAlpha = 1;
 
     const isInside = Math.sqrt((x.current - coord.x) ** 2 + (y.current - coord.y) ** 2) < RADIUS_MAX;
 
@@ -202,10 +224,9 @@ export default function SuperFogScreen() {
 
   function updateCover(el: number) {
     for (let i = coords.current.length - 1; i > -1; i--) {
-      coverFogLoopAt(previewCtxRef.current!, coords.current[i], i);
+      // coverFogLoopAt(previewCtxRef.current!, coords.current[i], i);
+      // coverFog(previewCtxRef.current!, coords.current[i], i);
     }
-
-    // eraseFog(previewCtxRef.current!, x.current, y.current, 0.8);
   }
 
   function updateErase(el: number) {
