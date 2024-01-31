@@ -1,173 +1,244 @@
 import Image from 'next/image';
 import fogImg from 'img/bushwhack/fog/fog.jpg';
 import sceneImg from 'img/bushwhack/fog/scene.jpg';
-import hintImg from 'img/bushwhack/fog/hint.png';
 import { useEffect, useRef, useState } from 'react';
-import { Modal, ModalBody, ModalContent, ModalFooter, cn, useDisclosure } from '@nextui-org/react';
-import ModelView3D from '@/pages/components/common/model/ModelView3D';
-import BasicButton from '@/pages/components/common/BasicButton';
+import { cn } from '@nextui-org/react';
+import { debounce } from 'lodash';
 import leftFogImg from 'img/bushwhack/content/fog_left.png';
 import rightFogImg from 'img/bushwhack/content/fog_right.png';
+import FogMasks from './components/FogMasks';
+import { BASE_CLIENT_HEIGHT, BASE_CLIENT_WIDTH } from '@/constant/common';
+import FogTitle from './components/FogTitle';
+import ShadowBorder from './components/ShadowBorder';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
-interface MaskItem {
-  name: string;
+interface Coord {
   x: number;
   y: number;
-  w: number;
-  h: number;
-  visible: boolean;
-  mask: ModelInfo;
+  timestamp: number;
+  times: number;
+  fps: number;
 }
 
-function getBaseMasks(): MaskItem[] {
-  const orbitAngle = {
-    minPolarAngle: Math.PI / 2,
-    maxPolarAngle: Math.PI / 2,
-    minAzimuthAngle: -Math.PI / 4,
-    maxAzimuthAngle: Math.PI / 4,
-  };
-
-  return [
-    // thief
-    {
-      name: 'Loki',
-      x: 373,
-      y: 507,
-      w: 70,
-      h: 94,
-      visible: false,
-      mask: {
-        source: '/models/chaowan_mianju.fbx',
-        texture: '/models/textures/chaowan.tga',
-        isTrackballControlls: false,
-        offsetPower: {
-          x: -0.5,
-          y: -5.4,
-          z: 0,
-        },
-        zoom: 6,
-        orbitAngle,
-      },
-    },
-    // doctor
-    {
-      name: 'Lewis',
-      x: 778,
-      y: 823,
-      w: 88,
-      h: 100,
-      visible: false,
-      mask: {
-        source: '/models/lewis_mask.fbx',
-        texture: '/models/textures/Lewis.tga',
-        isTrackballControlls: false,
-        rotate: {
-          x: Math.PI / 2,
-          //   y: -Math.PI / 6,
-          //   z: Math.PI / 6,
-        },
-        offsetPower: {
-          y: -0.5,
-        },
-        zoom: 6,
-        orbitAngle,
-      },
-    },
-    // rhea
-    {
-      name: 'Rhea',
-      x: 1362,
-      y: 628,
-      w: 81,
-      h: 94,
-      visible: false,
-      mask: {
-        source: '/models/rhea_mask.fbx',
-        texture: '/models/textures/T_Rhea.tga',
-        isTrackballControlls: false,
-        rotate: {
-          x: Math.PI / 2,
-          // y: -Math.PI / 6,
-          // z: Math.PI / 6,
-        },
-        offsetPower: {
-          y: -0.5,
-        },
-        zoom: 6,
-        orbitAngle,
-      },
-    },
-  ];
+interface ArcCoord extends Coord {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  scatters: Coord[];
 }
 
-export default function BasicFogScreen() {
-  const BASE_WIDTH = 1920;
-  const BASE_HEIGHT = 1080;
+const RADIUS_MIN = 20;
+const RADIUS_MAX = 100;
+const MAX_ERASE_TIMES = 10;
+const MAX_ERASE_FPS = 10;
+
+export default function SuperFogScreen() {
   const fogImgRef = useRef<HTMLImageElement>(null);
-  const [masks, setMasks] = useState<MaskItem[]>(getBaseMasks());
-  const maskVal = useRef<MaskItem[]>(masks);
-  const [maskInfo, setMaskInfo] = useState<MaskItem | null>(null);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const isViewing = useRef(false);
-  const [isStarting, setIsStarting] = useState(false);
-  const [finished, setFinished] = useState(false);
+  const fogCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const previewCtxRef = useRef<CanvasRenderingContext2D | null>(null);
+  const [width, setWidth] = useState(BASE_CLIENT_WIDTH);
+  const [height, setHeight] = useState(BASE_CLIENT_HEIGHT);
+
   const [isResizing, setIsResizing] = useState(false);
-  const [shadowWidth, setShadowWidth] = useState(BASE_WIDTH);
-  const [shadowHeight, setShadowHeight] = useState(BASE_HEIGHT);
+  const isViewingRef = useRef(false);
+  const isRunningRef = useRef(false);
+  const isStartingRef = useRef(false);
+  const isPausingRef = useRef(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
 
-  // 初始化计算面具坐标
-  function initMasks() {
-    const { innerWidth: w, innerHeight: h } = window;
-    const ratio = Math.min(w / BASE_WIDTH, h / BASE_HEIGHT);
+  const rafId = useRef(0);
 
-    const newMasks = getBaseMasks();
-    newMasks.forEach((m) => {
-      m.x = w / 2 - (BASE_WIDTH / 2 - m.x) * ratio;
-      m.y = h / 2 - (BASE_HEIGHT / 2 - m.y) * ratio;
-    });
-    setMasks((maskVal.current = newMasks));
-  }
+  const x = useRef(0);
+  const y = useRef(0);
+
+  const coords = useRef<ArcCoord[]>([]);
+  const lastTimestamp = useRef(0);
 
   function init() {
     setIsResizing(true);
     const { innerWidth, innerHeight } = window;
-    const ratio = Math.min(innerWidth / BASE_WIDTH, innerHeight / BASE_HEIGHT);
-    setShadowWidth(innerWidth * ratio);
-    setShadowHeight(innerHeight * ratio);
-    if (innerWidth / BASE_WIDTH > innerHeight / BASE_HEIGHT) {
-      setShadowWidth((innerHeight * BASE_WIDTH) / BASE_HEIGHT);
-      setShadowHeight(innerHeight);
-    } else {
-      setShadowWidth(innerWidth);
-      setShadowHeight((innerWidth * BASE_HEIGHT) / BASE_WIDTH);
-    }
-
-    initMasks();
-
-    setIsResizing(false);
+    setWidth(innerWidth);
+    setHeight(innerHeight);
   }
 
-  function onViewMask(item: MaskItem) {
-    if (!item.visible) return;
+  const initCanvas = debounce(() => {
+    if (!fogImgRef.current?.complete || !canvasRef.current) return;
 
-    setMaskInfo(item);
-    onOpen();
-    isViewing.current = true;
+    coords.current = [];
+    const { innerWidth, innerHeight } = window;
+    const { width: fogWidth, height: fogHeight } = fogImgRef.current;
+    const el = document.createElement('canvas');
+    el.width = innerWidth;
+    el.height = innerHeight;
+    previewCtxRef.current = el.getContext('2d');
+    previewCtxRef.current!.drawImage(fogImgRef.current, 0, 0, fogWidth, fogHeight);
+
+    const fogCanvas = document.createElement('canvas');
+    fogCanvas.width = innerWidth;
+    fogCanvas.height = innerHeight;
+    const fogCtx = fogCanvas.getContext('2d')!;
+    fogCtx.drawImage(fogImgRef.current, 0, 0, fogWidth, fogHeight);
+    fogCanvasRef.current = fogCanvas;
+
+    ctxRef.current = canvasRef.current.getContext('2d');
+    updateScene();
+    setIsResizing(false);
+  }, 300);
+
+  function onMouseMove(e: MouseEvent) {
+    e.preventDefault();
+
+    const { x: pX, y: pY } = e;
+    x.current = pX;
+    y.current = pY;
+
+    const now = performance.now();
+    lastTimestamp.current = Math.max(lastTimestamp.current, now) + 10;
+    const coord: ArcCoord = {
+      x: pX,
+      y: pY,
+      timestamp: lastTimestamp.current,
+      times: MAX_ERASE_TIMES,
+      fps: 0,
+      scatters: [],
+      minX: Infinity,
+      maxX: -Infinity,
+      minY: Infinity,
+      maxY: -Infinity,
+    };
+
+    coords.current.push(coord);
+
+    if (!rafId.current) {
+      renderLoop();
+    }
+  }
+
+  function onStop() {
+    console.log('stop');
+    setIsStarting(false);
+    setIsRunning(false);
+    isRunningRef.current = false;
+    isStartingRef.current = false;
+    window.removeEventListener('mousemove', onMouseMove);
   }
 
   function onGameTitleMouseEnter() {
     setIsStarting(true);
+    isStartingRef.current = true;
   }
 
-  function onFogClick() {
-    setFinished(true);
-    setTimeout(() => {
-      const newMasks = structuredClone(maskVal.current);
-      newMasks.forEach((mask) => {
-        mask.visible = true;
+  function onTransitionEnd() {
+    setIsStarting(false);
+    isStartingRef.current = false;
+    setIsRunning(true);
+    isRunningRef.current = true;
+    window.addEventListener('mousemove', onMouseMove);
+  }
+
+  function eraseFog(ctx: CanvasRenderingContext2D, dx: number, dy: number, alpha = 0.05) {
+    ctx.globalCompositeOperation = 'destination-out';
+
+    /** Out层擦除雾气 */
+    const radGrd = ctx.createRadialGradient(dx, dy, RADIUS_MIN, dx, dy, RADIUS_MAX);
+    radGrd.addColorStop(0, `rgba(0, 0, 0, ${alpha})`);
+    radGrd.addColorStop(0.9, 'rgba(0, 0, 0, 0)');
+    radGrd.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = radGrd;
+    ctx.fillRect(dx - RADIUS_MAX, dy - RADIUS_MAX, RADIUS_MAX * 2, RADIUS_MAX * 2);
+  }
+
+  function eraseFogLoopAt(ctx: CanvasRenderingContext2D, coord: ArcCoord) {
+    const { x: pX, y: pY, times, fps, scatters } = coord;
+    if (times <= 0) return;
+
+    if (fps === 0) {
+      const dx = pX + Math.random() * 50 - 25;
+      const dy = pY + Math.random() * 50 - 25;
+
+      if (dx < coord.minX) coord.minX = dx;
+      if (dx > coord.maxX) coord.maxX = dx;
+      if (dy < coord.minY) coord.minY = dy;
+      if (dy > coord.maxY) coord.maxY = dy;
+
+      eraseFog(ctx, dx, dy);
+
+      scatters.push({
+        x: dx,
+        y: dy,
+        timestamp: 0,
+        times: 0,
+        fps: 0,
       });
-      setMasks((maskVal.current = newMasks));
-    }, 2500);
+
+      coord.times--;
+      coord.fps = MAX_ERASE_FPS;
+
+      if (coord.times <= 0) {
+        coord.timestamp = Math.max(coord.timestamp, performance.now());
+        for (let i = scatters.length - 1; i > -1; i--) {
+          coord.timestamp += 10;
+          scatters[i].timestamp = coord.timestamp;
+          scatters[i].times = MAX_ERASE_TIMES;
+        }
+      }
+    } else {
+      coord.fps--;
+    }
+  }
+
+  function updateCover(el: number) {}
+
+  function updateErase(el: number) {
+    for (let i = coords.current.length - 1; i > -1; i--) {
+      const { timestamp } = coords.current[i];
+      if (el < timestamp) continue;
+
+      eraseFogLoopAt(previewCtxRef.current!, coords.current[i]);
+    }
+  }
+
+  function updateScene() {
+    if (!ctxRef.current || !previewCtxRef.current) return;
+
+    ctxRef.current.clearRect(0, 0, width, height);
+    ctxRef.current.drawImage(previewCtxRef.current.canvas, 0, 0, width, height);
+  }
+
+  function renderLoop(el: number = performance.now()) {
+    try {
+      const y = window.luxy.getWrapperTranslateY();
+      isPausingRef.current = y !== height;
+    } catch (error) {
+      isPausingRef.current = true;
+    }
+
+    if (isPausingRef.current && isRunningRef.current) {
+      rafId.current = 0;
+      init();
+      initCanvas();
+      return;
+    }
+
+    if (coords.current.length < 1) {
+      rafId.current = 0;
+      return;
+    }
+
+    if (isRunningRef.current && !isViewingRef.current) {
+      updateCover(el);
+
+      updateErase(el);
+
+      updateScene();
+    }
+
+    rafId.current = requestAnimationFrame(renderLoop);
   }
 
   useEffect(() => {
@@ -176,60 +247,45 @@ export default function BasicFogScreen() {
 
     return () => {
       window.removeEventListener('resize', init);
+      window.removeEventListener('mousemove', onMouseMove);
+
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = 0;
+      }
     };
   }, []);
 
   return (
     <div className="w-screen h-screen relative select-none flex justify-center items-center">
+      <Image ref={fogImgRef} className="invisible pointer-events-none" src={fogImg} alt="" fill onLoad={initCanvas} />
+
       <Image className={cn(['w-full h-full object-contain', isResizing && 'invisible'])} src={sceneImg} alt="" />
 
-      <div
-        className={cn([
-          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0 shadow-[inset_0_0_4rem_2rem_#000]',
-          isResizing && 'invisible',
-        ])}
-        style={{ width: `${shadowWidth}px`, height: `${shadowHeight}px` }}
-      ></div>
+      <ShadowBorder isResizing={isResizing} />
 
-      <Image
-        ref={fogImgRef}
-        className={cn(['z-10 transition-opacity !duration-[3000ms]', finished && 'opacity-0'])}
-        src={fogImg}
-        alt=""
-        fill
-        onClick={onFogClick}
-        onTouchEnd={onFogClick}
-      />
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className="absolute w-full h-full left-0 top-0 z-20 pointer-events-none"
+      ></canvas>
 
-      {masks.map((mask, index) => (
+      <FogMasks onViewChange={(val) => (isViewingRef.current = val)} />
+
+      {isRunning || (
         <div
-          key={index}
           className={cn([
-            'flex flex-col items-center absolute z-20 -translate-x-1/2 -translate-y-1/2',
-            mask.visible || 'hidden',
+            'absolute left-1/2 top-1/2 z-30 font-semakin text-[5.625rem] drop-shadow-[0_0_20px_rgba(0,0,0,0.4)] -translate-x-1/2 -translate-y-1/2 transition-opacity !duration-[1500ms]',
+            (isStarting || isRunning) && 'opacity-0 pointer-events-none',
           ])}
-          style={{ left: `${mask.x}px`, top: `${mask.y}px` }}
+          onMouseEnter={onGameTitleMouseEnter}
+          onTouchEnd={onGameTitleMouseEnter}
+          onTransitionEnd={onTransitionEnd}
         >
-          <Image className="w-[3.75rem] h-[3.75rem] animate-bounce" src={hintImg} alt="" />
-          <div
-            className="cursor-pointer"
-            style={{ width: `${mask.w / 16}rem`, height: `${mask.h / 16}rem` }}
-            onClick={() => onViewMask(mask)}
-          ></div>
+          Hunt in the Mist
         </div>
-      ))}
-
-      <div
-        className={cn([
-          'absolute left-1/2 top-1/2 z-30 font-semakin text-[5.625rem] drop-shadow-[0_0_20px_rgba(0,0,0,0.4)] -translate-x-1/2 -translate-y-1/2 transition-opacity !duration-[1500ms]',
-          isStarting && 'opacity-0 pointer-events-none',
-        ])}
-        onMouseEnter={onGameTitleMouseEnter}
-        // onClick={onGameTitleMouseEnter}
-        onTouchEnd={onGameTitleMouseEnter}
-      >
-        Hunt in the Mist
-      </div>
+      )}
 
       <div
         className="absolute top-0 left-0 -translate-y-full rotate-180 w-full h-24 z-30 overflow-hidden pointer-events-none"
@@ -268,29 +324,7 @@ export default function BasicFogScreen() {
         alt=""
       />
 
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        classNames={{
-          wrapper: 'items-center',
-          base: 'bg-black max-w-[43.75rem] w-[43.75rem] h-[43.75rem] border-3 border-[#4051F4] rounded-[0.625rem] shadow-[0_0_24px_2px_#4051F4] max-[960px]:max-w-[20rem] max-[960px]:max-h-[20rem]',
-          footer: 'justify-center',
-          closeButton: 'text-[#4051F4] text-[1.75rem]',
-        }}
-        onClose={() => (isViewing.current = false)}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalBody>{maskInfo && <ModelView3D info={maskInfo.mask} />}</ModalBody>
-              <ModalFooter>
-                <span className="text-2xl font-poppins">{maskInfo?.name}</span>
-                {/* <BasicButton label='Reset' onClick={onReset} /> */}
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      {isResizing && <CircularLoading />}
     </div>
   );
 }

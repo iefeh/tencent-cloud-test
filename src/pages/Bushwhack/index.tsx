@@ -15,7 +15,7 @@ export default function BushwhackPage() {
     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
     const y = window.luxy.getWrapperTranslateY();
     const screenHeight = window.innerHeight;
-    if (y < screenHeight && scrollTop > screenHeight) {
+    if ((y < screenHeight && scrollTop > screenHeight) || (y > screenHeight && scrollTop < screenHeight)) {
       document.documentElement.scrollTo(0, screenHeight);
     }
   }
