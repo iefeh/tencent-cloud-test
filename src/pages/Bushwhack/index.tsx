@@ -5,6 +5,7 @@ import IntroScreen from './subScreens/Intro';
 import CountdownScreen from './subScreens/Countdown';
 import { useEffect, useRef } from 'react';
 import GameContent from './subScreens/GameContent';
+import SuperFogScreen from './subScreens/SuperFog';
 
 export default function BushwhackPage() {
   const scrollWrapper = useRef<HTMLDivElement>(null);
@@ -31,7 +32,8 @@ export default function BushwhackPage() {
 
       <CountdownScreen />
 
-      <FogScreen />
+      {/* <FogScreen /> */}
+      <SuperFogScreen />
 
       {/* <KeyVisionScreen /> */}
 
