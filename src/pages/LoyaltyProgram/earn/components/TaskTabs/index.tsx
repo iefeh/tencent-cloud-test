@@ -5,8 +5,8 @@ import SeasonalCampaigns from './SeasonalCampaigns';
 export default function TaskTabs() {
   const tabs = [
     {
-      // key: 'Regular Tasks',
-      key: 'Whitelist Tasks',
+      key: 'Regular Tasks',
+      // key: 'Whitelist Tasks',
       content: <RegularTasks />,
     },
     // {

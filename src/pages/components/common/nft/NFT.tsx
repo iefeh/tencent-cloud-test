@@ -4,16 +4,18 @@ import activeBgImg from 'img/nft/common/bg_nft_active.png';
 import emptyNFTImg from 'img/nft/common/nft_empty.jpg';
 import Video from '../Video';
 import pendingImg from 'img/profile/pending.png';
+import transferringImg from 'img/profile/transferring.png';
 
 interface NFTProps {
   className?: string;
   name?: string;
   src?: string;
   isPending?: boolean;
+  isTransferring?: boolean;
 }
 
 export default function NFT(props: NFTProps) {
-  const { name, src, isPending } = props;
+  const { name, src, isPending, isTransferring } = props;
 
   return (
     <div className="flex flex-col items-center shrink-0">
@@ -37,6 +39,14 @@ export default function NFT(props: NFTProps) {
               <Image
                 className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9.625rem] h-24"
                 src={pendingImg}
+                alt=""
+              />
+            )}
+
+            {isTransferring && (
+              <Image
+                className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[13.9375rem] h-[7.4375rem]"
+                src={transferringImg}
                 alt=""
               />
             )}

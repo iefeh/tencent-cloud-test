@@ -49,7 +49,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const { userInfo, toggleLoginModal, expired, timerLoading } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const pagiInfo = useRef<PagiInfo>({
@@ -434,7 +434,7 @@ function RegularTasks() {
   };
 
   return (
-    <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', expired && 'h-[36rem] overflow-hidden'])}>
+    <div className="mt-7 mb-[8.75rem] flex flex-col items-center relative">
       <div
         className={cn([
           'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] font-poppins w-full relative',
@@ -445,7 +445,7 @@ function RegularTasks() {
           <Task key={`${task.id}_${task.achieved}`} task={task} />
         ))}
 
-        {(taskListLoading || timerLoading) && !expired && <CircularLoading />}
+        {taskListLoading && <CircularLoading />}
       </div>
 
       {pagiTotal > 0 && (
@@ -466,14 +466,14 @@ function RegularTasks() {
         />
       )}
 
-      {expired && (
+      {/* {expired && (
         <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
           <p>This event has concluded.</p>
           <p>More exciting events coming soon.</p>
           <p>Stay tuned!</p>
           <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
         </div>
-      )}
+      )} */}
     </div>
   );
 }
