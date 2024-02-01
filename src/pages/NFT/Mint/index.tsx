@@ -21,7 +21,7 @@ function MintPage() {
       </Head>
 
       <MintContext.Provider value={store}>
-        <div className="w-screen min-h-screen bg-[url('/img/nft/mint/bg.jpg')] bg-cover bg-no-repeat flex flex-col items-center justify-center font-poppins">
+        <div className="w-screen min-h-screen bg-[url('/img/nft/mint/bg.jpg')] bg-cover bg-no-repeat flex flex-col items-center justify-center font-poppins px-8 lg:px-0">
           <Mint />
           <MintTips />
           <MintButtons />

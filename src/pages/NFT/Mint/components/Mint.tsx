@@ -51,9 +51,9 @@ function Mint() {
 
   return (
     <div className="relative">
-      <Image className="w-[30rem] h-[30rem] object-contain" src={nftBorderImg} alt="" />
+      <Image className="w-[24rem] h-[24rem] lg:w-[30rem] lg:h-[30rem] object-contain" src={nftBorderImg} alt="" />
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[28.5rem] h-[28.5rem] z-10 flex justify-center items-center overflow-hidden">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[22.8rem] h-[22.8rem] lg:w-[28.5rem] lg:h-[28.5rem] z-10 flex justify-center items-center overflow-hidden">
         {minted && (
           <Video
             className="w-full h-full object-cover"

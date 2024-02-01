@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 function getBasePageInfo() {
   return { page_num: 1, page_size: 10 };
@@ -14,7 +13,6 @@ function getBasePageInfo() {
 function MyNFT() {
   const MIN_NFT_COUNT = 5;
   const { userInfo } = useContext(MobxContext);
-  const { isConnected } = useWeb3ModalAccount();
   const [nfts, setNFTs] = useState<(NFTItem | null)[]>(getBaseNFTs());
   const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
 
@@ -37,7 +35,7 @@ function MyNFT() {
   });
 
   useEffect(() => {
-    if (userInfo?.wallet && isConnected) {
+    if (userInfo?.wallet) {
       pageInfo.current = getBasePageInfo();
       queryNFTList();
     } else {
