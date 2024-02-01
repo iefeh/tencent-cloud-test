@@ -65,12 +65,12 @@ export default function RewardSwiper({ preInfo }: { preInfo: PreRegisterInfoDTO 
 
   return (
     <Swiper
-      className="max-w-[25rem] lg:max-w-[69.25rem] relative shrink-0 select-none"
+      className="max-w-[25rem] md:max-w-[69.25rem] relative shrink-0 select-none"
       wrapperClass="p-8"
       modules={[FreeMode, Mousewheel]}
       mousewheel={true}
       direction="horizontal"
-      slidesPerView={window?.innerWidth >= 1024 ? 4 : 1.5}
+      slidesPerView={window?.innerWidth >= 1024 ? 4 : window?.innerWidth >= 768 ? 2.5 : 1.5}
       freeMode={true}
       spaceBetween="2.375rem"
     >
