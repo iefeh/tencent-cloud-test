@@ -8,6 +8,7 @@ import { debounce } from 'lodash';
 import { cn } from '@nextui-org/react';
 import fogImg from 'img/bushwhack/fog/fog.jpg';
 import sceneImg from 'img/bushwhack/fog/scene.jpg';
+import { getPointsOnLine } from '@/hooks/utils';
 
 interface Coord {
   x: number;
@@ -87,25 +88,31 @@ export default function FogMainContent() {
     e.preventDefault();
 
     const { x: pX, y: pY } = e;
-    x.current = pX;
-    y.current = pY;
 
     const now = performance.now();
-    lastTimestamp.current = Math.max(lastTimestamp.current, now) + 10;
-    const coord: ArcCoord = {
-      x: pX,
-      y: pY,
-      timestamp: lastTimestamp.current,
-      times: MAX_ERASE_TIMES,
-      fps: 0,
-      scatters: [],
-      minX: Infinity,
-      maxX: -Infinity,
-      minY: Infinity,
-      maxY: -Infinity,
-    };
+    lastTimestamp.current = Math.max(lastTimestamp.current, now);
 
-    coords.current.push(coord);
+    const points = getPointsOnLine([x.current, y.current], [pX, pY], RADIUS_MAX * 0.75, false, true);
+    points.forEach(([dx, dy]) => {
+      lastTimestamp.current += 10;
+      const coord: ArcCoord = {
+        x: dx,
+        y: dy,
+        timestamp: lastTimestamp.current,
+        times: MAX_ERASE_TIMES,
+        fps: 0,
+        scatters: [],
+        minX: Infinity,
+        maxX: -Infinity,
+        minY: Infinity,
+        maxY: -Infinity,
+      };
+
+      coords.current.push(coord);
+    });
+
+    x.current = pX;
+    y.current = pY;
 
     if (!rafId.current) {
       renderLoop();
