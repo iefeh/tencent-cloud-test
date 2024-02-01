@@ -137,11 +137,11 @@ export default function FogMainContent() {
     ctx.fillRect(dx - RADIUS_MAX, dy - RADIUS_MAX, RADIUS_MAX * 2, RADIUS_MAX * 2);
   }
 
-  function eraseFogLoopAt(ctx: CanvasRenderingContext2D, coord: ArcCoord) {
-    const { x: pX, y: pY, times, fps, scatters } = coord;
+  function eraseFogLoopAt(ctx: CanvasRenderingContext2D, coord: ArcCoord, el: number) {
+    const { x: pX, y: pY, timestamp, times, fps, scatters } = coord;
     if (times <= 0) return;
 
-    if (fps === 0) {
+    if (fps === 0 || el - timestamp > 300) {
       const dx = pX + Math.random() * 50 - 25;
       const dy = pY + Math.random() * 50 - 25;
 
@@ -183,7 +183,7 @@ export default function FogMainContent() {
       const { timestamp } = coords.current[i];
       if (el < timestamp) continue;
 
-      eraseFogLoopAt(previewCtxRef.current!, coords.current[i]);
+      eraseFogLoopAt(previewCtxRef.current!, coords.current[i], el);
     }
   }
 

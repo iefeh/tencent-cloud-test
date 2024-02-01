@@ -25,7 +25,7 @@ export default function FogTitle(props: Props) {
   return (
     <div
       className={cn([
-        'absolute left-1/2 top-1/2 z-30 font-semakin text-[5.625rem] drop-shadow-[0_0_20px_rgba(0,0,0,0.4)] -translate-x-1/2 -translate-y-1/2 transition-opacity !duration-[1500ms]',
+        'absolute left-1/2 top-1/2 z-30 font-semakin text-[5.625rem] drop-shadow-[0_0_20px_rgba(0,0,0,0.4)] -translate-x-1/2 -translate-y-1/2 transition-opacity !duration-[1500ms] text-center',
         (isStarting || isRunning) && 'opacity-0 pointer-events-none',
       ])}
       onMouseEnter={onGameTitleMouseEnter}
