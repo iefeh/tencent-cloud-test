@@ -58,6 +58,8 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
     try {
       const signer = await provider.getSigner();
+      if (userInfo?.wallet) return;
+
       const signature = await signer?.signMessage(message);
 
       const data = {
@@ -172,5 +174,5 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     );
   };
 
-  return { onConnect, loading, BindTipsModal };
+  return { isConnected, address, onConnect, loading, BindTipsModal };
 }

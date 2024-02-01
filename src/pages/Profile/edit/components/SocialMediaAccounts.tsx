@@ -142,7 +142,7 @@ const SocialMediaAccounts = function () {
         placement="center"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem] flex-row' }}
+        classNames={{ base: 'bg-[#141414] !rounded-base max-w-[48rem]', body: 'px-8 pt-[3.625rem] flex-row' }}
       >
         <ModalContent>
           {(onClose) => (
@@ -151,9 +151,23 @@ const SocialMediaAccounts = function () {
                 <Image className="w-8 h-8 object-contain align-bottom mr-2" src={errorIconImg} alt="" />
 
                 <p>
-                  {accounts.filter((a) => a.connected).length < 2
-                    ? 'Please be aware that this is the last account connected on our website. Disconnecting it will result in PERMANENT LOSS of this account and all associated rewards, with no possibility of recovery. Are you sure you want to proceed with this operation?'
-                    : 'Please note that if you choose to disconnect this account now, a 12-hour waiting period will be required before you can reconnect it. Are you sure you want to disconnect?'}
+                  {accounts.filter((a) => a.connected).length < 2 ? (
+                    <>
+                      <div>
+                        Please be aware that this is the <span className="text-notion">LAST ACCOUNT</span> connected on
+                        our website.
+                      </div>
+
+                      <div>
+                        Disconnecting it will result in <span className="text-notion">PERMANENT LOSS</span> of this
+                        account and <span className="text-notion">ALL associated rewards and game data</span>, with{' '}
+                        <span className="text-notion">NO POSSIBILITY</span> of recovery. Are you sure you want to
+                        proceed with this operation?
+                      </div>
+                    </>
+                  ) : (
+                    'Please note that if you choose to disconnect this account now, a 12-hour waiting period will be required before you can reconnect it. Are you sure you want to disconnect?'
+                  )}
                 </p>
               </ModalBody>
               <ModalFooter>
