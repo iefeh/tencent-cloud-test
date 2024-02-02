@@ -11,7 +11,7 @@ import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest"
 import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
 import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
 import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
-import {HoldNFTQuest} from "./implementations/holdNFTQuest";
+import {HoldNFTQuest} from "@/lib/quests/implementations/holdNFTQuest";
 
 // TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
 //       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
