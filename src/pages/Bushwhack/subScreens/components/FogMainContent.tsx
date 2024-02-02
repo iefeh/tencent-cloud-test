@@ -43,7 +43,6 @@ export default function FogMainContent() {
   const [isResizing, setIsResizing] = useState(false);
   const isViewingRef = useRef(false);
   const isRunningRef = useRef(false);
-  const isPausingRef = useRef(false);
 
   const rafId = useRef(0);
 
