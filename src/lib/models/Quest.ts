@@ -32,6 +32,10 @@ export interface IQuest extends Document {
     active: boolean;
     // 任务排序，按升序排列
     order: number;
+    // 任务开始的日期
+    start_time: number;
+    // 任务结束的日期
+    end_time: number;
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -55,6 +59,8 @@ const QuestSchema = new Schema<IQuest>({
     },
     active: {type: Boolean, default: false},
     order: {type: Number},
+    start_time: {type: Number},
+    end_time: {type: Number},
     created_time: {type: Number},
     updated_time: {type: Number},
     deleted_time: {type: Number},

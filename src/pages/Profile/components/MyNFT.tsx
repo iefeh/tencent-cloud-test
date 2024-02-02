@@ -55,6 +55,7 @@ function MyNFT() {
             name={nft?.token_metadata?.name}
             src={nft?.token_metadata?.animation_url}
             isPending={nft?.transaction_status === 'pending'}
+            isTransferring={nft?.transaction_status === 'transferringImg'}
             key={index}
           />
         ))}

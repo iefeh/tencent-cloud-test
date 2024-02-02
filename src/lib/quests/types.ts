@@ -101,8 +101,6 @@ export type HoldNFT = {
     chain_id: string;
     // NFT所在的合约地址
     contract_addr: string;
-    // NFT的token id
-    token_id: number | null;
     // 任务地址，可为空
     url: string;
 }

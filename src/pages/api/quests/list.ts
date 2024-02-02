@@ -43,11 +43,14 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 async function paginationQuests(pageNum: number, pageSize: number): Promise<{ total: number, quests: any[] }> {
     const skip = (pageNum - 1) * pageSize;
+    const now = Date.now();
     const aggregateQuery: PipelineStage[] = [
         {
             $match: {
                 'active': true,
                 'deleted_time': null,
+                'start_time': {$lte: now},
+                'end_time': {$gt: now},
             }
         },
         {
