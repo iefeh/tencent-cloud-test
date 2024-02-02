@@ -4,7 +4,7 @@ import FogTitle from './FogTitle';
 import ShadowBorder from './ShadowBorder';
 import { useEffect, useRef, useState } from 'react';
 import { BASE_CLIENT_HEIGHT, BASE_CLIENT_WIDTH } from '@/constant/common';
-import { debounce } from 'lodash';
+import { debounce, throttle } from 'lodash';
 import { cn } from '@nextui-org/react';
 import fogImg from 'img/bushwhack/fog/fog.jpg';
 import sceneImg from 'img/bushwhack/fog/scene.jpg';
@@ -85,13 +85,14 @@ export default function FogMainContent() {
 
   function onMouseMove(e: MouseEvent) {
     e.preventDefault();
+    if (!isRunningRef.current) return;
 
     const { x: pX, y: pY } = e;
 
     const now = performance.now();
     lastTimestamp.current = Math.max(lastTimestamp.current, now);
 
-    const points = getPointsOnLine([x.current, y.current], [pX, pY], RADIUS_MAX * 0.75, false, true);
+    const points = getPointsOnLine([x.current, y.current], [pX, pY], RADIUS_MAX * 0.5, false, true);
     points.forEach(([dx, dy]) => {
       lastTimestamp.current += 10;
       const coord: ArcCoord = {
@@ -118,10 +119,11 @@ export default function FogMainContent() {
     }
   }
 
-  function onRun() {
+  const onRun = throttle(function () {
     isRunningRef.current = true;
+    coords.current = [];
     window.addEventListener('mousemove', onMouseMove);
-  }
+  }, 300);
 
   function eraseFog(ctx: CanvasRenderingContext2D, dx: number, dy: number, alpha = 0.05) {
     ctx.globalCompositeOperation = 'destination-out';
@@ -137,8 +139,7 @@ export default function FogMainContent() {
   }
 
   function eraseFogLoopAt(ctx: CanvasRenderingContext2D, coord: ArcCoord, el: number) {
-    const { x: pX, y: pY, timestamp, times, fps, scatters } = coord;
-    if (times <= 0) return;
+    const { x: pX, y: pY, timestamp, fps, scatters } = coord;
 
     if (fps === 0 || el - timestamp > 300) {
       const dx = pX + Math.random() * 50 - 25;
@@ -179,9 +180,12 @@ export default function FogMainContent() {
 
   function updateErase(el: number) {
     for (let i = coords.current.length - 1; i > -1; i--) {
-      const { timestamp } = coords.current[i];
+      const { timestamp, times } = coords.current[i];
       if (el < timestamp) continue;
-
+      if (times <= 0) {
+        coords.current.splice(i, 1);
+        continue;
+      }
       eraseFogLoopAt(previewCtxRef.current!, coords.current[i], el);
     }
   }
@@ -199,7 +203,7 @@ export default function FogMainContent() {
       return;
     }
 
-    if (isRunningRef.current && !isViewingRef.current) {
+    if (isRunningRef.current && !isViewingRef.current && ctxRef.current) {
       updateCover(el);
 
       updateErase(el);
@@ -229,7 +233,7 @@ export default function FogMainContent() {
     <>
       <Image ref={fogImgRef} className="invisible pointer-events-none" src={fogImg} alt="" fill onLoad={initCanvas} />
 
-      <Image className={cn(['w-full h-full object-contain', isResizing && 'invisible'])} src={sceneImg} alt="" />
+      <Image className={cn(['w-full h-full object-contain bg-black', isResizing && 'invisible'])} src={sceneImg} alt="" />
 
       <ShadowBorder isResizing={isResizing} />
 
@@ -240,7 +244,7 @@ export default function FogMainContent() {
         className="absolute w-full h-full left-0 top-0 z-20 pointer-events-none"
       ></canvas>
 
-      <FogMasks onViewChange={(val) => (isViewingRef.current = val)} />
+      <FogMasks checkMousemove={() => isRunningRef.current} onViewChange={(val) => (isViewingRef.current = val)} />
 
       <FogTitle onRun={onRun} />
     </>
