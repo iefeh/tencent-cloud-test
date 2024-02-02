@@ -34,6 +34,14 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         res.json(response.notFound("Unknown quest."));
         return;
     }
+    const now = Date.now();
+    if (quest.start_time > now || quest.end_time <= now) {
+        res.json(response.success({
+            verified: false,
+            tip: "Quest is not available.",
+        }));
+        return;
+    }
     const questImpl = await constructQuest(quest);
     const userId = req.userId!;
     // 检查用户是否已经完成该任务
