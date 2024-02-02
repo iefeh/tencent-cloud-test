@@ -20,7 +20,7 @@ export class HoldNFTQuest extends QuestBase {
         const id = holdNFT.chain_id;
         const userWallet = await UserWallet.findOne({user_id: userId, deleted_time: null});
         const user_wallet_addr = userWallet?.wallet_addr;
-        const userNft = await ContractNFT.findOne({contract_address: addr, chain_id: id, deleted_time: null, wallet_addr: user_wallet_addr});
+        const userNft = await ContractNFT.findOne({contract_address: addr, chain_id: id, transaction_status: "confirmed", wallet_addr: user_wallet_addr});
         return {
             claimable: !!userNft,
         }
@@ -32,7 +32,7 @@ export class HoldNFTQuest extends QuestBase {
         if (!claimableResult.claimable) {
             return {
                 verified: false,
-                tip: "You has no NFT."
+                tip: "No NFT detected or NFT transaction is pending."
             }
         }
         // 污染用户的白名单，确保单个白名单只能获取一次奖励
@@ -43,7 +43,7 @@ export class HoldNFTQuest extends QuestBase {
             logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
             return {
                 verified: false,
-                tip: "No eligible conditions for rewards were found. Please retry with a different account.",
+                tip: "Server Internal Error",
             }
         }
         const result = await this.saveUserReward(userId, taint, rewardDelta, null);
