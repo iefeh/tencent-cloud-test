@@ -6,6 +6,7 @@ import ModelView3D from '@/pages/components/common/model/ModelView3D';
 import { BASE_CLIENT_HEIGHT, BASE_CLIENT_WIDTH } from '@/constant/common';
 
 interface Props {
+  checkMousemove?: () => boolean;
   onViewChange?: (isViewing: boolean) => void;
 }
 
@@ -38,7 +39,7 @@ function getBaseMasks(): MaskItem[] {
       visible: false,
       mask: {
         source: '/models/chaowan_mianju.fbx',
-        texture: '/models/textures/chaowan.tga',
+        texture: '/models/textures/chaowan.png',
         isTrackballControlls: false,
         offsetPower: {
           x: -0.5,
@@ -59,7 +60,7 @@ function getBaseMasks(): MaskItem[] {
       visible: false,
       mask: {
         source: '/models/lewis_mask.fbx',
-        texture: '/models/textures/Lewis.tga',
+        texture: '/models/textures/Lewis.png',
         isTrackballControlls: false,
         rotate: {
           x: Math.PI / 2,
@@ -83,7 +84,7 @@ function getBaseMasks(): MaskItem[] {
       visible: false,
       mask: {
         source: '/models/rhea_mask.fbx',
-        texture: '/models/textures/T_Rhea.tga',
+        texture: '/models/textures/T_Rhea.png',
         isTrackballControlls: false,
         rotate: {
           x: Math.PI / 2,
@@ -101,7 +102,7 @@ function getBaseMasks(): MaskItem[] {
 }
 
 export default function FogMasks(props: Props) {
-  const { onViewChange } = props;
+  const { checkMousemove, onViewChange } = props;
   const [masks, setMasks] = useState<MaskItem[]>(getBaseMasks());
   const maskVal = useRef<MaskItem[]>(masks);
   const [maskInfo, setMaskInfo] = useState<MaskItem | null>(null);
@@ -133,6 +134,10 @@ export default function FogMasks(props: Props) {
   function onMousemove(e: MouseEvent) {
     e.preventDefault();
     if (isViewing.current) return;
+    if (checkMousemove) {
+      const res = checkMousemove();
+      if (!res) return;
+    }
 
     const { x: pX, y: pY } = e;
     const newMasks = structuredClone(maskVal.current);
@@ -150,8 +155,6 @@ export default function FogMasks(props: Props) {
     });
 
     setMasks((maskVal.current = newMasks));
-    // if (visibleCount < newMasks.length) return;
-    // window.removeEventListener('mousemove', onMousemove);
   }
 
   useEffect(() => {

@@ -52,9 +52,10 @@ export class ModelViewer {
   }
 
   loadModel() {
-    return new Promise<THREE.Group<THREE.Object3DEventMap>>((resolve, reject) => {
+    return new Promise<THREE.Group<THREE.Object3DEventMap>>((resolve) => {
       const manager = new THREE.LoadingManager();
       manager.addHandler(/\.tga$/i, new TGALoader());
+      manager.addHandler(/\.png$/i, new THREE.TextureLoader());
       const fbxLoader = new FBXLoader(manager);
       const { source, texture } = this.modelInfo;
 
@@ -62,7 +63,12 @@ export class ModelViewer {
         source,
         (loadedModel) => {
           if (texture) {
-            const textureLoader = new TGALoader();
+            let textureLoader: THREE.TextureLoader;
+            if (texture.match(/\.tga$/i)) {
+              textureLoader = new TGALoader();
+            } else {
+              textureLoader = new THREE.TextureLoader();
+            }
             const textureNormal = textureLoader.load(texture);
 
             loadedModel.traverse((v: any) => {
@@ -95,7 +101,9 @@ export class ModelViewer {
           resolve(loadedModel);
         },
         undefined,
-        (err) => reject(err),
+        (err) => {
+          console.log('load error:', err);
+        },
       );
     });
   }

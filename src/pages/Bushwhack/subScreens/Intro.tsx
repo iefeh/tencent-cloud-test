@@ -34,7 +34,7 @@ export default function IntroScreen() {
       cover: doctorImg,
       model: {
         source: '/models/Lewis_H.fbx',
-        texture: '/models/textures/Lewis.tga',
+        texture: '/models/textures/Lewis.png',
         offsetPower: {
           y: -0.9,
         },
@@ -47,7 +47,7 @@ export default function IntroScreen() {
       cover: rheaImg,
       model: {
         source: '/models/Rhea_H.fbx',
-        texture: '/models/textures/T_Rhea.tga',
+        texture: '/models/textures/T_Rhea.png',
         offsetPower: {
           y: -0.9,
         },
@@ -60,7 +60,7 @@ export default function IntroScreen() {
       cover: thiefImg,
       model: {
         source: '/models/Thief_H.fbx',
-        texture: '/models/textures/chaowan.tga',
+        texture: '/models/textures/chaowan.png',
         offsetPower: {
           y: -0.9,
         },
