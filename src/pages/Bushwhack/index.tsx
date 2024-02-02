@@ -1,11 +1,9 @@
 import Head from 'next/head';
-import FogScreen from './subScreens/Fog';
 import KeyVisionScreen from './subScreens/KeyVision';
 import IntroScreen from './subScreens/Intro';
 import CountdownScreen from './subScreens/Countdown';
 import { useEffect, useRef } from 'react';
 import GameContent from './subScreens/GameContent';
-import SuperFogScreen from './subScreens/SuperFog';
 import BasicFogScreen from './subScreens/BasicFog';
 
 export default function BushwhackPage() {
@@ -33,15 +31,13 @@ export default function BushwhackPage() {
 
       <CountdownScreen />
 
-      {/* <FogScreen /> */}
-      {/* <SuperFogScreen /> */}
       <BasicFogScreen />
 
       {/* <KeyVisionScreen /> */}
 
-      {/* <GameContent />
+      {/* <GameContent /> */}
 
-      <IntroScreen /> */}
+      {/* <IntroScreen /> */}
     </section>
   );
 }
