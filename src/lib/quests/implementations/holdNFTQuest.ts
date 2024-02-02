@@ -15,12 +15,21 @@ export class HoldNFTQuest extends QuestBase {
     }
 
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
-        const holdNFT = this.quest.properties as HoldNFT;
-        const addr = holdNFT.contract_addr;
-        const id = holdNFT.chain_id;
+        const questProp = this.quest.properties as HoldNFT;
         const userWallet = await UserWallet.findOne({user_id: userId, deleted_time: null});
-        const user_wallet_addr = userWallet?.wallet_addr;
-        const userNft = await ContractNFT.findOne({contract_address: addr, chain_id: id, transaction_status: "confirmed", wallet_addr: user_wallet_addr});
+        if (!userWallet) {
+            return {
+                claimable: false,
+                require_authorization: userWallet ? undefined : AuthorizationType.Wallet,
+            }
+        }
+        this.user_wallet_addr = userWallet?.wallet_addr;
+        const userNft = await ContractNFT.findOne({
+            contract_address: questProp.contract_addr,
+            chain_id: questProp.chain_id,
+            transaction_status: "confirmed",
+            wallet_addr: this.user_wallet_addr,
+        });
         return {
             claimable: !!userNft,
         }
@@ -32,7 +41,8 @@ export class HoldNFTQuest extends QuestBase {
         if (!claimableResult.claimable) {
             return {
                 verified: false,
-                tip: "No NFT detected or NFT transaction is pending."
+                require_authorization: claimableResult.require_authorization,
+                tip: claimableResult.require_authorization ? "You should connect your Wallet Address first." : "No NFT detected or NFT transaction is pending."
             }
         }
         // 污染用户的白名单，确保单个白名单只能获取一次奖励
