@@ -24,7 +24,7 @@ export default function CountdownScreen() {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center relative z-10 shadow-[0_0_2rem_2rem_#000]">
+    <div className="w-screen h-screen flex flex-col items-center justify-center relative z-30 shadow-[0_0_2rem_2rem_#000]">
       <Image className="object-cover z-[-1] opacity-25" src={fogImg} alt="" fill />
 
       <PageDesc

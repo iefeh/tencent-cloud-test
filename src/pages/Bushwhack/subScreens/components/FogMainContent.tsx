@@ -7,8 +7,8 @@ import { BASE_CLIENT_HEIGHT, BASE_CLIENT_WIDTH } from '@/constant/common';
 import { debounce, throttle } from 'lodash';
 import { cn } from '@nextui-org/react';
 import fogImg from 'img/bushwhack/fog/fog.jpg';
-import sceneImg from 'img/bushwhack/fog/scene.jpg';
 import { getPointsOnLine } from '@/hooks/utils';
+import Video from '@/pages/components/common/Video';
 
 interface Coord {
   x: number;
@@ -233,7 +233,18 @@ export default function FogMainContent() {
     <>
       <Image ref={fogImgRef} className="invisible pointer-events-none" src={fogImg} alt="" fill onLoad={initCanvas} />
 
-      <Image className={cn(['w-full h-full object-contain bg-black', isResizing && 'invisible'])} src={sceneImg} alt="" />
+      <Video
+        className={cn(['w-full h-full object-contain', isResizing && 'invisible'])}
+        options={{
+          poster: '/img/bushwhack/fog/scene.jpg',
+          sources: [
+            {
+              src: '/video/fogBg.webm',
+              type: 'video/webm',
+            },
+          ],
+        }}
+      />
 
       <ShadowBorder isResizing={isResizing} />
 
