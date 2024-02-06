@@ -66,3 +66,7 @@ export function getPointsOnLine(
 
   return points;
 }
+
+export function parseChainIdToHex(val: string): `0x${string}` {
+  return `0x${parseInt(val).toString(16)}`;
+}

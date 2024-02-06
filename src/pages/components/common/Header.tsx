@@ -24,10 +24,10 @@ const routeText: RouteMenu[] = [
   {
     name: 'AstrArk',
     children: [
-      {
-        name: 'Game Download',
-        route: '/AstrArk/Download',
-      },
+      // {
+      //   name: 'Game Download',
+      //   route: '/AstrArk/Download',
+      // },
       {
         name: 'Pre-Registration',
         route: '/AstrArk/PreRegistration',
@@ -40,7 +40,27 @@ const routeText: RouteMenu[] = [
   },
   { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
-  { name: 'NFT', route: '/NFT' },
+  {
+    name: 'NFT',
+    children: [
+      {
+        name: 'Overview',
+        route: '/NFT',
+      },
+      {
+        name: 'TETRA NFT Series',
+        route: '/TetraNFT',
+      },
+      {
+        name: 'Get Involved',
+        route: '/LoyaltyProgram/earn',
+      },
+      {
+        name: 'Mint Now',
+        route: '//NFT/Mint',
+      },
+    ],
+  },
   {
     name: 'Loyalty Program',
     children: [

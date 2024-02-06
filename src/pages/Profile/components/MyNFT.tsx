@@ -1,34 +1,47 @@
 import { Divider } from '@nextui-org/react';
 import NFT from '@/pages/components/common/nft/NFT';
-import baseNFTImg from 'img/nft/common/nft_base.jpg';
-import { useState } from 'react';
-import { StaticImageData } from 'next/image';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { MobxContext } from '@/pages/_app';
+import { throttle } from 'lodash';
+import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
 
-interface NFTItem {
-  title: string;
-  cover: string | StaticImageData;
+function getBasePageInfo() {
+  return { page_num: 1, page_size: 10 };
 }
 
-export default function MyNFT() {
-  const [nfts, setNFTs] = useState<(NFTItem | null)[]>([
-    // {
-    //   title: 'Destiny Tetra : 001',
-    //   cover: baseNFTImg,
-    // },
-    // {
-    //   title: 'Destiny Tetra : 001',
-    //   cover: baseNFTImg,
-    // },
-    // {
-    //   title: 'Destiny Tetra : 001',
-    //   cover: baseNFTImg,
-    // },
-    null,
-    null,
-    null,
-    null,
-    null,
-  ]);
+function MyNFT() {
+  const MIN_NFT_COUNT = 5;
+  const { userInfo } = useContext(MobxContext);
+  const [nfts, setNFTs] = useState<(NFTItem | null)[]>(getBaseNFTs());
+  const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
+
+  function getBaseNFTs(len = MIN_NFT_COUNT) {
+    return Array(len).fill(null);
+  }
+
+  const queryNFTList = throttle(async () => {
+    try {
+      const res = await queryMyNFTListAPI(pageInfo.current);
+      const list = (pageInfo.current.page_num === 1 ? [] : nfts).concat(res?.nfts || []);
+
+      // 补足空位
+      if (list.length < MIN_NFT_COUNT) {
+        list.push(...Array(MIN_NFT_COUNT - list.length).fill(null));
+      }
+
+      setNFTs(list);
+    } catch (error) {}
+  });
+
+  useEffect(() => {
+    if (userInfo?.wallet) {
+      pageInfo.current = getBasePageInfo();
+      queryNFTList();
+    } else {
+      setNFTs(getBaseNFTs());
+    }
+  }, [userInfo]);
 
   return (
     <div className="mt-20">
@@ -38,9 +51,17 @@ export default function MyNFT() {
 
       <div className="flex justify-between items-center gap-[1.6875rem]">
         {nfts.map((nft, index) => (
-          <NFT src={nft?.cover} key={index} />
+          <NFT
+            name={nft?.token_metadata?.name}
+            src={nft?.token_metadata?.animation_url}
+            isPending={nft?.transaction_status === 'pending'}
+            isTransferring={nft?.transaction_status === 'transferringImg'}
+            key={index}
+          />
         ))}
       </div>
     </div>
   );
 }
+
+export default observer(MyNFT);

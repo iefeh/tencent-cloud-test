@@ -1,6 +1,14 @@
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE } from '@/constant/storage';
-import { getUserInfoAPI, loginByEmailAPI, logoutAPI, signInParticleAPI } from '@/http/services/login';
+import { getWorldTimeAPI } from '@/http/services/common';
+import {
+  connectByEmailAPI,
+  getUserInfoAPI,
+  loginByEmailAPI,
+  logoutAPI,
+  signInParticleAPI,
+} from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
+import dayjs, { Dayjs } from 'dayjs';
 import { debounce } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 
@@ -11,6 +19,11 @@ class UserStore {
   particle: ParticleNetwork;
   loginModalVisible = false;
   inviteModalVisible = false;
+  // timerLoading = false;
+  // hasGotTime = false;
+  // expired = true;
+  // timer = 0;
+  isConnect = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -24,24 +37,56 @@ class UserStore {
   init = () => {
     this.token = localStorage.getItem(KEY_AUTHORIZATION) || '';
     if (this.token) this.getUserInfo();
+
+    // this.getCurrentTime();
+    // this.timer = window?.setInterval(this.getCurrentTime, 60000);
   };
+
+  // getCurrentTime = async () => {
+  //   this.timerLoading = true;
+
+  //   try {
+  //     const res = await getWorldTimeAPI();
+  //     let time: Dayjs;
+
+  //     if (res) {
+  //       time = dayjs(res.timestamp);
+  //     } else {
+  //       time = dayjs(Date.now());
+  //     }
+
+  //     const expiredTime = dayjs(+(process.env.NEXT_PUBLIC_WHITELIST_EXPIRE_TIME || 0) || 1706072400000);
+  //     this.expired = time.isAfter(expiredTime);
+  //     this.hasGotTime = true;
+  //   } catch (error) {
+  //     this.expired = false;
+  //   } finally {
+  //     this.timerLoading = false;
+  //   }
+  // };
 
   setUserInfo = (userInfo: UserInfo | null) => {
     this.userInfo = userInfo;
-  }
+  };
 
   loginByEmail = async (data: LoginByEmailBodyDto) => {
-    const res = await loginByEmailAPI(data);
-    this.token = res.token || '';
-    this.jwtToken = res.particle_jwt || '';
-    localStorage.setItem(KEY_AUTHORIZATION, this.token);
-    this.loginParticle();
+    const api = this.isConnect ? connectByEmailAPI : loginByEmailAPI;
+    const res = await api(data);
+
+    if (!this.isConnect) {
+      this.token = res.token || '';
+      this.jwtToken = res.particle_jwt || '';
+      localStorage.setItem(KEY_AUTHORIZATION, this.token);
+      this.loginParticle();
+    }
+
     await this.getUserInfo();
   };
 
   getUserInfo = debounce(async () => {
     const res = await getUserInfoAPI();
     this.setUserInfo(res);
+    this.toggleLoginModal(false);
 
     // 成功登录后清除邀请码
     localStorage.removeItem(KEY_INVITE_CODE);
@@ -97,12 +142,14 @@ class UserStore {
     return res;
   };
 
-  toggleLoginModal = (visible?: boolean) => {
+  toggleLoginModal = (visible?: boolean, isConnect?: boolean) => {
     if (typeof visible === 'boolean') {
       this.loginModalVisible = visible;
     } else {
       this.loginModalVisible = !this.loginModalVisible;
     }
+
+    this.isConnect = isConnect === true;
   };
 
   toggleInviteModal = (visible?: boolean) => {

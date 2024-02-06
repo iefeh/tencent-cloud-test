@@ -21,6 +21,7 @@ import './AstrArk/components/school/Mystery/index.scss';
 import './AstrArk/components/school/SchoolIcons/index.scss';
 import './TetraNFT/components/PrivilegeScreen/index.scss';
 import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
+import 'video.js/dist/video-js.css';
 import homePlanetBg from 'img/home/planet.png';
 import loadingImg from 'img/loading/bg_moon.png';
 import about_c1 from 'img/about/1@2x.png';
