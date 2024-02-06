@@ -237,6 +237,7 @@ export default function FogMainContent() {
         className={cn(['w-full h-full object-contain', isResizing && 'invisible'])}
         options={{
           poster: '/img/bushwhack/fog/scene.jpg',
+          fluid: false,
           sources: [
             {
               src: '/video/fogBg.webm',
