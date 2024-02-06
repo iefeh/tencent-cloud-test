@@ -41,6 +41,8 @@ export default function FogMainContent() {
   const [height, setHeight] = useState(BASE_CLIENT_HEIGHT);
 
   const [isResizing, setIsResizing] = useState(false);
+  const [isVideoVisible, setIsVideoVisible] = useState(false);
+  const videoVisiblerTimerRef = useRef(0);
   const isViewingRef = useRef(false);
   const isRunningRef = useRef(false);
 
@@ -54,6 +56,10 @@ export default function FogMainContent() {
 
   function init() {
     setIsResizing(true);
+    if (videoVisiblerTimerRef.current) {
+      clearTimeout(videoVisiblerTimerRef.current);
+    }
+    setIsVideoVisible(false);
     const { innerWidth, innerHeight } = window;
     setWidth(innerWidth);
     setHeight(innerHeight);
@@ -81,11 +87,14 @@ export default function FogMainContent() {
     ctxRef.current = canvasRef.current.getContext('2d');
     updateScene();
     setIsResizing(false);
+    videoVisiblerTimerRef.current = window.setTimeout(() => {
+      setIsVideoVisible(true);
+    }, 100);
   }, 300);
 
   function onMouseMove(e: MouseEvent) {
     e.preventDefault();
-    if (!isRunningRef.current) return;
+    if (!isRunningRef.current || !ctxRef.current) return;
 
     const { x: pX, y: pY } = e;
 
@@ -234,7 +243,7 @@ export default function FogMainContent() {
       <Image ref={fogImgRef} className="invisible pointer-events-none" src={fogImg} alt="" fill onLoad={initCanvas} />
 
       <Video
-        className={cn(['w-full h-full object-contain', isResizing && 'invisible'])}
+        className={cn(['w-full h-full object-contain', (isResizing || !isVideoVisible) && 'opacity-0'])}
         options={{
           poster: '/img/bushwhack/fog/scene.jpg',
           fluid: false,

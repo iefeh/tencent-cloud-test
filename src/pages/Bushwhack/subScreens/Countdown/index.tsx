@@ -5,23 +5,10 @@ import arrowImg from 'img/bushwhack/countdown/arrow.png';
 import fogImg from 'img/bushwhack/countdown/fog.png';
 import PageDesc from '@/pages/components/common/PageDesc';
 import { createPortal } from 'react-dom';
-import { useEffect, useState } from 'react';
+import useTouchBottom from '@/hooks/useTouchBottom';
 
 export default function CountdownScreen() {
-  const [isTouchBottom, setIsTouchBottom] = useState(false);
-
-  function onScroll() {
-    const scrollY = document.documentElement.scrollTop || document.body.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    setIsTouchBottom(scrollY >= scrollHeight - clientHeight);
-  }
-
-  useEffect(() => {
-    window.addEventListener('scroll', onScroll);
-
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const { isTouchedBottom } = useTouchBottom();
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center relative z-30 shadow-[0_0_2rem_2rem_#000]">
@@ -46,7 +33,7 @@ export default function CountdownScreen() {
         }
       />
 
-      {isTouchBottom ||
+      {isTouchedBottom ||
         createPortal(<ScrollDownArrow icon={arrowImg} className="!fixed !text-[#CFD9FF]" />, document.body)}
     </div>
   );
