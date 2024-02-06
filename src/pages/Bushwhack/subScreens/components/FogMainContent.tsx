@@ -249,7 +249,7 @@ export default function FogMainContent() {
           fluid: false,
           sources: [
             {
-              src: '/video/fogBg.webm',
+              src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/misty.webm',
               type: 'video/webm',
             },
           ],
