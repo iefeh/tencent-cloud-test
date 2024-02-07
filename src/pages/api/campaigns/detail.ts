@@ -18,7 +18,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     const userId = req.userId!;
     await getMongoConnection();
     // 查询活动
-    const campaign = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
+    const campaign: any = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
         _id: 0,
         active: 0,
         created_time: 0,

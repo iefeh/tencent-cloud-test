@@ -143,9 +143,19 @@ export abstract class QuestBase {
                     await extraTxOps(session);
                 }
                 const opts = {session};
-                await QuestAchievement.updateOne({user_id: userId, quest_id: this.quest.id}, {
-                    $setOnInsert: {created_time: Date.now()},
-                }, {upsert: true, session: session});
+                await QuestAchievement.updateOne(
+                    {user_id: userId, quest_id: this.quest.id, verified_time: null},
+                    {
+                        $set: {
+                            verified_time: now,
+                        },
+                        $setOnInsert: {
+                            created_time: now,
+                            verified_time: now,
+                        },
+                    },
+                    {upsert: true, session: session},
+                );
                 await audit.save(opts);
                 await User.updateOne({user_id: userId}, {$inc: {moon_beam: audit.moon_beam_delta}}, opts);
             })
