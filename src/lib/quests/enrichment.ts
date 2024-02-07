@@ -4,16 +4,15 @@ import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connec
 import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectSteamQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {preparedQuests, QuestType} from "@/lib/quests/types";
+import {QuestType} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
 import {getUserFirstWhitelist, queryUserAuth} from "@/lib/common/user";
+import {constructQuest} from "@/lib/quests/constructor";
 
-export async function enrichUserQuests(userId: string, quests: any[], enrichVerification: boolean = true) {
-    if (enrichVerification) {
-        // 为任务添加verified字段
-        await enrichQuestVerification(userId, quests);
-    }
+export async function enrichUserQuests(userId: string, quests: any[]) {
+    // 为任务添加verified字段
+    await enrichQuestVerification(userId, quests);
     // 为任务添加achieved字段
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
@@ -59,8 +58,9 @@ function filterQuestProperty(quests: any[]) {
         }
         // 只保留url属性
         quest.properties = {url: quest.properties.url};
-        // 添加或更新is_prepared属性
-        quest.properties.is_prepared = preparedQuests.has(quest.type);
+        // 设置is_prepared标识
+        const questImpl = constructQuest(quest)
+        quest.properties.is_prepared = questImpl.isPrepared();
     }
 }
 

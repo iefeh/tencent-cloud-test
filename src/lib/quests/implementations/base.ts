@@ -31,6 +31,13 @@ export abstract class QuestBase {
     // 用户领取对应任务的奖励
     abstract claimReward(userId: string): Promise<claimRewardResult>;
 
+    // 是否预备类任务，预备类任务只要调用prepare接口，即可完成任务
+    // 例如：需要上报即可完成的任务
+    // 预备类任务需要重写该方法，返回true
+    isPrepared(): boolean {
+        return false;
+    }
+
     async checkUserRewardDelta(userId: string): Promise<number> {
         // 检查静态任务奖励
         if (this.quest.reward.type == QuestRewardType.Fixed) {
@@ -99,12 +106,14 @@ export abstract class QuestBase {
 
     // 保存用户的任务达成记录
     async addUserAchievement(userId: string): Promise<void> {
-        const achievement = new QuestAchievement({
-            user_id: userId,
-            quest_id: this.quest.id,
-            created_time: Date.now(),
-        });
-        await achievement.save();
+        await QuestAchievement.updateOne(
+            {user_id: userId, quest_id: this.quest.id},
+            {
+                $setOnInsert: {
+                    created_time: Date.now(),
+                },
+            },
+        );
     }
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作

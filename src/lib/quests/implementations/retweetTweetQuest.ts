@@ -101,4 +101,8 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
             tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
         }
     }
+
+    isPrepared(): boolean {
+        return true;
+    }
 }
