@@ -20,7 +20,7 @@ const CampaignAchievementSchema = new Schema<ICampaignAchievement>({
 });
 
 CampaignAchievementSchema.index({user_id: 1, campaign_id: 1}, {unique: true});
-CampaignAchievementSchema.index({campaign_id: 1});
+CampaignAchievementSchema.index({campaign_id: 1, user_id: 1});
 
 // 使用既有模型或者新建模型
 const CampaignAchievement = models.CampaignAchievement || model<ICampaignAchievement>('CampaignAchievement', CampaignAchievementSchema, 'campaign_achievements');

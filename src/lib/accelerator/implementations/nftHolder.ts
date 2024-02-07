@@ -1,14 +1,7 @@
 import {Accelerator} from "@/lib/accelerator/implementations/base";
 import {IRewardAccelerator} from "@/lib/models/RewardAccelerator";
-import {NFTHolderAcceleratorProperties} from "@/lib/accelerator/types";
+import {NFTHolderAcceleratorProperties, NftHolderReward} from "@/lib/accelerator/types";
 import ContractNFT from "@/lib/models/ContractNFT";
-
-type NftHolderReward = {
-    // 用户钱包地址
-    wallet_address: string,
-    // 奖励的mb数量
-    moon_beam: number,
-}
 
 // NFT持有者加速器，用户持有NFT后，可以获得额外的MB奖励
 export class NftHolderAccelerator extends Accelerator<NftHolderReward> {
@@ -16,7 +9,11 @@ export class NftHolderAccelerator extends Accelerator<NftHolderReward> {
         super(accelerator);
     }
 
+    // 加速奖励， 通过用户持有的NFT数量，计算奖励加成
     async accelerate<U extends NftHolderReward>(reward: U): Promise<U> {
+        if (reward.base_moon_beam <= 0) {
+            return reward;
+        }
         const props = this.accelerator.properties as NFTHolderAcceleratorProperties;
         const filter: any = {
             chain_id: props.chain_id,
@@ -33,9 +30,9 @@ export class NftHolderAccelerator extends Accelerator<NftHolderReward> {
         const nftCount = nfts.length;
         // 计算奖励加成
         if (props.support_stacking) {
-            reward.moon_beam = Math.ceil(reward.moon_beam * props.reward_bonus * nftCount);
+            reward.bonus_moon_beam = Math.ceil(reward.base_moon_beam * props.reward_bonus * nftCount);
         } else {
-            reward.moon_beam = Math.ceil(reward.moon_beam * props.reward_bonus);
+            reward.bonus_moon_beam = Math.ceil(reward.base_moon_beam * props.reward_bonus);
         }
         return reward;
     }

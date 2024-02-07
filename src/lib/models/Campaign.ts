@@ -1,6 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 
-enum CampaignRewardType {
+export enum CampaignRewardType {
     // 奖励MB
     MoonBeam = 'moon_beam',
     // 奖励徽章
@@ -62,9 +62,9 @@ export interface ICampaign extends Document {
     // 任务的实现见 src/lib/quests
     tasks: any[],
     // 活动的奖励
-    rewards: any[],
+    rewards: CampaignReward[],
     // 领取奖励的设置
-    claim_settings: any,
+    claim_settings: CampaignClaimSettings,
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -83,6 +83,7 @@ const CampaignSchema = new Schema<ICampaign>({
     end_time: {type: Number},
     tasks: Schema.Types.Mixed,
     rewards: Schema.Types.Mixed,
+    claim_settings: Schema.Types.Mixed,
     created_time: {type: Number},
     updated_time: {type: Number},
     deleted_time: {type: Number},

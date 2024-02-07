@@ -17,3 +17,13 @@ export type NFTHolderAcceleratorProperties = {
     // NFT持有的最短时长，单位秒
     min_hold_duration: number,
 }
+
+// NFT持有者奖励
+export type NftHolderReward = {
+    // 用户钱包地址
+    wallet_address: string,
+    // 基础奖励的mb数量
+    base_moon_beam: number,
+    // 额外奖励的mb数量
+    bonus_moon_beam: number,
+}

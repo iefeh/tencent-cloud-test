@@ -151,14 +151,13 @@ export abstract class QuestBase {
                         },
                         $setOnInsert: {
                             created_time: now,
-                            verified_time: now,
                         },
                     },
                     {upsert: true, session: session},
                 );
                 await audit.save(opts);
                 await User.updateOne({user_id: userId}, {$inc: {moon_beam: audit.moon_beam_delta}}, opts);
-            })
+            });
             return {done: true, duplicated: false}
         } catch (error) {
             if (isDuplicateKeyError(error)) {
