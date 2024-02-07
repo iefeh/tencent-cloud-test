@@ -3,19 +3,13 @@ import {createRouter} from "next-connect";
 import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {constructQuest} from "@/lib/quests/constructor";
 import {redis} from "@/lib/redis/client";
-import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 import * as Sentry from "@sentry/nextjs";
 import {errorInterceptor} from "@/lib/middleware/error";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import {QuestType} from "@/lib/quests/types";
-import {addWalletVerificationCDForIP, checkWalletVerificationCDForIP} from "@/lib/redis/verifyWallet";
 import Campaign from "@/lib/models/Campaign";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import CampaignAchievement from "@/lib/models/CampaignAchievement";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 

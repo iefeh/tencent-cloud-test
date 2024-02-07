@@ -30,11 +30,13 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
         }
     }
 
-    async addUserAchievement(userId: string): Promise<void> {
+    async addUserAchievement(userId: string, verified: boolean): Promise<void> {
+        const now = Date.now();
         const achievement = new QuestAchievement({
             user_id: userId,
             quest_id: this.quest.id,
-            created_time: Date.now(),
+            created_time: now,
+            verified_time: now,
         });
         // 添加用户任务完成记录与转推次数
         await doTransaction(async (session) => {
@@ -44,7 +46,7 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
                 {
                     $inc: {[Metric.RetweetCount]: 1},
                     $setOnInsert: {
-                        "created_time": Date.now(),
+                        "created_time": now,
                     }
                 },
                 {upsert: true, session: session}

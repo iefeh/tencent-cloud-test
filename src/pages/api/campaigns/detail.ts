@@ -3,11 +3,9 @@ import {createRouter} from "next-connect";
 import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import Quest from "@/lib/models/Quest";
-import {PipelineStage} from 'mongoose';
-import Campaign, {CampaignStatus} from "@/lib/models/Campaign";
+import Campaign from "@/lib/models/Campaign";
+import {enrichUserTasks} from "@/lib/quests/taskEnrichment";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
-import {enrichUserQuests} from "@/lib/quests/enrichment";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -26,7 +24,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
         created_time: 0,
         updated_time: 0,
         deleted_time: 0
-    });
+    }).lean();
     if (!campaign) {
         res.json(response.notFound("Unknown campaign."));
         return;
@@ -34,12 +32,34 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     // 丰富任务信息
     const tasks = campaign.tasks;
     if (tasks && tasks.length > 0) {
-        await enrichUserQuests(userId, tasks);
+        await enrichUserTasks(userId, tasks);
     }
+    await enrichCampaignClaim(userId, campaign);
     res.json(response.success({
         campaign: campaign,
     }));
 });
+
+async function enrichCampaignClaim(userId: string, campaign: any) {
+    // 检查当前是否已经领取活动任务奖励
+    const claim = await CampaignAchievement.findOne({user_id: userId, campaign_id: campaign.id}, {_id: 0});
+    campaign.claimed = !!claim && !!claim.claimed_time;
+    if (campaign.claimed) {
+        return;
+    }
+    // 检查当前是否可以领取活动任务奖励
+    campaign.claimable = false;
+    let tasksCompleted = true;
+    for (const task of campaign.tasks) {
+        if (!task.verified) {
+            tasksCompleted = false;
+            break;
+        }
+    }
+    if (tasksCompleted) {
+        campaign.claimable = true;
+    }
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {

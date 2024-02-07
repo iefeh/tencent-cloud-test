@@ -105,14 +105,21 @@ export abstract class QuestBase {
     }
 
     // 保存用户的任务达成记录
-    async addUserAchievement(userId: string): Promise<void> {
+    async addUserAchievement(userId: string, verified: boolean): Promise<void> {
+        const now = Date.now();
+        const inserts: any = {};
+        if (verified) {
+            inserts.verified_time = now;
+        }
         await QuestAchievement.updateOne(
-            {user_id: userId, quest_id: this.quest.id},
+            {user_id: userId, quest_id: this.quest.id, verified_time: null},
             {
+                $set: inserts,
                 $setOnInsert: {
-                    created_time: Date.now(),
+                    created_time: now,
                 },
             },
+            {upsert: true},
         );
     }
 

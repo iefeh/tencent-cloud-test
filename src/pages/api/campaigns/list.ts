@@ -32,7 +32,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     }
     // 检查用户是否已经领取对应的任务
     const campaigns = pagination.data;
-    await enrichUserCampaignAchievements(userId!, campaigns);
+    await enrichUserCampaigns(userId!, campaigns);
     res.json(response.success({
         total: pagination.total,
         page_num: pageNum,
@@ -41,7 +41,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     }));
 });
 
-async function enrichUserCampaignAchievements(userId: string, campaigns: any[]) {
+async function enrichUserCampaigns(userId: string, campaigns: any[]) {
     // 根据活动的当前时间区间决定其状态
     campaigns.forEach(c => {
         if (c.start_time > Date.now()) {
@@ -54,22 +54,16 @@ async function enrichUserCampaignAchievements(userId: string, campaigns: any[]) 
         }
         c.status = CampaignStatus.Ongoing;
     });
-    // 初始化achieved字段，默认用户未完成活动
-    campaigns.forEach(c => c.achieved = false);
+    // 初始化claimed字段，默认用户未领取活动奖励
+    campaigns.forEach(c => c.claimed = false);
     if (!userId) {
         return;
     }
     // 查询用户已经完成的活动，修改达成标识与领取标识
     const campaignIds = campaigns.map(c => c.id);
-    const achievements = await CampaignAchievement.find({user_id: userId, campaign_id: {$in: campaignIds}});
-    const achievementMap = new Map<string, any>(achievements.map(a => [a.campaign_id, a]));
-    campaigns.forEach(c => {
-        if (!achievementMap.has(c.id)) {
-            return;
-        }
-        c.achieved = true;
-        c.claimed = !!achievementMap.get(c.id)!.claimed_time;
-    });
+    const achievements = await CampaignAchievement.find({user_id: userId, campaign_id: {$in: campaignIds}}, {_id: 0});
+    const achievementMap = new Map<string, number>(achievements.map(a => [a.campaign_id, a.claimed_time]));
+    campaigns.forEach(c => c.claimed = !!achievementMap.get(c.id));
 }
 
 async function paginationCampaigns(pageNum: number, pageSize: number, campaignStatus: CampaignStatus): Promise<{ total: number, data: any[] }> {
@@ -103,6 +97,7 @@ async function paginationCampaigns(pageNum: number, pageSize: number, campaignSt
         {
             $project: {
                 '_id': 0,
+                'id': 1,
                 'name': 1,
                 'image_url': 1,
                 'start_time': 1,

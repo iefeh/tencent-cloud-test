@@ -13,8 +13,7 @@ import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
 import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 import {HoldNFTQuest} from "@/lib/quests/implementations/holdNFTQuest";
 
-// TODO: 可以在checkClaim时完成用户指标的整理(如果存在)，然后在claim时如果奖励是范围，查询对应奖励的所在位置.
-//       动态奖励集合：存放奖励id，奖励的前置条件，奖励的额度.
+// 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
     switch (quest.type) {
         case QuestType.ConnectWallet:

@@ -78,6 +78,7 @@ const CampaignSchema = new Schema<ICampaign>({
     name: {type: String},
     description: {type: String},
     image_url: {type: String},
+    active: {type: Boolean},
     start_time: {type: Number},
     end_time: {type: Number},
     tasks: Schema.Types.Mixed,

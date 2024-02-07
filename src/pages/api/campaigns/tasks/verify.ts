@@ -55,8 +55,8 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
     }
     const questImpl = await constructQuest(task);
     // 检查用户是否已经完成该任务
-    const achieved = await questImpl.checkAchieved(userId);
-    if (achieved) {
+    const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: task.id});
+    if (achievement && achievement.verified_time) {
         logger.warn(`user ${userId} duplicate verify task ${task_id}`);
         return res.json(response.success({
             verified: false,
@@ -81,7 +81,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             }));
         }
         // 用户已完成任务，添加完成标识.
-        await questImpl.addUserAchievement(userId);
+        await questImpl.addUserAchievement(userId, true);
         await try2AddUserCampaignAchievement(userId, campaign_id, tasks.map((t: any) => t.id));
         // 检查用户是否已经完成所有任务
         res.json(response.success({
