@@ -97,6 +97,16 @@ export abstract class QuestBase {
         return !!reward;
     }
 
+    // 保存用户的任务达成记录
+    async addUserAchievement(userId: string): Promise<void> {
+        const achievement = new QuestAchievement({
+            user_id: userId,
+            quest_id: this.quest.id,
+            created_time: Date.now(),
+        });
+        await achievement.save();
+    }
+
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
     async saveUserReward<T>(userId: string, taint: string, moonBeamDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean }> {
         const now = Date.now();

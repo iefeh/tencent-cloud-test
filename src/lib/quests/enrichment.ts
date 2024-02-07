@@ -9,9 +9,11 @@ import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
 import {getUserFirstWhitelist, queryUserAuth} from "@/lib/common/user";
 
-export async function enrichUserQuests(userId: string, quests: any[]) {
-    // 为任务添加verified字段
-    await enrichQuestVerification(userId, quests);
+export async function enrichUserQuests(userId: string, quests: any[], enrichVerification: boolean = true) {
+    if (enrichVerification) {
+        // 为任务添加verified字段
+        await enrichQuestVerification(userId, quests);
+    }
     // 为任务添加achieved字段
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
