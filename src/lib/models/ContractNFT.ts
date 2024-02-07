@@ -21,10 +21,15 @@ const ContractNFTSchema = new Schema<IContractNFT>({
     transaction_status: {type: String},
     contract_address: {type: String},
     token_id: {type: Number},
+    wallet_addr: {type: String},
     created_time: {type: Number},
     confirmed_time: {type: Number},
     deleted_time: {type: Number, default: null},
 });
+
+ContractNFTSchema.index({transaction_id: 1});
+ContractNFTSchema.index({wallet_addr: 1});
+ContractNFTSchema.index({chain_id: 1, contract_address: 1, wallet_addr: 1});
 
 // 使用既有模型或者新建模型
 const ContractNFT = models.ContractNFT || model<IContractNFT>('ContractNFT', ContractNFTSchema, 'contract_nft');
