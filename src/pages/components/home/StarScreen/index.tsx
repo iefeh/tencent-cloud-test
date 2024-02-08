@@ -38,7 +38,7 @@ export default function StarScreen() {
   }, []);
 
   function setLuxyTrans() {
-    if (!planetRef.current) return;
+    if (!planetRef.current || !window.luxy) return;
 
     const y = window.luxy.getWrapperTranslateY();
     const l = document.documentElement.clientHeight;
