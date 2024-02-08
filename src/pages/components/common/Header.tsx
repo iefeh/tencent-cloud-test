@@ -55,10 +55,10 @@ const routeText: RouteMenu[] = [
         name: 'Get Involved',
         route: '/LoyaltyProgram/earn',
       },
-      {
-        name: 'Mint Now',
-        route: '//NFT/Mint',
-      },
+      // {
+      //   name: 'Mint Now',
+      //   route: '//NFT/Mint',
+      // },
     ],
   },
   {
