@@ -32,7 +32,7 @@ export enum CampaignStatus {
 }
 
 // 活动领取奖励的设置
-type CampaignClaimSettings = {
+export type CampaignClaimSettings = {
     // 领取奖励需要的授权，运营可以在任务中配置要求对应的授权，但是此处进行冗余设置，以确保用户领取奖励时的账号存在对应授权
     require_authorization: string,
     // 领取奖励后的提示
