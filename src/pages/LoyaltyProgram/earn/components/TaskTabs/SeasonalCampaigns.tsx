@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Pagination, cn } from '@nextui-org/react';
+import { Pagination, Select, SelectItem, cn } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -23,6 +23,25 @@ const EVENT_STATUS_CLASS_DICT = {
     class: 'text-white pl-[1.1875rem]',
   },
 };
+
+const EVENT_STATUS_OPTIONS = [
+  {
+    label: 'All',
+    value: '',
+  },
+  {
+    label: 'In Progress',
+    value: EventStatus.ONGOING,
+  },
+  {
+    label: 'Completed',
+    value: EventStatus.ENDED,
+  },
+  {
+    label: 'Coming Soon',
+    value: EventStatus.UPCOMING,
+  },
+];
 
 export default function SeasonalCampaigns() {
   const router = useRouter();
@@ -64,7 +83,7 @@ export default function SeasonalCampaigns() {
   }, []);
 
   return (
-    <div className="mt-7 flex flex-col items-center">
+    <div className="mt-7 flex flex-col items-center relative">
       <div
         className={cn([
           'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] w-full font-poppins relative',
@@ -140,6 +159,10 @@ export default function SeasonalCampaigns() {
         variant="light"
         onChange={onPagiChange}
       />
+
+      <Select items={EVENT_STATUS_OPTIONS} label="All" placeholder="All" className="max-w-xs absolute right-0 -top-7">
+        {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+      </Select>
     </div>
   );
 }
