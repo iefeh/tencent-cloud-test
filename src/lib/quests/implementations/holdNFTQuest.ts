@@ -25,10 +25,10 @@ export class HoldNFTQuest extends QuestBase {
         }
         this.user_wallet_addr = userWallet?.wallet_addr;
         const userNft = await ContractNFT.findOne({
-            contract_address: questProp.contract_addr,
             chain_id: questProp.chain_id,
-            transaction_status: "confirmed",
+            contract_address: questProp.contract_addr,
             wallet_addr: this.user_wallet_addr,
+            transaction_status: "confirmed",
         });
         return {
             claimable: !!userNft,

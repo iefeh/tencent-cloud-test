@@ -4,11 +4,13 @@ import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connec
 import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectSteamQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {preparedQuests, QuestType} from "@/lib/quests/types";
+import {QuestType} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
 import {getUserFirstWhitelist, queryUserAuth} from "@/lib/common/user";
+import {constructQuest} from "@/lib/quests/constructor";
 
+// 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
     // 为任务添加verified字段
     await enrichQuestVerification(userId, quests);
@@ -21,9 +23,9 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
 }
 
 // 丰富特定于任务的属性，如wallet任务额外返回上次钱包资产同步时间
-async function enrichQuestCustomProperty(userId: string, quests: any[]) {
+export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
     // 过滤任务中的property，返回URL与prepare标识
-    filterQuestProperty(quests);
+    maskQuestProperty(quests);
 
     for (let quest of quests) {
         if (quest.type != QuestType.ConnectWallet || !quest.verified) {
@@ -49,7 +51,7 @@ async function enrichQuestCustomProperty(userId: string, quests: any[]) {
 
 // 过滤任务中的property，返回URL与prepare标识
 // URL是用户完成任务的地址，prepare标识任务可以通过上报完成
-function filterQuestProperty(quests: any[]) {
+function maskQuestProperty(quests: any[]) {
     for (let quest of quests) {
         // 如果quest.properties不存在，则初始化为一个空对象
         if (!quest.properties) {
@@ -57,8 +59,9 @@ function filterQuestProperty(quests: any[]) {
         }
         // 只保留url属性
         quest.properties = {url: quest.properties.url};
-        // 添加或更新is_prepared属性
-        quest.properties.is_prepared = preparedQuests.has(quest.type);
+        // 设置is_prepared标识
+        const questImpl = constructQuest(quest)
+        quest.properties.is_prepared = questImpl.isPrepared();
     }
 }
 
@@ -167,7 +170,7 @@ async function getUserAuth(userId: string): Promise<Map<AuthorizationType, boole
 }
 
 // 为任务添加authorization、user_authorized字段，标识任务需要的前置授权类型
-async function enrichQuestAuthorization(userId: string, quests: any[]) {
+export async function enrichQuestAuthorization(userId: string, quests: any[]) {
     quests.forEach(quest => {
         if (quest.verified) {
             // 任务已完成，无需检查授权

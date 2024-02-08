@@ -6,6 +6,9 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {promiseSleep} from "@/lib/common/sleep";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import logger from "@/lib/logger/winstonLogger";
+import doTransaction from "@/lib/mongodb/transaction";
+import QuestAchievement from "@/lib/models/QuestAchievement";
+import User from "@/lib/models/User";
 
 
 export class RetweetTweetQuest extends ConnectTwitterQuest {
@@ -25,6 +28,30 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
         return {
             claimable: await this.checkAchieved(userId),
         }
+    }
+
+    async addUserAchievement(userId: string, verified: boolean): Promise<void> {
+        const now = Date.now();
+        const achievement = new QuestAchievement({
+            user_id: userId,
+            quest_id: this.quest.id,
+            created_time: now,
+            verified_time: now,
+        });
+        // 添加用户任务完成记录与转推次数
+        await doTransaction(async (session) => {
+            await achievement.save({session: session});
+            await UserMetrics.updateOne(
+                {user_id: userId},
+                {
+                    $inc: {[Metric.RetweetCount]: 1},
+                    $setOnInsert: {
+                        "created_time": now,
+                    }
+                },
+                {upsert: true, session: session}
+            );
+        })
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
@@ -75,5 +102,9 @@ export class RetweetTweetQuest extends ConnectTwitterQuest {
             claimed_amount: result.done ? rewardDelta : undefined,
             tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
         }
+    }
+
+    isPrepared(): boolean {
+        return true;
     }
 }
