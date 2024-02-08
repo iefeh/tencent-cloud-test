@@ -18,8 +18,8 @@ export default function IndexSlide(props: Props) {
         needAni={props.needAni}
         baseAniTY
         className="relative top-[15%] lg:top-[20%] items-center text-center px-8"
-        title="Moonveil's Genesis NFT——The Destiny TETRA"
-        subtitle="The Destiny TETRA NFT is the first level of Moonveil's Genesis NFT collection. The first-ever release promises to be the most valuable and sought-after NFT collection in Moonveil’s ecosystem."
+        title="Moonveil's Genesis NFT<br />The Destiny TETRA"
+        subtitle="The Destiny TETRA NFT is the first level of Moonveil's Genesis NFT collection.<br />The first-ever release promises to be the most valuable and sought-after NFT collection in Moonveil’s ecosystem."
         buttonLabel="Explore Now"
         buttonLink="https://opensea.io/collection/destiny-tetra"
       />
