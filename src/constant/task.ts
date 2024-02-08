@@ -40,3 +40,9 @@ export const enum MediaType {
   METAMASK = 'wallet',
   APPLE = 'apple',
 }
+
+export const enum EventStatus {
+  UPCOMING = 'upcoming',
+  ONGOING = 'ongoing',
+  ENDED = 'ended',
+}

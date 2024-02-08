@@ -1,189 +1,76 @@
-import Image, { StaticImageData } from 'next/image';
-import mbImg from 'img/loyalty/earn/mb.png';
-import LGButton from '@/pages/components/common/buttons/LGButton';
-import { Pagination } from '@nextui-org/react';
+import Image from 'next/image';
+import { Pagination, cn } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
 import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
+import { throttle } from 'lodash';
+import { EventItem, EventPageQueryDTO, queryEventListAPI } from '@/http/services/task';
+import { toast } from 'react-toastify';
+import { EventStatus } from '@/constant/task';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
-const enum TaskRewardType {
-  /** Moonveil Beams */
-  MB,
-  /** Badge */
-  BADGE,
-}
-
-interface TaskReward {
-  amount: string;
-  type: TaskRewardType;
-}
-
-const enum TaskStatus {
-  COMING_SOON,
-  IN_PROGRESS,
-  COMPLETED,
-}
-
-interface TaskItem {
-  title: string;
-  desc: string;
-  rewards: TaskReward[];
-  status: TaskStatus;
-  cover: string | StaticImageData;
-  connectButtonText?: string;
-  showConnectButton?: boolean;
-  verifyButtonText?: string;
-  showVerifyButton?: boolean;
-  onConnectClick?: (item: TaskItem) => void;
-  onVerifyClick?: (item: TaskItem) => void;
-}
-
-const TASK_STATUS_DICT = {
-  [TaskStatus.COMING_SOON]: {
+const EVENT_STATUS_CLASS_DICT = {
+  [EventStatus.UPCOMING]: {
     label: 'Coming Soon',
-    class: 'text-[#4FDCFF]',
+    class: 'text-[#4FDCFF] pl-[0.8125rem]',
   },
-  [TaskStatus.IN_PROGRESS]: {
+  [EventStatus.ONGOING]: {
     label: 'In Progress',
-    class: 'text-basic-yellow',
+    class: 'text-basic-yellow pl-[1.1875rem]',
   },
-  [TaskStatus.COMPLETED]: {
+  [EventStatus.ENDED]: {
     label: 'Completed',
-    class: 'text-white',
+    class: 'text-white pl-[1.1875rem]',
   },
 };
 
 export default function SeasonalCampaigns() {
   const router = useRouter();
-  const tasks: TaskItem[] = [
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-        {
-          amount: '1 badge',
-          type: TaskRewardType.BADGE,
-        },
-      ],
-      status: TaskStatus.IN_PROGRESS,
-      cover: '/img/loyalty/earn/seasonal/23.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-        {
-          amount: '1 badge',
-          type: TaskRewardType.BADGE,
-        },
-        {
-          amount: '1 badge',
-          type: TaskRewardType.BADGE,
-        },
-      ],
-      status: TaskStatus.IN_PROGRESS,
-      cover: '/img/loyalty/earn/seasonal/24.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.IN_PROGRESS,
-      cover: '/img/loyalty/earn/seasonal/25.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.IN_PROGRESS,
-      cover: '/img/loyalty/earn/seasonal/26.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.COMING_SOON,
-      cover: '/img/loyalty/earn/seasonal/27.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.IN_PROGRESS,
-      cover: '/img/loyalty/earn/seasonal/28.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.COMPLETED,
-      cover: '/img/loyalty/earn/seasonal/29.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.COMPLETED,
-      cover: '/img/loyalty/earn/seasonal/30.jpg',
-    },
-    {
-      title: 'AstrArk Character Voice Rally',
-      desc: 'Our test server will open at 4:00 pm, Nov. 16th, Singapore time...',
-      rewards: [
-        {
-          amount: '50 MBs',
-          type: TaskRewardType.MB,
-        },
-      ],
-      status: TaskStatus.COMPLETED,
-      cover: '/img/loyalty/earn/seasonal/31.jpg',
-    },
-  ];
+  const pagi = useRef<EventPageQueryDTO>({
+    page_num: 1,
+    page_size: 9,
+  });
+  const [tasks, setTasks] = useState<EventItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  function onTaskClick(task: TaskItem) {
-    router.push(`/LoyaltyProgram/task?taskId=${task.title}`);
+  function onTaskClick(task: EventItem) {
+    router.push(`/LoyaltyProgram/task?taskId=${task.name}`);
   }
+
+  const queryTasks = throttle(async (pagiParams: Partial<EventPageQueryDTO> = pagi.current, noLoading = false) => {
+    if (!noLoading) setLoading(true);
+    const params = Object.assign({}, pagi.current, pagiParams);
+
+    try {
+      const res = await queryEventListAPI(params);
+      const { campaigns, total } = res;
+      setTasks(campaigns || []);
+      setTotal(total || 0);
+    } catch (error: any) {
+      toast.error(error?.message || error);
+    } finally {
+      setLoading(false);
+    }
+  }, 500);
+
+  function onPagiChange(page: number) {
+    if (page === pagi.current.page_num) return;
+    queryTasks({ page_num: page });
+  }
+
+  useEffect(() => {
+    queryTasks();
+  }, []);
 
   return (
     <div className="mt-7 flex flex-col items-center">
-      <div className="content grid grid-cols-3 gap-[1.5625rem] font-poppins">
+      <div
+        className={cn([
+          'content flex flex-col lg:grid lg:grid-cols-3 gap-[1.5625rem] w-full font-poppins relative',
+          tasks.length < 1 && 'h-[37.5rem]',
+        ])}
+      >
         {tasks.map((task, index) => {
           return (
             <div
@@ -194,30 +81,38 @@ export default function SeasonalCampaigns() {
               <div className="w-[25rem] h-[11.25rem] overflow-hidden rounded-[0.625rem] relative">
                 <Image
                   className="object-cover hover:scale-125 transition-transform"
-                  src={task.cover}
+                  // src={task.image_url}
+                  src="/img/loyalty/earn/seasonal/23.jpg"
                   alt=""
                   width={400}
                   height={180}
                 />
 
                 <div
-                  className={`absolute left-0 top-[0.4375rem] w-[7.625rem] h-9 pt-[0.5625rem] bg-black/50 rounded-r-lg text-sm ${
-                    TASK_STATUS_DICT[task.status].class
-                  } ${task.status === TaskStatus.COMING_SOON ? 'pl-[0.8125rem]' : 'pl-[1.1875rem]'}`}
+                  className={cn([
+                    'absolute left-0 top-[0.4375rem] w-[7.625rem] h-9 pt-[0.5625rem] bg-black/50 rounded-r-lg text-sm',
+                    EVENT_STATUS_CLASS_DICT[task.status].class,
+                  ])}
                 >
-                  {TASK_STATUS_DICT[task.status].label}
+                  {EVENT_STATUS_CLASS_DICT[task.status].label}
                 </div>
+
+                {!task.claimed && (
+                  <div className="absolute bottom-0 left-0 w-full h-10 text-center !leading-10 font-semakin text-lg text-basic-yellow bg-black/70">
+                    Claimed
+                  </div>
+                )}
               </div>
 
-              <div className="text-xl mt-8">{task.title}</div>
-
-              <div className="text-[#999] text-sm mt-4">{task.desc}</div>
+              <div className="text-xl mt-8">{task.name}</div>
 
               <div className="mt-10 flex flex-wrap gap-[3.125rem]">
                 {task.rewards.map((reward, ri) => {
                   return (
                     <div key={ri} className="flex items-center">
-                      <Image className="w-8 h-8" src={mbImg} alt="" />
+                      <div className="w-8 h-8 relative">
+                        <Image className="object-contain" src={reward.image_small} alt="" fill />
+                      </div>
                       <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{reward.amount}</span>
                     </div>
                   );
@@ -226,23 +121,24 @@ export default function SeasonalCampaigns() {
             </div>
           );
         })}
+
+        {loading && <CircularLoading />}
       </div>
 
       <Pagination
         className="mt-[4.6875rem] mb-[8.75rem]"
         showControls
-        total={10}
+        total={total}
         initialPage={1}
         renderItem={PaginationRenderItem}
         classNames={{
           wrapper: 'gap-3',
           item: 'w-12 h-12 font-poppins-medium text-base text-white',
-          prev: 'w-12 h-12 border-1 border-white bg-transparent',
-          next: 'w-12 h-12 border-1 border-white bg-transparent',
         }}
         disableCursorAnimation
         radius="full"
         variant="light"
+        onChange={onPagiChange}
       />
     </div>
   );

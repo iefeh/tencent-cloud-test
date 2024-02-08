@@ -1,4 +1,4 @@
-import { QuestType } from '@/constant/task';
+import { EventStatus, QuestType } from '@/constant/task';
 import http from '../index';
 
 export interface TaskProperties {
@@ -95,4 +95,31 @@ export function taskDetailsAPI(params: { quest_id: string }): Promise<{ quest: T
 
 export function queryInviteCodeAPI(): Promise<{ invite_code: string }> {
   return http.get('/api/users/invite');
+}
+
+export interface EventReward {
+  type: string;
+  name: string;
+  image_small: string;
+  image_medium: string;
+  amount: number;
+  badge_id: string;
+}
+
+export interface EventItem {
+  name: string;
+  image_url: string;
+  start_time: number;
+  end_time: number;
+  status: EventStatus;
+  claimed: boolean;
+  rewards: EventReward[];
+}
+
+export interface EventPageQueryDTO extends PageQueryDto {
+  campaign_status?: EventStatus;
+}
+
+export function queryEventListAPI(params: EventPageQueryDTO): Promise<PageResDTO<EventItem>> {
+  return http.get('/api/campaigns/list', { params });
 }

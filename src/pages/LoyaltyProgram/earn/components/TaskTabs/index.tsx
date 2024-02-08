@@ -9,10 +9,10 @@ export default function TaskTabs() {
       // key: 'Whitelist Tasks',
       content: <RegularTasks />,
     },
-    // {
-    //   key: 'Seasonal Campaigns',
-    //   content: <SeasonalCampaigns />,
-    // },
+    {
+      key: 'Seasonal Campaigns',
+      content: <SeasonalCampaigns />,
+    },
   ];
 
   return (
