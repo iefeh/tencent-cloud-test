@@ -5,7 +5,7 @@ import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import {PipelineStage} from 'mongoose';
-import {enrichUserQuests} from "@/lib/quests/enrichment";
+import {enrichUserQuests} from "@/lib/quests/questEnrichment";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 

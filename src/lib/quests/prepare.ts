@@ -1,16 +1,12 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import {UserContextRequest} from "@/lib/middleware/auth";
+import {NextApiResponse} from "next";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import getMongoConnection from "@/lib/mongodb/client";
 import Quest from "@/lib/models/Quest";
 import {constructQuest} from "@/lib/quests/constructor";
 import logger from "@/lib/logger/winstonLogger";
 
-const router = createRouter<UserContextRequest, NextApiResponse>();
-
-router.use(mustAuthInterceptor).post(async (req, res) => {
-    const {quest_id} = req.body;
+export async function prepareUserQuestAchievement(req: UserContextRequest, res: NextApiResponse, quest_id: string) {
     if (!quest_id) {
         res.json(response.invalidParams());
         return;
@@ -31,18 +27,4 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     // 任务属于预备类，直接添加当前用户完成任务标识
     await questImpl.addUserAchievement(userId, false);
     return res.json(response.success());
-});
-
-// this will run if none of the above matches
-router.all((req, res) => {
-    res.status(405).json({
-        error: "Method not allowed",
-    });
-});
-
-export default router.handler({
-    onError(err, req, res) {
-        console.error(err);
-        res.status(500).json(response.serverError());
-    },
-});
+}

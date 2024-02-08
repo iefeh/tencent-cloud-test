@@ -8,12 +8,15 @@ export interface IQuestAchievement extends Document {
     user_id: string,
     // 创建时间毫秒时间戳
     created_time: number,
+    // 校验时间
+    verified_time: number,
 }
 
 const QuestAchievementSchema = new Schema<IQuestAchievement>({
     quest_id: {type: String, required: true},
     user_id: {type: String, required: true},
     created_time: {type: Number},
+    verified_time: {type: Number},
 });
 
 QuestAchievementSchema.index({user_id: 1, quest_id: 1}, {unique: true});

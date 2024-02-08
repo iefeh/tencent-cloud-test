@@ -11,7 +11,7 @@ export interface IContractTokenMetadata extends Document {
     created_time: number;
 }
 
-const ContractNFTSchema = new Schema<IContractTokenMetadata>({
+const ContractTokenMetadataSchema = new Schema<IContractTokenMetadata>({
     chain_id: {type: String},
     contract_address: {type: String},
     token_id: {type: Number},
@@ -21,6 +21,8 @@ const ContractNFTSchema = new Schema<IContractTokenMetadata>({
     created_time: {type: Number},
 });
 
+ContractTokenMetadataSchema.index({chain_id: 1, contract_address: 1, token_id: 1});
+
 // 使用既有模型或者新建模型
-const ContractTokenMetadata = models.ContractTokenMetadata || model<IContractTokenMetadata>('ContractTokenMetadata', ContractNFTSchema, 'contract_token_metadata');
+const ContractTokenMetadata = models.ContractTokenMetadata || model<IContractTokenMetadata>('ContractTokenMetadata', ContractTokenMetadataSchema, 'contract_token_metadata');
 export default ContractTokenMetadata;
