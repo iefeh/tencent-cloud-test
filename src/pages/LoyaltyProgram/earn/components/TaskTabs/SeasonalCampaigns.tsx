@@ -55,7 +55,7 @@ export default function SeasonalCampaigns() {
   const [loading, setLoading] = useState(false);
 
   function onTaskClick(task: EventItem) {
-    router.push(`/LoyaltyProgram/task?taskId=${task.id}`);
+    router.push(`/LoyaltyProgram/event?id=${task.id}`);
   }
 
   const queryTasks = throttle(async (pagiParams: Partial<EventPageQueryDTO> = pagi.current, noLoading = false) => {
@@ -130,19 +130,21 @@ export default function SeasonalCampaigns() {
                 )}
               </div>
 
-              <div className="text-xl mt-8">{task.name}</div>
+              <div className="flex flex-col justify-between flex-1">
+                <div className="text-xl mt-8">{task.name}</div>
 
-              <div className="mt-10 flex flex-wrap gap-[3.125rem]">
-                {task.rewards.map((reward, ri) => {
-                  return (
-                    <div key={ri} className="flex items-center">
-                      <div className="w-8 h-8 relative">
-                        <Image className="object-contain" src={reward.image_small} alt="" fill />
+                <div className="mt-10 flex flex-wrap gap-[3.125rem]">
+                  {task.rewards.map((reward, ri) => {
+                    return (
+                      <div key={ri} className="flex items-center">
+                        <div className="w-8 h-8 relative">
+                          <Image className="object-contain" src={reward.image_small} alt="" fill />
+                        </div>
+                        <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{reward.amount}</span>
                       </div>
-                      <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{reward.amount}</span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
