@@ -92,8 +92,4 @@ router.all((req, res) => {
     });
 });
 
-export default router.handler({
-    onError(err, req, res) {
-        res.status(500).json(response.serverError());
-    },
-});
+export default router.handler();
