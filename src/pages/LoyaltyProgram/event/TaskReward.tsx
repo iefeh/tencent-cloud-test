@@ -2,8 +2,15 @@ import MyRanking from '@/pages/components/common/MyRanking';
 import Countdown from './components/Countdown';
 import Rewards from './components/Rewards';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import { FullEventItem } from '@/http/services/task';
 
-export default function TaskReward() {
+interface Props {
+  item?: FullEventItem;
+}
+
+export default function TaskReward(props: Props) {
+  const { item } = props;
+
   return (
     <div className="w-[28.125rem]">
       <div className="font-semakin text-2xl">Rewards</div>

@@ -6,42 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { throttle } from 'lodash';
 import { EventItem, EventPageQueryDTO, queryEventListAPI } from '@/http/services/task';
 import { toast } from 'react-toastify';
-import { EventStatus } from '@/constant/task';
 import CircularLoading from '@/pages/components/common/CircularLoading';
-
-const EVENT_STATUS_CLASS_DICT = {
-  [EventStatus.UPCOMING]: {
-    label: 'Coming Soon',
-    class: 'text-[#4FDCFF] pl-[0.8125rem]',
-  },
-  [EventStatus.ONGOING]: {
-    label: 'In Progress',
-    class: 'text-basic-yellow pl-[1.1875rem]',
-  },
-  [EventStatus.ENDED]: {
-    label: 'Completed',
-    class: 'text-white pl-[1.1875rem]',
-  },
-};
-
-const EVENT_STATUS_OPTIONS = [
-  {
-    label: 'All',
-    value: 'all',
-  },
-  {
-    label: 'In Progress',
-    value: EventStatus.ONGOING,
-  },
-  {
-    label: 'Completed',
-    value: EventStatus.ENDED,
-  },
-  {
-    label: 'Coming Soon',
-    value: EventStatus.UPCOMING,
-  },
-];
+import { EVENT_STATUS_CLASS_DICT, EVENT_STATUS_OPTIONS } from '@/constant/task';
 
 export default function SeasonalCampaigns() {
   const router = useRouter();

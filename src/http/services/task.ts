@@ -117,10 +117,24 @@ export interface EventItem {
   rewards: EventReward[];
 }
 
+export interface FullEventItem extends EventItem {
+  description: string;
+  claimable: boolean;
+  tasks: TaskListItem[];
+  claim_settings: {
+    require_authorization: string;
+    success_message: string;
+  };
+}
+
 export interface EventPageQueryDTO extends PageQueryDto {
   campaign_status?: EventStatus;
 }
 
 export function queryEventListAPI(params: EventPageQueryDTO): Promise<PageResDTO<EventItem>> {
   return http.get('/api/campaigns/list', { params });
+}
+
+export function queryEventDetailsAPI(id: string): Promise<{ campaign: FullEventItem }> {
+  return http.get('/api/campaigns/detail', { params: { campaign_id: id } });
 }
