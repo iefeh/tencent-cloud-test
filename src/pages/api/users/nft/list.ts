@@ -39,11 +39,11 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }
     // 检查用户的NFT
     const pagination = await paginationWalletNFTs(wallet.wallet_addr, pageNum, pageSize);
-    if (pagination.total == 0) {
+    if (pagination.total == 0 || pagination.nfts.length == 0) {
         // 当前没有匹配的数据
         return res.json(response.success({
             wallet_connected: true,
-            total: 0,
+            total: pagination.total,
             page_num: pageNum,
             page_size: pageSize,
             nfts: pagination.nfts,

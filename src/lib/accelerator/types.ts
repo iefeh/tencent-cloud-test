@@ -16,6 +16,8 @@ export type NFTHolderAcceleratorProperties = {
     support_stacking: boolean,
     // NFT持有的最短时长，单位秒
     min_hold_duration: number,
+    // NFT的市场链接
+    nft_market_url: string,
 }
 
 // NFT持有者奖励
