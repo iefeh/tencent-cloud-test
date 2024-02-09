@@ -1,23 +1,26 @@
 import * as response from '../../../../lib/response/response';
-import {NextApiResponse, NextApiRequest} from 'next'
+import {NextApiRequest, NextApiResponse} from 'next'
 import {redis} from '@/lib/redis/client';
 import User, {IUser} from "@/lib/models/User";
 import {v4 as uuidv4} from 'uuid';
 import getMongoConnection from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
-import {generateUserSession} from "@/lib/middleware/session";
+import {generateUserSession, generateUserSignupSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
-import {CaptchaType} from "@/lib/authorization/types";
+import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
-import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
-    const {email, captcha, invite_code} = req.body;
+    const {email, captcha, invite_code, signup_mode} = req.body;
     if (!email || !captcha) {
         console.log("request body:", req.body);
+        res.json(response.invalidParams());
+        return
+    }
+    if (signup_mode && signup_mode !== "enabled") {
         res.json(response.invalidParams());
         return
     }
@@ -43,6 +46,43 @@ router.post(async (req, res) => {
     }
     // 执行用户登录
     let user = await User.findOne({'email': email});
+    const isNewUser = !user;
+    if (isNewUser && signup_mode) {
+        await doSignupConfirmation(res, inviter, user as IUser, email);
+        return;
+    }
+    await doUserLogin(res, inviter, user as IUser, email);
+});
+
+async function doSignupConfirmation(res: any, inviter: IUser, user: IUser, email: string) {
+    // 构建注册的负载信息
+    const payload: SignupPayload = {
+        authorization_type: AuthorizationType.Email,
+        user: {
+            user_id: uuidv4(),
+            email: email,
+            username: email.split("@")[0],
+            avatar_url: process.env.DEFAULT_AVATAR_URL,
+            created_time: Date.now(),
+        }
+    };
+    if (inviter) {
+        payload.invite = {
+            user_id: inviter.user_id,
+            invitee_id: user.user_id,
+            created_time: Date.now(),
+        };
+    }
+    // 删除验证码
+    await redis.del(`${CaptchaType.LoginCaptcha}:${email}`);
+    // 生成二次确认的注册token
+    const token = await generateUserSignupSession(payload);
+    res.json(response.signupConfirmation({
+        signup_cred: token,
+    }));
+}
+
+async function doUserLogin(res: any, inviter: IUser, user: IUser, email: string) {
     const isNewUser = !user;
     if (isNewUser) {
         user = new User({
@@ -75,7 +115,7 @@ router.post(async (req, res) => {
         particle_jwt: genLoginJWT(user.user_id),
         is_new_user: isNewUser,
     }));
-});
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {
