@@ -27,7 +27,7 @@ const EVENT_STATUS_CLASS_DICT = {
 const EVENT_STATUS_OPTIONS = [
   {
     label: 'All',
-    value: '',
+    value: 'all',
   },
   {
     label: 'In Progress',
@@ -51,10 +51,11 @@ export default function SeasonalCampaigns() {
   });
   const [tasks, setTasks] = useState<EventItem[]>([]);
   const [total, setTotal] = useState(0);
+  const [eventStatus, setEventStatus] = useState('all');
   const [loading, setLoading] = useState(false);
 
   function onTaskClick(task: EventItem) {
-    router.push(`/LoyaltyProgram/task?taskId=${task.name}`);
+    router.push(`/LoyaltyProgram/task?taskId=${task.id}`);
   }
 
   const queryTasks = throttle(async (pagiParams: Partial<EventPageQueryDTO> = pagi.current, noLoading = false) => {
@@ -78,6 +79,13 @@ export default function SeasonalCampaigns() {
     queryTasks({ page_num: page });
   }
 
+  function onStatusChange(keys: any) {
+    const key = keys.currentKey;
+    if (key === eventStatus) return;
+    setEventStatus(key);
+    queryTasks({ campaign_status: key === 'all' ? undefined : key });
+  }
+
   useEffect(() => {
     queryTasks();
   }, []);
@@ -97,11 +105,10 @@ export default function SeasonalCampaigns() {
               className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[1.6875rem] px-[1.5625rem] pb-[2.3125rem] flex flex-col cursor-pointer hover:border-basic-yellow transition-[border-color] duration-500"
               onClick={() => onTaskClick(task)}
             >
-              <div className="w-[25rem] h-[11.25rem] overflow-hidden rounded-[0.625rem] relative">
+              <div className="w-auto h-[11.25rem] overflow-hidden rounded-[0.625rem] relative">
                 <Image
                   className="object-cover hover:scale-125 transition-transform"
-                  // src={task.image_url}
-                  src="/img/loyalty/earn/seasonal/23.jpg"
+                  src={task.image_url}
                   alt=""
                   width={400}
                   height={180}
@@ -160,7 +167,15 @@ export default function SeasonalCampaigns() {
         onChange={onPagiChange}
       />
 
-      <Select items={EVENT_STATUS_OPTIONS} label="All" placeholder="All" className="max-w-xs absolute right-0 -top-7">
+      <Select
+        items={EVENT_STATUS_OPTIONS}
+        className="max-w-[10rem] absolute right-0 -top-14 -translate-y-full"
+        classNames={{ trigger: 'p-0 h-auto !bg-transparent' }}
+        aria-label="event status"
+        value={eventStatus}
+        defaultSelectedKeys={['all']}
+        onSelectionChange={onStatusChange}
+      >
         {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
       </Select>
     </div>

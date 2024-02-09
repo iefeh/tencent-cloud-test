@@ -107,6 +107,7 @@ export interface EventReward {
 }
 
 export interface EventItem {
+  id: string;
   name: string;
   image_url: string;
   start_time: number;
