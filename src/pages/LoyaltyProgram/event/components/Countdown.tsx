@@ -33,10 +33,16 @@ export function useCountdown(targetTime: number, currentTime = Date.now(), callb
   return { leftTime };
 }
 
-export default function Countdown() {
-  const [leftTimes, setLeftTimes] = useState(['00', '00', '00', '00']);
+interface Props {
+  end?: number | string;
+}
 
-  useCountdown(dayjs().add(31, 'd').valueOf(), dayjs().valueOf(), (diff) => {
+export default function Countdown(props: Props) {
+  const { end } = props;
+  const [leftTimes, setLeftTimes] = useState(['00', '00', '00', '00']);
+  const target = end || Date.now();
+
+  useCountdown(dayjs(target).valueOf(), dayjs().valueOf(), (diff) => {
     const du = dayjs.duration(diff);
     setLeftTimes([~~du.asDays(), du.hours(), du.minutes(), du.seconds()].map((t) => t.toString().padStart(2, '0')));
   });

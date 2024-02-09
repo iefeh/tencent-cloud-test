@@ -3,12 +3,16 @@ import Countdown from './components/Countdown';
 import Rewards from './components/Rewards';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { FullEventItem } from '@/http/services/task';
+import { useContext } from 'react';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
   item?: FullEventItem;
 }
 
-export default function TaskReward(props: Props) {
+function TaskReward(props: Props) {
+  const { userInfo } = useContext(MobxContext);
   const { item } = props;
 
   return (
@@ -16,10 +20,10 @@ export default function TaskReward(props: Props) {
       <div className="font-semakin text-2xl">Rewards</div>
 
       <div className="overflow-hidden rounded-[0.625rem] border-1 border-basic-gray mt-7">
-        <Countdown />
+        <Countdown end={item?.end_time} />
 
         <div className="px-5 pt-[1.625rem] pb-10">
-          <MyRanking className="rounded-[0.625rem]" />
+          <MyRanking points={userInfo?.moon_beam} className="rounded-[0.625rem]" />
 
           <Rewards />
 
@@ -29,3 +33,5 @@ export default function TaskReward(props: Props) {
     </div>
   );
 }
+
+export default observer(TaskReward);
