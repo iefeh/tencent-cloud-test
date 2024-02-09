@@ -6,6 +6,7 @@ import { FullEventItem } from '@/http/services/task';
 import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
+import Participants from './components/Participants';
 
 interface Props {
   item?: FullEventItem;
@@ -30,6 +31,8 @@ function TaskReward(props: Props) {
           <LGButton className="w-full h-12 mt-[1.6875rem] text-xl font-poppins" label="Claim Rewards" />
         </div>
       </div>
+
+      <Participants />
     </div>
   );
 }

@@ -138,3 +138,9 @@ export function queryEventListAPI(params: EventPageQueryDTO): Promise<PageResDTO
 export function queryEventDetailsAPI(id: string): Promise<{ campaign: FullEventItem }> {
   return http.get('/api/campaigns/detail', { params: { campaign_id: id } });
 }
+
+export function queryEventParticipantsAPI(
+  params: PageQueryDto & { campaign_id: string },
+): Promise<PageResDTO<EventItem>> {
+  return http.get('/api/campaigns/participants', { params });
+}
