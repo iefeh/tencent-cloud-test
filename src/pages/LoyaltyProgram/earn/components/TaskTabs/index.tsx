@@ -1,6 +1,8 @@
 import { Tabs, Tab } from '@nextui-org/react';
 import RegularTasks from './RegularTasks';
 import SeasonalCampaigns from './SeasonalCampaigns';
+import { Key, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function TaskTabs() {
   const tabs = [
@@ -14,6 +16,14 @@ export default function TaskTabs() {
       content: <SeasonalCampaigns />,
     },
   ];
+  const router = useRouter();
+  const [selectedKey, setSelectedKey] = useState((router.query?.tabKey as string) || tabs[0].key);
+
+  function onSelectionChange(key: Key) {
+    const str = key.toString();
+    router.replace({ pathname: '/LoyaltyProgram/earn', query: { tabKey: str } }, undefined, { scroll: false });
+    setSelectedKey(str);
+  }
 
   return (
     <div className="w-full flex flex-col mt-[4.25rem]">
@@ -21,12 +31,14 @@ export default function TaskTabs() {
         aria-label="Options"
         color="primary"
         variant="underlined"
+        selectedKey={selectedKey}
         classNames={{
           tabList: 'gap-6 w-full relative rounded-none p-0 border-b border-divider',
           cursor: 'w-full bg-basic-yellow',
           tab: 'max-w-fit px-0 h-12 font-semakin',
           tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
         }}
+        onSelectionChange={onSelectionChange}
       >
         {tabs.map((tab) => (
           <Tab
