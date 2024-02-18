@@ -44,7 +44,7 @@ function LoyaltyEvent() {
       <div className="flex gap-[3.125rem] pt-[10.9375rem]">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
-        <TaskReward item={eventDetails} />
+        <TaskReward item={eventDetails} onRefresh={queryEventDetails} />
       </div>
     </section>
   );

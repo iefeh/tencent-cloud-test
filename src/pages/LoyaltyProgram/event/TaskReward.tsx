@@ -12,11 +12,12 @@ import { EventStatus } from '@/constant/task';
 
 interface Props {
   item?: FullEventItem;
+  onRefresh?: () => void;
 }
 
 function TaskReward(props: Props) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
-  const { item } = props;
+  const { item, onRefresh } = props;
   const [isClaiming, setIsClaiming] = useState(false);
   const isInProcessing = item?.status === EventStatus.ONGOING;
 
@@ -32,7 +33,11 @@ function TaskReward(props: Props) {
 
     try {
       const res = await claimEventRewardAPI(item.id);
-      if (res?.claimed) return;
+      if (res?.claimed) {
+        toast.success(res?.tip || 'You have claimed rewards.');
+        onRefresh?.();
+        return;
+      }
 
       if (res?.tip) {
         toast.error(res.tip);
@@ -57,10 +62,10 @@ function TaskReward(props: Props) {
           {isInProcessing && (
             <LGButton
               className="w-full h-12 mt-[1.6875rem] text-xl font-poppins"
-              label="Claim Rewards"
-              actived
+              label={item?.claimed ? 'Claimed' : 'Claim Rewards'}
+              actived={!item?.claimed && item?.claimable}
               loading={isClaiming}
-              disabled={!item?.id}
+              disabled={!item?.claimable}
               onClick={onClaim}
             />
           )}
