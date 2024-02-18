@@ -139,9 +139,15 @@ export function queryEventDetailsAPI(id: string): Promise<{ campaign: FullEventI
   return http.get('/api/campaigns/detail', { params: { campaign_id: id } });
 }
 
+export interface ParticipantsItem {
+  avatar_url: string;
+  user_id: string;
+  username: string;
+}
+
 export function queryEventParticipantsAPI(
   params: PageQueryDto & { campaign_id: string },
-): Promise<PageResDTO<EventItem>> {
+): Promise<PageResDTO<ParticipantsItem>> {
   return http.get('/api/campaigns/participants', { params });
 }
 
