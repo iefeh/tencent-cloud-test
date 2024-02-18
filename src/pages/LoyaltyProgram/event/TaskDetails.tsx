@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import HotBanner from './components/HotBanner';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -47,6 +48,14 @@ export default function TaskDetails(props: Props) {
       </div>
 
       <Divider className="my-[2.625rem]" />
+
+      {item?.image_url && (
+        <>
+          <HotBanner item={item} />
+
+          <Divider className="my-[2.625rem]" />
+        </>
+      )}
 
       <EventTasks item={item} updateTasks={onRefresh} />
 

@@ -25,6 +25,7 @@ export default function Rewards(props: Props) {
 
         <div className="pt-[1.375rem] pr-[2.375rem] pb-[2.25rem] pl-[2.1875rem] w-full flex flex-col justify-between gap-5 relative border-t-1 border-basic-gray">
           <Image src={rewardBgImg} alt="" fill />
+          {/* <div>{JSON.stringify(item?.claim_settings?.reward_accelerators || [])}</div> */}
 
           {(item?.rewards || []).map((reward, index) => (
             <div
