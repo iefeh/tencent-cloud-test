@@ -50,7 +50,7 @@ function TaskReward(props: Props) {
       <div className="font-semakin text-2xl">Rewards</div>
 
       <div className="overflow-hidden rounded-[0.625rem] border-1 border-basic-gray mt-7">
-        <Countdown end={item?.end_time} />
+        <Countdown end={item?.end_time} key={item?.end_time || 'end_time'} />
 
         <div className="px-5 pt-[1.625rem] pb-10">
           <MyRanking points={userInfo?.moon_beam} className="rounded-[0.625rem]" />
