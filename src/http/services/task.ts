@@ -117,6 +117,23 @@ export interface EventItem {
   rewards: EventReward[];
 }
 
+export interface EventRewardAcceleratorProperty {
+  reward_bonus: number;
+  support_stacking: boolean;
+  min_hold_duration: number;
+  nft_market_url: string;
+  reward_bonus_moon_beam: number;
+}
+
+export interface EventRewardAccelerator {
+  id: string;
+  type: string;
+  name: string;
+  description: string;
+  image_url: string;
+  properties: EventRewardAcceleratorProperty;
+}
+
 export interface FullEventItem extends EventItem {
   description: string;
   claimable: boolean;
@@ -124,6 +141,7 @@ export interface FullEventItem extends EventItem {
   claim_settings: {
     require_authorization: string;
     success_message: string;
+    reward_accelerators: EventRewardAccelerator[];
   };
 }
 

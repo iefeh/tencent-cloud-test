@@ -99,7 +99,7 @@ export default function SeasonalCampaigns() {
               <div className="flex flex-col justify-between flex-1">
                 <div className="text-xl mt-8">{task.name}</div>
 
-                <div className="mt-10 flex flex-wrap gap-[3.125rem]">
+                <div className="mt-10 flex flex-wrap gap-[2rem]">
                   {task.rewards.map((reward, ri) => {
                     return (
                       <div key={ri} className="flex items-center">

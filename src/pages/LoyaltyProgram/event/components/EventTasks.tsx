@@ -270,7 +270,7 @@ function EventTasks(props: EventTaskProps) {
         </div>
       </div>
 
-      {(item?.tasks || []).map((task, index) => (
+      {tasks.map((task, index) => (
         <Task key={`${task.id}_${task.achieved}`} task={task} />
       ))}
     </div>
