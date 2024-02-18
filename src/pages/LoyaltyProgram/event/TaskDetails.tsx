@@ -21,7 +21,7 @@ interface Props {
 export default function TaskDetails(props: Props) {
   const { item, onRefresh } = props;
   const endTime = item?.end_time
-    ? dayjs(item.end_time).tz('Asia/Singapore').format('MMMM DD, YYYY, hh:mm A zzz')
+    ? dayjs(item.end_time).tz(dayjs.tz.guess()).format('MMMM DD, YYYY, hh:mm A zzz')
     : '--';
 
   return (
