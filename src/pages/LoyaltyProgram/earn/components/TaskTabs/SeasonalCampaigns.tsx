@@ -140,14 +140,21 @@ export default function SeasonalCampaigns() {
 
       <Select
         items={EVENT_STATUS_OPTIONS}
-        className="max-w-[10rem] absolute right-0 -top-14 -translate-y-full"
+        className="max-w-[10rem] absolute right-0 -top-14 -translate-y-full font-poppins"
         classNames={{ trigger: 'p-0 h-auto !bg-transparent' }}
         aria-label="event status"
         value={eventStatus}
         defaultSelectedKeys={['all']}
         onSelectionChange={onStatusChange}
       >
-        {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+        {(item) => (
+          <SelectItem
+            key={item.value}
+            className="data-[hover=true]:text-basic-yellow data-[selected=true]:text-basic-yellow"
+          >
+            {item.label}
+          </SelectItem>
+        )}
       </Select>
 
       {tasks.length < 1 && !loading && (
