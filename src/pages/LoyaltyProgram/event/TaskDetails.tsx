@@ -4,6 +4,14 @@ import Descriptions from './components/Descriptions';
 import { FullEventItem } from '@/http/services/task';
 import { EVENT_STATUS_CLASS_DICT } from '@/constant/task';
 import EventTasks from './components/EventTasks';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
 
 interface Props {
   item?: FullEventItem;
@@ -12,6 +20,9 @@ interface Props {
 
 export default function TaskDetails(props: Props) {
   const { item, onRefresh } = props;
+  const endTime = item?.end_time
+    ? dayjs(item.end_time).tz('Asia/Singapore').format('MMMM DD, YYYY, hh:mm A zzz')
+    : '--';
 
   return (
     <div className="w-[56.25rem] pb-[16.5rem]">
@@ -27,7 +38,7 @@ export default function TaskDetails(props: Props) {
 
           <Card className="basic-card">
             <CardBody>
-              <p>End Date of the Event: {item ? item.end_time : '--'}</p>
+              <p>End Date of the Event: {endTime}</p>
             </CardBody>
           </Card>
         </div>
