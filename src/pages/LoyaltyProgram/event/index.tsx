@@ -33,7 +33,9 @@ function LoyaltyEvent() {
     }
   }, 500);
 
-  function onBackClick() {}
+  function onBackClick() {
+    router.push({ pathname: '/LoyaltyProgram/earn', query: { tabKey: 'Seasonal Campaigns' } });
+  }
 
   useEffect(() => {
     queryEventDetails();
