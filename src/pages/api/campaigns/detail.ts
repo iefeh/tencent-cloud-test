@@ -3,7 +3,7 @@ import {createRouter} from "next-connect";
 import getMongoConnection from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import Campaign, {CampaignClaimSettings, CampaignRewardType} from "@/lib/models/Campaign";
+import Campaign, {CampaignClaimSettings, CampaignRewardType, CampaignStatus} from "@/lib/models/Campaign";
 import {enrichUserTasks} from "@/lib/quests/taskEnrichment";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import RewardAccelerator from "@/lib/models/RewardAccelerator";
@@ -43,6 +43,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 });
 
 async function enrichCampaign(userId: string, campaign: any) {
+    setCampaignStatus(campaign);
     await enrichCampaignClaim(userId, campaign);
     await enrichCampaignClaimAccelerators(userId, campaign);
 }
@@ -97,6 +98,18 @@ async function enrichCampaignClaimAccelerators(userId: string, campaign: any) {
         }
         accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
     });
+}
+
+function setCampaignStatus(campaign: any) {
+    if (campaign.start_time > Date.now()) {
+        campaign.status = CampaignStatus.Upcoming;
+        return;
+    }
+    if (campaign.end_time < Date.now()) {
+        campaign.status = CampaignStatus.Ended;
+        return;
+    }
+    campaign.status = CampaignStatus.Ongoing;
 }
 
 // this will run if none of the above matches
