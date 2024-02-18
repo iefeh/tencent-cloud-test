@@ -9,6 +9,7 @@ import { observer } from 'mobx-react-lite';
 import Participants from './components/Participants';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
+import { EventStatus } from '@/constant/task';
 
 interface Props {
   item?: FullEventItem;
@@ -18,6 +19,7 @@ function TaskReward(props: Props) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const { item } = props;
   const [isClaiming, setIsClaiming] = useState(false);
+  const isInProcessing = item?.status === EventStatus.ONGOING;
 
   const onClaim = throttle(async () => {
     if (!userInfo) {
@@ -55,14 +57,16 @@ function TaskReward(props: Props) {
 
           <Rewards item={item} />
 
-          <LGButton
-            className="w-full h-12 mt-[1.6875rem] text-xl font-poppins"
-            label="Claim Rewards"
-            actived
-            loading={isClaiming}
-            disabled={!item?.id}
-            onClick={onClaim}
-          />
+          {isInProcessing && (
+            <LGButton
+              className="w-full h-12 mt-[1.6875rem] text-xl font-poppins"
+              label="Claim Rewards"
+              actived
+              loading={isClaiming}
+              disabled={!item?.id}
+              onClick={onClaim}
+            />
+          )}
         </div>
       </div>
 

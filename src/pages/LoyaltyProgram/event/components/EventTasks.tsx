@@ -3,7 +3,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, cn, useDisclosure } from '@nextui-org/react';
 import { FullEventItem, TaskListItem, verifyEventAPI, prepareEventAPI } from '@/http/services/task';
 import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { MediaType, QuestType } from '@/constant/task';
+import { EventStatus, MediaType, QuestType } from '@/constant/task';
 import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
@@ -34,6 +34,7 @@ interface EventTaskProps {
 
 function EventTasks(props: EventTaskProps) {
   const { item, updateTasks } = props;
+  const isInProcessing = item?.status === EventStatus.ONGOING;
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
 
@@ -257,7 +258,7 @@ function EventTasks(props: EventTaskProps) {
           <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
         </div>
 
-        <TaskButtons task={task} />
+        {isInProcessing && <TaskButtons task={task} />}
       </div>
     );
   };
