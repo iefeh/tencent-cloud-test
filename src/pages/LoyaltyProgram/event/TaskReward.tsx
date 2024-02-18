@@ -1,4 +1,3 @@
-import MyRanking from '@/pages/components/common/MyRanking';
 import Countdown from './components/Countdown';
 import Rewards from './components/Rewards';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -53,8 +52,6 @@ function TaskReward(props: Props) {
         <Countdown end={item?.end_time} key={item?.end_time || 'end_time'} />
 
         <div className="px-5 pt-[1.625rem] pb-10">
-          <MyRanking points={userInfo?.moon_beam} className="rounded-[0.625rem]" />
-
           <Rewards item={item} />
 
           {isInProcessing && (
