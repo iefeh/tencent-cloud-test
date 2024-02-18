@@ -30,7 +30,7 @@ export default function TaskDetails(props: Props) {
 
       <div className="w-full flex justify-between items-center">
         <div className="flex items-center gap-[0.9375rem]">
-          <Card className="basic-card text-basic-yellow">
+          <Card className="basic-card text-basic-yellow shrink-0">
             <CardBody>
               <p>{item && item.status ? EVENT_STATUS_CLASS_DICT[item.status].label : '--'}</p>
             </CardBody>

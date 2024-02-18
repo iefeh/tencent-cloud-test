@@ -51,7 +51,7 @@ export default function ShareButton() {
   return (
     <>
       <Card ref={anchorRef} {...anchorProps} className="basic-card">
-        <CardBody className="flex-row items-center font-poppins-medium text-sm px-4">
+        <CardBody className="flex-row items-center font-poppins-medium text-sm !px-3">
           <Image className="w-[0.9375rem] h-[0.9375rem]" src={shareImg} alt="" />
           <p className="ml-[0.9375rem]">Share</p>
         </CardBody>
