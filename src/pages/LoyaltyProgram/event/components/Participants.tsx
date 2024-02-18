@@ -1,4 +1,4 @@
-import { queryEventParticipantsAPI } from '@/http/services/task';
+import { ParticipantsItem, queryEventParticipantsAPI } from '@/http/services/task';
 import { throttle } from 'lodash';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 export default function Participants() {
   const router = useRouter();
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<ParticipantsItem[]>([]);
   const [total, setTotal] = useState(0);
 
   const queryParticipants = throttle(async () => {
@@ -40,7 +40,7 @@ export default function Participants() {
           <Image
             className="avatar bg-black border-2 border-black rounded-full [&+.avatar]:-ml-3 inline-block w-[3.75rem] h-[3.75rem]"
             key={index}
-            src={item.src}
+            src={item.avatar_url}
             alt=""
             width={60}
             height={60}

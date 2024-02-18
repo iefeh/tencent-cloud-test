@@ -42,7 +42,7 @@ function LoyaltyEvent() {
         <title>TaskDetails | Moonveil Entertainment</title>
       </Head>
 
-      <div className="flex gap-[3.125rem] pt-[10.9375rem] relative">
+      <div className="flex gap-[3.125rem] pt-[10.9375rem] pb-32 relative">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
         <TaskReward item={eventDetails} onRefresh={queryEventDetails} />
