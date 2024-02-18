@@ -1,6 +1,5 @@
 import { Card, CardBody, Divider } from '@nextui-org/react';
 import ShareButton from '@/pages/components/common/ShareButton';
-import Tasks from './components/Tasks';
 import Descriptions from './components/Descriptions';
 import { FullEventItem } from '@/http/services/task';
 import { EVENT_STATUS_CLASS_DICT } from '@/constant/task';
