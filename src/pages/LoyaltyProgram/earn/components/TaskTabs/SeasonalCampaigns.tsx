@@ -89,7 +89,7 @@ export default function SeasonalCampaigns() {
                   {EVENT_STATUS_CLASS_DICT[task.status].label}
                 </div>
 
-                {!task.claimed && (
+                {task.claimed && (
                   <div className="absolute bottom-0 left-0 w-full h-10 text-center !leading-10 font-semakin text-lg text-basic-yellow bg-black/70">
                     Claimed
                   </div>
