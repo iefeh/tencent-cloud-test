@@ -57,7 +57,7 @@ export const EVENT_STATUS_CLASS_DICT = {
     class: 'text-basic-yellow pl-[1.1875rem]',
   },
   [EventStatus.ENDED]: {
-    label: 'Completed',
+    label: 'Ended',
     class: 'text-white pl-[1.1875rem]',
   },
 };
@@ -72,7 +72,7 @@ export const EVENT_STATUS_OPTIONS = [
     value: EventStatus.ONGOING,
   },
   {
-    label: 'Completed',
+    label: 'Ended',
     value: EventStatus.ENDED,
   },
   {
