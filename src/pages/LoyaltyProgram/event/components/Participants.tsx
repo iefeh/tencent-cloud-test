@@ -38,7 +38,7 @@ export default function Participants() {
       <div className="overflow-hidden rounded-[0.625rem] border-1 border-basic-gray mt-7 flex">
         {items.map((item, index) => (
           <Image
-            className="avatar bg-black border-2 border-black rounded-full [&+.avatar]:-ml-3 inline-block w-[3.75rem] h-[3.75rem]"
+            className="avatar bg-black border-2 border-black rounded-full [&+.avatar]:-ml-3 inline-block w-[3.75rem] h-[3.75rem] object-cover"
             key={index}
             src={item.avatar_url}
             alt=""
