@@ -144,3 +144,12 @@ export function queryEventParticipantsAPI(
 ): Promise<PageResDTO<EventItem>> {
   return http.get('/api/campaigns/participants', { params });
 }
+
+export interface ClaimEventRewardResDTO {
+  claimed: boolean;
+  tip: string;
+}
+
+export function claimEventRewardAPI(id: string): Promise<ClaimEventRewardResDTO | null> {
+  return http.post('/api/campaigns/claim', JSON.stringify({ campaign_id: id }));
+}
