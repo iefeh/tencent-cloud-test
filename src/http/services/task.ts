@@ -1,4 +1,4 @@
-import { QuestType } from '@/constant/task';
+import { EventStatus, QuestType } from '@/constant/task';
 import http from '../index';
 
 export interface TaskProperties {
@@ -95,4 +95,74 @@ export function taskDetailsAPI(params: { quest_id: string }): Promise<{ quest: T
 
 export function queryInviteCodeAPI(): Promise<{ invite_code: string }> {
   return http.get('/api/users/invite');
+}
+
+export interface EventReward {
+  type: string;
+  name: string;
+  image_small: string;
+  image_medium: string;
+  amount: number;
+  badge_id: string;
+}
+
+export interface EventItem {
+  id: string;
+  name: string;
+  image_url: string;
+  start_time: number;
+  end_time: number;
+  status: EventStatus;
+  claimed: boolean;
+  rewards: EventReward[];
+}
+
+export interface FullEventItem extends EventItem {
+  description: string;
+  claimable: boolean;
+  tasks: TaskListItem[];
+  claim_settings: {
+    require_authorization: string;
+    success_message: string;
+  };
+}
+
+export interface EventPageQueryDTO extends PageQueryDto {
+  campaign_status?: EventStatus;
+}
+
+export function queryEventListAPI(params: EventPageQueryDTO): Promise<PageResDTO<EventItem>> {
+  return http.get('/api/campaigns/list', { params });
+}
+
+export function queryEventDetailsAPI(id: string): Promise<{ campaign: FullEventItem }> {
+  return http.get('/api/campaigns/detail', { params: { campaign_id: id } });
+}
+
+export function queryEventParticipantsAPI(
+  params: PageQueryDto & { campaign_id: string },
+): Promise<PageResDTO<EventItem>> {
+  return http.get('/api/campaigns/participants', { params });
+}
+
+export interface ClaimEventRewardResDTO {
+  claimed: boolean;
+  tip: string;
+}
+
+export function claimEventRewardAPI(id: string): Promise<ClaimEventRewardResDTO | null> {
+  return http.post('/api/campaigns/claim', JSON.stringify({ campaign_id: id }));
+}
+
+interface EventReqDTO {
+  campaign_id: string;
+  task_id: string;
+}
+
+export function verifyEventAPI(data: EventReqDTO): Promise<VerifyTaskResDTO> {
+  return http.post('/api/campaigns/tasks/verify', JSON.stringify(data));
+}
+
+export function prepareEventAPI(data: EventReqDTO): Promise<void> {
+  return http.post('/api/campaigns/tasks/prepare', JSON.stringify(data));
 }

@@ -15,6 +15,13 @@ interface PageQueryDto {
   page_size: number;
 }
 
+interface PageResDTO<T> {
+  total: number;
+  page_num: string;
+  page_size: string;
+  [key: string]: T[] | null;
+}
+
 interface Dict<T> {
   [key: string]: T;
 }

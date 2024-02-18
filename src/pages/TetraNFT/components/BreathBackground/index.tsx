@@ -9,6 +9,7 @@ export default function BreathBackground() {
   const bgRef = useRef<HTMLDivElement>(null);
 
   function runAni() {
+    if (!window.luxy) return;
     const y = window.luxy.getWrapperTranslateY();
     const screenHeight = document.documentElement.clientHeight;
     if (y > screenHeight && y < screenHeight * 2 && bgRef.current) {
