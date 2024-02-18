@@ -4,13 +4,15 @@ import Tasks from './components/Tasks';
 import Descriptions from './components/Descriptions';
 import { FullEventItem } from '@/http/services/task';
 import { EVENT_STATUS_CLASS_DICT } from '@/constant/task';
+import EventTasks from './components/EventTasks';
 
 interface Props {
   item?: FullEventItem;
+  onRefresh?: () => void;
 }
 
 export default function TaskDetails(props: Props) {
-  const { item } = props;
+  const { item, onRefresh } = props;
 
   return (
     <div className="w-[56.25rem] pb-[16.5rem]">
@@ -36,7 +38,7 @@ export default function TaskDetails(props: Props) {
 
       <Divider className="my-[2.625rem]" />
 
-      <Tasks items={item && item.tasks ? item.tasks : []} />
+      <EventTasks item={item} updateTasks={onRefresh} />
 
       <Descriptions content={item ? item.description : '--'} />
     </div>

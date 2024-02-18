@@ -153,3 +153,16 @@ export interface ClaimEventRewardResDTO {
 export function claimEventRewardAPI(id: string): Promise<ClaimEventRewardResDTO | null> {
   return http.post('/api/campaigns/claim', JSON.stringify({ campaign_id: id }));
 }
+
+interface EventReqDTO {
+  campaign_id: string;
+  task_id: string;
+}
+
+export function verifyEventAPI(data: EventReqDTO): Promise<VerifyTaskResDTO> {
+  return http.post('/api/campaigns/tasks/verify', JSON.stringify(data));
+}
+
+export function prepareEventAPI(data: EventReqDTO): Promise<void> {
+  return http.post('/api/campaigns/tasks/prepare', JSON.stringify(data));
+}

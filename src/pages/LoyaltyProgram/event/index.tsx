@@ -2,12 +2,15 @@ import Head from 'next/head';
 import TaskDetails from './TaskDetails';
 import TaskReward from './TaskReward';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FullEventItem, queryEventDetailsAPI } from '@/http/services/task';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
-export default function LoyaltyTask() {
+function LoyaltyEvent() {
+  const { userInfo } = useContext(MobxContext);
   const router = useRouter();
   const [eventDetails, setEventDetails] = useState<FullEventItem | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -30,7 +33,7 @@ export default function LoyaltyTask() {
 
   useEffect(() => {
     queryEventDetails();
-  }, []);
+  }, [userInfo]);
 
   return (
     <section id="luxy" className="w-full flex flex-col px-[16.25rem] [&>div]:mx-auto">
@@ -39,10 +42,12 @@ export default function LoyaltyTask() {
       </Head>
 
       <div className="flex gap-[3.125rem] pt-[10.9375rem]">
-        <TaskDetails item={eventDetails} />
+        <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
         <TaskReward item={eventDetails} />
       </div>
     </section>
   );
 }
+
+export default observer(LoyaltyEvent);
