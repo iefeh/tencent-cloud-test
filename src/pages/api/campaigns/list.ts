@@ -20,10 +20,10 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
     await getMongoConnection();
     const pagination = await paginationCampaigns(pageNum, pageSize, campaign_status as CampaignStatus);
-    if (pagination.total == 0) {
+    if (pagination.total == 0 || pagination.data.length == 0) {
         // 当前没有匹配的数据
         res.json(response.success({
-            total: 0,
+            total: pagination.total,
             page_num: pageNum,
             page_size: pageSize,
             campaigns: pagination.data,
