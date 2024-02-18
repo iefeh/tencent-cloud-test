@@ -1,22 +1,26 @@
-import { ParticipantsItem, queryEventParticipantsAPI } from '@/http/services/task';
+import { FullEventItem, ParticipantsItem, queryEventParticipantsAPI } from '@/http/services/task';
 import { throttle } from 'lodash';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-export default function Participants() {
+interface Props {
+  item?: FullEventItem;
+}
+
+export default function Participants(props: Props) {
+  const { item } = props;
   const router = useRouter();
   const [items, setItems] = useState<ParticipantsItem[]>([]);
   const [total, setTotal] = useState(0);
 
   const queryParticipants = throttle(async () => {
-    const id = router.query.id as string;
-    if (!id) return;
+    if (!item?.id) return;
 
     const params = {
       page_num: 1,
       page_size: 9,
-      campaign_id: id,
+      campaign_id: item.id,
     };
 
     try {
@@ -29,7 +33,7 @@ export default function Participants() {
 
   useEffect(() => {
     queryParticipants();
-  }, []);
+  }, [item]);
 
   return (
     <div className="w-[28.125rem] mt-14">

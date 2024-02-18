@@ -72,7 +72,7 @@ function TaskReward(props: Props) {
         </div>
       </div>
 
-      <Participants />
+      <Participants item={item} />
     </div>
   );
 }

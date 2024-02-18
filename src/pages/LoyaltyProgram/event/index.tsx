@@ -15,7 +15,6 @@ function LoyaltyEvent() {
   const router = useRouter();
   const [eventDetails, setEventDetails] = useState<FullEventItem | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [key, setKey] = useState('0');
 
   const queryEventDetails = throttle(async (noLoading = false) => {
     const id = router.query.id as string;
@@ -26,7 +25,6 @@ function LoyaltyEvent() {
     try {
       const res = await queryEventDetailsAPI(id);
       setEventDetails(res.campaign || undefined);
-      setKey(Math.random().toString().substring(2));
     } catch (error: any) {
       toast.error(error?.message || error);
     } finally {
@@ -47,7 +45,7 @@ function LoyaltyEvent() {
       <div className="flex gap-[3.125rem] pt-[10.9375rem] pb-32 relative">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
-        <TaskReward key={key} item={eventDetails} onRefresh={queryEventDetails} />
+        <TaskReward item={eventDetails} onRefresh={queryEventDetails} />
 
         {loading && <CircularLoading />}
       </div>
