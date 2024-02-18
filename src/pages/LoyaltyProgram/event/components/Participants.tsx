@@ -22,9 +22,6 @@ export default function Participants() {
     try {
       const res = await queryEventParticipantsAPI(params);
       const list = res.participants || [];
-      if (list.length === 0) {
-        list.push(...Array(9).fill({ src: '/img/profile/mb.png' }));
-      }
       setItems(list);
       setTotal(res.total || 0);
     } catch (error) {}
