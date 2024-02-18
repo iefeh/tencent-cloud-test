@@ -8,6 +8,7 @@ import { EventItem, EventPageQueryDTO, queryEventListAPI } from '@/http/services
 import { toast } from 'react-toastify';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { EVENT_STATUS_CLASS_DICT, EVENT_STATUS_OPTIONS } from '@/constant/task';
+import teamsImg from 'img/loyalty/task/teams.png';
 
 export default function SeasonalCampaigns() {
   const router = useRouter();
@@ -119,21 +120,23 @@ export default function SeasonalCampaigns() {
         {loading && <CircularLoading />}
       </div>
 
-      <Pagination
-        className="mt-[4.6875rem] mb-[8.75rem]"
-        showControls
-        total={total}
-        initialPage={1}
-        renderItem={PaginationRenderItem}
-        classNames={{
-          wrapper: 'gap-3',
-          item: 'w-12 h-12 font-poppins-medium text-base text-white',
-        }}
-        disableCursorAnimation
-        radius="full"
-        variant="light"
-        onChange={onPagiChange}
-      />
+      {tasks.length > 0 && (
+        <Pagination
+          className="mt-[4.6875rem] mb-[8.75rem]"
+          showControls
+          total={total}
+          initialPage={1}
+          renderItem={PaginationRenderItem}
+          classNames={{
+            wrapper: 'gap-3',
+            item: 'w-12 h-12 font-poppins-medium text-base text-white',
+          }}
+          disableCursorAnimation
+          radius="full"
+          variant="light"
+          onChange={onPagiChange}
+        />
+      )}
 
       <Select
         items={EVENT_STATUS_OPTIONS}
@@ -146,6 +149,14 @@ export default function SeasonalCampaigns() {
       >
         {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
       </Select>
+
+      {tasks.length < 1 && !loading && (
+        <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+          <p>More exciting events coming soon.</p>
+          <p>Stay tuned!</p>
+          <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
+        </div>
+      )}
     </div>
   );
 }
