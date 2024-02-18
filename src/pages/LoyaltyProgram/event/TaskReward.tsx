@@ -1,4 +1,3 @@
-import MyRanking from '@/pages/components/common/MyRanking';
 import Countdown from './components/Countdown';
 import Rewards from './components/Rewards';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -13,11 +12,12 @@ import { EventStatus } from '@/constant/task';
 
 interface Props {
   item?: FullEventItem;
+  onRefresh?: () => void;
 }
 
 function TaskReward(props: Props) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
-  const { item } = props;
+  const { item, onRefresh } = props;
   const [isClaiming, setIsClaiming] = useState(false);
   const isInProcessing = item?.status === EventStatus.ONGOING;
 
@@ -33,7 +33,11 @@ function TaskReward(props: Props) {
 
     try {
       const res = await claimEventRewardAPI(item.id);
-      if (res?.claimed) return;
+      if (res?.claimed) {
+        toast.success(res?.tip || 'You have claimed rewards.');
+        onRefresh?.();
+        return;
+      }
 
       if (res?.tip) {
         toast.error(res.tip);
@@ -53,17 +57,15 @@ function TaskReward(props: Props) {
         <Countdown end={item?.end_time} key={item?.end_time || 'end_time'} />
 
         <div className="px-5 pt-[1.625rem] pb-10">
-          <MyRanking points={userInfo?.moon_beam} className="rounded-[0.625rem]" />
-
           <Rewards item={item} />
 
           {isInProcessing && (
             <LGButton
               className="w-full h-12 mt-[1.6875rem] text-xl font-poppins"
-              label="Claim Rewards"
-              actived
+              label={item?.claimed ? 'Claimed' : 'Claim Rewards'}
+              actived={!item?.claimed && item?.claimable}
               loading={isClaiming}
-              disabled={!item?.id}
+              disabled={!item?.claimable}
               onClick={onClaim}
             />
           )}
