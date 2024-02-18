@@ -131,7 +131,7 @@ export interface EventRewardAccelerator {
   name: string;
   description: string;
   image_url: string;
-  properties: EventRewardAcceleratorProperty[];
+  properties: EventRewardAcceleratorProperty;
 }
 
 export interface FullEventItem extends EventItem {
