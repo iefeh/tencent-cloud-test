@@ -21,7 +21,11 @@ export default function Participants() {
 
     try {
       const res = await queryEventParticipantsAPI(params);
-      setItems(res.participants || []);
+      const list = res.participants || [];
+      if (list.length === 0) {
+        list.push(...Array(9).fill({ src: '/img/profile/mb.png' }));
+      }
+      setItems(list);
       setTotal(res.total || 0);
     } catch (error) {}
   }, 500);
@@ -36,7 +40,14 @@ export default function Participants() {
 
       <div className="overflow-hidden rounded-[0.625rem] border-1 border-basic-gray mt-7 flex">
         {items.map((item, index) => (
-          <Image key={index} src={item.src} alt="" width={64} height={64} />
+          <Image
+            className="avatar bg-black border-2 border-black rounded-full [&+.avatar]:-ml-3 inline-block w-[3.75rem] h-[3.75rem]"
+            key={index}
+            src={item.src}
+            alt=""
+            width={60}
+            height={60}
+          />
         ))}
       </div>
     </div>
