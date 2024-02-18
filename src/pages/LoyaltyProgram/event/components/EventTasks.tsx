@@ -1,17 +1,12 @@
 import Image from 'next/image';
-import mbImg from 'img/loyalty/earn/mb.png';
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, cn, useDisclosure } from '@nextui-org/react';
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@nextui-org/react';
 import { FullEventItem, TaskListItem, verifyEventAPI, prepareEventAPI } from '@/http/services/task';
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { EventStatus, MediaType, QuestType } from '@/constant/task';
-import closeImg from 'img/loyalty/earn/close.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
-import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
-import { useCountdown } from '@/pages/LoyaltyProgram/event/components/Countdown';
-import dayjs from 'dayjs';
 import useConnect from '@/hooks/useConnect';
 
 interface VerifyTexts {

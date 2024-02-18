@@ -8,6 +8,7 @@ import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 function LoyaltyEvent() {
   const { userInfo } = useContext(MobxContext);
@@ -41,10 +42,12 @@ function LoyaltyEvent() {
         <title>TaskDetails | Moonveil Entertainment</title>
       </Head>
 
-      <div className="flex gap-[3.125rem] pt-[10.9375rem]">
+      <div className="flex gap-[3.125rem] pt-[10.9375rem] relative">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
         <TaskReward item={eventDetails} onRefresh={queryEventDetails} />
+
+        {loading && <CircularLoading />}
       </div>
     </section>
   );
