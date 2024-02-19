@@ -51,7 +51,9 @@ function TaskReward(props: Props) {
 
   return (
     <div className="w-[28.125rem]">
-      <div className="font-semakin text-2xl">&nbsp;</div>
+      <div className="font-semakin text-2xl" aria-label="empty">
+        &nbsp;
+      </div>
 
       <div className="overflow-hidden rounded-[0.625rem] border-1 border-basic-gray mt-7">
         <Countdown end={item?.end_time} key={item?.end_time || 'end_time'} />
