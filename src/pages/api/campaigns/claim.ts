@@ -167,7 +167,6 @@ async function constructUserMbReward(userId: string, campaign: ICampaign): Promi
 // 构建用户活动的加成MB奖励
 async function constructUserAcceleratedMbReward(userId: string, campaign: ICampaign, baseMbReward: number): Promise<any[]> {
     // 检查活动奖励加速设置
-    console.log(campaign.claim_settings);
     const rewardAccelerators = campaign.claim_settings.reward_accelerators;
     if (!rewardAccelerators || rewardAccelerators.length === 0) {
         return [];
@@ -198,9 +197,12 @@ async function constructUserAcceleratedMbReward(userId: string, campaign: ICampa
                     bonus_moon_beam: 0,
                 };
                 const holderReward = await nftHolderAccelerator.accelerate(reward);
+                logger.info(`User ${userId} accelerated ${holderReward.bonus_moon_beam} MB from campaign ${campaign.id} accelerator ${accelerator.id}.`);
+                if (holderReward.bonus_moon_beam == 0) {
+                    continue;
+                }
                 // 限制钱包参与同一个活动的加速器只能领取一次
                 const taint = `${campaign.id},${accelerator.id},wallet,${wallet}`
-                logger.info(`User ${userId} accelerated ${holderReward.bonus_moon_beam} MB from campaign ${campaign.id} accelerator ${accelerator.id}.`);
                 audits.push(new UserMoonBeamAudit({
                     user_id: userId,
                     type: UserMoonBeamAuditType.CampaignBonus,
