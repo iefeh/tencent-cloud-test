@@ -44,11 +44,11 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
                 tip: "Verification is under a 30s waiting period, please try again later.",
             }));
         }
-        await claimCampaignRewards(userId, campaign);
+        const totalMB = await claimCampaignRewards(userId, campaign);
         // 检查用户是否已经完成所有任务
         res.json(response.success({
             claimed: true,
-            tip: "You have claimed rewards.",
+            tip: totalMB ? `You have claimed rewards, included ${totalMB} MB.` : "You have claimed rewards.",
         }));
     } catch (error) {
         logger.error(error);
@@ -118,7 +118,7 @@ async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICamp
     return campaign;
 }
 
-async function claimCampaignRewards(userId: string, campaign: ICampaign) {
+async function claimCampaignRewards(userId: string, campaign: ICampaign): Promise<number> {
     const audits = await constructUserMbReward(userId, campaign);
     // 计算用户最终获得的总的MB奖励
     const totalMbDelta = audits.reduce((acc, audit) => acc + audit.moon_beam_delta, 0);
@@ -149,6 +149,7 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign) {
         // 更新用户的MB余额
         await User.updateOne({user_id: userId}, {$inc: {moon_beam: totalMbDelta}}, opts);
     });
+    return totalMbDelta;
 }
 
 // 构建用户活动的MB奖励
