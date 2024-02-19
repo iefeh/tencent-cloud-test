@@ -141,7 +141,7 @@ export default function SeasonalCampaigns() {
       <Select
         items={EVENT_STATUS_OPTIONS}
         className="max-w-[10rem] absolute right-0 -top-14 -translate-y-full font-poppins"
-        classNames={{ trigger: 'p-0 h-auto !bg-transparent' }}
+        classNames={{ trigger: 'p-0 h-auto !bg-transparent', value: 'text-right pr-3' }}
         aria-label="event status"
         value={eventStatus}
         defaultSelectedKeys={['all']}
