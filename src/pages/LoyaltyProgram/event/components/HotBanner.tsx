@@ -33,7 +33,7 @@ export default function HotBanner(props: Props) {
       >
         {banners.map((item, index) => (
           <SwiperSlide key={index} className="relative">
-            <Image className="object-cover" src={item} alt="" fill />
+            <Image className="object-cover" src={item} alt="" fill sizes='100%' />
           </SwiperSlide>
         ))}
 
