@@ -50,10 +50,6 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             claimed: true,
             tip: totalMB ? `You have claimed rewards, included ${totalMB} MB.` : "You have claimed rewards.",
         }));
-    } catch (error) {
-        logger.error(error);
-        Sentry.captureException(error);
-        res.status(500).json(defaultErrorResponse);
     } finally {
         // 释放任务锁
         await redis.del(lockKey);
