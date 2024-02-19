@@ -79,6 +79,7 @@ function EventTasks(props: EventTaskProps) {
     const isNeedConnect = !!task.properties.url;
     const [verifiable, setVerifiable] = useState(!verified && (!task.properties.is_prepared || achieved));
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [hasVerifyCD, setHasVerifyCD] = useState(false);
 
     const connectType = task.authorization || '';
     const {
@@ -136,13 +137,11 @@ function EventTasks(props: EventTaskProps) {
         if (!res.verified) {
           if (res.require_authorization) {
             onOpen();
+            setVerifiable(true);
           } else if (res.tip) {
             toast.error(res.tip);
+            setHasVerifyCD(true);
           }
-
-          setTimeout(() => {
-            setVerifiable(true);
-          }, 30000);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTasks?.();
@@ -195,7 +194,13 @@ function EventTasks(props: EventTaskProps) {
           label={verified ? 'Verified' : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
+          hasCD={hasVerifyCD}
+          cd={30}
           onClick={onVerify}
+          onCDOver={() => {
+            setVerifiable(true);
+            setHasVerifyCD(false);
+          }}
         />
 
         <Modal
