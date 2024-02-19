@@ -57,8 +57,8 @@ function EventTasks(props: EventTaskProps) {
           break;
         case QuestType.ASTRARK_PRE_REGISTER:
           item.connectTexts = {
-            label: 'Start',
-            finishedLable: 'Started',
+            label: 'Participate',
+            finishedLable: 'Participated',
           };
           break;
       }

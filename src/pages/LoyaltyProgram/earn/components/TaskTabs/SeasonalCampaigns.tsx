@@ -33,7 +33,7 @@ export default function SeasonalCampaigns() {
       const res = await queryEventListAPI(params);
       const { campaigns, total } = res;
       setTasks(campaigns || []);
-      setTotal(total || 0);
+      setTotal(Math.ceil((total || 0) / (pagiParams.page_size || 9)));
     } catch (error: any) {
       toast.error(error?.message || error);
     } finally {

@@ -76,7 +76,7 @@ export default function Rewards(props: Props) {
               <Tooltip
                 key={index}
                 content={
-                  <div className="px-8 py-4 max-w-md">
+                  <div className="px-8 py-4 max-w-lg">
                     <div className="font-semakin text-2xl text-basic-yellow text-center">NFT Holder Bonus</div>
                     <div className="text-base">
                       <p className="mt-4">
@@ -91,10 +91,11 @@ export default function Rewards(props: Props) {
 
                             <div>
                               <span>{acc.name}</span>, +{acc.properties.reward_bonus * 100}%,{' '}
+                              {acc.properties.reward_bonus_moon_beam}MB per item,{' '}
                               <a className="underline" href={acc.properties.nft_market_url} target="_blank">
-                                {acc.properties.reward_bonus_moon_beam}MB
-                              </a>{' '}
-                              per item
+                                Go get
+                              </a>
+                              !
                             </div>
                           </li>
                         ))}
