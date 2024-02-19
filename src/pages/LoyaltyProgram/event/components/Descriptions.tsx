@@ -1,3 +1,4 @@
+import ShadowDescription from '@/pages/components/common/ShadowDom/ShadowDescription';
 import { Divider } from '@nextui-org/react';
 import { useState } from 'react';
 
@@ -14,7 +15,7 @@ export default function Descriptions(props: Props) {
 
       <Divider className="my-6" />
 
-      <div dangerouslySetInnerHTML={{ __html: content || '--' }}></div>
+      <ShadowDescription content={content || '--'} />
     </div>
   );
 }
