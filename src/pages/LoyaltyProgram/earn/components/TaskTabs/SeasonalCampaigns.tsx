@@ -22,7 +22,7 @@ export default function SeasonalCampaigns() {
   const [loading, setLoading] = useState(false);
 
   function onTaskClick(task: EventItem) {
-    router.push(`/LoyaltyProgram/event?id=${task.id}`);
+    window.open(`${location.origin}/LoyaltyProgram/event?id=${task.id}`);
   }
 
   const queryTasks = throttle(async (pagiParams: Partial<EventPageQueryDTO> = pagi.current, noLoading = false) => {
@@ -105,7 +105,7 @@ export default function SeasonalCampaigns() {
                     return (
                       <div key={ri} className="flex items-center">
                         <div className="w-8 h-8 relative">
-                          <Image className="object-contain" src={reward.image_small} alt="" fill />
+                          <Image className="object-contain" src={reward.image_small} alt="" fill sizes="100%" />
                         </div>
                         <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{reward.amount}</span>
                       </div>
@@ -141,7 +141,7 @@ export default function SeasonalCampaigns() {
       <Select
         items={EVENT_STATUS_OPTIONS}
         className="max-w-[10rem] absolute right-0 -top-14 -translate-y-full font-poppins"
-        classNames={{ trigger: 'p-0 h-auto !bg-transparent' }}
+        classNames={{ trigger: 'p-0 h-auto !bg-transparent', value: 'text-right pr-3' }}
         aria-label="event status"
         value={eventStatus}
         defaultSelectedKeys={['all']}

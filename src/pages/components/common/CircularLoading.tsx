@@ -16,7 +16,7 @@ export default function CircularLoading() {
   return (
     <div ref={nodeRef} className="absolute left-0 top-0 w-full h-full flex items-center justify-center backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999]">
       <div className="relative w-[8.125rem] h-[8.125rem] text-center leading-[8.125rem]" aria-label="Loading...">
-        <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill />
+        <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill sizes='100%' />
         <span className="relative z-0 font-semakin text-basic-yellow">Loading</span>
       </div>
     </div>

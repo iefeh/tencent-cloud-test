@@ -138,6 +138,7 @@ function RegularTasks() {
     const isNeedConnect = !!task.properties.url;
     const [verifiable, setVerifiable] = useState(verified ? canReverify : !task.properties.is_prepared || achieved);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [hasVerifyCD, setHasVerifyCD] = useState(false);
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -205,13 +206,11 @@ function RegularTasks() {
         if (!res.verified) {
           if (res.require_authorization) {
             onOpen();
+            setVerifiable(true);
           } else if (res.tip) {
             toast.error(res.tip);
+            setHasVerifyCD(true);
           }
-
-          setTimeout(() => {
-            setVerifiable(true);
-          }, 30000);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTask();
@@ -266,7 +265,13 @@ function RegularTasks() {
           label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
+          hasCD={hasVerifyCD}
+          cd={30}
           onClick={onVerify}
+          onCDOver={() => {
+            setVerifiable(true);
+            setHasVerifyCD(false);
+          }}
         />
 
         <Modal

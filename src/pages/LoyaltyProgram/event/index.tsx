@@ -44,7 +44,7 @@ function LoyaltyEvent() {
   return (
     <section id="luxy" className="w-full flex flex-col px-[16.25rem] [&>div]:mx-auto">
       <Head>
-        <title>TaskDetails | Moonveil Entertainment</title>
+        <title>Event Details | Moonveil Entertainment</title>
       </Head>
 
       <div className="text-base pt-[10.9375rem] !ml-0">

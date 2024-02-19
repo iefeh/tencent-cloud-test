@@ -12,7 +12,7 @@ export default function TaskTabs() {
       content: <RegularTasks />,
     },
     {
-      key: 'Seasonal Campaigns',
+      key: 'Events',
       content: <SeasonalCampaigns />,
     },
   ];
