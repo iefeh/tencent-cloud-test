@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { Pagination, Select, SelectItem, cn } from '@nextui-org/react';
 import PaginationRenderItem from './components/PaginationRenderItem';
-import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { throttle } from 'lodash';
 import { EventItem, EventPageQueryDTO, queryEventListAPI } from '@/http/services/task';
@@ -11,7 +10,6 @@ import { EVENT_STATUS_CLASS_DICT, EVENT_STATUS_OPTIONS } from '@/constant/task';
 import teamsImg from 'img/loyalty/task/teams.png';
 
 export default function SeasonalCampaigns() {
-  const router = useRouter();
   const pagi = useRef<EventPageQueryDTO>({
     page_num: 1,
     page_size: 9,

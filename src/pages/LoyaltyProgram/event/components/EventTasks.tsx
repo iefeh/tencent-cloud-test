@@ -137,11 +137,11 @@ function EventTasks(props: EventTaskProps) {
         if (!res.verified) {
           if (res.require_authorization) {
             onOpen();
-            setVerifiable(true);
           } else if (res.tip) {
             toast.error(res.tip);
-            setHasVerifyCD(true);
           }
+
+          setHasVerifyCD(true);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTasks?.();
