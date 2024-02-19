@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { Divider } from '@nextui-org/react';
 
 function LoyaltyEvent() {
   const { userInfo } = useContext(MobxContext);
@@ -32,6 +33,10 @@ function LoyaltyEvent() {
     }
   }, 500);
 
+  function onBackClick() {
+    router.push({ pathname: '/LoyaltyProgram/earn', query: { tabKey: 'Seasonal Campaigns' } });
+  }
+
   useEffect(() => {
     queryEventDetails();
   }, [userInfo]);
@@ -42,7 +47,16 @@ function LoyaltyEvent() {
         <title>TaskDetails | Moonveil Entertainment</title>
       </Head>
 
-      <div className="flex gap-[3.125rem] pt-[10.9375rem] pb-32 relative">
+      <div className="text-base pt-[10.9375rem] !ml-0">
+        <span className="text-[#666666] hover:text-white transition-colors cursor-pointer" onClick={onBackClick}>
+          Earn Moon Beams &gt;{' '}
+        </span>
+        <span>Event Details</span>
+      </div>
+
+      <Divider className="mt-[1.1875rem] bg-[rgba(255,255,255,0.1)] mb-8" />
+
+      <div className="flex gap-[3.125rem] pb-32 relative">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
         <TaskReward item={eventDetails} onRefresh={queryEventDetails} />
