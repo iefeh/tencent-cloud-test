@@ -8,6 +8,9 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import useConnect from '@/hooks/useConnect';
+import { useCountdown } from './Countdown';
+import dayjs from 'dayjs';
+import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 
 interface VerifyTexts {
   label: string;
@@ -262,8 +265,32 @@ function EventTasks(props: EventTaskProps) {
     );
   };
 
+  const TaskCountDown = ({ durationTime }: { durationTime: number }) => {
+    const now = Date.now();
+    const [leftText, setLeftText] = useState('--:--:--');
+
+    useCountdown(now + durationTime, now, (time) => {
+      const du = dayjs.duration(time);
+      setLeftText(du.format('HH:mm:ss'));
+
+      if (time <= 0) {
+        updateTasks?.();
+      }
+    });
+
+    return (
+      <div className="border-2 border-[#DAAC74] rounded-[0.625rem] bg-[#070707] flex justify-between px-4 py-2">
+        <Image className="w-[1.125rem] h-[1.125rem]" src={reverifyTipImg} alt="" />
+        <div className="font-poppins text-sm text-[#999] ml-[0.8125rem]">
+          Task will start in <span className="text-[#DAAC74]">{leftText}</span>.
+        </div>
+      </div>
+    );
+  };
+
   const Task = (props: { task: TaskItem }) => {
     const { task } = props;
+    const { started, started_after } = task;
 
     return (
       <div className="flex justify-between items-center py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300">
@@ -278,7 +305,8 @@ function EventTasks(props: EventTaskProps) {
           <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
         </div>
 
-        {isInProcessing && <TaskButtons task={task} />}
+        {isInProcessing &&
+          (started ? <TaskButtons task={task} /> : <TaskCountDown durationTime={started_after || 0} />)}
       </div>
     );
   };
