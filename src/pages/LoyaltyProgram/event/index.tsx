@@ -42,7 +42,7 @@ function LoyaltyEvent() {
   }, [userInfo]);
 
   return (
-    <section id="luxy" className="w-full flex flex-col px-[16.25rem] [&>div]:mx-auto">
+    <section id="luxy" className="w-full flex flex-col px-8 lg:px-[16.25rem] [&>div]:mx-auto">
       <Head>
         <title>Event Details | Moonveil Entertainment</title>
       </Head>
@@ -56,7 +56,7 @@ function LoyaltyEvent() {
 
       <Divider className="mt-[1.1875rem] bg-[rgba(255,255,255,0.1)] mb-8" />
 
-      <div className="flex gap-[3.125rem] pb-32 relative">
+      <div className="flex flex-col lg:flex-row gap-[3.125rem] pb-32 relative max-w-full">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
         <TaskReward item={eventDetails} onRefresh={queryEventDetails} />

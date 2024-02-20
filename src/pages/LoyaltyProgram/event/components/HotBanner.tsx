@@ -12,7 +12,7 @@ export default function HotBanner(props: Props) {
   const banners = [item.image_url];
 
   return (
-    <div className="relative w-[57.8125rem] h-[37.5rem] hidden lg:block">
+    <div className="relative w-[57.8125rem] lg:h-[37.5rem] max-w-full h-72">
       <Swiper
         className="w-full h-full overflow-hidden rounded-[0.625rem] relative"
         modules={[Pagination, Autoplay]}
@@ -33,7 +33,7 @@ export default function HotBanner(props: Props) {
       >
         {banners.map((item, index) => (
           <SwiperSlide key={index} className="relative">
-            <Image className="object-cover" src={item} alt="" fill sizes='100%' />
+            <Image className="object-cover" src={item} alt="" fill sizes="100%" />
           </SwiperSlide>
         ))}
 
