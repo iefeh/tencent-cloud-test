@@ -31,11 +31,6 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
         res.json(response.notFound("Unknown campaign."));
         return;
     }
-    // 丰富任务信息
-    const tasks = campaign.tasks;
-    if (tasks && tasks.length > 0) {
-        await enrichUserTasks(userId, tasks);
-    }
     await enrichCampaign(userId, campaign);
     res.json(response.success({
         campaign: campaign,
@@ -44,14 +39,23 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 async function enrichCampaign(userId: string, campaign: any) {
     setCampaignStatus(campaign);
-    await enrichCampaignClaim(userId, campaign);
+    await enrichCampaignClaimed(userId, campaign);
+    await enrichUserTasks(userId, campaign.tasks, campaign.claimed);
+    await enrichCampaignClaimable(userId, campaign);
     await enrichCampaignClaimAccelerators(userId, campaign);
 }
 
-async function enrichCampaignClaim(userId: string, campaign: any) {
+async function enrichCampaignClaimed(userId: string, campaign: any) {
+    campaign.claimed = false;
+    if (!userId) {
+        return;
+    }
     // 检查当前是否已经领取活动任务奖励
     const claim = await CampaignAchievement.findOne({user_id: userId, campaign_id: campaign.id}, {_id: 0});
     campaign.claimed = !!claim && !!claim.claimed_time;
+}
+
+async function enrichCampaignClaimable(userId: string, campaign: any) {
     if (campaign.claimed) {
         return;
     }

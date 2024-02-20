@@ -18,6 +18,7 @@ import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBea
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
+import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -44,16 +45,15 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
                 tip: "Verification is under a 30s waiting period, please try again later.",
             }));
         }
-        await claimCampaignRewards(userId, campaign);
+        const totalMB = await claimCampaignRewards(userId, campaign);
+        if (totalMB > 0) {
+            await try2AddUser2MBLeaderboard(userId);
+        }
         // 检查用户是否已经完成所有任务
         res.json(response.success({
             claimed: true,
-            tip: "You have claimed rewards.",
+            tip: totalMB ? `You have claimed rewards, included ${totalMB} MB.` : "You have claimed rewards.",
         }));
-    } catch (error) {
-        logger.error(error);
-        Sentry.captureException(error);
-        res.status(500).json(defaultErrorResponse);
     } finally {
         // 释放任务锁
         await redis.del(lockKey);
@@ -118,7 +118,7 @@ async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICamp
     return campaign;
 }
 
-async function claimCampaignRewards(userId: string, campaign: ICampaign) {
+async function claimCampaignRewards(userId: string, campaign: ICampaign): Promise<number> {
     const audits = await constructUserMbReward(userId, campaign);
     // 计算用户最终获得的总的MB奖励
     const totalMbDelta = audits.reduce((acc, audit) => acc + audit.moon_beam_delta, 0);
@@ -149,6 +149,7 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign) {
         // 更新用户的MB余额
         await User.updateOne({user_id: userId}, {$inc: {moon_beam: totalMbDelta}}, opts);
     });
+    return totalMbDelta;
 }
 
 // 构建用户活动的MB奖励
@@ -167,7 +168,6 @@ async function constructUserMbReward(userId: string, campaign: ICampaign): Promi
 // 构建用户活动的加成MB奖励
 async function constructUserAcceleratedMbReward(userId: string, campaign: ICampaign, baseMbReward: number): Promise<any[]> {
     // 检查活动奖励加速设置
-    console.log(campaign.claim_settings);
     const rewardAccelerators = campaign.claim_settings.reward_accelerators;
     if (!rewardAccelerators || rewardAccelerators.length === 0) {
         return [];
@@ -198,9 +198,12 @@ async function constructUserAcceleratedMbReward(userId: string, campaign: ICampa
                     bonus_moon_beam: 0,
                 };
                 const holderReward = await nftHolderAccelerator.accelerate(reward);
+                logger.info(`User ${userId} accelerated ${holderReward.bonus_moon_beam} MB from campaign ${campaign.id} accelerator ${accelerator.id}.`);
+                if (holderReward.bonus_moon_beam == 0) {
+                    continue;
+                }
                 // 限制钱包参与同一个活动的加速器只能领取一次
                 const taint = `${campaign.id},${accelerator.id},wallet,${wallet}`
-                logger.info(`User ${userId} accelerated ${holderReward.bonus_moon_beam} MB from campaign ${campaign.id} accelerator ${accelerator.id}.`);
                 audits.push(new UserMoonBeamAudit({
                     user_id: userId,
                     type: UserMoonBeamAuditType.CampaignBonus,
