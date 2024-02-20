@@ -36,6 +36,12 @@ function maskQuestProperty(quests: any[]) {
         // 设置is_prepared标识
         const questImpl = constructQuest(quest)
         quest.properties.is_prepared = questImpl.isPrepared();
+        // 设置当前任务的开始标识
+        quest.started = true;
+        if (quest.start_time && quest.start_time > Date.now()) {
+            quest.started = false;
+            quest.started_after = quest.start_time - Date.now();
+        }
     }
 }
 
