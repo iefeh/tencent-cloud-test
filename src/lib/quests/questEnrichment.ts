@@ -181,6 +181,7 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
             case QuestType.ConnectTwitter:
             case QuestType.FollowOnTwitter:
             case QuestType.RetweetTweet:
+            case QuestType.LikeTweet:
                 quest.authorization = AuthorizationType.Twitter;
                 quest.user_authorized = false;
                 break;
