@@ -9,6 +9,7 @@ export enum QuestType {
     ConnectSteam = "connect_steam",
     FollowOnTwitter = "follow_on_twitter",
     RetweetTweet = "retweet_tweet",
+    LikeTweet = "like_tweet",
     JoinDiscordServer = "join_discord_server",
     HoldDiscordRole = "hold_discord_role",
     Whitelist = "whitelist",
@@ -43,14 +44,26 @@ export enum QuestRewardType {
 
 // 关注
 export type FollowOnTwitter = {
-    // 关注的目标用户，用于构建intent地址
+    // 关注的目标用户的handle，如@Moonveil_Studio
     username: string;
+    // 目标用户的twitter id，如1669209055024259074
+    target_twitter_id: string;
     // 任务地址
     url: string;
 }
 
 // 转推
 export type RetweetTweet = {
+    // 目标推文地址
+    tweet_url: string;
+    // 推文id，用于构建intent地址
+    tweet_id: string;
+    // 任务地址
+    url: string;
+}
+
+// 点赞推文
+export type LikeTweet = {
     // 目标推文地址
     tweet_url: string;
     // 推文id，用于构建intent地址
@@ -117,6 +130,10 @@ export type checkClaimableResult = {
     claimable: boolean;
     // 是否需要用户授权(任务需要用户先授权再进行任务申领检查)
     require_authorization?: AuthorizationType;
+    // 未能领取任务奖励情况下的提醒
+    tip?: string;
+    // 传递自定义信息
+    extra?: any;
 }
 
 // 领取任务奖励结果
@@ -129,4 +146,6 @@ export type claimRewardResult = {
     claimed_amount?: number;
     // 未能领取任务奖励情况下的提醒
     tip?: string;
+    // 传递自定义信息
+    extra?: any;
 }

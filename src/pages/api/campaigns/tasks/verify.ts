@@ -77,6 +77,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         return res.json(response.success({
             verified: false,
             require_authorization: result.require_authorization,
+            tip: result.tip,
         }));
     }
     // 用户已完成任务，添加完成标识.

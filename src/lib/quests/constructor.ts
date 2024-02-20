@@ -12,6 +12,7 @@ import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQues
 import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
 import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 import {HoldNFTQuest} from "@/lib/quests/implementations/holdNFTQuest";
+import {LikeTweetQuest} from "@/lib/quests/implementations/likeTweetQuest";
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -24,6 +25,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new FollowOnTwitterQuest(quest);
         case QuestType.RetweetTweet:
             return new RetweetTweetQuest(quest);
+        case QuestType.LikeTweet:
+            return new LikeTweetQuest(quest);
         case QuestType.ConnectTwitter:
             return new ConnectTwitterQuest(quest);
         case QuestType.ConnectSteam:

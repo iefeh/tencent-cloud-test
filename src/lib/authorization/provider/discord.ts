@@ -23,11 +23,11 @@ const discordOAuthOps: OAuthOptions = {
     tokenEndpoint: process.env.DISCORD_TOKEN_URL!,
     enableBasicAuth: true,
     onAccessTokenRefreshed: async authToken => {
-        logger.debug("access token refreshed:", authToken)
+        logger.debug("discord access token refreshed:", authToken)
         await saveRotateAuthToken(authToken);
     },
     onRefreshTokenExpired: async authToken => {
-        logger.debug("refresh token revoked:", authToken);
+        logger.debug("discord refresh token revoked:", authToken);
         await deleteAuthToken(authToken);
     }
 }

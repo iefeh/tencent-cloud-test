@@ -20,7 +20,8 @@ export class HoldNFTQuest extends QuestBase {
         if (!userWallet) {
             return {
                 claimable: false,
-                require_authorization: userWallet ? undefined : AuthorizationType.Wallet,
+                require_authorization: AuthorizationType.Wallet,
+                tip: "You should connect your Wallet Address first.",
             }
         }
         this.user_wallet_addr = userWallet?.wallet_addr;
@@ -32,6 +33,7 @@ export class HoldNFTQuest extends QuestBase {
         });
         return {
             claimable: !!userNft,
+            tip: userNft ? undefined : "No NFT detected or NFT transaction is pending.",
         }
     }
 
@@ -42,7 +44,7 @@ export class HoldNFTQuest extends QuestBase {
             return {
                 verified: false,
                 require_authorization: claimableResult.require_authorization,
-                tip: claimableResult.require_authorization ? "You should connect your Wallet Address first." : "No NFT detected or NFT transaction is pending."
+                tip: claimableResult.tip,
             }
         }
         // 污染用户的白名单，确保单个白名单只能获取一次奖励
