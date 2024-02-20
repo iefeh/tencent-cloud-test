@@ -165,7 +165,7 @@ function loadVideo(path: string) {
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/LoyaltyProgram/event'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
