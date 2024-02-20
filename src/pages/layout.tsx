@@ -8,7 +8,15 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
 
-export default function RootLayout({ children, isInWhiteList }: { children: React.ReactNode; isInWhiteList: boolean }) {
+export default function RootLayout({
+  children,
+  isInWhiteList,
+  hasNoHeader,
+}: {
+  children: React.ReactNode;
+  isInWhiteList: boolean;
+  hasNoHeader: boolean;
+}) {
   return (
     <React.Fragment>
       <LineBorder />
@@ -17,9 +25,11 @@ export default function RootLayout({ children, isInWhiteList }: { children: Reac
         className="flex w-full h-screen flex-col items-center justify-between relative bg-black"
         id="main-layout"
       > */}
-      {isInWhiteList || <Header />}
+      <Suspense fallback={<Loading />}>
+        {hasNoHeader || <Header />}
 
-      <main className="dark page-container w-full h-full">{children}</main>
+        <main className="dark page-container w-full h-full">{children}</main>
+      </Suspense>
       {/* </main> */}
     </React.Fragment>
   );
