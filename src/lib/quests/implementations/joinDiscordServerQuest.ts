@@ -1,10 +1,10 @@
 import {IQuest} from "@/lib/models/Quest";
-import {HoldDiscordRole, checkClaimableResult, claimRewardResult, JoinDiscordServer} from "@/lib/quests/types";
+import { checkClaimableResult, JoinDiscordServer} from "@/lib/quests/types";
 import {ConnectDiscordQuest, queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
 import logger from "@/lib/logger/winstonLogger";
-import {deleteAuthToken, isDiscordAuthRevokedError, isDiscordRateLimitError} from "@/lib/authorization/provider/util";
+import {deleteAuthToken, isDiscordAuthRevokedError} from "@/lib/authorization/provider/util";
 import * as Sentry from "@sentry/nextjs";
 
 export class JoinDiscordServerQuest extends ConnectDiscordQuest {

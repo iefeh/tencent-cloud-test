@@ -21,8 +21,9 @@ export class NftHolderAccelerator extends Accelerator<NftHolderReward> {
             wallet_addr: reward.wallet_address,
         }
         if (props.min_hold_duration) {
+            // 用户持有NFT的最小持有时间
             filter.created_time = {
-                $gte: new Date(Date.now() - props.min_hold_duration * 1000),
+                $lte: Date.now() - props.min_hold_duration * 1000,
             }
         }
         // 获取用户持有的NFT数量

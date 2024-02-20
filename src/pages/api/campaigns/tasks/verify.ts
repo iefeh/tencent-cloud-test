@@ -63,35 +63,30 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         }));
     }
     const lockKey = `verify_campaign_task_lock:${campaign_id}:${task_id}:${userId}`;
-    try {
-        // 每隔30秒允许校验一次相同任务
-        const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
-        if (!locked) {
-            return res.json(response.success({
-                verified: false,
-                tip: "Verification is under a 30s waiting period, please try again later.",
-            }));
-        }
-        // 检查用户是否已经完成任务
-        const result = await questImpl.checkClaimable(userId);
-        if (!result.claimable) {
-            res.json(response.success({
-                verified: false,
-                require_authorization: result.require_authorization,
-            }));
-        }
-        // 用户已完成任务，添加完成标识.
-        await questImpl.addUserAchievement(userId, true);
-        await try2AddUserCampaignAchievement(userId, campaign_id, tasks.map((t: any) => t.id));
-        // 检查用户是否已经完成所有任务
-        res.json(response.success({
-            verified: true,
+    // 每隔30秒允许校验一次相同任务
+    const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
+    if (!locked) {
+        return res.json(response.success({
+            verified: false,
+            tip: "Verification is under a 30s waiting period, please try again later.",
         }));
-    } catch (error) {
-        logger.error(error);
-        Sentry.captureException(error);
-        res.status(500).json(defaultErrorResponse);
     }
+    // 检查用户是否已经完成任务
+    const result = await questImpl.checkClaimable(userId);
+    if (!result.claimable) {
+        return res.json(response.success({
+            verified: false,
+            require_authorization: result.require_authorization,
+            tip: result.tip,
+        }));
+    }
+    // 用户已完成任务，添加完成标识.
+    await questImpl.addUserAchievement(userId, true);
+    await try2AddUserCampaignAchievement(userId, campaign_id, tasks.map((t: any) => t.id));
+    // 检查用户是否已经完成所有任务
+    return res.json(response.success({
+        verified: true,
+    }));
 });
 
 async function try2AddUserCampaignAchievement(userId: string, campaignId: string, taskIds: string[]) {
