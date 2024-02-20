@@ -27,6 +27,20 @@ interface EventTaskProps {
   updateTasks?: () => void;
 }
 
+const EVENT_ICON_DICT: Dict<string> = {
+  [QuestType.ConnectWallet]: 'wallet_colored',
+  [QuestType.ConnectTwitter]: 'twitter_colored',
+  [QuestType.ConnectDiscord]: 'discord_colored',
+  [QuestType.ConnectTelegram]: 'telegram_colored',
+  [QuestType.ConnectSteam]: 'steam_colored',
+  [QuestType.FollowOnTwitter]: 'twitter_colored',
+  [QuestType.RetweetTweet]: 'twitter_colored',
+  [QuestType.LikeTwitter]: 'twitter_colored',
+  [QuestType.JOIN_DISCORD_SERVER]: 'discord_colored',
+  [QuestType.HoldDiscordRole]: 'discord_colored',
+  [QuestType.HoldNFT]: 'nft_colored',
+};
+
 function EventTasks(props: EventTaskProps) {
   const { item, updateTasks } = props;
   const isInProcessing = item?.status === EventStatus.ONGOING;
@@ -254,7 +268,13 @@ function EventTasks(props: EventTaskProps) {
     return (
       <div className="flex justify-between items-center py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300">
         <div className="flex items-center">
-          <Image className="w-9 h-9" src="/img/loyalty/task/discord_colored.png" alt="" width={36} height={36} />
+          <Image
+            className="w-9 h-9"
+            src={`/img/loyalty/task/${EVENT_ICON_DICT[task.type] || 'default_colored'}.png`}
+            alt=""
+            width={36}
+            height={36}
+          />
           <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
         </div>
 
