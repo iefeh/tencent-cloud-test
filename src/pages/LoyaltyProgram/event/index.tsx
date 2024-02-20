@@ -34,7 +34,7 @@ function LoyaltyEvent() {
   }, 500);
 
   function onBackClick() {
-    router.push({ pathname: '/LoyaltyProgram/earn', query: { tabKey: 'Events' } });
+    router.push({ pathname: '/LoyaltyProgram/earn', query: { ...router.query, tabKey: 'Events' } });
   }
 
   useEffect(() => {
