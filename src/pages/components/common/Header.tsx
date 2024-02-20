@@ -53,12 +53,12 @@ const routeText: RouteMenu[] = [
       },
       {
         name: 'Get Involved',
-        route: '/LoyaltyProgram/earn',
+        route: '/LoyaltyProgram/earn?from=nft',
       },
-      // {
-      //   name: 'Mint Now',
-      //   route: '//NFT/Mint',
-      // },
+      {
+        name: 'Mint Now',
+        route: '/NFT/Mint',
+      },
     ],
   },
   {
@@ -70,7 +70,7 @@ const routeText: RouteMenu[] = [
       },
       {
         name: 'Earn Moon Beams',
-        route: '/LoyaltyProgram/earn',
+        route: '/LoyaltyProgram/earn?from=lp',
         // disabled: true,
       },
       // {
@@ -140,7 +140,7 @@ const Header = () => {
   const router = useRouter();
 
   function isActiveRoute(menu: RouteMenu) {
-    const route = router.route || '/';
+    const route = router.asPath || '/';
     return menu.route === route || menu.children?.some((item) => item.route === route);
   }
 

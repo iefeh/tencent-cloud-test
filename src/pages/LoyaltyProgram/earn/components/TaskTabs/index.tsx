@@ -21,7 +21,9 @@ export default function TaskTabs() {
 
   function onSelectionChange(key: Key) {
     const str = key.toString();
-    router.replace({ pathname: '/LoyaltyProgram/earn', query: { tabKey: str } }, undefined, { scroll: false });
+    router.replace({ pathname: '/LoyaltyProgram/earn', query: { ...router.query, tabKey: str } }, undefined, {
+      scroll: false,
+    });
     setSelectedKey(str);
   }
 
