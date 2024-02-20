@@ -171,7 +171,7 @@ function EventTasks(props: EventTaskProps) {
     }
 
     function getConnectLabel(texts?: VerifyTexts) {
-      const { label, finishedLable } = texts || { label: 'Connect', finishedLable: 'Connected' };
+      const { label, finishedLable } = texts || { label: 'Participate', finishedLable: 'Participated' };
       if (task.verified || (task.achieved && !task.properties.is_prepared)) return finishedLable;
       return label;
     }
