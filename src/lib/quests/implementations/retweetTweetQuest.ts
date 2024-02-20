@@ -58,7 +58,7 @@ export class RetweetTweetQuest extends QuestBase {
                 throw error;
             }
             // 检查转推响应
-            const response = error.response;
+            const response = error.response!;
             // 当前无权限，移除用户的授权token
             if (response.status === 403 || response.data.error_description == "Value passed for the token was invalid.") {
                 logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} retweet invalidated: ${response.data}`);
