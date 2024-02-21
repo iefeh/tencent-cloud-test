@@ -279,7 +279,13 @@ function EventTasks(props: EventTaskProps) {
                   <p className="font-poppins-medium text-base">
                     Before starting this task, please ensure that you have completed the following steps:
                     <ol className="mt-2">
-                      <li>1. Join our official Discord server, Moonveil.</li>
+                      <li>
+                        1. Join our official Discord server,{' '}
+                        <a className="text-basic-yellow underline" href="https://discord.gg/moonveil" target="_blank">
+                          Moonveil
+                        </a>
+                        .
+                      </li>
                       <li>
                         2. Get the &quot;<span className="text-basic-yellow">Verified</span>&quot; role.
                       </li>
