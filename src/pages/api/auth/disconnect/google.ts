@@ -5,12 +5,11 @@ import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {redis} from "@/lib/redis/client";
 import {AuthorizationType} from "@/lib/authorization/types";
 import UserGoogle from "@/lib/models/UserGoogle";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
-    await getMongoConnection();
     // 检查用户的绑定
     const google = await UserGoogle.findOne({user_id: req.userId!, deleted_time: null});
     if (!google) {

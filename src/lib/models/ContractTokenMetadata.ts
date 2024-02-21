@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 合约代币元信息
 export interface IContractTokenMetadata extends Document {
@@ -24,5 +25,6 @@ const ContractTokenMetadataSchema = new Schema<IContractTokenMetadata>({
 ContractTokenMetadataSchema.index({chain_id: 1, contract_address: 1, token_id: 1});
 
 // 使用既有模型或者新建模型
-const ContractTokenMetadata = models.ContractTokenMetadata || model<IContractTokenMetadata>('ContractTokenMetadata', ContractTokenMetadataSchema, 'contract_token_metadata');
+const connection = connectToMongoDbDev();
+const ContractTokenMetadata = models.ContractTokenMetadata || connection.model<IContractTokenMetadata>('ContractTokenMetadata', ContractTokenMetadataSchema, 'contract_token_metadata');
 export default ContractTokenMetadata;

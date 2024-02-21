@@ -2,7 +2,7 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import Campaign from "@/lib/models/Campaign";
 import {constructQuest} from "@/lib/quests/constructor";
 import logger from "@/lib/logger/winstonLogger";
@@ -14,7 +14,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     if (!campaign_id || !task_id) {
         return res.json(response.invalidParams());
     }
-    await getMongoConnection();
     // 查询活动
     const campaign = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
         _id: 0,

@@ -9,7 +9,7 @@ import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import User from "@/lib/models/User";
 import {v4 as uuidv4} from "uuid";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
 
@@ -22,7 +22,6 @@ router.post(async (req, res) => {
     }
     // 检查邀请码
     const {invite_code} = req.body;
-    await getMongoConnection();
     let inviter: any;
     if (invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

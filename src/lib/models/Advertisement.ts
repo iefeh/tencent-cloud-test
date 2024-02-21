@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IAdvertisement extends Document {
     // 广告id
@@ -39,7 +40,7 @@ const AdvertisementSchema = new Schema<IAdvertisement>({
     deleted_time: {type: Number, default: null},
 });
 
-
 // 使用既有模型或者新建模型
-const Advertisement = models.Advertisement || model<IAdvertisement>('Advertisement', AdvertisementSchema, 'advertisements');
+const connection = connectToMongoDbDev();
+const Advertisement = models.Advertisement || connection.model<IAdvertisement>('Advertisement', AdvertisementSchema, 'advertisements');
 export default Advertisement;

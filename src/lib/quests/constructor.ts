@@ -13,6 +13,7 @@ import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
 import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
 import {HoldNFTQuest} from "@/lib/quests/implementations/holdNFTQuest";
 import {LikeTweetQuest} from "@/lib/quests/implementations/likeTweetQuest";
+import {SendDiscordMessageQuest} from "@/lib/quests/implementations/sendDiscordMessageQuest";
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -35,6 +36,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new JoinDiscordServerQuest(quest);
         case QuestType.HoldDiscordRole:
             return new HoldDiscordRoleQuest(quest);
+        case QuestType.SendDiscordMessage:
+            return new SendDiscordMessageQuest(quest);
         case QuestType.UserMetric:
             return new UserMetricQuest(quest);
         case QuestType.Whitelist:

@@ -3,7 +3,7 @@ import {NextApiResponse, NextApiRequest} from 'next'
 import {redis} from '@/lib/redis/client';
 import User, {IUser} from "@/lib/models/User";
 import {v4 as uuidv4} from 'uuid';
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
 import {generateUserSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
@@ -32,7 +32,6 @@ router.post(async (req, res) => {
         return
     }
     // 检查邀请码
-    await getMongoConnection();
     let inviter: any;
     if (invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
