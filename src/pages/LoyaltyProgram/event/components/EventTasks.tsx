@@ -97,6 +97,7 @@ function EventTasks(props: EventTaskProps) {
     const isNeedConnect = !!task.properties.url;
     const [verifiable, setVerifiable] = useState(!verified && (!task.properties.is_prepared || achieved));
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
 
     const connectType = task.authorization || '';
@@ -114,6 +115,8 @@ function EventTasks(props: EventTaskProps) {
     }
 
     async function onPrepare() {
+      if (!task.properties.is_prepared) return;
+
       setConnectLoading(true);
       try {
         await prepareEventAPI({ task_id: task.id, campaign_id: item!.id });
@@ -132,11 +135,12 @@ function EventTasks(props: EventTaskProps) {
       }
 
       if (task.properties.url) {
-        onConnectURL();
-      }
-
-      if (task.properties.is_prepared) {
-        onPrepare();
+        if (task.type === QuestType.SEND_DISCORD_MESSAGE) {
+          discordMsgData.onOpen();
+        } else {
+          onConnectURL();
+          onPrepare();
+        }
       }
     }
 
@@ -253,6 +257,45 @@ function EventTasks(props: EventTaskProps) {
                         console.log('connect click');
                         toggleLoginModal();
                       }
+                    }}
+                  />
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+
+        <Modal
+          placement="center"
+          backdrop="blur"
+          isOpen={discordMsgData.isOpen}
+          onOpenChange={discordMsgData.onOpenChange}
+          classNames={{ base: 'bg-[#070707] border-1 border-[#1D1D1D] rounded-[0.625rem] pt-8 pb-4' }}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalBody>
+                  <p className="font-poppins-medium text-base">
+                    Before starting this task, please ensure that you have completed the following steps:
+                    <ol className="mt-2">
+                      <li>1. Join our official Discord server, Moonveil.</li>
+                      <li>
+                        2. Get the &quot;<span className="text-basic-yellow">Verified</span>&quot; role.
+                      </li>
+                    </ol>
+                  </p>
+                </ModalBody>
+
+                <ModalFooter className="justify-center">
+                  <LGButton
+                    squared
+                    actived
+                    label="Confirmed"
+                    onClick={() => {
+                      onConnectURL();
+                      onPrepare();
+                      onClose();
                     }}
                   />
                 </ModalFooter>
