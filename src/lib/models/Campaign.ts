@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev, {connectToMongoDbDiscord} from "@/lib/mongodb/client";
 
 export enum CampaignRewardType {
     // 奖励MB
@@ -93,5 +94,6 @@ const CampaignSchema = new Schema<ICampaign>({
 CampaignSchema.index({id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const Campaign = models.Campaign || model<ICampaign>('Campaign', CampaignSchema, 'campaigns');
+const connection = await connectToMongoDbDev();
+const Campaign = models.Campaign || connection.model<ICampaign>('Campaign', CampaignSchema, 'campaigns');
 export default Campaign;

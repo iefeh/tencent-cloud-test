@@ -2,7 +2,7 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import {queryUserAuth} from "@/lib/common/user";
 import {getClientIP, HttpsProxyGet} from "@/lib/common/request";
 import Quest from "@/lib/models/Quest";
@@ -35,7 +35,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
 router.get(async (req, res) => {
     try {
-        await getMongoConnection();
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
         // const resp = await client.NftService.getNftsForAddress("matic-mumbai", "0x58a7f8e93900A1A820B46C23DF3C0D9783b24D05");

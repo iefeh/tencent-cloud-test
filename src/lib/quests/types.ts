@@ -15,6 +15,7 @@ export enum QuestType {
     Whitelist = "whitelist",
     UserMetric = "user_metric",
     HoldNFT = "hold_nft",
+    SendDiscordMessage = "send_discord_message",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -40,6 +41,24 @@ export enum QuestRewardType {
     Fixed = "fixed",
     // 范围奖励，奖励数量特定于任务进行动态分配
     Range = "range",
+}
+
+// 发送discord消息(文本频道或者论坛回帖都适用.)
+export type SendDiscordMessage = {
+    // discord的邀请链接，用户可以通过该链接加入DC
+    guild_url: string;
+    // 在指定的工会
+    guild_id: string;
+    // 在指定的频道
+    channel_id: string;
+    // 最短消息长度
+    min_msg_length: number;
+    // 发送的开始时间，毫秒时间戳
+    start_time: number;
+    // 发送的结束时间，毫秒时间戳
+    end_time: number;
+    // 任务地址
+    url: string;
 }
 
 // 关注

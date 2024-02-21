@@ -1,7 +1,7 @@
 import {UserContextRequest} from "@/lib/middleware/auth";
 import {NextApiResponse} from "next";
 import * as response from "@/lib/response/response";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import Quest from "@/lib/models/Quest";
 import {constructQuest} from "@/lib/quests/constructor";
 import logger from "@/lib/logger/winstonLogger";
@@ -12,7 +12,6 @@ export async function prepareUserQuestAchievement(req: UserContextRequest, res: 
         return;
     }
     const userId = req.userId!;
-    await getMongoConnection();
     const quest = await Quest.findOne({id: quest_id, active: true, deleted_time: null});
     if (!quest) {
         res.json(response.notFound("Unknown quest."));

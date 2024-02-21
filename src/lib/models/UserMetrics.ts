@@ -1,5 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // TODO：添加新的metric，一定需要同时修改IUserMetrics与UserMetricsSchema
 export enum Metric {
@@ -89,7 +90,8 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
 UserMetricsSchema.index({user_id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const UserMetrics = models.UserMetrics || model<IUserMetrics>('UserMetrics', UserMetricsSchema, 'user_metrics');
+const connection = await connectToMongoDbDev();
+const UserMetrics = models.UserMetrics || connection.model<IUserMetrics>('UserMetrics', UserMetricsSchema, 'user_metrics');
 export default UserMetrics;
 
 // 设置用户的指标

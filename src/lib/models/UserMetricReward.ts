@@ -1,5 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 import {Metric} from "@/lib/models/UserMetrics";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 指标奖励类型
 export enum UserMetricRewardType {
@@ -56,7 +57,8 @@ UserMetricRewardSchema.index({id: 1}, {unique: true});
 UserMetricRewardSchema.index({require_metric: 1, reward_type: 1});
 
 // 使用既有模型或者新建模型
-const UserMetricReward = models.UserMetricReward || model<IUserMetricReward>('UserMetricReward', UserMetricRewardSchema, 'user_metric_rewards');
+const connection = await connectToMongoDbDev();
+const UserMetricReward = models.UserMetricReward || connection.model<IUserMetricReward>('UserMetricReward', UserMetricRewardSchema, 'user_metric_rewards');
 export default UserMetricReward;
 
 // 检查用户指标满足的奖励设置

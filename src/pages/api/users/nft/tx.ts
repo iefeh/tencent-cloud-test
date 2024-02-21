@@ -4,7 +4,7 @@ import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {errorInterceptor} from "@/lib/middleware/error";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import ContractTokenMetadata from "@/lib/models/ContractTokenMetadata";
 import ContractNFT from "@/lib/models/ContractNFT";
 
@@ -16,7 +16,6 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
         res.json(response.invalidParams());
         return
     }
-    await getMongoConnection();
     // 对应交易id的nft
     const nft: any = await ContractNFT.findOne({transaction_id: tx_id, deleted_time: null}, {
         '_id': 0,

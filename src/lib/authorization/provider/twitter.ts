@@ -10,7 +10,7 @@ import {deleteAuthToken, saveRotateAuthToken, validateCallbackState} from "@/lib
 import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import logger from "@/lib/logger/winstonLogger";
 
 const twitterOAuthOps: OAuthOptions = {
@@ -41,7 +41,6 @@ export async function generateAuthorizationURL(req: any, res: any) {
     }
 
     // 检查注册邀请码
-    await getMongoConnection();
     let inviter: any;
     if (!req.userId && invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

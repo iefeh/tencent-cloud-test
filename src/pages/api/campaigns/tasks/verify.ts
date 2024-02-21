@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import logger from "@/lib/logger/winstonLogger";
@@ -27,7 +27,6 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         return res.json(response.invalidParams());
     }
     const userId = req.userId!;
-    await getMongoConnection();
     // 查询活动
     const campaign = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
         _id: 0,

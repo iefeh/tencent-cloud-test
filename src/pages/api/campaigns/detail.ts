@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Campaign, {CampaignClaimSettings, CampaignRewardType, CampaignStatus} from "@/lib/models/Campaign";
@@ -18,7 +18,6 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
         return
     }
     const userId = req.userId!;
-    await getMongoConnection();
     // 查询活动
     const campaign: any = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
         _id: 0,
