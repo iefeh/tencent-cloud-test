@@ -20,6 +20,7 @@ export const enum QuestType {
   HoldNFT = 'hold_nft',
   JOIN_DISCORD_SERVER = 'join_discord_server',
   ASTRARK_PRE_REGISTER = 'user_metric',
+  SEND_DISCORD_MESSAGE = 'send_discord_message',
 }
 
 export const enum QuestRewardType {
