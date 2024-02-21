@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import copyImg from 'img/profile/copy.png';
 import { cn } from '@nextui-org/react';
 import { toast } from 'react-toastify';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
   className?: string;
@@ -16,7 +17,7 @@ interface Props {
   copyIcon?: string | StaticImageData;
 }
 
-export default function UserProfile(props: Props) {
+function UserProfile(props: Props) {
   const { className, avatarClassName, usernameClassName, walletClassName, hideCopy, desc, copyText, copyIcon } = props;
   const { userInfo } = useContext(MobxContext);
   if (!userInfo) return null;
@@ -74,3 +75,5 @@ export default function UserProfile(props: Props) {
     </div>
   );
 }
+
+export default observer(UserProfile);
