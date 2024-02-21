@@ -83,7 +83,7 @@ const UserAvatar = () => {
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
         <div className="avatar rounded-full overflow-hidden w-7 h-7 relative">
-          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill />
+          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes='100%' />
         </div>
       </div>
 

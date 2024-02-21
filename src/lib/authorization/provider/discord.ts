@@ -11,7 +11,7 @@ import User from "@/lib/models/User";
 import {deleteAuthToken, saveRotateAuthToken, validateCallbackState} from "@/lib/authorization/provider/util";
 import UserDiscord from "@/lib/models/UserDiscord";
 import logger from "@/lib/logger/winstonLogger";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
 const discordOAuthOps: OAuthOptions = {
@@ -23,11 +23,11 @@ const discordOAuthOps: OAuthOptions = {
     tokenEndpoint: process.env.DISCORD_TOKEN_URL!,
     enableBasicAuth: true,
     onAccessTokenRefreshed: async authToken => {
-        logger.debug("access token refreshed:", authToken)
+        logger.debug("discord access token refreshed:", authToken)
         await saveRotateAuthToken(authToken);
     },
     onRefreshTokenExpired: async authToken => {
-        logger.debug("refresh token revoked:", authToken);
+        logger.debug("discord refresh token revoked:", authToken);
         await deleteAuthToken(authToken);
     }
 }
@@ -41,7 +41,6 @@ export async function generateAuthorizationURL(req: any, res: any) {
         return;
     }
     // 检查注册邀请码
-    await getMongoConnection();
     let inviter: any;
     if (!req.userId && invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

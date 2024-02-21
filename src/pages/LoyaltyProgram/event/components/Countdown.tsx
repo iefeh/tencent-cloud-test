@@ -8,7 +8,7 @@ dayjs.extend(duration);
 
 export function useCountdown(targetTime: number, currentTime = Date.now(), callback?: (time: number) => void) {
   const lastTimestamp = useRef(performance.now());
-  const leftTime = useRef(Math.max(targetTime - currentTime, 0));
+  const leftTime = useRef(0);
   const rafId = useRef(0);
 
   function run(el: number = performance.now()) {
@@ -20,6 +20,7 @@ export function useCountdown(targetTime: number, currentTime = Date.now(), callb
   }
 
   useEffect(() => {
+    leftTime.current = Math.max(targetTime - currentTime, 0);
     run();
 
     return () => {
@@ -33,10 +34,16 @@ export function useCountdown(targetTime: number, currentTime = Date.now(), callb
   return { leftTime };
 }
 
-export default function Countdown() {
-  const [leftTimes, setLeftTimes] = useState(['00', '00', '00', '00']);
+interface Props {
+  end?: number | string;
+}
 
-  useCountdown(dayjs().add(31, 'd').valueOf(), dayjs().valueOf(), (diff) => {
+export default function Countdown(props: Props) {
+  const { end } = props;
+  const [leftTimes, setLeftTimes] = useState(['00', '00', '00', '00']);
+  const target = end || Date.now();
+
+  useCountdown(dayjs(target).valueOf(), dayjs().valueOf(), (diff) => {
     const du = dayjs.duration(diff);
     setLeftTimes([~~du.asDays(), du.hours(), du.minutes(), du.seconds()].map((t) => t.toString().padStart(2, '0')));
   });
@@ -51,9 +58,12 @@ export default function Countdown() {
       <div className="flex items-center font-semakin text-xl text-basic-yellow">
         {leftTimes.map((time, index) => (
           <Fragment key={index}>
-            {index > 0 && <span className="w-[0.9375rem] text-center">:</span>}
+            {index > 0 && <span className="text-center">:</span>}
 
-            <div className={'w-10 h-10 border-1 border-basic-gray rounded-[0.3125rem] text-center leading-10'}>
+            <div
+              className={'h-10 border-1 border-basic-gray rounded-[0.3125rem] text-center leading-10'}
+              style={{ width: `${1.25 * Math.max(~~Math.log10(+time) + 1, 2)}rem` }}
+            >
               {time}
             </div>
           </Fragment>

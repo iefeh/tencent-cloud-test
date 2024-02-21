@@ -6,11 +6,12 @@ import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
-import {validateCallbackState} from "@/lib/authorization/provider/util";
+import {deleteAuthToken, saveRotateAuthToken, validateCallbackState} from "@/lib/authorization/provider/util";
 import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
+import logger from "@/lib/logger/winstonLogger";
 
 const twitterOAuthOps: OAuthOptions = {
     clientId: process.env.TWITTER_CLIENT_ID!,
@@ -19,7 +20,15 @@ const twitterOAuthOps: OAuthOptions = {
     redirectURI: process.env.TWITTER_REDIRECT_URL!,
     authEndpoint: process.env.TWITTER_AUTH_URL!,
     tokenEndpoint: process.env.TWITTER_TOKEN_URL!,
-    enableBasicAuth: true
+    enableBasicAuth: true,
+    onAccessTokenRefreshed: async authToken => {
+        logger.debug("twitter access token refreshed:", authToken)
+        await saveRotateAuthToken(authToken);
+    },
+    onRefreshTokenExpired: async authToken => {
+        logger.debug("twitter refresh token revoked:", authToken);
+        await deleteAuthToken(authToken);
+    }
 }
 export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);
 
@@ -32,7 +41,6 @@ export async function generateAuthorizationURL(req: any, res: any) {
     }
 
     // 检查注册邀请码
-    await getMongoConnection();
     let inviter: any;
     if (!req.userId && invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

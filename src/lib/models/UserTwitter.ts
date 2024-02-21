@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IUserTwitter extends Document {
     // 谷歌用户的关联id
@@ -47,5 +48,6 @@ UserTwitterSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserTwitterSchema.index({twitter_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const UserTwitter = models.UserTwitter || model<IUserTwitter>('UserTwitter', UserTwitterSchema, 'user_twitters');
+const connection = connectToMongoDbDev();
+const UserTwitter = models.UserTwitter || connection.model<IUserTwitter>('UserTwitter', UserTwitterSchema, 'user_twitters');
 export default UserTwitter;

@@ -97,9 +97,9 @@ const Rank = function () {
                 ])}
               >
                 {index === 0 ? (
-                  <Image src="/img/loyalty/earn/bg_rank_champion.png" alt="" fill />
+                  <Image src="/img/loyalty/earn/bg_rank_champion.png" alt="" fill sizes='100%' />
                 ) : (
-                  <Image src="/img/loyalty/earn/bg_rank_not_champion.png" alt="" fill />
+                  <Image src="/img/loyalty/earn/bg_rank_not_champion.png" alt="" fill sizes='100%' />
                 )}
                 <span className={cn(['relative z-0', index === 0 && '-left-1'])}>{index + 1}</span>
               </div>

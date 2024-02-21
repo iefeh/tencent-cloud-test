@@ -5,7 +5,7 @@ import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {sendCaptcha} from "@/lib/authorization/captcha";
 import {AuthorizationType, CaptchaType} from "@/lib/authorization/types";
 import User from "@/lib/models/User";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import {redis} from "@/lib/redis/client";
 
 
@@ -15,7 +15,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const {email} = req.query;
     if (email) {
         // 检查邮件是否绑定
-        await getMongoConnection();
         const user = await User.findOne({user_id: req.userId!, deleted_time: null}, {_id: 0, email: 1});
         if (user && user.email) {
             res.json(response.accountAlreadyBoundMedia());

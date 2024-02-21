@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IOAuthToken extends Document {
     // token对应的平台
@@ -40,5 +41,6 @@ OAuthTokenSchema.index({platform: 1, platform_id: 1, deleted_time: 1}, {unique: 
 OAuthTokenSchema.index({platform_id: 1});
 
 // 使用既有模型或者新建模型
-const OAuthToken = models.OAuthToken || model<IOAuthToken>('OAuthToken', OAuthTokenSchema, 'oauth_tokens');
+const connection = connectToMongoDbDev();
+const OAuthToken = models.OAuthToken || connection.model<IOAuthToken>('OAuthToken', OAuthTokenSchema, 'oauth_tokens');
 export default OAuthToken;

@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
@@ -28,7 +28,6 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         res.json(response.invalidParams());
         return;
     }
-    await getMongoConnection();
     const quest = await Quest.findOne({id: quest_id, active: true, deleted_time: null});
     if (!quest) {
         res.json(response.notFound("Unknown quest."));

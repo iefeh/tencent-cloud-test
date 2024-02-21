@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {getMBLeaderboardTopUsers} from "@/lib/redis/moonBeamLeaderboard";
@@ -9,7 +9,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
-    await getMongoConnection();
     const leaderboard = await getMBLeaderboardTopUsers(userId!);
     res.json(response.success(leaderboard));
 });

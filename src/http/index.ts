@@ -15,42 +15,39 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-axios.interceptors.response.use((res) => {
-  if (!res.data) return null;
+axios.interceptors.response.use(
+  (res) => {
+    if (!res.data) return null;
 
-  let data: any;
+    let data: any;
 
-  try {
-    data = JSON.parse(res.data);
-  } catch (error) {
-    console.log('Data Parse Error: ', error);
-    return data;
-  }
+    try {
+      data = JSON.parse(res.data) || {};
+    } catch (error) {
+      console.log('Data Parse Error: ', error);
+      return data;
+    }
 
-  if (data.code !== 1) {
+    if (data.code === 1) return data.data;
+
     switch (data.code) {
       // token expired
       case -2: {
         const store = useStore();
         store.logout(false);
-        break;
+        return null;
       }
     }
+
     if (data.msg) {
       toast.error(data.msg);
     }
-    
-    if (Math.floor(res.status / 100) !== 2 && data.msg) {
-      toast.error(data.msg);
-      return data;
-    } else {
-      return Promise.reject(data);
-    }
-  }
 
-  return data.data;
-}, (error) => {
-  toast.error(error);
-});
+    return data.data;
+  },
+  (error) => {
+    toast.error(error);
+  },
+);
 
 export default axios;

@@ -35,7 +35,7 @@ const Home = function () {
   const rafId = useRef(0);
 
   function setLuxyFixed() {
-    if (!maskRef.current) return;
+    if (!maskRef.current || !window.luxy) return;
 
     const y = window.luxy.getWrapperTranslateY();
     const screenHeight = document.documentElement.clientHeight;

@@ -6,7 +6,7 @@ export default function useTouchBottom() {
   const throttleSetIisTouchedBottom = throttle((isTB: boolean) => setIsTouchedBottom(isTB), 1000);
   function onLuxyScroll() {
     const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-    const isTB = scrollTop === scrollHeight - clientHeight;
+    const isTB = Math.abs(scrollTop - scrollHeight + clientHeight) < 1;
     throttleSetIisTouchedBottom(isTB);
   }
 
