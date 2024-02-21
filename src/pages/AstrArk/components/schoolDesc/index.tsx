@@ -53,9 +53,8 @@ export default function SchoolDesc() {
     const rw = vw / ow;
     const rh = vh / oh;
     const ratio = Math.min(rw, rh);
-    const realW = ow * ratio;
-    const realH = oh * ratio;
-    console.log(ow, oh, realW, realH);
+    const realW = Math.min(ow * ratio, vw);
+    const realH = (realW * oh) / ow;
     ctx.drawImage(node, Math.abs((realW - vw) / 2), Math.abs((realH - vh) / 2), realW, realH, 0, 0, ow, oh);
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((res) => resolve(res)));
     if (!blob) return '';
