@@ -12,7 +12,7 @@ export default function HotBanner(props: Props) {
   const banners = [item.image_url];
 
   return (
-    <div className="relative w-[57.8125rem] lg:h-[37.5rem] max-w-full h-72">
+    <div className="relative w-[56.25rem] lg:h-[25.3125rem] max-w-full h-72">
       <Swiper
         className="w-full h-full overflow-hidden rounded-[0.625rem] relative"
         modules={[Pagination, Autoplay]}
