@@ -24,6 +24,6 @@ CampaignAchievementSchema.index({user_id: 1, campaign_id: 1}, {unique: true});
 CampaignAchievementSchema.index({campaign_id: 1, user_id: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const CampaignAchievement = models.CampaignAchievement || connection.model<ICampaignAchievement>('CampaignAchievement', CampaignAchievementSchema, 'campaign_achievements');
 export default CampaignAchievement;

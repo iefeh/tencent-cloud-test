@@ -100,6 +100,6 @@ const SteamGameSchema = new Schema<ISteamGame>({
 SteamGameSchema.index({steam_appid: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const SteamGame = models.SteamGame || connection.model<ISteamGame>('SteamGame', SteamGameSchema, 'steam_games');
 export default SteamGame;

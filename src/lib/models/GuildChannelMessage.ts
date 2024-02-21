@@ -44,6 +44,6 @@ GuildChannelMessageSchema.index({message_id: 1});
 GuildChannelMessageSchema.index({author_id: 1});
 
 // 特定数据库的模型
-const connection = await connectToMongoDbDiscord();
+const connection = connectToMongoDbDiscord();
 const GuildChannelMessage = models.GuildChannelMessage || connection.model('GuildChannelMessage', GuildChannelMessageSchema, 'guild_channel_messages');
 export default GuildChannelMessage;

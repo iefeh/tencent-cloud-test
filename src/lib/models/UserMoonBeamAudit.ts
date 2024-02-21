@@ -51,6 +51,6 @@ UserMoonBeamAuditSchema.index({user_id: 1, type: 1});
 UserMoonBeamAuditSchema.index({corr_id: 1, user_id: 1});
 UserMoonBeamAuditSchema.index({reward_taint: 1, deleted_time: 1}, {unique: true});
 
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserMoonBeamAudit = models.UserMoonBeamAudit || connection.model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');
 export default UserMoonBeamAudit;

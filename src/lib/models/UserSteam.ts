@@ -60,6 +60,6 @@ UserSteamSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserSteamSchema.index({steam_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserSteam = models.UserSteam || connection.model<IUserSteam>('UserSteam', UserSteamSchema, 'user_steams');
 export default UserSteam;

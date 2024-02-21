@@ -33,6 +33,6 @@ ContractNFTSchema.index({wallet_addr: 1});
 ContractNFTSchema.index({chain_id: 1, contract_address: 1, wallet_addr: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const ContractNFT = models.ContractNFT || connection.model<IContractNFT>('ContractNFT', ContractNFTSchema, 'contract_nft');
 export default ContractNFT;

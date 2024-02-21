@@ -32,7 +32,7 @@ export class SendDiscordMessageQuest extends ConnectDiscordQuest {
         this.user_discord_id = discord.discord_id;
         const questProp = this.quest.properties as SendDiscordMessage;
         // 检查用户是否完成发言
-        const filter = {
+        const filter: any = {
             guild_id: questProp.guild_id,
             channel_id: questProp.channel_id,
             author_id: this.user_discord_id,

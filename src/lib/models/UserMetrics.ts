@@ -90,7 +90,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
 UserMetricsSchema.index({user_id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserMetrics = models.UserMetrics || connection.model<IUserMetrics>('UserMetrics', UserMetricsSchema, 'user_metrics');
 export default UserMetrics;
 

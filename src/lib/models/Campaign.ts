@@ -94,6 +94,6 @@ const CampaignSchema = new Schema<ICampaign>({
 CampaignSchema.index({id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const Campaign = models.Campaign || connection.model<ICampaign>('Campaign', CampaignSchema, 'campaigns');
 export default Campaign;

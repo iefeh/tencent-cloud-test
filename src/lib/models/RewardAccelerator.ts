@@ -33,6 +33,6 @@ const RewardAcceleratorSchema = new Schema<IRewardAccelerator>({
 RewardAcceleratorSchema.index({id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const RewardAccelerator = models.RewardAccelerator || connection.model<IRewardAccelerator>('RewardAccelerator', RewardAcceleratorSchema, 'reward_accelerators');
 export default RewardAccelerator;

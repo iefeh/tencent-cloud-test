@@ -25,6 +25,6 @@ const ContractTokenMetadataSchema = new Schema<IContractTokenMetadata>({
 ContractTokenMetadataSchema.index({chain_id: 1, contract_address: 1, token_id: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const ContractTokenMetadata = models.ContractTokenMetadata || connection.model<IContractTokenMetadata>('ContractTokenMetadata', ContractTokenMetadataSchema, 'contract_token_metadata');
 export default ContractTokenMetadata;
