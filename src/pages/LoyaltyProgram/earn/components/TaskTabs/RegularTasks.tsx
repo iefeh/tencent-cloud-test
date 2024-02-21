@@ -331,10 +331,10 @@ function RegularTasks() {
                 <ModalBody>
                   <p className="font-poppins-medium text-base">
                     Before starting this task, please ensure that you have completed the following steps:
-                    <ol>
-                      <li>Join our official Discord server, Moonveil.</li>
+                    <ol className="mt-2">
+                      <li>1. Join our official Discord server, Moonveil.</li>
                       <li>
-                        Get the &quot;<span className="text-basic-yellow">Verified</span>&quot; role.
+                        2. Get the &quot;<span className="text-basic-yellow">Verified</span>&quot; role.
                       </li>
                     </ol>
                   </p>
