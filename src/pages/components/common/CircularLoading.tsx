@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import loadingImg from 'img/loading/loading.png';
 import { useEffect, useRef } from 'react';
+import { cn } from '@nextui-org/react';
 
-export default function CircularLoading() {
+export default function CircularLoading({ noBlur }: { noBlur?: boolean }) {
   const nodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,7 +15,13 @@ export default function CircularLoading() {
   }, []);
 
   return (
-    <div ref={nodeRef} className="absolute left-0 top-0 w-full h-full flex items-center justify-center backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999]">
+    <div
+      ref={nodeRef}
+      className={cn([
+        'absolute left-0 top-0 w-full h-full flex items-center justify-center bg-overlay/30 z-[999]',
+        noBlur || 'backdrop-saturate-150 backdrop-blur-md',
+      ])}
+    >
       <div className="relative w-[8.125rem] h-[8.125rem] text-center leading-[8.125rem]" aria-label="Loading...">
         <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill sizes='100%' />
         <span className="relative z-0 font-semakin text-basic-yellow">Loading</span>
