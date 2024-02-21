@@ -9,6 +9,7 @@ import { cn } from '@nextui-org/react';
 export default function SchoolDesc() {
   const COUNT = 4;
   const images = Array(COUNT).fill('');
+  const firstImages = Array(COUNT).fill('');
   const videoRefs = useRef<(HTMLVideoElement | null)[]>(Array(schools.length).fill(null));
   const {
     nodeRef,
@@ -27,7 +28,13 @@ export default function SchoolDesc() {
     switchSketch(index);
   }
 
-  function getFrame(index: number, isFirst = false) {
+  async function getFrame(index: number, isFirst = false) {
+    if (isFirst && firstImages[index]) {
+      await sketch.current?.updateImage(index, firstImages[index]);
+      images[index] = firstImages[index];
+      return;
+    }
+
     const { clientWidth: ow, clientHeight: oh } = nodeRef.current!;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d')!;
@@ -43,19 +50,26 @@ export default function SchoolDesc() {
     if (isFirst) node.currentTime = 2;
 
     ctx.clearRect(0, 0, ow, oh);
-    ctx.drawImage(node, (vw - ow) / 2, (vh - oh) / 2, ow, oh, 0, 0, ow, oh);
-    return new Promise((resolve) => {
-      canvas.toBlob(async (blob) => {
-        try {
-          const url = URL.createObjectURL(blob!);
-          await sketch.current?.updateImage(index, url);
-          images[index] = url;
-          resolve(url);
-        } catch (error) {
-          resolve('');
-        }
-      });
-    });
+    const rw = vw / ow;
+    const rh = vh / oh;
+    const ratio = Math.min(rw, rh);
+    const realW = ow * ratio;
+    const realH = oh * ratio;
+    console.log(ow, oh, realW, realH);
+    ctx.drawImage(node, Math.abs((realW - vw) / 2), Math.abs((realH - vh) / 2), realW, realH, 0, 0, ow, oh);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((res) => resolve(res)));
+    if (!blob) return '';
+
+    let url = '';
+
+    try {
+      url = URL.createObjectURL(blob);
+    } catch (error) {}
+
+    await sketch.current?.updateImage(index, url);
+    images[index] = url;
+    if (isFirst) firstImages[index] = url;
+    return url;
   }
 
   function onBeforeSketch(prevIndex: number, nextIndex: number) {
