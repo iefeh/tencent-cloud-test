@@ -321,7 +321,7 @@ function EventTasks(props: EventTaskProps) {
 
     useCountdown(now + durationTime, now, (time) => {
       const du = dayjs.duration(time);
-      setLeftText(du.format('HH:mm:ss'));
+      setLeftText(Math.floor(du.asHours()) + du.format(':mm:ss'));
 
       if (time <= 0) {
         updateTasks?.();
