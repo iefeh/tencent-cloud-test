@@ -4,9 +4,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Input } from '@nextui-org/react';
 import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
-import Image from 'next/image';
-import { useContext, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useContext, useEffect, useState } from 'react';
 
 const ProfileEdit = function () {
   const { userInfo, getUserInfo } = useContext(MobxContext);
@@ -38,6 +36,11 @@ const ProfileEdit = function () {
       setLoading(false);
     }
   });
+
+  useEffect(() => {
+    setName(userInfo?.username);
+    setAvatarURL(userInfo?.avatar_url);
+  }, [userInfo]);
 
   return (
     <div className="mt-[3.4375rem]">

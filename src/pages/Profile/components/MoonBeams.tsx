@@ -5,9 +5,10 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import MBHistoryButton from './MBHistoryButton';
 import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 
-export default function MoonBeams() {
-  const {userInfo} = useContext(MobxContext);
+function MoonBeams() {
+  const { userInfo } = useContext(MobxContext);
 
   return (
     <div className="w-[42.5rem] h-[15rem] relative overflow-hidden rounded-[0.625rem] border-1 border-[#1D1D1D] flex flex-col justify-between pt-[2.375rem] pb-[3.25rem] pr-[10.5rem] pl-[2.1875rem] hover:border-basic-yellow transition-[border-color] duration-500">
@@ -31,3 +32,5 @@ export default function MoonBeams() {
     </div>
   );
 }
+
+export default observer(MoonBeams);
