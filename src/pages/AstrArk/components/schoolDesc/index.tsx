@@ -46,10 +46,14 @@ export default function SchoolDesc() {
     ctx.drawImage(node, (vw - ow) / 2, (vh - oh) / 2, ow, oh, 0, 0, ow, oh);
     return new Promise((resolve) => {
       canvas.toBlob(async (blob) => {
-        const url = URL.createObjectURL(blob!);
-        await sketch.current?.updateImage(index, url);
-        images[index] = url;
-        resolve(url);
+        try {
+          const url = URL.createObjectURL(blob!);
+          await sketch.current?.updateImage(index, url);
+          images[index] = url;
+          resolve(url);
+        } catch (error) {
+          resolve('');
+        }
       });
     });
   }
