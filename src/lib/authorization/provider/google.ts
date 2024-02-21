@@ -10,7 +10,7 @@ import {NextApiResponse} from "next";
 import User from "@/lib/models/User";
 import {validateCallbackState} from "@/lib/authorization/provider/util";
 import UserGoogle from "@/lib/models/UserGoogle";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 const googleOAuthOps: OAuthOptions = {
     clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -31,7 +31,6 @@ export async function generateAuthorizationURL(req: any, res: any) {
     }
 
     // 检查注册邀请码
-    await getMongoConnection();
     let inviter: any;
     if (!req.userId && invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

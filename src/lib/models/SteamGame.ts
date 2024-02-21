@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 数据库里steam game信息的完整性
 export enum SteamGameFilter {
@@ -99,5 +100,6 @@ const SteamGameSchema = new Schema<ISteamGame>({
 SteamGameSchema.index({steam_appid: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const SteamGame = models.SteamGame || model<ISteamGame>('SteamGame', SteamGameSchema, 'steam_games');
+const connection = await connectToMongoDbDev();
+const SteamGame = models.SteamGame || connection.model<ISteamGame>('SteamGame', SteamGameSchema, 'steam_games');
 export default SteamGame;

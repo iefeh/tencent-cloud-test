@@ -188,6 +188,7 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
             case QuestType.ConnectDiscord:
             case QuestType.HoldDiscordRole:
             case QuestType.JoinDiscordServer:
+            case QuestType.SendDiscordMessage:
                 quest.authorization = AuthorizationType.Discord;
                 quest.user_authorized = false;
                 break;

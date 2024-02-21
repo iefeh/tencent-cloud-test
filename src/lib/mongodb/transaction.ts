@@ -1,7 +1,7 @@
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 async function doTransaction<T>(callback: (session: any) => Promise<T>): Promise<T> {
-    const conn = await getMongoConnection();
+    const conn = await connectToMongoDbDev();
     const session = await conn.startSession();
     session.startTransaction();
     try {

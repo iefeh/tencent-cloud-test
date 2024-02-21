@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 合约NFT
 export interface IContractNFT extends Document {
@@ -32,5 +33,6 @@ ContractNFTSchema.index({wallet_addr: 1});
 ContractNFTSchema.index({chain_id: 1, contract_address: 1, wallet_addr: 1});
 
 // 使用既有模型或者新建模型
-const ContractNFT = models.ContractNFT || model<IContractNFT>('ContractNFT', ContractNFTSchema, 'contract_nft');
+const connection = await connectToMongoDbDev();
+const ContractNFT = models.ContractNFT || connection.model<IContractNFT>('ContractNFT', ContractNFTSchema, 'contract_nft');
 export default ContractNFT;

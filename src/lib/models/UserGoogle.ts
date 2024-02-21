@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IUserGoogle extends Document {
     // 谷歌用户的关联id
@@ -47,5 +48,6 @@ UserGoogleSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserGoogleSchema.index({google_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const UserGoogle = models.UserGoogle || model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
+const connection = await connectToMongoDbDev();
+const UserGoogle = models.UserGoogle || connection.model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
 export default UserGoogle;

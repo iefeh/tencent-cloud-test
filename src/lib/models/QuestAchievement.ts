@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 任务完成记录
 export interface IQuestAchievement extends Document {
@@ -23,5 +24,6 @@ QuestAchievementSchema.index({user_id: 1, quest_id: 1}, {unique: true});
 QuestAchievementSchema.index({quest_id: 1});
 
 // 使用既有模型或者新建模型
-const QuestAchievement = models.QuestAchievement || model<IQuestAchievement>('QuestAchievement', QuestAchievementSchema, 'quest_achievements');
+const connection = await connectToMongoDbDev();
+const QuestAchievement = models.QuestAchievement || connection.model<IQuestAchievement>('QuestAchievement', QuestAchievementSchema, 'quest_achievements');
 export default QuestAchievement;

@@ -13,7 +13,7 @@ import {validateCallbackState} from "@/lib/authorization/provider/util";
 // import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
 import {da} from "date-fns/locale";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 const SteamWebAPI = require('steamapi');
 
@@ -32,7 +32,6 @@ export async function generateAuthorizationURL(req: any, res: any) {
     }
 
     // 检查注册邀请码
-    await getMongoConnection();
     let inviter: any;
     if (!req.userId && invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

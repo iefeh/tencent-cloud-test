@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export type WalletToken = {
     // 所在链id，如eth
@@ -70,5 +71,6 @@ WalletAssetSchema.index({wallet_addr: 1});
 WalletAssetSchema.index({user_id: 1});
 
 // 使用既有模型或者新建模型
-const WalletAsset = models.WalletAsset || model<IWalletAsset>('WalletAsset', WalletAssetSchema, 'wallet_assets');
+const connection = await connectToMongoDbDev();
+const WalletAsset = models.WalletAsset || connection.model<IWalletAsset>('WalletAsset', WalletAssetSchema, 'wallet_assets');
 export default WalletAsset;

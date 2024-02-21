@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IUserDiscord extends Document {
     // 谷歌用户的关联id
@@ -48,5 +49,6 @@ UserDiscordSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserDiscordSchema.index({discord_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const UserDiscord = models.UserDiscord || model<IUserDiscord>('UserDiscord', UserDiscordSchema, 'user_discords');
+const connection = await connectToMongoDbDev();
+const UserDiscord = models.UserDiscord || connection.model<IUserDiscord>('UserDiscord', UserDiscordSchema, 'user_discords');
 export default UserDiscord;

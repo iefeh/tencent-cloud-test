@@ -1,4 +1,4 @@
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import User from "@/lib/models/User";
 import logger from "@/lib/logger/winstonLogger";
 import Whitelist, {IWhitelist} from "@/lib/models/Whitelist";
@@ -35,7 +35,6 @@ export async function getUserFirstWhitelist(userId: string, whitelistId: string)
 
 // 检查用户的授权信息
 export async function queryUserAuth(userId: string): Promise<any> {
-    await getMongoConnection();
     const aggregation = [
         {$match: {'user_id': userId, 'deleted_time': null}},
         {
@@ -125,7 +124,6 @@ export async function queryUserAuth(userId: string): Promise<any> {
 }
 
 export async function queryUser(userId: string): Promise<any> {
-    await getMongoConnection();
     const aggregation = [
         {$match: {'user_id': userId, 'deleted_time': null}},
         {

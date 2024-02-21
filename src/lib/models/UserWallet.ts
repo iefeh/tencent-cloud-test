@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // TODO：用户钱包需要添加资产同步标识？后台根据标识同步用户的资产，下发徽章？
 export interface IUserWallet extends Document {
@@ -25,5 +26,6 @@ UserWalletSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserWalletSchema.index({wallet_addr: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const UserWallet = models.UserWallet || model<IUserWallet>('UserWallet', UserWalletSchema, 'user_wallets');
+const connection = await connectToMongoDbDev();
+const UserWallet = models.UserWallet || connection.model<IUserWallet>('UserWallet', UserWalletSchema, 'user_wallets');
 export default UserWallet;

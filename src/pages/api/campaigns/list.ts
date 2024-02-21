@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {PipelineStage} from 'mongoose';
@@ -18,7 +18,6 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
     const userId = req.userId;
-    await getMongoConnection();
     const pagination = await paginationCampaigns(pageNum, pageSize, campaign_status as CampaignStatus);
     if (pagination.total == 0 || pagination.data.length == 0) {
         // 当前没有匹配的数据
