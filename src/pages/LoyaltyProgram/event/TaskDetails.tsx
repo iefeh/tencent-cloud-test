@@ -26,11 +26,11 @@ export default function TaskDetails(props: Props) {
     : '--';
 
   return (
-    <div className="w-[56.25rem] pb-[16.5rem]">
+    <div className="w-auto lg:w-[56.25rem] pb-[16.5rem]">
       <div className="font-semakin text-[2.5rem]">{item ? item.name : '--'}</div>
 
-      <div className="w-full flex justify-between items-center">
-        <div className="flex items-center gap-[0.9375rem]">
+      <div className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 lg:gap-0">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center gap-[0.9375rem]">
           <Card className="basic-card text-basic-yellow shrink-0">
             <CardBody>
               <p>{item && item.status ? EVENT_STATUS_CLASS_DICT[item.status].label : '--'}</p>

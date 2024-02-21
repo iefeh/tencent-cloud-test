@@ -28,6 +28,9 @@ export interface TaskListItem {
   user_authorized?: boolean;
   verified?: boolean;
   achieved?: boolean;
+  started?: boolean;
+  start_time?: number;
+  started_after?: number;
 }
 
 export interface TaskListResDto {
