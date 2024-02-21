@@ -15,10 +15,12 @@ export class NftHolderAccelerator extends Accelerator<NftHolderReward> {
             return reward;
         }
         const props = this.accelerator.properties as NFTHolderAcceleratorProperties;
+        // 检查用户持有的已确认的NFT数量
         const filter: any = {
             chain_id: props.chain_id,
             contract_address: props.contract_address,
             wallet_addr: reward.wallet_address,
+            transaction_status: "confirmed",
         }
         if (props.min_hold_duration) {
             // 用户持有NFT的最小持有时间
