@@ -57,7 +57,7 @@ UserMetricRewardSchema.index({id: 1}, {unique: true});
 UserMetricRewardSchema.index({require_metric: 1, reward_type: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserMetricReward = models.UserMetricReward || connection.model<IUserMetricReward>('UserMetricReward', UserMetricRewardSchema, 'user_metric_rewards');
 export default UserMetricReward;
 

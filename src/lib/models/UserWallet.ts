@@ -26,6 +26,6 @@ UserWalletSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserWalletSchema.index({wallet_addr: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserWallet = models.UserWallet || connection.model<IUserWallet>('UserWallet', UserWalletSchema, 'user_wallets');
 export default UserWallet;

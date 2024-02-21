@@ -41,6 +41,6 @@ OAuthTokenSchema.index({platform: 1, platform_id: 1, deleted_time: 1}, {unique: 
 OAuthTokenSchema.index({platform_id: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const OAuthToken = models.OAuthToken || connection.model<IOAuthToken>('OAuthToken', OAuthTokenSchema, 'oauth_tokens');
 export default OAuthToken;

@@ -33,6 +33,6 @@ WhitelistSchema.index({whitelist_id: 1, whitelist_entity_type: 1, whitelist_enti
 WhitelistSchema.index({whitelist_entity_id: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const Whitelist = models.Whitelist || connection.model<IWhitelist>('Whitelist', WhitelistSchema, 'whitelists');
 export default Whitelist;

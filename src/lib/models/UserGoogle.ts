@@ -48,6 +48,6 @@ UserGoogleSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserGoogleSchema.index({google_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserGoogle = models.UserGoogle || connection.model<IUserGoogle>('UserGoogle', UserGoogleSchema, 'user_googles');
 export default UserGoogle;

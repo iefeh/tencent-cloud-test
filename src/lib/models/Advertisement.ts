@@ -41,6 +41,6 @@ const AdvertisementSchema = new Schema<IAdvertisement>({
 });
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const Advertisement = models.Advertisement || connection.model<IAdvertisement>('Advertisement', AdvertisementSchema, 'advertisements');
 export default Advertisement;

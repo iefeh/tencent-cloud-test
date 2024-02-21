@@ -49,6 +49,6 @@ UserDiscordSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
 UserDiscordSchema.index({discord_id: 1, deleted_time: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const UserDiscord = models.UserDiscord || connection.model<IUserDiscord>('UserDiscord', UserDiscordSchema, 'user_discords');
 export default UserDiscord;

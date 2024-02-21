@@ -57,6 +57,6 @@ UserSchema.index({email: 1}, {unique: true, partialFilterExpression: {email: {$e
 // 邀请码全局唯一
 UserSchema.index({invite_code: 1}, {unique: true, partialFilterExpression: {email: {$exists: true}}});
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const User = models.User || connection.model<IUser>('User', UserSchema, 'users');
 export default User;

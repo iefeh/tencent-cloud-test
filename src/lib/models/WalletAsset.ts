@@ -71,6 +71,6 @@ WalletAssetSchema.index({wallet_addr: 1});
 WalletAssetSchema.index({user_id: 1});
 
 // 使用既有模型或者新建模型
-const connection = await connectToMongoDbDev();
+const connection = connectToMongoDbDev();
 const WalletAsset = models.WalletAsset || connection.model<IWalletAsset>('WalletAsset', WalletAssetSchema, 'wallet_assets');
 export default WalletAsset;
