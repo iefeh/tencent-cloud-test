@@ -52,7 +52,7 @@ export default function SchoolDesc() {
     ctx.clearRect(0, 0, ow, oh);
     const rw = vw / ow;
     const rh = vh / oh;
-    const ratio = Math.min(rw, rh);
+    const ratio = ow > vw || oh > vh ? Math.max(rw, rh) : Math.min(rw, rh);
     const realW = ow * ratio;
     const realH = oh * ratio;
     console.log(ow, oh, realW, realH);
