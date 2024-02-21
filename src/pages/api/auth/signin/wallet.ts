@@ -40,7 +40,7 @@ router.post(async (req, res) => {
     const isNewUser = !userWallet;
     if (isNewUser && signup_mode) {
         // 执行注册确认
-        await doSignupConfirmation(res, inviter, address.toLowerCase());
+        await doSignupConfirmation(res, address.toLowerCase(), inviter);
         return;
     }
     // 执行常规用户登录
