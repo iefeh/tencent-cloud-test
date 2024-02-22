@@ -10,7 +10,7 @@ import {
 } from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
-import { debounce } from 'lodash';
+import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import { toast } from 'react-toastify';
 
@@ -125,7 +125,7 @@ class UserStore {
     localStorage.removeItem(KEY_PARTICLE_TOKEN);
   };
 
-  getUserInfo = debounce(async () => {
+  getUserInfo = throttle(async () => {
     const res = await getUserInfoAPI();
     this.setUserInfo(res);
     this.toggleLoginModal(false);
