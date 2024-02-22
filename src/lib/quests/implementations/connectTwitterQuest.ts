@@ -90,9 +90,3 @@ export async function queryUserTwitterAuthorization(userId: string): Promise<any
     const results = await UserTwitter.aggregate(aggregateQuery);
     return results.length > 0 ? results[0] : null;
 }
-
-// 校验用户是否绑定了twitter
-export async function verifyConnectTwitterQuest(userId: string, quest: IQuest): Promise<checkClaimableResult> {
-    const twitter = await queryUserTwitterAuthorization(userId);
-    return {claimable: !!twitter};
-}

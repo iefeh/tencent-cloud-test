@@ -4,9 +4,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Input } from '@nextui-org/react';
 import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
-import Image from 'next/image';
-import { useContext, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useContext, useEffect, useState } from 'react';
 
 const ProfileEdit = function () {
   const { userInfo, getUserInfo } = useContext(MobxContext);
@@ -39,11 +37,16 @@ const ProfileEdit = function () {
     }
   });
 
+  useEffect(() => {
+    setName(userInfo?.username);
+    setAvatarURL(userInfo?.avatar_url);
+  }, [userInfo]);
+
   return (
     <div className="mt-[3.4375rem]">
       {/* <div className="flex items-center font-semibold mb-[3.4375rem]">
         <div className="w-[6.875rem] h-[6.875rem] relative overflow-hidden rounded-full">
-          {avatar_url && <Image className="object-cover" src={avatar_url} alt="" fill />}
+          {avatar_url && <Image className="object-cover" src={avatar_url} alt="" fill sizes='100%' />}
         </div>
 
         <div className="text-2xl ml-5">Change profile photo</div>

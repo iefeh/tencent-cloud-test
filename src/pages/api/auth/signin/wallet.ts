@@ -5,13 +5,11 @@ import {verifySignWallet} from "@/lib/web3/wallet";
 import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
 import {generateUserSession, generateUserSignupSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
-import User, {IUser} from "@/lib/models/User";
+import User from "@/lib/models/User";
 import {v4 as uuidv4} from "uuid";
-import getMongoConnection from "@/lib/mongodb/client";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
-import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
-import {redis} from "@/lib/redis/client";
+import {AuthorizationType, SignupPayload} from "@/lib/authorization/types";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -26,7 +24,7 @@ router.post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    await getMongoConnection();
+
     let inviter: any;
     if (invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});

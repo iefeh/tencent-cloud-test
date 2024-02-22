@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {UserContextRequest} from "@/lib/middleware/auth";
 import Advertisement from "@/lib/models/Advertisement";
@@ -9,7 +9,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
     const now = Date.now();
-    await getMongoConnection();
     const ads = await Advertisement.find({
         active: true,
         start_time: {$lte: now},

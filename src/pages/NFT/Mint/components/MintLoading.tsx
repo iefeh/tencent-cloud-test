@@ -19,6 +19,7 @@ function MintLoading() {
           src={loadingImg}
           alt=""
           fill
+          sizes="100%"
         />
 
         <Image className="relative w-[2.3125rem] h-[2.0625rem] z-10" src={triangleImg} alt="" />

@@ -166,8 +166,10 @@ export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
   const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
+  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
+  const hasNoHeader = noHeaderList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
@@ -220,9 +222,13 @@ export default function App({ Component, pageProps }: AppProps) {
       window.luxy = res.default;
       window.luxy.getWrapperTranslateY = function () {
         if (!this.wrapper) return;
-        const { transform } = this.wrapper.style;
-        const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
-        return -y || 0;
+        try {
+          const { transform } = this.wrapper.style;
+          const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
+          return -y || 0;
+        } catch (error) {
+          return 0;
+        }
       };
       window.luxy.disable = function () {
         const { resizeId, scrollId } = this;
@@ -276,15 +282,15 @@ export default function App({ Component, pageProps }: AppProps) {
 
       <Web3ModalProvider>
         <NextUIProvider>
-          {!isInWhiteList && loading ? (
-            <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-          ) : (
-            <MobxContext.Provider value={store}>
-              <RootLayout isInWhiteList={isInWhiteList}>
+          <MobxContext.Provider value={store}>
+            {!isInWhiteList && loading ? (
+              <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+            ) : (
+              <RootLayout isInWhiteList={isInWhiteList} hasNoHeader={hasNoHeader}>
                 <Component {...pageProps} />
               </RootLayout>
-            </MobxContext.Provider>
-          )}
+            )}
+          </MobxContext.Provider>
         </NextUIProvider>
       </Web3ModalProvider>
 

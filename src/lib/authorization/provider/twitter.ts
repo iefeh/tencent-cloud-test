@@ -6,11 +6,15 @@ import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
 import {OAuthProvider} from "@/lib/authorization/oauth";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
-import {checkGetAuthorizationURLPrerequisite, validateCallbackState} from "@/lib/authorization/provider/util";
+import {
+    checkGetAuthorizationURLPrerequisite, deleteAuthToken,
+    saveRotateAuthToken,
+    validateCallbackState
+} from "@/lib/authorization/provider/util";
 import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
-import getMongoConnection from "@/lib/mongodb/client";
+import logger from "@/lib/logger/winstonLogger";
 
 const twitterOAuthOps: OAuthOptions = {
     clientId: process.env.TWITTER_CLIENT_ID!,
@@ -19,7 +23,15 @@ const twitterOAuthOps: OAuthOptions = {
     redirectURI: process.env.TWITTER_REDIRECT_URL!,
     authEndpoint: process.env.TWITTER_AUTH_URL!,
     tokenEndpoint: process.env.TWITTER_TOKEN_URL!,
-    enableBasicAuth: true
+    enableBasicAuth: true,
+    onAccessTokenRefreshed: async authToken => {
+        logger.debug("twitter access token refreshed:", authToken)
+        await saveRotateAuthToken(authToken);
+    },
+    onRefreshTokenExpired: async authToken => {
+        logger.debug("twitter refresh token revoked:", authToken);
+        await deleteAuthToken(authToken);
+    }
 }
 export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);
 

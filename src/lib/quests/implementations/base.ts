@@ -31,6 +31,13 @@ export abstract class QuestBase {
     // 用户领取对应任务的奖励
     abstract claimReward(userId: string): Promise<claimRewardResult>;
 
+    // 是否预备类任务，预备类任务只要调用prepare接口，即可完成任务
+    // 例如：需要上报即可完成的任务
+    // 预备类任务需要重写该方法，返回true
+    isPrepared(): boolean {
+        return false;
+    }
+
     async checkUserRewardDelta(userId: string): Promise<number> {
         // 检查静态任务奖励
         if (this.quest.reward.type == QuestRewardType.Fixed) {
@@ -97,6 +104,25 @@ export abstract class QuestBase {
         return !!reward;
     }
 
+    // 保存用户的任务达成记录
+    async addUserAchievement(userId: string, verified: boolean): Promise<void> {
+        const now = Date.now();
+        const inserts: any = {};
+        if (verified) {
+            inserts.verified_time = now;
+        }
+        await QuestAchievement.updateOne(
+            {user_id: userId, quest_id: this.quest.id, verified_time: null},
+            {
+                $set: inserts,
+                $setOnInsert: {
+                    created_time: now,
+                },
+            },
+            {upsert: true},
+        );
+    }
+
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
     async saveUserReward<T>(userId: string, taint: string, moonBeamDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean }> {
         const now = Date.now();
@@ -117,12 +143,21 @@ export abstract class QuestBase {
                     await extraTxOps(session);
                 }
                 const opts = {session};
-                await QuestAchievement.updateOne({user_id: userId, quest_id: this.quest.id}, {
-                    $setOnInsert: {created_time: Date.now()},
-                }, {upsert: true, session: session});
+                await QuestAchievement.updateOne(
+                    {user_id: userId, quest_id: this.quest.id, verified_time: null},
+                    {
+                        $set: {
+                            verified_time: now,
+                        },
+                        $setOnInsert: {
+                            created_time: now,
+                        },
+                    },
+                    {upsert: true, session: session},
+                );
                 await audit.save(opts);
                 await User.updateOne({user_id: userId}, {$inc: {moon_beam: audit.moon_beam_delta}}, opts);
-            })
+            });
             return {done: true, duplicated: false}
         } catch (error) {
             if (isDuplicateKeyError(error)) {

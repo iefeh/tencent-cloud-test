@@ -1,5 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 import {WhitelistEntityType} from "@/lib/quests/types";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // TODO：用户钱包需要添加资产同步标识？后台根据标识同步用户的资产，下发徽章？
 export interface IWhitelist extends Document {
@@ -32,5 +33,6 @@ WhitelistSchema.index({whitelist_id: 1, whitelist_entity_type: 1, whitelist_enti
 WhitelistSchema.index({whitelist_entity_id: 1});
 
 // 使用既有模型或者新建模型
-const Whitelist = models.Whitelist || model<IWhitelist>('Whitelist', WhitelistSchema, 'whitelists');
+const connection = connectToMongoDbDev();
+const Whitelist = models.Whitelist || connection.model<IWhitelist>('Whitelist', WhitelistSchema, 'whitelists');
 export default Whitelist;

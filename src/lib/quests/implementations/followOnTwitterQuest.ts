@@ -37,4 +37,8 @@ export class FollowOnTwitterQuest extends ConnectTwitterQuest {
         await promiseSleep(2000);
         return super.claimReward(userId);
     }
+
+    isPrepared(): boolean {
+        return true;
+    }
 }

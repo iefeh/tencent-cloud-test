@@ -34,6 +34,7 @@ export default function MainTitle() {
   }, []);
 
   useEffect(() => {
+    if (!window.luxy) return;
     window.luxy.disable();
     document.documentElement.style.overflow = 'hidden';
 

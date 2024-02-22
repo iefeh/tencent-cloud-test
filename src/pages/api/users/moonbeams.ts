@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import logger from "@/lib/logger/winstonLogger";
@@ -20,12 +20,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const pageSize = Number(page_size);
 
     const userId = req.userId!;
-    await getMongoConnection();
     const pagination = await paginationUserMoonbeams(userId, pageNum, pageSize);
-    if (pagination.total == 0) {
+    if (pagination.total == 0 || pagination.mbs.length == 0) {
         // 当前没有匹配的数据
         res.json(response.success({
-            total: 0,
+            total: pagination.total,
             page_num: pageNum,
             page_size: pageSize,
             quests: pagination.mbs,

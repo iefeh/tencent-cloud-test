@@ -1,5 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 import {QuestRewardType, QuestType} from "@/lib/quests/types";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
 // 任务记录
@@ -69,5 +70,6 @@ const QuestSchema = new Schema<IQuest>({
 QuestSchema.index({id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
-const Quest = models.Quest || model<IQuest>('Quest', QuestSchema, 'quests');
+const connection = connectToMongoDbDev();
+const Quest = models.Quest || connection.model<IQuest>('Quest', QuestSchema, 'quests');
 export default Quest;

@@ -6,7 +6,7 @@ import {errorInterceptor} from "@/lib/middleware/error";
 import {redis} from "@/lib/redis/client";
 import User from "@/lib/models/User";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
+import connectToMongoDbDev, {isDuplicateKeyError} from "@/lib/mongodb/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -19,7 +19,6 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
         return res.json(response.tooManyRequests());
     }
     try {
-        await getMongoConnection();
         // 获取用户的邀请码
         const user = await User.findOne({user_id: userId, deleted_time: null}, {_id: 0, invite_code: 1});
         if (!user) {

@@ -1,6 +1,6 @@
 import {NextApiResponse} from "next";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
+import connectToMongoDbDev, {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/common/url";
 import * as response from "@/lib/response/response";
 import {generateUserSession, generateUserSignupSession} from "@/lib/middleware/session";
@@ -53,7 +53,6 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
         return;
     }
     try {
-        await getMongoConnection();
         // 获取当前的授权第三方用户
         const authParty = await authFlow.getAuthParty(req, authPayload);
         if (authPayload.flow == AuthorizationFlow.CONNECT) {
