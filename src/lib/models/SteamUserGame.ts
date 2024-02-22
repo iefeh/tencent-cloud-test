@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export type SteamUserGameStats = {
     // 游戏id
@@ -42,5 +43,6 @@ SteamUserGameSchema.index({user_id: 1, steam_id: 1});
 SteamUserGameSchema.index({steam_id: 1, user_id: 1});
 
 // 使用既有模型或者新建模型
-const SteamUserGame = models.SteamUserGame || model<ISteamUserGame>('SteamUserGame', SteamUserGameSchema, 'steam_user_games');
+const connection = connectToMongoDbDev();
+const SteamUserGame = models.SteamUserGame || connection.model<ISteamUserGame>('SteamUserGame', SteamUserGameSchema, 'steam_user_games');
 export default SteamUserGame;

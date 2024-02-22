@@ -6,7 +6,7 @@ import {errorInterceptor} from "@/lib/middleware/error";
 import {redis} from "@/lib/redis/client";
 import User from "@/lib/models/User";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
+import connectToMongoDbDev, {isDuplicateKeyError} from "@/lib/mongodb/client";
 import UserWallet from "@/lib/models/UserWallet";
 import {PipelineStage} from "mongoose";
 import Quest from "@/lib/models/Quest";
@@ -24,7 +24,6 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
-    await getMongoConnection();
     // 检查用户当前绑定的钱包
     const wallet = await UserWallet.findOne({user_id: userId, deleted_time: null}, {_id: 0, wallet_addr: 1});
     if (!wallet) {
@@ -39,11 +38,11 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }
     // 检查用户的NFT
     const pagination = await paginationWalletNFTs(wallet.wallet_addr, pageNum, pageSize);
-    if (pagination.total == 0) {
+    if (pagination.total == 0 || pagination.nfts.length == 0) {
         // 当前没有匹配的数据
         return res.json(response.success({
             wallet_connected: true,
-            total: 0,
+            total: pagination.total,
             page_num: pageNum,
             page_size: pageSize,
             nfts: pagination.nfts,

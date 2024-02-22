@@ -124,6 +124,8 @@ export class Sketch {
 
     // image cover
     const img = this.textures[index].image;
+    if (!img) return;
+
     this.imageAspect = img.height / img.width;
     let a1;
     let a2;

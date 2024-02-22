@@ -9,11 +9,13 @@ export enum QuestType {
     ConnectSteam = "connect_steam",
     FollowOnTwitter = "follow_on_twitter",
     RetweetTweet = "retweet_tweet",
+    LikeTweet = "like_tweet",
     JoinDiscordServer = "join_discord_server",
     HoldDiscordRole = "hold_discord_role",
     Whitelist = "whitelist",
     UserMetric = "user_metric",
     HoldNFT = "hold_nft",
+    SendDiscordMessage = "send_discord_message",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -22,12 +24,6 @@ export const QuestMetrics = new Map<QuestType, Metric[]>([
     [QuestType.ConnectWallet, [Metric.WalletTokenUsdValue, Metric.WalletNftUsdValue, Metric.WalletAssetUsdValue]],
     // 连接steam时，可用指标为：账号年限、游戏数量、账号价值、账号综合评分
     [QuestType.ConnectSteam, [Metric.SteamAccountYears, Metric.SteamAccountGameCount, Metric.SteamAccountUSDValue, Metric.SteamAccountRating]]
-]);
-
-// 允许预备完成的任务，前端在任务有该标识时，当用户点击任务按钮执行上报.
-export const preparedQuests = new Map<QuestType, boolean>([
-    [QuestType.RetweetTweet, true],
-    [QuestType.FollowOnTwitter, true],
 ]);
 
 export enum WhitelistEntityType {
@@ -47,16 +43,46 @@ export enum QuestRewardType {
     Range = "range",
 }
 
+// 发送discord消息(文本频道或者论坛回帖都适用.)
+export type SendDiscordMessage = {
+    // discord的邀请链接，用户可以通过该链接加入DC
+    guild_url: string;
+    // 在指定的工会
+    guild_id: string;
+    // 在指定的频道
+    channel_id: string;
+    // 最短消息长度
+    min_msg_length: number;
+    // 发送的开始时间，毫秒时间戳
+    start_time: number;
+    // 发送的结束时间，毫秒时间戳
+    end_time: number;
+    // 任务地址
+    url: string;
+}
+
 // 关注
 export type FollowOnTwitter = {
-    // 关注的目标用户，用于构建intent地址
+    // 关注的目标用户的handle，如@Moonveil_Studio
     username: string;
+    // 目标用户的twitter id，如1669209055024259074
+    target_twitter_id: string;
     // 任务地址
     url: string;
 }
 
 // 转推
 export type RetweetTweet = {
+    // 目标推文地址
+    tweet_url: string;
+    // 推文id，用于构建intent地址
+    tweet_id: string;
+    // 任务地址
+    url: string;
+}
+
+// 点赞推文
+export type LikeTweet = {
     // 目标推文地址
     tweet_url: string;
     // 推文id，用于构建intent地址
@@ -123,6 +149,10 @@ export type checkClaimableResult = {
     claimable: boolean;
     // 是否需要用户授权(任务需要用户先授权再进行任务申领检查)
     require_authorization?: AuthorizationType;
+    // 未能领取任务奖励情况下的提醒
+    tip?: string;
+    // 传递自定义信息
+    extra?: any;
 }
 
 // 领取任务奖励结果
@@ -135,4 +165,6 @@ export type claimRewardResult = {
     claimed_amount?: number;
     // 未能领取任务奖励情况下的提醒
     tip?: string;
+    // 传递自定义信息
+    extra?: any;
 }

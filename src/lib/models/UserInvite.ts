@@ -1,4 +1,5 @@
 import {Document, Schema, models, model} from 'mongoose'
+import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IUserInvite extends Document {
     // 邀请人id
@@ -18,5 +19,6 @@ const UserInviteSchema = new Schema<IUserInvite>({
 UserInviteSchema.index({user_id: 1, invitee_id: 1});
 UserInviteSchema.index({invitee_id: 1});
 // 使用既有模型或者新建模型
-const UserInvite = models.UserInvite || model<IUserInvite>('UserInvite', UserInviteSchema, 'user_invites');
+const connection = connectToMongoDbDev();
+const UserInvite = models.UserInvite || connection.model<IUserInvite>('UserInvite', UserInviteSchema, 'user_invites');
 export default UserInvite;

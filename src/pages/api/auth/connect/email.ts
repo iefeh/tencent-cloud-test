@@ -2,7 +2,7 @@ import * as response from '../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
 import {redis} from '@/lib/redis/client';
 import User from "@/lib/models/User";
-import getMongoConnection, {isDuplicateKeyError} from "@/lib/mongodb/client";
+import connectToMongoDbDev, {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {createRouter} from "next-connect";
 import {CaptchaType} from "@/lib/authorization/types";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
@@ -32,7 +32,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         return
     }
     // 执行用户邮件绑定、删除验证码
-    await getMongoConnection();
     try {
         await User.updateOne({'user_id': req.userId, email: null}, {email: email});
         await redis.del(`${CaptchaType.ConnectCaptcha}:${email}`);

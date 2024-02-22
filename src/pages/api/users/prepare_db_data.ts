@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import UserMetricReward, {RewardItem, UserMetricRewardType} from "@/lib/models/UserMetricReward";
@@ -13,7 +13,6 @@ import {QuestRewardType, QuestType} from "@/lib/quests/types";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
-    await getMongoConnection();
     // await saveQuests();
     // await saveWalletTokenReward();
     // await saveWalletNftReward();

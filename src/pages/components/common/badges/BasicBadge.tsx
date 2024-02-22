@@ -17,7 +17,7 @@ export default function BasicBadge(props: BasicBadgeProps) {
       ])}
     >
       <div className={cn(['relative', src ? 'w-full h-full' : 'w-[1.5625rem] h-[1.5625rem]'])}>
-        <Image src={src || plusImg} alt="" fill />
+        <Image src={src || plusImg} alt="" fill sizes='100%' />
       </div>
     </div>
   );

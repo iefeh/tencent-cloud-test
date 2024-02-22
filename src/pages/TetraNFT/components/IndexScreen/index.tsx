@@ -4,6 +4,7 @@ export default function IndexScreen() {
   const rafId = useRef(0);
 
   function runAni() {
+    if (!window.luxy) return;
     requestAnimationFrame(runAni);
     const y = window.luxy.getWrapperTranslateY();
     const sy = document.documentElement.scrollTop || document.body.scrollTop;

@@ -4,13 +4,11 @@ import * as response from "@/lib/response/response";
 import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
 import {v4 as uuidv4} from "uuid";
 import {redis} from "@/lib/redis/client";
-import {twitterOAuthProvider} from "@/lib/authorization/provider/twitter";
 import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
 import {NextApiResponse} from "next";
 import User from "@/lib/models/User";
 import {checkGetAuthorizationURLPrerequisite, validateCallbackState} from "@/lib/authorization/provider/util";
 import UserGoogle from "@/lib/models/UserGoogle";
-import getMongoConnection from "@/lib/mongodb/client";
 
 const googleOAuthOps: OAuthOptions = {
     clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -29,6 +27,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
     if (!checkResult.passed) {
         return;
     }
+
     // 生成授权的状态字段
     const currFlow = req.userId ? AuthorizationFlow.CONNECT : AuthorizationFlow.LOGIN;
     const payload: AuthorizationPayload = {

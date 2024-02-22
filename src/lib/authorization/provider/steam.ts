@@ -12,16 +12,6 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {checkGetAuthorizationURLPrerequisite, validateCallbackState} from "@/lib/authorization/provider/util";
 // import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
-import {da} from "date-fns/locale";
-import getMongoConnection from "@/lib/mongodb/client";
-
-const SteamWebAPI = require('steamapi');
-
-const OPENID_CHECK = {
-    ns: 'http://specs.openid.net/auth/2.0',
-    claimed_id: 'https://steamcommunity.com/openid/id/',
-    identity: 'https://steamcommunity.com/openid/id/',
-};
 
 export async function generateAuthorizationURL(req: any, res: any) {
     // 检查用户的授权落地页
@@ -47,7 +37,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
         "state": state,
     });
     const authURL = appendQueryParamsToUrl(process.env.STEAM_AUTH_URL!, {
-        "openid.ns": OPENID_CHECK.ns,
+        "openid.ns": 'http://specs.openid.net/auth/2.0',
         "openid.mode": "checkid_setup",
         "openid.return_to": redirectURL,
         "openid.realm": redirectURL,

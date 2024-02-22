@@ -1,6 +1,6 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import getMongoConnection from "@/lib/mongodb/client";
+import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import User from "@/lib/models/User";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
@@ -20,7 +20,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    await getMongoConnection();
     const data = await getParticleUser(particle_user_id, particle_auth_token);
 
     let particle: any;

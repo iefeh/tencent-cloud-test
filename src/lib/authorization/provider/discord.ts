@@ -16,8 +16,6 @@ import {
 } from "@/lib/authorization/provider/util";
 import UserDiscord from "@/lib/models/UserDiscord";
 import logger from "@/lib/logger/winstonLogger";
-import getMongoConnection from "@/lib/mongodb/client";
-
 
 const discordOAuthOps: OAuthOptions = {
     clientId: process.env.DISCORD_CLIENT_ID!,
@@ -28,11 +26,11 @@ const discordOAuthOps: OAuthOptions = {
     tokenEndpoint: process.env.DISCORD_TOKEN_URL!,
     enableBasicAuth: true,
     onAccessTokenRefreshed: async authToken => {
-        logger.debug("access token refreshed:", authToken)
+        logger.debug("discord access token refreshed:", authToken)
         await saveRotateAuthToken(authToken);
     },
     onRefreshTokenExpired: async authToken => {
-        logger.debug("refresh token revoked:", authToken);
+        logger.debug("discord refresh token revoked:", authToken);
         await deleteAuthToken(authToken);
     }
 }
