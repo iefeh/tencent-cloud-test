@@ -239,7 +239,7 @@ function EventTasks(props: EventTaskProps) {
                 <ModalBody>
                   <p className="font-poppins-medium text-base">
                     {userInfo
-                      ? `It seems you haven't connect your ${getAccountText()}. Please connect it at first.`
+                      ? `Your ${getAccountText()} is not connected or the previous authorization has expired. Please click to reconnect.`
                       : "It seems you haven't logged in to the website. Please log in first to access the content."}
                   </p>
                 </ModalBody>
