@@ -19,6 +19,7 @@ import { KEY_EMAIL } from '@/constant/storage';
 import { sendEmailCodeAPI, sendEmailConnectCodeAPI } from '@/http/services/login';
 import { observer } from 'mobx-react-lite';
 import { toast } from 'react-toastify';
+import { throttle } from 'lodash';
 
 interface BtnGroup {
   title: string;
@@ -219,6 +220,20 @@ const LoginModal = function () {
     desc,
     reset,
   } = useEmail();
+  const [initLoading, setInitLoading] = useState(false);
+
+  const onContinueClick = throttle(async () => {
+    setInitLoading(true);
+
+    try {
+      await initLoginInfo();
+    } catch (error: any) {
+      toast.error(error?.message || error);
+      console.log('Continue Login Error:', error);
+    } finally {
+      setInitLoading(false);
+    }
+  }, 500);
 
   useEffect(() => {
     setEmailLoginVisible(isConnect);
@@ -363,8 +378,8 @@ const LoginModal = function () {
               </ModalBody>
 
               <ModalFooter>
-                <BasicButton label="Continue" onClick={initLoginInfo} />
-                <LGButton label="Switch Account" actived onClick={switchAccount} />
+                <LGButton label="Continue" loading={initLoading} onClick={onContinueClick} />
+                <LGButton label="Switch Account" actived disabled={initLoading} onClick={switchAccount} />
               </ModalFooter>
             </>
           )}
