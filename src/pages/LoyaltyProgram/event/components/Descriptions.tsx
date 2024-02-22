@@ -10,12 +10,12 @@ export default function Descriptions(props: Props) {
   const { content } = props;
 
   return (
-    <div className="mt-20">
+    <div className="mt-20 max-w-full">
       <div className="font-semakin text-2xl leading-none">Descriptions</div>
 
       <Divider className="my-6" />
 
-      <ShadowDescription content={content || '--'} />
+      <ShadowDescription className="max-w-full" content={content || '--'} />
     </div>
   );
 }
