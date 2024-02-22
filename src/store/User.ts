@@ -12,6 +12,7 @@ import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
 import { debounce } from 'lodash';
 import { makeAutoObservable } from 'mobx';
+import { toast } from 'react-toastify';
 
 class UserStore {
   token = '';
@@ -94,7 +95,6 @@ class UserStore {
   };
 
   initLoginInfo = async () => {
-    this.toggleNewUserModal(false);
     const res = await confirmSignUpAPI();
     if (res) {
       localStorage.setItem(KEY_AUTHORIZATION, res.token || '');
@@ -113,8 +113,9 @@ class UserStore {
       return;
     }
 
-    this.loginParticle();
+    this.loginParticle().catch((error: any) => toast.error(error.message || error));
     await this.getUserInfo();
+    this.toggleNewUserModal(false);
   };
 
   switchAccount = () => {
