@@ -1,17 +1,15 @@
 import * as response from '../../../../lib/response/response';
 import {NextApiResponse, NextApiRequest} from 'next'
 import {createRouter} from "next-connect";
-import {verifySignature, verifySignWallet} from "@/lib/web3/wallet";
-import {redis} from "@/lib/redis/client";
-import logger from "@/lib/logger/winstonLogger";
+import {verifySignWallet} from "@/lib/web3/wallet";
 import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
-import {generateUserSession} from "@/lib/middleware/session";
+import {generateUserSession, generateUserSignupSession} from "@/lib/middleware/session";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import User from "@/lib/models/User";
 import {v4 as uuidv4} from "uuid";
-import connectToMongoDbDev from "@/lib/mongodb/client";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
+import {AuthorizationType, SignupPayload} from "@/lib/authorization/types";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -20,8 +18,13 @@ router.post(async (req, res) => {
     if (!address) {
         return;
     }
-    // 检查邀请码
-    const {invite_code} = req.body;
+    // 检查邀请码、注册模式
+    const {invite_code, signup_mode} = req.body;
+    if (signup_mode && signup_mode !== "enabled") {
+        res.json(response.invalidParams());
+        return
+    }
+
     let inviter: any;
     if (invite_code) {
         inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
@@ -31,8 +34,14 @@ router.post(async (req, res) => {
         }
     }
     // 检查用户是否历史用户
-    let userWallet = await UserWallet.findOne({wallet_addr: address.toLowerCase(), deleted_time: null});
+    let userWallet = await UserWallet.findOne({wallet_addr: address.toLowerCase(), deleted_time: null}) as IUserWallet;
     const isNewUser = !userWallet;
+    if (isNewUser && signup_mode) {
+        // 执行注册确认
+        await doSignupConfirmation(res, address.toLowerCase(), inviter);
+        return;
+    }
+    // 执行常规用户登录
     if (isNewUser) {
         // 用户不存在，需要创建新的用户与钱包绑定
         userWallet = await createUserAndWallet(address, inviter);
@@ -44,6 +53,39 @@ router.post(async (req, res) => {
         is_new_user: isNewUser,
     }));
 });
+
+async function doSignupConfirmation(res: any, address: string, inviter: any) {
+    // 构建注册的负载信息
+    const now = Date.now();
+    const userId = uuidv4();
+    const payload: SignupPayload = {
+        authorization_type: AuthorizationType.Wallet,
+        user: {
+            user_id: userId,
+            username: address,
+            avatar_url: process.env.DEFAULT_AVATAR_URL,
+            created_time: now,
+        },
+        third_party_user: {
+            user_id: userId,
+            wallet_addr: address.toLowerCase(),
+            created_time: now,
+        },
+    };
+    if (inviter) {
+        payload.invite = {
+            user_id: inviter.user_id,
+            invitee_id: userId,
+            created_time: now,
+        };
+    }
+    // 生成二次确认的注册token
+    const token = await generateUserSignupSession(payload);
+    res.json(response.signupConfirmation({
+        signup_cred: token,
+    }));
+}
+
 
 async function createUserAndWallet(address: string, inviter: any): Promise<IUserWallet> {
     const user = new User({
