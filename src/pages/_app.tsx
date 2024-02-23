@@ -281,7 +281,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <Web3ModalProvider>
-        <NextUIProvider>
+        <NextUIProvider navigate={router.push}>
           <MobxContext.Provider value={store}>
             {!isInWhiteList && loading ? (
               <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
