@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import CircularLoading from '@/pages/components/common/CircularLoading';
-import { Divider } from '@nextui-org/react';
+import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 
 function LoyaltyEvent() {
   const { userInfo } = useContext(MobxContext);
@@ -33,10 +33,6 @@ function LoyaltyEvent() {
     }
   }, 500);
 
-  function onBackClick() {
-    router.push({ pathname: '/LoyaltyProgram/earn', query: { ...router.query, tabKey: 'Events' } });
-  }
-
   useEffect(() => {
     queryEventDetails();
   }, [userInfo]);
@@ -47,16 +43,9 @@ function LoyaltyEvent() {
         <title>Event Details | Moonveil Entertainment</title>
       </Head>
 
-      <div className="text-base pt-[10.9375rem] !ml-0">
-        <span className="text-[#666666] hover:text-white transition-colors cursor-pointer" onClick={onBackClick}>
-          Earn Moon Beams &gt;{' '}
-        </span>
-        <span>Event Details</span>
-      </div>
+      <AutoBreadcrumbs className="pt-[10.9375rem] !ml-0" hrefs={['/LoyaltyProgram/earn']} />
 
-      <Divider className="mt-[1.1875rem] bg-[rgba(255,255,255,0.1)] mb-8" />
-
-      <div className="flex flex-col lg:flex-row gap-[3.125rem] pb-32 relative max-w-full">
+      <div className="flex flex-col lg:flex-row gap-[3.125rem] pb-32 relative max-w-full mt-8">
         <TaskDetails item={eventDetails} onRefresh={queryEventDetails} />
 
         <TaskReward item={eventDetails} onRefresh={queryEventDetails} />
