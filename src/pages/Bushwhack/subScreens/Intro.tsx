@@ -113,18 +113,14 @@ export default function IntroScreen() {
           {activeIndex > 0 && (
             <div
               ref={navigationPrevRef}
-              className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
+              onClick={() => swiperRef.current?.slidePrev()}
             >
               <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
                 {roles[activeIndex - 1].name}
               </div>
 
-              <Image
-                className="w-[6.875rem] h-[3.75rem] cursor-pointer"
-                src={leftArrowImg}
-                alt=""
-                onClick={() => swiperRef.current?.slidePrev()}
-              />
+              <Image className="w-[6.875rem] h-[3.75rem]" src={leftArrowImg} alt="" />
             </div>
           )}
           {activeIndex < roles.length - 1 && (

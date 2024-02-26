@@ -4,7 +4,7 @@ import videoImg from 'img/bushwhack/content/video.jpg';
 
 export default function GameContent() {
   return (
-    <div className="w-full relative z-10">
+    <div className="w-full relative z-30 shadow-[0_0_2rem_2rem_#000]">
       <Image className="object-cover" src="/img/bushwhack/content/bg.jpg" alt="" fill />
 
       <div className="max-w-[75rem] m-auto flex flex-col pt-[26.625rem] pb-[13.625rem] relative z-0">
@@ -29,7 +29,7 @@ export default function GameContent() {
           }
         />
 
-        <Image className="w-full h-auto mt-[11.875rem]" src={videoImg} alt="" />
+        <Image className="w-full h-auto mt-20" src={videoImg} alt="" />
 
         <PageDesc
           className="items-start text-left mt-14"
