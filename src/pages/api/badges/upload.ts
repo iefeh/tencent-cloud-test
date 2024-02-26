@@ -19,6 +19,7 @@ router.post(async (req, res) => {
     for (const badgeName of badgeNames) {
         const badgeDirPath = path.join(badgesDirPath, badgeName);
         const imageFiles = fs.readdirSync(badgeDirPath);
+        let series = new Map<string, BadgeSeries>();
         for (const fileName of imageFiles) {
             const badgePath = path.join(badgeDirPath, fileName);
             const badgeLevel = fileName.substr(-5, 1);
@@ -33,45 +34,44 @@ router.post(async (req, res) => {
             // 上传到s3
             await upload2public("moonveil-public", `badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`, iconBuffer, "image/webp");
             await upload2public("moonveil-public", `badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`, buffer, "image/webp");
-            // 构建badge并保存
-            await Badge.updateOne(
-                {id: uuidv5(badgeName, NAMESPACE)},
-                {
-                    $set: {
-                        name: badgeName,
-                        description: "",
-                        series: new Map<string, BadgeSeries>([
-                            [badgeLevel, {
-                                description: "",
-                                icon_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`,
-                                image_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`,
-                                // 初始化requirements
-                                requirements: [
-                                    {
-                                        type: RequirementType.UserMetric,
-                                        properties: {
-                                            metric: "retweet_count",
-                                            operator: ">=",
-                                            value: 0,
-                                            reward_moon_beam: 0,
-                                        },
-                                    }
-                                ],
-                                open_for_mint: false,
-                            }],
-                        ]),
-                        obtain_url: "",
-                        chain_id: "80001",
-                        updated_time: Date.now(),
-
-                    },
-                    $setOnInsert: {
-                        created_time: Date.now(),
-                    },
-                },
-                {upsert: true},
-            );
+            series.set(badgeLevel, {
+                description: "",
+                icon_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`,
+                image_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`,
+                // 初始化requirements
+                requirements: [
+                    {
+                        type: RequirementType.UserMetric,
+                        properties: {
+                            metric: "retweet_count",
+                            operator: ">=",
+                            value: 0,
+                            reward_moon_beam: 0,
+                        },
+                    }
+                ],
+                open_for_mint: false,
+            });
         }
+        // 构建badge并保存
+        await Badge.updateOne(
+            {id: uuidv5(badgeName, NAMESPACE)},
+            {
+                $set: {
+                    name: badgeName,
+                    description: "",
+                    series: series,
+                    obtain_url: "",
+                    chain_id: "80001",
+                    updated_time: Date.now(),
+                    active: false,
+                },
+                $setOnInsert: {
+                    created_time: Date.now(),
+                },
+            },
+            {upsert: true},
+        );
     }
     return res.json(response.success());
 });

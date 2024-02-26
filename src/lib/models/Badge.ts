@@ -15,6 +15,10 @@ export interface IBadges extends Document {
     obtain_url: string,
     // 支持的链id
     chain_id: string,
+    // 排序
+    order: number,
+    // 当前徽章是否激活
+    active: boolean,
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -70,6 +74,8 @@ const BadgesSchema = new Schema<IBadges>({
     series: {type: Map},
     obtain_url: {type: String},
     chain_id: {type: String},
+    order: {type: Number},
+    active: {type: Boolean},
     created_time: {type: Number},
     updated_time: {type: Number},
     deleted_time: {type: Number, default: null},
