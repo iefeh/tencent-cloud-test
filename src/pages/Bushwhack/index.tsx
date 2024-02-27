@@ -52,7 +52,7 @@ export default function BushwhackPage() {
 
       <GameContent />
 
-      {/* <IntroScreen /> */}
+      <IntroScreen />
     </section>
   );
 }
