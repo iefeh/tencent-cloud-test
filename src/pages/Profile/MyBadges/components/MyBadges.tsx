@@ -1,9 +1,16 @@
+import { BadgeItem } from '@/http/services/badges';
 import BasicBadge from '@/pages/components/common/badges/BasicBadge';
-import { useState } from 'react';
 
-export default function MyBadges() {
-  const [total, setTotal] = useState(32);
-  const [badges, setBadges] = useState(Array(36).fill(''));
+interface Props {
+  total: number;
+  badges: (BadgeItem | null)[];
+  onView?: (item?: BadgeItem | null) => void;
+  onClaim?: (id: string) => void;
+  onMint?: (id: string) => void;
+}
+
+export default function MyAssets(props: Props) {
+  const { total, badges, onView, onClaim, onMint } = props;
 
   return (
     <div className="mt-12">
@@ -11,7 +18,7 @@ export default function MyBadges() {
 
       <div className="w-full grid grid-cols-3 md:grid-cols-8 xl:grid-cols-9 relative z-0 gap-6 mt-10 border-1 border-basic-gray rounded-base p-14">
         {badges.map((badge, index) => (
-          <BasicBadge key={index} />
+          <BasicBadge key={index} item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
         ))}
       </div>
     </div>

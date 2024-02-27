@@ -2,8 +2,18 @@ import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 import DisplayBadges from './components/DisplayBadges';
 import MyBadges from './components/MyBadges';
+import useMyBadges from './hooks/useMyBadges';
+import useDisplayBadges from './hooks/useDisplayBadges';
+import { throttle } from 'lodash';
 
 export default function MyBadgesPage() {
+  const { badges: displayBadges, queryDisplayBadges } = useDisplayBadges();
+  const { total, badges, queryMyBadges, claimBadge, mintBadge } = useMyBadges();
+
+  const updateBadges = throttle(async () => {
+    await Promise.all([queryDisplayBadges(), queryMyBadges()]);
+  }, 500);
+
   return (
     <section
       id="luxy"
@@ -15,9 +25,9 @@ export default function MyBadgesPage() {
 
       <AutoBreadcrumbs />
 
-      <DisplayBadges />
+      <DisplayBadges badges={displayBadges} />
 
-      <MyBadges />
+      <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} />
     </section>
   );
 }

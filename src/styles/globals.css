@@ -7,6 +7,7 @@
   --background-rgb: 0, 0, 0;
   --basic-yellow: #f6c799;
   background-color: #000;
+  font-family: poppins;
 }
 
 body {
@@ -111,7 +112,7 @@ body {
   }
 }
 
-*::-webkit-scrollbar{
+*::-webkit-scrollbar {
   display: none;
 }
 
