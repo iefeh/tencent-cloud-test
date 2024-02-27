@@ -41,7 +41,7 @@ router.post(async (req, res) => {
                 // 初始化requirements
                 requirements: [
                     {
-                        type: RequirementType.UserMetric,
+                        type: RequirementType.Metric,
                         properties: {
                             metric: "retweet_count",
                             operator: ">=",

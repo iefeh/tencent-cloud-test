@@ -42,7 +42,7 @@ export type BadgeSeries = {
 // 要求类型
 export enum RequirementType {
     // 用户指标
-    UserMetric = "user_metric",
+    Metric = "metric",
     // 白名单
     Whitelist = "whitelist",
 }

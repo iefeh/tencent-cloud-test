@@ -7,7 +7,9 @@ export interface IUserBadges extends Document {
     // 徽章id
     badge_id: string,
     // 用户获取的徽章系列
-    series: Map<number, UserBadgeSeries>,
+    series: Map<string, UserBadgeSeries>,
+    // 是否展示中
+    display: boolean,
     // 创建时间毫秒时间戳
     created_time: number,
     // 更新时间毫秒时间戳
@@ -27,6 +29,7 @@ const UserBadgesSchema = new Schema<IUserBadges>({
     user_id: {type: String, required: true},
     badge_id: {type: String},
     series: {type: Map},
+    display: {type: Boolean, default: false},
     created_time: {type: Number},
     updated_time: {type: Number},
 });
