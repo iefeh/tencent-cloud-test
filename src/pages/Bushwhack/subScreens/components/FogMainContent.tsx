@@ -247,6 +247,7 @@ export default function FogMainContent() {
         options={{
           poster: '/img/bushwhack/fog/scene.jpg',
           fluid: false,
+          controls: false,
           sources: [
             {
               src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/misty.webm',
