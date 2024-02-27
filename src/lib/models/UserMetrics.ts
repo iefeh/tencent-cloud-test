@@ -91,7 +91,7 @@ UserMetricsSchema.index({user_id: 1}, {unique: true});
 
 // 添加UserMetrics表的更新通知，当有更新时，触发通知到徽章检查队列
 UserMetricsSchema.post('updateOne', function (doc, next) {
-    console.log('%s has been saved', doc._id);
+    console.log('doc has been updated:', doc);
     next();
 });
 
