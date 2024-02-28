@@ -199,7 +199,7 @@ function EventTasks(props: EventTaskProps) {
     }
 
     return (
-      <div className="mt-5 flex items-center">
+      <div className="flex items-center">
         {isNeedConnect && (
           <LGButton
             className="uppercase"
@@ -343,7 +343,7 @@ function EventTasks(props: EventTaskProps) {
     const { started, started_after } = task;
 
     return (
-      <div className="flex justify-between items-center py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300">
+      <div className="flex justify-between py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300 flex-col lg:flex-row items-start lg:items-center">
         <div className="flex items-center">
           <Image
             className="w-9 h-9"
@@ -355,8 +355,11 @@ function EventTasks(props: EventTaskProps) {
           <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
         </div>
 
-        {isInProcessing &&
-          (started ? <TaskButtons task={task} /> : <TaskCountDown durationTime={started_after || 0} />)}
+        {isInProcessing && (
+          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0">
+            {started ? <TaskButtons task={task} /> : <TaskCountDown durationTime={started_after || 0} />}
+          </div>
+        )}
       </div>
     );
   };

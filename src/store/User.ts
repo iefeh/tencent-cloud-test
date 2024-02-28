@@ -1,6 +1,7 @@
-import { KEY_AUTHORIZATION, KEY_INVITE_CODE } from '@/constant/storage';
+import { KEY_AUTHORIZATION, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { getWorldTimeAPI } from '@/http/services/common';
 import {
+  confirmSignUpAPI,
   connectByEmailAPI,
   getUserInfoAPI,
   loginByEmailAPI,
@@ -9,8 +10,9 @@ import {
 } from '@/http/services/login';
 import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
-import { debounce } from 'lodash';
+import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
+import { toast } from 'react-toastify';
 
 class UserStore {
   token = '';
@@ -24,6 +26,7 @@ class UserStore {
   // expired = true;
   // timer = 0;
   isConnect = false;
+  newUserModalVisible = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -72,18 +75,57 @@ class UserStore {
   loginByEmail = async (data: LoginByEmailBodyDto) => {
     const api = this.isConnect ? connectByEmailAPI : loginByEmailAPI;
     const res = await api(data);
+    if (!res) throw new Error('Login Failed');
 
     if (!this.isConnect) {
-      this.token = res.token || '';
-      this.jwtToken = res.particle_jwt || '';
-      localStorage.setItem(KEY_AUTHORIZATION, this.token);
-      this.loginParticle();
-    }
+      localStorage.setItem(KEY_AUTHORIZATION, res.token || '');
+      localStorage.setItem(KEY_PARTICLE_TOKEN, res.particle_jwt || '');
 
-    await this.getUserInfo();
+      if (res.signup_cred) {
+        localStorage.setItem(KEY_SIGN_UP_CRED, res.signup_cred);
+        this.toggleNewUserModal(true);
+        // 主动中断过程，不修改原有流程
+        throw new Error('Is New User');
+      }
+
+      this.initLoginInfo();
+    } else {
+      await this.getUserInfo();
+    }
   };
 
-  getUserInfo = debounce(async () => {
+  initLoginInfo = async () => {
+    const res = await confirmSignUpAPI();
+    if (res) {
+      localStorage.setItem(KEY_AUTHORIZATION, res.token || '');
+      localStorage.setItem(KEY_PARTICLE_TOKEN, res.particle_jwt || '');
+    }
+
+    const token = localStorage.getItem(KEY_AUTHORIZATION) || '';
+    const jwtToken = localStorage.getItem(KEY_PARTICLE_TOKEN) || '';
+    console.log('token at thirdparty-login callback url search params', token);
+    console.log('jwt-token at thirdparty-login callback url search params', jwtToken);
+    this.token = token;
+    this.jwtToken = jwtToken;
+    if (!token) {
+      localStorage.removeItem(KEY_AUTHORIZATION);
+      localStorage.removeItem(KEY_PARTICLE_TOKEN);
+      return;
+    }
+
+    this.loginParticle().catch((error: any) => toast.error(error.message || error));
+    await this.getUserInfo();
+    this.toggleNewUserModal(false);
+  };
+
+  switchAccount = () => {
+    this.toggleNewUserModal(false);
+    this.toggleLoginModal(true);
+    localStorage.removeItem(KEY_AUTHORIZATION);
+    localStorage.removeItem(KEY_PARTICLE_TOKEN);
+  };
+
+  getUserInfo = throttle(async () => {
     const res = await getUserInfoAPI();
     this.setUserInfo(res);
     this.toggleLoginModal(false);
@@ -157,6 +199,14 @@ class UserStore {
       this.inviteModalVisible = visible;
     } else {
       this.inviteModalVisible = !this.inviteModalVisible;
+    }
+  };
+
+  toggleNewUserModal = (visible?: boolean) => {
+    if (typeof visible === 'boolean') {
+      this.newUserModalVisible = visible;
+    } else {
+      this.newUserModalVisible = !this.inviteModalVisible;
     }
   };
 }
