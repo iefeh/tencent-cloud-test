@@ -5,14 +5,42 @@ import MyBadges from './components/MyBadges';
 import useMyBadges from './hooks/useMyBadges';
 import useDisplayBadges from './hooks/useDisplayBadges';
 import { throttle } from 'lodash';
+import { useDisclosure } from '@nextui-org/react';
+import BadgeModal from './components/BadgeModal';
+import { useEffect, useState } from 'react';
+import { BadgeItem, toggleBadgeDisplayAPI } from '@/http/services/badges';
+import { observer } from 'mobx-react-lite';
 
-export default function MyBadgesPage() {
+function MyBadgesPage() {
   const { badges: displayBadges, queryDisplayBadges } = useDisplayBadges();
   const { total, badges, queryMyBadges, claimBadge, mintBadge } = useMyBadges();
+  const modalDisclosure = useDisclosure();
+  const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
 
   const updateBadges = throttle(async () => {
     await Promise.all([queryDisplayBadges(), queryMyBadges()]);
   }, 500);
+
+  function onView(item?: BadgeItem | null) {
+    setCurrentItem(item || null);
+    if (!item) return;
+
+    modalDisclosure.onOpen();
+  }
+
+  async function onToggleDisplay(id: string) {
+    await toggleBadgeDisplayAPI(id);
+    await updateBadges();
+  }
+
+  useEffect(() => {
+    if (!currentItem) return;
+
+    const item = badges.find((item) => item?.id === currentItem.id);
+    if (!item) return;
+
+    setCurrentItem(item);
+  }, [badges]);
 
   return (
     <section
@@ -25,9 +53,21 @@ export default function MyBadgesPage() {
 
       <AutoBreadcrumbs />
 
-      <DisplayBadges badges={displayBadges} />
+      <DisplayBadges badges={displayBadges} onView={onView} />
 
-      <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} />
+      <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} onView={onView} />
+
+      {currentItem && (
+        <BadgeModal
+          item={currentItem}
+          disclosure={modalDisclosure}
+          onToggleDisplay={onToggleDisplay}
+          onClaim={claimBadge}
+          onMint={mintBadge}
+        />
+      )}
     </section>
   );
 }
+
+export default observer(MyBadgesPage);

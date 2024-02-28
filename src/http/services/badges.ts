@@ -3,6 +3,7 @@ import http from '../index';
 export interface BadgeItem {
   id: string;
   label: string;
+  description?: string;
   imgUrl: string;
   achieved?: boolean;
   claimed?: boolean;
@@ -18,6 +19,7 @@ const BADGES_DATA: BadgeItem[] = [
   {
     id: '1',
     label: '初出茅庐',
+    description: '在Moonneil 累积签到20天可获得 2023-11-09  Obtained this badge',
     imgUrl: 'https://yiyun-yijian.oss-cn-chengdu.aliyuncs.com/moonveil/badges/%E5%88%9D%E5%87%BA%E8%8C%85%E5%BA%90.png',
     achieved: false,
   },
@@ -105,19 +107,28 @@ const BADGES_DATA: BadgeItem[] = [
   },
 ];
 
+let DISPLAY_LIST: string[] = [];
+
 export function queryBadgesPageListAPI(params: PageQueryDto): Promise<PageResDTO<BadgeItem>> {
+  const data: BadgeItem[] = JSON.parse(JSON.stringify(BADGES_DATA));
+  data.forEach((item) => {
+    item.isDisplayed = DISPLAY_LIST.includes(item.id);
+  });
+
   const res: PageResDTO<BadgeItem> = {
     total: BADGES_DATA.length * 3,
     page_num: params.page_num + '',
     page_size: params.page_size + '',
-    data: JSON.parse(JSON.stringify(BADGES_DATA)),
+    data,
   } as any;
 
   return Promise.resolve(res);
 }
 
 export function queryDisplayBadgesAPI(): Promise<BadgeItem[]> {
-  const res = JSON.parse(JSON.stringify(BADGES_DATA.filter((item) => item.isDisplayed)));
+  const items = DISPLAY_LIST.map((id) => BADGES_DATA.find((item) => item.id === id));
+  const res: BadgeItem[] = JSON.parse(JSON.stringify(items));
+  res.forEach((item) => (item.isDisplayed = true));
 
   return Promise.resolve(res);
 }
@@ -137,6 +148,27 @@ export function mintBadgeAPI(id: string): Promise<boolean> {
   const item = BADGES_DATA.find((badge) => badge.id === id);
   if (item && item.mintable) {
     item.minted = true;
+  }
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 500);
+  });
+}
+
+export function toggleBadgeDisplayAPI(id: string): Promise<boolean> {
+  const index = DISPLAY_LIST.indexOf(id);
+  if (index > -1) {
+    DISPLAY_LIST.splice(index, 1);
+  } else if (DISPLAY_LIST.length >= 5) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(false);
+      }, 500);
+    });
+  } else {
+    DISPLAY_LIST.push(id);
   }
 
   return new Promise((resolve) => {
