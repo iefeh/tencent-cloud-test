@@ -70,6 +70,8 @@ export default function MainTitle() {
               <div className="text-[4rem] lg:text-[6.25rem]">TETRA NFT Series</div>
             </div>
           }
+          buttonLabel="Explore More"
+          buttonLink="https://opensea.io/collection/destiny-tetra"
         />
       </CSSTransition>
 
