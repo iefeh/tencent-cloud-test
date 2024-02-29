@@ -1,6 +1,7 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev, {connectToMongoDbDiscord} from "@/lib/mongodb/client";
 
+
 export enum CampaignRewardType {
     // 奖励MB
     MoonBeam = 'moon_beam',

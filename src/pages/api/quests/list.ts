@@ -6,6 +6,7 @@ import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import {PipelineStage} from 'mongoose';
 import {enrichUserQuests} from "@/lib/quests/questEnrichment";
+import { getMaxLevelBadge } from "@/pages/api/badges/display"
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -33,6 +34,8 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     const quests = pagination.quests;
     await enrichUserQuests(userId!, quests);
     // TODO: 在reward字段里面添加badges(可能有多个)的信息，返回
+    enrichBadgeInfo(quests);
+
     res.json(response.success({
         total: pagination.total,
         page_num: pageNum,
@@ -40,6 +43,14 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
         quests: quests,
     }));
 });
+
+function enrichBadgeInfo(quests: Quest[]) {
+    for( let c of quests ){
+        if( c.reward.badges_id.length > 0 ) {
+
+        }
+    }
+}
 
 async function paginationQuests(pageNum: number, pageSize: number): Promise<{ total: number, quests: any[] }> {
     const skip = (pageNum - 1) * pageSize;
