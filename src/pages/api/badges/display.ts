@@ -3,8 +3,7 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Badges from "@/lib/models/Badge";
-import { PipelineStage } from 'mongoose';
-import { BadgeSeries } from '../../../lib/models/Badge';
+import { BadgeSeries } from "../../../lib/models/Badge";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
