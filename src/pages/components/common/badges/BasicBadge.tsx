@@ -77,9 +77,10 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
             className="absolute inset-0 h-full z-10 bg-transparent text-sm leading-none uppercase"
             radius="none"
             isLoading={loading}
+            disabled={item.minting}
             onPress={() => onMintClick(item.id)}
           >
-            Mint SBT
+            {item.minting ? 'SBT Minting' : 'Mint SBT'}
           </Button>
         </div>
       )}

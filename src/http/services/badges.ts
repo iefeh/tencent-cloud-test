@@ -12,6 +12,7 @@ export interface BadgeItem {
   serie?: string;
   serieNo?: number;
   mintable?: boolean;
+  minting?: boolean;
   minted?: boolean;
 }
 
@@ -113,7 +114,7 @@ const BADGES_DATA: BadgeItem[] = [
     serieNo: 11,
     achieved: true,
     mintable: true,
-    // minted: true,
+    minting: true,
   },
 ];
 

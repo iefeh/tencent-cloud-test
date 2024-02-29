@@ -119,10 +119,15 @@ export default function BadgeModal(props: Props) {
 
                 {item?.claimed && item?.mintable && !item?.minted && (
                   <LGButton
-                    label="Mint SBT"
+                    label={item.minting ? 'SBT Minting' : 'Mint SBT'}
                     actived
-                    className="!bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] w-full !text-white uppercase mt-9"
+                    className={cn([
+                      'w-full !text-white uppercase mt-9',
+                      item.minting ||
+                        'bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] hover:bg-[linear-gradient(270deg,#CC6AFF,#258FFB)]',
+                    ])}
                     loading={loading}
+                    disabled={item.minting}
                     onClick={onMintClick}
                   />
                 )}
