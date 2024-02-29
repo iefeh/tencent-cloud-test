@@ -61,7 +61,7 @@ export class RetweetTweetQuest extends QuestBase {
             const response = error.response!;
             // 当前无权限，移除用户的授权token
             if (response.status === 403 || response.data.error_description == "Value passed for the token was invalid.") {
-                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} retweet invalidated: ${response.data}`);
+                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} retweet invalidated: ${JSON.stringify(response.data)}`);
                 await deleteAuthToken(twitterAuth.token);
                 return {
                     claimable: false,
@@ -79,7 +79,7 @@ export class RetweetTweetQuest extends QuestBase {
             }
             // 当前是否已经被限流，需要添加限流处理
             if (response.status === 429) {
-                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} retweet rate limited: ${response.data}`);
+                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} retweet rate limited: ${JSON.stringify(response.data)}`);
                 const resetAt = response.headers["x-rate-limit-reset"];
                 if (resetAt) {
                     const wait = Number(resetAt) - Math.ceil(Date.now() / 1000);

@@ -11,6 +11,8 @@ export interface AuthorizationPayload {
     code_challenge?: string;
     // 新用户登录时的邀请人id
     inviter_id?: string;
+    // 注册模式
+    signup_mode?: string;
 }
 
 

@@ -38,7 +38,7 @@ function LoyaltyEvent() {
   }, [userInfo]);
 
   return (
-    <section id="luxy" className="w-full flex flex-col px-8 lg:px-[16.25rem] [&>div]:mx-auto">
+    <section id="luxy" className="w-full flex flex-col px-16 lg:px-[16.25rem] [&>div]:mx-auto">
       <Head>
         <title>Event Details | Moonveil Entertainment</title>
       </Head>

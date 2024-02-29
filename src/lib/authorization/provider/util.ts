@@ -6,7 +6,32 @@ import {AuthorizationType, AuthToken} from "@/lib/authorization/types";
 import OAuthToken from "@/lib/models/OAuthToken";
 import axios from "axios";
 import logger from "@/lib/logger/winstonLogger";
+import User, {IUser} from "@/lib/models/User";
+import getMongoConnection from "@/lib/mongodb/client";
 
+export async function checkGetAuthorizationURLPrerequisite(req: any, res: any): Promise<{ passed: boolean, inviter?: IUser }> {
+    // 检查用户的授权落地页
+    const {landing_url, invite_code, signup_mode} = req.query;
+    if (!landing_url) {
+        res.json(response.invalidParams());
+        return {passed: false};
+    }
+    if (signup_mode && signup_mode !== "enabled") {
+        res.json(response.invalidParams());
+        return {passed: false};
+    }
+    // 检查注册邀请码
+    await getMongoConnection();
+    let inviter: any;
+    if (!req.userId && invite_code) {
+        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        if (!inviter) {
+            res.json(response.unknownInviteCode());
+            return {passed: false};
+        }
+    }
+    return {passed: true, inviter: inviter};
+}
 
 export async function validateCallbackState(authType: AuthorizationType, req: any, res: any): Promise<{ passed: boolean, authPayload?: AuthorizationPayload }> {
     const {state, error, code} = req.query;

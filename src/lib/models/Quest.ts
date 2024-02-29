@@ -26,8 +26,10 @@ export interface IQuest extends Document {
         // 格式化的奖励，用于定制化的展示任务奖励
         amount_formatted: number,
         // 当奖励类型为range时，任务关联的动态奖励ids，关联UserMetricReward
-        // 注意，当任务类型为whitelist时，会最后尝试根据白名单的奖励进行下发
+        // 注意，当任务类型为whitelist时，会检查range_reward_ids，最后尝试根据白名单的奖励进行下发.
         range_reward_ids: string[],
+        // 徽章列表id，任务可能会奖励的徽章，这里只是为了展示用.
+        badge_ids: string[],
     },
     // 任务是否激活，不展示未激活
     active: boolean;

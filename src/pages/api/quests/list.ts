@@ -32,6 +32,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     // 目前有足够的任务数，丰富响应的数据
     const quests = pagination.quests;
     await enrichUserQuests(userId!, quests);
+    // TODO: 在reward字段里面添加badges(可能有多个)的信息，返回
     res.json(response.success({
         total: pagination.total,
         page_num: pageNum,
