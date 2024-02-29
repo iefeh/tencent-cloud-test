@@ -104,7 +104,7 @@ export default function BadgeModal(props: Props) {
                   </span>
                 </div>
 
-                <p className="text-base text-[#666] mt-5 px-20 [&+.btns]:mt-9">{item.description || '--'}</p>
+                <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">{item.description || '--'}</p>
 
                 {item.achieved && !item.claimed && (
                   <LGButton

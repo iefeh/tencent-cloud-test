@@ -28,8 +28,8 @@ function MyBadgesPage() {
     modalDisclosure.onOpen();
   }
 
-  async function onToggleDisplay(id: string) {
-    await toggleBadgeDisplayAPI(id);
+  async function onToggleDisplay(id: string, index?: number) {
+    await toggleBadgeDisplayAPI(id, index);
     await updateBadges();
   }
 
@@ -53,7 +53,13 @@ function MyBadgesPage() {
 
       <AutoBreadcrumbs />
 
-      <DisplayBadges badges={displayBadges} onView={onView} onSort={sortBadges} />
+      <DisplayBadges
+        displayedBadges={displayBadges}
+        badges={badges}
+        onView={onView}
+        onSort={sortBadges}
+        onDisplay={onToggleDisplay}
+      />
 
       <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} onView={onView} />
 

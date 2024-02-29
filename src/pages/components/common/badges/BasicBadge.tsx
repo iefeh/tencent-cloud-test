@@ -3,7 +3,7 @@ import plusImg from 'img/profile/plus.png';
 import { Button, cn } from '@nextui-org/react';
 import { BadgeItem } from '@/http/services/badges';
 import lockIcon from 'img/profile/badges/icon_lock.png';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 interface BasicBadgeProps {
   item?: BadgeItem | null;
@@ -14,7 +14,7 @@ interface BasicBadgeProps {
   onMint?: (id: string) => void;
 }
 
-export default function BasicBadge(props: BasicBadgeProps) {
+export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(props, ref) {
   const { item, forDisplay, className, onView, onClaim, onMint } = props;
   const [loading, setLoading] = useState(false);
 
@@ -87,6 +87,7 @@ export default function BasicBadge(props: BasicBadgeProps) {
 
   return (
     <li
+      ref={ref}
       className={cn([
         'w-[6.25rem] h-[6.25rem] bg-black shrink-0 border-1 border-basic-gray rounded-base shadow-basic-yellow transition-colors relative hover:border-basic-yellow hover:shadow-lg',
         item || 'empty-item',
@@ -124,4 +125,4 @@ export default function BasicBadge(props: BasicBadgeProps) {
       )}
     </li>
   );
-}
+});

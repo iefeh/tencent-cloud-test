@@ -159,22 +159,31 @@ export function mintBadgeAPI(id: string): Promise<boolean> {
   });
 }
 
-export function toggleBadgeDisplayAPI(id: string): Promise<boolean> {
-  const index = DISPLAY_LIST.indexOf(id);
-  if (index > -1) {
-    DISPLAY_LIST.splice(index, 1);
-  } else {
-    const firstEmptyIndex = DISPLAY_LIST.indexOf(null);
-
-    if (firstEmptyIndex < 0) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(false);
-        }, 500);
-      });
+export function toggleBadgeDisplayAPI(id: string, index?: number): Promise<boolean> {
+  const existedIndex = DISPLAY_LIST.indexOf(id);
+  if (existedIndex > -1) {
+    if (index !== undefined) {
+      DISPLAY_LIST.splice(existedIndex, 1, null);
+      DISPLAY_LIST[index] = id;
+    } else {
+      DISPLAY_LIST.splice(existedIndex, 1);
     }
+  } else {
+    if (index !== undefined) {
+      DISPLAY_LIST[index] = id;
+    } else {
+      const firstEmptyIndex = DISPLAY_LIST.indexOf(null);
 
-    DISPLAY_LIST[firstEmptyIndex] = id;
+      if (firstEmptyIndex < 0) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(false);
+          }, 500);
+        });
+      }
+
+      DISPLAY_LIST[firstEmptyIndex] = id;
+    }
   }
 
   return new Promise((resolve) => {
