@@ -1,4 +1,4 @@
-import { BadgeItem, queryDisplayBadgesAPI } from '@/http/services/badges';
+import { BadgeItem, queryDisplayBadgesAPI, sortDisplayBadgesAPI } from '@/http/services/badges';
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
@@ -9,11 +9,6 @@ export default function useDisplayBadges() {
   const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(36).fill(''));
 
   const queryDisplayBadges = throttle(async () => {
-    if (!userInfo) {
-      setBadges(Array(MIN_TOTAL).fill(null));
-      return;
-    }
-
     const res = await queryDisplayBadgesAPI();
     const list = res || [];
 
@@ -24,9 +19,14 @@ export default function useDisplayBadges() {
     setBadges(list);
   }, 500);
 
+  const sortBadges = throttle(async (newIndex: number, oldIndex: number) => {
+    await sortDisplayBadgesAPI({ newIndex, oldIndex });
+    await queryDisplayBadges();
+  }, 500);
+
   useEffect(() => {
     queryDisplayBadges();
   }, [userInfo]);
 
-  return { badges, queryDisplayBadges };
+  return { badges, queryDisplayBadges, sortBadges };
 }

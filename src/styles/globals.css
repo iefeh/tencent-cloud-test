@@ -119,3 +119,8 @@ body {
 * {
   scrollbar-width: none;
 }
+
+li::marker {
+  display: none;
+  content: '';
+}

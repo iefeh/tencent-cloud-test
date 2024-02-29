@@ -86,9 +86,10 @@ export default function BasicBadge(props: BasicBadgeProps) {
   );
 
   return (
-    <div
+    <li
       className={cn([
         'w-[6.25rem] h-[6.25rem] bg-black shrink-0 border-1 border-basic-gray rounded-base shadow-basic-yellow transition-colors relative hover:border-basic-yellow hover:shadow-lg',
+        item || 'empty-item',
         className,
       ])}
     >
@@ -121,6 +122,6 @@ export default function BasicBadge(props: BasicBadgeProps) {
           </span>
         </span>
       )}
-    </div>
+    </li>
   );
 }

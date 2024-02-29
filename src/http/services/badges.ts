@@ -107,7 +107,7 @@ const BADGES_DATA: BadgeItem[] = [
   },
 ];
 
-let DISPLAY_LIST: string[] = [];
+let DISPLAY_LIST: (string | null)[] = Array(5).fill(null);
 
 export function queryBadgesPageListAPI(params: PageQueryDto): Promise<PageResDTO<BadgeItem>> {
   const data: BadgeItem[] = JSON.parse(JSON.stringify(BADGES_DATA));
@@ -126,9 +126,11 @@ export function queryBadgesPageListAPI(params: PageQueryDto): Promise<PageResDTO
 }
 
 export function queryDisplayBadgesAPI(): Promise<BadgeItem[]> {
-  const items = DISPLAY_LIST.map((id) => BADGES_DATA.find((item) => item.id === id));
+  const items = DISPLAY_LIST.map((id) => id && BADGES_DATA.find((item) => item.id === id));
   const res: BadgeItem[] = JSON.parse(JSON.stringify(items));
-  res.forEach((item) => (item.isDisplayed = true));
+  res.forEach((item) => {
+    if (item) item.isDisplayed = true;
+  });
 
   return Promise.resolve(res);
 }
@@ -161,15 +163,32 @@ export function toggleBadgeDisplayAPI(id: string): Promise<boolean> {
   const index = DISPLAY_LIST.indexOf(id);
   if (index > -1) {
     DISPLAY_LIST.splice(index, 1);
-  } else if (DISPLAY_LIST.length >= 5) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(false);
-      }, 500);
-    });
   } else {
-    DISPLAY_LIST.push(id);
+    const firstEmptyIndex = DISPLAY_LIST.indexOf(null);
+
+    if (firstEmptyIndex < 0) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(false);
+        }, 500);
+      });
+    }
+
+    DISPLAY_LIST[firstEmptyIndex] = id;
   }
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 500);
+  });
+}
+
+export function sortDisplayBadgesAPI(data: { newIndex: number; oldIndex: number }): Promise<boolean> {
+  const { oldIndex, newIndex } = data;
+  let lastId = DISPLAY_LIST[oldIndex];
+  DISPLAY_LIST[oldIndex] = DISPLAY_LIST[newIndex];
+  DISPLAY_LIST[newIndex] = lastId;
 
   return new Promise((resolve) => {
     setTimeout(() => {

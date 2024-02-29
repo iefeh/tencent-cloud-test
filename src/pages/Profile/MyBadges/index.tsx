@@ -12,7 +12,7 @@ import { BadgeItem, toggleBadgeDisplayAPI } from '@/http/services/badges';
 import { observer } from 'mobx-react-lite';
 
 function MyBadgesPage() {
-  const { badges: displayBadges, queryDisplayBadges } = useDisplayBadges();
+  const { badges: displayBadges, queryDisplayBadges, sortBadges } = useDisplayBadges();
   const { total, badges, queryMyBadges, claimBadge, mintBadge } = useMyBadges();
   const modalDisclosure = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
@@ -53,7 +53,7 @@ function MyBadgesPage() {
 
       <AutoBreadcrumbs />
 
-      <DisplayBadges badges={displayBadges} onView={onView} />
+      <DisplayBadges badges={displayBadges} onView={onView} onSort={sortBadges} />
 
       <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} onView={onView} />
 
