@@ -105,6 +105,16 @@ const BADGES_DATA: BadgeItem[] = [
     mintable: true,
     // minted: true,
   },
+  {
+    id: '12',
+    label: 'NFT Briger',
+    imgUrl: 'https://yiyun-yijian.oss-cn-chengdu.aliyuncs.com/moonveil/badges/NFT%20BRIGER10.png',
+    isSeries: true,
+    serieNo: 11,
+    achieved: true,
+    mintable: true,
+    // minted: true,
+  },
 ];
 
 let DISPLAY_LIST: (string | null)[] = Array(5).fill(null);

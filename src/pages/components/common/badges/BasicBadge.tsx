@@ -90,14 +90,14 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
     <li
       ref={ref}
       className={cn([
-        'w-[6.25rem] h-[6.25rem] bg-black shrink-0 border-1 border-basic-gray rounded-base shadow-basic-yellow transition-colors relative hover:border-basic-yellow hover:shadow-lg',
+        'w-[6.75rem] h-[6.8125rem] px-1 pt-[0.5625rem] shrink-0 relative',
         item || 'empty-item',
         className,
       ])}
     >
       <div
         className={cn([
-          'inline-flex justify-center items-center w-full h-full relative rounded-base overflow-hidden',
+          'inline-flex justify-center items-center w-[6.25rem] h-[6.25rem] bg-black relative overflow-hidden border-1 border-basic-gray rounded-base shadow-basic-yellow transition-colors hover:border-basic-yellow hover:shadow-lg',
           item && !item.achieved && 'grayscale opacity-50',
         ])}
         onClick={() => onView?.(item)}
@@ -117,14 +117,14 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
 
       {/* 系列标志 */}
       {item?.isSeries && (
-        <span className="absolute top-0 -left-1 -translate-y-1/2 font-semakin text-basic-yellow text-xs leading-none px-1 h-[1.0625rem] inline-flex items-center border-1 border-[#333] rounded-[0.3125rem] bg-black series">
+        <span className="absolute top-0 left-0 font-semakin text-basic-yellow text-xs leading-none px-1 h-[1.0625rem] inline-flex items-center border-1 border-[#333] rounded-[0.3125rem] bg-black series">
           <span className="relative top-[0.0625rem]">LV.{item.serieNo || '--'}</span>
         </span>
       )}
 
       {/* SBT标志 */}
       {item?.minted && (
-        <span className="absolute top-0 -right-1 -translate-y-1/2 font-semakin text-basic-yellow text-xs leading-none px-1 h-[1.0625rem] inline-flex items-center border-1 border-[#333] rounded-[0.3125rem] bg-black series">
+        <span className="absolute top-0 right-0 font-semakin text-basic-yellow text-xs leading-none px-1 h-[1.0625rem] inline-flex items-center border-1 border-[#333] rounded-[0.3125rem] bg-black series">
           <span className="relative top-[0.0625rem] bg-[linear-gradient(300deg,#E9E7D1_0%,#CC6AFF_0%,#258FFB_100%)] bg-clip-text text-transparent">
             SBT
           </span>
