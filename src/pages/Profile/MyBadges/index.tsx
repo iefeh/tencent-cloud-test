@@ -63,15 +63,13 @@ function MyBadgesPage() {
 
       <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} onView={onView} />
 
-      {currentItem && (
-        <BadgeModal
-          item={currentItem}
-          disclosure={modalDisclosure}
-          onToggleDisplay={onToggleDisplay}
-          onClaim={claimBadge}
-          onMint={mintBadge}
-        />
-      )}
+      <BadgeModal
+        item={currentItem}
+        disclosure={modalDisclosure}
+        onToggleDisplay={onToggleDisplay}
+        onClaim={claimBadge}
+        onMint={mintBadge}
+      />
     </section>
   );
 }

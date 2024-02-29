@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import plusImg from 'img/profile/plus.png';
+import helpIcon from 'img/profile/badges/icon_help.png';
 import { Button, cn } from '@nextui-org/react';
 import { BadgeItem } from '@/http/services/badges';
 import lockIcon from 'img/profile/badges/icon_lock.png';
@@ -97,12 +98,18 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       <div
         className={cn([
           'inline-flex justify-center items-center w-full h-full relative rounded-base overflow-hidden',
-          item?.achieved || 'grayscale opacity-50',
+          item && !item.achieved && 'grayscale opacity-50',
         ])}
         onClick={() => onView?.(item)}
       >
-        <div className={cn(['relative', item ? 'w-full h-full' : 'w-[1.5625rem] h-[1.5625rem]'])}>
-          <Image className="object-contain" src={item?.imgUrl || plusImg} alt="" fill sizes="100%" />
+        <div className={cn(['relative', !item && forDisplay ? 'w-[1.5625rem] h-[1.5625rem]' : 'w-full h-full'])}>
+          <Image
+            className={cn(['object-contain', item?.imgUrl || 'grayscale'])}
+            src={item?.imgUrl || (forDisplay ? plusImg : helpIcon)}
+            alt=""
+            fill
+            sizes="100%"
+          />
         </div>
 
         {forDisplay ? <ContentForDisplay /> : <ContentForNonDisplay />}

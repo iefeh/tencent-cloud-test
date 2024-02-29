@@ -19,10 +19,10 @@ export default function useDisplayBadges() {
     setBadges(list);
   }, 500);
 
-  const sortBadges = throttle(async (newIndex: number, oldIndex: number) => {
+  const sortBadges = async (newIndex: number, oldIndex: number) => {
     await sortDisplayBadgesAPI({ newIndex, oldIndex });
     await queryDisplayBadges();
-  }, 500);
+  };
 
   useEffect(() => {
     queryDisplayBadges();

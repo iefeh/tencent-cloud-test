@@ -3,7 +3,7 @@ import BasicBadge from '@/pages/components/common/badges/BasicBadge';
 import useSort from '../hooks/useSort';
 import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import { useState } from 'react';
-import { throttle } from 'lodash';
+import { debounce, throttle } from 'lodash';
 
 interface Props {
   badges?: (BadgeItem | null)[];
@@ -16,10 +16,10 @@ interface Props {
 export default function DisplayBadges(props: Props) {
   const { badges, displayedBadges, onView, onSort, onDisplay } = props;
   const { containerElRef } = useSort({
-    onChange: (evt) => {
+    onChange: debounce(async (evt) => {
       const { newIndex, oldIndex } = evt;
-      onSort?.(newIndex!, oldIndex!);
-    },
+      await onSort?.(newIndex!, oldIndex!);
+    }, 500),
   });
   const fullBadges = (badges || []).slice().filter((item) => item?.claimed);
   if (fullBadges.length < 10) {
@@ -45,7 +45,7 @@ export default function DisplayBadges(props: Props) {
           <div className="flex flex-col px-2 py-4">
             <p className="text-lg font-poppins text-white">Please select the badge you&apos;d like to display.</p>
 
-            <div className="grid grid-cols-5 gap-3 mt-4 max-h-[14rem] overflow-y-auto py-2">
+            <div className="grid grid-cols-5 gap-3 mt-4 max-h-[14.25rem] overflow-y-auto py-2">
               {fullBadges.map((item, index) => (
                 <BasicBadge
                   key={item ? `id_${item.id}` : `index_${index}`}
