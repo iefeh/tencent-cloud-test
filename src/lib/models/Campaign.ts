@@ -21,6 +21,8 @@ type CampaignReward = {
     image_medium: string,
     // 奖励数量
     amount: number,
+    //徽章ID
+    badge_id: string,
 }
 
 export enum CampaignStatus {
