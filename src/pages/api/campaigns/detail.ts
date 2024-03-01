@@ -8,6 +8,8 @@ import {enrichUserTasks} from "@/lib/quests/taskEnrichment";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import RewardAccelerator from "@/lib/models/RewardAccelerator";
 import {RewardAcceleratorType} from "@/lib/accelerator/types";
+import Badges from "@/lib/models/Badge";
+import { getMaxLevelBadge } from "@/pages/api/badges/display"
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -38,12 +40,23 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 async function enrichCampaign(userId: string, campaign: any) {
     setCampaignStatus(campaign);
+    await setCampaignBadgeImage(campaign);
     await enrichCampaignClaimed(userId, campaign);
     await enrichUserTasks(userId, campaign.tasks, campaign.claimed);
     await enrichCampaignClaimable(userId, campaign);
     await enrichCampaignClaimAccelerators(userId, campaign);
 }
 
+async function setCampaignBadgeImage(campaign: any) {
+    for (let c of campaign.rewards) {
+        if (c.type == "badge") {
+            let targetBadge = await getMaxLevelBadge(c.badge_id);
+            c.name = targetBadge.name;
+            c.image_small = targetBadge.icon_url;
+            c.image_medium = targetBadge.image_url;
+        }
+    }
+}
 async function enrichCampaignClaimed(userId: string, campaign: any) {
     campaign.claimed = false;
     if (!userId) {
