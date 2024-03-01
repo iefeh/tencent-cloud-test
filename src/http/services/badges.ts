@@ -18,7 +18,7 @@ export interface BadgeItem {
 
 const BADGES_DATA: BadgeItem[] = [
   {
-    id: '1',
+    id: 'dc1ec2c5-6c67-54cb-b66c-fea7aeb563b7',
     label: '初出茅庐',
     description: '在Moonneil 累积签到20天可获得 2023-11-09  Obtained this badge',
     imgUrl: 'https://yiyun-yijian.oss-cn-chengdu.aliyuncs.com/moonveil/badges/%E5%88%9D%E5%87%BA%E8%8C%85%E5%BA%90.png',

@@ -5,12 +5,13 @@ import { EventReward, FullEventItem } from '@/http/services/task';
 import trifleImg from 'img/nft/trifle/trifle_active_1.jpg';
 import { useEffect, useState } from 'react';
 import { Tooltip } from '@nextui-org/react';
+import { EVENT_REWARD_TYPE } from '@/constant/task';
+import notifyIcon from 'img/icon/icon_notify.png';
+import Link from 'next/link';
 
 interface Props {
   item?: FullEventItem;
 }
-
-const TYPE_NFT_BONUS = 'nft_bonus';
 
 export default function Rewards(props: Props) {
   const { item } = props;
@@ -21,7 +22,7 @@ export default function Rewards(props: Props) {
 
     if ((item?.claim_settings?.reward_accelerators?.length || 0) > 0) {
       list.push({
-        type: TYPE_NFT_BONUS,
+        type: EVENT_REWARD_TYPE.NFT_BONUS,
         name: 'NFT Holder Bonus',
       });
     }
@@ -46,7 +47,7 @@ export default function Rewards(props: Props) {
           <Image src={rewardBgImg} alt="" fill sizes="100%" />
 
           {rewards.map((reward, index) => {
-            const isBonus = reward.type === TYPE_NFT_BONUS;
+            const isBonus = reward.type === EVENT_REWARD_TYPE.NFT_BONUS;
 
             const row = (
               <div
@@ -70,40 +71,59 @@ export default function Rewards(props: Props) {
               </div>
             );
 
-            if (!isBonus) return row;
+            let tooltipContent = null;
+
+            if (reward.type === EVENT_REWARD_TYPE.NFT_BONUS) {
+              tooltipContent = (
+                <div className="px-8 py-4 max-w-lg">
+                  <div className="font-semakin text-2xl text-basic-yellow text-center">NFT Holder Bonus</div>
+                  <div className="text-base">
+                    <p className="mt-4">
+                      As a holder of any Moonveil ecosystem NFTs, you&apos;re eligible for bonus rewards after holding
+                      them for over 24 hours as follows:
+                    </p>
+
+                    <ul className="mt-4">
+                      {(item?.claim_settings?.reward_accelerators || []).map((acc, accIndex) => (
+                        <li key={accIndex} className="flex items-center li [&>.li]:mt-2">
+                          <div className="w-3 h-3 rounded-full bg-white mr-2"></div>
+
+                          <div>
+                            <span>{acc.name}</span>, +{acc.properties.reward_bonus * 100}%,{' '}
+                            {acc.properties.reward_bonus_moon_beam}MB per item,{' '}
+                            <a className="underline" href={acc.properties.nft_market_url} target="_blank">
+                              Go get
+                            </a>
+                            !
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              );
+            } else if (reward.type === EVENT_REWARD_TYPE.BADGE) {
+              tooltipContent = (
+                <div className="px-8 py-4 max-w-lg flex">
+                  <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
+
+                  <p className="text-base">
+                    Please note that only the highest-level badge style in this series is displayed here. The specific
+                    badge style you receive will depend on the achievements you accomplish. You can also check more
+                    details from your{' '}
+                    <Link className="text-basic-yellow underline" href="/Profile/MyBadges">
+                      Badge Center
+                    </Link>
+                    .
+                  </p>
+                </div>
+              );
+            }
+
+            if (!tooltipContent) return row;
 
             return (
-              <Tooltip
-                key={index}
-                content={
-                  <div className="px-8 py-4 max-w-lg">
-                    <div className="font-semakin text-2xl text-basic-yellow text-center">NFT Holder Bonus</div>
-                    <div className="text-base">
-                      <p className="mt-4">
-                        As a holder of any Moonveil ecosystem NFTs, you&apos;re eligible for bonus rewards after holding
-                        them for over 24 hours as follows:
-                      </p>
-
-                      <ul className="mt-4">
-                        {(item?.claim_settings?.reward_accelerators || []).map((acc, accIndex) => (
-                          <li key={accIndex} className="flex items-center li [&>.li]:mt-2">
-                            <div className="w-3 h-3 rounded-full bg-white mr-2"></div>
-
-                            <div>
-                              <span>{acc.name}</span>, +{acc.properties.reward_bonus * 100}%,{' '}
-                              {acc.properties.reward_bonus_moon_beam}MB per item,{' '}
-                              <a className="underline" href={acc.properties.nft_market_url} target="_blank">
-                                Go get
-                              </a>
-                              !
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                }
-              >
+              <Tooltip key={index} content={tooltipContent}>
                 {row}
               </Tooltip>
             );
