@@ -32,8 +32,8 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 export async function getMaxLevelBadge(badgeId:string): Promise<BadgeSeries> {
   const badges = await Badges.find({id: badgeId});
   //判断是否有徽章
-  if (badges.length == 0) {
-    return { description: '', image_url: '', open_for_mint: false, requirements: [], icon_url: ""};;
+  if (badges.length == 0 ) {
+    return { description: '', image_url: '', open_for_mint: false, requirements: [], icon_url: ""};
   }
 
   //获取最高等级的徽章
@@ -44,7 +44,6 @@ export async function getMaxLevelBadge(badgeId:string): Promise<BadgeSeries> {
       maxLevel = Number(c);
     }
   }
-
   maxLevel = String(maxLevel);
   badges[0].series.get(maxLevel).name = badges[0].name;
   return badges[0].series.get(maxLevel);
