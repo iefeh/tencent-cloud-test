@@ -1,0 +1,47 @@
+import { BadgeItem, claimBadgeAPI, mintBadgeAPI, queryBadgesPageListAPI } from '@/http/services/badges';
+import { MobxContext } from '@/pages/_app';
+import { throttle } from 'lodash';
+import { useContext, useEffect, useRef, useState } from 'react';
+
+export default function useMyBadges() {
+  const MIN_TOTAL = 36;
+  const { userInfo } = useContext(MobxContext);
+  const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 36 });
+  const [total, setTotal] = useState(MIN_TOTAL);
+  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(36).fill(''));
+
+  const queryMyBadges = throttle(async (condition?: Partial<PageQueryDto>) => {
+    const params = Object.assign({}, pagi.current, condition);
+
+    const res = await queryBadgesPageListAPI(params);
+    setTotal(res.total || 0);
+    const list = res?.data || [];
+
+    if (list.length < MIN_TOTAL) {
+      list.push(...Array(MIN_TOTAL - list.length).fill(null));
+    }
+
+    setBadges(list);
+    Object.assign({ page_num: res.page_num || 0, page_size: res.page_size });
+  }, 500);
+
+  const claimBadge = throttle(async (id: string) => {
+    const res = await claimBadgeAPI(id);
+    if (!res) return;
+
+    await queryMyBadges();
+  }, 500);
+
+  const mintBadge = throttle(async (id: string) => {
+    const res = await mintBadgeAPI(id);
+    if (!res) return;
+
+    await queryMyBadges();
+  }, 500);
+
+  useEffect(() => {
+    queryMyBadges();
+  }, [userInfo]);
+
+  return { total, badges, queryMyBadges, claimBadge, mintBadge };
+}

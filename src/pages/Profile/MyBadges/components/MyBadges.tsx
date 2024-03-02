@@ -1,0 +1,28 @@
+import { BadgeItem } from '@/http/services/badges';
+import BasicBadge from '@/pages/components/common/badges/BasicBadge';
+import { useEffect, useRef } from 'react';
+import Sortable from 'sortablejs';
+
+interface Props {
+  total: number;
+  badges: (BadgeItem | null)[];
+  onView?: (item?: BadgeItem | null) => void;
+  onClaim?: (id: string) => void;
+  onMint?: (id: string) => void;
+}
+
+export default function MyAssets(props: Props) {
+  const { total, badges, onView, onClaim, onMint } = props;
+
+  return (
+    <div className="mt-12">
+      <div className="font-semakin text-basic-yellow text-2xl">My Badges ( {total} )</div>
+
+      <ul className="w-full grid grid-cols-3 md:grid-cols-8 xl:grid-cols-9 relative z-0 gap-6 mt-10 border-1 border-basic-gray rounded-base p-14">
+        {badges.map((badge, index) => (
+          <BasicBadge key={index} item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
+        ))}
+      </ul>
+    </div>
+  );
+}
