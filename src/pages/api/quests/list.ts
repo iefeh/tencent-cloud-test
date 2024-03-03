@@ -44,7 +44,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     }));
 });
 
-async function loadBadgeInfo(quests: Quest[]) {
+async function loadBadgeInfo(quests: any[]) {
     for( let c of quests ){
         if( c.reward.badge_ids?.length > 0 ) {
             c.reward.badges = [];
