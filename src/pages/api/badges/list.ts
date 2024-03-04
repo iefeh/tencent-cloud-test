@@ -27,7 +27,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   }));
 });
 
-async function loadBadges(userId:string): Promise<any[]> {
+export async function loadBadges(userId:string): Promise<any[]> {
     const aggregateQuery: PipelineStage[] = [
       {
           $match: {
