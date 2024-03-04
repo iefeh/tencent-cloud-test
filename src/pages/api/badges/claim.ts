@@ -26,6 +26,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
 async function claimTheBadge( userId:string, badgeId:string):Promise<string>{
   const serie = "";
+  //Todo 认领徽章需要添加时间
   UserBadges.updateOne({user_id: userId,badge_id:badgeId},)
   
   return "";
