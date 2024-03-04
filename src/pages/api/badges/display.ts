@@ -8,12 +8,13 @@ import { BadgeSeries } from "../../../lib/models/Badge";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).get(async (req, res) => {
-  const {id} = req.query;
+  let {id} = req.query;
   if (!id) {
     res.json(response.invalidParams());
     return;
   }
 
+  id = String(id);
   const targetBadge = await getMaxLevelBadge(id);
 
   if (!targetBadge.icon_url) {
@@ -29,7 +30,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 });
 
 //获取该徽章下最高等级的奖章
-export async function getMaxLevelBadge(badgeId:string): Promise<BadgeSeries> {
+export async function getMaxLevelBadge(badgeId:string): Promise<any> {
   const badges = await Badges.find({id: badgeId});
   //判断是否有徽章
   if (badges.length == 0 ) {
