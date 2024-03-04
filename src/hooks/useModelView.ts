@@ -1,6 +1,11 @@
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { ExposureShader } from 'three/examples/jsm/shaders/ExposureShader';
 import { RefObject, useEffect, useRef, useState } from 'react';
 import { OrbitControls, TGALoader } from 'three/examples/jsm/Addons';
 
@@ -11,6 +16,9 @@ export class ModelViewer {
   private renderer!: THREE.WebGLRenderer;
   private controls!: TrackballControls | OrbitControls;
   private rafId = 0;
+  private mixer?: THREE.AnimationMixer;
+  private lastEl = 0;
+  private composer!: EffectComposer;
   private renderCallback!: () => void;
 
   constructor(private container: HTMLElement, private modelInfo: ModelInfo) {
@@ -24,6 +32,13 @@ export class ModelViewer {
     this.loadModel();
     this.renderer = this.initRenderer();
     this.controls = this.initControls();
+    const composer = new EffectComposer(this.renderer);
+    composer.addPass(new RenderPass(this.scene, this.camera));
+
+    const exposurePass = new ShaderPass(ExposureShader);
+    exposurePass.uniforms.exposure.value = this.modelInfo.exposure || 5.6; // 设置曝光度，值越高，亮度越高
+    composer.addPass(exposurePass);
+    this.composer = composer;
   }
 
   initScene() {
@@ -40,15 +55,14 @@ export class ModelViewer {
   }
 
   initLight() {
-    // 半球光
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xfeece2, 1.8);
-    hemisphereLight.position.set(0, 200, 0);
-    this.scene.add(hemisphereLight);
+    this.scene.traverse((obj) => {
+      if (obj instanceof THREE.Light) {
+        this.scene.remove(obj);
+      }
+    });
 
-    // 点光源
-    const light = new THREE.PointLight(0xffff00, 2, 100);
-    light.position.set(0, 0, 0);
-    this.scene.add(light);
+    const amLight = new THREE.AmbientLight(0xffffff, 1);
+    this.scene.add(amLight);
   }
 
   loadModel() {
@@ -56,12 +70,35 @@ export class ModelViewer {
       const manager = new THREE.LoadingManager();
       manager.addHandler(/\.tga$/i, new TGALoader());
       manager.addHandler(/\.png$/i, new THREE.TextureLoader());
-      const fbxLoader = new FBXLoader(manager);
       const { source, texture } = this.modelInfo;
 
-      fbxLoader.load(
+      let loader: FBXLoader | GLTFLoader | null = null;
+      const isFBX = source.toLowerCase().endsWith('fbx');
+      let isGLTF = false;
+      if (isFBX) {
+        loader = new FBXLoader(manager);
+      } else {
+        isGLTF = source.toLowerCase().endsWith('glb');
+        if (isGLTF) {
+          loader = new GLTFLoader(manager);
+        }
+      }
+
+      if (!loader) return null;
+
+      loader.load(
         source,
-        (loadedModel) => {
+        (res) => {
+          let loadedModel: THREE.Group<THREE.Object3DEventMap> | null = null;
+
+          if (isFBX) {
+            loadedModel = res as any;
+          } else if (isGLTF) {
+            loadedModel = (res as GLTF).scene;
+          }
+
+          if (!loadedModel) return;
+
           if (texture) {
             let textureLoader: THREE.TextureLoader;
             if (texture.match(/\.tga$/i)) {
@@ -76,7 +113,9 @@ export class ModelViewer {
               const newMaterial = v.material.clone();
               v.material = newMaterial;
               v.material.map = textureNormal;
-              v.material.shininess = 80;
+              v.material.map = newMaterial.map;
+              // v.material.shininess = 80;
+              v.material.metalness = 0;
             });
           }
 
@@ -98,6 +137,16 @@ export class ModelViewer {
 
           this.scene.add(loadedModel);
           this.model = loadedModel;
+
+          if (this.modelInfo.playAni) {
+            this.mixer = new THREE.AnimationMixer(loadedModel);
+            loadedModel.animations.forEach((ani) => {
+              const action = this.mixer?.clipAction(ani);
+              action?.play();
+              action?.setLoop(THREE.LoopRepeat, Infinity);
+            });
+          }
+
           resolve(loadedModel);
         },
         undefined,
@@ -118,9 +167,10 @@ export class ModelViewer {
     //色调映射
     renderer.toneMapping = THREE.ReinhardToneMapping;
     renderer.autoClear = true;
-    // this.renderer.outputColorSpace = THREE.sRGBEncoding
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    renderer.toneMappingExposure = 10.0;
+
     //曝光
-    renderer.toneMappingExposure = 3;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.container.appendChild(renderer.domElement);
@@ -154,10 +204,19 @@ export class ModelViewer {
     return controls;
   }
 
-  render() {
+  render(el = performance.now()) {
+    if (this.lastEl === 0) {
+      this.lastEl = el;
+    }
+
     this.rafId = requestAnimationFrame(this.renderCallback);
     this.controls.update();
-    this.renderer.render(this.scene, this.camera);
+    if (this.mixer) {
+      this.mixer.update((el - this.lastEl) * (this.modelInfo.deltaRatio || 1 / 1200));
+    }
+    this.composer.render();
+    // this.renderer.render(this.scene, this.camera);
+    this.lastEl = el;
   }
 
   reset() {

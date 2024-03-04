@@ -68,7 +68,6 @@ export default function Video(props: Props) {
       const player = playerRef.current;
 
       player.autoplay(options.autoplay);
-      console.log(1111, options.autoplay);
       player.src(options.sources);
 
       if (!options.hasControlBar) {

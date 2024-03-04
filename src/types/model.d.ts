@@ -12,4 +12,7 @@ declare interface ModelInfo {
     minAzimuthAngle?: number;
     maxAzimuthAngle?: number;
   };
+  playAni?: boolean;
+  deltaRatio?: number;
+  exposure?: number;
 }
