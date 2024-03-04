@@ -18,16 +18,28 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   }
   
   //查询该用户的所有徽章
-  const badges = await loadBadges(userId);
+  const {page_num, page_size} = req.query;
+
+  if (!page_num || !page_size) {
+    res.json(response.invalidParams());
+    return
+  }
+
+  const pageNum = Number(page_num);
+  const pageSize = Number(page_size);
+ 
+  const badges = await loadBadges(userId,pageNum,pageSize);
 
   //返回用户徽章
   res.json(response.success({
-    total: badges.length,
-    badges: badges
+    total: badges[0].data.length,
+    badges: badges[0].data
   }));
 });
 
-export async function loadBadges(userId:string): Promise<any[]> {
+export async function loadBadges(userId:string, pageNum:number, pageSize:number): Promise<any[]> {
+    const skip = (pageNum - 1) * pageSize;
+
     const aggregateQuery: PipelineStage[] = [
       {
           $match: {
@@ -44,22 +56,26 @@ export async function loadBadges(userId:string): Promise<any[]> {
           $project: {
               '_id': 0,
           }
-      }
+      },{
+        $facet: {
+            data: [{$skip: skip}, {$limit: pageSize}]
+        }
+    }
   ];
 
   const badges = await UserBadges.aggregate(aggregateQuery);
 
-  for( let c of badges ){
-      //查询徽章配置
-      let b = await Badges.find({id: c.badge_id});
-      //取出用户取的和徽章系列
-      let k = Object.keys(c.series)[0];
-      //添加徽章的信息
-      let t = b[0].series.get(k);
-      c.description = t.description;
-      c.icon_url = t.icon_url;
-      c.image_url = t.image_url;
-  }
+  // for( let c of badges ){
+  //     //查询徽章配置
+  //     let b = await Badges.find({id: c.badge_id});
+  //     //取出用户取的和徽章系列
+  //     let k = Object.keys(c.series)[0];
+  //     //添加徽章的信息
+  //     let t = b[0].series.get(k);
+  //     c.description = t.description;
+  //     c.icon_url = t.icon_url;
+  //     c.image_url = t.image_url;
+  // }
 
 
   return badges;
