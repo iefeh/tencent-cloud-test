@@ -47,17 +47,11 @@ async function getUserDisplayedBadges(userId:string): Promise<any[]> {
             'updated_time': 0,
             'order': 0        
         }
-    },{
-      $facet: {
-        data: [{$limit: 5}]
-      }
     }
   ];
 
   let result = await UserBadges.aggregate(aggregateQuery);
   for( let c of result[0].data ) {
-    
-
     const badges = await Badges.find({id: c.badge_id});
     let maxLv = -1;
     for( let s of Object.keys(c.series) ) {
@@ -65,7 +59,7 @@ async function getUserDisplayedBadges(userId:string): Promise<any[]> {
         maxLv = Number(s);
       }
     }
-    console.log("maxLv: "+maxLv);
+    
     c.lv = maxLv;
     c.name = badges[0].name;
     c.icon_url = badges[0].series.get(String(maxLv)).icon_url;

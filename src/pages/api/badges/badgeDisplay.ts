@@ -7,6 +7,7 @@ import doTransaction from "@/lib/mongodb/transaction";
 import { letterSpacing } from "html2canvas/dist/types/css/property-descriptors/letter-spacing";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
+const badgeDisplayLimit = 5;
 
 router.use(maybeAuthInterceptor).post(async (req, res) => {
   let userId = req.userId;
@@ -43,17 +44,39 @@ router.use(maybeAuthInterceptor).post(async (req, res) => {
 });
 
 async function saveDisplayBadge(userId:string, badgeId:string,display:string):Promise<any> {
+    let result:any = {};
+
     if ( display == 'true' ) {
       const displayedBadges = await UserBadges.find({user_id: userId,display: true});
-      let result:any = {};
-      if ( displayedBadges.length >= 5 ) {
-        result.msg = "no place to display badge.";
+
+      if ( displayedBadges.length >= badgeDisplayLimit ) {
         result.modifiedCount = 0;
+        result.msg = "no place to display badge.";
         return result;
       }
+
+      let sorts: Map<string, number> = new Map();
+   
+      for( let b of displayedBadges ) {
+         sorts.set(b.display_order,1);
+      }
+      
+      for( let i=1;i<=badgeDisplayLimit; i++ ) {
+       if( !sorts.has(String(i))) {
+        let t = await UserBadges.updateOne({user_id: userId, badge_id: badgeId}, {display: true, display_order: i, updated_time: Date.now()});
+        result.modifiedCount = t.modifiedCount;
+        result.msg = "operate success.";
+        break;
+       }
+      }
+
+      return result;
     }
     
-    
+    let t = await UserBadges.updateOne({user_id: userId, badge_id: badgeId},{display: false, updated_time: Date.now()});
+    result.modifiedCount = t.modifiedCount;
+    result.msg = "operate success.";
+    return result;
 }
 // this will run if none of the above matches
 router.all((req, res) => {
