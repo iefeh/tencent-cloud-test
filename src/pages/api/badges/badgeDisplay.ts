@@ -4,13 +4,11 @@ import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import UserBadges from "@/lib/models/UserBadges";
 import doTransaction from "@/lib/mongodb/transaction";
+import { letterSpacing } from "html2canvas/dist/types/css/property-descriptors/letter-spacing";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).post(async (req, res) => {
-  for(let w of req.body) {
-    console.log(w);
-  }
   let userId = req.userId;
   userId = "4fa8b6f9-d296-4e63-af85-19ce2d9c2cfa";
   //判断用户是否登录
@@ -19,39 +17,44 @@ router.use(maybeAuthInterceptor).post(async (req, res) => {
     return;
   }
 
+  const { badge_id,display }  = req.query;
+
+  if(!badge_id || !display) {
+    res.json(response.invalidParams());
+    return;
+  }
   //保存所有徽章的穿戴信息
-  const modifiedCount = await saveAllWearInfo(userId,req.body);
-  
+  const result = await saveDisplayBadge( userId,String(badge_id),String(display) );
+  if ( result.modifiedCount == 0) {
+    res.json(response.invalidParams({
+      modifiedCount: result.modifiedCount,
+      msg: result.msg
+      }
+    ));
+    return;
+  }
+
+
   res.json(response.success({
-      modifiedCount: modifiedCount
+      modifiedCount: result.modifiedCount,
+      msg: result.msg
     }
-  ))
+  ));
 });
 
-async function saveAllWearInfo(userId:string,wearInfos:any[]):Promise<any> {
-  const now = Date.now();
-  let modifiedCount = 0;
-  await doTransaction(async (session) => {
-    //保存用户所有徽章穿戴信息
-    for( let c of wearInfos ) {
-      let r = await UserBadges.updateOne(
-        {user_id: userId, badge_id: c.badge_id},
-        {
-          $set: {
-            display: c.display,
-            order: c.order,
-            updated_time: now,
-          }
-        },
-        {upsert: true, session: session},
-      );
-      modifiedCount += r.modifiedCount;
+async function saveDisplayBadge(userId:string, badgeId:string,display:string):Promise<any> {
+    if ( display == 'true' ) {
+      const displayedBadges = await UserBadges.find({user_id: userId,display: true});
+      let result:any = {};
+      if ( displayedBadges.length >= 5 ) {
+        result.msg = "no place to display badge.";
+        result.modifiedCount = 0;
+        return result;
+      }
     }
-  });    
-  return modifiedCount;
-};
-          
-
+    
+    
+}
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({
