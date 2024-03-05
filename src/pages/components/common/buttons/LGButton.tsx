@@ -11,6 +11,7 @@ interface Props {
   loading?: boolean;
   actived?: boolean;
   disabled?: boolean;
+  linearDisabled?: boolean;
   squared?: boolean;
   onClick?: () => void;
   hasCD?: boolean;
@@ -21,7 +22,20 @@ interface Props {
 }
 
 export default function LGButton(props: Props) {
-  const { loading, actived, disabled, onClick, link, squared, prefix, suffix, hasCD, cd = 10, onCDOver } = props;
+  const {
+    loading,
+    actived,
+    disabled,
+    linearDisabled,
+    onClick,
+    link,
+    squared,
+    prefix,
+    suffix,
+    hasCD,
+    cd = 10,
+    onCDOver,
+  } = props;
   const router = useRouter();
   const onLinkClick = () => {
     if (!link) return;
@@ -79,6 +93,10 @@ export default function LGButton(props: Props) {
           actived &&
           'border-none px-[calc(1.5rem_+_2px)] py-[calc(0.25rem_+_2px)] text-black bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
         disabled && 'text-[#999] border-[#999] opacity-100',
+        disabled &&
+          (linearDisabled
+            ? 'bg-[linear-gradient(80deg,#666666,#424242)] border-none'
+            : 'text-[#999] border-[#999] opacity-100'),
         squared ? 'rounded-[0.625rem]' : 'rounded-3xl',
         props.className,
       ])}
