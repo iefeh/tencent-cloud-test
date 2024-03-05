@@ -62,25 +62,30 @@ export default function IntroScreen() {
       },
     },
     {
-      name: 'Loki',
+      name: 'Kaya',
       cover: thiefImg,
       model: {
-        source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/loki_walk.fbx',
-        // source: '/models/loki_walk.fbx',
-        texture: '/models/textures/chaowan.png',
-        offsetPower: {
-          // x: 0.5,
-          // y: -0.8,
-        },
+        // source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/loki_walk.fbx',
+        source: '/models/kaya_walk.fbx',
+        texture: '/models/textures/kaya.tga',
+        // offsetPower: {
+        //   x: 0.5,
+        //   y: -0.8,
+        // },
         rotate: {
           // x: Math.PI / 2,
           // y: -Math.PI / 36,
         },
         // zoom: 0.06,
+        offsetPower: {
+          y: -0.9,
+          z: 2,
+        },
+        zoom: 2.2,
         orbitAngle,
         playAni: true,
         // deltaRatio: 1 / 1000,
-        exposure: 10.0,
+        exposure: 5.0,
       },
     },
   ];
