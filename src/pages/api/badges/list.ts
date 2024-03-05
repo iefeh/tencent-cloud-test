@@ -64,18 +64,47 @@ export async function loadBadges(userId:string, pageNum:number, pageSize:number)
   ];
 
   const badges = await UserBadges.aggregate(aggregateQuery);
+  
+  for( let c of badges[0].data){
+      //查询徽章配置
+      let b = await Badges.find({id: c.badge_id});
+      //取出用户取的和徽章系列
+      let claim = -1;
+      let disclaim = -1;
+      let lv;
 
-  // for( let c of badges ){
-  //     //查询徽章配置
-  //     let b = await Badges.find({id: c.badge_id});
-  //     //取出用户取的和徽章系列
-  //     let k = Object.keys(c.series)[0];
-  //     //添加徽章的信息
-  //     let t = b[0].series.get(k);
-  //     c.description = t.description;
-  //     c.icon_url = t.icon_url;
-  //     c.image_url = t.image_url;
-  // }
+      //分别获取领取的最高等级和未领取的最高等级
+      for( let k of Object.keys(c.series) ){
+        lv = Number(k);//此为徽章等级
+        if( lv > claim && c.series[k].claimed_time != null ) {
+          claim = lv;
+        }
+
+        if( lv > disclaim && c.series[k].claimed_time == null ) {
+          disclaim = lv;
+        }
+      }
+
+      let displayedBadges:any = [];
+
+      //添加徽章的信息
+      let t = b[0].series.get(String(claim));
+      displayedBadges.push({lv: claim,name: b[0].name,description: t.description,icon_url: t.icon_url, image_url: t.image_url,obtained_time: c.series[claim].obtained_time,claimed_time: c.series[claim].claimed_time});
+      if( disclaim > claim ) {
+        //添加未领取的徽章信息
+        t = b[0].series.get(String(disclaim));
+        displayedBadges.push({lv: disclaim,name: b[0].name,description: t.description,icon_url: t.icon_url, image_url: t.image_url,obtained_time: c.series[disclaim].obtained_time});
+      }
+      delete c.series;
+      c.series = displayedBadges;
+      
+      //是否为系列徽章
+      if( Array.from(b[0].series.keys()).length > 1 ){
+        c.has_series = true;
+      }else{
+        c.has_series = false;
+      }
+  }
 
 
   return badges;

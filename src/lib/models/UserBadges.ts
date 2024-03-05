@@ -16,6 +16,8 @@ export interface IUserBadges extends Document {
     updated_time: number,
     // 展示顺序
     order: number,
+    //佩戴顺序
+    display_order: number,
 }
 
 type UserBadgeSeries = {
@@ -35,6 +37,7 @@ const UserBadgesSchema = new Schema<IUserBadges>({
     created_time: {type: Number},
     updated_time: {type: Number},
     order: {type: Number},
+    display_order: {type: Number},
 });
 
 UserBadgesSchema.index({user_id: 1, badge_id: 1}, {unique: true});

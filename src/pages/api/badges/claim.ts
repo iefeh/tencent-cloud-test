@@ -16,32 +16,38 @@ router.use(maybeAuthInterceptor).post(async (req, res) => {
     return;
   }
   
-  const { badge_id } = req.query;
+  const { badge_id,badge_lv } = req.query;
   const badgeId = String(badge_id);
-  if( !badgeId ){
+  const lv = String(badge_lv);
+  if( !badgeId || !lv ){
     res.json(response.invalidParams());
     return;
   }
-  const result = await claimTheBadge(userId,badgeId);
+  const result = await claimTheBadge(userId,badgeId,lv);
   res.json(response.success({
     result: result,
   }))
 });
 
-async function claimTheBadge( userId:string, badgeId:string):Promise<any>{  
+async function claimTheBadge( userId:string, badgeId:string, lv:string):Promise<any>{  
   //查找目标徽章
   const badge = await UserBadges.findOne({user_id: userId,badge_id: badgeId});
   
   //更新领取时间
   let result;
   const now = Date.now();
-  for( let c of badge.series.keys() ){
-      if( badge.series.get(c).claimed_time == null ) {
-        result = await UserBadges.updateOne({user_id: userId,badge_id: badgeId},
-          {series:{[c]: { obtained_time:badge.series.get(c).obtained_time,claimed_time:now }},
-            updated_time:now});
-        console.log(result);
-      }
+
+  if( badge.series.get(String(lv)) == null ){
+    return "Badge level didnt exist";
+  }
+
+  if( badge.series.get(String(lv)).claimed_time == null ) {
+    result = await UserBadges.updateOne({user_id: userId,badge_id: badgeId},
+        { $set: { [`series.${lv}.claimed_time`]: now,
+                  updated_time: now}
+        }
+      );
+    console.log(result);
   }
 
   //若该徽章已经领取
@@ -53,10 +59,6 @@ async function claimTheBadge( userId:string, badgeId:string):Promise<any>{
 
   return result;
 }
-
-
-
-
 
 // this will run if none of the above matches
 router.all((req, res) => {
