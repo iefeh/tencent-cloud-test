@@ -1,17 +1,34 @@
+import { MobxContext } from '@/pages/_app';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import NFT from '@/pages/components/common/nft/NFT';
+import { throttle } from 'lodash';
+import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-export default function Page({
+function NFTMergePage({
   params,
   searchParams,
 }: {
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const [nfts, setNFTs] = useState([]);
+  const { userInfo } = useContext(MobxContext);
+  const [nfts, setNFTs] = useState<any[]>([]);
+
+  const queryNFTs = throttle(async () => {
+    const list = [];
+    if (list.length < 9) {
+      list.push(...Array(9 - list.length).fill(null));
+    }
+
+    setNFTs(list);
+  }, 500);
+
+  useEffect(() => {
+    queryNFTs();
+  }, [userInfo]);
 
   return (
     <section id="luxy">
@@ -60,3 +77,5 @@ export default function Page({
     </section>
   );
 }
+
+export default observer(NFTMergePage);
