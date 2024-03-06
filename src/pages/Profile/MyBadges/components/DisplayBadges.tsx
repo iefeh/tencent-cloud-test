@@ -11,7 +11,7 @@ interface Props {
   displayedBadges?: (BadgeItem | null)[];
   onView?: (item?: BadgeItem | null) => void;
   onSort?: (newIndex: number, oldIndex: number) => void;
-  onDisplay?: (id: string, index?: number) => void;
+  onDisplay?: (id: string, display: boolean) => void;
 }
 
 export default function DisplayBadges(props: Props) {
@@ -22,7 +22,15 @@ export default function DisplayBadges(props: Props) {
       await onSort?.(newIndex!, oldIndex!);
     }, 500),
   });
-  const fullBadges = (badges || []).slice().filter((item) => item?.claimed);
+  const fullBadges = (badges || []).slice().filter((item) => {
+    const { series, display } = item || {};
+    if (display) return false;
+
+    const { claimed_time } = series?.[0] || {};
+    if (!claimed_time) return false;
+
+    return true;
+  });
   if (fullBadges.length < 10) {
     fullBadges.push(...Array(10 - fullBadges.length).fill(null));
   }
@@ -33,7 +41,7 @@ export default function DisplayBadges(props: Props) {
     const onChooseToDisplay = throttle(async (item: BadgeItem | null) => {
       if (!onDisplay || !item) return;
 
-      await onDisplay(item.id, badgeIndex);
+      await onDisplay(item.badge_id, !item.display);
     }, 500);
 
     return (
@@ -54,7 +62,7 @@ export default function DisplayBadges(props: Props) {
             >
               {fullBadges.map((item, index) => (
                 <BasicBadge
-                  key={item ? `id_${item.id}` : `index_${index}`}
+                  key={item ? `id_${item.badge_id}` : `index_${index}`}
                   item={item}
                   forDisplay
                   onView={() => onChooseToDisplay(item)}
@@ -74,7 +82,7 @@ export default function DisplayBadges(props: Props) {
       <ul ref={containerElRef} className="w-full flex justify-start items-center relative z-0 gap-[1.125rem] mt-10">
         {displayedBadges?.map((item, index) =>
           item ? (
-            <BasicBadge key={`id_${item.id}`} item={item} forDisplay onView={onView} />
+            <BasicBadge key={`id_${item.badge_id}`} item={item} forDisplay onView={onView} />
           ) : (
             <EmptyBadge key={`index_${index}`} badgeIndex={index} />
           ),

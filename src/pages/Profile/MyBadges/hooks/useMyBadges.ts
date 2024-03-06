@@ -14,15 +14,15 @@ export default function useMyBadges() {
     const params = Object.assign({}, pagi.current, condition);
 
     const res = await queryBadgesPageListAPI(params);
-    setTotal(res.total || 0);
-    const list = res?.data || [];
+    setTotal(res?.total || 0);
+    const list = res?.badges || [];
 
     if (list.length < MIN_TOTAL) {
       list.push(...Array(MIN_TOTAL - list.length).fill(null));
     }
 
     setBadges(list);
-    Object.assign({ page_num: res.page_num || 0, page_size: res.page_size });
+    Object.assign({ page_num: res?.page_num || 0, page_size: res?.page_size });
   }, 500);
 
   const claimBadge = throttle(async (id: string) => {

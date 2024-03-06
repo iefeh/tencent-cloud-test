@@ -1,26 +1,44 @@
 import { BadgeItem, queryDisplayBadgesAPI, sortDisplayBadgesAPI } from '@/http/services/badges';
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 export default function useDisplayBadges() {
   const MIN_TOTAL = 5;
   const { userInfo } = useContext(MobxContext);
-  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(36).fill(''));
+  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(MIN_TOTAL).fill(''));
+  const badgesRef = useRef<Array<BadgeItem | null>>(badges);
 
   const queryDisplayBadges = throttle(async () => {
     const res = await queryDisplayBadgesAPI();
-    const list = res || [];
+    const list = res?.result || [];
 
     if (list.length < MIN_TOTAL) {
       list.push(...Array(MIN_TOTAL - list.length).fill(null));
     }
 
     setBadges(list);
+    badgesRef.current = list;
   }, 500);
 
   const sortBadges = async (newIndex: number, oldIndex: number) => {
-    await sortDisplayBadgesAPI({ newIndex, oldIndex });
+    try {
+      const fullData = badgesRef.current;
+      const oldOrder = fullData[oldIndex]!.display_order;
+      fullData[oldIndex]!.display_order = fullData[newIndex]!.display_order;
+      fullData[newIndex]!.display_order = oldOrder;
+      const list = fullData.filter((item) => !!item) as BadgeItem[];
+      const data = list.map((item) => ({
+        badge_id: item.badge_id,
+        display: !!item.display,
+        display_order: item.display_order!,
+      }));
+
+      await sortDisplayBadgesAPI(data);
+    } catch (error) {
+      console.log('Badge Sort Error:', error);
+    }
+
     await queryDisplayBadges();
   };
 

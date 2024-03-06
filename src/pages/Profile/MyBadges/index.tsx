@@ -28,15 +28,15 @@ function MyBadgesPage() {
     modalDisclosure.onOpen();
   }
 
-  async function onToggleDisplay(id: string, index?: number) {
-    await toggleBadgeDisplayAPI(id, index);
+  async function onToggleDisplay(id: string, display: boolean) {
+    await toggleBadgeDisplayAPI(id, display);
     await updateBadges();
   }
 
   useEffect(() => {
     if (!currentItem) return;
 
-    const item = badges.find((item) => item?.id === currentItem.id);
+    const item = badges.find((item) => item?.badge_id === currentItem.badge_id);
     if (!item) return;
 
     setCurrentItem(item);

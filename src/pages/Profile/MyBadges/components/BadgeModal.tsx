@@ -17,7 +17,7 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
-  onToggleDisplay?: (id: string) => void;
+  onToggleDisplay?: (id: string, display: boolean) => void;
   onClaim?: (id: string) => void;
   onMint?: (id: string) => void;
 }
@@ -27,21 +27,30 @@ export default function BadgeModal(props: Props) {
   const [loading, setLoading] = useState(false);
   const [displayLoading, setDisplayLoading] = useState(false);
 
+  const { series, display, image_url: displayImageUrl, icon_url: displayIconUrl, lv: displayLv } = item || {};
+  const { claimed_time, obtained_time, lv: bagLv, image_url: bagImageUrl, icon_url: bagIconUrl } = series?.[0] || {};
+
+  const claimed = !!display || !!claimed_time;
+  const achieved = !!display || !!obtained_time;
+  const image_url = displayImageUrl || bagImageUrl;
+  const icon_url = displayIconUrl || bagIconUrl;
+  const lv = displayLv || bagLv;
+
   const onToggleDisplayClick = throttle(async () => {
-    if (!item?.id || !onToggleDisplay) return;
+    if (!item?.badge_id || !onToggleDisplay) return;
 
     setDisplayLoading(true);
-    await onToggleDisplay(item.id);
+    await onToggleDisplay(item.badge_id, !display);
     setDisplayLoading(false);
     disclosure.onClose();
   }, 500);
 
   async function onClaimClick() {
-    if (!onClaim || !item?.id) return;
+    if (!onClaim || !item?.badge_id) return;
 
     setLoading(true);
     try {
-      await onClaim(item.id);
+      await onClaim(item.badge_id);
     } catch (error) {
       console.log('Badge Claim Error:', error);
     } finally {
@@ -50,11 +59,11 @@ export default function BadgeModal(props: Props) {
   }
 
   async function onMintClick() {
-    if (!onMint || !item?.id) return;
+    if (!onMint || !item?.badge_id) return;
 
     setLoading(true);
     try {
-      await onMint(item.id);
+      await onMint(item.badge_id);
     } catch (error) {
       console.log('Badge Mint Error:', error);
     } finally {
@@ -80,8 +89,8 @@ export default function BadgeModal(props: Props) {
             <>
               <ModalBody>
                 <Image
-                  className={cn(['w-60 h-60 object-contain', item?.achieved || 'grayscale opacity-50'])}
-                  src={item?.imgUrl || helpIcon}
+                  className={cn(['w-60 h-60 object-contain', achieved || 'grayscale opacity-50'])}
+                  src={image_url || helpIcon}
                   alt=""
                   width={300}
                   height={300}
@@ -89,17 +98,17 @@ export default function BadgeModal(props: Props) {
 
                 <div className="font-semakin text-3xl mt-5">
                   <span className="relative bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent">
-                    {item?.label || '--'}
+                    {item?.name || '--'}
 
-                    {item?.isDisplayed && (
+                    {item?.display && (
                       <div className="absolute -right-[0.1875rem] top-[0.125rem] -translate-y-full translate-x-full font-poppins text-sm leading-none text-black bg-[linear-gradient(120deg,#D9A970,#EFEBC5)] rounded-base rounded-bl-none p-[0.375rem]">
                         Displayed
                       </div>
                     )}
 
-                    {item?.isSeries && (
+                    {item?.has_series && (
                       <div className="font-semakin bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent absolute -right-[0.1875rem] bottom-0 translate-x-full text-base leading-none border-1 border-basic-gray px-1 py-[0.1875rem] rounded-[0.3125rem]">
-                        LV.{item?.serieNo || '--'}
+                        LV.{lv || '--'}
                       </div>
                     )}
                   </span>
@@ -107,7 +116,7 @@ export default function BadgeModal(props: Props) {
 
                 <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">{item?.description || '--'}</p>
 
-                {item?.achieved && !item?.claimed && (
+                {achieved && !claimed && (
                   <LGButton
                     label="Claim"
                     actived
@@ -117,7 +126,7 @@ export default function BadgeModal(props: Props) {
                   />
                 )}
 
-                {item?.claimed && item?.mintable && !item?.minted && (
+                {claimed && item?.mintable && !item?.minted && (
                   <LGButton
                     label={item.minting ? 'SBT Minting' : 'Mint SBT'}
                     actived
@@ -135,9 +144,9 @@ export default function BadgeModal(props: Props) {
                 <div className="flex justify-between gap-2 mt-6 w-full btns">
                   <LGButton
                     className="flex-1 uppercase"
-                    label={item?.isDisplayed ? 'Remove' : 'Display'}
+                    label={item?.display ? 'Remove' : 'Display'}
                     loading={displayLoading}
-                    disabled={!item?.claimed}
+                    disabled={!claimed}
                     onClick={onToggleDisplayClick}
                   />
 

@@ -18,9 +18,9 @@ router.use(maybeAuthInterceptor).post(async (req, res) => {
     return;
   }
 
-  const { badge_id,display }  = req.query;
+  const { badge_id,display } = req.body;
 
-  if(!badge_id || !display) {
+  if(!badge_id || typeof display !== 'boolean') {
     res.json(response.invalidParams());
     return;
   }

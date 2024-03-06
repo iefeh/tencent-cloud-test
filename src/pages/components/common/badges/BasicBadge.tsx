@@ -19,6 +19,15 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
   const { item, forDisplay, className, onView, onClaim, onMint } = props;
   const [loading, setLoading] = useState(false);
 
+  const { series, display, image_url: displayImageUrl, icon_url: displayIconUrl, lv: displayLv } = item || {};
+  const { claimed_time, obtained_time, lv: bagLv, image_url: bagImageUrl, icon_url: bagIconUrl } = series?.[0] || {};
+
+  const claimed = !!display || !!claimed_time;
+  const achieved = !!display || !!obtained_time;
+  const image_url = displayImageUrl || bagImageUrl;
+  const icon_url = displayIconUrl || bagIconUrl;
+  const lv = displayLv || bagLv;
+
   async function onClaimClick(id: string) {
     if (!onClaim) return;
 
@@ -50,19 +59,19 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
   const ContentForNonDisplay = () => (
     <>
       {/* 未获得标志 */}
-      {item && !item?.achieved && (
+      {item && !achieved && (
         <Image className="absolute bottom-[0.625rem] right-[0.625rem] w-3 h-[0.875rem]" src={lockIcon} alt="" />
       )}
 
       {/* 获取按钮 */}
-      {item?.achieved && !item?.claimed && (
+      {item && achieved && !claimed && (
         <div className="absolute left-0 bottom-0 w-full h-6">
           <div className="absolute inset-0 bg-[rgba(50,83,192,0.6)] z-0 transition-opacity bg"></div>
           <Button
             className="absolute inset-0 h-full z-10 bg-transparent text-sm leading-none uppercase"
             radius="none"
             isLoading={loading}
-            onPress={() => onClaimClick(item.id)}
+            onPress={() => onClaimClick(item.badge_id)}
           >
             Claim
           </Button>
@@ -70,7 +79,7 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       )}
 
       {/* Mint按钮 */}
-      {item?.claimed && item?.mintable && !item?.minted && (
+      {claimed && item?.mintable && !item?.minted && (
         <div className="absolute left-0 bottom-0 w-full h-6">
           <div className="absolute inset-0 bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] opacity-70 z-0 transition-opacity bg"></div>
           <Button
@@ -78,7 +87,7 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
             radius="none"
             isLoading={loading}
             disabled={item.minting}
-            onPress={() => onMintClick(item.id)}
+            onPress={() => onMintClick(item.badge_id)}
           >
             {item.minting ? 'SBT Minting' : 'Mint SBT'}
           </Button>
@@ -99,14 +108,14 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       <div
         className={cn([
           'inline-flex justify-center items-center w-[6.25rem] h-[6.25rem] bg-black relative overflow-hidden border-1 border-basic-gray rounded-base shadow-basic-yellow transition-colors hover:border-basic-yellow hover:shadow-lg',
-          item && !item.achieved && 'grayscale opacity-50',
+          item && !achieved && 'grayscale opacity-50',
         ])}
         onClick={() => onView?.(item)}
       >
         <div className={cn(['relative', !item && forDisplay ? 'w-[1.5625rem] h-[1.5625rem]' : 'w-full h-full'])}>
           <Image
-            className={cn(['object-contain', item?.imgUrl || 'grayscale'])}
-            src={item?.imgUrl || (forDisplay ? plusImg : helpIcon)}
+            className={cn(['object-contain', image_url || 'grayscale'])}
+            src={image_url || (forDisplay ? plusImg : helpIcon)}
             alt=""
             fill
             sizes="100%"
@@ -117,9 +126,9 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       </div>
 
       {/* 系列标志 */}
-      {item?.isSeries && (
+      {item?.has_series && (
         <span className="absolute top-0 left-0 font-semakin text-basic-yellow text-xs leading-none px-1 h-[1.0625rem] inline-flex items-center border-1 border-[#333] rounded-[0.3125rem] bg-black series">
-          <span className="relative top-[0.0625rem]">LV.{item.serieNo || '--'}</span>
+          <span className="relative top-[0.0625rem]">LV.{lv || '--'}</span>
         </span>
       )}
 
