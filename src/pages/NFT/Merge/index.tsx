@@ -2,7 +2,7 @@ import { NFTItem } from '@/http/services/mint';
 import { MobxContext } from '@/pages/_app';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import NFT from '@/pages/components/common/nft/NFT';
+import MergeNFT from '@/pages/components/common/nft/MergeNFT';
 import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
@@ -22,7 +22,7 @@ function NFTMergePage({
   const [canMint, setCanMint] = useState(false);
   const [mintLoading, setMintLoading] = useState(false);
   const [minted, setMinted] = useState(false);
-  const [selectedNFTs, setSelectedNFTs] = useState<Dict<boolean>>({});
+  const [selectedNFTs, setSelectedNFTs] = useState<NFTItem[]>([]);
 
   const queryNFTs = throttle(async () => {
     const list = [
@@ -67,7 +67,7 @@ function NFTMergePage({
         token_id: 43,
         block_number: 46641675,
         confirmed_time: 1709542050421,
-        transaction_id: '0x26c481b2a4799e5280c3ada3c68b3b843bd588748d3356712f089464f1e2ce39',
+        transaction_id: '0x26c481b2a4799e5280c3ada3c68b3b843bd588748d3356712f089464f1e2ce38',
         transaction_status: 'confirmed',
         token_metadata: {
           name: 'Destiny TETRA NFT #43',
@@ -86,13 +86,15 @@ function NFTMergePage({
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
     if (!item) return;
 
-    // if (selectedNFTs[item.transaction_id]) {
-    //   delete selectedNFTs[item.transaction_id];
-    // } else if (Object.keys(selectedNFTs).length < MAX_MERGE_LEN) {
-    //   selectedNFTs[item.transaction_id] = true;
-    // }
+    let list = selectedNFTs.slice();
+    if (!selected) {
+      list = list.filter((nft) => nft.transaction_id !== item.transaction_id);
+    } else if (selectedNFTs.length < MAX_MERGE_LEN) {
+      list.push(item);
+    }
 
-    // setSelectedNFTs(structuredClone(selectedNFTs));
+    setSelectedNFTs(list);
+    setCanMint(list.length === MAX_MERGE_LEN);
   }
 
   useEffect(() => {
@@ -148,7 +150,7 @@ function NFTMergePage({
 
           <div className="w-full grid grid-cols-3 gap-3 flex-1 overflow-y-auto mt-6">
             {nfts.map((item, index) => (
-              <NFT
+              <MergeNFT
                 key={item ? `id_${item.transaction_id}` : `index_${index}`}
                 src={item?.token_metadata?.animation_url}
                 showSelection

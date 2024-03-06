@@ -95,7 +95,7 @@ export default function LGButton(props: Props) {
         disabled && 'text-[#999] border-[#999] opacity-100',
         disabled &&
           (linearDisabled
-            ? 'bg-[linear-gradient(80deg,#666666,#424242)] border-none'
+            ? 'bg-[linear-gradient(80deg,#666666,#424242)] border-none px-[calc(1.5rem_+_2px)] py-[calc(0.25rem_+_2px)]'
             : 'text-[#999] border-[#999] opacity-100'),
         squared ? 'rounded-[0.625rem]' : 'rounded-3xl',
         props.className,
