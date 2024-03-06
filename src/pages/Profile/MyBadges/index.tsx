@@ -10,9 +10,16 @@ import BadgeModal from './components/BadgeModal';
 import { useEffect, useState } from 'react';
 import { BadgeItem, toggleBadgeDisplayAPI } from '@/http/services/badges';
 import { observer } from 'mobx-react-lite';
+import { MAX_DISPLAY_COUNT } from '@/constant/badge';
 
 function MyBadgesPage() {
-  const { badges: displayBadges, queryDisplayBadges, sortBadges, loading: displayLoaidng } = useDisplayBadges();
+  const {
+    badges: displayBadges,
+    queryDisplayBadges,
+    sortBadges,
+    loading: displayLoaidng,
+    validCount,
+  } = useDisplayBadges();
   const { total, badges, queryMyBadges, claimBadge, mintBadge, loading: fullQueryLoading } = useMyBadges();
   const modalDisclosure = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
@@ -74,6 +81,7 @@ function MyBadgesPage() {
       <BadgeModal
         item={currentItem}
         disclosure={modalDisclosure}
+        canDisplay={validCount < MAX_DISPLAY_COUNT}
         onToggleDisplay={onToggleDisplay}
         onClaim={claimBadge}
         onMint={mintBadge}

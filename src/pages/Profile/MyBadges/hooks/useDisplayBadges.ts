@@ -1,22 +1,24 @@
+import { MAX_DISPLAY_COUNT } from '@/constant/badge';
 import { BadgeItem, queryDisplayBadgesAPI, sortDisplayBadgesAPI } from '@/http/services/badges';
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 export default function useDisplayBadges() {
-  const MIN_TOTAL = 5;
   const { userInfo } = useContext(MobxContext);
-  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(MIN_TOTAL).fill(''));
+  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(MAX_DISPLAY_COUNT).fill(''));
   const badgesRef = useRef<Array<BadgeItem | null>>(badges);
   const [loading, setLoading] = useState(false);
+  const [validCount, setValidCount] = useState(0);
 
   const queryDisplayBadges = throttle(async () => {
     setLoading(true);
     const res = await queryDisplayBadgesAPI();
     const list = res?.result || [];
+    setValidCount(list.length);
 
-    if (list.length < MIN_TOTAL) {
-      list.push(...Array(MIN_TOTAL - list.length).fill(null));
+    if (list.length < MAX_DISPLAY_COUNT) {
+      list.push(...Array(MAX_DISPLAY_COUNT - list.length).fill(null));
     }
 
     setBadges(list);
@@ -52,5 +54,5 @@ export default function useDisplayBadges() {
     queryDisplayBadges();
   }, [userInfo]);
 
-  return { badges, queryDisplayBadges, sortBadges, loading };
+  return { badges, queryDisplayBadges, sortBadges, loading, validCount };
 }

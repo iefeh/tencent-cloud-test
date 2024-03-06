@@ -17,13 +17,14 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
+  canDisplay?: boolean;
   onToggleDisplay?: (id: string, display: boolean) => void;
   onClaim?: (id: string) => void;
   onMint?: (id: string) => void;
 }
 
 export default function BadgeModal(props: Props) {
-  const { item, disclosure, onToggleDisplay, onClaim, onMint } = props;
+  const { item, disclosure, canDisplay, onToggleDisplay, onClaim, onMint } = props;
   const [loading, setLoading] = useState(false);
   const [displayLoading, setDisplayLoading] = useState(false);
 
@@ -142,13 +143,15 @@ export default function BadgeModal(props: Props) {
                 )}
 
                 <div className="flex justify-between gap-2 mt-6 w-full btns">
-                  <LGButton
-                    className="flex-1 uppercase"
-                    label={item?.display ? 'Remove' : 'Display'}
-                    loading={displayLoading}
-                    disabled={!claimed}
-                    onClick={onToggleDisplayClick}
-                  />
+                  {(!item?.display && !canDisplay) || (
+                    <LGButton
+                      className="flex-1 uppercase"
+                      label={item?.display ? 'Remove' : 'Display'}
+                      loading={displayLoading}
+                      disabled={!claimed}
+                      onClick={onToggleDisplayClick}
+                    />
+                  )}
 
                   <LGButton className="flex-1 uppercase" label="Show Off" actived disabled />
                 </div>
