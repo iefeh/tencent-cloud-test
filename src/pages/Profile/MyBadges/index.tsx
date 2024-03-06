@@ -12,8 +12,8 @@ import { BadgeItem, toggleBadgeDisplayAPI } from '@/http/services/badges';
 import { observer } from 'mobx-react-lite';
 
 function MyBadgesPage() {
-  const { badges: displayBadges, queryDisplayBadges, sortBadges } = useDisplayBadges();
-  const { total, badges, queryMyBadges, claimBadge, mintBadge } = useMyBadges();
+  const { badges: displayBadges, queryDisplayBadges, sortBadges, loading: displayLoaidng } = useDisplayBadges();
+  const { total, badges, queryMyBadges, claimBadge, mintBadge, loading: fullQueryLoading } = useMyBadges();
   const modalDisclosure = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
 
@@ -56,12 +56,20 @@ function MyBadgesPage() {
       <DisplayBadges
         displayedBadges={displayBadges}
         badges={badges}
+        loading={displayLoaidng}
         onView={onView}
         onSort={sortBadges}
         onDisplay={onToggleDisplay}
       />
 
-      <MyBadges total={total} badges={badges} onClaim={claimBadge} onMint={mintBadge} onView={onView} />
+      <MyBadges
+        total={total}
+        badges={badges}
+        loading={fullQueryLoading}
+        onClaim={claimBadge}
+        onMint={mintBadge}
+        onView={onView}
+      />
 
       <BadgeModal
         item={currentItem}

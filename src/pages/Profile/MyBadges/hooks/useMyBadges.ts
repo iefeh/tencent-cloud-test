@@ -9,8 +9,12 @@ export default function useMyBadges() {
   const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 36 });
   const [total, setTotal] = useState(MIN_TOTAL);
   const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(36).fill(''));
+  const [loading, setLoading] = useState(false);
+  const [claimLoading, setClaimLoaing] = useState(false);
+  const [mintLoading, setMintLoading] = useState(false);
 
   const queryMyBadges = throttle(async (condition?: Partial<PageQueryDto>) => {
+    setLoading(true);
     const params = Object.assign({}, pagi.current, condition);
 
     const res = await queryBadgesPageListAPI(params);
@@ -23,25 +27,30 @@ export default function useMyBadges() {
 
     setBadges(list);
     Object.assign({ page_num: res?.page_num || 0, page_size: res?.page_size });
+    setLoading(false);
   }, 500);
 
   const claimBadge = throttle(async (id: string) => {
+    setClaimLoaing(true);
     const res = await claimBadgeAPI(id);
-    if (!res) return;
-
-    await queryMyBadges();
+    if (res) {
+      await queryMyBadges();
+    }
+    setClaimLoaing(false);
   }, 500);
 
   const mintBadge = throttle(async (id: string) => {
+    setMintLoading(true);
     const res = await mintBadgeAPI(id);
-    if (!res) return;
-
-    await queryMyBadges();
+    if (res) {
+      await queryMyBadges();
+    }
+    setMintLoading(false);
   }, 500);
 
   useEffect(() => {
     queryMyBadges();
   }, [userInfo]);
 
-  return { total, badges, queryMyBadges, claimBadge, mintBadge };
+  return { total, badges, queryMyBadges, claimBadge, mintBadge, loading, claimLoading, mintLoading };
 }

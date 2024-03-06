@@ -5,17 +5,19 @@ import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import { useState } from 'react';
 import { debounce, throttle } from 'lodash';
 import SimpleBar from 'simplebar-react';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
   badges?: (BadgeItem | null)[];
   displayedBadges?: (BadgeItem | null)[];
+  loading?: boolean;
   onView?: (item?: BadgeItem | null) => void;
   onSort?: (newIndex: number, oldIndex: number) => void;
   onDisplay?: (id: string, display: boolean) => void;
 }
 
 export default function DisplayBadges(props: Props) {
-  const { badges, displayedBadges, onView, onSort, onDisplay } = props;
+  const { badges, displayedBadges, loading, onView, onSort, onDisplay } = props;
   const { containerElRef } = useSort({
     onChange: debounce(async (evt) => {
       const { newIndex, oldIndex } = evt;
@@ -79,7 +81,7 @@ export default function DisplayBadges(props: Props) {
     <div className="mt-12">
       <div className="font-semakin text-basic-yellow text-2xl">Display Badges</div>
 
-      <ul ref={containerElRef} className="w-full flex justify-start items-center relative z-0 gap-[1.125rem] mt-10">
+      <ul ref={containerElRef} className="w-min flex justify-start items-center relative z-0 gap-[1.125rem] mt-10">
         {displayedBadges?.map((item, index) =>
           item ? (
             <BasicBadge key={`id_${item.badge_id}`} item={item} forDisplay onView={onView} />
@@ -87,6 +89,8 @@ export default function DisplayBadges(props: Props) {
             <EmptyBadge key={`index_${index}`} badgeIndex={index} />
           ),
         )}
+
+        {loading && <CircularLoading cirleClassName="!w-24 !h-24 !leading-[6rem]" />}
       </ul>
     </div>
   );

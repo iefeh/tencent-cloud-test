@@ -1,4 +1,5 @@
 import { BadgeItem } from '@/http/services/badges';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 import BasicBadge from '@/pages/components/common/badges/BasicBadge';
 import { useEffect, useRef } from 'react';
 import Sortable from 'sortablejs';
@@ -6,13 +7,14 @@ import Sortable from 'sortablejs';
 interface Props {
   total: number;
   badges: (BadgeItem | null)[];
+  loading?: boolean;
   onView?: (item?: BadgeItem | null) => void;
   onClaim?: (id: string) => void;
   onMint?: (id: string) => void;
 }
 
 export default function MyAssets(props: Props) {
-  const { total, badges, onView, onClaim, onMint } = props;
+  const { total, badges, loading, onView, onClaim, onMint } = props;
 
   return (
     <div className="mt-12">
@@ -22,6 +24,8 @@ export default function MyAssets(props: Props) {
         {badges.map((badge, index) => (
           <BasicBadge key={index} item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
         ))}
+
+        {loading && <CircularLoading />}
       </ul>
     </div>
   );

@@ -8,8 +8,10 @@ export default function useDisplayBadges() {
   const { userInfo } = useContext(MobxContext);
   const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(MIN_TOTAL).fill(''));
   const badgesRef = useRef<Array<BadgeItem | null>>(badges);
+  const [loading, setLoading] = useState(false);
 
   const queryDisplayBadges = throttle(async () => {
+    setLoading(true);
     const res = await queryDisplayBadgesAPI();
     const list = res?.result || [];
 
@@ -19,9 +21,12 @@ export default function useDisplayBadges() {
 
     setBadges(list);
     badgesRef.current = list;
+    setLoading(false);
   }, 500);
 
   const sortBadges = async (newIndex: number, oldIndex: number) => {
+    setLoading(true);
+
     try {
       const fullData = badgesRef.current;
       const oldOrder = fullData[oldIndex]!.display_order;
@@ -40,11 +45,12 @@ export default function useDisplayBadges() {
     }
 
     await queryDisplayBadges();
+    setLoading(false);
   };
 
   useEffect(() => {
     queryDisplayBadges();
   }, [userInfo]);
 
-  return { badges, queryDisplayBadges, sortBadges };
+  return { badges, queryDisplayBadges, sortBadges, loading };
 }
