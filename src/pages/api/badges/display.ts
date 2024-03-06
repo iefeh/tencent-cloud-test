@@ -51,7 +51,7 @@ async function getUserDisplayedBadges(userId:string): Promise<any[]> {
   ];
 
   let result = await UserBadges.aggregate(aggregateQuery);
-  for( let c of result[0].data ) {
+  for( let c of result ) {
     const badges = await Badges.find({id: c.badge_id});
     let maxLv = -1;
     for( let s of Object.keys(c.series) ) {

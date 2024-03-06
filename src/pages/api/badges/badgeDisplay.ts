@@ -55,14 +55,14 @@ async function saveDisplayBadge(userId:string, badgeId:string,display:string):Pr
         return result;
       }
 
-      let sorts: Map<string, number> = new Map();
+      let sorts: Map<number, number> = new Map();
    
       for( let b of displayedBadges ) {
          sorts.set(b.display_order,1);
       }
       
       for( let i=1;i<=badgeDisplayLimit; i++ ) {
-       if( !sorts.has(String(i))) {
+       if( !sorts.has(i)) {
         let t = await UserBadges.updateOne({user_id: userId, badge_id: badgeId}, {display: true, display_order: i, updated_time: Date.now()});
         result.modifiedCount = t.modifiedCount;
         result.msg = "operate success.";
