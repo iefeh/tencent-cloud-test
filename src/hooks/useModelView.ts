@@ -32,25 +32,28 @@ export class ModelViewer {
     this.loadModel();
     this.renderer = this.initRenderer();
     this.controls = this.initControls();
+    const { exposure } = this.modelInfo;
+    if (exposure === null) return;
+
     const composer = new EffectComposer(this.renderer);
     composer.addPass(new RenderPass(this.scene, this.camera));
 
     const exposurePass = new ShaderPass(ExposureShader);
-    exposurePass.uniforms.exposure.value = this.modelInfo.exposure || 5.6; // 设置曝光度，值越高，亮度越高
+    exposurePass.uniforms.exposure.value = exposure || 5.6; // 设置曝光度，值越高，亮度越高
     composer.addPass(exposurePass);
     this.composer = composer;
   }
 
   initScene() {
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x000000, 600, 3000); //雾化场景
     return scene;
   }
 
   initCamera() {
     const { clientWidth, clientHeight } = this.container;
     const camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 1, 1000);
-    camera.position.set(0, 0, 500);
+    const { cameraPosition: { x, y, z } = {} } = this.modelInfo;
+    camera.position.set(x || 0, y || 0, z || 500);
     return camera;
   }
 
@@ -61,7 +64,8 @@ export class ModelViewer {
       }
     });
 
-    const amLight = new THREE.AmbientLight(0xffffff, 1);
+    const { ambientLightIntensity } = this.modelInfo;
+    const amLight = new THREE.AmbientLight(0xffffff, ambientLightIntensity || 1);
     this.scene.add(amLight);
   }
 
@@ -78,7 +82,7 @@ export class ModelViewer {
       if (isFBX) {
         loader = new FBXLoader(manager);
       } else {
-        isGLTF = source.toLowerCase().endsWith('glb');
+        isGLTF = /\.(glb|gltf)$/.test(source.toLowerCase());
         if (isGLTF) {
           loader = new GLTFLoader(manager);
         }
@@ -99,6 +103,8 @@ export class ModelViewer {
 
           if (!loadedModel) return;
 
+          let textureNormal: THREE.Texture | null = null;
+
           if (texture) {
             let textureLoader: THREE.TextureLoader;
             if (texture.match(/\.tga$/i)) {
@@ -106,18 +112,17 @@ export class ModelViewer {
             } else {
               textureLoader = new THREE.TextureLoader();
             }
-            const textureNormal = textureLoader.load(texture);
-
-            loadedModel.traverse((v: any) => {
-              if (!v.isMesh) return;
-              const newMaterial = v.material.clone();
-              v.material = newMaterial;
-              v.material.map = textureNormal;
-              v.material.map = newMaterial.map;
-              // v.material.shininess = 80;
-              v.material.metalness = 0;
-            });
+            textureNormal = textureLoader.load(texture);
           }
+
+          loadedModel.traverse((v: any) => {
+            if (!v.isMesh || !textureNormal) return;
+
+            const newMaterial = v.material.clone();
+            v.material = newMaterial;
+            v.material.map = textureNormal;
+            v.material.metalness = 0;
+          });
 
           const box = new THREE.Box3();
           const {
@@ -139,8 +144,16 @@ export class ModelViewer {
           this.model = loadedModel;
 
           if (this.modelInfo.playAni) {
+            let animations: THREE.AnimationClip[] = [];
             this.mixer = new THREE.AnimationMixer(loadedModel);
-            loadedModel.animations.forEach((ani) => {
+
+            if (isFBX) {
+              animations = loadedModel.animations;
+            } else if (isGLTF) {
+              animations = res.animations;
+            }
+
+            animations.forEach((ani) => {
               const action = this.mixer?.clipAction(ani);
               action?.play();
               action?.setLoop(THREE.LoopRepeat, Infinity);
@@ -151,7 +164,7 @@ export class ModelViewer {
         },
         undefined,
         (err) => {
-          console.log('load error:', err);
+          console.log('load error:', source, err);
         },
       );
     });
@@ -167,8 +180,10 @@ export class ModelViewer {
     //色调映射
     renderer.toneMapping = THREE.ReinhardToneMapping;
     renderer.autoClear = true;
-    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
-    renderer.toneMappingExposure = 10.0;
+
+    const { colorSpace, toneMappingExposure } = this.modelInfo;
+    renderer.outputColorSpace = colorSpace || THREE.SRGBColorSpace;
+    renderer.toneMappingExposure = toneMappingExposure || 1.0;
 
     //曝光
     renderer.shadowMap.enabled = true;
@@ -214,8 +229,12 @@ export class ModelViewer {
     if (this.mixer) {
       this.mixer.update((el - this.lastEl) * (this.modelInfo.deltaRatio || 1 / 1200));
     }
-    this.composer.render();
-    // this.renderer.render(this.scene, this.camera);
+
+    if (this.composer) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
     this.lastEl = el;
   }
 

@@ -12,7 +12,11 @@ declare interface ModelInfo {
     minAzimuthAngle?: number;
     maxAzimuthAngle?: number;
   };
+  cameraPosition?: { x?: number; y?: number; z?: number };
   playAni?: boolean;
   deltaRatio?: number;
-  exposure?: number;
+  exposure?: number | null;
+  toneMappingExposure?: number;
+  colorSpace?: THREE.ColorSpace;
+  ambientLightIntensity?: number;
 }

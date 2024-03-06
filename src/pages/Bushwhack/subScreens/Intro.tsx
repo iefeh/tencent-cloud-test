@@ -11,6 +11,7 @@ import rightArrowImg from 'img/bushwhack/intro/arrow_right.png';
 import discordImg from 'img/bushwhack/intro/discord.png';
 import { useRef, useState } from 'react';
 import { Button } from '@nextui-org/react';
+import * as THREE from 'three';
 
 interface Role {
   name: string;
@@ -34,7 +35,6 @@ export default function IntroScreen() {
       cover: doctorImg,
       model: {
         source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/lewis_walk.fbx',
-        // source: '/models/lewis_walk.fbx',
         texture: '/models/textures/Lewis.png',
         offsetPower: {
           y: -0.9,
@@ -42,6 +42,8 @@ export default function IntroScreen() {
         zoom: 2.2,
         orbitAngle,
         playAni: true,
+        colorSpace: THREE.LinearSRGBColorSpace,
+        toneMappingExposure: 10.0,
       },
     },
     {
@@ -49,7 +51,6 @@ export default function IntroScreen() {
       cover: rheaImg,
       model: {
         source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/rhea_walk.fbx',
-        // source: '/models/rhea_walk.fbx',
         texture: '/models/textures/T_Rhea.png',
         offsetPower: {
           y: -0.9,
@@ -59,33 +60,46 @@ export default function IntroScreen() {
         orbitAngle,
         playAni: true,
         exposure: 10,
+        colorSpace: THREE.LinearSRGBColorSpace,
+        toneMappingExposure: 10.0,
+      },
+    },
+    {
+      name: 'Loki',
+      cover: thiefImg,
+      model: {
+        source: '/models/loki.glb',
+        offsetPower: {
+          y: -3,
+        },
+        cameraPosition: {
+          y: 1,
+          z: 2.4,
+        },
+        orbitAngle,
+        playAni: true,
+        // deltaRatio: 1 / 1000,
+        exposure: null,
+        ambientLightIntensity: 5.0,
       },
     },
     {
       name: 'Kaya',
       cover: thiefImg,
       model: {
-        // source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/loki_walk.fbx',
-        source: '/models/kaya_walk.fbx',
-        texture: '/models/textures/kaya.tga',
-        // offsetPower: {
-        //   x: 0.5,
-        //   y: -0.8,
-        // },
-        rotate: {
-          // x: Math.PI / 2,
-          // y: -Math.PI / 36,
-        },
-        // zoom: 0.06,
+        source: '/models/kaya.glb',
         offsetPower: {
-          y: -0.9,
-          z: 2,
+          y: -3,
         },
-        zoom: 2.2,
+        cameraPosition: {
+          y: 1,
+          z: 2.4,
+        },
         orbitAngle,
         playAni: true,
         // deltaRatio: 1 / 1000,
-        exposure: 5.0,
+        exposure: null,
+        ambientLightIntensity: 5.0,
       },
     },
   ];
