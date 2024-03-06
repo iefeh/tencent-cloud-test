@@ -101,7 +101,7 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       ref={ref}
       className={cn([
         'w-[6.75rem] h-[6.8125rem] px-1 pt-[0.5625rem] shrink-0 relative',
-        item || 'empty-item',
+        item ? 'drag-item' : 'empty-item',
         className,
       ])}
     >
