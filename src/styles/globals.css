@@ -111,10 +111,20 @@ body {
   }
 }
 
-*::-webkit-scrollbar{
+*::-webkit-scrollbar {
   display: none;
 }
 
 * {
   scrollbar-width: none;
+}
+
+/** 隐藏音量控制 */
+.vjs-volume-panel {
+  display: none !important;
+}
+
+/** 隐藏画中画控制 */
+.vjs-picture-in-picture-control {
+  display: none !important;
 }
