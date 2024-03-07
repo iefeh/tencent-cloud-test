@@ -2,7 +2,7 @@
 
 import { Button, cn } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { HTMLAttributeAnchorTarget, useEffect, useRef } from 'react';
 
 interface Props {
   label: string;
@@ -13,6 +13,7 @@ interface Props {
   disabled?: boolean;
   linearDisabled?: boolean;
   squared?: boolean;
+  target?: HTMLAttributeAnchorTarget;
   onClick?: () => void;
   hasCD?: boolean;
   cd?: number;
@@ -29,6 +30,7 @@ export default function LGButton(props: Props) {
     linearDisabled,
     onClick,
     link,
+    target,
     squared,
     prefix,
     suffix,
@@ -40,7 +42,7 @@ export default function LGButton(props: Props) {
   const onLinkClick = () => {
     if (!link) return;
 
-    if (/^http/.test(link)) {
+    if (/^http/.test(link) || target === '_blank') {
       window.open(link);
     } else {
       router.push(link);

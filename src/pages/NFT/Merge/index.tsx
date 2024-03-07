@@ -165,14 +165,14 @@ function NFTMergePage({
                 <p className="text-base text-center w-[39rem]">
                   Congratulations on receiving your Eternity TETRA NFT, please check the unique identification number of
                   each TETRA NFT from the{' '}
-                  <Link href="/Profile" target="_blank" className="uppercase text-basic-yellow">
+                  <Link href="/Profile" target="_blank" className="uppercase text-basic-yellow underline">
                     USER CENTER
                   </Link>
                   .
                 </p>
 
                 <div className="flex justify-center pt-12 gap-2">
-                  <LGButton label="Check NFT" actived />
+                  <LGButton label="Check NFT" link="/Profile/MyAssets" target="_blank" actived />
                   <LGButton label="Merge History" />
                 </div>
               </>
@@ -216,7 +216,7 @@ function NFTMergePage({
               My Assets( 9 )
             </div>
 
-            <Link className="text-basic-yellow" href="">
+            <Link className="text-basic-yellow" href="/Profile/MyAssets" target="_blank">
               More Assets &gt;&gt;
             </Link>
           </div>
