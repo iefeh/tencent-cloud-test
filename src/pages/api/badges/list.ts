@@ -88,12 +88,20 @@ export async function loadBadges(userId:string, pageNum:number, pageSize:number)
       let displayedBadges:any = [];
 
       //添加徽章的信息
-      let t = b[0].series.get(String(claim));
-      displayedBadges.push({lv: claim,name: b[0].name,description: t.description,icon_url: t.icon_url, image_url: t.image_url,obtained_time: c.series[claim].obtained_time,claimed_time: c.series[claim].claimed_time});
+      let t;
+      if( claim == -1 ) {
+        displayedBadges.push("null")
+      }else{
+        t = b[0].series.get(String(claim));
+        displayedBadges.push({lv: claim,name: b[0].name,description: t.description,icon_url: t.icon_url, image_url: t.image_url,obtained_time: c.series[claim].obtained_time,claimed_time: c.series[claim].claimed_time});
+      }
+      
       if( disclaim > claim ) {
         //添加未领取的徽章信息
         t = b[0].series.get(String(disclaim));
         displayedBadges.push({lv: disclaim,name: b[0].name,description: t.description,icon_url: t.icon_url, image_url: t.image_url,obtained_time: c.series[disclaim].obtained_time});
+      }else{
+        displayedBadges.push("null")
       }
       delete c.series;
       c.series = displayedBadges;
