@@ -32,7 +32,7 @@ export default function MergeNFT(props: NFTProps) {
       onClick();
     }
 
-    if (onSelectChange && src) {
+    if (onSelectChange && src && !isPending && !isTransferring) {
       setSelected(!selected);
       onSelectChange(!selected);
     }
@@ -44,6 +44,8 @@ export default function MergeNFT(props: NFTProps) {
         <div className="relative z-0 w-[13.125rem] h-[13.125rem]">
           <Video
             options={{
+              preload: false,
+              autoplay: false,
               controls: false,
               sources: [
                 {

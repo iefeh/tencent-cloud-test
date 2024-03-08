@@ -1,4 +1,4 @@
-import { NFTItem } from '@/http/services/mint';
+import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
 import { MobxContext } from '@/pages/_app';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import Video from '@/pages/components/common/Video';
@@ -9,22 +9,16 @@ import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import BetterScroll from 'better-scroll';
+import Pullup from '@better-scroll/pull-up';
+import Pulldown from '@better-scroll/pull-down';
+import MouseWheel from '@better-scroll/mouse-wheel';
+import useMint from '@/hooks/useMint';
 
-function getMergedNFT() {
-  return {
-    chain_id: '80001',
-    token_id: 43,
-    block_number: 46641675,
-    confirmed_time: 1709542050421,
-    transaction_id: '0x26c481b2a4799e5280c3ada3c68b3b843bd588748d3356712f089464f1e2ce37',
-    transaction_status: 'confirmed',
-    token_metadata: {
-      name: 'Destiny TETRA NFT #43',
-      animation_url: 'https://cloudflare-ipfs.com/ipfs/bafybeidpyjgki6yt6gzo3qwsf6tl24q67t6fyjkrzyscm5dma4qulcnpva',
-    },
-  };
-}
+BetterScroll.use(MouseWheel);
+BetterScroll.use(Pullup);
+BetterScroll.use(Pulldown);
 
 function NFTMergePage({
   params,
@@ -35,76 +29,48 @@ function NFTMergePage({
 }) {
   const { userInfo } = useContext(MobxContext);
   const MAX_MERGE_LEN = 4;
-  const [nfts, setNFTs] = useState<(NFTItem | null)[]>([]);
-  const [canMint, setCanMint] = useState(false);
+  const MIN_NFT_COUNT = 9;
+
+  function getBasePageInfo() {
+    return { page_num: 1, page_size: MIN_NFT_COUNT };
+  }
+
+  const [nfts, setNFTs] = useState<(NFTItem | null)[]>(Array(MIN_NFT_COUNT).fill(null));
+  const [canMerge, setCanMerge] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [mergeLoading, setMergeLoading] = useState(false);
   const [merged, setMerged] = useState(false);
   const [selectedNFTs, setSelectedNFTs] = useState<NFTItem[]>([]);
   const [mergedNFT, setMergedNFT] = useState<NFTItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
+  const [total, setTotal] = useState(0);
+  const loadFinishedRef = useRef(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bsRef = useRef<BetterScroll | null>(null);
+  const { verifyMerge, merge } = useMint();
 
-  const queryNFTs = throttle(async () => {
-    const list = [
-      {
-        token_id: 44,
-        chain_id: '80001',
-        block_number: 46491562,
-        confirmed_time: 1709207951540,
-        transaction_id: '0xc7efad050379187e50dbcf4674f45c1782f5671d26c1cb1e359d6f85f1ec20be',
-        transaction_status: 'confirmed',
-        token_metadata: {
-          name: 'Destiny TETRA NFT #44',
-          animation_url: 'https://cloudflare-ipfs.com/ipfs/bafybeidknhvfvfr5uoozhkfj6kykocccen7ctvqonoesenpbbjstpsvgmm',
-        },
-      },
-      {
-        token_id: 5,
-        chain_id: '80001',
-        block_number: 46518000,
-        confirmed_time: 1709265286082,
-        transaction_id: '0xef6b6885a1c79907c74896d1a5cfa27707210102f74b83373f5546d66b358e53',
-        transaction_status: 'confirmed',
-        token_metadata: {
-          name: 'Destiny TETRA NFT #5',
-          animation_url: 'https://cloudflare-ipfs.com/ipfs/bafybeidswqmts7oyl5bivl7ople45mfhtovbnuixkxqbckyvzycxzpx7vm',
-        },
-      },
-      {
-        chain_id: '80001',
-        token_id: 43,
-        block_number: 46641675,
-        confirmed_time: 1709542050421,
-        transaction_id: '0x26c481b2a4799e5280c3ada3c68b3b843bd588748d3356712f089464f1e2ce39',
-        transaction_status: 'confirmed',
-        token_metadata: {
-          name: 'Destiny TETRA NFT #43',
-          animation_url: 'https://cloudflare-ipfs.com/ipfs/bafybeidpyjgki6yt6gzo3qwsf6tl24q67t6fyjkrzyscm5dma4qulcnpva',
-        },
-      },
-      {
-        chain_id: '80001',
-        token_id: 43,
-        block_number: 46641675,
-        confirmed_time: 1709542050421,
-        transaction_id: '0x26c481b2a4799e5280c3ada3c68b3b843bd588748d3356712f089464f1e2ce38',
-        transaction_status: 'confirmed',
-        token_metadata: {
-          name: 'Destiny TETRA NFT #43',
-          animation_url: 'https://cloudflare-ipfs.com/ipfs/bafybeidpyjgki6yt6gzo3qwsf6tl24q67t6fyjkrzyscm5dma4qulcnpva',
-        },
-      },
-    ];
+  const queryNFTs = async () => {
+    setLoading(true);
+    let list: (NFTItem | null)[] = [];
+    let totalCount = 0;
 
-    if (merged) {
-      list.push(getMergedNFT());
-    }
+    try {
+      const res = await queryMyNFTListAPI(pageInfo.current);
+      list = pageInfo.current.page_num === 1 ? [] : nfts;
+      list.push(...(res?.nfts || []));
+      totalCount = res?.total || 0;
+    } catch (error) {}
 
-    if (list.length < 9) {
-      list.push(...Array(9 - list.length).fill(null));
+    if (list.length < MIN_NFT_COUNT) {
+      list.push(...Array(MIN_NFT_COUNT - list.length).fill(null));
     }
 
     setNFTs(list);
-  }, 500);
+    setTotal(totalCount);
+    setLoading(false);
+    loadFinishedRef.current = list.length >= totalCount;
+  };
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
     if (!item) return;
@@ -117,23 +83,64 @@ function NFTMergePage({
     }
 
     setSelectedNFTs(list);
-    setCanMint(list.length === MAX_MERGE_LEN);
+    setCanMerge(list.length === MAX_MERGE_LEN);
   }
+
+  const onMergeClick = throttle(async () => {
+    const res = await verifyMerge();
+    if (!res) return;
+
+    onOpen();
+  }, 500);
 
   const onMerge = throttle(async () => {
     setMergeLoading(true);
     onClose();
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const ids = selectedNFTs.map((item) => item.token_id);
+    await merge(ids);
 
     setMergeLoading(false);
-    setMergedNFT(getMergedNFT());
-    setMerged(true);
+    // setMerged(true);
   }, 500);
+
+  const onPullUp = async () => {
+    if (loadFinishedRef.current) return;
+    pageInfo.current.page_num++;
+    await queryNFTs();
+    bsRef.current?.finishPullUp();
+    bsRef.current?.refresh();
+  };
+
+  const onPulldown = async () => {
+    loadFinishedRef.current = false;
+    pageInfo.current.page_num = 1;
+    await queryNFTs();
+    bsRef.current?.finishPullDown();
+    bsRef.current?.refresh();
+  };
 
   useEffect(() => {
     queryNFTs();
   }, [userInfo]);
+
+  useEffect(() => {
+    if (!scrollRef.current) return;
+
+    bsRef.current = new BetterScroll(scrollRef.current, {
+      probeType: 3,
+      pullUpLoad: true,
+      pullDownRefresh: true,
+      mouseWheel: true,
+    });
+
+    bsRef.current.on('pullingUp', onPullUp);
+    bsRef.current.on('pullingDown', onPulldown);
+
+    return () => {
+      bsRef.current?.destroy();
+    };
+  }, []);
 
   return (
     <section id="luxy">
@@ -141,7 +148,7 @@ function NFTMergePage({
         <title>Merge NFT | Moonveil Entertainment</title>
       </Head>
 
-      <div className="w-full pl-[6.875rem] pr-20 flex flex-col items-center md:flex-row md:items-start gap-[4.375rem] mt-[10.25rem] mb-[7.25rem]">
+      <div className="w-full pl-[6.875rem] pr-20 flex flex-col items-center xl:flex-row xl:items-start gap-[4.375rem] mt-[10.25rem] mb-[7.25rem]">
         <div className="w-[50rem] h-[50rem] flex flex-col bg-[url('/img/nft/merge/bg_content.png')] bg-contain border-1 border-basic-yellow rounded-md px-[1.875rem] relative">
           <div className="flex-1 flex flex-col justify-center items-center">
             {mergeLoading ? null : merged ? (
@@ -183,7 +190,13 @@ function NFTMergePage({
                     ? 'Please select the FOUR Destiny TETRA NFTs you want to merge.'
                     : 'Please log in to check your NFT'}
                 </p>
-                <LGButton className="mt-11" label="Merge Now" disabled={!canMint} linearDisabled onClick={onOpen} />
+                <LGButton
+                  className="mt-11"
+                  label="Merge Now"
+                  disabled={!canMerge}
+                  linearDisabled
+                  onClick={onMergeClick}
+                />
               </>
             )}
           </div>
@@ -210,10 +223,10 @@ function NFTMergePage({
           {mergeLoading && <CircularLoading noBlur />}
         </div>
 
-        <div className="flex-1 h-[50rem] flex flex-col">
+        <div className="flex-1 flex flex-col relative">
           <div className="flex justify-between items-center shrink-0">
             <div className="font-semakin text-3xl bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] text-transparent">
-              My Assets( 9 )
+              My Assets( {total} )
             </div>
 
             <Link className="text-basic-yellow" href="/Profile/MyAssets" target="_blank">
@@ -221,16 +234,22 @@ function NFTMergePage({
             </Link>
           </div>
 
-          <div className="w-full grid grid-cols-3 gap-3 flex-1 overflow-y-auto mt-6">
-            {nfts.map((item, index) => (
-              <MergeNFT
-                key={item ? `id_${item.transaction_id}` : `index_${index}`}
-                src={item?.token_metadata?.animation_url}
-                showSelection
-                onSelectChange={(selected) => onToggleNFT(item, selected)}
-              />
-            ))}
+          <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6">
+            <div className="w-full grid grid-cols-3 gap-3 flex-1">
+              {nfts.map((item, index) => (
+                <MergeNFT
+                  key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
+                  src={item?.token_metadata?.animation_url}
+                  isPending={item?.transaction_status === 'pending'}
+                  isTransferring={item?.transaction_status === 'transferringImg'}
+                  showSelection
+                  onSelectChange={(selected) => onToggleNFT(item, selected)}
+                />
+              ))}
+            </div>
           </div>
+
+          {loading && <CircularLoading />}
         </div>
 
         <Modal
