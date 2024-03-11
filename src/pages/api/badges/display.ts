@@ -4,7 +4,6 @@ import * as response from '@/lib/response/response';
 import { maybeAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import Badges from '@/lib/models/Badge';
 import UserBadges from '@/lib/models/UserBadges';
-import { BadgeSeries } from '../../../lib/models/Badge';
 import { PipelineStage } from 'mongoose';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();

@@ -11,6 +11,7 @@ import {chunkArray} from "@/lib/common/url";
 import SteamUserGame, {ISteamUserGame} from "@/lib/models/SteamUserGame";
 import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
+import { sendBadgeCheckMessages } from "@/lib/kafka/client";
 
 export class ConnectSteamQuest extends QuestBase {
     constructor(quest: IQuest) {
@@ -106,6 +107,8 @@ export class ConnectSteamQuest extends QuestBase {
                 {upsert: true, session: session}
             );
         });
+
+        sendBadgeCheckMessages(userId,userMetric);
 
         return {
             userMetric: userMetric

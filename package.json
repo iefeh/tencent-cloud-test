@@ -65,7 +65,8 @@
     "video.js": "^8.10.0",
     "web3": "^4.3.0",
     "winston": "^3.11.0",
-    "winston-transport": "^4.6.0"
+    "winston-transport": "^4.6.0",
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
     "@auth/mongodb-adapter": "^2.0.2",

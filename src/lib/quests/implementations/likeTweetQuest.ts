@@ -9,6 +9,7 @@ import {deleteAuthToken} from "@/lib/authorization/provider/util";
 import {redis} from "@/lib/redis/client";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import logger from "@/lib/logger/winstonLogger";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 
 export class LikeTweetQuest extends QuestBase {
@@ -108,6 +109,7 @@ export class LikeTweetQuest extends QuestBase {
                 },
                 {upsert: true, session: session}
             );
+            sendBadgeCheckMessage(userId,Metric.RetweetCount);
         });
         if (result.duplicated) {
             return {
