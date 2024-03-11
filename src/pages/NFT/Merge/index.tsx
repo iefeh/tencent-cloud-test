@@ -302,9 +302,10 @@ function NFTMergePage({
               My Assets( {total} )
             </div>
 
-            <Link className="text-basic-yellow" href="/Profile/MyAssets" target="_blank">
+            <div></div>
+            {/* <Link className="text-basic-yellow" href="/Profile/MyAssets" target="_blank">
               More Assets &gt;&gt;
-            </Link>
+            </Link> */}
           </div>
 
           <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6">
