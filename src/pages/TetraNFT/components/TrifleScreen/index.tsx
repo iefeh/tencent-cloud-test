@@ -25,11 +25,11 @@ export default function TrifleScren() {
     {
       title: 'Eternity TETRA',
       label: 'Level II',
-      // TODO 替换二阶激活图片
       activeImg: activeTrifleImg1,
       bgImg: trifleBgImg2,
       bgStyle: { maxWidth: '103%', width: '103%', height: '103%' },
-      isActive: false,
+      videoSrc: '/video/ntf2.webm',
+      isActive: true,
     },
     {
       title: 'Infinity TETRA',

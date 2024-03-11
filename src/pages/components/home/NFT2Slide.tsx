@@ -8,7 +8,7 @@ export default function NFT2Slide(props: Props) {
   return (
     <div className="bg-video w-full h-screen relative flex justify-center items-center">
       <div className="video-container absolute inset-0 z-0">
-        <video className="w-full h-full block object-cover" src="/video/nft2.webm" autoPlay muted loop></video>
+        <video className="w-full h-full block object-cover" src="/video/nftbg2.webm" autoPlay muted loop></video>
 
         <div className="video-mask absolute left-0 top-0 w-full h-full z-10 bg-black/70"></div>
       </div>
