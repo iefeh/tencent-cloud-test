@@ -172,6 +172,11 @@ function NFTMergePage({
   }
 
   useEffect(() => {
+    setSelectedNFTs([]);
+    setMerged(false);
+    setMergeLoading(false);
+    setMergedNFT(null);
+
     queryNFTs();
     if (userInfo) queryLatestMergeNFT(true);
   }, [userInfo]);
