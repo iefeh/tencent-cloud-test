@@ -7,6 +7,7 @@ const ROUTE_DICT: Dict<string> = {
   '/Profile/MyAssets': 'My Asset',
   '/LoyaltyProgram/earn': 'Earn Moon Beams',
   '/LoyaltyProgram/event': 'Event Details',
+  '/NFT/Merge/history': 'Merge History',
 };
 
 interface Props {
