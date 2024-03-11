@@ -24,6 +24,7 @@
     "@web3modal/ethers": "^3.5.3",
     "api": "^6.1.1",
     "axios": "^1.5.1",
+    "better-scroll": "^2.5.1",
     "bignumber.js": "^9.1.2",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.0.1",
