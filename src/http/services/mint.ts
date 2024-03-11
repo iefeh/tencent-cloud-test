@@ -14,6 +14,7 @@ export interface NFTItem {
   status?: string;
   transaction_status: string;
   token_metadata: TokenMetadata | null;
+  confirmed_time?: number;
 }
 
 export interface MergeListItem extends NFTItem {

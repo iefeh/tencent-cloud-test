@@ -9,12 +9,14 @@ import burningImg from 'img/profile/burning.png';
 import selectedIcon from 'img/nft/merge/icon_selected.png';
 import { useState } from 'react';
 import { throttle } from 'lodash';
+import { cn } from '@nextui-org/react';
 
 interface NFTProps {
   className?: string;
   name?: string;
   src?: string;
   status?: string;
+  withControls?: boolean;
   showSelection?: boolean;
   defaultSelected?: boolean;
   onClick?: (item?: any) => void;
@@ -22,7 +24,17 @@ interface NFTProps {
 }
 
 export default function NFT(props: NFTProps) {
-  const { name, src, status, showSelection, defaultSelected, onClick, onSelectChange } = props;
+  const {
+    className,
+    withControls = true,
+    name,
+    src,
+    status,
+    showSelection,
+    defaultSelected,
+    onClick,
+    onSelectChange,
+  } = props;
   const [selected, setSelected] = useState(!!defaultSelected);
   const isPending = status === 'pending';
   const isTransferring = status === 'pending';
@@ -51,13 +63,15 @@ export default function NFT(props: NFTProps) {
 
   return (
     <div className="flex flex-col items-center shrink-0 relative" onClick={onNFTClick}>
-      <div className="relative w-[16.5rem] h-[16.5rem] flex justify-center items-center bg-black">
+      <div className={cn(['relative w-[16.5rem] h-[16.5rem] flex justify-center items-center bg-black', className])}>
         <Image src={src ? activeBgImg : bgImg} alt="" fill />
 
         {src ? (
-          <div className="relative z-0 w-[13.125rem] h-[13.125rem]">
+          <div className="relative z-0 w-4/5 h-4/5">
             <Video
+              className="w-full h-full"
               options={{
+                controls: withControls,
                 sources: [
                   {
                     src,
