@@ -240,8 +240,7 @@ function NFTMergePage({
                 <MergeNFT
                   key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
                   src={item?.token_metadata?.animation_url}
-                  isPending={item?.transaction_status === 'pending'}
-                  isTransferring={item?.transaction_status === 'transferringImg'}
+                  status={item?.transaction_status}
                   showSelection
                   onSelectChange={(selected) => onToggleNFT(item, selected)}
                 />
