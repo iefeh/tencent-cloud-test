@@ -77,7 +77,7 @@ function NFTMergeHistoryPage({
       <div className="w-full mt-16 flex flex-col justify-between min-h-[25rem] max-h-screen">
         <div className="font-semakin text-basic-yellow text-3xl">Merge History</div>
 
-        <div className="flex-1 overflow-y-auto relative min-h-[25rem]">
+        <div className="flex-1 overflow-y-auto relative min-h-[25rem] pb-8">
           {list.length < 1 ? (
             <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
               <p>More exciting events coming soon.</p>
@@ -98,7 +98,7 @@ function NFTMergeHistoryPage({
                   key={item.token_id}
                   className="flex gap-10 mt-8 border-1 border-[#1e1a17] rounded-sm px-16 bg-black"
                 >
-                  <div className="pr-4 border-r-1 border-r-[#1e1a17] py-12">
+                  <div className="pr-8 w-80 border-r-1 border-r-[#1e1a17] py-12">
                     <div className="text-[#999]">Acquired</div>
 
                     <div className="mt-6">
