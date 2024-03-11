@@ -4,9 +4,7 @@ import * as response from "@/lib/response/response";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import { errorInterceptor } from "@/lib/middleware/error";
 import { timeoutInterceptor } from "@/lib/middleware/timeout";
-import connectToMongoDbDev from "@/lib/mongodb/client";
 import ContractTokenMetadata from "@/lib/models/ContractTokenMetadata";
-import ContractNFT from "@/lib/models/ContractNFT";
 import UserWallet from "@/lib/models/UserWallet";
 import Merge, { MergeStatus } from "@/lib/models/Merge";
 import { el } from "date-fns/locale";
@@ -47,54 +45,37 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }
 
     const merges = pagination.data;
-    // 查询合并请求的token元信息
-    const tokenIds = merges.flatMap(merge => merge.request_tokens ? merge.request_tokens : []);
-
-
-    let merge: any;
-    if (!tx_id) {
-        // 查询用户的最新合并请求
-        merge = await Merge.findOne({request_wallet_addr: userWallet.wallet_addr, deleted_time: null}, {_id:0}).sort({created_time: -1}).lean();
-    }else {
-        // 查询对应交易id的合并请求
-        merge = await Merge.findOne({request_transaction_id: tx_id, deleted_time: null}, {_id:0}).lean();
-    }
-    // 如果不存在这样的合并请求则直接返回空
-    if (!merge) {
-        return res.json(response.success({
-            merge: null,
-        }));
-    }
-    // 检查合并请求的状态，如果存在目标网络的token_id则添加对应token的元信息
-    if (merge.target_token_id) {
-        const meta = await ContractTokenMetadata.findOne({
-            chain_id: merge.target_chain_id,
-            contract_address: merge.target_contract_address,
-            token_id: merge.target_token_id
-        }, {
-            "_id": 0,
-            "token_id": 1,
-            "metadata.name": 1,
-            "metadata.animation_url": 1
-        });
-        merge.token_metadata = meta?.metadata;
-    }
-    // 检查当前合并状态，只反馈requesting与merged两种状态
-    if (merge.status !== MergeStatus.Merged) {
-        merge.status = MergeStatus.Requesting;
-    }
-    return res.json(response.success({
-        merge: {
+    await enrichNFTMetadata(merges);
+    // 封装响应数据
+    const responses = [];
+    for (let merge of merges) {
+        // 检查当前合并状态，只反馈requesting与merged两种状态
+        if (merge.status !== MergeStatus.Merged) {
+            merge.status = MergeStatus.Requesting;
+        }
+        responses.push({
             chain_id: merge.target_chain_id,
             contract_address: merge.target_contract_address,
             token_id: merge.target_token_id,
             status: merge.status,
             token_metadata: merge.token_metadata,
+            request_token_metadata: merge.request_token_metadata,
             confirmed_time: merge.confirmed_time,
             transaction_id: merge.target_transaction_id,
-        },
+        });
+    }
+    return res.json(response.success({
+        total: pagination.total,
+        page_num: pageNum,
+        page_size: pageSize,
+        merges: responses,
     }));
 });
+
+async function enrichNFTMetadata(merges: any[]) : Promise<void>{
+    await enrichRequestNFTMetadata(merges);
+    await enrichMergedNFTMetadata(merges);
+}
 
 async function enrichRequestNFTMetadata(merges: any[]) : Promise<void>{
     // 按照NFT的chain_id、contract_address进行分组token_id
@@ -136,11 +117,55 @@ async function enrichRequestNFTMetadata(merges: any[]) : Promise<void>{
                 delete metadata.chain_id;
                 delete metadata.contract_address;
             }
-            if ('request_token_metadata' in merge) {
+            if (merge.request_token_metadata) {
                 merge.request_token_metadata.push(metadata);
             }else {
                 merge.request_token_metadata = [metadata];
             }
+        }
+    }
+}
+
+async function enrichMergedNFTMetadata(merges: any[]) : Promise<void>{
+    // 按照NFT的chain_id、contract_address进行分组token_id
+    const mergeMap = new Map<string, any[]>();
+    for (let merge of merges) {
+        if (!merge.target_token_id) {
+            continue;
+        }
+        const key = `${merge.target_chain_id},${merge.target_contract_address}`;
+        if (!mergeMap.has(key)) {
+            mergeMap.set(key, []);
+        }
+        mergeMap.get(key)!.push(merge);
+    }
+    // 按token id分组查询NFT的元信息
+    const mergeKeys = Array.from(mergeMap.keys());
+    const metaQuery = mergeKeys.map(key => {
+        const [chainId, contractAddress] = key.split(",");
+        return {
+            chain_id: chainId,
+            contract_address: contractAddress,
+            token_id: {$in: mergeMap.get(key)!.map(merge => merge.target_token_id)}
+        }
+    });
+    const tokens = await ContractTokenMetadata.find({$or: metaQuery}, {
+        "_id": 0,
+        "chain_id": 1,
+        "contract_address": 1,
+        "token_id": 1,
+        "metadata.name": 1,
+        "metadata.animation_url": 1
+    }).lean();
+    const tokenMetadataMap = new Map<string, any>(tokens.map(token => [`${token.chain_id},${token.contract_address},${token.token_id}`, token.metadata]));
+    // 封装NFT的元信息
+    for (let merge of merges) {
+        const key = `${merge.target_chain_id},${merge.target_contract_address},${merge.target_token_id}`;
+        merge.token_metadata = tokenMetadataMap.get(key);
+        // 如果token_metadata存在则移除chain_id、contract_address
+        if (merge.token_metadata) {
+            delete merge.token_metadata.chain_id;
+            delete merge.token_metadata.contract_address;
         }
     }
 }
