@@ -49,7 +49,6 @@ function NFTMergePage({
   const scrollRef = useRef<HTMLDivElement>(null);
   const bsRef = useRef<BetterScroll | null>(null);
   const { verifyMerge, merge } = useMint();
-  const [latestMerge, setLatestMerge] = useState<NFTItem | null>(null);
   const loopTimer = useRef(0);
 
   const queryNFTs = async () => {
@@ -75,16 +74,16 @@ function NFTMergePage({
   };
 
   const queryLatestMergeNFT = async (isRefresh = false) => {
-    const res = await queryLatestMergeReqAPI({ tx_id: latestMerge?.transaction_id });
+    const res = await queryLatestMergeReqAPI({ tx_id: mergedNFT?.transaction_id });
     const nft = res?.merge || null;
 
     if (nft) {
       if (nft.status === 'requesting') {
-        setLoading(true);
+        setMergeLoading(true);
         setMerged(false);
       } else if (nft.status === 'merged') {
-        setLoading(false);
-        if (!isRefresh) setMerged(true);
+        setMergeLoading(false);
+        setMerged(true);
 
         // 已合并状态取消轮询
         if (loopTimer.current) {
@@ -96,7 +95,7 @@ function NFTMergePage({
       setMerged(false);
     }
 
-    setLatestMerge(nft);
+    setMergedNFT(nft);
   };
 
   function startQueryLoop() {
@@ -109,17 +108,25 @@ function NFTMergePage({
   }
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
-    if (!item) return;
+    if (!item || (selected && selectedNFTs.length >= MAX_MERGE_LEN) || merged || mergeLoading) return false;
 
     let list = selectedNFTs.slice();
     if (!selected) {
       list = list.filter((nft) => nft.transaction_id !== item.transaction_id);
-    } else if (selectedNFTs.length < MAX_MERGE_LEN) {
+    } else {
+      if (selectedNFTs.length > 0) {
+        const itemNFTType = `${item.chain_id}_${item.contract_address}`;
+        const existedNFTType = `${selectedNFTs[0].chain_id}_${selectedNFTs[0].contract_address}`;
+
+        if (itemNFTType !== existedNFTType) return false;
+      }
+
       list.push(item);
     }
 
     setSelectedNFTs(list);
     setCanMerge(list.length === MAX_MERGE_LEN);
+    return true;
   }
 
   const onMergeClick = throttle(async () => {
@@ -135,6 +142,10 @@ function NFTMergePage({
 
     const ids = selectedNFTs.map((item) => item.token_id);
     await merge(ids);
+    setSelectedNFTs([]);
+    setNFTs([]);
+    pageInfo.current.page_num = 1;
+    queryNFTs();
     startQueryLoop();
   }, 500);
 
@@ -154,9 +165,15 @@ function NFTMergePage({
     bsRef.current?.refresh();
   };
 
+  function onMergeMore() {
+    setLoading(false);
+    setMerged(false);
+    setMergedNFT(null);
+  }
+
   useEffect(() => {
     queryNFTs();
-    if (userInfo) queryLatestMergeNFT();
+    if (userInfo) queryLatestMergeNFT(true);
   }, [userInfo]);
 
   useEffect(() => {
@@ -177,6 +194,10 @@ function NFTMergePage({
     };
   }, []);
 
+  useEffect(() => {
+    setSelectedNFTs([]);
+  }, [merged, mergeLoading]);
+
   return (
     <section id="luxy">
       <Head>
@@ -191,8 +212,9 @@ function NFTMergePage({
                 <div className="w-[35.8125rem] h-[35.8125rem]">
                   {mergedNFT?.token_metadata?.animation_url && (
                     <Video
+                      key={mergedNFT.token_metadata.animation_url}
+                      className="w-full h-full"
                       options={{
-                        controls: false,
                         sources: [
                           {
                             src: mergedNFT.token_metadata.animation_url,
@@ -214,8 +236,8 @@ function NFTMergePage({
                 </p>
 
                 <div className="flex justify-center pt-12 gap-2">
-                  <LGButton label="Check NFT" link="/Profile/MyAssets" target="_blank" actived />
-                  <LGButton label="Merge History" />
+                  <LGButton label="Merge More" actived onClick={onMergeMore} />
+                  <LGButton label="Merge History" link="/NFT/Merge/history" />
                 </div>
               </>
             ) : (

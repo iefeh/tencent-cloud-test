@@ -20,7 +20,7 @@ interface NFTProps {
   showSelection?: boolean;
   defaultSelected?: boolean;
   onClick?: (item?: any) => void;
-  onSelectChange?: (selected: boolean) => void;
+  onSelectChange?: (selected: boolean) => boolean | undefined;
 }
 
 export default function MergeNFT(props: NFTProps) {
@@ -46,8 +46,9 @@ export default function MergeNFT(props: NFTProps) {
     }
 
     if (onSelectChange && src && !isPending && !isTransferring) {
-      setSelected(!selected);
-      onSelectChange(!selected);
+      if (onSelectChange(!selected)) {
+        setSelected(!selected);
+      }
     }
   }, 500);
 
@@ -68,22 +69,6 @@ export default function MergeNFT(props: NFTProps) {
               ],
             }}
           />
-
-          {isPending && (
-            <Image
-              className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9.625rem] h-24"
-              src={pendingImg}
-              alt=""
-            />
-          )}
-
-          {isTransferring && (
-            <Image
-              className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[13.9375rem] h-[7.4375rem]"
-              src={transferringImg}
-              alt=""
-            />
-          )}
 
           {statusImg && (
             <Image
