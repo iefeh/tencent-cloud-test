@@ -45,7 +45,7 @@ export default function MergeNFT(props: NFTProps) {
       onClick();
     }
 
-    if (onSelectChange && src && !isPending && !isTransferring) {
+    if (onSelectChange && src && !isPending && !isTransferring && !isBurning) {
       if (onSelectChange(!selected)) {
         setSelected(!selected);
       }

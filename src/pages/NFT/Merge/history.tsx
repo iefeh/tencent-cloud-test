@@ -98,19 +98,29 @@ function NFTMergeHistoryPage({
                   key={item.token_id}
                   className="flex gap-10 mt-8 border-1 border-[#1e1a17] rounded-sm px-16 bg-black"
                 >
-                  <div className="pr-8 w-80 border-r-1 border-r-[#1e1a17] py-12">
-                    <div className="text-[#999]">Acquired</div>
+                  <div className="pr-8 w-80 border-r-1 border-r-[#1e1a17] py-12 flex flex-col">
+                    <div className="text-[#999] shrink-0">Acquired</div>
 
-                    <div className="mt-6">
-                      {item.token_metadata && (
-                        <div className="flex flex-col items-start">
-                          <NFT className="!w-36 !h-36" src={item.token_metadata.animation_url} withControls={false} />
+                    <div className="mt-6 flex-1">
+                      <div className="h-full flex flex-col items-start">
+                        {item.status === 'merged' && item.token_metadata ? (
+                          <>
+                            <NFT className="!w-36 !h-36" src={item.token_metadata.animation_url} withControls={false} />
 
-                          <p className="text-xl font-semakin text-basic-yellow mt-4">{item.token_metadata.name}</p>
+                            <p className="text-xl font-semakin text-basic-yellow mt-4">{item.token_metadata.name}</p>
 
-                          <p className="mt-2">{confirmedTime}</p>
-                        </div>
-                      )}
+                            <p className="mt-2">{confirmedTime}</p>
+                          </>
+                        ) : (
+                          <>
+                            <div className="relative w-full flex-1">
+                              <CircularLoading />
+                            </div>
+
+                            <p className="font-semakin text-base text-basic-yellow text-center w-full">Merging</p>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
 
