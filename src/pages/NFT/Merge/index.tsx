@@ -1,4 +1,4 @@
-import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
+import { NFTItem, queryLatestMergeReqAPI, queryMyNFTListAPI } from '@/http/services/mint';
 import { MobxContext } from '@/pages/_app';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import Video from '@/pages/components/common/Video';
@@ -49,6 +49,8 @@ function NFTMergePage({
   const scrollRef = useRef<HTMLDivElement>(null);
   const bsRef = useRef<BetterScroll | null>(null);
   const { verifyMerge, merge } = useMint();
+  const [latestMerge, setLatestMerge] = useState<NFTItem | null>(null);
+  const loopTimer = useRef(0);
 
   const queryNFTs = async () => {
     setLoading(true);
@@ -71,6 +73,40 @@ function NFTMergePage({
     setLoading(false);
     loadFinishedRef.current = list.length >= totalCount;
   };
+
+  const queryLatestMergeNFT = async (isRefresh = false) => {
+    const res = await queryLatestMergeReqAPI({ tx_id: latestMerge?.transaction_id });
+    const nft = res?.merge || null;
+
+    if (nft) {
+      if (nft.status === 'requesting') {
+        setLoading(true);
+        setMerged(false);
+      } else if (nft.status === 'merged') {
+        setLoading(false);
+        if (!isRefresh) setMerged(true);
+
+        // 已合并状态取消轮询
+        if (loopTimer.current) {
+          clearTimeout(loopTimer.current);
+        }
+      }
+    } else {
+      setLoading(false);
+      setMerged(false);
+    }
+
+    setLatestMerge(nft);
+  };
+
+  function startQueryLoop() {
+    if (loopTimer.current) {
+      clearTimeout(loopTimer.current);
+    }
+
+    queryLatestMergeNFT();
+    loopTimer.current = window.setInterval(queryLatestMergeNFT, 60000);
+  }
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
     if (!item) return;
@@ -99,9 +135,7 @@ function NFTMergePage({
 
     const ids = selectedNFTs.map((item) => item.token_id);
     await merge(ids);
-
-    setMergeLoading(false);
-    // setMerged(true);
+    startQueryLoop();
   }, 500);
 
   const onPullUp = async () => {
@@ -122,6 +156,7 @@ function NFTMergePage({
 
   useEffect(() => {
     queryNFTs();
+    if (userInfo) queryLatestMergeNFT();
   }, [userInfo]);
 
   useEffect(() => {

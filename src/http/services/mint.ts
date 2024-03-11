@@ -10,6 +10,7 @@ export interface NFTItem {
   token_id: number;
   block_number: number;
   transaction_id: string;
+  status?: string;
   transaction_status: string;
   token_metadata: TokenMetadata | null;
 }
@@ -28,4 +29,8 @@ export function queryMyNFTListAPI(params: PageQueryDto): Promise<NFTListDTO> {
 
 export function queryNFTInfoAPI(params: { tx_id: string }): Promise<{ nft: NFTItem | null }> {
   return http.get('/api/users/nft/tx', { params });
+}
+
+export function queryLatestMergeReqAPI(params: { tx_id?: string }): Promise<{ merge: NFTItem | null }> {
+  return http.get('/api/users/nft/merge_request/latest', { params });
 }
