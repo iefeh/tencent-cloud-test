@@ -1,4 +1,5 @@
 import { Kafka, Message, Producer } from 'kafkajs';
+import { stringify } from 'querystring';
 
 export function getKafkaProducer(): Producer {
   const broker = process.env.KAFKA_DEV_BROKER!;
@@ -39,10 +40,10 @@ export const KAFKA_badge_MSG_SEP = '-_-=_+';
 export async function sendBadgeCheckMessage(userId: string, metric: string) {
   const producer = getKafkaProducer();
   await producer.connect();
-
+  const jsonStr = JSON.stringify({ userId: userId, metric: metric, timestamp: Date.now() });
   await producer.send({
     topic: 'badge-distributes',
-    messages: [{ key: KAFKA_BADGE_MSG_KEY, value: userId + KAFKA_badge_MSG_SEP + metric }],
+    messages: [{ value: jsonStr }],
   });
 
   // 断开连接
@@ -57,7 +58,7 @@ export async function sendBadgeCheckMessages(userId: string, metrics: { [key: st
 
   for (const [metric, value] of Object.entries(metrics)) {
     if (typeof value === 'number') {
-      msgs.push({ key: KAFKA_BADGE_MSG_KEY, value: userId + KAFKA_badge_MSG_SEP + metric });
+      msgs.push({ value: JSON.stringify({ userId: userId, metric: metric, timestamp: Date.now() }) });
     }
   }
 
