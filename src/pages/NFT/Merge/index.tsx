@@ -12,13 +12,11 @@ import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
-import Pulldown from '@better-scroll/pull-down';
 import MouseWheel from '@better-scroll/mouse-wheel';
 import useMint from '@/hooks/useMint';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
-BetterScroll.use(Pulldown);
 
 function NFTMergePage({
   params,
@@ -166,16 +164,6 @@ function NFTMergePage({
     }, 100);
   }, 500);
 
-  const onPulldown = throttle(async () => {
-    loadFinishedRef.current = false;
-    pageInfo.current.page_num = 1;
-    await queryNFTs();
-    setTimeout(() => {
-      bsRef.current?.finishPullDown();
-      bsRef.current?.refresh();
-    }, 100);
-  }, 500);
-
   function onMergeMore() {
     setLoading(false);
     setMerged(false);
@@ -198,12 +186,10 @@ function NFTMergePage({
     bsRef.current = new BetterScroll(scrollRef.current, {
       probeType: 3,
       pullUpLoad: true,
-      pullDownRefresh: true,
       mouseWheel: true,
     });
 
     bsRef.current.on('pullingUp', onPullUp);
-    bsRef.current.on('pullingDown', onPulldown);
 
     return () => {
       bsRef.current?.destroy();
