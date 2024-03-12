@@ -20,7 +20,7 @@ interface Props {
   };
   canDisplay?: boolean;
   onToggleDisplay?: (id: string, display: boolean) => void;
-  onClaim?: (id: string) => void;
+  onClaim?: (item: BadgeItem) => void;
   onMint?: (id: string) => void;
 }
 
@@ -52,7 +52,7 @@ export default function BadgeModal(props: Props) {
 
     setLoading(true);
     try {
-      await onClaim(item.badge_id);
+      await onClaim(item);
     } catch (error) {
       console.log('Badge Claim Error:', error);
     } finally {

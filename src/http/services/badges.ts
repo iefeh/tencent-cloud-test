@@ -35,8 +35,8 @@ export function queryDisplayBadgesAPI(): Promise<{ result: BadgeItem[] }> {
   return http.get('/api/badges/display');
 }
 
-export function claimBadgeAPI(id: string): Promise<boolean> {
-  return http.post('/api/badges/claim', JSON.stringify({ badge_id: id }));
+export function claimBadgeAPI(data: { badge_id: string; badge_lv: number }): Promise<boolean> {
+  return http.post('/api/badges/claim', JSON.stringify(data));
 }
 
 export function mintBadgeAPI(id: string): Promise<boolean> {
