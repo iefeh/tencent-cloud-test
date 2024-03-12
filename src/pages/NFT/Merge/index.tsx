@@ -83,7 +83,7 @@ function NFTMergePage({
     const nft = res?.merge || null;
 
     if (nft) {
-      if (nft.status === 'requesting' && !isRefresh) {
+      if (nft.status === 'requesting') {
         setMergeLoading(true);
         setMerged(false);
       } else if (nft.status === 'merged') {
@@ -308,7 +308,7 @@ function NFTMergePage({
             </Link> */}
           </div>
 
-          <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6">
+          <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6 relative">
             <div className="w-full grid grid-cols-3 gap-x-3 gap-y-8 flex-1">
               {nfts.map((item, index) => (
                 <MergeNFT
@@ -321,9 +321,9 @@ function NFTMergePage({
                 />
               ))}
             </div>
-          </div>
 
-          {loading && <CircularLoading />}
+            {loading && <CircularLoading />}
+          </div>
         </div>
 
         <Modal
