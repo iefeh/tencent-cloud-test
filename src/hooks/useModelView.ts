@@ -41,7 +41,7 @@ export class ModelViewer {
 
   initLight() {
     // 半球光
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xfeece2, 1.8);
     hemisphereLight.position.set(0, 200, 0);
     this.scene.add(hemisphereLight);
 
