@@ -1,14 +1,14 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {errorInterceptor} from "@/lib/middleware/error";
-import {redis} from "@/lib/redis/client";
+import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import { errorInterceptor } from "@/lib/middleware/error";
+import { redis } from "@/lib/redis/client";
 import User from "@/lib/models/User";
-import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import connectToMongoDbDev, {isDuplicateKeyError} from "@/lib/mongodb/client";
+import { timeoutInterceptor } from "@/lib/middleware/timeout";
+import connectToMongoDbDev, { isDuplicateKeyError } from "@/lib/mongodb/client";
 import UserWallet from "@/lib/models/UserWallet";
-import {PipelineStage} from "mongoose";
+import { PipelineStage } from "mongoose";
 import Quest from "@/lib/models/Quest";
 import ContractTokenMetadata from "@/lib/models/ContractTokenMetadata";
 import ContractNFT from "@/lib/models/ContractNFT";
@@ -18,7 +18,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(async (req, res) => {
     const userId = req.userId!;
-    const {page_num, page_size} = req.query;
+    const { page_num, page_size } = req.query;
     if (!page_num || !page_size) {
         res.json(response.invalidParams());
         return
@@ -26,7 +26,7 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
     // 检查用户当前绑定的钱包
-    const wallet = await UserWallet.findOne({user_id: userId, deleted_time: null}, {_id: 0, wallet_addr: 1});
+    const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null }, { _id: 0, wallet_addr: 1 });
     if (!wallet) {
         // 当前没有匹配的数据
         return res.json(response.success({
@@ -60,7 +60,15 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }));
 });
 
-async function enrichNFTMetadata(nfts: any[]) : Promise<void>{
+async function enrichNFTMetadata(nfts: any[]): Promise<void> {
+    for (let nft of nfts) {
+        // 检查NFT的实际状态，如果NFT存在locked_as则需要修正当前的状态
+        if (nft.locked_as) {
+            nft.status = nft.locked_as;
+            delete nft.locked_as;
+            delete nft.locked_time;
+        }
+    }
     // 按照NFT的chain_id、contract_address进行分组token_id
     const nftMap = new Map<string, any[]>();
     for (let nft of nfts) {
@@ -77,10 +85,10 @@ async function enrichNFTMetadata(nfts: any[]) : Promise<void>{
         return {
             chain_id: chainId,
             contract_address: contractAddress,
-            token_id: {$in: nftMap.get(key)!.map(nft => nft.token_id)}
+            token_id: { $in: nftMap.get(key)!.map(nft => nft.token_id) }
         }
     });
-    const tokens = await ContractTokenMetadata.find({$or: nftQuery}, {
+    const tokens = await ContractTokenMetadata.find({ $or: nftQuery }, {
         "_id": 0,
         "chain_id": 1,
         "contract_address": 1,
@@ -98,12 +106,6 @@ async function enrichNFTMetadata(nfts: any[]) : Promise<void>{
             delete nft.token_metadata.chain_id;
             delete nft.token_metadata.contract_address;
         }
-        // 检查NFT的实际状态，如果NFT存在locked_as则需要修正当前的状态
-        if (nft.locked_as) {
-            nft.status = nft.locked_as;
-            delete nft.locked_as;
-            delete nft.locked_time;
-        }
     }
 }
 
@@ -119,7 +121,7 @@ async function paginationWalletNFTs(wallet: string, pageNum: number, pageSize: n
         {
             $sort: {
                 // 按获取进行降序排列
-                'block_number': -1
+                'created_time': -1
             }
         },
         {
@@ -127,22 +129,22 @@ async function paginationWalletNFTs(wallet: string, pageNum: number, pageSize: n
                 '_id': 0,
                 '__v': 0,
                 'wallet_addr': 0,
-                'created_time':0,
+                'created_time': 0,
                 'deleted_time': 0,
             }
         },
         {
             $facet: {
-                metadata: [{$count: "total"}],
-                data: [{$skip: skip}, {$limit: pageSize}]
+                metadata: [{ $count: "total" }],
+                data: [{ $skip: skip }, { $limit: pageSize }]
             }
         }
     ];
     const results = await ContractNFT.aggregate(aggregateQuery);
     if (results[0].metadata.length == 0) {
-        return {total: 0, nfts: []}
+        return { total: 0, nfts: [] }
     }
-    return {total: results[0].metadata[0].total, nfts: results[0].data}
+    return { total: results[0].metadata[0].total, nfts: results[0].data }
 }
 
 
