@@ -84,13 +84,14 @@ function NFTMergePage({
       if (nft.status === 'requesting') {
         setMergeLoading(true);
         setMerged(false);
+        if (isRefresh) startQueryLoop();
       } else if (nft.status === 'merged') {
         setMergeLoading(false);
         setMerged(true);
 
         // 已合并状态取消轮询
         if (loopTimer.current) {
-          clearTimeout(loopTimer.current);
+          clearInterval(loopTimer.current);
         }
       }
     } else {
@@ -103,11 +104,12 @@ function NFTMergePage({
 
   function startQueryLoop() {
     if (loopTimer.current) {
-      clearTimeout(loopTimer.current);
+      clearInterval(loopTimer.current);
+      loopTimer.current = 0;
     }
 
     queryLatestMergeNFT();
-    loopTimer.current = window.setInterval(queryLatestMergeNFT, 60000);
+    loopTimer.current = window.setInterval(queryLatestMergeNFT, 10000);
   }
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
@@ -145,7 +147,9 @@ function NFTMergePage({
     onClose();
 
     const ids = selectedNFTs.map((item) => item.token_id);
-    await merge(ids);
+    const res = await merge(ids);
+    if (!res) return;
+
     setSelectedNFTs([]);
     setNFTs([]);
     currenNFTsRef.current = [];
@@ -178,6 +182,13 @@ function NFTMergePage({
 
     queryNFTs();
     if (userInfo) queryLatestMergeNFT(true);
+
+    return () => {
+      if (loopTimer.current) {
+        window.clearInterval(loopTimer.current);
+        loopTimer.current = 0;
+      }
+    };
   }, [userInfo]);
 
   useEffect(() => {
@@ -301,7 +312,8 @@ function NFTMergePage({
                   key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
                   src={item?.token_metadata?.animation_url}
                   name={item?.token_metadata?.name}
-                  status={item?.transaction_status}
+                  status={item?.status}
+                  transactionStatus={item?.transaction_status}
                   showSelection
                   onSelectChange={(selected) => onToggleNFT(item, selected)}
                 />
