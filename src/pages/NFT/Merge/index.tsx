@@ -51,10 +51,14 @@ function NFTMergePage({
   const { verifyMerge, merge } = useMint();
   const loopTimer = useRef(0);
 
-  const queryNFTs = async () => {
+  const queryNFTs = async (isRefresh = false) => {
     setLoading(true);
     let list: (NFTItem | null)[] = [];
     let totalCount = 0;
+
+    if (isRefresh) {
+      pageInfo.current.page_num = 1;
+    }
 
     try {
       const res = await queryMyNFTListAPI(pageInfo.current);
@@ -109,7 +113,10 @@ function NFTMergePage({
     }
 
     queryLatestMergeNFT();
-    loopTimer.current = window.setInterval(queryLatestMergeNFT, 10000);
+    loopTimer.current = window.setInterval(() => {
+      queryLatestMergeNFT();
+      queryNFTs(true);
+    }, 20000);
   }
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
