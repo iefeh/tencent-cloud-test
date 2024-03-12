@@ -1,9 +1,9 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {errorInterceptor} from "@/lib/middleware/error";
-import {timeoutInterceptor} from "@/lib/middleware/timeout";
+import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import { errorInterceptor } from "@/lib/middleware/error";
+import { timeoutInterceptor } from "@/lib/middleware/timeout";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 import ContractTokenMetadata from "@/lib/models/ContractTokenMetadata";
 import ContractNFT from "@/lib/models/ContractNFT";
@@ -11,17 +11,16 @@ import ContractNFT from "@/lib/models/ContractNFT";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(async (req, res) => {
-    const {tx_id} = req.query;
+    const { tx_id } = req.query;
     if (!tx_id) {
         res.json(response.invalidParams());
         return
     }
     // 对应交易id的nft
-    const nft: any = await ContractNFT.findOne({transaction_id: tx_id, deleted_time: null}, {
+    const nft: any = await ContractNFT.findOne({ transaction_id: tx_id, deleted_time: null }, {
         '_id': 0,
         '__v': 0,
         'wallet_addr': 0,
-        'contract_address': 0,
         'created_time': 0,
         'deleted_time': 0
     }).lean();
@@ -32,13 +31,22 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
         }));
     }
     // 查询NFT的元信息
-    // TODO:此处未判断token所在的链、合约
-    const meta = await ContractTokenMetadata.findOne({token_id: nft.token_id}, {
+    const meta = await ContractTokenMetadata.findOne({
+        chain_id: nft.chain_id,
+        contract_address: nft.contract_address,
+        token_id: nft.token_id
+    }, {
         "_id": 0,
         "token_id": 1,
         "metadata.name": 1,
         "metadata.animation_url": 1
     });
+    // 检查NFT的实际状态，如果NFT存在locked_as则需要修正当前的状态
+    if (nft.locked_as) {
+        nft.status = nft.locked_as;
+        delete nft.locked_as;
+        delete nft.locked_time;
+    }
     nft.token_metadata = meta?.metadata;
     return res.json(response.success({
         nft: nft,

@@ -17,7 +17,7 @@ export default function FogDeco() {
         alt=""
       />
 
-      <div className="absolute inset-0 top-[100vh] z-40 overflow-hidden pointer-events-none">
+      <div className="absolute left-0 top-[100vh] w-screen h-screen z-50 pointer-events-none">
         <Image
           className="w-[57.875rem] h-[50rem] object-cover absolute left-0 -bottom-[33rem] z-0 pointer-events-none"
           src={leftFogImg}

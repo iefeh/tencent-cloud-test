@@ -11,7 +11,7 @@ interface BasicBadgeProps {
   forDisplay?: boolean;
   className?: string;
   onView?: (item?: BadgeItem | null) => void;
-  onClaim?: (id: string) => void;
+  onClaim?: (item: BadgeItem) => void;
   onMint?: (id: string) => void;
 }
 
@@ -29,12 +29,12 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
   const icon_url = displayIconUrl || bagIconUrl;
   const lv = displayLv || bagLv;
 
-  async function onClaimClick(id: string) {
+  async function onClaimClick(item: BadgeItem) {
     if (!onClaim) return;
 
     setLoading(true);
     try {
-      await onClaim(id);
+      await onClaim(item);
     } catch (error) {
       console.log('Badge Claim Error:', error);
     } finally {
@@ -72,7 +72,7 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
             className="absolute inset-0 h-full z-10 bg-transparent text-sm leading-none uppercase"
             radius="none"
             isLoading={loading}
-            onPress={() => onClaimClick(item.badge_id)}
+            onPress={() => onClaimClick(item)}
           >
             Claim
           </Button>

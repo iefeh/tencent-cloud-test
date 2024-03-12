@@ -9,7 +9,7 @@ interface Props {
   badges: (BadgeItem | null)[];
   loading?: boolean;
   onView?: (item?: BadgeItem | null) => void;
-  onClaim?: (id: string) => void;
+  onClaim?: (item: BadgeItem) => void;
   onMint?: (id: string) => void;
 }
 
