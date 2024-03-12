@@ -1,10 +1,11 @@
 import { BadgeItem } from '@/http/services/badges';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Modal, ModalBody, ModalContent, cn } from '@nextui-org/react';
-import { throttle } from 'lodash';
+import { divide, throttle } from 'lodash';
 import Image from 'next/image';
 import { useState } from 'react';
 import helpIcon from 'img/profile/badges/icon_help.png';
+import arrowIcon from 'img/profile/badges/icon_arrow.png';
 
 interface Props {
   item: BadgeItem | null;
@@ -114,6 +115,45 @@ export default function BadgeModal(props: Props) {
                     )}
                   </span>
                 </div>
+
+                {item && item?.has_series && item.series && (
+                  <div className="flex justify-center mt-10">
+                    {item.series[0] && (
+                      <>
+                        <div className="flex flex-col items-center">
+                          <Image
+                            className="w-[4.375rem] h-[4.375rem] object-contain border-1 border-basic-yellow rounded-base"
+                            src={item.series[0].icon_url}
+                            alt=""
+                            width={70}
+                            height={70}
+                          />
+
+                          <p className="font-semakin text-sm bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent mt-3 px-1 py-[0.125rem] border-1 border-basic-gray rounded-md">
+                            LV.{item.series[0].lv || '--'}
+                          </p>
+                        </div>
+
+                        <Image className="w-[0.875rem] h-4 mt-7 mx-1" src={arrowIcon} alt="" width={28} height={32} />
+                      </>
+                    )}
+                    {item.series[1] && (
+                      <div className="flex flex-col items-center grayscale">
+                        <Image
+                          className="w-[4.375rem] h-[4.375rem] object-contain"
+                          src={item.series[1].icon_url}
+                          alt=""
+                          width={70}
+                          height={70}
+                        />
+
+                        <p className="font-semakin text-sm text-[#666] mt-3 px-1 py-[0.125rem] border-1 border-basic-gray rounded-md">
+                          LV.{item.series[1].lv || '--'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">{item?.description || '--'}</p>
 
