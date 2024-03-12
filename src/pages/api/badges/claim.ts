@@ -1,14 +1,13 @@
 import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
-import { maybeAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBadges from '@/lib/models/UserBadges';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(maybeAuthInterceptor).post(async (req, res) => {
+router.use(mustAuthInterceptor).post(async (req, res) => {
   let userId = req.userId;
-  userId = '4fa8b6f9-d296-4e63-af85-19ce2d9c2cfa';
   //判断用户是否登录
   if (!userId) {
     res.json(response.unauthorized());

@@ -1,5 +1,4 @@
 import { Kafka, Message, Producer } from 'kafkajs';
-import { stringify } from 'querystring';
 
 export function getKafkaProducer(): Producer {
   const broker = process.env.KAFKA_DEV_BROKER!;
