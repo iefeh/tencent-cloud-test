@@ -36,11 +36,13 @@ function NFTMergePage({
   }
 
   const [nfts, setNFTs] = useState<(NFTItem | null)[]>(Array(MIN_NFT_COUNT).fill(null));
+  const currenNFTsRef = useRef<(NFTItem | null)[]>([]);
   const [canMerge, setCanMerge] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mergeLoading, setMergeLoading] = useState(false);
   const [merged, setMerged] = useState(false);
   const [selectedNFTs, setSelectedNFTs] = useState<NFTItem[]>([]);
+  const selectedNFTsRef = useRef<NFTItem[]>([]);
   const [mergedNFT, setMergedNFT] = useState<NFTItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
@@ -58,16 +60,19 @@ function NFTMergePage({
 
     try {
       const res = await queryMyNFTListAPI(pageInfo.current);
-      list = pageInfo.current.page_num === 1 ? [] : nfts;
-      list.push(...(res?.nfts || []));
+      list = pageInfo.current.page_num === 1 ? [] : currenNFTsRef.current.slice();
+      if (res?.nfts) {
+        list = list.concat(res.nfts);
+      }
       totalCount = res?.total || 0;
     } catch (error) {}
 
     if (list.length < MIN_NFT_COUNT) {
-      list.push(...Array(MIN_NFT_COUNT - list.length).fill(null));
+      list = list.concat(Array(MIN_NFT_COUNT - list.length).fill(null));
     }
 
     setNFTs(list);
+    currenNFTsRef.current = list;
     setTotal(totalCount);
     setLoading(false);
     loadFinishedRef.current = list.length >= totalCount;
@@ -78,7 +83,7 @@ function NFTMergePage({
     const nft = res?.merge || null;
 
     if (nft) {
-      if (nft.status === 'requesting') {
+      if (nft.status === 'requesting' && !isRefresh) {
         setMergeLoading(true);
         setMerged(false);
       } else if (nft.status === 'merged') {
@@ -108,15 +113,15 @@ function NFTMergePage({
   }
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
-    if (!item || (selected && selectedNFTs.length >= MAX_MERGE_LEN) || merged || mergeLoading) return false;
+    if (!item || (selected && selectedNFTsRef.current.length >= MAX_MERGE_LEN) || merged || mergeLoading) return false;
 
-    let list = selectedNFTs.slice();
+    let list = selectedNFTsRef.current.slice();
     if (!selected) {
-      list = list.filter((nft) => nft.transaction_id !== item.transaction_id);
+      list = list.filter((nft) => nft.token_id !== item.token_id);
     } else {
-      if (selectedNFTs.length > 0) {
+      if (selectedNFTsRef.current.length > 0) {
         const itemNFTType = `${item.chain_id}_${item.contract_address}`;
-        const existedNFTType = `${selectedNFTs[0].chain_id}_${selectedNFTs[0].contract_address}`;
+        const existedNFTType = `${selectedNFTsRef.current[0].chain_id}_${selectedNFTsRef.current[0].contract_address}`;
 
         if (itemNFTType !== existedNFTType) return false;
       }
@@ -125,6 +130,7 @@ function NFTMergePage({
     }
 
     setSelectedNFTs(list);
+    selectedNFTsRef.current = list;
     setCanMerge(list.length === MAX_MERGE_LEN);
     return true;
   }
@@ -144,26 +150,31 @@ function NFTMergePage({
     await merge(ids);
     setSelectedNFTs([]);
     setNFTs([]);
+    currenNFTsRef.current = [];
     pageInfo.current.page_num = 1;
     queryNFTs();
     startQueryLoop();
   }, 500);
 
-  const onPullUp = async () => {
+  const onPullUp = throttle(async () => {
     if (loadFinishedRef.current) return;
     pageInfo.current.page_num++;
     await queryNFTs();
-    bsRef.current?.finishPullUp();
-    bsRef.current?.refresh();
-  };
+    setTimeout(() => {
+      bsRef.current?.finishPullUp();
+      bsRef.current?.refresh();
+    }, 100);
+  }, 500);
 
-  const onPulldown = async () => {
+  const onPulldown = throttle(async () => {
     loadFinishedRef.current = false;
     pageInfo.current.page_num = 1;
     await queryNFTs();
-    bsRef.current?.finishPullDown();
-    bsRef.current?.refresh();
-  };
+    setTimeout(() => {
+      bsRef.current?.finishPullDown();
+      bsRef.current?.refresh();
+    }, 100);
+  }, 500);
 
   function onMergeMore() {
     setLoading(false);
@@ -291,17 +302,19 @@ function NFTMergePage({
               My Assets( {total} )
             </div>
 
-            <Link className="text-basic-yellow" href="/Profile/MyAssets" target="_blank">
+            <div></div>
+            {/* <Link className="text-basic-yellow" href="/Profile/MyAssets" target="_blank">
               More Assets &gt;&gt;
-            </Link>
+            </Link> */}
           </div>
 
           <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6">
-            <div className="w-full grid grid-cols-3 gap-3 flex-1">
+            <div className="w-full grid grid-cols-3 gap-x-3 gap-y-8 flex-1">
               {nfts.map((item, index) => (
                 <MergeNFT
                   key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
                   src={item?.token_metadata?.animation_url}
+                  name={item?.token_metadata?.name}
                   status={item?.transaction_status}
                   showSelection
                   onSelectChange={(selected) => onToggleNFT(item, selected)}
