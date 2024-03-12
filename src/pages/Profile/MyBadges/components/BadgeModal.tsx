@@ -30,7 +30,16 @@ export default function BadgeModal(props: Props) {
   const [displayLoading, setDisplayLoading] = useState(false);
 
   const { series, display, image_url: displayImageUrl, icon_url: displayIconUrl, lv: displayLv } = item || {};
-  const { claimed_time, obtained_time, lv: bagLv, image_url: bagImageUrl, icon_url: bagIconUrl } = series?.[0] || {};
+  const validSerie = series?.[0] || series?.[1];
+  const {
+    name,
+    description,
+    claimed_time,
+    obtained_time,
+    lv: bagLv,
+    image_url: bagImageUrl,
+    icon_url: bagIconUrl,
+  } = validSerie || {};
 
   const claimed = !!display || !!claimed_time;
   const achieved = !!display || !!obtained_time;
@@ -100,7 +109,7 @@ export default function BadgeModal(props: Props) {
 
                 <div className="font-semakin text-3xl mt-5">
                   <span className="relative bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent">
-                    {item?.name || '--'}
+                    {name || '--'}
 
                     {item?.display && (
                       <div className="absolute -right-[0.1875rem] top-[0.125rem] -translate-y-full translate-x-full font-poppins text-sm leading-none text-black bg-[linear-gradient(120deg,#D9A970,#EFEBC5)] rounded-base rounded-bl-none p-[0.375rem]">
@@ -118,44 +127,50 @@ export default function BadgeModal(props: Props) {
 
                 {item && item?.has_series && item.series && (
                   <div className="flex justify-center mt-10">
-                    {item.series[0] && (
-                      <>
-                        <div className="flex flex-col items-center">
-                          <Image
-                            className="w-[4.375rem] h-[4.375rem] object-contain border-1 border-basic-yellow rounded-base"
-                            src={item.series[0].icon_url}
-                            alt=""
-                            width={70}
-                            height={70}
-                          />
+                    {item.series.map((serie, index) => {
+                      if (!serie) return null;
 
-                          <p className="font-semakin text-sm bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent mt-3 px-1 py-[0.125rem] border-1 border-basic-gray rounded-md">
-                            LV.{item.series[0].lv || '--'}
-                          </p>
-                        </div>
+                      return (
+                        <>
+                          {index > 0 && item.series?.[index - 1] && (
+                            <Image
+                              className="w-[0.875rem] h-4 mt-7 mx-1"
+                              src={arrowIcon}
+                              alt=""
+                              width={28}
+                              height={32}
+                            />
+                          )}
 
-                        <Image className="w-[0.875rem] h-4 mt-7 mx-1" src={arrowIcon} alt="" width={28} height={32} />
-                      </>
-                    )}
-                    {item.series[1] && (
-                      <div className="flex flex-col items-center grayscale">
-                        <Image
-                          className="w-[4.375rem] h-[4.375rem] object-contain"
-                          src={item.series[1].icon_url}
-                          alt=""
-                          width={70}
-                          height={70}
-                        />
+                          <div className={cn(['flex flex-col items-center', serie.obtained_time || 'grayscale'])}>
+                            <Image
+                              className={cn([
+                                'w-[4.375rem] h-[4.375rem] object-contain',
+                                serie.obtained_time && 'border-1 border-basic-yellow rounded-base',
+                              ])}
+                              src={serie.icon_url}
+                              alt=""
+                              width={70}
+                              height={70}
+                            />
 
-                        <p className="font-semakin text-sm text-[#666] mt-3 px-1 py-[0.125rem] border-1 border-basic-gray rounded-md">
-                          LV.{item.series[1].lv || '--'}
-                        </p>
-                      </div>
-                    )}
+                            <p
+                              className={cn([
+                                'font-semakin text-sm mt-3 px-1 py-[0.125rem] border-1 border-basic-gray rounded-md',
+                                serie.obtained_time &&
+                                  'bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent',
+                              ])}
+                            >
+                              LV.{serie.lv || '--'}
+                            </p>
+                          </div>
+                        </>
+                      );
+                    })}
                   </div>
                 )}
 
-                <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">{item?.description || '--'}</p>
+                <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">{description || '--'}</p>
 
                 {achieved && !claimed && (
                   <LGButton

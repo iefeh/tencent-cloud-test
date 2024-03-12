@@ -14,10 +14,11 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     return;
   }
 
-  const { badge_id, badge_lv } = req.query;
+  const { badge_id, badge_lv } = req.body;
+
   const badgeId = String(badge_id);
   const lv = String(badge_lv);
-  if (!badgeId || !lv) {
+  if (!badgeId || !lv || badgeId == 'undefined' || lv == 'undefined') {
     res.json(response.invalidParams());
     return;
   }
@@ -32,7 +33,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
 async function claimTheBadge(userId: string, badgeId: string, lv: string): Promise<any> {
   //查找目标徽章
   const badge = await UserBadges.findOne({ user_id: userId, badge_id: badgeId });
-
   //更新领取时间
   let result;
   const now = Date.now();
@@ -46,7 +46,6 @@ async function claimTheBadge(userId: string, badgeId: string, lv: string): Promi
       { user_id: userId, badge_id: badgeId },
       { $set: { [`series.${lv}.claimed_time`]: now, updated_time: now } },
     );
-    console.log(result);
   }
 
   //若该徽章已经领取
