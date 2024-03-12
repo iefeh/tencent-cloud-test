@@ -1,17 +1,17 @@
 import { Kafka, Message, Producer } from 'kafkajs';
 
 export function getKafkaProducer(): Producer {
-  const broker = process.env.KAFKA_DEV_BROKER!;
+  const broker = process.env.KAFKA_BROKER!;
   if (!broker) {
-    throw new Error('Please define the KAFKA_DEV_BROKER environment variable');
+    throw new Error('Please define the KAFKA_BROKER environment variable');
   }
-  const username = process.env.KAFKA_DEV_USERNAME!;
+  const username = process.env.KAFKA_USERNAME!;
   if (!username) {
-    throw new Error('Please define the KAFKA_DEV_USERNAME environment variable');
+    throw new Error('Please define the KAFKA_USERNAME environment variable');
   }
-  const password = process.env.KAFKA_DEV_PASSWORD!;
+  const password = process.env.KAFKA_PASSWORD!;
   if (!password) {
-    throw new Error('Please define the KAFKA_DEV_PASSWORD environment variable');
+    throw new Error('Please define the KAFKA_PASSWORD environment variable');
   }
 
   const kafka = new Kafka({
@@ -31,9 +31,6 @@ export function getKafkaProducer(): Producer {
 }
 
 export default getKafkaProducer;
-
-export const KAFKA_BADGE_MSG_KEY = 'badge_check';
-export const KAFKA_badge_MSG_SEP = '-_-=_+';
 
 //发送单条消息
 export async function sendBadgeCheckMessage(userId: string, metric: string) {
