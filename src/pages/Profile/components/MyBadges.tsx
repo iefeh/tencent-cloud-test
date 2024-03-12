@@ -18,8 +18,7 @@ export default function MyBadges() {
         </div>
 
         <div className="text-right">
-          {/* <Link href="">More Badges &gt;&gt;</Link> */}
-          <span>Coming Soon</span>
+          <Link href="/Profile/MyBadges">More Badges &gt;&gt;</Link>
         </div>
       </div>
 

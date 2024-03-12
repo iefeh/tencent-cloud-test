@@ -82,3 +82,10 @@ export const EVENT_STATUS_OPTIONS = [
     value: EventStatus.UPCOMING,
   },
 ];
+
+export const enum EVENT_REWARD_TYPE {
+  MOON_BEAM = 'moon_beam',
+  BADGE = 'badge',
+  LUCKY_DRAW = 'lucky_draw',
+  NFT_BONUS = 'nft_bonus',
+}

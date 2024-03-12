@@ -57,6 +57,8 @@
     "react-transition-group": "^4.4.5",
     "sharp": "^0.32.6",
     "simple-oauth2": "^5.0.0",
+    "simplebar-react": "^3.2.4",
+    "sortablejs": "^1.15.2",
     "steamapi": "^2.4.2",
     "swiper": "^10.3.1",
     "three": "^0.159.0",
@@ -64,7 +66,8 @@
     "video.js": "^8.10.0",
     "web3": "^4.3.0",
     "winston": "^3.11.0",
-    "winston-transport": "^4.6.0"
+    "winston-transport": "^4.6.0",
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
     "@auth/mongodb-adapter": "^2.0.2",
@@ -80,6 +83,7 @@
     "@types/react-dom": "^18",
     "@types/react-transition-group": "^4.4.7",
     "@types/simple-oauth2": "^5.0.6",
+    "@types/sortablejs": "^1.15.8",
     "@types/three": "^0.159.0",
     "@types/uuid": "^9.0.6",
     "autoprefixer": "^10",

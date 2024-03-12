@@ -7,6 +7,7 @@
   --background-rgb: 0, 0, 0;
   --basic-yellow: #f6c799;
   background-color: #000;
+  font-family: poppins;
 }
 
 body {
@@ -117,6 +118,11 @@ body {
 
 * {
   scrollbar-width: none;
+}
+
+li::marker {
+  display: none;
+  content: '';
 }
 
 /** 隐藏音量控制 */

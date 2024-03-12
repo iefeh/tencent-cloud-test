@@ -13,6 +13,7 @@ import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {v4 as uuidv4} from "uuid";
 import * as Sentry from "@sentry/nextjs";
+import { sendBadgeCheckMessages } from "@/lib/kafka/client";
 
 
 const Debank = require('debank');
@@ -249,6 +250,9 @@ export class ConnectWalletQuest extends QuestBase {
                 }
             );
         });
+
+        sendBadgeCheckMessages(userId,userMetric);
+
         return {
             userMetric: userMetric,
         };

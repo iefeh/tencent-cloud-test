@@ -40,10 +40,11 @@ const UserAvatar = () => {
       icon: profileImg,
       path: '/Profile',
     },
-    // {
-    //   title: 'My Badges',
-    //   icon: badgeImg,
-    // },
+    {
+      title: 'My Badges',
+      icon: badgeImg,
+      path: '/Profile/MyBadges',
+    },
     // {
     //   title: 'Check-In',
     //   icon: checkinImg,
@@ -83,7 +84,7 @@ const UserAvatar = () => {
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
         <div className="avatar rounded-full overflow-hidden w-7 h-7 relative">
-          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes='100%' />
+          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes="100%" />
         </div>
       </div>
 
@@ -116,7 +117,7 @@ const UserAvatar = () => {
 
       <Modal
         placement="center"
-        backdrop='blur'
+        backdrop="blur"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem]' }}

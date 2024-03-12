@@ -9,6 +9,7 @@ import {deleteAuthToken} from "@/lib/authorization/provider/util";
 import {redis} from "@/lib/redis/client";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import logger from "@/lib/logger/winstonLogger";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 
 export class LikeTweetQuest extends QuestBase {
@@ -57,7 +58,7 @@ export class LikeTweetQuest extends QuestBase {
             const response = error.response!;
             // 当前无权限，移除用户的授权token
             if (response.status === 403 || response.data.error_description == "Value passed for the token was invalid.") {
-                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like invalidated: ${response.data}`);
+                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like invalidated: ${JSON.stringify(response.data)}`);
                 await deleteAuthToken(twitterAuth.token);
                 return {
                     claimable: false,
@@ -67,7 +68,7 @@ export class LikeTweetQuest extends QuestBase {
             }
             // 当前是否已经被限流，需要添加限流处理
             if (response.status === 429) {
-                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like rate limited: ${response.data}`);
+                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like rate limited: ${JSON.stringify(response.data)}`);
                 const resetAt = response.headers["x-rate-limit-reset"];
                 if (resetAt) {
                     const wait = Number(resetAt) - Math.ceil(Date.now() / 1000);
@@ -108,6 +109,7 @@ export class LikeTweetQuest extends QuestBase {
                 },
                 {upsert: true, session: session}
             );
+            sendBadgeCheckMessage(userId,Metric.RetweetCount);
         });
         if (result.duplicated) {
             return {
