@@ -1,15 +1,19 @@
 import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
-import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import UserBadges from '@/lib/models/UserBadges';
-import Badges from '@/lib/models/Badge';
+import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
+import Badges, { IBadges } from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
+import { MongoClient, Collection, Db } from 'mongodb';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+type BadgeWithOwner = IBadges & { badgeOwner?: IUserBadges };
+
+router.use(maybeAuthInterceptor).get(async (req, res) => {
   let userId = req.userId;
+  userId = 'faf5716d-439e-4680-98d1-577e6cab6edc';
   //判断用户是否登录
   if (!userId) {
     res.json(response.unauthorized());
@@ -27,13 +31,41 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   const pageNum = Number(page_num);
   const pageSize = Number(page_size);
 
-  const badges = await loadBadges(userId, pageNum, pageSize);
+  //const badges = await loadBadges(userId, pageNum, pageSize);
+  const uri = String(process.env.MONGODB_DEV_URI);
+  const client = new MongoClient(uri);
+  await client.connect();
+  const db: Db = client.db();
+  const badgesCollection: Collection<IBadges> = db.collection('badges');
+  const userBadgesCollection: Collection<IUserBadges> = db.collection('user_badges');
+  const cursor = badgesCollection.aggregate<IBadges>([
+    {
+      $lookup: {
+        from: userBadgesCollection.collectionName,
+        localField: 'id',
+        foreignField: 'badge_id',
+        as: 'badgeOwner',
+      },
+    },
+    {
+      $unwind: {
+        path: '$badgeOwner',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ]);
+  let count  = 0
+  await cursor.forEach((result: BadgeWithOwner) => {
+    console.log((++count)+"result:"+result);
+  });
 
+  await client.close();
+  
   //返回用户徽章
   res.json(
     response.success({
-      total: badges[0].data.length,
-      badges: badges[0].data,
+      // total: badges[0].data.length,
+      // badges: badges[0].data,
     }),
   );
 });
