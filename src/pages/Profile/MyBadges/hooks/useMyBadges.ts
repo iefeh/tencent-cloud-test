@@ -32,7 +32,7 @@ export default function useMyBadges() {
 
   const claimBadge = throttle(async (item: BadgeItem) => {
     setClaimLoaing(true);
-    const lv = item.has_series ? item.series?.[1]?.lv : item.lv;
+    const lv = item.has_series ? item.series?.[1]?.lv || item.series?.[0].lv : item.lv;
     const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv || 1 });
     if (res) {
       await queryMyBadges();
