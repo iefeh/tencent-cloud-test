@@ -13,7 +13,7 @@ interface Props {
   onMint?: (id: string) => void;
 }
 
-export default function MyAssets(props: Props) {
+export default function MyBadges(props: Props) {
   const { total, badges, loading, onView, onClaim, onMint } = props;
 
   return (
