@@ -16,6 +16,7 @@ interface NFTProps {
   name?: string;
   src?: string;
   status?: string;
+  transactionStatus?: string;
   withControls?: boolean;
   showSelection?: boolean;
   defaultSelected?: boolean;
@@ -30,14 +31,15 @@ export default function NFT(props: NFTProps) {
     name,
     src,
     status,
+    transactionStatus,
     showSelection,
     defaultSelected,
     onClick,
     onSelectChange,
   } = props;
   const [selected, setSelected] = useState(!!defaultSelected);
-  const isPending = status === 'pending';
-  const isTransferring = status === 'pending';
+  const isPending = transactionStatus === 'pending';
+  const isTransferring = transactionStatus === 'transferringImg';
   const isBurning = status === 'burning';
 
   let statusImg: StaticImageData | null = null;

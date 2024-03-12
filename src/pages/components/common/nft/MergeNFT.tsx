@@ -17,6 +17,7 @@ interface NFTProps {
   name?: string;
   src?: string;
   status?: string;
+  transactionStatus?: string;
   showSelection?: boolean;
   defaultSelected?: boolean;
   onClick?: (item?: any) => void;
@@ -24,10 +25,10 @@ interface NFTProps {
 }
 
 export default function MergeNFT(props: NFTProps) {
-  const { name, src, status, showSelection, defaultSelected, onClick, onSelectChange } = props;
+  const { name, src, status, transactionStatus, showSelection, defaultSelected, onClick, onSelectChange } = props;
   const [selected, setSelected] = useState(!!defaultSelected);
-  const isPending = status === 'pending';
-  const isTransferring = status === 'pending';
+  const isPending = transactionStatus === 'pending';
+  const isTransferring = transactionStatus === 'transferringImg';
   const isBurning = status === 'burning';
 
   let statusImg: StaticImageData | null = null;
