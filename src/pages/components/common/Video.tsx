@@ -4,14 +4,32 @@ import Player from 'video.js/dist/types/player';
 
 interface Props {
   className?: string;
-  options?: any;
+  options?: Partial<VJSOptions>;
   onReady?: (player: Player) => void;
+}
+
+interface VJSSource {
+  src: string;
+  type: string;
+}
+
+interface VJSOptions {
+  poster?: string;
+  muted?: boolean;
+  autoplay?: boolean;
+  loop?: boolean;
+  preload?: boolean;
+  fluid?: boolean;
+  controls?: boolean;
+  hasControlBar?: boolean;
+  bigPlayButton?: boolean;
+  sources: VJSSource[];
 }
 
 export default function Video(props: Props) {
   const videoRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Player | null>(null);
-  let { className, options, onReady } = props;
+  let { className, options: extraOptions, onReady } = props;
   const baseOptions = {
     muted: true,
     autoplay: true,
@@ -19,8 +37,11 @@ export default function Video(props: Props) {
     // responsive: true,
     preload: true,
     fluid: true,
+    controls: true,
+    hasControlBar: true,
+    bigPlayButton: true,
   };
-  options = Object.assign(baseOptions, options);
+  const options = Object.assign({}, baseOptions, extraOptions);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -32,6 +53,11 @@ export default function Video(props: Props) {
 
       videoElement.classList.add('vjs-big-play-centered');
       videoElement.classList.add('vjs-fluid');
+
+      if (options.bigPlayButton) {
+        videoElement.classList.add('vjs-show-big-play-button-on-pause');
+      }
+
       videoRef.current.appendChild(videoElement);
 
       const player = (playerRef.current = videojs(videoElement, options, () => {
@@ -43,6 +69,14 @@ export default function Video(props: Props) {
 
       player.autoplay(options.autoplay);
       player.src(options.sources);
+
+      if (!options.hasControlBar) {
+        const barEl = videoRef.current.querySelector(':scope .vjs-control-bar');
+
+        if (barEl) {
+          barEl.parentElement?.removeChild(barEl);
+        }
+      }
     }
   }, [options, videoRef]);
 
