@@ -84,11 +84,15 @@ export default function NFT(props: NFTProps) {
             />
 
             {statusImg && (
-              <Image
-                className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9.625rem] h-24"
-                src={statusImg}
-                alt=""
-              />
+              <>
+                <div className="absolute inset-0 z-10 bg-black/60"></div>
+
+                <Image
+                  className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9.625rem] h-24"
+                  src={statusImg}
+                  alt=""
+                />
+              </>
             )}
           </div>
         ) : (
