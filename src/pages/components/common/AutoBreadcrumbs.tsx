@@ -4,8 +4,10 @@ import { useRouter } from 'next/router';
 const ROUTE_DICT: Dict<string> = {
   '/Profile': 'User Center',
   '/Profile/MyBadges': 'My Badges',
+  '/Profile/MyAssets': 'My Asset',
   '/LoyaltyProgram/earn': 'Earn Moon Beams',
   '/LoyaltyProgram/event': 'Event Details',
+  '/NFT/Merge/history': 'Merge History',
 };
 
 interface Props {

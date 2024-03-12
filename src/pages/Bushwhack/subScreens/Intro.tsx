@@ -87,63 +87,57 @@ export default function IntroScreen() {
       </div>
 
       <div className="w-[100rem] pt-[6.25rem] pb-[13.1825rem] flex flex-col items-center">
-        <Swiper
-          className="w-full h-[40.625rem]"
-          slidesPerView={1}
-          allowTouchMove={false}
-          navigation={{
-            prevEl: navigationPrevRef.current,
-            nextEl: navigationNextRef.current,
-          }}
-          onInit={(swiper) => (swiperRef.current = swiper)}
-          onActiveIndexChange={(swiper) => setActiveIndex(swiper.realIndex)}
-        >
-          {roles.map((role, index) => (
-            <SwiperSlide key={index}>
-              <div className="relative flex items-center text-center w-full h-full">
-                <div className="w-full font-semakin text-center text-[#736045] text-[18.75rem]">{role.name}</div>
+        <div className="w-full h-[40.625rem] relative flex justify-center">
+          <Swiper
+            className="!absolute inset-0 z-0"
+            slidesPerView={1}
+            allowTouchMove={false}
+            navigation={{
+              prevEl: navigationPrevRef.current,
+              nextEl: navigationNextRef.current,
+            }}
+            onInit={(swiper) => (swiperRef.current = swiper)}
+            onActiveIndexChange={(swiper) => setActiveIndex(swiper.realIndex)}
+          >
+            {roles.map((role, index) => (
+              <SwiperSlide key={index}>
+                <div className="relative flex items-center text-center w-full h-full">
+                  <div className="w-full font-semakin text-center text-[#736045] text-[18.75rem]">{role.name}</div>
+                </div>
+              </SwiperSlide>
+            ))}
 
-                <div className="absolute inset-0 z-0">
-                  <ModelView3D info={role.model} />
+            {activeIndex > 0 && (
+              <div
+                ref={navigationPrevRef}
+                className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
+                onClick={() => swiperRef.current?.slidePrev()}
+              >
+                <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
+                  {roles[activeIndex - 1].name}
+                </div>
+
+                <Image className="w-[6.875rem] h-[3.75rem]" src={leftArrowImg} alt="" />
+              </div>
+            )}
+            {activeIndex < roles.length - 1 && (
+              <div
+                ref={navigationNextRef}
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
+                onClick={() => swiperRef.current?.slideNext()}
+              >
+                <Image className="w-[6.875rem] h-[3.75rem]" src={rightArrowImg} alt="" />
+                <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
+                  {roles[activeIndex + 1].name}
                 </div>
               </div>
-            </SwiperSlide>
-          ))}
+            )}
+          </Swiper>
 
-          {activeIndex > 0 && (
-            <div
-              ref={navigationPrevRef}
-              className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10"
-            >
-              <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
-                {roles[activeIndex - 1].name}
-              </div>
-
-              <Image
-                className="w-[6.875rem] h-[3.75rem] cursor-pointer"
-                src={leftArrowImg}
-                alt=""
-                onClick={() => swiperRef.current?.slidePrev()}
-              />
-            </div>
-          )}
-          {activeIndex < roles.length - 1 && (
-            <div
-              ref={navigationNextRef}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10"
-            >
-              <Image
-                className="w-[6.875rem] h-[3.75rem] cursor-pointer"
-                src={rightArrowImg}
-                alt=""
-                onClick={() => swiperRef.current?.slideNext()}
-              />
-              <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
-                {roles[activeIndex + 1].name}
-              </div>
-            </div>
-          )}
-        </Swiper>
+          <div className="w-[calc(100%_-_360px)] min-w-[20rem] h-full relative z-10">
+            <ModelView3D key={activeIndex} info={roles[activeIndex].model} />
+          </div>
+        </div>
 
         <div className="w-full">
           <Image className="w-[6.25rem] h-[4.5rem] mx-auto" src={turnImg} alt="" />
