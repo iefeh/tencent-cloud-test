@@ -32,8 +32,18 @@ export default function useMyBadges() {
 
   const claimBadge = throttle(async (item: BadgeItem) => {
     setClaimLoaing(true);
-    const lv = item.has_series ? item.series?.[1]?.lv || item.series?.[0].lv : item.lv;
-    const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv || 1 });
+    let lv = 1;
+
+    if (item.has_series) {
+      item.series?.forEach((serie) => {
+        if (!serie.obtained_time || serie.lv <= lv) return;
+        lv = serie.lv;
+      });
+    } else {
+      lv = item.lv || 1;
+    }
+
+    const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv });
     if (res) {
       await queryMyBadges();
     }
