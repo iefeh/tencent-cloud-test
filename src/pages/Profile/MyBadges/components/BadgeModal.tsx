@@ -109,7 +109,7 @@ export default function BadgeModal(props: Props) {
 
                 <div className="font-semakin text-3xl mt-5">
                   <span className="relative bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent">
-                    {name || '--'}
+                    {name || item?.name || '--'}
 
                     {item?.display && (
                       <div className="absolute -right-[0.1875rem] top-[0.125rem] -translate-y-full translate-x-full font-poppins text-sm leading-none text-black bg-[linear-gradient(120deg,#D9A970,#EFEBC5)] rounded-base rounded-bl-none p-[0.375rem]">
@@ -161,7 +161,7 @@ export default function BadgeModal(props: Props) {
                                   'bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent',
                               ])}
                             >
-                              LV.{serie.lv || '--'}
+                              LV.{serie.lv || item.lv || '--'}
                             </p>
                           </div>
                         </>
@@ -170,7 +170,9 @@ export default function BadgeModal(props: Props) {
                   </div>
                 )}
 
-                <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">{description || '--'}</p>
+                <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">
+                  {description || item?.description || '--'}
+                </p>
 
                 {achieved && !claimed && (
                   <LGButton
