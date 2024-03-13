@@ -9,9 +9,8 @@ import { PipelineStage } from 'mongoose';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(maybeAuthInterceptor).get(async (req, res) => {
+router.use(mustAuthInterceptor).get(async (req, res) => {
   let userId = req.userId;
-  userId = 'faf5716d-439e-4680-98d1-577e6cab6edc';
   //判断用户是否登录
   if (!userId) {
     res.json(response.unauthorized());

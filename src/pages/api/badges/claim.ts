@@ -23,11 +23,19 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     return;
   }
   const result = await claimTheBadge(userId, badgeId, lv);
-  res.json(
-    response.success({
-      result: result,
-    }),
-  );
+  if(result ==="success"){
+    res.json(
+      response.success({
+        result: result,
+      }),
+    );
+  }else{
+    res.json(
+      response.invalidParams({
+        result: result,
+      }),
+    );
+  }
 });
 
 async function claimTheBadge(userId: string, badgeId: string, lv: string): Promise<any> {
@@ -52,7 +60,7 @@ async function claimTheBadge(userId: string, badgeId: string, lv: string): Promi
   if (!result) {
     result = 'Badge already claimed';
   } else {
-    result = 'Badge claimed success';
+    result = 'success';
   }
 
   return result;
