@@ -12,13 +12,11 @@ import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
-import Pulldown from '@better-scroll/pull-down';
 import MouseWheel from '@better-scroll/mouse-wheel';
 import useMint from '@/hooks/useMint';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
-BetterScroll.use(Pulldown);
 
 function NFTMergePage({
   params,
@@ -53,10 +51,14 @@ function NFTMergePage({
   const { verifyMerge, merge } = useMint();
   const loopTimer = useRef(0);
 
-  const queryNFTs = async () => {
+  const queryNFTs = async (isRefresh = false) => {
     setLoading(true);
     let list: (NFTItem | null)[] = [];
     let totalCount = 0;
+
+    if (isRefresh) {
+      pageInfo.current.page_num = 1;
+    }
 
     try {
       const res = await queryMyNFTListAPI(pageInfo.current);
@@ -83,16 +85,17 @@ function NFTMergePage({
     const nft = res?.merge || null;
 
     if (nft) {
-      if (nft.status === 'requesting' && !isRefresh) {
+      if (nft.status === 'requesting') {
         setMergeLoading(true);
         setMerged(false);
+        if (isRefresh) startQueryLoop();
       } else if (nft.status === 'merged') {
         setMergeLoading(false);
         setMerged(true);
 
         // 已合并状态取消轮询
         if (loopTimer.current) {
-          clearTimeout(loopTimer.current);
+          clearInterval(loopTimer.current);
         }
       }
     } else {
@@ -105,11 +108,15 @@ function NFTMergePage({
 
   function startQueryLoop() {
     if (loopTimer.current) {
-      clearTimeout(loopTimer.current);
+      clearInterval(loopTimer.current);
+      loopTimer.current = 0;
     }
 
     queryLatestMergeNFT();
-    loopTimer.current = window.setInterval(queryLatestMergeNFT, 60000);
+    loopTimer.current = window.setInterval(() => {
+      queryLatestMergeNFT();
+      queryNFTs(true);
+    }, 20000);
   }
 
   function onToggleNFT(item: NFTItem | null, selected: boolean) {
@@ -147,7 +154,12 @@ function NFTMergePage({
     onClose();
 
     const ids = selectedNFTs.map((item) => item.token_id);
-    await merge(ids);
+    const res = await merge(ids);
+    if (!res) {
+      setMergeLoading(false);
+      return;
+    }
+
     setSelectedNFTs([]);
     setNFTs([]);
     currenNFTsRef.current = [];
@@ -166,16 +178,6 @@ function NFTMergePage({
     }, 100);
   }, 500);
 
-  const onPulldown = throttle(async () => {
-    loadFinishedRef.current = false;
-    pageInfo.current.page_num = 1;
-    await queryNFTs();
-    setTimeout(() => {
-      bsRef.current?.finishPullDown();
-      bsRef.current?.refresh();
-    }, 100);
-  }, 500);
-
   function onMergeMore() {
     setLoading(false);
     setMerged(false);
@@ -190,6 +192,13 @@ function NFTMergePage({
 
     queryNFTs();
     if (userInfo) queryLatestMergeNFT(true);
+
+    return () => {
+      if (loopTimer.current) {
+        window.clearInterval(loopTimer.current);
+        loopTimer.current = 0;
+      }
+    };
   }, [userInfo]);
 
   useEffect(() => {
@@ -198,12 +207,10 @@ function NFTMergePage({
     bsRef.current = new BetterScroll(scrollRef.current, {
       probeType: 3,
       pullUpLoad: true,
-      pullDownRefresh: true,
       mouseWheel: true,
     });
 
     bsRef.current.on('pullingUp', onPullUp);
-    bsRef.current.on('pullingDown', onPulldown);
 
     return () => {
       bsRef.current?.destroy();
@@ -308,22 +315,23 @@ function NFTMergePage({
             </Link> */}
           </div>
 
-          <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6">
+          <div ref={scrollRef} className="w-full h-[47.25rem] overflow-hidden mt-6 relative">
             <div className="w-full grid grid-cols-3 gap-x-3 gap-y-8 flex-1">
               {nfts.map((item, index) => (
                 <MergeNFT
                   key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
                   src={item?.token_metadata?.animation_url}
                   name={item?.token_metadata?.name}
-                  status={item?.transaction_status}
+                  status={item?.status}
+                  transactionStatus={item?.transaction_status}
                   showSelection
                   onSelectChange={(selected) => onToggleNFT(item, selected)}
                 />
               ))}
             </div>
-          </div>
 
-          {loading && <CircularLoading />}
+            {loading && <CircularLoading />}
+          </div>
         </div>
 
         <Modal
