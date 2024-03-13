@@ -218,8 +218,10 @@ export default function useMint() {
       const transaction = await contract.current!.mergeRequest(ids);
       const result = await transaction.wait();
       console.log('merge result:', result);
+      return true;
     } catch (error: any) {
       toastError(error, 'merge');
+      return false;
     }
   }, 500);
 
