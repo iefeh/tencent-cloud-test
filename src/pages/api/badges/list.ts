@@ -1,15 +1,17 @@
 import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
-import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import UserBadges from '@/lib/models/UserBadges';
-import Badges from '@/lib/models/Badge';
+import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
+import Badges, { IBadges } from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
+
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(maybeAuthInterceptor).get(async (req, res) => {
   let userId = req.userId;
+  userId = 'faf5716d-439e-4680-98d1-577e6cab6edc';
   //判断用户是否登录
   if (!userId) {
     res.json(response.unauthorized());
@@ -27,8 +29,39 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   const pageNum = Number(page_num);
   const pageSize = Number(page_size);
 
-  const badges = await loadBadges(userId, pageNum, pageSize);
+  if (pageNum < 0 || pageSize < 0) {
+    res.json(response.invalidParams());
+    return;
+  }
 
+
+  let badges = await loadUserBadges(userId, pageNum, pageSize);
+  let ownedIds: any[] = []
+  if (badges[0].data.length < pageSize) {
+    if (badges[0].data.length == 0) {
+      const result = await loadUserBadgesCount(userId);
+      let skip: number;
+      if (result[0].data.length == 0) {
+        skip = 0;
+      } else {
+        skip = (pageNum - 1) * pageSize - result[0].data.length;
+        for (let c of result[0].data) {
+          ownedIds.push(c.badge_id);
+        }
+      }
+      badges = await loadAllBadge(skip, pageSize, ownedIds);
+    } else {
+
+      for (let c of badges[0].data) {
+        ownedIds.push(c.badge_id);
+      }
+      const temp = await loadAllBadge(0, pageSize - badges[0].data.length, ownedIds);
+
+      for (let c of temp[0].data) {
+        badges[0].data.push(c);
+      }
+    }
+  }
   //返回用户徽章
   res.json(
     response.success({
@@ -38,7 +71,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   );
 });
 
-export async function loadBadges(userId: string, pageNum: number, pageSize: number): Promise<any[]> {
+export async function loadUserBadges(userId: string, pageNum: number, pageSize: number): Promise<any[]> {
   const skip = (pageNum - 1) * pageSize;
 
   const aggregateQuery: PipelineStage[] = [
@@ -70,57 +103,50 @@ export async function loadBadges(userId: string, pageNum: number, pageSize: numb
   for (let c of badges[0].data) {
     //查询徽章配置
     let b = await Badges.find({ id: c.badge_id });
-    //取出用户取的和徽章系列
-    let claim = -1;
-    let disclaim = -1;
-    let lv;
+    if (b[0] == undefined) {
+      continue;
+    }
 
+    //获取用户最高等级徽章
+    let lv = Number.MIN_VALUE;
     //分别获取领取的最高等级和未领取的最高等级
     for (let k of Object.keys(c.series)) {
-      lv = Number(k); //此为徽章等级
-      if (lv > claim && c.series[k].claimed_time != null) {
-        claim = lv;
-      }
-
-      if (lv > disclaim && c.series[k].claimed_time == null) {
-        disclaim = lv;
+      if (Number(k) > lv) {
+        lv = Number(k);
       }
     }
-
-    let displayedBadges: any = [];
 
     //添加徽章的信息
-    let t;
-    if (claim == -1) {
-      displayedBadges.push(null);
-    } else {
-      t = b[0].series.get(String(claim));
-      displayedBadges.push({
-        lv: claim,
-        name: b[0].name,
-        description: t.description,
-        icon_url: t.icon_url,
-        image_url: t.image_url,
-        obtained_time: c.series[claim].obtained_time,
-        claimed_time: c.series[claim].claimed_time,
-      });
-    }
+    let displayedBadges: any = [];
+    let t = b[0].series.get(String(lv));
+    // if (t.claimed_time == undefined) {
+    //   t.claimed_time = 0;
+    // }
+    displayedBadges.push({
+      lv: lv,
+      name: b[0].name,
+      description: t.description,
+      icon_url: t.icon_url,
+      image_url: t.image_url,
+      obtained_time: c.series[String(lv)].obtained_time,
+      claimed_time: c.series[String(lv)].claimed_time,
+    });
 
-    if (disclaim > claim) {
-      //添加未领取的徽章信息
-      t = b[0].series.get(String(disclaim));
+    t = b[0].series.get(String(lv + 1));
+    if (t != undefined) {
       displayedBadges.push({
-        lv: disclaim,
+        lv: lv + 1,
         name: b[0].name,
         description: t.description,
         icon_url: t.icon_url,
         image_url: t.image_url,
-        obtained_time: c.series[disclaim].obtained_time,
+        // obtained_time: undefined,
+        // claimed_time: undefined,
       });
     } else {
       displayedBadges.push(null);
     }
-    delete c.series;
+    //delete c.series;
     c.series = displayedBadges;
 
     //是否为系列徽章
@@ -133,6 +159,90 @@ export async function loadBadges(userId: string, pageNum: number, pageSize: numb
 
   return badges;
 }
+
+
+export async function loadAllBadge(skip: number, pageSize: number, ownedIds: any[]): Promise<any[]> {
+
+  const aggregateQuery: PipelineStage[] = [
+    {
+      $match: {
+        active: true,
+        id: { $nin: ownedIds }
+      },
+    },
+    {
+      $sort: {
+        // 按照'order'升序排序
+        order: 1,
+      },
+    },
+    {
+      $project: {
+        //id:"$badge_id",
+        _id: 0,
+        __v: 0,
+        chain_id: 0,
+        deleted_time: 0,
+        description: 0,
+        obtain_url: 0,
+        active: 0,
+      },
+    },
+    {
+      $facet: {
+        data: [{ $skip: skip }, { $limit: pageSize }],
+      },
+    },
+  ];
+
+  const badges = await Badges.aggregate(aggregateQuery);
+  let lv: number;
+  for (let c of badges[0].data) {
+    c["badge_id"] = c.id;
+    //获取最低等级
+    lv = Number.MAX_VALUE;
+    for (let k of Object.keys(c.series)) {
+      if (Number(k) < lv) {
+        lv = Number(k);
+      }
+    }
+
+    let displayedBadges: any = [];
+    let t = c.series[String(lv)];
+    displayedBadges.push({
+      lv: lv,
+      name: c.name,
+      description: t.description,
+      icon_url: t.icon_url,
+      image_url: t.image_url,
+    });
+    displayedBadges.push(null);
+    delete c.id;
+    c.series = displayedBadges;
+  }
+
+  return badges;
+}
+
+
+async function loadUserBadgesCount(userId: string): Promise<any[]> {
+  const aggregateQuery: PipelineStage[] = [
+    {
+      $match: {
+        user_id: userId,
+      }
+    },
+    {
+      $project: {
+        badge_id: 1
+      },
+    },
+  ];
+
+  const result = await UserBadges.aggregate(aggregateQuery);
+  return result;
+}
+
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({

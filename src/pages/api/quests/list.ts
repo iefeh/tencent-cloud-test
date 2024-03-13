@@ -35,7 +35,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     await enrichUserQuests(userId!, quests);
     //在reward字段里面添加badges(可能有多个)的信息，返回
     await loadBadgeInfo(quests);
-
+    enrichQuestNewTag(quests);
     res.json(response.success({
         total: pagination.total,
         page_num: pageNum,
@@ -43,6 +43,19 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
         quests: quests,
     }));
 });
+
+function enrichQuestNewTag(quests: any[]) {
+    const now = Date.now();
+    for (let q of quests) {
+        q.is_new = false;
+        // 检查任务的创建时间是否在最近7天内
+        if (now - q.created_time < 7 * 24 * 3600 * 1000) {
+            q.is_new = true;
+        }
+        // 移除任务的创建时间
+        delete q.created_time;
+    }
+}
 
 async function loadBadgeInfo(quests: any[]) {
     for( let c of quests ){
@@ -79,7 +92,6 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
                 '_id': 0,
                 '__v': 0,
                 'deleted_time': 0,
-                'created_time': 0,
                 'updated_time': 0,
                 'active': 0,
                 'order': 0,

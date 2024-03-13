@@ -1,15 +1,16 @@
 import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
-import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import Badges from '@/lib/models/Badge';
 import UserBadges from '@/lib/models/UserBadges';
 import { PipelineStage } from 'mongoose';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(maybeAuthInterceptor).get(async (req, res) => {
   let userId = req.userId;
+  userId = 'faf5716d-439e-4680-98d1-577e6cab6edc';
   //判断用户是否登录
   if (!userId) {
     res.json(response.unauthorized());
@@ -51,7 +52,11 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
   let result = await UserBadges.aggregate(aggregateQuery);
   for (let c of result) {
     const badges = await Badges.find({ id: c.badge_id });
+    if (badges.length == 0) {
+      return [];
+    }
     let maxLv = -1;
+    let seriesCount = 0;
     for (let s of Object.keys(c.series)) {
       if (Number(s) > maxLv && c.series[s].claimed_time != null) {
         maxLv = Number(s);
@@ -63,6 +68,7 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
     c.icon_url = badges[0].series.get(String(maxLv)).icon_url;
     c.image_url = badges[0].series.get(String(maxLv)).image_url;
     c.description = badges[0].series.get(String(maxLv)).description;
+    c.has_series = Object.keys(badges[0].series).length > 1;
     delete c.series;
   }
   //const badges = await Badges.find({id: badgeId});
