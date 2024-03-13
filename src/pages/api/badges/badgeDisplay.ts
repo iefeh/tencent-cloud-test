@@ -1,7 +1,7 @@
 import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
-import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBadges from '@/lib/models/UserBadges';
 import doTransaction from '@/lib/mongodb/transaction';
 import { letterSpacing } from 'html2canvas/dist/types/css/property-descriptors/letter-spacing';
