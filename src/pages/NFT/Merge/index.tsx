@@ -155,7 +155,10 @@ function NFTMergePage({
 
     const ids = selectedNFTs.map((item) => item.token_id);
     const res = await merge(ids);
-    if (!res) return;
+    if (!res) {
+      setMergeLoading(false);
+      return;
+    }
 
     setSelectedNFTs([]);
     setNFTs([]);
