@@ -108,7 +108,7 @@ export default function BadgeModal(props: Props) {
                 />
 
                 <div className="font-semakin text-3xl mt-5">
-                  <span className="relative bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent">
+                  <div className="relative bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent max-w-[calc(100%_-_4.25rem)] px-2">
                     {name || item?.name || '--'}
 
                     {item?.display && (
@@ -122,7 +122,7 @@ export default function BadgeModal(props: Props) {
                         LV.{lv || '--'}
                       </div>
                     )}
-                  </span>
+                  </div>
                 </div>
 
                 {item && item?.has_series && item.series && (

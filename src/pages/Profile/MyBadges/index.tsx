@@ -58,7 +58,7 @@ function MyBadgesPage() {
         <title>My Badges | Moonveil Entertainment</title>
       </Head>
 
-      <AutoBreadcrumbs />
+      <AutoBreadcrumbs hrefs={['/Profile']} />
 
       <div className="mt-12">
         <div className="font-semakin text-basic-yellow text-2xl">Display Badges</div>
