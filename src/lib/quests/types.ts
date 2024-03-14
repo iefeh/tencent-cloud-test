@@ -10,6 +10,7 @@ export enum QuestType {
     FollowOnTwitter = "follow_on_twitter",
     RetweetTweet = "retweet_tweet",
     LikeTweet = "like_tweet",
+    CommentTweet = "comment_tweet",
     JoinDiscordServer = "join_discord_server",
     HoldDiscordRole = "hold_discord_role",
     Whitelist = "whitelist",
@@ -83,6 +84,16 @@ export type RetweetTweet = {
 
 // 点赞推文
 export type LikeTweet = {
+    // 目标推文地址
+    tweet_url: string;
+    // 推文id，用于构建intent地址
+    tweet_id: string;
+    // 任务地址
+    url: string;
+}
+
+// 评论推文
+export type CommentTweet = {
     // 目标推文地址
     tweet_url: string;
     // 推文id，用于构建intent地址
