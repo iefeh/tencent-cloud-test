@@ -32,7 +32,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     return;
   }
 
-  let badges = await loadUserBadges(userId, pageNum, pageSize);
+  let [badges, claimed_count] = await loadUserBadges(userId, pageNum, pageSize);
   let ownedIds: any[] = [];
   if (badges[0].data.length < pageSize) {
     if (badges[0].data.length == 0) {
@@ -62,8 +62,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   res.json(
     response.success({
       total: badges[0].data.length,
-      claimed_count: badges[0].claimed_count,
-      badges: badges[0].data
+      claimed_count,
+      badges: badges[0].data,
     }),
   );
 });
@@ -106,7 +106,7 @@ export async function loadUserBadges(userId: string, pageNum: number, pageSize: 
     }
 
     //获取用户最高等级徽章
-    let lv = -99999; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
+    let lv = -Infinity; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
     //分别获取领取的最高等级和未领取的最高等级
     claimed = false;
     for (let k of Object.keys(c.series)) {
@@ -120,7 +120,6 @@ export async function loadUserBadges(userId: string, pageNum: number, pageSize: 
     if (claimed) {
       claimed_count++;
     }
-
 
     //添加徽章的信息
     let displayedBadges: any = [];
@@ -160,8 +159,7 @@ export async function loadUserBadges(userId: string, pageNum: number, pageSize: 
       c.has_series = false;
     }
   }
-  badges[0].claimed_count = claimed_count;
-  return badges;
+  return [badges, claimed_count];
 }
 
 export async function loadAllBadge(skip: number, pageSize: number, ownedIds: any[]): Promise<any[]> {

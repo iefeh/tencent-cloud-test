@@ -16,14 +16,12 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     return;
   }
 
-  const result = await getUserDisplayedBadges(userId);
-  let claimed_count = result[0]['claimed_count'];
-  result[0]['claimed_count']=undefined;
+  const [result, claimed_count] = await getUserDisplayedBadges(userId);
   res.json(
     response.success({
       claimed_count: claimed_count,
-      result: result
-    })
+      result: result,
+    }),
   );
 });
 async function getUserDisplayedBadges(userId: string): Promise<any[]> {
@@ -59,7 +57,7 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
     if (badges.length == 0) {
       continue;
     }
-    let maxLv = -99999; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
+    let maxLv = -Infinity; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
     claimed = false;
     for (let s of Object.keys(c.series)) {
       if (Number(s) > maxLv && c.series[s].claimed_time != null) {
@@ -79,9 +77,8 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
     c.has_series = Object.keys(badges[0].series).length > 1;
     delete c.series;
   }
-  result[0]['claimed_count'] = claimed_count;
   //const badges = await Badges.find({id: badgeId});
-  return result;
+  return [result, claimed_count];
 }
 
 //获取该徽章下最高等级的奖章
