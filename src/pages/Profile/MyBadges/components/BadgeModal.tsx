@@ -210,7 +210,7 @@ export default function BadgeModal(props: Props) {
                     />
                   )}
 
-                  <LGButton className="flex-1 uppercase" label="Show Off" actived disabled />
+                  <LGButton className="flex-1 uppercase" label="Coming Soon" actived disabled />
                 </div>
               </ModalBody>
             </>
