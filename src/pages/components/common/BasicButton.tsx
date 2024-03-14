@@ -1,6 +1,9 @@
 'use client';
 
+import { MobxContext } from '@/pages/_app';
+import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
+import { useContext } from 'react';
 
 interface Props {
   prefix?: JSX.Element;
@@ -9,13 +12,20 @@ interface Props {
   active?: boolean;
   disabled?: boolean;
   className?: string;
+  needAuth?: boolean;
   onClick?: () => void;
 }
 
-export default function BasicButton(props: Props) {
+function BasicButton(props: Props) {
+  const { needAuth } = props;
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const router = useRouter();
   const onLinkClick = () => {
     if (!props.link) return;
+    if (needAuth && !userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
 
     if (/^http/.test(props.link)) {
       window.open(props.link);
@@ -43,3 +53,5 @@ export default function BasicButton(props: Props) {
     </button>
   );
 }
+
+export default observer(BasicButton);

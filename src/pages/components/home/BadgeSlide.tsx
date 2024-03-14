@@ -14,18 +14,19 @@ export default function BadgeSlide(props: Props) {
 
       <PageDesc
         hasBelt
-        title="Unlock Achievements, Reap Rewards<br />The Moonveil Badge System Unveiled!"
+        title="Moonveil<br />Badge System Unveiled!"
         needAni={props.needAni}
         baseAniTY
-        className="relative top-[5%] left-[10%] items-start text-center w-full"
+        className="relative top-[5%] left-[10%] items-start text-left w-full"
         subtitle={
-          <div className="title text-lg font-decima mb-10 tracking-tighter max-w-[40rem] text-left">
+          <div className="title text-lg font-decima mb-10 tracking-tighter max-w-[40rem]">
             We are thrilled to introduce the Moonveil Badge System as an integral component of our Loyalty Program.
             Complete tasks and claim your exclusive badges now! .
           </div>
         }
         buttonLabel="Explore Now"
         buttonLink="/Profile/MyBadges"
+        needAuth
       />
     </div>
   );
