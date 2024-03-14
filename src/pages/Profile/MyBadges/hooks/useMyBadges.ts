@@ -18,12 +18,13 @@ export default function useMyBadges() {
     const params = Object.assign({}, pagi.current, condition);
 
     const res = await queryBadgesPageListAPI(params);
-    setTotal(res?.total || 0);
     const list = res?.badges || [];
 
     if (list.length < MIN_TOTAL) {
       list.push(...Array(MIN_TOTAL - list.length).fill(null));
     }
+
+    setTotal(list.reduce((p, c) => (p += c?.series?.[0]?.obtained_time ? 1 : 0), 0));
 
     setBadges(list);
     Object.assign({ page_num: res?.page_num || 0, page_size: res?.page_size });
