@@ -230,7 +230,11 @@ function NFTMergePage({
       <div className="w-full pl-[6.875rem] pr-20 flex flex-col items-center xl:flex-row xl:items-start gap-[4.375rem] mt-[10.25rem] mb-[7.25rem]">
         <div className="w-[50rem] h-[50rem] flex flex-col bg-[url('/img/nft/merge/bg_content.png')] bg-contain border-1 border-basic-yellow rounded-md px-[1.875rem] relative">
           <div className="flex-1 flex flex-col justify-center items-center">
-            {mergeLoading ? null : merged ? (
+            {mergeLoading ? (
+              <div className="relative w-full flex-1">
+                <CircularLoading noBlur />
+              </div>
+            ) : merged ? (
               <>
                 <div className="w-[35.8125rem] h-[35.8125rem]">
                   {mergedNFT?.token_metadata?.animation_url && (
@@ -249,7 +253,7 @@ function NFTMergePage({
                   )}
                 </div>
 
-                <p className="text-base text-center w-[39rem]">
+                <p className="text-base text-center w-[39rem] mt-2">
                   Congratulations on receiving your Eternity TETRA NFT, please check the unique identification number of
                   each TETRA NFT from the{' '}
                   <Link href="/Profile" target="_blank" className="uppercase text-basic-yellow underline">
@@ -283,24 +287,22 @@ function NFTMergePage({
 
           {!merged && (
             <div className="shrink-0">
-              <p className="text-[#999] mb-8">
-                {mergeLoading ? (
+              <p className="text-white mb-8 text-lg">
+                {!mergeLoading ? (
                   <>
-                    The merging process will take about <span className="text-basic-yellow">5 minutes</span>. Please do
-                    not refresh or close the page. Thank you for your patience.
+                    The merging process will take about <span className="text-basic-yellow">5 to 10 minutes</span>.
+                    Please do not refresh or close the page. Thank you for your patience.
                   </>
                 ) : (
                   <>
-                    <span className="text-white">Kind reminder: </span>Lv2 Eternity TETRA will be merged on the Ethereum
-                    network. To ensure a smooth experience for you, we will cover all the ETH Gas Fees required for
-                    minting on Ethereum.
+                    <span className="text-basic-yellow">Kind reminder: </span>Lv2 Eternity TETRA will be merged on the
+                    Ethereum network. To ensure a smooth experience for you, we will cover all the{' '}
+                    <span className="text-basic-yellow">ETH Gas Fees</span> required for minting on Ethereum.
                   </>
                 )}
               </p>
             </div>
           )}
-
-          {mergeLoading && <CircularLoading noBlur />}
         </div>
 
         <div className="flex-1 flex flex-col relative">
