@@ -1,19 +1,20 @@
-import {IQuest} from "@/lib/models/Quest";
-import {QuestType} from "@/lib/quests/types";
-import {QuestBase} from "@/lib/quests/implementations/base";
-import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
-import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
-import {HoldDiscordRoleQuest} from "@/lib/quests/implementations/holdDiscordRoleQuest";
-import {UserMetricQuest} from "@/lib/quests/implementations/userMetricQuest";
-import {FollowOnTwitterQuest} from "@/lib/quests/implementations/followOnTwitterQuest";
-import {RetweetTweetQuest} from "@/lib/quests/implementations/retweetTweetQuest";
-import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
-import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
-import {WhitelistQuest} from "@/lib/quests/implementations/whitelistQuest";
-import {JoinDiscordServerQuest} from "@/lib/quests/implementations/joinDiscordServerQuest";
-import {HoldNFTQuest} from "@/lib/quests/implementations/holdNFTQuest";
-import {LikeTweetQuest} from "@/lib/quests/implementations/likeTweetQuest";
-import {SendDiscordMessageQuest} from "@/lib/quests/implementations/sendDiscordMessageQuest";
+import { IQuest } from "@/lib/models/Quest";
+import { QuestType } from "@/lib/quests/types";
+import { QuestBase } from "@/lib/quests/implementations/base";
+import { ConnectTwitterQuest } from "@/lib/quests/implementations/connectTwitterQuest";
+import { ConnectDiscordQuest } from "@/lib/quests/implementations/connectDiscordQuest";
+import { HoldDiscordRoleQuest } from "@/lib/quests/implementations/holdDiscordRoleQuest";
+import { UserMetricQuest } from "@/lib/quests/implementations/userMetricQuest";
+import { FollowOnTwitterQuest } from "@/lib/quests/implementations/followOnTwitterQuest";
+import { RetweetTweetQuest } from "@/lib/quests/implementations/retweetTweetQuest";
+import { ConnectSteamQuest } from "@/lib/quests/implementations/connectSteamQuest";
+import { ConnectWalletQuest } from "@/lib/quests/implementations/connectWalletQuest";
+import { WhitelistQuest } from "@/lib/quests/implementations/whitelistQuest";
+import { JoinDiscordServerQuest } from "@/lib/quests/implementations/joinDiscordServerQuest";
+import { HoldNFTQuest } from "@/lib/quests/implementations/holdNFTQuest";
+import { LikeTweetQuest } from "@/lib/quests/implementations/likeTweetQuest";
+import { SendDiscordMessageQuest } from "@/lib/quests/implementations/sendDiscordMessageQuest";
+import { CommentTweetQuest } from "./implementations/commentTweetQuest";
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -28,6 +29,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new RetweetTweetQuest(quest);
         case QuestType.LikeTweet:
             return new LikeTweetQuest(quest);
+        case QuestType.CommentTweet:
+            return new CommentTweetQuest(quest);
         case QuestType.ConnectTwitter:
             return new ConnectTwitterQuest(quest);
         case QuestType.ConnectSteam:
