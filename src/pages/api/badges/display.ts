@@ -17,14 +17,19 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }
 
   const result = await getUserDisplayedBadges(userId);
-
+  let claimed_count = result[0]['claimed_count'];
+  result[0]['claimed_count']=undefined;
   res.json(
     response.success({
-      result: result,
-    }),
+      claimed_count: claimed_count,
+      result: result
+    })
   );
 });
 async function getUserDisplayedBadges(userId: string): Promise<any[]> {
+  let claimed_count = 0;
+  let claimed: boolean;
+
   const aggregateQuery: PipelineStage[] = [
     {
       $match: {
@@ -52,14 +57,18 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
   for (let c of result) {
     const badges = await Badges.find({ id: c.badge_id });
     if (badges.length == 0) {
-      return [];
+      continue;
     }
-    let maxLv = -1;
-    let seriesCount = 0;
+    let maxLv = -99999; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
+    claimed = false;
     for (let s of Object.keys(c.series)) {
       if (Number(s) > maxLv && c.series[s].claimed_time != null) {
+        claimed = true;
         maxLv = Number(s);
       }
+    }
+    if (claimed) {
+      claimed_count++;
     }
 
     c.lv = maxLv;
@@ -70,6 +79,7 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
     c.has_series = Object.keys(badges[0].series).length > 1;
     delete c.series;
   }
+  result[0]['claimed_count'] = claimed_count;
   //const badges = await Badges.find({id: badgeId});
   return result;
 }
@@ -84,7 +94,7 @@ export async function getMaxLevelBadge(badgeId: string): Promise<any> {
 
   //获取最高等级的徽章
   let maxLevel: number | string;
-  maxLevel = Number.MIN_VALUE;
+  maxLevel = -99999; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
   for (let c of badges[0].series.keys()) {
     if (Number(c) > maxLevel) {
       maxLevel = Number(c);

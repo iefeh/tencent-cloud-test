@@ -6,7 +6,6 @@ import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
 import Badges, { IBadges } from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
 
-
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
@@ -33,9 +32,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     return;
   }
 
-
   let badges = await loadUserBadges(userId, pageNum, pageSize);
-  let ownedIds: any[] = []
+  let ownedIds: any[] = [];
   if (badges[0].data.length < pageSize) {
     if (badges[0].data.length == 0) {
       const result = await loadUserBadgesCount(userId);
@@ -50,7 +48,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
       }
       badges = await loadAllBadge(skip, pageSize, ownedIds);
     } else {
-
       for (let c of badges[0].data) {
         ownedIds.push(c.badge_id);
       }
@@ -65,14 +62,16 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   res.json(
     response.success({
       total: badges[0].data.length,
-      badges: badges[0].data,
+      claimed_count: badges[0].claimed_count,
+      badges: badges[0].data
     }),
   );
 });
 
 export async function loadUserBadges(userId: string, pageNum: number, pageSize: number): Promise<any[]> {
   const skip = (pageNum - 1) * pageSize;
-
+  let claimed_count = 0; //已领取徽章计数
+  let claimed: boolean;
   const aggregateQuery: PipelineStage[] = [
     {
       $match: {
@@ -107,20 +106,26 @@ export async function loadUserBadges(userId: string, pageNum: number, pageSize: 
     }
 
     //获取用户最高等级徽章
-    let lv = Number.MIN_VALUE;
+    let lv = -99999; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
     //分别获取领取的最高等级和未领取的最高等级
+    claimed = false;
     for (let k of Object.keys(c.series)) {
+      if (c.series[k].claimed_time != null) {
+        claimed = true;
+      }
       if (Number(k) > lv) {
         lv = Number(k);
       }
     }
+    if (claimed) {
+      claimed_count++;
+    }
+
 
     //添加徽章的信息
     let displayedBadges: any = [];
     let t = b[0].series.get(String(lv));
-    // if (t.claimed_time == undefined) {
-    //   t.claimed_time = 0;
-    // }
+
     displayedBadges.push({
       lv: lv,
       name: b[0].name,
@@ -155,18 +160,16 @@ export async function loadUserBadges(userId: string, pageNum: number, pageSize: 
       c.has_series = false;
     }
   }
-
+  badges[0].claimed_count = claimed_count;
   return badges;
 }
 
-
 export async function loadAllBadge(skip: number, pageSize: number, ownedIds: any[]): Promise<any[]> {
-
   const aggregateQuery: PipelineStage[] = [
     {
       $match: {
         active: true,
-        id: { $nin: ownedIds }
+        id: { $nin: ownedIds },
       },
     },
     {
@@ -197,7 +200,7 @@ export async function loadAllBadge(skip: number, pageSize: number, ownedIds: any
   const badges = await Badges.aggregate(aggregateQuery);
   let lv: number;
   for (let c of badges[0].data) {
-    c["badge_id"] = c.id;
+    c['badge_id'] = c.id;
     //获取最低等级
     lv = Number.MAX_VALUE;
     for (let k of Object.keys(c.series)) {
@@ -223,17 +226,17 @@ export async function loadAllBadge(skip: number, pageSize: number, ownedIds: any
   return badges;
 }
 
-
 async function loadUserBadgesCount(userId: string): Promise<any[]> {
+  console.log('loadUserBadgesCount');
   const aggregateQuery: PipelineStage[] = [
     {
       $match: {
         user_id: userId,
-      }
+      },
     },
     {
       $project: {
-        badge_id: 1
+        badge_id: 1,
       },
     },
   ];
