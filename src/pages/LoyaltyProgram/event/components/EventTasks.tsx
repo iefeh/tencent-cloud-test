@@ -73,10 +73,10 @@ function EventTasks(props: EventTaskProps) {
             finishedLable: 'Followed',
           };
           break;
-        case QuestType.ASTRARK_PRE_REGISTER:
+        case QuestType.CommentTweet:
           item.connectTexts = {
-            label: 'Participate',
-            finishedLable: 'Participated',
+            label: 'Comment',
+            finishedLable: 'Commented',
           };
           break;
       }
