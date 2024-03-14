@@ -13,6 +13,7 @@ export const enum QuestType {
   ConnectSteam = 'connect_steam',
   FollowOnTwitter = 'follow_on_twitter',
   RetweetTweet = 'retweet_tweet',
+  CommentTweet = 'comment_tweet',
   LikeTwitter = 'like_tweet',
   HoldDiscordRole = 'hold_discord_role',
   Whitelist = 'whitelist',
