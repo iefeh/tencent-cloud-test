@@ -6,9 +6,9 @@ import { useContext, useEffect, useRef, useState } from 'react';
 export default function useMyBadges() {
   const MIN_TOTAL = 36;
   const { userInfo } = useContext(MobxContext);
-  const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 36 });
-  const [total, setTotal] = useState(MIN_TOTAL);
-  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(36).fill(''));
+  const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: MIN_TOTAL });
+  const [total, setTotal] = useState(0);
+  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(MIN_TOTAL).fill(''));
   const [loading, setLoading] = useState(false);
   const [claimLoading, setClaimLoaing] = useState(false);
   const [mintLoading, setMintLoading] = useState(false);
