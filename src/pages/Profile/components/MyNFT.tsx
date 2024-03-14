@@ -5,59 +5,45 @@ import { observer } from 'mobx-react-lite';
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
-
-function getBasePageInfo() {
-  return { page_num: 1, page_size: 10 };
-}
+import Link from 'next/link';
+import useScrollLoad from '@/hooks/useScrollLoad';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 function MyNFT() {
   const MIN_NFT_COUNT = 5;
   const { userInfo } = useContext(MobxContext);
-  const [nfts, setNFTs] = useState<(NFTItem | null)[]>(getBaseNFTs());
-  const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
-
-  function getBaseNFTs(len = MIN_NFT_COUNT) {
-    return Array(len).fill(null);
-  }
-
-  const queryNFTList = throttle(async () => {
-    try {
-      const res = await queryMyNFTListAPI(pageInfo.current);
-      const list = (pageInfo.current.page_num === 1 ? [] : nfts).concat(res?.nfts || []);
-
-      // 补足空位
-      if (list.length < MIN_NFT_COUNT) {
-        list.push(...Array(MIN_NFT_COUNT - list.length).fill(null));
-      }
-
-      setNFTs(list);
-    } catch (error) {}
-  });
-
-  useEffect(() => {
-    if (userInfo?.wallet) {
-      pageInfo.current = getBasePageInfo();
-      queryNFTList();
-    } else {
-      setNFTs(getBaseNFTs());
-    }
-  }, [userInfo]);
+  const {
+    data: nfts,
+    scrollRef,
+    loading,
+    total,
+  } = useScrollLoad<NFTItem>({ watchAuth: true, minCount: 5, queryKey: 'nfts', queryFn: queryMyNFTListAPI });
 
   return (
     <div className="mt-20">
-      <div className="font-semakin text-2xl text-basic-yellow">My NFT</div>
+      <div className="flex justify-between items-center">
+        <div className="font-semakin text-2xl text-basic-yellow">My NFT（{total}）</div>
+
+        <Link href="/NFT/Merge/history" className="text-basic-yellow">
+          Merge History &gt;&gt;
+        </Link>
+      </div>
 
       <Divider className="my-[1.875rem]" />
 
-      <div className="flex justify-between items-center gap-[1.6875rem]">
-        {nfts.map((nft, index) => (
-          <NFT
-            name={nft?.token_metadata?.name}
-            src={nft?.token_metadata?.animation_url}
-            status={nft?.transaction_status}
-            key={index}
-          />
-        ))}
+      <div ref={scrollRef} className="w-full max-h-[36.5rem] overflow-hidden relative">
+        <div className="flex justify-start items-center flex-wrap gap-[1.25rem]">
+          {nfts.map((nft, index) => (
+            <NFT
+              name={nft?.token_metadata?.name}
+              src={nft?.token_metadata?.animation_url}
+              status={nft?.transaction_status}
+              key={index}
+            />
+          ))}
+        </div>
+
+        {loading && <CircularLoading />}
       </div>
     </div>
   );

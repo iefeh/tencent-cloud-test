@@ -10,13 +10,8 @@ import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
-import BetterScroll from 'better-scroll';
-import Pullup from '@better-scroll/pull-up';
-import MouseWheel from '@better-scroll/mouse-wheel';
 import useMint from '@/hooks/useMint';
-
-BetterScroll.use(MouseWheel);
-BetterScroll.use(Pullup);
+import useScrollLoad from '@/hooks/useScrollLoad';
 
 function NFTMergePage({
   params,
@@ -29,56 +24,29 @@ function NFTMergePage({
   const MAX_MERGE_LEN = 4;
   const MIN_NFT_COUNT = 9;
 
-  function getBasePageInfo() {
-    return { page_num: 1, page_size: MIN_NFT_COUNT };
-  }
-
-  const [nfts, setNFTs] = useState<(NFTItem | null)[]>(Array(MIN_NFT_COUNT).fill(null));
-  const currenNFTsRef = useRef<(NFTItem | null)[]>([]);
+  const {
+    data: nfts,
+    resetData: resetNFTs,
+    queryData: queryNFTs,
+    scrollRef,
+    total,
+    loading,
+  } = useScrollLoad<NFTItem>({
+    watchAuth: true,
+    minCount: MIN_NFT_COUNT,
+    pageSize: MIN_NFT_COUNT,
+    queryKey: 'nfts',
+    queryFn: queryMyNFTListAPI,
+  });
   const [canMerge, setCanMerge] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [mergeLoading, setMergeLoading] = useState(false);
   const [merged, setMerged] = useState(false);
   const [selectedNFTs, setSelectedNFTs] = useState<NFTItem[]>([]);
   const selectedNFTsRef = useRef<NFTItem[]>([]);
   const [mergedNFT, setMergedNFT] = useState<NFTItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
-  const [total, setTotal] = useState(0);
-  const loadFinishedRef = useRef(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const bsRef = useRef<BetterScroll | null>(null);
   const { verifyMerge, merge } = useMint();
   const loopTimer = useRef(0);
-
-  const queryNFTs = async (isRefresh = false) => {
-    setLoading(true);
-    let list: (NFTItem | null)[] = [];
-    let totalCount = 0;
-
-    if (isRefresh) {
-      pageInfo.current.page_num = 1;
-    }
-
-    try {
-      const res = await queryMyNFTListAPI(pageInfo.current);
-      list = pageInfo.current.page_num === 1 ? [] : currenNFTsRef.current.slice();
-      if (res?.nfts) {
-        list = list.concat(res.nfts);
-      }
-      totalCount = res?.total || 0;
-    } catch (error) {}
-
-    if (list.length < MIN_NFT_COUNT) {
-      list = list.concat(Array(MIN_NFT_COUNT - list.length).fill(null));
-    }
-
-    setNFTs(list);
-    currenNFTsRef.current = list;
-    setTotal(totalCount);
-    setLoading(false);
-    loadFinishedRef.current = list.length >= totalCount;
-  };
 
   const queryLatestMergeNFT = async (isRefresh = false) => {
     const res = await queryLatestMergeReqAPI({ tx_id: mergedNFT?.transaction_id });
@@ -99,7 +67,7 @@ function NFTMergePage({
         }
       }
     } else {
-      setLoading(false);
+      setMergeLoading(false);
       setMerged(false);
     }
 
@@ -161,25 +129,12 @@ function NFTMergePage({
     }
 
     setSelectedNFTs([]);
-    setNFTs([]);
-    currenNFTsRef.current = [];
-    pageInfo.current.page_num = 1;
+    resetNFTs();
     queryNFTs();
     startQueryLoop();
   }, 500);
 
-  const onPullUp = throttle(async () => {
-    if (loadFinishedRef.current) return;
-    pageInfo.current.page_num++;
-    await queryNFTs();
-    setTimeout(() => {
-      bsRef.current?.finishPullUp();
-      bsRef.current?.refresh();
-    }, 100);
-  }, 500);
-
   function onMergeMore() {
-    setLoading(false);
     setMerged(false);
     setMergedNFT(null);
   }
@@ -190,7 +145,6 @@ function NFTMergePage({
     setMergeLoading(false);
     setMergedNFT(null);
 
-    queryNFTs();
     if (userInfo) queryLatestMergeNFT(true);
 
     return () => {
@@ -200,22 +154,6 @@ function NFTMergePage({
       }
     };
   }, [userInfo]);
-
-  useEffect(() => {
-    if (!scrollRef.current) return;
-
-    bsRef.current = new BetterScroll(scrollRef.current, {
-      probeType: 3,
-      pullUpLoad: true,
-      mouseWheel: true,
-    });
-
-    bsRef.current.on('pullingUp', onPullUp);
-
-    return () => {
-      bsRef.current?.destroy();
-    };
-  }, []);
 
   useEffect(() => {
     setSelectedNFTs([]);
