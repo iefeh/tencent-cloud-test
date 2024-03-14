@@ -46,7 +46,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
 async function saveDisplayBadge(userId: string, badgeId: string, display: string): Promise<any> {
   let result: any = {};
 
-  if (display == 'true') {
+  if (display === 'true') {
     const displayedBadges = await UserBadges.find({ user_id: userId, display: true });
 
     if (displayedBadges.length >= badgeDisplayLimit) {

@@ -31,6 +31,7 @@ export interface TaskListItem {
   started?: boolean;
   start_time?: number;
   started_after?: number;
+  is_new?: boolean;
 }
 
 export interface TaskListResDto {

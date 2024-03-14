@@ -8,6 +8,7 @@ import YellowCircle from '../../common/YellowCircle';
 import { useEffect, useState, useRef } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
+import BadgeSlide from '../BadgeSlide';
 import NFT2Slide from '../NFT2Slide';
 
 export default function SwiperScreen() {
@@ -52,8 +53,12 @@ export default function SwiperScreen() {
       >
         {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
 
-        <SwiperSlide>
+        {/* <SwiperSlide>
           <NFT2Slide needAni={needAnis[0]} />
+        </SwiperSlide> */}
+
+        <SwiperSlide>
+          <BadgeSlide needAni={needAnis[0]} />
         </SwiperSlide>
 
         <SwiperSlide>

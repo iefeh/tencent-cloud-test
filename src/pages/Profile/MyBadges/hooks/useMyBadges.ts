@@ -6,9 +6,9 @@ import { useContext, useEffect, useRef, useState } from 'react';
 export default function useMyBadges() {
   const MIN_TOTAL = 36;
   const { userInfo } = useContext(MobxContext);
-  const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 36 });
-  const [total, setTotal] = useState(MIN_TOTAL);
-  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(36).fill(''));
+  const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: MIN_TOTAL });
+  const [total, setTotal] = useState(0);
+  const [badges, setBadges] = useState<Array<BadgeItem | null>>(Array(MIN_TOTAL).fill(''));
   const [loading, setLoading] = useState(false);
   const [claimLoading, setClaimLoaing] = useState(false);
   const [mintLoading, setMintLoading] = useState(false);
@@ -32,8 +32,18 @@ export default function useMyBadges() {
 
   const claimBadge = throttle(async (item: BadgeItem) => {
     setClaimLoaing(true);
-    const lv = item.has_series ? item.series?.[1]?.lv || item.series?.[0].lv : item.lv;
-    const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv || 1 });
+    let lv = 1;
+
+    if (item.has_series) {
+      item.series?.forEach((serie) => {
+        if (!serie.obtained_time || serie.lv <= lv) return;
+        lv = serie.lv;
+      });
+    } else {
+      lv = item.lv || 1;
+    }
+
+    const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv });
     if (res) {
       await queryMyBadges();
     }

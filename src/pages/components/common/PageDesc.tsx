@@ -4,6 +4,7 @@ import Belt from './Belt';
 import whiteLogo from 'img/logo_white.png';
 import goldenLogo from 'img/logo_golden.png';
 import { ReactNode, forwardRef } from 'react';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
   baseAniTY?: boolean;
@@ -17,9 +18,12 @@ interface Props {
   buttonLink?: string;
   className?: string;
   button?: ReactNode;
+  needAuth?: boolean;
 }
 
 export default forwardRef<HTMLDivElement, Props>(function PageDesc(props: Props, ref) {
+  const { needAuth } = props;
+
   return (
     <div
       ref={ref}
@@ -56,7 +60,7 @@ export default forwardRef<HTMLDivElement, Props>(function PageDesc(props: Props,
           props.subtitle
         ))}
 
-      {props.buttonLabel && <BasicButton label={props.buttonLabel} link={props.buttonLink} />}
+      {props.buttonLabel && <BasicButton label={props.buttonLabel} link={props.buttonLink} needAuth={needAuth} />}
 
       {props.button}
     </div>

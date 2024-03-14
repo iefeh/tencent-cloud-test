@@ -418,7 +418,7 @@ function RegularTasks() {
     }, []);
 
     return (
-      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500">
+      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
         <div className="text-xl">{task.name}</div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
@@ -483,6 +483,12 @@ function RegularTasks() {
             />
           </div>
         </div>
+
+        {task.is_new && (
+          <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute right-4 top-2 p-2 z-10">
+            NEW
+          </div>
+        )}
       </div>
     );
   };
