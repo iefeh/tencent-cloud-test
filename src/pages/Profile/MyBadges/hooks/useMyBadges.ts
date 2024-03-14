@@ -24,7 +24,7 @@ export default function useMyBadges() {
       list.push(...Array(MIN_TOTAL - list.length).fill(null));
     }
 
-    setTotal(list.reduce((p, c) => (p += c?.series?.[0]?.obtained_time ? 1 : 0), 0));
+    setTotal(res?.claimed_count || 0);
 
     setBadges(list);
     Object.assign({ page_num: res?.page_num || 0, page_size: res?.page_size });

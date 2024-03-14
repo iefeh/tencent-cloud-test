@@ -1,6 +1,5 @@
 import '@/styles/globals.css';
 import '@/styles/dialog.css';
-import 'simplebar-react/dist/simplebar.min.css';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
