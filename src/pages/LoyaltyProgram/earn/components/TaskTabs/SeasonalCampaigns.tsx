@@ -25,7 +25,7 @@ export default function SeasonalCampaigns() {
 
   const queryTasks = throttle(async (pagiParams: Partial<EventPageQueryDTO> = pagi.current, noLoading = false) => {
     if (!noLoading) setLoading(true);
-    const params = Object.assign({}, pagi.current, pagiParams);
+    const params = Object.assign(pagi.current, pagiParams);
 
     try {
       const res = await queryEventListAPI(params);

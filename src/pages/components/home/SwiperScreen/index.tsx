@@ -51,9 +51,9 @@ export default function SwiperScreen() {
       >
         {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
 
-        <SwiperSlide>
+        {/* <SwiperSlide>
           <IndexSlide needAni={needAnis[0]} />
-        </SwiperSlide>
+        </SwiperSlide> */}
 
         {/* <SwiperSlide>
           <LimitedTestSlide needAni={needAnis[1]} />
