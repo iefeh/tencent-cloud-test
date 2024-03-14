@@ -61,9 +61,9 @@ export default function SwiperScreen() {
           <BadgeSlide needAni={needAnis[0]} />
         </SwiperSlide>
 
-        <SwiperSlide>
+        {/* <SwiperSlide>
           <IndexSlide needAni={needAnis[1]} />
-        </SwiperSlide>
+        </SwiperSlide> */}
 
         {/* <SwiperSlide>
           <LimitedTestSlide needAni={needAnis[2]} />
