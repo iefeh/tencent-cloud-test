@@ -28,7 +28,7 @@ export default function ProfilePage() {
 
         <Invite />
       </div>
-      
+
       <MyNFT />
 
       <EventsParticipated />

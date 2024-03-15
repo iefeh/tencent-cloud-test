@@ -10,12 +10,14 @@ export default function useDisplayBadges() {
   const badgesRef = useRef<Array<BadgeItem | null>>(badges);
   const [loading, setLoading] = useState(false);
   const [validCount, setValidCount] = useState(0);
+  const [total, setTotal] = useState(0);
 
   const queryDisplayBadges = throttle(async () => {
     setLoading(true);
     const res = await queryDisplayBadgesAPI();
     const list = res?.result || [];
     setValidCount(list.length);
+    setTotal(res?.claimed_count || 0);
 
     if (list.length < MAX_DISPLAY_COUNT) {
       list.push(...Array(MAX_DISPLAY_COUNT - list.length).fill(null));
@@ -54,5 +56,5 @@ export default function useDisplayBadges() {
     queryDisplayBadges();
   }, [userInfo]);
 
-  return { badges, queryDisplayBadges, sortBadges, loading, validCount };
+  return { total, badges, queryDisplayBadges, sortBadges, loading, validCount };
 }

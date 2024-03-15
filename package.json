@@ -38,6 +38,7 @@
     "https-proxy-agent": "^7.0.2",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "lodash": "^4.17.21",
     "logging-service": "^1.0.1",
     "luxy.js": "^0.1.0",
@@ -57,7 +58,6 @@
     "react-transition-group": "^4.4.5",
     "sharp": "^0.32.6",
     "simple-oauth2": "^5.0.0",
-    "simplebar-react": "^3.2.4",
     "sortablejs": "^1.15.2",
     "steamapi": "^2.4.2",
     "swiper": "^10.3.1",
@@ -66,8 +66,7 @@
     "video.js": "^8.10.0",
     "web3": "^4.3.0",
     "winston": "^3.11.0",
-    "winston-transport": "^4.6.0",
-    "kafkajs": "^2.2.4"
+    "winston-transport": "^4.6.0"
   },
   "devDependencies": {
     "@auth/mongodb-adapter": "^2.0.2",

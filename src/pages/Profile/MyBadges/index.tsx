@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
-import DisplayBadges from './components/DisplayBadges';
+import DisplayBadges from '../components/DisplayBadges';
 import MyBadges from './components/MyBadges';
 import useMyBadges from './hooks/useMyBadges';
 import useDisplayBadges from './hooks/useDisplayBadges';
@@ -58,16 +58,21 @@ function MyBadgesPage() {
         <title>My Badges | Moonveil Entertainment</title>
       </Head>
 
-      <AutoBreadcrumbs />
+      <AutoBreadcrumbs hrefs={['/Profile']} />
 
-      <DisplayBadges
-        displayedBadges={displayBadges}
-        badges={badges}
-        loading={displayLoaidng}
-        onView={onView}
-        onSort={sortBadges}
-        onDisplay={onToggleDisplay}
-      />
+      <div className="mt-12">
+        <div className="font-semakin text-basic-yellow text-2xl">Display Badges</div>
+
+        <DisplayBadges
+          className="w-min justify-start mt-10"
+          items={displayBadges}
+          badges={badges}
+          loading={displayLoaidng}
+          onView={onView}
+          onSort={sortBadges}
+          onDisplayed={updateBadges}
+        />
+      </div>
 
       <MyBadges
         total={total}

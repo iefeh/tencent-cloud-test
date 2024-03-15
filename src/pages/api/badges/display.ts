@@ -16,15 +16,18 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     return;
   }
 
-  const result = await getUserDisplayedBadges(userId);
-
+  const [result, claimed_count] = await getUserDisplayedBadges(userId);
   res.json(
     response.success({
+      claimed_count: claimed_count,
       result: result,
     }),
   );
 });
 async function getUserDisplayedBadges(userId: string): Promise<any[]> {
+  let claimed_count = 0;
+  let claimed: boolean;
+
   const aggregateQuery: PipelineStage[] = [
     {
       $match: {
@@ -52,14 +55,18 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
   for (let c of result) {
     const badges = await Badges.find({ id: c.badge_id });
     if (badges.length == 0) {
-      return [];
+      continue;
     }
-    let maxLv = -1;
-    let seriesCount = 0;
+    let maxLv = -Infinity; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
+    claimed = false;
     for (let s of Object.keys(c.series)) {
       if (Number(s) > maxLv && c.series[s].claimed_time != null) {
+        claimed = true;
         maxLv = Number(s);
       }
+    }
+    if (claimed) {
+      claimed_count++;
     }
 
     c.lv = maxLv;
@@ -71,7 +78,7 @@ async function getUserDisplayedBadges(userId: string): Promise<any[]> {
     delete c.series;
   }
   //const badges = await Badges.find({id: badgeId});
-  return result;
+  return [result, claimed_count];
 }
 
 //获取该徽章下最高等级的奖章
@@ -84,7 +91,7 @@ export async function getMaxLevelBadge(badgeId: string): Promise<any> {
 
   //获取最高等级的徽章
   let maxLevel: number | string;
-  maxLevel = Number.MIN_VALUE;
+  maxLevel = -99999; //不能使用Number.MIN_VALUE指定为最小值，当LV是0时会异常
   for (let c of badges[0].series.keys()) {
     if (Number(c) > maxLevel) {
       maxLevel = Number(c);
