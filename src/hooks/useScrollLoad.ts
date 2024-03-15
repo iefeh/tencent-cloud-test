@@ -28,6 +28,7 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
   const [data, setData] = useState<(T | null)[]>(Array(options.minCount).fill(null));
   const currenDataRef = useRef<(T | null)[]>([]);
   const [loading, setLoading] = useState(false);
+  const isPullingUpRef = useRef(false);
   const pageInfo = useRef<PageQueryDto>(getBasePageInfo());
   const [total, setTotal] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,7 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     setData((currenDataRef.current = []));
   }
 
-  const queryData = async (isRefresh = false) => {
+  const queryData = throttle(async (isRefresh = false) => {
     if (!options.queryFn) return;
 
     setLoading(true);
@@ -75,14 +76,18 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     setTimeout(() => {
       bsRef.current?.refresh();
     }, 100);
-  };
+  }, 500);
 
   const onPullUp = throttle(async () => {
-    if (loadFinishedRef.current) return;
+    if (loadFinishedRef.current || isPullingUpRef.current) return;
 
+    isPullingUpRef.current = true;
     pageInfo.current.page_num++;
     await queryData();
-    bsRef.current?.finishPullUp();
+    setTimeout(() => {
+      bsRef.current?.finishPullUp();
+      isPullingUpRef.current = false;
+    }, 100);
   }, 500);
 
   useEffect(() => {

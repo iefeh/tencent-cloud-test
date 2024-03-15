@@ -27,11 +27,13 @@ export interface BadgeItem {
   minted?: boolean;
 }
 
-export function queryBadgesPageListAPI(params: PageQueryDto): Promise<PageResDTO<BadgeItem>> {
+export function queryBadgesPageListAPI(
+  params: PageQueryDto,
+): Promise<PageResDTO<BadgeItem> & { claimed_count?: number }> {
   return http.get('/api/badges/list', { params });
 }
 
-export function queryDisplayBadgesAPI(): Promise<{ result: BadgeItem[] }> {
+export function queryDisplayBadgesAPI(): Promise<PageResDTO<BadgeItem> & { claimed_count?: number }> {
   return http.get('/api/badges/display');
 }
 
