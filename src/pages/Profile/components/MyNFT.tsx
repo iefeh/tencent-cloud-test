@@ -4,9 +4,14 @@ import { observer } from 'mobx-react-lite';
 import { queryMyNFTListAPI, type NFTItem } from '@/http/services/mint';
 import { isMobile } from 'react-device-detect';
 import useScrollLoad from '@/hooks/useScrollLoad';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 function MyNFT() {
-  const { data: nfts, scrollRef } = useScrollLoad<NFTItem>({
+  const {
+    data: nfts,
+    scrollRef,
+    loading,
+  } = useScrollLoad<NFTItem>({
     minCount: 5,
     watchAuth: true,
     bsOptions: isMobile ? { scrollY: false, scrollX: true, scrollbar: true } : {},
@@ -32,6 +37,8 @@ function MyNFT() {
             />
           ))}
         </div>
+
+        {loading && <CircularLoading />}
       </div>
     </div>
   );
