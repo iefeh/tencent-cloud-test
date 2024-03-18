@@ -5,6 +5,7 @@ import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
 import logger from "@/lib/logger/winstonLogger";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 
 
 export class ConnectTwitterQuest extends QuestBase {
@@ -34,7 +35,18 @@ export class ConnectTwitterQuest extends QuestBase {
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.TwitterConnected]: true },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+          });
         if (result.duplicated) {
             return {
                 verified: false,

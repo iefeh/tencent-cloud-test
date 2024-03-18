@@ -5,7 +5,8 @@ import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {redis} from "@/lib/redis/client";
 import {AuthorizationType} from "@/lib/authorization/types";
 import UserGoogle from "@/lib/models/UserGoogle";
-import connectToMongoDbDev from "@/lib/mongodb/client";
+import doTransaction from "@/lib/mongodb/transaction";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -16,7 +17,12 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.success());
         return;
     }
-    await UserGoogle.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()});
+    await doTransaction(async (session) => {
+        const opts = {session};
+        await UserGoogle.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()}, opts);
+        // 更新用户授权指标
+        await UserMetrics.updateOne({user_id: req.userId},{[Metric.GoogleConnected]: false},opts);
+    });
     // 添加cd
     await redis.set(`reconnect_cd:${AuthorizationType.Google}:${google.google_id}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
     res.json(response.success());

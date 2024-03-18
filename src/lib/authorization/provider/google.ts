@@ -9,6 +9,7 @@ import {NextApiResponse} from "next";
 import User from "@/lib/models/User";
 import {checkGetAuthorizationURLPrerequisite, validateCallbackState} from "@/lib/authorization/provider/util";
 import UserGoogle from "@/lib/models/UserGoogle";
+import { Metric } from "@/lib/models/UserMetrics";
 
 const googleOAuthOps: OAuthOptions = {
     clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -53,6 +54,10 @@ export class GoogleAuthFlow extends AuthFlowBase {
 
     authorizationType(): AuthorizationType {
         return AuthorizationType.Google;
+    }
+
+    authorizationMetric(): Metric {
+        return Metric.GoogleConnected;
     }
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {

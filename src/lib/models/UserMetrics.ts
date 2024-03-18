@@ -32,6 +32,14 @@ export enum Metric {
   SteamAccountRating = 'steam_account_rating',
 
   // 初出茅庐徽章，其他的加入社区/关注某人，按照完成任务算.
+  TwitterConnected = 'twitter_connected',
+  DiscordConnected = 'discord_connected',
+  SteamConnected = 'steam_connected',
+  WalletConnected = 'wallet_connected',
+  GoogleConnected = 'google_connected',
+  DiscordJoinedMoonveil = 'discord_joined_moonveil',
+  TwitterFollowedMoonveil = 'twitter_followed_moonveil',
+  TwitterFollowedAstrArk = 'twitter_followed_astrark',
 
   // 奔走相告徽章，完成转推次数
   RetweetCount = 'retweet_count',
@@ -63,6 +71,16 @@ export interface IUserMetrics extends Document {
   // Steam账户评分
   steam_account_rating: number;
 
+  // 用户平台指标
+  twitterConnected: boolean;
+  discordConnected: boolean;
+  steamConnected: boolean;
+  walletConnected: boolean;
+  googleConnected: boolean;
+  discordJoinedMoonveil: boolean;
+  twitterFollowedMoonveil: boolean;
+  twitterFollowedAstrArk: boolean;
+
   // 转推次数
   retweet_count: number;
 
@@ -84,16 +102,19 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_account_game_count: { Type: Number },
   steam_account_usd_value: { Type: Number },
   steam_account_rating: { Type: Number },
+  twitterConnected: { Type: Boolean },
+  discordConnected: { Type: Boolean },
+  steamConnected: { Type: Boolean },
+  walletConnected: { Type: Boolean },
+  googleConnected: { Type: Boolean },
+  discordJoinedMoonveil: { Type: Boolean },
+  twitterFollowedMoonveil: { Type: Boolean },
+  twitterFollowedAstrArk: { Type: Boolean },
   retweet_count: { Type: Number },
   created_time: { type: Number, required: true },
 });
 
 UserMetricsSchema.index({ user_id: 1 }, { unique: true });
-
-// 添加UserMetrics表的更新通知，当有更新时，触发通知到徽章检查队列
-// UserMetricsSchema.post('updateOne', async function (doc, next) {
-//   next();
-// });
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();

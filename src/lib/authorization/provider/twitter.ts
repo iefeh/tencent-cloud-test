@@ -15,6 +15,7 @@ import UserTwitter from "@/lib/models/UserTwitter";
 import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
 import logger from "@/lib/logger/winstonLogger";
+import { Metric } from "@/lib/models/UserMetrics";
 
 const twitterOAuthOps: OAuthOptions = {
     clientId: process.env.TWITTER_CLIENT_ID!,
@@ -72,6 +73,10 @@ export class TwitterAuthFlow extends AuthFlowBase {
 
     authorizationType(): AuthorizationType {
         return AuthorizationType.Twitter;
+    }
+
+    authorizationMetric(): Metric {
+        return Metric.TwitterConnected;
     }
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
