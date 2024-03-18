@@ -35,6 +35,8 @@ export enum Metric {
 
   // 奔走相告徽章，完成转推次数
   RetweetCount = 'retweet_count',
+  //创世者徽章，NFT等级
+  TetraHolder = 'tetra_holder',
 }
 
 // 用户内部指标，存放单独的集合
@@ -62,10 +64,20 @@ export interface IUserMetrics extends Document {
   steam_account_usd_value: number;
   // Steam账户评分
   steam_account_rating: number;
-
   // 转推次数
   retweet_count: number;
-
+  //NFT等级
+  tetra_holder: number;
+  //验证twitter
+  twitter_connected: boolean;
+  //关注MoonVeil
+  twitter_follow_moonveil: boolean;
+  //关注AstrArk_World
+  twitter_follow_astrark: boolean;
+  //验证discord
+  discord_connected: boolean;
+  //加入discord_server
+  join_discord_server_moonveil: boolean;
   // 创建时间毫秒时间戳
   created_time: number;
 }
@@ -85,6 +97,12 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_account_usd_value: { Type: Number },
   steam_account_rating: { Type: Number },
   retweet_count: { Type: Number },
+  tetra_holder: { Type: Number },
+  twitter_connected: { type: Boolean },
+  twitter_follow_moonveil: { type: Boolean },
+  twitter_follow_astrark: { type: Boolean },
+  discord_connected: { type: Boolean },
+  join_discord_server_moonveil: { type: Boolean },
   created_time: { type: Number, required: true },
 });
 
@@ -113,7 +131,7 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
   );
 
   sendBadgeCheckMessage(userId, metric);
-  
+
   return result;
 }
 

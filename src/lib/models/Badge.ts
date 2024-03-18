@@ -25,6 +25,8 @@ export interface IBadges extends Document {
   updated_time: number;
   // 删除时间毫秒时间戳
   deleted_time: number | null;
+  //污点依赖
+  taint_dependency: string[];
 }
 
 export type BadgeSeries = {
@@ -79,6 +81,7 @@ const BadgesSchema = new Schema<IBadges>({
   created_time: { type: Number },
   updated_time: { type: Number },
   deleted_time: { type: Number, default: null },
+  taint_dependency: { type: [String] },
 });
 
 BadgesSchema.index({ id: 1 }, { unique: true });
