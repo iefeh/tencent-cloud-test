@@ -70,7 +70,6 @@ export class FollowOnTwitterQuest extends QuestBase {
                 );
             };
         }
-
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
