@@ -6,6 +6,7 @@ import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
 import Badges, { IBadges } from '@/lib/models/Badge';
 import { PipelineStage, StringExpressionOperator } from 'mongoose';
 import { Data3DTexture } from 'three';
+import { ka } from 'date-fns/locale';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -160,6 +161,21 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
 
   return [data, claimed_count];
 }
+
+export async function getCliamedCount(userId: string): Promise<number> {
+  let results: any[] = await UserBadges.find({ user_id: userId }, { _id: 0, series: 1 });
+  let claimed_count: number = 0;
+  for (let b of results) {
+    for (let k of b.series.keys()) {
+      if (b.series.get(k).claimed_time != null) {
+        claimed_count++;
+        break;
+      }
+    }
+  }
+  return claimed_count;
+}
+
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({
