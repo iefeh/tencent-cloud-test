@@ -79,7 +79,7 @@ export interface IUserMetrics extends Document {
   google_connected: boolean;
   discord_joined_moonveil: boolean;
   twitter_followed_moonveil: boolean;
-  twitter_followed_astrArk: boolean;
+  twitter_followed_astrark: boolean;
 
   // 转推次数
   retweet_count: number;
@@ -109,7 +109,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   google_connected: { Type: Boolean },
   discord_joined_moonveil: { Type: Boolean },
   twitter_followed_moonveil: { Type: Boolean },
-  twitter_followed_astrArk: { Type: Boolean },
+  twitter_followed_astrark: { Type: Boolean },
   retweet_count: { Type: Number },
   created_time: { type: Number, required: true },
 });
