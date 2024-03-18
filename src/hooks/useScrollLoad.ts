@@ -1,4 +1,4 @@
-import BetterScroll from 'better-scroll';
+import BetterScroll, { Options } from 'better-scroll';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { throttle } from 'lodash';
 import { MobxContext } from '@/pages/_app';
@@ -7,6 +7,8 @@ interface LoadOptions<T = unknown> {
   pageSize?: number;
   minCount?: number;
   watchAuth?: boolean;
+  bsOptions?: Options;
+  pullupLoad?: boolean;
   queryKey?: string;
   queryFn?: (params: PageQueryDto) => Promise<PageResDTO<T>>;
 }
@@ -14,6 +16,7 @@ interface LoadOptions<T = unknown> {
 const BASE_OPTIONS: LoadOptions = {
   pageSize: 10,
   minCount: 0,
+  pullupLoad: true,
   queryKey: 'data',
 };
 
@@ -93,15 +96,21 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
   useEffect(() => {
     if (!scrollRef.current) return;
 
-    bsRef.current = new BetterScroll(scrollRef.current, {
-      probeType: 3,
-      pullUpLoad: true,
-      mouseWheel: true,
-      scrollbar: true,
-      nestedScroll: true,
-    });
+    const bsOptions = Object.assign(
+      {
+        probeType: 3,
+        pullUpLoad: true,
+        mouseWheel: true,
+        scrollbar: true,
+        nestedScroll: true,
+      },
+      options.bsOptions,
+    );
+    bsRef.current = new BetterScroll(scrollRef.current, bsOptions);
 
-    bsRef.current.on('pullingUp', onPullUp);
+    if (options.pullupLoad) {
+      bsRef.current.on('pullingUp', onPullUp);
+    }
 
     return () => {
       bsRef.current?.destroy();

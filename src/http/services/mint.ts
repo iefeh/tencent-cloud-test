@@ -21,15 +21,7 @@ export interface MergeListItem extends NFTItem {
   request_token_metadata: (TokenMetadata | null)[];
 }
 
-interface NFTListDTO {
-  nfts: NFTItem[];
-  page_num: number;
-  page_size: number;
-  total: number;
-  wallet_connected: boolean;
-}
-
-export function queryMyNFTListAPI(params: PageQueryDto): Promise<NFTListDTO> {
+export function queryMyNFTListAPI(params: PageQueryDto): Promise<PageResDTO<NFTItem> & { wallet_connected: boolean }> {
   return http.get('/api/users/nft/list', { params });
 }
 
