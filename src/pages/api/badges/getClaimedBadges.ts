@@ -50,6 +50,7 @@ export async function loadUserBadges(userId: string, pageNum: number, pageSize: 
     {
       $match: {
         user_id: userId,
+        display: false
       },
     },
     {
