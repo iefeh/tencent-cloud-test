@@ -97,20 +97,7 @@ export class LikeTweetQuest extends QuestBase {
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${claim.extra}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        // retweet时额外添加用户的转推次数
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
-            await UserMetrics.updateOne(
-                {user_id: userId},
-                {
-                    $inc: {[Metric.RetweetCount]: 1},
-                    $setOnInsert: {
-                        "created_time": Date.now(),
-                    }
-                },
-                {upsert: true, session: session}
-            );
-            sendBadgeCheckMessage(userId,Metric.RetweetCount);
-        });
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {
             return {
                 verified: false,

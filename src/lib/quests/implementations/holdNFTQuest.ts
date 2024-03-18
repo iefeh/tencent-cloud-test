@@ -47,7 +47,6 @@ export class HoldNFTQuest extends QuestBase {
                 tip: claimableResult.tip,
             }
         }
-        // 污染用户的白名单，确保单个白名单只能获取一次奖励
         // 按 任务/钱包 进行污染，防止同一个钱包多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);

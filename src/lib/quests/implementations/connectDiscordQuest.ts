@@ -5,6 +5,7 @@ import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
 import logger from "@/lib/logger/winstonLogger";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 
 export class ConnectDiscordQuest extends QuestBase {
     // 用户的授权discord_id，在checkClaimable()时设置
@@ -36,7 +37,18 @@ export class ConnectDiscordQuest extends QuestBase {
         // 污染discord，确保同一个discord单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.DiscordConnected]: true },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+          });
         if (result.duplicated) {
             return {
                 verified: false,
