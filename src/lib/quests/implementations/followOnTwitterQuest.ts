@@ -12,8 +12,8 @@ export class FollowOnTwitterQuest extends QuestBase {
 
     // 定义twitter账号与指标的映射关系
     private readonly followMetrics = new Map<string, Metric>([
-        [process.env.MOONVEIL_TWITTER_ID!, Metric.TwitterFollowedMoonveil],
-        [process.env.ASTRARK_TWITTER_ID!, Metric.TwitterFollowedAstrArk],
+        [process.env.MOONVEIL_TWITTER_USERNAME!, Metric.TwitterFollowedMoonveil],
+        [process.env.ASTRARK_TWITTER_USERNAME!, Metric.TwitterFollowedAstrArk],
     ]);
 
     constructor(quest: IQuest) {
@@ -54,7 +54,7 @@ export class FollowOnTwitterQuest extends QuestBase {
         }
         // 检查是否触发关注指标
         const questProp = this.quest.properties as FollowOnTwitter;
-        const followMetric = this.followMetrics.get(questProp.target_twitter_id);
+        const followMetric = this.followMetrics.get(questProp.username);
         let updateMetric = undefined;
         if (followMetric) {
             updateMetric = async (session: any) => {
