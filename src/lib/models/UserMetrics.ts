@@ -72,14 +72,14 @@ export interface IUserMetrics extends Document {
   steam_account_rating: number;
 
   // 用户平台指标
-  twitterConnected: boolean;
-  discordConnected: boolean;
-  steamConnected: boolean;
-  walletConnected: boolean;
-  googleConnected: boolean;
-  discordJoinedMoonveil: boolean;
-  twitterFollowedMoonveil: boolean;
-  twitterFollowedAstrArk: boolean;
+  twitter_connected: boolean;
+  discord_connected: boolean;
+  steam_connected: boolean;
+  wallet_connected: boolean;
+  google_connected: boolean;
+  discord_joined_moonveil: boolean;
+  twitter_followed_moonveil: boolean;
+  twitter_followed_astrArk: boolean;
 
   // 转推次数
   retweet_count: number;
@@ -102,14 +102,14 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_account_game_count: { Type: Number },
   steam_account_usd_value: { Type: Number },
   steam_account_rating: { Type: Number },
-  twitterConnected: { Type: Boolean },
-  discordConnected: { Type: Boolean },
-  steamConnected: { Type: Boolean },
-  walletConnected: { Type: Boolean },
-  googleConnected: { Type: Boolean },
-  discordJoinedMoonveil: { Type: Boolean },
-  twitterFollowedMoonveil: { Type: Boolean },
-  twitterFollowedAstrArk: { Type: Boolean },
+  twitter_connected: { Type: Boolean },
+  discord_connected: { Type: Boolean },
+  steam_connected: { Type: Boolean },
+  wallet_connected: { Type: Boolean },
+  google_connected: { Type: Boolean },
+  discord_joined_moonveil: { Type: Boolean },
+  twitter_followed_moonveil: { Type: Boolean },
+  twitter_followed_astrArk: { Type: Boolean },
   retweet_count: { Type: Number },
   created_time: { type: Number, required: true },
 });
