@@ -112,7 +112,7 @@ export async function loadUserBadges(
       c.name = c.badge_info[0].name;
       c.has_series = Object.keys(c.badge_info[0].series).length > 1;
 
-      delete c.series;
+      // delete c.series;
       delete c.badge_info;
     }
   }

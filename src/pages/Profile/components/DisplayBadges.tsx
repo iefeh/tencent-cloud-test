@@ -1,5 +1,5 @@
 import useScrollLoad from '@/hooks/useScrollLoad';
-import { BadgeItem, queryBadgesPageListAPI, toggleBadgeDisplayAPI } from '@/http/services/badges';
+import { BadgeItem, queryCanDisplayBadgesAPI, toggleBadgeDisplayAPI } from '@/http/services/badges';
 import BasicBadge from '@/pages/components/common/badges/BasicBadge';
 import { Popover, PopoverContent, PopoverTrigger, cn } from '@nextui-org/react';
 import { debounce, throttle } from 'lodash';
@@ -10,7 +10,6 @@ import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
   className?: string;
-  badges?: (BadgeItem | null)[];
   loading?: boolean;
   items?: (BadgeItem | null)[];
   onSort?: (newIndex: number, oldIndex: number) => void;
@@ -18,14 +17,14 @@ interface Props {
   onDisplayed?: () => void;
 }
 
-const DisplayBadgesPopover: FC<Props> = ({ className, badges, items, onView, onDisplayed, onSort }) => {
+const DisplayBadgesPopover: FC<Props> = ({ className, items, onView, onDisplayed, onSort }) => {
   const { data, scrollRef, queryData, loading } = useScrollLoad<BadgeItem>({
     minCount: 10,
+    pageSize: 20,
     watchAuth: true,
-    queryKey: 'badges',
-    queryFn: queryBadgesPageListAPI,
+    queryKey: 'data',
+    queryFn: queryCanDisplayBadgesAPI,
   });
-  const filteredData = (badges || data).filter((item) => item && !item.display && item.series?.[0]?.obtained_time);
   const { containerElRef } = useSort({
     onChange: debounce(async (evt) => {
       const { newIndex, oldIndex } = evt;
@@ -39,14 +38,13 @@ const DisplayBadgesPopover: FC<Props> = ({ className, badges, items, onView, onD
 
     setToggleLoading(true);
     await toggleBadgeDisplayAPI(item.badge_id, !item.display);
-    if (badges === undefined) await queryData(true);
-
+    await queryData(true);
     await onDisplayed?.();
     setToggleLoading(false);
   }, 500);
 
   useEffect(() => {
-    if (badges === undefined) queryData(true);
+    queryData(true);
   }, [items]);
 
   const SinglePopover = ({ item }: { item: BadgeItem | null }) => {
@@ -66,7 +64,7 @@ const DisplayBadgesPopover: FC<Props> = ({ className, badges, items, onView, onD
 
             <div ref={scrollRef} className="h-[15rem] mt-4 overflow-hidden">
               <div className="w-full min-h-full grid grid-cols-5 gap-3">
-                {filteredData.map((item, index) => (
+                {data.map((item, index) => (
                   <BasicBadge
                     key={item ? `id_${item.badge_id}` : `index_${index}`}
                     item={item}
@@ -86,7 +84,7 @@ const DisplayBadgesPopover: FC<Props> = ({ className, badges, items, onView, onD
     () => (
       <>{items && items.length > 0 ? items.map((item, index) => <SinglePopover key={index} item={item} />) : null}</>
     ),
-    [items, filteredData],
+    [items, data],
   );
 
   return (

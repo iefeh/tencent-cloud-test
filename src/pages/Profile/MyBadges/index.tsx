@@ -84,7 +84,6 @@ function MyBadgesPage() {
           <DisplayBadges
             className={cn(['justify-start mt-10', isMobile ? 'w-max' : 'w-min'])}
             items={displayBadges}
-            badges={badges}
             loading={displayLoaidng}
             onView={onView}
             onSort={sortBadges}
