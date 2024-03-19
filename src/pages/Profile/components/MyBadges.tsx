@@ -63,8 +63,7 @@ function MyBadges() {
           <span className="text-2xl ml-[0.625rem]">
             My Badges
             <span className="text-lg ml-[0.5625rem] hidden lg:inline">
-              ( {total}
-              {displayBadges.length} )
+              ( {total} )
             </span>
           </span>
         </div>
