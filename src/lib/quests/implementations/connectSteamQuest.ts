@@ -44,7 +44,18 @@ export class ConnectSteamQuest extends QuestBase {
         // 按 任务/steam id 进行污染，防止同一个steam账号多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Steam},${userSteam.steam_id}`
         const assetId = refreshResult.userMetric[Metric.SteamAssetId];
-        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId, async (session) => {
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.SteamConnected]: 1 },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+          });
         if (result.duplicated) {
             return {
                 verified: false,

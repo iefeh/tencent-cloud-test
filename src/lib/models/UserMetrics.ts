@@ -32,11 +32,20 @@ export enum Metric {
   SteamAccountRating = 'steam_account_rating',
 
   // 初出茅庐徽章，其他的加入社区/关注某人，按照完成任务算.
+  TwitterConnected = 'twitter_connected',
+  DiscordConnected = 'discord_connected',
+  SteamConnected = 'steam_connected',
+  WalletConnected = 'wallet_connected',
+  GoogleConnected = 'google_connected',
+  DiscordJoinedMoonveil = 'discord_joined_moonveil',
+  TwitterFollowedMoonveil = 'twitter_followed_moonveil',
+  TwitterFollowedAstrArk = 'twitter_followed_astrark',
 
   // 奔走相告徽章，完成转推次数
   RetweetCount = 'retweet_count',
-  //创世者徽章，NFT等级
+  //NFT等级，对应创世者徽章
   TetraHolder = 'tetra_holder',
+  //新手任务完成徽章
 }
 
 // 用户内部指标，存放单独的集合
@@ -44,7 +53,7 @@ export interface IUserMetrics extends Document {
   // 用户id
   user_id: string;
   // 是否预约astrark游戏
-  pre_register_astrark: boolean;
+  pre_register_astrark: number;
   // astrark游戏英雄地址
   astrark_hero_url: string;
   // 绑定钱包拥有的token价值
@@ -64,27 +73,28 @@ export interface IUserMetrics extends Document {
   steam_account_usd_value: number;
   // Steam账户评分
   steam_account_rating: number;
+
+  // 用户平台指标
+  twitter_connected: number;
+  discord_connected: number;
+  steam_connected: number;
+  wallet_connected: number;
+  google_connected: number;
+  discord_joined_moonveil: number;
+  twitter_followed_moonveil: number;
+  twitter_followed_astrark: number;
+
   // 转推次数
   retweet_count: number;
   //NFT等级
   tetra_holder: number;
-  //验证twitter
-  twitter_connected: boolean;
-  //关注MoonVeil
-  twitter_follow_moonveil: boolean;
-  //关注AstrArk_World
-  twitter_follow_astrark: boolean;
-  //验证discord
-  discord_connected: boolean;
-  //加入discord_server
-  join_discord_server_moonveil: boolean;
   // 创建时间毫秒时间戳
   created_time: number;
 }
 
 const UserMetricsSchema = new Schema<IUserMetrics>({
   user_id: { type: String, required: true },
-  pre_register_astrark: { type: Boolean },
+  pre_register_astrark: { type: Number },
   astrark_hero_url: { type: String },
   wallet_asset_id: { type: String },
   wallet_token_usd_value: { Type: Number },
@@ -96,22 +106,20 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_account_game_count: { Type: Number },
   steam_account_usd_value: { Type: Number },
   steam_account_rating: { Type: Number },
+  twitter_connected: { Type: Number },
+  discord_connected: { Type: Number },
+  steam_connected: { Type: Number },
+  wallet_connected: { Type: Number },
+  google_connected: { Type: Number },
+  discord_joined_moonveil: { Type: Number },
+  twitter_followed_moonveil: { Type: Number },
+  twitter_followed_astrark: { Type: Number },
   retweet_count: { Type: Number },
   tetra_holder: { Type: Number },
-  twitter_connected: { type: Boolean },
-  twitter_follow_moonveil: { type: Boolean },
-  twitter_follow_astrark: { type: Boolean },
-  discord_connected: { type: Boolean },
-  join_discord_server_moonveil: { type: Boolean },
   created_time: { type: Number, required: true },
 });
 
 UserMetricsSchema.index({ user_id: 1 }, { unique: true });
-
-// 添加UserMetrics表的更新通知，当有更新时，触发通知到徽章检查队列
-// UserMetricsSchema.post('updateOne', async function (doc, next) {
-//   next();
-// });
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();
@@ -120,7 +128,7 @@ const UserMetrics =
 export default UserMetrics;
 
 // 设置用户的指标
-export async function createUserMetric(userId: string, metric: Metric, value: string | number | boolean) {
+export async function createUserMetric(userId: string, metric: Metric, value: string | number) {
   const result = UserMetrics.updateOne(
     { user_id: userId },
     {
@@ -131,7 +139,6 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
   );
 
   sendBadgeCheckMessage(userId, metric);
-
   return result;
 }
 

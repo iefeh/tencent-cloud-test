@@ -170,7 +170,18 @@ export class ConnectWalletQuest extends QuestBase {
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         const assetId = refreshResult.userMetric[Metric.WalletAssetId];
-        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId, async (session) => {
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.WalletConnected]: 1 },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+          });
         if (result.duplicated) {
             return {
                 verified: false,

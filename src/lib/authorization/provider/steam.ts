@@ -12,6 +12,7 @@ import {AuthorizationType} from "@/lib/authorization/types";
 import {checkGetAuthorizationURLPrerequisite, validateCallbackState} from "@/lib/authorization/provider/util";
 // import * as SteamWebAPI from 'steamapi';
 import UserSteam from "@/lib/models/UserSteam";
+import { Metric } from "@/lib/models/UserMetrics";
 
 export async function generateAuthorizationURL(req: any, res: any) {
     // 检查用户的授权落地页
@@ -54,6 +55,10 @@ export class SteamAuthFlow extends AuthFlowBase {
 
     authorizationType(): AuthorizationType {
         return AuthorizationType.Steam;
+    }
+
+    authorizationMetric(): Metric {
+        return Metric.SteamConnected;
     }
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
