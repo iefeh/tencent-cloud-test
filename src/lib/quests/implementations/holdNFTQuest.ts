@@ -98,39 +98,6 @@ export class HoldNFTQuest extends QuestBase {
       //发送该徽章检查消息.同时检查这两个指标，判断是否符合下发徽章的条件，指标值不会发送到后台进行检查。
       sendBadgeCheckMessages(userId, { [Metric.TetraHolder]: 1, [Metric.WalletNftUsdValue]: 1 });
     }
-
-    async claimReward(userId: string): Promise<claimRewardResult> {
-        // 检查用户资格
-        const claimableResult = await this.checkClaimable(userId);
-        if (!claimableResult.claimable) {
-            return {
-                verified: false,
-                require_authorization: claimableResult.require_authorization,
-                tip: claimableResult.tip,
-            }
-        }
-        // 按 任务/钱包 进行污染，防止同一个钱包多次获得该任务奖励
-        const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
-        const rewardDelta = await this.checkUserRewardDelta(userId);
-        if (!rewardDelta) {
-            logger.warn((`user ${userId} quest ${this.quest.id} reward amount zero`));
-            return {
-                verified: false,
-                tip: "Server Internal Error",
-            }
-        }
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
-        if (result.duplicated) {
-            return {
-                verified: false,
-                tip: "The Wallet Address has already claimed reward.",
-            }
-        }
-        return {
-            verified: result.done,
-            claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
-        }
     if (result.duplicated) {
       return {
         verified: false,
