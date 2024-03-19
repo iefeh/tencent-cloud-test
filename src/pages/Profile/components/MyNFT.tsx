@@ -3,6 +3,7 @@ import NFT from '@/pages/components/common/nft/NFT';
 import { observer } from 'mobx-react-lite';
 import { queryMyNFTListAPI, type NFTItem } from '@/http/services/mint';
 import { isMobile } from 'react-device-detect';
+import Link from 'next/link';
 import useScrollLoad from '@/hooks/useScrollLoad';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
@@ -11,6 +12,7 @@ function MyNFT() {
     data: nfts,
     scrollRef,
     loading,
+    total,
   } = useScrollLoad<NFTItem>({
     minCount: 5,
     watchAuth: true,
@@ -22,7 +24,13 @@ function MyNFT() {
 
   return (
     <div className="mt-20">
-      <div className="font-semakin text-2xl text-basic-yellow">My NFT</div>
+      <div className="flex justify-between items-center">
+        <div className="font-semakin text-2xl text-basic-yellow">My NFT（{total}）</div>
+
+        <Link href="/NFT/Merge/history" className="text-basic-yellow">
+          Merge History &gt;&gt;
+        </Link>
+      </div>
 
       <Divider className="my-[1.875rem]" />
 

@@ -106,10 +106,10 @@ function RegularTasks() {
             finishedLable: 'Followed',
           };
           break;
-        case QuestType.ASTRARK_PRE_REGISTER:
+        case QuestType.CommentTweet:
           item.connectTexts = {
-            label: 'Participate',
-            finishedLable: 'Participated',
+            label: 'Comment',
+            finishedLable: 'Commented',
           };
           break;
       }
@@ -230,7 +230,7 @@ function RegularTasks() {
     }
 
     function getConnectLabel(texts?: VerifyTexts) {
-      const { label, finishedLable } = texts || { label: 'Connect', finishedLable: 'Connected' };
+      const { label, finishedLable } = texts || { label: 'Participate', finishedLable: 'Participated' };
       if (task.verified || (task.achieved && !task.properties.is_prepared)) return finishedLable;
       return label;
     }
