@@ -54,7 +54,7 @@ export interface IUserMetrics extends Document {
   // 用户id
   user_id: string;
   // 是否预约astrark游戏
-  pre_register_astrark: boolean;
+  pre_register_astrark: number;
   // astrark游戏英雄地址
   astrark_hero_url: string;
   // 绑定钱包拥有的token价值
@@ -76,14 +76,14 @@ export interface IUserMetrics extends Document {
   steam_account_rating: number;
 
   // 用户平台指标
-  twitter_connected: boolean;
-  discord_connected: boolean;
-  steam_connected: boolean;
-  wallet_connected: boolean;
-  google_connected: boolean;
-  discord_joined_moonveil: boolean;
-  twitter_followed_moonveil: boolean;
-  twitter_followed_astrark: boolean;
+  twitter_connected: number;
+  discord_connected: number;
+  steam_connected: number;
+  wallet_connected: number;
+  google_connected: number;
+  discord_joined_moonveil: number;
+  twitter_followed_moonveil: number;
+  twitter_followed_astrark: number;
 
   // 转推次数
   retweet_count: number;
@@ -97,7 +97,7 @@ export interface IUserMetrics extends Document {
 
 const UserMetricsSchema = new Schema<IUserMetrics>({
   user_id: { type: String, required: true },
-  pre_register_astrark: { type: Boolean },
+  pre_register_astrark: { type: Number },
   astrark_hero_url: { type: String },
   wallet_asset_id: { type: String },
   wallet_token_usd_value: { Type: Number },
@@ -109,14 +109,14 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_account_game_count: { Type: Number },
   steam_account_usd_value: { Type: Number },
   steam_account_rating: { Type: Number },
-  twitter_connected: { Type: Boolean },
-  discord_connected: { Type: Boolean },
-  steam_connected: { Type: Boolean },
-  wallet_connected: { Type: Boolean },
-  google_connected: { Type: Boolean },
-  discord_joined_moonveil: { Type: Boolean },
-  twitter_followed_moonveil: { Type: Boolean },
-  twitter_followed_astrark: { Type: Boolean },
+  twitter_connected: { Type: Number },
+  discord_connected: { Type: Number },
+  steam_connected: { Type: Number },
+  wallet_connected: { Type: Number },
+  google_connected: { Type: Number },
+  discord_joined_moonveil: { Type: Number },
+  twitter_followed_moonveil: { Type: Number },
+  twitter_followed_astrark: { Type: Number },
   retweet_count: { Type: Number },
   tetra_holder: { Type: Number },
   novice_notch: { Type: Number },
@@ -132,7 +132,7 @@ const UserMetrics =
 export default UserMetrics;
 
 // 设置用户的指标
-export async function createUserMetric(userId: string, metric: Metric, value: string | number | boolean) {
+export async function createUserMetric(userId: string, metric: Metric, value: string | number) {
   const result = UserMetrics.updateOne(
     { user_id: userId },
     {
@@ -143,26 +143,6 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
   );
 
   sendBadgeCheckMessage(userId, metric);
-
-  return result;
-}
-
-// 设置用户的指标
-export async function createUserMetrics(userId: string, metrics: { [key: string]: string | number | boolean }) {
-  let setOperations: { [key: string]: string | number | boolean } = {};
-  for (const [metric, value] of Object.entries(metrics)) {
-    setOperations[metric] = value;
-  }
-  const result = UserMetrics.updateOne(
-    { user_id: userId },
-    {
-      $set: setOperations,
-      $setOnInsert: { created_time: Date.now() },
-    },
-    { upsert: true },
-  );
-
-  sendBadgeCheckMessages(userId, setOperations);
 
   return result;
 }
