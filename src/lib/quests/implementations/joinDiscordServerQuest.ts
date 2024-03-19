@@ -79,7 +79,7 @@ export class JoinDiscordServerQuest extends QuestBase {
         await UserMetrics.updateOne(
           { user_id: userId },
           {
-            $set: { [followMetric]: true },
+            $set: { [followMetric]: 1 },
             $setOnInsert: {
               created_time: Date.now(),
             },

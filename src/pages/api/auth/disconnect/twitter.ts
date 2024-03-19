@@ -21,7 +21,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         const opts = {session};
         await UserTwitter.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()}, opts);
         // 更新用户授权指标
-        await UserMetrics.updateOne({user_id: req.userId},{[Metric.TwitterConnected]: false},opts);
+        await UserMetrics.updateOne({user_id: req.userId},{[Metric.TwitterConnected]: 0},opts);
     });
     // 添加cd
     await redis.set(`reconnect_cd:${AuthorizationType.Twitter}:${twitter.twitter_id}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);

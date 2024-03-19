@@ -48,7 +48,7 @@ export class ConnectSteamQuest extends QuestBase {
             await UserMetrics.updateOne(
               { user_id: userId },
               {
-                $set: { [Metric.SteamConnected]: true },
+                $set: { [Metric.SteamConnected]: 1 },
                 $setOnInsert: {
                   created_time: Date.now(),
                 },

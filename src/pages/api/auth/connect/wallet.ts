@@ -51,7 +51,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
             {user_id: req.userId},
             {
                 $set: {
-                    [Metric.WalletConnected]: true,
+                    [Metric.WalletConnected]: 1,
                 },
                 $setOnInsert: {
                     "created_time": Date.now(),

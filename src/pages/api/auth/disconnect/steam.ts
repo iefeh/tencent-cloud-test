@@ -21,7 +21,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         const opts = {session};
         await UserSteam.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()}, opts);
         // 更新用户授权指标
-        await UserMetrics.updateOne({user_id: req.userId},{[Metric.SteamConnected]: false},opts);
+        await UserMetrics.updateOne({user_id: req.userId},{[Metric.SteamConnected]: 0},opts);
     });
     // 添加cd
     await redis.set(`reconnect_cd:${AuthorizationType.Steam}:${steam.steam_id}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
