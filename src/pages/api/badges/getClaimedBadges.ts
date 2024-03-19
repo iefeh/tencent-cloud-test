@@ -95,6 +95,7 @@ export async function loadUserBadges(
   ];
   const results = await UserBadges.aggregate(aggregateQuery);
   let maxLv: number;
+  let data:any[] = [];
   if (results.length > 0) {
     for (let c of results[0].data) {
       maxLv = -Infinity;
@@ -102,6 +103,9 @@ export async function loadUserBadges(
         if (c.series[k].claimed_time != null) {
           maxLv = Number(k);
         }
+      }
+      if (maxLv === -Infinity) {
+        continue;
       }
 
       let orgBadgeData = c.badge_info[0].series[String(maxLv)];
@@ -111,12 +115,12 @@ export async function loadUserBadges(
       c.image_url = orgBadgeData.image_url;
       c.name = c.badge_info[0].name;
       c.has_series = Object.keys(c.badge_info[0].series).length > 1;
-
+      data.push(c);
       // delete c.series;
       delete c.badge_info;
     }
   }
-  return results.length > 0 ? results[0].data : [];
+  return data;
 }
 
 // this will run if none of the above matches
