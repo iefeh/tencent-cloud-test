@@ -59,10 +59,10 @@ const routeText: RouteMenu[] = [
       //   name: 'Mint Now',
       //   route: '/NFT/Mint',
       // },
-      {
-        name: 'TETRA NFT Merge',
-        route: '/NFT/Merge',
-      },
+      // {
+      //   name: 'TETRA NFT Merge',
+      //   route: '/NFT/Merge',
+      // },
     ],
   },
   {
