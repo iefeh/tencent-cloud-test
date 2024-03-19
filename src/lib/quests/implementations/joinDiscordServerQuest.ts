@@ -9,10 +9,11 @@ import * as Sentry from '@sentry/nextjs';
 import UserMetrics, { IUserMetrics, Metric } from '@/lib/models/UserMetrics';
 import { QuestBase } from './base';
 import { sendBadgeCheckMessage } from '@/lib/kafka/client';
+import { ClientSession } from 'mongoose';
 
 export class JoinDiscordServerQuest extends QuestBase {
   // 定义discord服务器id与指标的映射关系
-  private readonly followMetrics = new Map<string, Metric>([
+  private readonly joinServerMetrics = new Map<string, Metric>([
     [process.env.MOONVEIL_DISCORD_SERVER_ID!, Metric.DiscordJoinedMoonveil],
   ]);
 
@@ -60,6 +61,41 @@ export class JoinDiscordServerQuest extends QuestBase {
     return { claimable: false };
   }
 
+  async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+    const updateMetric = this.checkUserMetric(userId);
+    super.addUserAchievement(userId, verified, updateMetric);
+    this.sendBadgeCheckMessage(userId);
+  }
+
+  private sendBadgeCheckMessage(userId: string) {
+    const questProp = this.quest.properties as JoinDiscordServer;
+    const joinServerMetric = this.joinServerMetrics.get(questProp.guild_id);
+    if (joinServerMetric) {
+      sendBadgeCheckMessage(userId, joinServerMetric);
+    }
+  }
+
+  private checkUserMetric(userId: string): undefined | ((session: ClientSession) => Promise<void>) {
+    const questProp = this.quest.properties as JoinDiscordServer;
+    const joinServerMetric = this.joinServerMetrics.get(questProp.guild_id);
+    let updateMetric = undefined;
+    if (joinServerMetric) {
+      updateMetric = async (session: any) => {
+        await UserMetrics.updateOne(
+          { user_id: userId },
+          {
+            $set: { [joinServerMetric]: 1 },
+            $setOnInsert: {
+              created_time: Date.now(),
+            },
+          },
+          { upsert: true, session: session },
+        );
+      };
+    }
+    return updateMetric;
+  }
+
   async claimReward(userId: string): Promise<claimRewardResult> {
     const claimableResult = await this.checkClaimable(userId);
     if (!claimableResult.claimable) {
@@ -71,36 +107,20 @@ export class JoinDiscordServerQuest extends QuestBase {
     }
 
     // 检查是否触发关注指标
-    const questProp = this.quest.properties as JoinDiscordServer;
-    const followMetric = this.followMetrics.get(questProp.guild_id);
-    let updateMetric = undefined;
-    if (followMetric) {
-      updateMetric = async (session: any) => {
-        await UserMetrics.updateOne(
-          { user_id: userId },
-          {
-            $set: { [followMetric]: 1 },
-            $setOnInsert: {
-              created_time: Date.now(),
-            },
-          },
-          { upsert: true, session: session },
-        );
-      };
-    }
+    const updateMetric = this.checkUserMetric(userId);
 
     // 污染discord，确保同一个discord单任务只能获取一次奖励
     const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
     const rewardDelta = await this.checkUserRewardDelta(userId);
     const result = await this.saveUserReward(userId, taint, rewardDelta, null, updateMetric);
-
-    sendBadgeCheckMessage(userId,Metric.DiscordJoinedMoonveil);
-
     if (result.duplicated) {
       return {
         verified: false,
         tip: 'The Discord Account has already claimed reward.',
       };
+    }
+    if (updateMetric) {
+      sendBadgeCheckMessage(userId, Metric.DiscordJoinedMoonveil);
     }
     return {
       verified: result.done,

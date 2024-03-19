@@ -13,7 +13,7 @@ import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {v4 as uuidv4} from "uuid";
 import * as Sentry from "@sentry/nextjs";
-import { sendBadgeCheckMessages } from "@/lib/kafka/client";
+import { sendBadgeCheckMessage, sendBadgeCheckMessages } from "@/lib/kafka/client";
 
 
 const Debank = require('debank');
@@ -36,6 +36,22 @@ export class ConnectWalletQuest extends QuestBase {
             claimable: !!userWallet,
             require_authorization: userWallet ? undefined : AuthorizationType.Wallet,
         }
+    }
+
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.WalletConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        sendBadgeCheckMessage(userId, Metric.WalletConnected);
     }
 
     async reClaimReward(userId: string): Promise<claimRewardResult> {

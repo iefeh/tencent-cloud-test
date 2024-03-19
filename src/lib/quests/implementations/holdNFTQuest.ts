@@ -40,6 +40,46 @@ export class HoldNFTQuest extends QuestBase {
     };
   }
 
+  async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+    const updateMetric = this.checkUserMetric(userId);
+    super.addUserAchievement(userId, verified, updateMetric);
+    if (updateMetric) {
+      //发送该徽章检查消息.同时检查这两个指标，判断是否符合下发徽章的条件，指标值不会发送到后台进行检查。
+      sendBadgeCheckMessages(userId, { [Metric.TetraHolder]: 1, [Metric.WalletNftUsdValue]: 1 });
+    }
+  }
+
+  private checkUserMetric(userId: string): undefined | ((session: ClientSession) => Promise<void>) {
+    const NFTProp = this.quest.properties as HoldNFT;
+    const chain_id = NFTProp.chain_id;
+    const contract_addr = NFTProp.contract_addr;
+    let hold_nft: Number = 0;
+
+    if (process.env.LVL1_TETRA_CHAINID === chain_id && process.env.LVL1_TETRACONTRACTADDRESS === contract_addr) {
+      hold_nft = 1;
+    } else if (process.env.LVL2_TETRA_CHAINID === chain_id && process.env.LVL2_TETRACONTRACTADDRESS === contract_addr) {
+      hold_nft = 2;
+    } else if (process.env.LVL3_TETRA_CHAINID === chain_id && process.env.LVL3_TETRACONTRACTADDRESS === contract_addr) {
+      hold_nft = 3;
+    }
+    // 创建指标更新函数
+    if (hold_nft == 0) {
+      return undefined;
+    }
+    return async (session) => {
+      await UserMetrics.updateOne(
+        { user_id: userId },
+        {
+          $set: { tetra_holder: hold_nft },
+          $setOnInsert: {
+            created_time: Date.now(),
+          },
+        },
+        { upsert: true, session: session },
+      );
+    };
+  }
+
   async claimReward(userId: string): Promise<claimRewardResult> {
     // 检查用户资格
     const claimableResult = await this.checkClaimable(userId);
@@ -63,46 +103,17 @@ export class HoldNFTQuest extends QuestBase {
       };
     }
     //将NULL改为更新指标函数，可参考retweetTweetQuest 149
-    const NFTProp = this.quest.properties as HoldNFT;
-    const chain_id = NFTProp.chain_id;
-    const contract_addr = NFTProp.contract_addr;
-    let hold_nft: Number = 0;
-
-    if (process.env.LVL1_TETRA_CHAINID === chain_id && process.env.LVL1_TETRACONTRACTADDRESS === contract_addr) {
-      hold_nft = 1;
-    } else if (process.env.LVL2_TETRA_CHAINID === chain_id && process.env.LVL2_TETRACONTRACTADDRESS === contract_addr) {
-      hold_nft = 2;
-    } else if (process.env.LVL3_TETRA_CHAINID === chain_id && process.env.LVL3_TETRACONTRACTADDRESS === contract_addr) {
-      hold_nft = 3;
-    }
-
-    type UpdateNFTHolder = (session: ClientSession) => Promise<void>;
-    let updateNFTHolber: UpdateNFTHolder | undefined = undefined;
-    if (hold_nft !== 0) {
-      updateNFTHolber = async (session) => {
-        await UserMetrics.updateOne(
-          { user_id: userId },
-          {
-            $set: { tetra_holder: hold_nft },
-            $setOnInsert: {
-              created_time: Date.now(),
-            },
-          },
-          { upsert: true, session: session },
-        );
-      };
-    }
-
+    const updateNFTHolber = this.checkUserMetric(userId);
     const result = await this.saveUserReward(userId, taint, rewardDelta, null, updateNFTHolber);
-    if (hold_nft !== 0) {
-      //发送该徽章检查消息.同时检查这两个指标，判断是否符合下发徽章的条件，指标值不会发送到后台进行检查。
-      sendBadgeCheckMessages(userId, { [Metric.TetraHolder]: 1, [Metric.WalletNftUsdValue]: 1 });
-    }
     if (result.duplicated) {
       return {
         verified: false,
         tip: 'The Wallet Address has already claimed reward.',
       };
+    }
+    if (updateNFTHolber) {
+      //发送该徽章检查消息.同时检查这两个指标，判断是否符合下发徽章的条件，指标值不会发送到后台进行检查。
+      sendBadgeCheckMessages(userId, { [Metric.TetraHolder]: 1, [Metric.WalletNftUsdValue]: 1 });
     }
     return {
       verified: result.done,

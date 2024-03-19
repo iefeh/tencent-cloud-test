@@ -128,8 +128,8 @@ export class RetweetTweetQuest extends QuestBase {
         },
         { upsert: true, session: session },
       );
-      sendBadgeCheckMessage(userId, Metric.RetweetCount);
     });
+    sendBadgeCheckMessage(userId, Metric.RetweetCount);
   }
 
   async claimReward(userId: string): Promise<claimRewardResult> {

@@ -1,12 +1,11 @@
 import { IQuest } from '@/lib/models/Quest';
 import { FollowOnTwitter, checkClaimableResult, claimRewardResult } from '@/lib/quests/types';
-import { ConnectTwitterQuest } from '@/lib/quests/implementations/connectTwitterQuest';
-import { promiseSleep } from '@/lib/common/sleep';
 import UserTwitter from '@/lib/models/UserTwitter';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { QuestBase } from './base';
 import UserMetrics, { Metric, IUserMetrics } from '@/lib/models/UserMetrics';
 import { sendBadgeCheckMessage } from '@/lib/kafka/client';
+import { ClientSession } from 'mongoose';
 
 export class FollowOnTwitterQuest extends QuestBase {
   // 定义twitter账号与指标的映射关系
@@ -33,6 +32,44 @@ export class FollowOnTwitterQuest extends QuestBase {
     };
   }
 
+  private checkUserMetric(userId: string): undefined | ((session: ClientSession) => Promise<void>) {
+    const questProp = this.quest.properties as FollowOnTwitter;
+    const followMetric = this.followMetrics.get(questProp.username);
+    let updateMetric = undefined;
+    if (followMetric) {
+      updateMetric = async (session: any) => {
+        await UserMetrics.updateOne(
+          { user_id: userId },
+          {
+            $set: { [followMetric]: 1 },
+            $setOnInsert: {
+              created_time: Date.now(),
+            },
+          },
+          { upsert: true, session: session },
+        );
+      };
+    }
+    return updateMetric;
+  }
+
+
+  async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+    // 检查是否触发关注指标
+    const updateMetric = this.checkUserMetric(userId);
+    super.addUserAchievement(userId, verified, updateMetric);
+    // 检查当前满足的指标并发送消息
+    this.sendBadgeCheckMessage(userId);
+  }
+
+  private async sendBadgeCheckMessage(userId: string) {
+    const questProp = this.quest.properties as FollowOnTwitter;
+    const followMetric = this.followMetrics.get(questProp.username);
+    if (followMetric) {
+      sendBadgeCheckMessage(userId, followMetric);
+    }
+  }
+
   async claimReward(userId: string): Promise<claimRewardResult> {
     // 获取用户的twitter
     const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
@@ -52,23 +89,7 @@ export class FollowOnTwitterQuest extends QuestBase {
       };
     }
     // 检查是否触发关注指标
-    const questProp = this.quest.properties as FollowOnTwitter;
-    const followMetric = this.followMetrics.get(questProp.username);
-    let updateMetric = undefined;
-    if (followMetric) {
-      updateMetric = async (session: any) => {
-        await UserMetrics.updateOne(
-          { user_id: userId },
-          {
-            $set: { [followMetric]: 1 },
-            $setOnInsert: {
-              created_time: Date.now(),
-            },
-          },
-          { upsert: true, session: session },
-        );
-      };
-    }
+    const updateMetric = this.checkUserMetric(userId);
     // 污染twitter，确保同一个twitter单任务只能获取一次奖励
     const taint = `${this.quest.id},${AuthorizationType.Twitter},${userTwitter.twitter_id}`;
     const rewardDelta = await this.checkUserRewardDelta(userId);
@@ -79,9 +100,8 @@ export class FollowOnTwitterQuest extends QuestBase {
         tip: 'The Twitter Account has already claimed reward.',
       };
     }
-
-    sendBadgeCheckMessage(userId, Metric.TwitterFollowedAstrArk);
-
+    // 检查当前满足的指标并发送消息
+    this.sendBadgeCheckMessage(userId);
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,

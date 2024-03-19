@@ -22,6 +22,22 @@ export class ConnectTwitterQuest extends QuestBase {
     };
   }
 
+  async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+    super.addUserAchievement(userId, verified, async (session) => {
+        await UserMetrics.updateOne(
+            { user_id: userId },
+            {
+                $set: { [Metric.TwitterConnected]: 1 },
+                $setOnInsert: {
+                    created_time: Date.now(),
+                },
+            },
+            { upsert: true, session: session },
+        );
+    });
+    sendBadgeCheckMessage(userId, Metric.TwitterConnected);
+}
+
   async claimReward(userId: string): Promise<claimRewardResult> {
     // 获取用户的twitter
     const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
@@ -46,16 +62,14 @@ export class ConnectTwitterQuest extends QuestBase {
         },
         { upsert: true, session: session },
       );
-    });
-    
-    sendBadgeCheckMessage(userId, Metric.TwitterConnected);
-    
+    });    
     if (result.duplicated) {
       return {
         verified: false,
         tip: 'The Twitter Account has already claimed reward.',
       };
     }
+    sendBadgeCheckMessage(userId, Metric.TwitterConnected);
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,

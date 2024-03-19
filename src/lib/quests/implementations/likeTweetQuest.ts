@@ -2,14 +2,12 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, LikeTweet} from "@/lib/quests/types";
 import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitterQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
-import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import {twitterOAuthProvider} from "@/lib/authorization/provider/twitter";
 import {isAxiosError} from "axios";
 import {deleteAuthToken} from "@/lib/authorization/provider/util";
 import {redis} from "@/lib/redis/client";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import logger from "@/lib/logger/winstonLogger";
-import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 
 export class LikeTweetQuest extends QuestBase {

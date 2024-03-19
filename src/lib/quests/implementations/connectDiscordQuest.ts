@@ -4,8 +4,7 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
-import logger from "@/lib/logger/winstonLogger";
-import UserMetrics, { Metric,IUserMetrics } from "@/lib/models/UserMetrics";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 export class ConnectDiscordQuest extends QuestBase {
@@ -24,6 +23,22 @@ export class ConnectDiscordQuest extends QuestBase {
             claimable: !!userDiscord,
             require_authorization: userDiscord ? undefined : AuthorizationType.Discord,
         }
+    }
+
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.DiscordConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        sendBadgeCheckMessage(userId, Metric.DiscordConnected);
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
