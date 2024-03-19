@@ -26,26 +26,6 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     });
     // 添加cd
     await redis.set(`reconnect_cd:${AuthorizationType.Discord}:${discord.discord_id}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
-    let userMetric: IUserMetrics = await UserMetrics.find({ user_id: userId });
-    if (
-      userMetric.twitter_connected &&
-      userMetric.twitter_followed_astrark &&
-      userMetric.twitter_followed_moonveil &&
-      userMetric.discord_connected &&
-      userMetric.discord_joined_moonveil
-    ) {
-      await UserMetrics.updateOne(
-        { user_id: userId },
-        {
-          $set: { [Metric.NoviceNotch]: 1 },
-          $setOnInsert: {
-            created_time: Date.now(),
-          },
-        },
-        { upsert: true },
-      );
-      sendBadgeCheckMessage(userId, Metric.NoviceNotch);
-    }
     res.json(response.success());
 });
 
