@@ -1,23 +1,26 @@
-import { Divider } from '@nextui-org/react';
+import { Divider, cn } from '@nextui-org/react';
 import NFT from '@/pages/components/common/nft/NFT';
-import { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { MobxContext } from '@/pages/_app';
-import { throttle } from 'lodash';
-import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
+import { queryMyNFTListAPI, type NFTItem } from '@/http/services/mint';
+import { isMobile } from 'react-device-detect';
 import Link from 'next/link';
 import useScrollLoad from '@/hooks/useScrollLoad';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
 function MyNFT() {
-  const MIN_NFT_COUNT = 5;
-  const { userInfo } = useContext(MobxContext);
   const {
     data: nfts,
     scrollRef,
     loading,
     total,
-  } = useScrollLoad<NFTItem>({ watchAuth: true, minCount: 5, queryKey: 'nfts', queryFn: queryMyNFTListAPI });
+  } = useScrollLoad<NFTItem>({
+    minCount: 5,
+    watchAuth: true,
+    bsOptions: isMobile ? { scrollY: false, scrollX: true, scrollbar: true } : {},
+    pullupLoad: !isMobile,
+    queryKey: 'nfts',
+    queryFn: queryMyNFTListAPI,
+  });
 
   return (
     <div className="mt-20">
@@ -31,8 +34,8 @@ function MyNFT() {
 
       <Divider className="my-[1.875rem]" />
 
-      <div ref={scrollRef} className="w-full max-h-[36.5rem] overflow-hidden relative">
-        <div className="flex justify-start items-center flex-wrap gap-[1.25rem]">
+      <div ref={scrollRef} className="w-full max-h-[38.5rem] overflow-hidden relative">
+        <div className={cn(['flex items-center gap-[1.2rem]', isMobile ? 'w-max' : 'w-full flex-wrap'])}>
           {nfts.map((nft, index) => (
             <NFT
               name={nft?.token_metadata?.name}

@@ -174,7 +174,7 @@ export class ConnectWalletQuest extends QuestBase {
             await UserMetrics.updateOne(
               { user_id: userId },
               {
-                $set: { [Metric.WalletConnected]: true },
+                $set: { [Metric.WalletConnected]: 1 },
                 $setOnInsert: {
                   created_time: Date.now(),
                 },

@@ -163,6 +163,7 @@ export class RetweetTweetQuest extends QuestBase {
         tip: 'The Twitter Account has already claimed reward.',
       };
     }
+    sendBadgeCheckMessage(userId,Metric.RetweetCount);
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,

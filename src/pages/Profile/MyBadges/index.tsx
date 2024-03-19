@@ -5,12 +5,14 @@ import MyBadges from './components/MyBadges';
 import useMyBadges from './hooks/useMyBadges';
 import useDisplayBadges from './hooks/useDisplayBadges';
 import { throttle } from 'lodash';
-import { useDisclosure } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
 import BadgeModal from './components/BadgeModal';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BadgeItem, toggleBadgeDisplayAPI } from '@/http/services/badges';
 import { observer } from 'mobx-react-lite';
 import { MAX_DISPLAY_COUNT } from '@/constant/badge';
+import { isMobile } from 'react-device-detect';
+import BScroll from 'better-scroll';
 
 function MyBadgesPage() {
   const {
@@ -23,9 +25,14 @@ function MyBadgesPage() {
   const { total, badges, queryMyBadges, claimBadge, mintBadge, loading: fullQueryLoading } = useMyBadges();
   const modalDisclosure = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bsRef = useRef<BScroll | null>(null);
 
   const updateBadges = throttle(async () => {
     await Promise.all([queryDisplayBadges(), queryMyBadges()]);
+    setTimeout(() => {
+      bsRef.current?.refresh();
+    }, 100);
   }, 500);
 
   function onView(item?: BadgeItem | null) {
@@ -49,10 +56,20 @@ function MyBadgesPage() {
     setCurrentItem(item);
   }, [badges]);
 
+  useEffect(() => {
+    if (!scrollRef.current) return;
+
+    bsRef.current = new BScroll(scrollRef.current, { scrollX: true, scrollbar: true, probeType: 3 });
+
+    return () => {
+      if (bsRef.current) bsRef.current.destroy();
+    };
+  }, []);
+
   return (
     <section
       id="luxy"
-      className="w-full flex flex-col px-8 md:px-32 lg:px-[16.25rem] pt-[9.125rem] pb-[13.5rem] mx-auto min-h-screen bg-[url('/img/profile/bg.png')] bg-[length:100%_auto] bg-no-repeat"
+      className="w-full flex flex-col px-12 md:px-32 lg:px-[16.25rem] pt-[9.125rem] pb-[13.5rem] mx-auto min-h-screen bg-[url('/img/profile/bg.png')] bg-[length:100%_auto] bg-no-repeat"
     >
       <Head>
         <title>My Badges | Moonveil Entertainment</title>
@@ -63,15 +80,16 @@ function MyBadgesPage() {
       <div className="mt-12">
         <div className="font-semakin text-basic-yellow text-2xl">Display Badges</div>
 
-        <DisplayBadges
-          className="w-min justify-start mt-10"
-          items={displayBadges}
-          badges={badges}
-          loading={displayLoaidng}
-          onView={onView}
-          onSort={sortBadges}
-          onDisplayed={updateBadges}
-        />
+        <div ref={scrollRef} className="w-full overflow-hidden relative">
+          <DisplayBadges
+            className={cn(['justify-start mt-10', isMobile ? 'w-max' : 'w-min'])}
+            items={displayBadges}
+            loading={displayLoaidng}
+            onView={onView}
+            onSort={sortBadges}
+            onDisplayed={updateBadges}
+          />
+        </div>
       </div>
 
       <MyBadges

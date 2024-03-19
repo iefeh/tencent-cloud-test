@@ -108,7 +108,7 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
                 {user_id: authPayload.authorization_user_id!},
                 {
                     $set: {
-                        [userMetric]: true,
+                        [userMetric]: 1,
                     },
                     $setOnInsert: {
                         "created_time": Date.now(),
