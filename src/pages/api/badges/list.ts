@@ -117,7 +117,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
         if (claimed) {
           claimed_count++;
         }
-
+      
         let distributedBadge = c.user_badges[0].series[String(maxLv)];
         let orgBadgeData = c.series[String(maxLv)];
         let nextLvBadge = c.series[String(maxLv + 1)];
@@ -135,9 +135,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
           nextLvBadge.name = c.name;
           nextLvBadge.lv = maxLv + 1;
           series.push(nextLvBadge);
-        } else {
-          series.push(null);
-        }
+        } 
         c.user_id = distributedBadge.user_id;
       } else {
         c.has_series = Object.keys(c.series).length > 1;
@@ -148,7 +146,6 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
         delete c.series[k].open_for_mint;
 
         series.push(c.series[k]);
-        series.push(null);
       }
       c.badge_id = c.id;
       delete c.user_badges;
