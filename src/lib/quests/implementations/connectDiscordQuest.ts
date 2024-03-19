@@ -5,7 +5,8 @@ import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
 import logger from "@/lib/logger/winstonLogger";
-import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import UserMetrics, { Metric,IUserMetrics } from "@/lib/models/UserMetrics";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 export class ConnectDiscordQuest extends QuestBase {
     // 用户的授权discord_id，在checkClaimable()时设置
@@ -49,6 +50,26 @@ export class ConnectDiscordQuest extends QuestBase {
               { upsert: true, session: session },
             );
           });
+        let userMetric: IUserMetrics = await UserMetrics.find({ user_id: userId });
+        if (
+        userMetric.twitter_connected &&
+        userMetric.twitter_followed_astrark &&
+        userMetric.twitter_followed_moonveil &&
+        userMetric.discord_connected &&
+        userMetric.discord_joined_moonveil
+        ) {
+        await UserMetrics.updateOne(
+            { user_id: userId },
+            {
+            $set: { [Metric.NoviceNotch]: 1 },
+            $setOnInsert: {
+                created_time: Date.now(),
+            },
+            },
+            { upsert: true },
+        );
+        sendBadgeCheckMessage(userId, Metric.NoviceNotch);
+        }
         if (result.duplicated) {
             return {
                 verified: false,
