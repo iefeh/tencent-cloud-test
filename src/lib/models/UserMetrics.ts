@@ -43,6 +43,8 @@ export enum Metric {
 
   // 奔走相告徽章，完成转推次数
   RetweetCount = 'retweet_count',
+  //NFT等级，对应创世者徽章
+  TetraHolder = 'tetra_holder',
   //新手任务完成徽章
   NoviceNotch = 'novice_notch',
 }
@@ -85,6 +87,8 @@ export interface IUserMetrics extends Document {
 
   // 转推次数
   retweet_count: number;
+  //NFT等级
+  tetra_holder: number;
   //新手徽章条件达成
   novice_notch: number;
   // 创建时间毫秒时间戳
@@ -114,6 +118,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   twitter_followed_moonveil: { Type: Boolean },
   twitter_followed_astrark: { Type: Boolean },
   retweet_count: { Type: Number },
+  tetra_holder: { Type: Number },
   novice_notch: { Type: Number },
   created_time: { type: Number, required: true },
 });
