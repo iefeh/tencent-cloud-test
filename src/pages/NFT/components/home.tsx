@@ -34,7 +34,8 @@ const NftHome: React.FC = () => {
           <div className="flex gap-2 mt-[7rem]">
             <BasicButton label="TETRA NFT Series" link="/TetraNFT" />
             <BasicButton label="Get Involved" link="/LoyaltyProgram/earn" />
-            <BasicButton label="Merge Now" link="/NFT/Merge" active />
+            {/* <BasicButton label="Merge Now" link="/NFT/Merge" active /> */}
+            <BasicButton label="Coming Soon" active disabled />
           </div>
         }
       />

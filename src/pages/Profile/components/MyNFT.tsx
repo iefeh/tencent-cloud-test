@@ -1,17 +1,12 @@
 import { Divider } from '@nextui-org/react';
 import NFT from '@/pages/components/common/nft/NFT';
-import { useContext, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { MobxContext } from '@/pages/_app';
-import { throttle } from 'lodash';
-import { NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
+import { queryMyNFTListAPI, type NFTItem } from '@/http/services/mint';
 import Link from 'next/link';
 import useScrollLoad from '@/hooks/useScrollLoad';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
 function MyNFT() {
-  const MIN_NFT_COUNT = 5;
-  const { userInfo } = useContext(MobxContext);
   const {
     data: nfts,
     scrollRef,
