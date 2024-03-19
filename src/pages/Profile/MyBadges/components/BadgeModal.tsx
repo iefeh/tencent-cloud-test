@@ -107,7 +107,7 @@ export default function BadgeModal(props: Props) {
                   height={300}
                 />
 
-                <div className="font-semakin text-3xl mt-5">
+                <div className="font-semakin text-3xl mt-5 flex justify-center w-full">
                   <div className="relative bg-[linear-gradient(300deg,#EDE0B9_0%,#CAA67E_100%)] bg-clip-text text-transparent max-w-[calc(100%_-_4.25rem)] px-2">
                     {name || item?.name || '--'}
 
