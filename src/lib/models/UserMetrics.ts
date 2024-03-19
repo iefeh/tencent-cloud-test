@@ -46,7 +46,6 @@ export enum Metric {
   //NFT等级，对应创世者徽章
   TetraHolder = 'tetra_holder',
   //新手任务完成徽章
-  NoviceNotch = 'novice_notch',
 }
 
 // 用户内部指标，存放单独的集合
@@ -89,8 +88,6 @@ export interface IUserMetrics extends Document {
   retweet_count: number;
   //NFT等级
   tetra_holder: number;
-  //新手徽章条件达成
-  novice_notch: number;
   // 创建时间毫秒时间戳
   created_time: number;
 }
@@ -119,7 +116,6 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   twitter_followed_astrark: { Type: Number },
   retweet_count: { Type: Number },
   tetra_holder: { Type: Number },
-  novice_notch: { Type: Number },
   created_time: { type: Number, required: true },
 });
 
@@ -143,6 +139,25 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
   );
 
   sendBadgeCheckMessage(userId, metric);
+  return result;
+}
+
+// 设置用户的指标
+export async function createUserMetrics(userId: string, metrics: { [key: string]: string | number | boolean }) {
+  let setOperations: { [key: string]: string | number | boolean } = {};
+  for (const [metric, value] of Object.entries(metrics)) {
+    setOperations[metric] = value;
+  }
+  const result = UserMetrics.updateOne(
+    { user_id: userId },
+    {
+      $set: setOperations,
+      $setOnInsert: { created_time: Date.now() },
+    },
+    { upsert: true },
+  );
+
+  sendBadgeCheckMessages(userId, setOperations);
 
   return result;
 }
