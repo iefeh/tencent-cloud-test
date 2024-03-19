@@ -93,26 +93,8 @@ export class JoinDiscordServerQuest extends QuestBase {
     const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
     const rewardDelta = await this.checkUserRewardDelta(userId);
     const result = await this.saveUserReward(userId, taint, rewardDelta, null, updateMetric);
-    let userMetric: IUserMetrics = await UserMetrics.find({ user_id: userId });
-    if (
-      userMetric.twitter_connected &&
-      userMetric.twitter_followed_astrark &&
-      userMetric.twitter_followed_moonveil &&
-      userMetric.discord_connected &&
-      userMetric.discord_joined_moonveil
-    ) {
-      await UserMetrics.updateOne(
-        { user_id: userId },
-        {
-          $set: { [Metric.NoviceNotch]: 1 },
-          $setOnInsert: {
-            created_time: Date.now(),
-          },
-        },
-        { upsert: true },
-      );
-      sendBadgeCheckMessage(userId, Metric.NoviceNotch);
-    }
+
+    sendBadgeCheckMessage(userId,Metric.DiscordJoinedMoonveil);
 
     if (result.duplicated) {
       return {

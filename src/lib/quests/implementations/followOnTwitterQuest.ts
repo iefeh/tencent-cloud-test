@@ -79,26 +79,9 @@ export class FollowOnTwitterQuest extends QuestBase {
         tip: 'The Twitter Account has already claimed reward.',
       };
     }
-    let userMetric: IUserMetrics = await UserMetrics.find({ user_id: userId });
-    if (
-      userMetric.twitter_connected &&
-      userMetric.twitter_followed_astrark &&
-      userMetric.twitter_followed_moonveil &&
-      userMetric.discord_connected &&
-      userMetric.discord_joined_moonveil
-    ) {
-      await UserMetrics.updateOne(
-        { user_id: userId },
-        {
-          $set: { [Metric.NoviceNotch]: 1 },
-          $setOnInsert: {
-            created_time: Date.now(),
-          },
-        },
-        { upsert: true },
-      );
-      sendBadgeCheckMessage(userId, Metric.NoviceNotch);
-    }
+
+    sendBadgeCheckMessage(userId, Metric.TwitterFollowedAstrArk);
+
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,

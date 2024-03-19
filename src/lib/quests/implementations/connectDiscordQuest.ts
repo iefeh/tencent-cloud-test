@@ -50,26 +50,9 @@ export class ConnectDiscordQuest extends QuestBase {
               { upsert: true, session: session },
             );
           });
-        let userMetric: IUserMetrics = await UserMetrics.find({ user_id: userId });
-        if (
-        userMetric.twitter_connected &&
-        userMetric.twitter_followed_astrark &&
-        userMetric.twitter_followed_moonveil &&
-        userMetric.discord_connected &&
-        userMetric.discord_joined_moonveil
-        ) {
-        await UserMetrics.updateOne(
-            { user_id: userId },
-            {
-            $set: { [Metric.NoviceNotch]: 1 },
-            $setOnInsert: {
-                created_time: Date.now(),
-            },
-            },
-            { upsert: true },
-        );
-        sendBadgeCheckMessage(userId, Metric.NoviceNotch);
-        }
+       
+        sendBadgeCheckMessage(userId, Metric.DiscordConnected);
+        
         if (result.duplicated) {
             return {
                 verified: false,
