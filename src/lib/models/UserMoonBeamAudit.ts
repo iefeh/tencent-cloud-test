@@ -8,6 +8,8 @@ export enum UserMoonBeamAuditType {
     Campaigns = "campaigns",
     // 活动额外奖励，由于活动可以挂载多个加速器，campaign_bonus对应着每个加速器给与的奖励
     CampaignBonus = "campaign_bonus",
+    // 徽章
+    Badges = "badges",
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
@@ -24,11 +26,13 @@ export interface IUserMoonBeamAudit extends Document {
     // 如type=quests时是任务id
     // 如type=campaigns时是活动id
     // 如type=campaign_bonus时是活动id
+    // 如type=badges时是徽章id
     corr_id: String;
     // 额外信息，
     // 如 type=quests && quest_type=connect_wallet时，存放用户的钱包资产(WalletAsset)id
     // 如 type=quests && quest_type=connect_steam时，存放用户的游戏资产(SteamUserGame)id
     // 如 type=campaign_bonus 时，存放加速器(IRewardAccelerator)id
+    // 如 type=badges 时，存放徽章的等级
     extra_info: string;
     // 审计时间
     created_time: Number;

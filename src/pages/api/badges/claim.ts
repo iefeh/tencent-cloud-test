@@ -2,80 +2,162 @@ import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import UserBadges from '@/lib/models/UserBadges';
+import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
+import Badge, { BadgeSeries } from '@/lib/models/Badge';
+import { errorInterceptor } from '@/lib/middleware/error';
+import { ResponseData } from '@/lib/response/response';
+import { redis } from '@/lib/redis/client';
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import doTransaction from '@/lib/mongodb/transaction';
+import { th } from 'date-fns/locale';
+import logger from '@/lib/logger/winstonLogger';
+import { try2AddUser2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
+import User from '@/lib/models/User';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).post(async (req, res) => {
-  let userId = req.userId;
-  //判断用户是否登录
-  if (!userId) {
-    res.json(response.unauthorized());
-    return;
-  }
-
+router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { badge_id, badge_lv } = req.body;
-
-  const badgeId = String(badge_id);
-  const lv = String(badge_lv);
-  if (!badgeId || !lv || badgeId == 'undefined' || lv == 'undefined') {
+  if (!badge_id || !badge_lv) {
     res.json(response.invalidParams());
     return;
   }
-  const result = await claimTheBadge(userId, badgeId, lv);
-  if(result ==="success"){
-    res.json(
-      response.success({
-        result: result,
-      }),
-    );
-  }else{
-    res.json(
-      response.invalidParams({
-        result: result,
-      }),
-    );
-  }
+
+  const badgeId = String(badge_id);
+  const lv = String(badge_lv);
+  let userId = req.userId!;
+  const data = await try2ClaimBadge(userId, badgeId, lv)
+  res.json(data);
 });
 
-async function claimTheBadge(userId: string, badgeId: string, lv: string): Promise<any> {
-  //查找目标徽章
-  const badge = await UserBadges.findOne({ user_id: userId, badge_id: badgeId });
-  //更新领取时间
-  let result;
+async function try2ClaimBadge(userId: string, badgeId: string, level: string): Promise<any> {
+  const claimLock = `claim_badge_lock:${badgeId}:${userId}`;
+  const locked = await redis.set(claimLock, Date.now(), "EX", 60, "NX");
+  if (!locked) {
+    return response.success({
+      result: "Claim is under a waiting period, please try again later.",
+    })
+  }
+  try {
+    // 检查用户达成的徽章
+    const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: badgeId });
+    if (!userBadge) {
+      return response.success({
+        result: 'Badge not obtained.',
+      });
+    }
+    const series = userBadge.series.get(level)
+    if (!series) {
+      return response.success({
+        result: 'You are not eligible to claim this badge level.',
+      });
+    }
+    // 检查用户是否已经领取过该徽章
+    if (series.claimed_time) {
+      return response.success({
+        result: 'Badge already claimed.',
+      });
+    }
+    const reward = await constructBadgeMoonbeamReward(userBadge, level)
+    // 构建领取徽章对象
+    const claimBadge: any = {};
+    const now = Date.now();
+    for (let s of reward.series) {
+      claimBadge[`series.${s}.claimed_time`] = now;
+    }
+    // 领取徽章、发放用户奖励
+    await doTransaction(async (session) => {
+      const opts = { session };
+      if (reward.mb > 0) {
+        await UserMoonBeamAudit.bulkSave(reward.audits, opts);
+        await User.updateOne({ user_id: userId }, { $inc: { moon_beam: reward.mb } }, opts);
+      }
+      await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
+        $set: claimBadge,
+      }, opts);
+    });
+    // 当有MB下发时，刷新用户的MB缓存
+    if (reward.mb > 0) {
+      await try2AddUser2MBLeaderboard(userId);
+      return response.success({
+        result: `You have claimed badge and received ${reward.mb} MB.`,
+      });
+    }
+    return response.success({
+      result: 'You have claimed badge.',
+    });
+  } finally {
+    await redis.del(claimLock);
+  }
+}
+
+// 构建徽章下发的奖励，如MB
+async function constructBadgeMoonbeamReward(userBadge: IUserBadges, level: string): Promise<{ mb: number, series: string[], audits: any[] }> {
+  const badge = await Badge.findOne({ id: userBadge.badge_id });
+  if (!badge) {
+    throw new Error(`Badge ${userBadge.badge_id} should but not found.`);
+  }
+  let badgeSeries: any[] = [];
+  // 把徽章系列转为列表，并且加上level属性
+  badge.series.forEach((bs: BadgeSeries, lvl: string) => {
+    badgeSeries.push({
+      ...bs,
+      level: lvl,
+    });
+  });
+  // 按level进行升序排列
+  badgeSeries = badgeSeries.sort((a, b) => a.level - b.level);
+
+  // 遍历系列，领取直到level的所有未领取的奖励
+  let rewards: any[] = [];
+  let mb = 0;
+  let claimSeries: string[] = [];
   const now = Date.now();
-
-  if (badge.series.get(String(lv)) == null) {
-    return 'Badge level didnt exist';
+  for (let s of badgeSeries) {
+    if (Number(s.level) > Number(level)) {
+      break;
+    }
+    // 检查是否已经领取
+    const claimedLvl = userBadge.series.get(s.level);
+    if (claimedLvl && claimedLvl.claimed_time) {
+      // 已经领取奖励，直接跳过
+      logger.debug(`user ${userBadge.user_id} badge ${badge.id} series ${s.level} claimed, skip.`);
+      continue;
+    }
+    // 检查当前徽章的奖励
+    if (s.reward_moon_beam == undefined) {
+      throw new Error(`Badge ${badge.id} series ${s.level} reward_moon_beam should but not found.`);
+    }
+    // 记录领取的系列等级，用户标识已经领取对应系列的奖励
+    claimSeries.push(s.level);
+    if (s.reward_moon_beam == 0) {
+      logger.debug(`Badge ${badge.id} series ${s.level} reward_moon_beam is 0, skip.`);
+      continue;
+    }
+    logger.debug(`user ${userBadge.user_id} claiming badge ${badge.id} series ${s.level} mb ${s.reward_moon_beam}.`);
+    mb += s.reward_moon_beam;
+    rewards.push(new UserMoonBeamAudit({
+      user_id: userBadge.user_id,
+      type: UserMoonBeamAuditType.Badges,
+      moon_beam_delta: s.reward_moon_beam,
+      reward_taint: `badge:${userBadge.badge_id},level:${s.level},user:${userBadge.user_id}`,
+      corr_id: userBadge.badge_id,
+      extra_info: s.level,
+      created_time: now,
+    }));
   }
-
-  if (badge.series.get(String(lv)).claimed_time == null) {
-    result = await UserBadges.updateOne(
-      { user_id: userId, badge_id: badgeId },
-      { $set: { [`series.${lv}.claimed_time`]: now, updated_time: now } },
-    );
-  }
-
-  //若该徽章已经领取
-  if (!result) {
-    result = 'Badge already claimed';
-  } else {
-    result = 'success';
-  }
-
-  return result;
+  return {
+    mb,
+    series: claimSeries,
+    audits: rewards,
+  };
 }
 
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({
-    error: 'Method not allowed',
+    error: "Method not allowed",
   });
 });
 
-export default router.handler({
-  onError(err, req, res) {
-    console.error(err);
-    res.status(500).json(response.serverError());
-  },
-});
+export default router.handler();
