@@ -100,7 +100,7 @@ export async function loadUserBadges(
     for (let c of results[0].data) {
       maxLv = -Infinity;
       for (let k of Object.keys(c.series)) {
-        if (c.series[k].claimed_time != null) {
+        if (Number(k) > maxLv && c.series[k].claimed_time != null) {
           maxLv = Number(k);
         }
       }
