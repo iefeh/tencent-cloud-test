@@ -3,7 +3,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Modal, ModalBody, ModalContent, cn } from '@nextui-org/react';
 import { divide, throttle } from 'lodash';
 import Image from 'next/image';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import helpIcon from 'img/profile/badges/icon_help.png';
 import arrowIcon from 'img/profile/badges/icon_arrow.png';
 
@@ -131,7 +131,7 @@ export default function BadgeModal(props: Props) {
                       if (!serie) return null;
 
                       return (
-                        <>
+                        <Fragment key={index}>
                           {index > 0 && item.series?.[index - 1] && (
                             <Image
                               className="w-[0.875rem] h-4 mt-7 mx-1"
@@ -164,7 +164,7 @@ export default function BadgeModal(props: Props) {
                               LV.{serie.lv || item.lv || '--'}
                             </p>
                           </div>
-                        </>
+                        </Fragment>
                       );
                     })}
                   </div>
