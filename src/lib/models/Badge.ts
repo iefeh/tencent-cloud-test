@@ -37,6 +37,8 @@ export type BadgeSeries = {
   image_url: string;
   // 系列达成条件
   requirements: Requirement[];
+  // 奖励的MB数量
+  reward_moon_beam: number;
   // 是否开放mint，当开放mint时，会在用户claim徽章后，生成用户徽章的mint记录.
   open_for_mint: boolean;
 };
@@ -65,8 +67,6 @@ export type UserMetricRequirement = {
   metric: Metric;
   operator: '==' | '>=' | '<=' | '>' | '<';
   value: boolean | number | string;
-  // 奖励的MB数量
-  reward_moon_beam: number;
 };
 
 const BadgesSchema = new Schema<IBadges>({
