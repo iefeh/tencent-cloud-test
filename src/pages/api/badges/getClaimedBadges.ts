@@ -109,14 +109,21 @@ export async function loadUserBadges(
       }
 
       let orgBadgeData = c.badge_info[0].series[String(maxLv)];
+      
       c.lv = maxLv;
       c.description = orgBadgeData.description;
       c.icon_url = orgBadgeData.icon_url;
       c.image_url = orgBadgeData.image_url;
       c.name = c.badge_info[0].name;
       c.has_series = Object.keys(c.badge_info[0].series).length > 1;
+      
+      let series:any[] = [];
+      for ( let s of Object.keys(c.series) ){
+          c.series[s].lv = s;
+          series.push(c.series[s])
+      }
+      c.series = series;
       data.push(c);
-      // delete c.series;
       delete c.badge_info;
     }
   }
