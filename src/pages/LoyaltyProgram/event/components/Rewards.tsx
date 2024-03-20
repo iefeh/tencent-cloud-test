@@ -36,7 +36,7 @@ export default function Rewards(props: Props) {
 
       <div className="border-1 border-basic-gray rounded-[0.625rem] overflow-hidden mt-[1.625rem]">
         <Image
-          className="w-[25.625rem] h-[25.625rem]"
+          className="w-[25.625rem] h-[25.625rem] object-contain"
           src={item?.rewards?.[0]?.image_medium || rewardImg}
           alt=""
           width={410}
