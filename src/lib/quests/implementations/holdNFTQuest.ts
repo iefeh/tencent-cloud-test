@@ -6,7 +6,7 @@ import { AuthorizationType } from '@/lib/authorization/types';
 import { checkClaimableResult, claimRewardResult, HoldNFT } from '@/lib/quests/types';
 import logger from '@/lib/logger/winstonLogger';
 import UserMetrics, { Metric } from '@/lib/models/UserMetrics';
-import {sendBadgeCheckMessage} from '@/lib/kafka/client';
+import { sendBadgeCheckMessages } from '@/lib/kafka/client';
 import { ClientSession } from 'mongoose';
 
 export class HoldNFTQuest extends QuestBase {
@@ -44,7 +44,10 @@ export class HoldNFTQuest extends QuestBase {
     const updateMetric = this.checkUserMetric(userId);
     await super.addUserAchievement(userId, verified, updateMetric);
     if (updateMetric) {
-      await sendBadgeCheckMessage(userId, Metric.TetraHolder);
+      await sendBadgeCheckMessages(userId, {
+        [Metric.TetraHolder]: 1,
+        [Metric.WalletConnected]: 1,
+      });
     }
   }
 
@@ -69,7 +72,10 @@ export class HoldNFTQuest extends QuestBase {
       await UserMetrics.updateOne(
         { user_id: userId },
         {
-          $set: { tetra_holder: hold_nft },
+          $set: {
+            [Metric.TetraHolder]: hold_nft,
+            [Metric.WalletConnected]: 1,
+          },
           $setOnInsert: {
             created_time: Date.now(),
           },
@@ -111,7 +117,10 @@ export class HoldNFTQuest extends QuestBase {
       };
     }
     if (updateNFTHolber) {
-      await sendBadgeCheckMessage(userId, Metric.TetraHolder);
+      await sendBadgeCheckMessages(userId, {
+        [Metric.TetraHolder]: 1,
+        [Metric.WalletConnected]: 1,
+      });
     }
     return {
       verified: result.done,

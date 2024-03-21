@@ -8,7 +8,7 @@ import { deleteAuthToken, isDiscordAuthRevokedError } from '@/lib/authorization/
 import * as Sentry from '@sentry/nextjs';
 import UserMetrics, { IUserMetrics, Metric } from '@/lib/models/UserMetrics';
 import { QuestBase } from './base';
-import { sendBadgeCheckMessage } from '@/lib/kafka/client';
+import { sendBadgeCheckMessage, sendBadgeCheckMessages } from '@/lib/kafka/client';
 import { ClientSession } from 'mongoose';
 
 export class JoinDiscordServerQuest extends QuestBase {
@@ -71,7 +71,10 @@ export class JoinDiscordServerQuest extends QuestBase {
     const questProp = this.quest.properties as JoinDiscordServer;
     const joinServerMetric = this.joinServerMetrics.get(questProp.guild_id);
     if (joinServerMetric) {
-      await sendBadgeCheckMessage(userId, joinServerMetric);
+      await sendBadgeCheckMessages(userId, {
+        [joinServerMetric]: 1,
+        [Metric.DiscordConnected]: 1,
+      });
     }
   }
 
@@ -84,7 +87,10 @@ export class JoinDiscordServerQuest extends QuestBase {
         await UserMetrics.updateOne(
           { user_id: userId },
           {
-            $set: { [joinServerMetric]: 1 },
+            $set: { 
+              [joinServerMetric]: 1,
+              [Metric.DiscordConnected]: 1,
+            },
             $setOnInsert: {
               created_time: Date.now(),
             },
@@ -119,9 +125,7 @@ export class JoinDiscordServerQuest extends QuestBase {
         tip: 'The Discord Account has already claimed reward.',
       };
     }
-    if (updateMetric) {
-      await sendBadgeCheckMessage(userId, Metric.DiscordJoinedMoonveil);
-    }
+    await this.sendBadgeCheckMessage(userId);
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,
