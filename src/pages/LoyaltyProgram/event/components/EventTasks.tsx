@@ -39,6 +39,7 @@ const EVENT_ICON_DICT: Dict<string> = {
   [QuestType.FollowOnTwitter]: 'twitter_colored',
   [QuestType.RetweetTweet]: 'twitter_colored',
   [QuestType.LikeTwitter]: 'twitter_colored',
+  [QuestType.CommentTweet]: 'twitter_colored',
   [QuestType.JOIN_DISCORD_SERVER]: 'discord_colored',
   [QuestType.HoldDiscordRole]: 'discord_colored',
   [QuestType.SEND_DISCORD_MESSAGE]: 'discord_colored',
