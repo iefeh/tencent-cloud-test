@@ -2,6 +2,7 @@ import { BadgeItem, claimBadgeAPI, mintBadgeAPI, queryBadgesPageListAPI } from '
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function useMyBadges() {
   const MIN_TOTAL = 36;
@@ -46,6 +47,9 @@ export default function useMyBadges() {
 
     const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv });
     if (res) {
+      if (res.result) {
+        toast.success(res.result);
+      }
       await queryMyBadges();
     }
     setClaimLoaing(false);

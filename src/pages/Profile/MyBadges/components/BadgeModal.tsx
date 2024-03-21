@@ -142,7 +142,7 @@ export default function BadgeModal(props: Props) {
                             />
                           )}
 
-                          <div className={cn(['flex flex-col items-center', serie.obtained_time || 'grayscale'])}>
+                          <div className="flex flex-col items-center">
                             <Image
                               className={cn([
                                 'w-[4.375rem] h-[4.375rem] object-contain',
