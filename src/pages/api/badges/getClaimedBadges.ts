@@ -84,6 +84,8 @@ export async function loadUserBadges(
         display: 1,
         display_order: 1,
         series: 1,
+        created_time: 1,
+        updated_time: 1,
         badge_info: '$badge_info',
       },
     },
@@ -109,22 +111,27 @@ export async function loadUserBadges(
       }
 
       let maxLvBadgeData = c.badge_info[0].series[String(maxLv)];
+      let maxLvClaimedTime = c.series[String(maxLv)];
 
       c.lv = maxLv;
       c.description = maxLvBadgeData.description;
       c.icon_url = maxLvBadgeData.icon_url;
       c.image_url = maxLvBadgeData.image_url;
       c.name = c.badge_info[0].name;
+      // c.claimed_time = maxLvClaimedTime.claimed_time;
+      // c.obtained_time = maxLvClaimedTime.obtained_time;
       c.has_series = Object.keys(c.badge_info[0].series).length > 1;
 
       let series: any[] = [];
       maxLvBadgeData.lv = maxLv;
       maxLvBadgeData.name = c.name;
+      maxLvBadgeData.claimed_time = maxLvClaimedTime.claimed_time;
+      maxLvBadgeData.obtained_time = maxLvClaimedTime.obtained_time;
       delete maxLvBadgeData.requirements;
       delete maxLvBadgeData.reward_moon_beam;
       delete maxLvBadgeData.open_for_mint;
       series.push(maxLvBadgeData);
-    
+
       let nextLvBadgeData = c.badge_info[0].series[String(maxLv + 1)];
       if (nextLvBadgeData != undefined) {
         nextLvBadgeData.lv = maxLv + 1;
