@@ -129,7 +129,7 @@ export class RetweetTweetQuest extends QuestBase {
         { upsert: true, session: session },
       );
     });
-    sendBadgeCheckMessage(userId, Metric.RetweetCount);
+    await sendBadgeCheckMessage(userId, Metric.RetweetCount);
   }
 
   async claimReward(userId: string): Promise<claimRewardResult> {
@@ -163,7 +163,7 @@ export class RetweetTweetQuest extends QuestBase {
         tip: 'The Twitter Account has already claimed reward.',
       };
     }
-    sendBadgeCheckMessage(userId,Metric.RetweetCount);
+    await sendBadgeCheckMessage(userId,Metric.RetweetCount);
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,

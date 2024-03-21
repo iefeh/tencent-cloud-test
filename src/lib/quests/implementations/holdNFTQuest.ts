@@ -6,7 +6,7 @@ import { AuthorizationType } from '@/lib/authorization/types';
 import { checkClaimableResult, claimRewardResult, HoldNFT } from '@/lib/quests/types';
 import logger from '@/lib/logger/winstonLogger';
 import UserMetrics, { Metric } from '@/lib/models/UserMetrics';
-import { sendBadgeCheckMessages } from '@/lib/kafka/client';
+import {sendBadgeCheckMessage} from '@/lib/kafka/client';
 import { ClientSession } from 'mongoose';
 
 export class HoldNFTQuest extends QuestBase {
@@ -42,10 +42,9 @@ export class HoldNFTQuest extends QuestBase {
 
   async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
     const updateMetric = this.checkUserMetric(userId);
-    super.addUserAchievement(userId, verified, updateMetric);
+    await super.addUserAchievement(userId, verified, updateMetric);
     if (updateMetric) {
-      //发送该徽章检查消息.同时检查这两个指标，判断是否符合下发徽章的条件，指标值不会发送到后台进行检查。
-      sendBadgeCheckMessages(userId, { [Metric.TetraHolder]: 1, [Metric.WalletNftUsdValue]: 1 });
+      await sendBadgeCheckMessage(userId, Metric.TetraHolder);
     }
   }
 
@@ -112,8 +111,7 @@ export class HoldNFTQuest extends QuestBase {
       };
     }
     if (updateNFTHolber) {
-      //发送该徽章检查消息.同时检查这两个指标，判断是否符合下发徽章的条件，指标值不会发送到后台进行检查。
-      sendBadgeCheckMessages(userId, { [Metric.TetraHolder]: 1, [Metric.WalletNftUsdValue]: 1 });
+      await sendBadgeCheckMessage(userId, Metric.TetraHolder);
     }
     return {
       verified: result.done,

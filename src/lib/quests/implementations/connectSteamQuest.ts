@@ -9,7 +9,6 @@ import {v4 as uuidv4} from "uuid";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import {chunkArray} from "@/lib/common/url";
 import SteamUserGame, {ISteamUserGame} from "@/lib/models/SteamUserGame";
-import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
 import { sendBadgeCheckMessage, sendBadgeCheckMessages } from "@/lib/kafka/client";
 
@@ -27,7 +26,7 @@ export class ConnectSteamQuest extends QuestBase {
     }
 
     async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
-        super.addUserAchievement(userId, verified, async (session) => {
+        await super.addUserAchievement(userId, verified, async (session) => {
             await UserMetrics.updateOne(
                 { user_id: userId },
                 {
@@ -39,7 +38,7 @@ export class ConnectSteamQuest extends QuestBase {
                 { upsert: true, session: session },
             );
         });
-        sendBadgeCheckMessage(userId, Metric.SteamConnected);
+        await sendBadgeCheckMessage(userId, Metric.SteamConnected);
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
@@ -78,7 +77,7 @@ export class ConnectSteamQuest extends QuestBase {
                 tip: "The Steam Account has already claimed reward.",
             }
         }
-        sendBadgeCheckMessage(userId, Metric.SteamConnected);
+        await sendBadgeCheckMessage(userId, Metric.SteamConnected);
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
@@ -136,8 +135,7 @@ export class ConnectSteamQuest extends QuestBase {
             );
         });
 
-        sendBadgeCheckMessages(userId,userMetric);
-
+        await sendBadgeCheckMessages(userId,userMetric);
         return {
             userMetric: userMetric
         };

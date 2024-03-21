@@ -57,16 +57,16 @@ export class FollowOnTwitterQuest extends QuestBase {
   async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
     // 检查是否触发关注指标
     const updateMetric = this.checkUserMetric(userId);
-    super.addUserAchievement(userId, verified, updateMetric);
+    await super.addUserAchievement(userId, verified, updateMetric);
     // 检查当前满足的指标并发送消息
-    this.sendBadgeCheckMessage(userId);
+    await this.sendBadgeCheckMessage(userId);
   }
 
   private async sendBadgeCheckMessage(userId: string) {
     const questProp = this.quest.properties as FollowOnTwitter;
     const followMetric = this.followMetrics.get(questProp.username);
     if (followMetric) {
-      sendBadgeCheckMessage(userId, followMetric);
+      await sendBadgeCheckMessage(userId, followMetric);
     }
   }
 
@@ -101,7 +101,7 @@ export class FollowOnTwitterQuest extends QuestBase {
       };
     }
     // 检查当前满足的指标并发送消息
-    this.sendBadgeCheckMessage(userId);
+    await this.sendBadgeCheckMessage(userId);
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,

@@ -1,7 +1,7 @@
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, UserMetric} from "@/lib/quests/types";
-import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import UserMetrics from "@/lib/models/UserMetrics";
 import logger from "@/lib/logger/winstonLogger";
 import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
@@ -40,8 +40,8 @@ export class UserMetricQuest extends QuestBase {
     }
 
     async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
-        super.addUserAchievement(userId, verified);
-        sendBadgeCheckMessage(userId, this.properties.metric);
+        await super.addUserAchievement(userId, verified);
+        await sendBadgeCheckMessage(userId, this.properties.metric);
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
@@ -69,7 +69,7 @@ export class UserMetricQuest extends QuestBase {
                 tip: "You have already claimed reward.",
             }
         }
-        sendBadgeCheckMessage(userId, this.properties.metric);
+        await sendBadgeCheckMessage(userId, this.properties.metric);
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,

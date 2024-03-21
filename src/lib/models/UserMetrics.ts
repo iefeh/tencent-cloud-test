@@ -138,7 +138,7 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
     { upsert: true },
   );
 
-  sendBadgeCheckMessage(userId, metric);
+  await sendBadgeCheckMessage(userId, metric);
   return result;
 }
 
@@ -157,7 +157,7 @@ export async function createUserMetrics(userId: string, metrics: { [key: string]
     { upsert: true },
   );
 
-  sendBadgeCheckMessages(userId, setOperations);
+  await sendBadgeCheckMessages(userId, setOperations);
 
   return result;
 }
