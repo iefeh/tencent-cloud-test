@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 
 const ROUTE_DICT: Dict<string> = {
   '/Profile': 'User Center',
+  '/Profile/edit': 'Edit',
   '/Profile/MyBadges': 'My Badges',
   '/Profile/MyAssets': 'My Asset',
   '/LoyaltyProgram/earn': 'Earn Moon Beams',
