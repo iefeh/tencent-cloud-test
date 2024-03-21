@@ -7,6 +7,7 @@
   --background-rgb: 0, 0, 0;
   --basic-yellow: #f6c799;
   background-color: #000;
+  font-family: poppins;
 }
 
 body {
@@ -111,10 +112,25 @@ body {
   }
 }
 
-*::-webkit-scrollbar{
+*::-webkit-scrollbar {
   display: none;
 }
 
 * {
   scrollbar-width: none;
+}
+
+li::marker {
+  display: none;
+  content: '';
+}
+
+/** 隐藏音量控制 */
+.vjs-volume-panel {
+  display: none !important;
+}
+
+/** 隐藏画中画控制 */
+.vjs-picture-in-picture-control {
+  display: none !important;
 }

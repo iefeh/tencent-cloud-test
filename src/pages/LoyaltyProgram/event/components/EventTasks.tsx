@@ -39,6 +39,7 @@ const EVENT_ICON_DICT: Dict<string> = {
   [QuestType.FollowOnTwitter]: 'twitter_colored',
   [QuestType.RetweetTweet]: 'twitter_colored',
   [QuestType.LikeTwitter]: 'twitter_colored',
+  [QuestType.CommentTweet]: 'twitter_colored',
   [QuestType.JOIN_DISCORD_SERVER]: 'discord_colored',
   [QuestType.HoldDiscordRole]: 'discord_colored',
   [QuestType.SEND_DISCORD_MESSAGE]: 'discord_colored',
@@ -48,7 +49,7 @@ const EVENT_ICON_DICT: Dict<string> = {
 function EventTasks(props: EventTaskProps) {
   const { item, updateTasks } = props;
   const isInProcessing = item?.status === EventStatus.ONGOING;
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
 
   function handleQuests(list: TaskItem[]) {
@@ -73,10 +74,10 @@ function EventTasks(props: EventTaskProps) {
             finishedLable: 'Followed',
           };
           break;
-        case QuestType.ASTRARK_PRE_REGISTER:
+        case QuestType.CommentTweet:
           item.connectTexts = {
-            label: 'Participate',
-            finishedLable: 'Participated',
+            label: 'Comment',
+            finishedLable: 'Commented',
           };
           break;
       }
@@ -167,6 +168,7 @@ function EventTasks(props: EventTaskProps) {
         } else {
           if (res.tip) toast.success(res.tip);
           updateTasks?.();
+          getUserInfo();
         }
       } catch (error: any) {
         if (error.tip) {

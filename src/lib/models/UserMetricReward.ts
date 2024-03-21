@@ -10,7 +10,10 @@ export enum UserMetricRewardType {
     Badges = "badges",
 }
 
-// 用户指标的范围奖励
+// 用户指标的奖励配置
+// 如奖励类型为moon_beams时，标识对应指标下发的MB奖励配置
+// 如奖励类型为badge时，仅用作倒排索引，标识某一个指标关联的徽章，即当前是 指标->徽章 的映射。
+// 所有指标类型徽章，如果有引起指标的事件发生，应当触发事件对应指标的奖励检查。
 export interface IUserMetricReward extends Document {
     // 奖励id
     id: string,
@@ -31,17 +34,16 @@ export type RewardItem = {
     require_metric_value: boolean | number | string;
     // 奖励的MB数量
     reward_moon_beam?: number;
-    // 奖励的对应徽章
+    // 指标奖励关联的徽章，仅在reward_type为badges时存在.
+    // 如奖励类型为badge时，仅用作倒排索引，标识某一个指标关联的徽章，即当前是 指标->徽章 的映射。
+    // 所有指标类型徽章，如果有引起指标的事件发生，应当触发事件对应指标的奖励检查。
     reward_badge_id?: string;
-    // 奖励的徽章等级
-    reward_badge_level?: number;
 }
 
 const rewardItemSchema = new Schema({
     require_metric_value: {type: Schema.Types.Mixed, required: true},
     reward_moon_beam: {type: Number},
     reward_badge_id: {type: String},
-    reward_badge_level: {type: Number},
 });
 
 const UserMetricRewardSchema = new Schema<IUserMetricReward>({

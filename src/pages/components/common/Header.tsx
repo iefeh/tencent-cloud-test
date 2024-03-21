@@ -59,6 +59,10 @@ const routeText: RouteMenu[] = [
       //   name: 'Mint Now',
       //   route: '/NFT/Mint',
       // },
+      // {
+      //   name: 'TETRA NFT Merge',
+      //   route: '/NFT/Merge',
+      // },
     ],
   },
   {
@@ -165,7 +169,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="font-semakin flex items-center max-lg:hidden">
+      <div className="font-semakin flex items-center max-xl:hidden">
         {routeText.map((value, index) =>
           value.children ? (
             <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} onLinkClick={onLinkClick} />

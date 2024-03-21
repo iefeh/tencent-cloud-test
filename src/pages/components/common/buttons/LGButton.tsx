@@ -2,7 +2,7 @@
 
 import { Button, cn } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { HTMLAttributeAnchorTarget, useEffect, useRef } from 'react';
 
 interface Props {
   label: string;
@@ -11,7 +11,9 @@ interface Props {
   loading?: boolean;
   actived?: boolean;
   disabled?: boolean;
+  linearDisabled?: boolean;
   squared?: boolean;
+  target?: HTMLAttributeAnchorTarget;
   onClick?: () => void;
   hasCD?: boolean;
   cd?: number;
@@ -21,12 +23,26 @@ interface Props {
 }
 
 export default function LGButton(props: Props) {
-  const { loading, actived, disabled, onClick, link, squared, prefix, suffix, hasCD, cd = 10, onCDOver } = props;
+  const {
+    loading,
+    actived,
+    disabled,
+    linearDisabled,
+    onClick,
+    link,
+    target,
+    squared,
+    prefix,
+    suffix,
+    hasCD,
+    cd = 10,
+    onCDOver,
+  } = props;
   const router = useRouter();
   const onLinkClick = () => {
     if (!link) return;
 
-    if (/^http/.test(link)) {
+    if (/^http/.test(link) || target === '_blank') {
       window.open(link);
     } else {
       router.push(link);
@@ -79,6 +95,10 @@ export default function LGButton(props: Props) {
           actived &&
           'border-none px-[calc(1.5rem_+_2px)] py-[calc(0.25rem_+_2px)] text-black bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
         disabled && 'text-[#999] border-[#999] opacity-100',
+        disabled &&
+          (linearDisabled
+            ? 'bg-[linear-gradient(80deg,#666666,#424242)] border-none px-[calc(1.5rem_+_2px)] py-[calc(0.25rem_+_2px)]'
+            : 'text-[#999] border-[#999] opacity-100'),
         squared ? 'rounded-[0.625rem]' : 'rounded-3xl',
         props.className,
       ])}
