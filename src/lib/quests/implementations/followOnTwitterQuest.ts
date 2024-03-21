@@ -3,8 +3,8 @@ import { FollowOnTwitter, checkClaimableResult, claimRewardResult } from '@/lib/
 import UserTwitter from '@/lib/models/UserTwitter';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { QuestBase } from './base';
-import UserMetrics, { Metric, IUserMetrics } from '@/lib/models/UserMetrics';
-import { sendBadgeCheckMessage } from '@/lib/kafka/client';
+import UserMetrics, { Metric } from '@/lib/models/UserMetrics';
+import { sendBadgeCheckMessages } from '@/lib/kafka/client';
 import { ClientSession } from 'mongoose';
 
 export class FollowOnTwitterQuest extends QuestBase {
@@ -41,7 +41,10 @@ export class FollowOnTwitterQuest extends QuestBase {
         await UserMetrics.updateOne(
           { user_id: userId },
           {
-            $set: { [followMetric]: 1 },
+            $set: { 
+              [followMetric]: 1,
+              [Metric.TwitterConnected]:1,
+            },
             $setOnInsert: {
               created_time: Date.now(),
             },
@@ -66,7 +69,10 @@ export class FollowOnTwitterQuest extends QuestBase {
     const questProp = this.quest.properties as FollowOnTwitter;
     const followMetric = this.followMetrics.get(questProp.username);
     if (followMetric) {
-      await sendBadgeCheckMessage(userId, followMetric);
+      await sendBadgeCheckMessages(userId, {
+        [followMetric]: 1,
+        [Metric.TwitterConnected]: 1,
+      });
     }
   }
 

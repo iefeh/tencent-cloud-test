@@ -8,6 +8,8 @@ import {deleteAuthToken} from "@/lib/authorization/provider/util";
 import {redis} from "@/lib/redis/client";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import logger from "@/lib/logger/winstonLogger";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 
 export class LikeTweetQuest extends QuestBase {
@@ -83,6 +85,22 @@ export class LikeTweetQuest extends QuestBase {
         }
     }
 
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        await super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.TwitterConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        await sendBadgeCheckMessage(userId, Metric.TwitterConnected);
+    }
+
     async claimReward(userId: string): Promise<claimRewardResult> {
         const claim = await this.checkClaimable(userId);
         if (!claim.claimable) {
@@ -102,6 +120,7 @@ export class LikeTweetQuest extends QuestBase {
                 tip: "The Twitter Account has already claimed reward.",
             }
         }
+        await sendBadgeCheckMessage(userId, Metric.TwitterConnected);
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,

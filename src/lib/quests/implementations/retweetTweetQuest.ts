@@ -11,7 +11,7 @@ import { deleteAuthToken } from '@/lib/authorization/provider/util';
 import { redis } from '@/lib/redis/client';
 import { QuestBase } from '@/lib/quests/implementations/base';
 import logger from '@/lib/logger/winstonLogger';
-import { sendBadgeCheckMessage } from '@/lib/kafka/client';
+import { sendBadgeCheckMessages } from '@/lib/kafka/client';
 
 export class RetweetTweetQuest extends QuestBase {
   constructor(quest: IQuest) {
@@ -129,7 +129,10 @@ export class RetweetTweetQuest extends QuestBase {
         { upsert: true, session: session },
       );
     });
-    await sendBadgeCheckMessage(userId, Metric.RetweetCount);
+    await sendBadgeCheckMessages(userId, {
+      [Metric.RetweetCount]: 1,
+      [Metric.TwitterConnected]: 1,
+    });
   }
 
   async claimReward(userId: string): Promise<claimRewardResult> {
@@ -163,7 +166,10 @@ export class RetweetTweetQuest extends QuestBase {
         tip: 'The Twitter Account has already claimed reward.',
       };
     }
-    await sendBadgeCheckMessage(userId,Metric.RetweetCount);
+    await sendBadgeCheckMessages(userId, {
+      [Metric.RetweetCount]: 1,
+      [Metric.TwitterConnected]: 1,
+    });
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,
