@@ -95,7 +95,7 @@ export async function loadUserBadges(
   ];
   const results = await UserBadges.aggregate(aggregateQuery);
   let maxLv: number;
-  let data:any[] = [];
+  let data: any[] = [];
   if (results.length > 0) {
     for (let c of results[0].data) {
       maxLv = -Infinity;
@@ -108,19 +108,31 @@ export async function loadUserBadges(
         continue;
       }
 
-      let orgBadgeData = c.badge_info[0].series[String(maxLv)];
-      
+      let maxLvBadgeData = c.badge_info[0].series[String(maxLv)];
+
       c.lv = maxLv;
-      c.description = orgBadgeData.description;
-      c.icon_url = orgBadgeData.icon_url;
-      c.image_url = orgBadgeData.image_url;
+      c.description = maxLvBadgeData.description;
+      c.icon_url = maxLvBadgeData.icon_url;
+      c.image_url = maxLvBadgeData.image_url;
       c.name = c.badge_info[0].name;
       c.has_series = Object.keys(c.badge_info[0].series).length > 1;
-      
-      let series:any[] = [];
-      for ( let s of Object.keys(c.series) ){
-          c.series[s].lv = s;
-          series.push(c.series[s])
+
+      let series: any[] = [];
+      maxLvBadgeData.lv = maxLv;
+      maxLvBadgeData.name = c.name;
+      delete maxLvBadgeData.requirements;
+      delete maxLvBadgeData.reward_moon_beam;
+      delete maxLvBadgeData.open_for_mint;
+      series.push(maxLvBadgeData);
+    
+      let nextLvBadgeData = c.badge_info[0].series[String(maxLv + 1)];
+      if (nextLvBadgeData != undefined) {
+        nextLvBadgeData.lv = maxLv + 1;
+        nextLvBadgeData.name = c.name;
+        delete nextLvBadgeData.requirements;
+        delete nextLvBadgeData.reward_moon_beam;
+        delete nextLvBadgeData.open_for_mint;
+        series.push(nextLvBadgeData);
       }
       c.series = series;
       data.push(c);
