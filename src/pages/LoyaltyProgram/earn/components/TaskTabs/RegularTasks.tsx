@@ -49,7 +49,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const pagiInfo = useRef<PagiInfo>({
@@ -218,6 +218,7 @@ function RegularTasks() {
         } else {
           if (res.tip) toast.success(res.tip);
           updateTask();
+          getUserInfo();
         }
       } catch (error: any) {
         if (error.tip) {

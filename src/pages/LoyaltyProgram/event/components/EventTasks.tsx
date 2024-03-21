@@ -48,7 +48,7 @@ const EVENT_ICON_DICT: Dict<string> = {
 function EventTasks(props: EventTaskProps) {
   const { item, updateTasks } = props;
   const isInProcessing = item?.status === EventStatus.ONGOING;
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
 
   function handleQuests(list: TaskItem[]) {
@@ -167,6 +167,7 @@ function EventTasks(props: EventTaskProps) {
         } else {
           if (res.tip) toast.success(res.tip);
           updateTasks?.();
+          getUserInfo();
         }
       } catch (error: any) {
         if (error.tip) {
