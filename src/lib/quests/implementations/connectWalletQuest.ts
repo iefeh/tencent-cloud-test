@@ -39,7 +39,7 @@ export class ConnectWalletQuest extends QuestBase {
     }
 
     async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
-        super.addUserAchievement(userId, verified, async (session) => {
+        await super.addUserAchievement(userId, verified, async (session) => {
             await UserMetrics.updateOne(
                 { user_id: userId },
                 {
@@ -51,7 +51,7 @@ export class ConnectWalletQuest extends QuestBase {
                 { upsert: true, session: session },
             );
         });
-        sendBadgeCheckMessage(userId, Metric.WalletConnected);
+        await sendBadgeCheckMessage(userId, Metric.WalletConnected);
     }
 
     async reClaimReward(userId: string): Promise<claimRewardResult> {
@@ -278,7 +278,7 @@ export class ConnectWalletQuest extends QuestBase {
             );
         });
 
-        sendBadgeCheckMessages(userId,userMetric);
+        await sendBadgeCheckMessages(userId,userMetric);
 
         return {
             userMetric: userMetric,

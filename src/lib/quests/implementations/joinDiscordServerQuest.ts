@@ -63,15 +63,15 @@ export class JoinDiscordServerQuest extends QuestBase {
 
   async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
     const updateMetric = this.checkUserMetric(userId);
-    super.addUserAchievement(userId, verified, updateMetric);
-    this.sendBadgeCheckMessage(userId);
+    await super.addUserAchievement(userId, verified, updateMetric);
+    await this.sendBadgeCheckMessage(userId);
   }
 
-  private sendBadgeCheckMessage(userId: string) {
+  private async sendBadgeCheckMessage(userId: string) {
     const questProp = this.quest.properties as JoinDiscordServer;
     const joinServerMetric = this.joinServerMetrics.get(questProp.guild_id);
     if (joinServerMetric) {
-      sendBadgeCheckMessage(userId, joinServerMetric);
+      await sendBadgeCheckMessage(userId, joinServerMetric);
     }
   }
 
@@ -120,7 +120,7 @@ export class JoinDiscordServerQuest extends QuestBase {
       };
     }
     if (updateMetric) {
-      sendBadgeCheckMessage(userId, Metric.DiscordJoinedMoonveil);
+      await sendBadgeCheckMessage(userId, Metric.DiscordJoinedMoonveil);
     }
     return {
       verified: result.done,

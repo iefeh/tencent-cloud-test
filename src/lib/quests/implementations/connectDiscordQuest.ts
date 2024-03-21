@@ -26,7 +26,7 @@ export class ConnectDiscordQuest extends QuestBase {
     }
 
     async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
-        super.addUserAchievement(userId, verified, async (session) => {
+        await super.addUserAchievement(userId, verified, async (session) => {
             await UserMetrics.updateOne(
                 { user_id: userId },
                 {
@@ -38,7 +38,7 @@ export class ConnectDiscordQuest extends QuestBase {
                 { upsert: true, session: session },
             );
         });
-        sendBadgeCheckMessage(userId, Metric.DiscordConnected);
+        await sendBadgeCheckMessage(userId, Metric.DiscordConnected);
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
@@ -66,7 +66,7 @@ export class ConnectDiscordQuest extends QuestBase {
             );
           });
        
-        sendBadgeCheckMessage(userId, Metric.DiscordConnected);
+        await sendBadgeCheckMessage(userId, Metric.DiscordConnected);
         
         if (result.duplicated) {
             return {

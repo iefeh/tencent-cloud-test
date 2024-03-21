@@ -1,5 +1,5 @@
 import {IQuest} from "@/lib/models/Quest";
-import {HoldDiscordRole, checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
+import {HoldDiscordRole, checkClaimableResult} from "@/lib/quests/types";
 import {ConnectDiscordQuest, queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
