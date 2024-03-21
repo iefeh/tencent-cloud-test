@@ -4,11 +4,20 @@ import BasicBadge from '@/pages/components/common/badges/BasicBadge';
 import { Popover, PopoverContent, PopoverTrigger, cn } from '@nextui-org/react';
 import { debounce, throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
-import { FC, useEffect, useMemo, useState } from 'react';
+import {
+  ForwardRefRenderFunction,
+  RefObject,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import useSort from '../MyBadges/hooks/useSort';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
+  ref?: RefObject<DisplayBadgesRef>;
   className?: string;
   loading?: boolean;
   items?: (BadgeItem | null)[];
@@ -17,7 +26,14 @@ interface Props {
   onDisplayed?: () => void;
 }
 
-const DisplayBadgesPopover: FC<Props> = ({ className, items, onView, onDisplayed, onSort }) => {
+export interface DisplayBadgesRef {
+  update: () => void;
+}
+
+const DisplayBadgesPopover: ForwardRefRenderFunction<DisplayBadgesRef, Props> = (
+  { className, items, onView, onDisplayed, onSort },
+  ref,
+) => {
   const { data, scrollRef, queryData, loading } = useScrollLoad<BadgeItem>({
     minCount: 10,
     pageSize: 20,
@@ -46,6 +62,8 @@ const DisplayBadgesPopover: FC<Props> = ({ className, items, onView, onDisplayed
   useEffect(() => {
     queryData(true);
   }, [items]);
+
+  useImperativeHandle(ref, () => ({ update: queryData }));
 
   const SinglePopover = ({ item }: { item: BadgeItem | null }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -96,4 +114,4 @@ const DisplayBadgesPopover: FC<Props> = ({ className, items, onView, onDisplayed
   );
 };
 
-export default observer(DisplayBadgesPopover);
+export default observer(forwardRef(DisplayBadgesPopover));

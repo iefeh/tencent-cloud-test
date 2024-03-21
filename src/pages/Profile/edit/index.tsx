@@ -14,7 +14,7 @@ export default function ProfileEditPage() {
         <title>User Center | Moonveil Entertainment</title>
       </Head>
 
-      <AutoBreadcrumbs />
+      <AutoBreadcrumbs hrefs={['/Profile']} />
 
       <ProfileEdit />
 

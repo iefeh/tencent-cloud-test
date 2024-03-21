@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
-import DisplayBadges from '../components/DisplayBadges';
+import DisplayBadges, { type DisplayBadgesRef } from '../components/DisplayBadges';
 import MyBadges from './components/MyBadges';
 import useMyBadges from './hooks/useMyBadges';
 import useDisplayBadges from './hooks/useDisplayBadges';
@@ -27,6 +27,7 @@ function MyBadgesPage() {
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bsRef = useRef<BScroll | null>(null);
+  const dbRef = useRef<DisplayBadgesRef>(null);
 
   const updateBadges = throttle(async () => {
     await Promise.all([queryDisplayBadges(), queryMyBadges()]);
@@ -46,6 +47,11 @@ function MyBadgesPage() {
     await toggleBadgeDisplayAPI(id, display);
     await updateBadges();
   }
+
+  const onClaimBadge = throttle(async (item: BadgeItem) => {
+    await claimBadge(item);
+    await dbRef.current?.update();
+  }, 500);
 
   useEffect(() => {
     if (!currentItem) return;
@@ -82,6 +88,7 @@ function MyBadgesPage() {
 
         <div ref={scrollRef} className="w-full overflow-hidden relative">
           <DisplayBadges
+            ref={dbRef}
             className={cn(['justify-start mt-10', isMobile ? 'w-max' : 'w-min'])}
             items={displayBadges}
             loading={displayLoaidng}
@@ -96,7 +103,7 @@ function MyBadgesPage() {
         total={total}
         badges={badges}
         loading={fullQueryLoading}
-        onClaim={claimBadge}
+        onClaim={onClaimBadge}
         onMint={mintBadge}
         onView={onView}
       />
@@ -106,7 +113,7 @@ function MyBadgesPage() {
         disclosure={modalDisclosure}
         canDisplay={validCount < MAX_DISPLAY_COUNT}
         onToggleDisplay={onToggleDisplay}
-        onClaim={claimBadge}
+        onClaim={onClaimBadge}
         onMint={mintBadge}
       />
     </section>
