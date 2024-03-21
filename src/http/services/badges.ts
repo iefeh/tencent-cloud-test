@@ -41,7 +41,7 @@ export function queryCanDisplayBadgesAPI(params: PageQueryDto): Promise<PageResD
   return http.get('/api/badges/getClaimedBadges', { params });
 }
 
-export function claimBadgeAPI(data: { badge_id: string; badge_lv: number }): Promise<boolean> {
+export function claimBadgeAPI(data: { badge_id: string; badge_lv: number }): Promise<{ result: string }> {
   return http.post('/api/badges/claim', JSON.stringify(data));
 }
 

@@ -23,8 +23,8 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
   const validSerie = series?.[0] || series?.[1];
   const { claimed_time, obtained_time, lv: bagLv, image_url: bagImageUrl, icon_url: bagIconUrl } = validSerie || {};
 
-  const claimed = !!display || !!claimed_time;
-  const achieved = !!display || !!obtained_time;
+  const claimed = !!claimed_time;
+  const achieved = !!obtained_time;
   const image_url = displayImageUrl || bagImageUrl;
   const icon_url = displayIconUrl || bagIconUrl;
   const lv = displayLv || bagLv;
