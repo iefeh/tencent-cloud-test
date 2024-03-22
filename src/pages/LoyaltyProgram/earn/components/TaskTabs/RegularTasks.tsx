@@ -49,7 +49,7 @@ interface TaskItem extends TaskListItem {
 }
 
 function RegularTasks() {
-  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
   const pagiInfo = useRef<PagiInfo>({
@@ -106,10 +106,10 @@ function RegularTasks() {
             finishedLable: 'Followed',
           };
           break;
-        case QuestType.ASTRARK_PRE_REGISTER:
+        case QuestType.CommentTweet:
           item.connectTexts = {
-            label: 'Participate',
-            finishedLable: 'Participated',
+            label: 'Comment',
+            finishedLable: 'Commented',
           };
           break;
       }
@@ -218,6 +218,7 @@ function RegularTasks() {
         } else {
           if (res.tip) toast.success(res.tip);
           updateTask();
+          getUserInfo();
         }
       } catch (error: any) {
         if (error.tip) {
@@ -230,7 +231,7 @@ function RegularTasks() {
     }
 
     function getConnectLabel(texts?: VerifyTexts) {
-      const { label, finishedLable } = texts || { label: 'Connect', finishedLable: 'Connected' };
+      const { label, finishedLable } = texts || { label: 'Participate', finishedLable: 'Participated' };
       if (task.verified || (task.achieved && !task.properties.is_prepared)) return finishedLable;
       return label;
     }
@@ -418,7 +419,7 @@ function RegularTasks() {
     }, []);
 
     return (
-      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500">
+      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
         <div className="text-xl">{task.name}</div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
@@ -483,6 +484,12 @@ function RegularTasks() {
             />
           </div>
         </div>
+
+        {task.is_new && (
+          <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute right-4 top-2 p-2 z-10">
+            NEW
+          </div>
+        )}
       </div>
     );
   };

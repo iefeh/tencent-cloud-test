@@ -4,7 +4,8 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import {AuthorizationType} from "@/lib/authorization/types";
-import logger from "@/lib/logger/winstonLogger";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 export class ConnectDiscordQuest extends QuestBase {
     // 用户的授权discord_id，在checkClaimable()时设置
@@ -24,6 +25,22 @@ export class ConnectDiscordQuest extends QuestBase {
         }
     }
 
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        await super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.DiscordConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        await sendBadgeCheckMessage(userId, Metric.DiscordConnected);
+    }
+
     async claimReward(userId: string): Promise<claimRewardResult> {
         const claimableResult = await this.checkClaimable(userId);
         if (!claimableResult.claimable) {
@@ -36,7 +53,21 @@ export class ConnectDiscordQuest extends QuestBase {
         // 污染discord，确保同一个discord单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Discord},${this.user_discord_id}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.DiscordConnected]: 1 },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+          });
+       
+        await sendBadgeCheckMessage(userId, Metric.DiscordConnected);
+        
         if (result.duplicated) {
             return {
                 verified: false,

@@ -2,13 +2,14 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, LikeTweet} from "@/lib/quests/types";
 import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitterQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
-import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import {twitterOAuthProvider} from "@/lib/authorization/provider/twitter";
 import {isAxiosError} from "axios";
 import {deleteAuthToken} from "@/lib/authorization/provider/util";
 import {redis} from "@/lib/redis/client";
 import {QuestBase} from "@/lib/quests/implementations/base";
 import logger from "@/lib/logger/winstonLogger";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 
 export class LikeTweetQuest extends QuestBase {
@@ -57,7 +58,7 @@ export class LikeTweetQuest extends QuestBase {
             const response = error.response!;
             // 当前无权限，移除用户的授权token
             if (response.status === 403 || response.data.error_description == "Value passed for the token was invalid.") {
-                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like invalidated: ${response.data}`);
+                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like invalidated: ${JSON.stringify(response.data)}`);
                 await deleteAuthToken(twitterAuth.token);
                 return {
                     claimable: false,
@@ -67,7 +68,7 @@ export class LikeTweetQuest extends QuestBase {
             }
             // 当前是否已经被限流，需要添加限流处理
             if (response.status === 429) {
-                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like rate limited: ${response.data}`);
+                logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} like rate limited: ${JSON.stringify(response.data)}`);
                 const resetAt = response.headers["x-rate-limit-reset"];
                 if (resetAt) {
                     const wait = Number(resetAt) - Math.ceil(Date.now() / 1000);
@@ -84,6 +85,22 @@ export class LikeTweetQuest extends QuestBase {
         }
     }
 
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        await super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.TwitterConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        await sendBadgeCheckMessage(userId, Metric.TwitterConnected);
+    }
+
     async claimReward(userId: string): Promise<claimRewardResult> {
         const claim = await this.checkClaimable(userId);
         if (!claim.claimable) {
@@ -96,25 +113,14 @@ export class LikeTweetQuest extends QuestBase {
         // 污染twitter，确保同一个twitter单任务只能获取一次奖励
         const taint = `${this.quest.id},${AuthorizationType.Twitter},${claim.extra}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        // retweet时额外添加用户的转推次数
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
-            await UserMetrics.updateOne(
-                {user_id: userId},
-                {
-                    $inc: {[Metric.RetweetCount]: 1},
-                    $setOnInsert: {
-                        "created_time": Date.now(),
-                    }
-                },
-                {upsert: true, session: session}
-            );
-        });
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {
             return {
                 verified: false,
                 tip: "The Twitter Account has already claimed reward.",
             }
         }
+        await sendBadgeCheckMessage(userId, Metric.TwitterConnected);
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,

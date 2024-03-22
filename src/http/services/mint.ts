@@ -10,22 +10,29 @@ export interface NFTItem {
   token_id: number;
   block_number: number;
   transaction_id: string;
+  contract_address?: string;
+  status?: string;
   transaction_status: string;
   token_metadata: TokenMetadata | null;
+  confirmed_time?: number;
 }
 
-interface NFTListDTO {
-  nfts: NFTItem[];
-  page_num: number;
-  page_size: number;
-  total: number;
-  wallet_connected: boolean;
+export interface MergeListItem extends NFTItem {
+  request_token_metadata: (TokenMetadata | null)[];
 }
 
-export function queryMyNFTListAPI(params: PageQueryDto): Promise<NFTListDTO> {
+export function queryMyNFTListAPI(params: PageQueryDto): Promise<PageResDTO<NFTItem> & { wallet_connected: boolean }> {
   return http.get('/api/users/nft/list', { params });
 }
 
 export function queryNFTInfoAPI(params: { tx_id: string }): Promise<{ nft: NFTItem | null }> {
   return http.get('/api/users/nft/tx', { params });
+}
+
+export function queryLatestMergeReqAPI(params: { tx_id?: string }): Promise<{ merge: NFTItem | null }> {
+  return http.get('/api/users/nft/merge_request/latest', { params });
+}
+
+export function queryMergeListAPI(params: PageQueryDto): Promise<PageResDTO<MergeListItem>> {
+  return http.get('/api/users/nft/merge_request/list', { params });
 }

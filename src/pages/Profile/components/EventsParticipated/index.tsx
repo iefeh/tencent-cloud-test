@@ -39,7 +39,7 @@ export default function EventsParticipated() {
   ]);
 
   return (
-    <div className="mt-[6.875rem]">
+    <div className="mt-20">
       <div className="mt-20 font-semakin text-2xl text-basic-yellow">Events Participated</div>
 
       <Table

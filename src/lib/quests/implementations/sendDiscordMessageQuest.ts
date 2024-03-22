@@ -1,17 +1,11 @@
 import {IQuest} from "@/lib/models/Quest";
 import {
-    HoldDiscordRole,
     checkClaimableResult,
-    claimRewardResult,
-    LikeTweet,
     SendDiscordMessage
 } from "@/lib/quests/types";
-import {ConnectDiscordQuest, queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
+import {ConnectDiscordQuest} from "@/lib/quests/implementations/connectDiscordQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
-import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
 import logger from "@/lib/logger/winstonLogger";
-import {deleteAuthToken, isDiscordAuthRevokedError} from "@/lib/authorization/provider/util";
-import * as Sentry from "@sentry/nextjs";
 import UserDiscord from "@/lib/models/UserDiscord";
 import GuildChannelMessage from "@/lib/models/GuildChannelMessage";
 

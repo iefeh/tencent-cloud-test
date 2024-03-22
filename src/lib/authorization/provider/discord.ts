@@ -16,6 +16,7 @@ import {
 } from "@/lib/authorization/provider/util";
 import UserDiscord from "@/lib/models/UserDiscord";
 import logger from "@/lib/logger/winstonLogger";
+import { Metric } from "@/lib/models/UserMetrics";
 
 const discordOAuthOps: OAuthOptions = {
     clientId: process.env.DISCORD_CLIENT_ID!,
@@ -69,6 +70,10 @@ export class DiscordAuthFlow extends AuthFlowBase {
 
     authorizationType(): AuthorizationType {
         return AuthorizationType.Discord;
+    }
+
+    authorizationMetric(): Metric {
+        return Metric.DiscordConnected;
     }
 
     async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {

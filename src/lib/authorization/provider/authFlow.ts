@@ -12,6 +12,8 @@ import * as Sentry from '@sentry/nextjs';
 import UserInvite from "@/lib/models/UserInvite";
 import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
 import {v4 as uuidv4} from "uuid";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import { tr } from "date-fns/locale";
 
 export interface ValidationResult {
     passed: boolean,
@@ -39,6 +41,9 @@ export abstract class AuthFlowBase {
 
     // 获取授权的类型
     abstract authorizationType(): AuthorizationType;
+
+    // 当前授权关联的指标
+    abstract authorizationMetric(): Metric;
 }
 
 export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: any) {
@@ -88,6 +93,7 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
     }
     // 创建新的用户绑定
     const newUserConnection = authFlow.constructUserConnection(authPayload.authorization_user_id!, authParty);
+    const userMetric = authFlow.authorizationMetric();
     try {
         await doTransaction(async (session) => {
             const opts = {session};
@@ -97,6 +103,19 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
                 await userConnection.save(opts);
             }
             await newUserConnection.save(opts);
+            // 更新用户授权指标
+            await UserMetrics.updateOne(
+                {user_id: authPayload.authorization_user_id!},
+                {
+                    $set: {
+                        [userMetric]: 1,
+                    },
+                    $setOnInsert: {
+                        "created_time": Date.now(),
+                    }
+                },
+                {upsert: true, session: session}
+            );
         });
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.success());
         res.redirect(landing_url);

@@ -1,4 +1,4 @@
-import { EventStatus, QuestType } from '@/constant/task';
+import { EVENT_REWARD_TYPE, EventStatus, QuestType } from '@/constant/task';
 import http from '../index';
 
 export interface TaskProperties {
@@ -31,6 +31,7 @@ export interface TaskListItem {
   started?: boolean;
   start_time?: number;
   started_after?: number;
+  is_new?: boolean;
 }
 
 export interface TaskListResDto {
@@ -101,7 +102,7 @@ export function queryInviteCodeAPI(): Promise<{ invite_code: string }> {
 }
 
 export interface EventReward {
-  type: string;
+  type: EVENT_REWARD_TYPE;
   name: string;
   image_small: string;
   image_medium: string;

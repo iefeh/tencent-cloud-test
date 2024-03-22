@@ -213,6 +213,18 @@ export default function useMint() {
     }
   }, 500);
 
+  const merge = throttle(async (ids: number[]) => {
+    try {
+      const transaction = await contract.current!.mergeRequest(ids);
+      const result = await transaction.wait();
+      console.log('merge result:', result);
+      return true;
+    } catch (error: any) {
+      toastError(error, 'merge');
+      return false;
+    }
+  }, 500);
+
   async function onButtonClick() {
     if (!isWalletConnected || !userInfo?.wallet) {
       onConnect();
@@ -246,6 +258,26 @@ export default function useMint() {
     toggleLoading(false);
   }
 
+  async function verifyMerge() {
+    if (!isWalletConnected || !userInfo?.wallet) {
+      onConnect();
+      return false;
+    }
+
+    if (!isNetCorrected) {
+      const res = await checkNetwork();
+      if (!res) {
+        await switchNetwork();
+      }
+      return false;
+    }
+
+    const res1 = await checkWallet(true);
+    if (!res1) return false;
+
+    return true;
+  }
+
   useEffect(() => {
     if (!userInfo || !walletProvider) return;
     init();
@@ -268,5 +300,5 @@ export default function useMint() {
     };
   }, []);
 
-  return { mintCount, setMintCount, onButtonClick };
+  return { mintCount, setMintCount, onButtonClick, verifyMerge, merge };
 }

@@ -66,6 +66,12 @@ import '@/styles/toastify.css';
 import { Web3ModalProvider } from '@/store/Web3Modal';
 import { NextUIProvider } from '@nextui-org/react';
 import { KEY_INVITE_CODE } from '@/constant/storage';
+import BetterScroll from 'better-scroll';
+import Pullup from '@better-scroll/pull-up';
+import MouseWheel from '@better-scroll/mouse-wheel';
+
+BetterScroll.use(MouseWheel);
+BetterScroll.use(Pullup);
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -281,7 +287,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <Web3ModalProvider>
-        <NextUIProvider>
+        <NextUIProvider navigate={router.push}>
           <MobxContext.Provider value={store}>
             {!isInWhiteList && loading ? (
               <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />

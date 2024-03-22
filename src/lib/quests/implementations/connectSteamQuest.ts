@@ -9,8 +9,8 @@ import {v4 as uuidv4} from "uuid";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import {chunkArray} from "@/lib/common/url";
 import SteamUserGame, {ISteamUserGame} from "@/lib/models/SteamUserGame";
-import logger from "@/lib/logger/winstonLogger";
 import doTransaction from "@/lib/mongodb/transaction";
+import { sendBadgeCheckMessage, sendBadgeCheckMessages } from "@/lib/kafka/client";
 
 export class ConnectSteamQuest extends QuestBase {
     constructor(quest: IQuest) {
@@ -23,6 +23,22 @@ export class ConnectSteamQuest extends QuestBase {
             claimable: !!userSteam,
             require_authorization: userSteam ? undefined : AuthorizationType.Steam,
         }
+    }
+
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        await super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.SteamConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        await sendBadgeCheckMessage(userId, Metric.SteamConnected);
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
@@ -43,13 +59,25 @@ export class ConnectSteamQuest extends QuestBase {
         // 按 任务/steam id 进行污染，防止同一个steam账号多次获得该任务奖励
         const taint = `${this.quest.id},${AuthorizationType.Steam},${userSteam.steam_id}`
         const assetId = refreshResult.userMetric[Metric.SteamAssetId];
-        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId, async (session) => {
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.SteamConnected]: 1 },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+          });
         if (result.duplicated) {
             return {
                 verified: false,
                 tip: "The Steam Account has already claimed reward.",
             }
         }
+        await sendBadgeCheckMessage(userId, Metric.SteamConnected);
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
@@ -107,6 +135,7 @@ export class ConnectSteamQuest extends QuestBase {
             );
         });
 
+        await sendBadgeCheckMessages(userId,userMetric);
         return {
             userMetric: userMetric
         };
