@@ -19,8 +19,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     updated_time: now,
   };
 
-  console.log(notification_id);
-
   let result: any;
   if (notification_id !== undefined) {
     result = await UserNotification.updateOne({ user_id: userId, notification_id: notification_id }, update);
