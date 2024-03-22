@@ -64,7 +64,9 @@ async function getUserUnreadNotifications(userId: string): Promise<any[]> {
         let: { notification_id: '$notification_id' },
         pipeline: [
           {
-            $match: { $expr: { $and: [{ $eq: ['$notification_id', '$$notification_id'] }] } },
+            $match: {
+              $expr: { $and: [{ $eq: ['$user_id', userId] }, { $eq: ['$notification_id', '$$notification_id'] }] },
+            },
           },
         ],
         as: 'read_flag',
