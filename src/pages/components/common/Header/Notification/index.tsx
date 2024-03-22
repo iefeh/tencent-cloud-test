@@ -12,6 +12,7 @@ import closeIcon from 'img/icon/icon_close.png';
 import styles from './index.module.css';
 import LGButton from '../../buttons/LGButton';
 import { throttle } from 'lodash';
+import useLoopQuery from '@/hooks/useLoopQuery';
 
 const Notification: FC = () => {
   const { userInfo } = useContext(MobxContext);
@@ -30,6 +31,8 @@ const Notification: FC = () => {
   const [isOpen, setOpen] = useState(false);
   const anchorProps = useClick(isOpen, setOpen);
 
+  useLoopQuery(() => queryData(true), 60000);
+
   function onClose() {
     setOpen(false);
   }
@@ -43,7 +46,7 @@ const Notification: FC = () => {
 
     const res = await readNotificationAPI(data);
     if (res.success) {
-      await queryData();
+      await queryData(true);
     }
 
     setReadLoading(false);
