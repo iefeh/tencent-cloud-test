@@ -19,6 +19,7 @@ import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-
 import { cn } from '@nextui-org/react';
 import UserInfo from '../UserInfo';
 import Link from 'next/link';
+import Notification from './Notification';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -104,7 +105,7 @@ const MoreLinks = () => {
 
   return (
     <>
-      <div ref={menuRef} {...anchorProps} className="ml-2 mr-[1.375rem] px-2 cursor-pointer relative">
+      <div ref={menuRef} {...anchorProps} className="mx-2 px-2 cursor-pointer relative">
         <Image className="w-1 h-[0.9375rem]" src={moreIconImg} alt="" />
         <Image
           className={cn([
@@ -129,9 +130,9 @@ const MoreLinks = () => {
 
           return (
             <MenuItem key={ci}>
-              <div className="link-menu [&+.link-menu]:ml-4" onClick={() => window.open(child.link)}>
-                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-[28px] h-[28px]" />
-              </div>
+              <Link className="link-menu [&+.link-menu]:ml-4" href={child.link} target="_blank">
+                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-7 h-7" />
+              </Link>
             </MenuItem>
           );
         })}
@@ -164,17 +165,24 @@ const Header = () => {
       </div>
 
       <div className="flex items-center flex-[1] justify-end">
-        <div className="max-lg:hidden flex items-center">
+        <div className="max-lg:hidden flex items-center mr-4">
           {mediaIcon.map((value, index) => {
             const Component = value.img;
             return (
-              <div className="link-menu [&+.link-menu]:ml-4" key={index} onClick={() => window.open(value.link)}>
-                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-[28px] h-[28px]" />
-              </div>
+              <Link
+                className="link-menu [&+.link-menu]:ml-4 relative z-10"
+                key={index}
+                href={value.link}
+                target="_blank"
+              >
+                <Component className="hover:fill-basic-yellow hover:cursor-pointer fill-white/30 transition-all w-7 h-7" />
+              </Link>
             );
           })}
 
           <MoreLinks />
+
+          <Notification />
         </div>
 
         <UserInfo />

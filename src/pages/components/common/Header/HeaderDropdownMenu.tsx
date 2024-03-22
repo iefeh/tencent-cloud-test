@@ -24,7 +24,7 @@ export default function HeaderDropdownMenu(props: Props) {
     <Link
       ref={menuRef}
       {...anchorProps}
-      href={item.route || 'javascript:void(0);'}
+      href={item.route || ''}
       className={cn([
         'cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] text-[22px] ml-8 relative z-10',
         isActive && 'text-[#F6C799] border-[#F6C799]',
@@ -55,7 +55,7 @@ export default function HeaderDropdownMenu(props: Props) {
                 'font-semakin uppercase text-lg',
                 child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
               ])}
-              href={(!child.disabled && child.route) || 'javascript:void(0);'}
+              href={(!child.disabled && child.route) || ''}
               onClick={() => onTextClick(child)}
             >
               {child.name}
