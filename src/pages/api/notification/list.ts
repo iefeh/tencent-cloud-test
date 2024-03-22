@@ -1,9 +1,9 @@
-import type { NextApiResponse } from "next";
-import { createRouter } from "next-connect";
-import * as response from "@/lib/response/response";
-import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import type { NextApiResponse } from 'next';
+import { createRouter } from 'next-connect';
+import * as response from '@/lib/response/response';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { PipelineStage } from 'mongoose';
-import UserNotification from "@/lib/models/UserNotifications";
+import UserNotification from '@/lib/models/UserNotifications';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -23,10 +23,20 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }
 
   const data: any[] = await getUserNotifications(String(userId), pageNum, pageSize);
-  res.json(response.success({
-    total: data.length,
-    data: data
-  }));
+  let has_unread: boolean = false;
+  for (let i of data) {
+    if (!i.readed) {
+      has_unread = !i.readed;
+      break;
+    }
+  }
+  res.json(
+    response.success({
+      total: data.length,
+      has_unread: has_unread,
+      data: data,
+    }),
+  );
 });
 
 async function getUserNotifications(userId: string, pageNum: number, pageSize: number): Promise<any[]> {
@@ -34,40 +44,53 @@ async function getUserNotifications(userId: string, pageNum: number, pageSize: n
   const pipeline: PipelineStage[] = [
     {
       $match: {
-        user_id: userId
+        user_id: userId,
+      },
+    },
+    {
+      $unionWith: {
+        coll: 'global_notifications',
       },
     },
     {
       $lookup: {
-        from: 'notifications',
-        let: { id: '$notification_id' },
-        as: 'notifictions',
+        from: 'notification_read_flag',
+        let: { notification_id: '$notification_id' },
         pipeline: [
           {
-            $match: { $expr: { $and: [{ $eq: ['$id', '$$id'] }] } }
-          }
-        ]
-      }
-    },
-    {
-      $unwind: '$notifictions'
+            $match: { $expr: { $and: [{ $eq: ['$notification_id', '$$notification_id'] }] } },
+          },
+        ],
+        as: 'read_flag',
+      },
     },
     {
       $project: {
         _id: 0,
-        userId: 1,
         notification_id: 1,
-        readed: 1,
-        content: "$notifictions.content",
-        link: "$notifictions.link",
-        created_time: 1
-      }
+        content: 1,
+        link: 1,
+        created_time: 1,
+        readed: {
+          $cond: {
+            if: { $gt: [{ $size: '$read_flag' }, 0] },
+            then: true, // 如果大于0，则输出true
+            else: false, // 否则输出false
+          },
+        },
+      },
     },
     {
       $sort: {
-        created_time: -1
-      }
-    }
+        created_time: -1,
+      },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: pageSize,
+    },
   ];
   let data: any[] = await UserNotification.aggregate(pipeline);
   return data;
@@ -76,7 +99,7 @@ async function getUserNotifications(userId: string, pageNum: number, pageSize: n
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({
-    error: "Method not allowed",
+    error: 'Method not allowed',
   });
 });
 
