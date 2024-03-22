@@ -10,14 +10,15 @@ import Telegram from 'img/header/telegram.svg';
 import X from 'img/header/x.svg';
 import List from 'svg/list.svg';
 import Close from 'svg/close.svg';
-import Sidebar from './Sidebar';
+import Sidebar from '../Sidebar';
 import { useRouter } from 'next/router';
 import HeaderDropdownMenu from './HeaderDropdownMenu';
 import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
-import UserInfo from './UserInfo';
+import UserInfo from '../UserInfo';
+import Link from 'next/link';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -144,43 +145,18 @@ const Header = () => {
     return menu.route === route || menu.children?.some((item) => item.route === route);
   }
 
-  function onLinkClick(path?: string) {
-    if (!path) return;
-
-    router.push(path);
-    try {
-      window.luxy.disable();
-      window.luxy.wrapper.style.transform = 'translate3d(0, 0, 0)';
-      window.luxy.enable();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   return (
     <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
       <div className="flex-[1]">
-        <div onClick={() => onLinkClick('/')}>
-          <Image className="w-[135px] h-[80px]" src={logo} alt="Picture of the author" />
-        </div>
+        <Link href="/">
+          <Image className="w-[135px] h-[80px]" src={logo} alt="Logo" />
+        </Link>
       </div>
 
       <div className="font-semakin flex items-center max-lg:hidden">
-        {routeText.map((value, index) =>
-          value.children ? (
-            <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} onLinkClick={onLinkClick} />
-          ) : (
-            <div
-              className={`cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] ${
-                isActiveRoute(value) && 'text-[#F6C799] border-[#F6C799]'
-              } text-[22px] ml-8 relative z-10`}
-              key={index}
-              onClick={() => onLinkClick(value.route)}
-            >
-              {value.name}
-            </div>
-          ),
-        )}
+        {routeText.map((value, index) => (
+          <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
+        ))}
       </div>
 
       <div className="flex items-center flex-[1] justify-end">
