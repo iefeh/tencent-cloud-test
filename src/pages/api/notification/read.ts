@@ -8,9 +8,9 @@ import { PipelineStage } from 'mongoose';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(mustAuthInterceptor).post(async (req, res) => {
   const userId = req.userId;
-  const { notification_id } = req.query;
+  const { notification_id } = req.body;
 
   let result: boolean = true;
   if (notification_id !== undefined) {
