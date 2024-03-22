@@ -13,9 +13,12 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
   let pageNum = Number(page_num);
   let pageSize = Number(page_size);
-  if (!pageNum || !pageNum) {
+  if (!pageNum) {
     //若没有传页数和单页条数，则赋默认值
     pageNum = 1;
+  }
+  if (!pageSize) {
+    //若没有传页数和单页条数，则赋默认值
     pageSize = 10;
   }
 

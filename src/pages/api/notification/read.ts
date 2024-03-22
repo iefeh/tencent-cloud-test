@@ -25,7 +25,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   if (notification_id !== undefined) {
     result = await UserNotification.updateOne({ user_id: userId, notification_id: notification_id }, update);
   } else {
-    result = await UserNotification.updateOne({ user_id: userId }, update);
+    result = await UserNotification.updateMany({ user_id: userId }, update);
   }
 
   //返回结果
