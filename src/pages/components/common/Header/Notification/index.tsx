@@ -43,7 +43,7 @@ const Notification: FC = () => {
   }
 
   const onGo = throttle(async (item?: NotificationItem | null, isAll = false) => {
-    if (!isAll && (!item || !item.notification_id)) return;
+    if (!isAll && (!item || !item.notification_id || !!item.readed)) return;
 
     if (item?.link) window.open(item.link, '_blank');
     const noti = isAll ? data[0] : item;
