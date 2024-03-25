@@ -20,3 +20,7 @@ export function queryNotificationPageListAPI(
 export function readNotificationAPI(data: { notification_id?: string }): Promise<{ success: boolean }> {
   return http.post('/api/notification/read', JSON.stringify(data));
 }
+
+export function readAllNotificationsAPI(data: { notification_id?: string }): Promise<{ success: boolean }> {
+  return http.post('/api/notification/read_all', JSON.stringify(data));
+}

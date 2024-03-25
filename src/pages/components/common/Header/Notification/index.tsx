@@ -1,5 +1,10 @@
 import useScrollLoad from '@/hooks/useScrollLoad';
-import { NotificationItem, queryNotificationPageListAPI, readNotificationAPI } from '@/http/services/notification';
+import {
+  NotificationItem,
+  queryNotificationPageListAPI,
+  readAllNotificationsAPI,
+  readNotificationAPI,
+} from '@/http/services/notification';
 import { MobxContext } from '@/pages/_app';
 import { Badge, Button, cn } from '@nextui-org/react';
 import { ControlledMenu, useClick } from '@szhsin/react-menu';
@@ -40,11 +45,15 @@ const Notification: FC = () => {
   const onGo = throttle(async (item?: NotificationItem | null, isAll = false) => {
     if (!isAll && (!item || !item.notification_id)) return;
 
-    setReadLoading(true);
     if (item?.link) window.open(item.link, '_blank');
-    const data = isAll ? {} : { notification_id: item!.notification_id };
+    const noti = isAll ? data[0] : item;
+    const notification_id = noti?.notification_id || '';
+    if (!notification_id) return;
+    setReadLoading(true);
+    const reqData = { notification_id };
 
-    const res = await readNotificationAPI(data);
+    const api = isAll ? readAllNotificationsAPI : readNotificationAPI;
+    const res = await api(reqData);
     if (res.success) {
       await queryData(true);
     }
