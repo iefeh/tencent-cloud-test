@@ -14,7 +14,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     res.json(response.unauthorized());
     return;
   }
-  let result: boolean = false;
+  let result: boolean = true;
   if (notification_id !== undefined) {
     //插入已读数据
     await NotificationReadFlag.insertMany([
