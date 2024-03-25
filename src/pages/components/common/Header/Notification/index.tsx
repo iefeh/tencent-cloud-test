@@ -70,11 +70,13 @@ const Notification: FC = () => {
                 ])}
               >
                 <div>{item?.content}</div>
-                <LGButton
-                  className={cn(['mt-4', item?.readed && 'border-white/30 text-white/30'])}
-                  label="GO"
-                  onClick={() => onGo(item)}
-                />
+                {item?.link && (
+                  <LGButton
+                    className={cn(['mt-4', item?.readed && 'border-white/30 text-white/30'])}
+                    label="GO"
+                    onClick={() => onGo(item)}
+                  />
+                )}
               </li>
             ))
           ) : (
