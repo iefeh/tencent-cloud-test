@@ -47,10 +47,10 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     setData((currenDataRef.current = []));
   }
 
-  const queryData = throttle(async (isRefresh = false) => {
+  const queryData = throttle(async (isRefresh = false, noLoading = false) => {
     if (!options.queryFn) return;
 
-    setLoading(true);
+    if (!noLoading) setLoading(true);
     let list: (T | null)[] = [];
     let totalCount = 0;
 

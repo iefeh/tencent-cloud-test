@@ -6,7 +6,7 @@ import {
   readNotificationAPI,
 } from '@/http/services/notification';
 import { MobxContext } from '@/pages/_app';
-import { Badge, Button, cn } from '@nextui-org/react';
+import { Badge, Button, Tooltip, cn } from '@nextui-org/react';
 import { ControlledMenu, useClick } from '@szhsin/react-menu';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
@@ -37,7 +37,7 @@ const Notification: FC = () => {
   const [isOpen, setOpen] = useState(false);
   const anchorProps = useClick(isOpen, setOpen);
 
-  useLoopQuery(() => queryData(true), 60000);
+  useLoopQuery(() => queryData(true, true), 60000);
 
   function onClose() {
     setOpen(false);
@@ -80,7 +80,10 @@ const Notification: FC = () => {
                 ])}
                 onClick={() => onGo(item)}
               >
-                <div>{item?.content}</div>
+                <Tooltip content={<div className="max-w-[25rem]">{item?.content || '--'}</div>}>
+                  <div className="overflow-hidden line-clamp-3">{item?.content || '--'}</div>
+                </Tooltip>
+
                 {item?.link && (
                   <LGButton
                     className={cn(['mt-4', item?.readed && 'border-white/30 text-white/30'])}
