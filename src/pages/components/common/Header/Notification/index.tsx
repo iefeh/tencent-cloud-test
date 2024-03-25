@@ -65,9 +65,10 @@ const Notification: FC = () => {
               <li
                 key={item!.notification_id}
                 className={cn([
-                  'noti-item px-6 pt-4 border-white/10 [&+.noti-item]:border-t-1 [&+.noti-item]:mt-4 text-sm leading-6',
+                  'noti-item px-6 pt-4 border-white/10 [&+.noti-item]:border-t-1 [&+.noti-item]:mt-4 text-sm leading-6 cursor-pointer relative',
                   item?.readed ? 'text-white/30' : 'text-white',
                 ])}
+                onClick={() => onGo(item)}
               >
                 <div>{item?.content}</div>
                 {item?.link && (
@@ -76,6 +77,10 @@ const Notification: FC = () => {
                     label="GO"
                     onClick={() => onGo(item)}
                   />
+                )}
+
+                {item?.readed || (
+                  <div className="absolute w-[0.375rem] h-[0.375rem] rounded-full bg-[#FF3333] left-ten top-6"></div>
                 )}
               </li>
             ))
