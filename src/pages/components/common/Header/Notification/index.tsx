@@ -5,7 +5,7 @@ import { Badge, Button, cn } from '@nextui-org/react';
 import { ControlledMenu, useClick } from '@szhsin/react-menu';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
-import { FC, useContext, useMemo, useRef, useState } from 'react';
+import { FC, useContext, useEffect, useRef, useState } from 'react';
 import NotiSvg from 'svg/notify.svg';
 import CheckSvg from 'svg/check.svg';
 import closeIcon from 'img/icon/icon_close.png';
@@ -18,7 +18,7 @@ const Notification: FC = () => {
   const { userInfo } = useContext(MobxContext);
   const [hasUnread, setHasUnread] = useState(false);
   const [readLoading, setReadLoading] = useState(false);
-  const { data, scrollRef, queryData, loading } = useScrollLoad({
+  const { data, scrollRef, queryData, loading, refreshScroll } = useScrollLoad({
     watchAuth: true,
     queryKey: 'data',
     queryFn: async (params) => {
@@ -52,36 +52,37 @@ const Notification: FC = () => {
     setReadLoading(false);
   }, 500);
 
-  const notiContent = useMemo(
-    () => (
-      <div className="px-3">
-        <div ref={scrollRef} className="h-[29.5rem] overflow-hidden relative">
-          <ul className="py-6 pt-ten flex flex-col">
-            {data.length > 0 ? (
-              data.map((item) => (
-                <li
-                  key={item!.notification_id}
-                  className={cn([
-                    'noti-item px-6 pt-4 border-white/10 [&+.noti-item]:border-t-1 [&+.noti-item]:mt-4 text-sm leading-6',
-                    item?.readed ? 'text-white/30' : 'text-white',
-                  ])}
-                >
-                  <div>{item?.content}</div>
-                  <LGButton
-                    className={cn(['mt-4', item?.readed && 'border-white/30 text-white/30'])}
-                    label="GO"
-                    onClick={() => onGo(item)}
-                  />
-                </li>
-              ))
-            ) : (
-              <li className="text-lg leading-[18.75rem] text-center">No notifications.</li>
-            )}
-          </ul>
-        </div>
+  useEffect(() => {
+    if (isOpen) refreshScroll();
+  }, [isOpen]);
+
+  const notiContent = (
+    <div className="px-3">
+      <div ref={scrollRef} className="h-[29.5rem] overflow-hidden relative">
+        <ul className="py-6 pt-ten flex flex-col">
+          {data.length > 0 ? (
+            data.map((item) => (
+              <li
+                key={item!.notification_id}
+                className={cn([
+                  'noti-item px-6 pt-4 border-white/10 [&+.noti-item]:border-t-1 [&+.noti-item]:mt-4 text-sm leading-6',
+                  item?.readed ? 'text-white/30' : 'text-white',
+                ])}
+              >
+                <div>{item?.content}</div>
+                <LGButton
+                  className={cn(['mt-4', item?.readed && 'border-white/30 text-white/30'])}
+                  label="GO"
+                  onClick={() => onGo(item)}
+                />
+              </li>
+            ))
+          ) : (
+            <li className="text-lg leading-[18.75rem] text-center">No notifications.</li>
+          )}
+        </ul>
       </div>
-    ),
-    [data],
+    </div>
   );
 
   if (!userInfo) return null;
@@ -107,7 +108,7 @@ const Notification: FC = () => {
           state={isOpen ? 'open' : 'closed'}
           align="end"
           anchorRef={anchorRef}
-          // onClose={onClose}
+          onClose={onClose}
         >
           <div className="flex justify-between items-center bg-[url('/img/profile/bg_notification.png')] bg-no-repeat bg-contain h-16 px-6 shrink-0">
             <span className="text-lg">Notification</span>

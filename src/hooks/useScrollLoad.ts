@@ -90,6 +90,10 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     }, 100);
   }, 500);
 
+  function refreshScroll() {
+    bsRef.current?.refresh();
+  }
+
   useEffect(() => {
     if (!scrollRef.current) return;
 
@@ -116,9 +120,7 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      bsRef.current?.refresh();
-    }, 500);
+    refreshScroll();
   }, [data]);
 
   useEffect(() => {
@@ -139,5 +141,6 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     loading,
     resetData,
     queryData,
+    refreshScroll,
   };
 }
