@@ -18,6 +18,7 @@ import styles from './index.module.css';
 import LGButton from '../../buttons/LGButton';
 import { throttle } from 'lodash';
 import useLoopQuery from '@/hooks/useLoopQuery';
+import CircularLoading from '../../CircularLoading';
 
 const Notification: FC = () => {
   const { userInfo } = useContext(MobxContext);
@@ -97,6 +98,8 @@ const Notification: FC = () => {
             <li className="text-lg leading-[18.75rem] text-center">No notifications.</li>
           )}
         </ul>
+
+        {loading && <CircularLoading />}
       </div>
     </div>
   );
