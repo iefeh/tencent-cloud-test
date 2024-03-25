@@ -2,9 +2,7 @@ import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import UserNotification from '@/lib/models/UserNotifications';
 import NotificationReadFlag from '@/lib/models/NotificationReadFlag';
-import { PipelineStage } from 'mongoose';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -16,9 +14,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     res.json(response.unauthorized());
     return;
   }
-  let result: boolean = false;
+  let result: boolean = true;
   if (notification_id !== undefined) {
-    result = true;
     //插入已读数据
     await NotificationReadFlag.insertMany([
       { user_id: userId, notification_id: notification_id, created_time: Date.now() },
