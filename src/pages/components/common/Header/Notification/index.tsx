@@ -114,14 +114,14 @@ const Notification: FC = () => {
       <div ref={anchorRef} className="inline-block" {...anchorProps}>
         <Badge
           isOneChar
-          className={cn(['w-[0.375rem] h-[0.375rem] bg-[#FF3333]', hasUnread || 'hidden'])}
+          className={cn(['w-2 h-2 bg-[#FF3333]', hasUnread || 'hidden'])}
           content=""
           shape="circle"
           placement="top-right"
           showOutline={false}
           size="sm"
         >
-          <NotiSvg className="hover:fill-basic-yellow hover:cursor-pointer fill-white/30 transition-all w-7 h-7" />
+          <NotiSvg className="cursor-pointer transition-all w-7 h-7 fill-basic-yellow" />
         </Badge>
 
         <ControlledMenu
