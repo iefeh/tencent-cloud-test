@@ -49,7 +49,7 @@ const Notification: FC = () => {
     const noti = isAll ? data[0] : item;
     const notification_id = noti?.notification_id || '';
     if (!notification_id) return;
-    setReadLoading(true);
+    if (isAll) setReadLoading(true);
     const reqData = { notification_id };
 
     const api = isAll ? readAllNotificationsAPI : readNotificationAPI;
@@ -58,7 +58,7 @@ const Notification: FC = () => {
       await queryData(true);
     }
 
-    setReadLoading(false);
+    if (isAll) setReadLoading(false);
   }, 500);
 
   useEffect(() => {
@@ -143,8 +143,8 @@ const Notification: FC = () => {
           <Button
             className="bg-[#141414] rounded-none h-16 text-light-gray"
             startContent={<CheckSvg className="w-5 h-5 fill-light-gray" />}
-            disabled={!hasUnread}
-            isLoading={readLoading || loading}
+            disabled={!hasUnread || loading}
+            isLoading={readLoading}
             onClick={() => onGo(null, true)}
           >
             Mark all as read
