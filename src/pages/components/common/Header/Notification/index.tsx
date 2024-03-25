@@ -48,7 +48,7 @@ const Notification: FC = () => {
     if (item?.link) window.open(item.link, '_blank');
     const noti = isAll ? data[0] : item;
     const notification_id = noti?.notification_id || '';
-    if (!notification_id) return;
+    if (!notification_id || !!item?.readed) return;
     if (isAll) setReadLoading(true);
     const reqData = { notification_id };
 
