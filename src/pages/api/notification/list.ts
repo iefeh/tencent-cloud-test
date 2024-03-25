@@ -23,18 +23,23 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }
 
   const data: any[] = await getUserNotifications(String(userId), pageNum, pageSize);
+  if (data[0].metadata[0].total == 0) {
+    data[0].data = [];
+  }
+
   let has_unread: boolean = false;
-  for (let i of data) {
+  for (let i of data[0].data) {
     if (!i.readed) {
       has_unread = !i.readed;
       break;
     }
   }
+
   res.json(
     response.success({
-      total: data.length,
+      total: data[0].metadata[0].total ,
       has_unread: has_unread,
-      data: data,
+      data: data[0].data,
     }),
   );
 });
@@ -88,10 +93,10 @@ async function getUserNotifications(userId: string, pageNum: number, pageSize: n
       },
     },
     {
-      $skip: skip,
-    },
-    {
-      $limit: pageSize,
+      $facet: {
+        metadata: [{ $count: 'total' }],
+        data: [{ $skip: skip }, { $limit: pageSize }],
+      },
     },
   ];
   let data: any[] = await UserNotification.aggregate(pipeline);
