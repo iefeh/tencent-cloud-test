@@ -76,9 +76,6 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     realSetData(list);
     setTotal(totalCount);
     setLoading(false);
-    setTimeout(() => {
-      bsRef.current?.refresh();
-    }, 100);
   }, 500);
 
   const onPullUp = throttle(async () => {
@@ -92,6 +89,10 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
       isPullingUpRef.current = false;
     }, 100);
   }, 500);
+
+  function refreshScroll() {
+    bsRef.current?.refresh();
+  }
 
   useEffect(() => {
     if (!scrollRef.current) return;
@@ -114,8 +115,13 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
 
     return () => {
       bsRef.current?.destroy();
+      bsRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    refreshScroll();
+  }, [data]);
 
   useEffect(() => {
     if (!options.watchAuth) return;
@@ -135,5 +141,6 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     loading,
     resetData,
     queryData,
+    refreshScroll,
   };
 }
