@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
-import InviteCard from './InviteCard';
-import MBProgress from './MBProgress';
+import InviteCard from '../../../components/profile/invite/InviteCard';
+import MBProgress from '../../../components/profile/invite/MBProgress';
+import InviteesTabs from '@/components/profile/invite/InviteesTabs';
+import RewardHistory from '@/components/profile/invite/RewardHistory';
 
 export default function ProfileEditPage() {
   return (
@@ -19,6 +21,12 @@ export default function ProfileEditPage() {
         <InviteCard />
 
         <MBProgress />
+
+        <div className="flex gap-10 mt-16">
+          <InviteesTabs />
+
+          <RewardHistory />
+        </div>
       </div>
     </section>
   );

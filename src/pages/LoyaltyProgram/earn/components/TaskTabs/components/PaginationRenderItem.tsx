@@ -22,6 +22,7 @@ export default function PaginationRenderItem({
           className,
           activePage < total ? 'border-white text-white' : '!border-[#333333] !text-[#333333]',
         ])}
+        disabled={activePage >= total}
         onClick={onNext}
       >
         <ChevronIcon className="rotate-180" />
@@ -36,8 +37,9 @@ export default function PaginationRenderItem({
         className={cn([
           'border-1 bg-transparent',
           className,
-          activePage > 1 ? 'border-white text-white' : 'border-[#333333] text-[#333333]',
+          activePage > 1 ? 'border-white text-white' : 'border-[#333333] !text-[#333333]',
         ])}
+        disabled={activePage <= 1}
         onClick={onPrevious}
       >
         <ChevronIcon />
