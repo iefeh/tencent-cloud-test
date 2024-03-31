@@ -4,22 +4,34 @@ import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
 import { getCurrentBattleSeasonId } from './overview';
+import UserMetrics from '@/lib/models/UserMetrics';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
   const user_id = req.userId;
   const userId = String(user_id);
-  //用户开始新的赛季
-  let result: boolean = true;
-  const season_id = await getCurrentBattleSeasonId();
-  await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: season_id }, { started: true, updated_time: Date.now() }).catch((error: Error) => {
-    console.log(error);
-    result = false;
-  });
+  
+  //将用户通行证由低阶切换至高阶
+  let success: boolean = true;
+  let msg: string = "";
+  const user_metric = await UserMetrics.findOne({ user_id: userId });
+  if (Number(user_metric.tetra_holder) === 1) {
+    const season_id = await getCurrentBattleSeasonId();
+    await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: season_id }, { type: BattlePassType.PremiumPass, updated_time: Date.now() }).catch((error: Error) => {
+      console.log(error);
+      msg = "Update failed."
+      success = false;
+    });
+  } else {
+    msg = "Didn't hold tetra nft."
+    success = false;
+  }
+
   res.json(
     response.success({
-      success: result
+      msg: msg,
+      success: success
     }),
   );
 });

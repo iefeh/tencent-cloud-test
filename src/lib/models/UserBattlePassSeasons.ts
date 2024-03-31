@@ -7,10 +7,14 @@ export enum BattlePassType {
 }
 //用户达成的奖励
 type Reward = {
-  type: BattlePassType;
   satisfied_time: number;
   claimed_time?: number;
 };
+
+type RewardRecords = {
+  standard: Map<String, Reward>;
+  premium: Map<String, Reward>;
+}
 
 export interface IUserBattlePassSeasons extends Document {
   user_id: string; //用户ID
@@ -19,7 +23,7 @@ export interface IUserBattlePassSeasons extends Document {
   finished_tasks: number; //完成任务数
   max_lv: number; //赛季最大等级
   type: BattlePassType; //通证类型
-  reward_records: Map<string, Reward>; //奖励记录，记录用户各等级达成时间和领取时间
+  reward_records: RewardRecords; //奖励记录，记录用户各等级达成时间和领取时间
   total_moon_beam: number; //该赛季获得的MB数
   created_time: number; //创建时间
   updated_time: number; //修改时间
