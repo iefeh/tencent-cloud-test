@@ -1,0 +1,52 @@
+import { Document, models, Schema } from 'mongoose';
+import connectToMongoDbDev from '@/lib/mongodb/client';
+
+export enum BattlePassType {
+  PremiumPass = 'premium_pass',
+  StandardPass = 'standard_pass',
+}
+//用户达成的奖励
+type Reward = {
+  type: BattlePassType;
+  satisfied_time: number;
+  claimed_time?: number;
+};
+
+export interface IUserBattlePassSeasons extends Document {
+  user_id: string; //用户ID
+  battlepass_season_id: number; //赛季ID
+  started: boolean; //赛季是否已启动
+  finished_tasks: number; //完成任务数
+  max_lv: number; //赛季最大等级
+  type: BattlePassType; //通证类型
+  reward_records: Map<string, Reward>; //奖励记录，记录用户各等级达成时间和领取时间
+  total_moon_beam: number; //该赛季获得的MB数
+  created_time: number; //创建时间
+  updated_time: number; //修改时间
+}
+
+const UserBattlePassSeasonsSchema = new Schema({
+  user_id: { type: String, required: true },
+  battlepass_season_id: { type: Number, required: true },
+  started: { type: Boolean, default: false },
+  finished_tasks: { type: Number },
+  max_lv: { type: Number },
+  type: { type: String },
+  reward_records: { type: Map },
+  total_moon_beam: { type: Number },
+  created_time: { type: Number },
+  updated_time: { type: Number },
+});
+
+UserBattlePassSeasonsSchema.index({ user_id: 1, battlepass_season_id: 1 }, { unique: true });
+UserBattlePassSeasonsSchema.index({ user_id: 1 }, { unique: true });
+
+const connection = connectToMongoDbDev();
+const UserBattlePassSeasons =
+  models.UserBattlePassSeasons ||
+  connection.model<IUserBattlePassSeasons>(
+    'UserBattlePassSeasons',
+    UserBattlePassSeasonsSchema,
+    'user_battlepass_seasons',
+  );
+export default UserBattlePassSeasons;
