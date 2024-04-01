@@ -40,9 +40,12 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 export async function isPremiumSatisfied(user_id: string): Promise<boolean> {
   const user_metric: any = await UserMetrics.findOne({ user_id: user_id });
   let satisfied: boolean = false;
-  if (Number(user_metric.tetra_holder) === 1) {
-    satisfied = true;
+  if(user_metric){
+    if (Number(user_metric.tetra_holder) === 1) {
+      satisfied = true;
+    }
   }
+  
   return satisfied;
 }
 // this will run if none of the above matches
