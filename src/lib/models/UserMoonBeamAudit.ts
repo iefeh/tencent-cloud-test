@@ -1,4 +1,4 @@
-import {Document, Model, model, models, Schema} from 'mongoose';
+import {Document, models, Schema} from 'mongoose';
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export enum UserMoonBeamAuditType {
@@ -10,6 +10,10 @@ export enum UserMoonBeamAuditType {
     CampaignBonus = "campaign_bonus",
     // 徽章
     Badges = "badges",
+    // 被邀请用户注册
+    InviteeRegistration = "invitee_registration",
+    // 被邀请用户完成新手徽章，当用户得到新手徽章时视为完成注册，会给邀请者奖励
+    InviteeNoviceBadge = "invitee_novice_badge",
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
@@ -58,3 +62,24 @@ UserMoonBeamAuditSchema.index({reward_taint: 1, deleted_time: 1}, {unique: true}
 const connection = connectToMongoDbDev();
 const UserMoonBeamAudit = models.UserMoonBeamAudit || connection.model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');
 export default UserMoonBeamAudit;
+
+// 新用户被邀请注册的MB加成
+export const NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA = 15;
+// 被邀请者完成新手徽章的MB加成
+export const INVITEE_NOVICE_BADGE_MOON_BEAM_DELTA = 30;
+
+// 保存新用户被邀请注册的审计记录
+export async function saveNewInviteeRegistrationMoonBeamAudit(inviteeId: string, inviterId: any, session: any) {
+    if (!inviterId) {
+        return;
+    }
+    const audit = new UserMoonBeamAudit({
+        user_id: inviteeId,
+        type: UserMoonBeamAuditType.InviteeRegistration,
+        moon_beam_delta: NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA,
+        reward_taint: `invitee_${inviteeId}`,
+        corr_id: inviterId,
+        created_time: Date.now(),
+    });
+    return await audit.save({session});
+}
