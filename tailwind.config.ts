@@ -63,6 +63,9 @@ const config: Config = {
       borderRadius: {
         base: '0.625rem',
       },
+      spacing: {
+        ten: '0.625rem'
+      }
     },
   },
   darkMode: 'class',

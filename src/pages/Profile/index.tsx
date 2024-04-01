@@ -6,6 +6,7 @@ import DailyCheckIn from '../LoyaltyProgram/earn/components/EarnBanner/DailyChec
 import Invite from '../LoyaltyProgram/earn/components/EarnBanner/Invite';
 import MyNFT from './components/MyNFT';
 import EventsParticipated from './components/EventsParticipated';
+import BattlePassCard from '@/components/card/BattlePassCard';
 
 export default function ProfilePage() {
   return (
@@ -26,7 +27,10 @@ export default function ProfilePage() {
 
         {/* <DailyCheckIn /> */}
 
-        <Invite />
+        {/* 如果增加拉新模块，将赛季模块放到最后并设置block=true */}
+        <BattlePassCard />
+
+        <Invite inProfie />
       </div>
 
       <MyNFT />
