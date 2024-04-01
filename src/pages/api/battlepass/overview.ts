@@ -56,6 +56,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
       has_battle_pass: has_battle_pass, //是否拥有赛季通行证
       is_premium: is_premium, //是否为高阶通行证
       max_lv: max_lv, //用户当前最大等级
+      start_time:current_season.start_time,
+      end_time:current_season.end_time,
       standard_pass: standard_pass, //标准通行证
       premium_pass: premium_pass, //高阶通行证
     }),
@@ -125,7 +127,6 @@ async function getCurrentSeason(): Promise<any> {
 }
 
 async function loadBattlepassLevelInfo(current_season: any, user_battle_season: any): Promise<any[]> {
-  console.log(user_battle_season);
   let premium_pass: any[] = [];
   let standard_pass: any[] = [];
   if (!user_battle_season) {
