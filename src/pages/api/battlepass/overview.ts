@@ -4,9 +4,9 @@ import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import BattlePassSeasons from '@/lib/models/BattlePassSeasons';
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
-import UserMetrics from '@/lib/models/UserMetrics';
 import Badges from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
+import { isPremiumSatisfied } from './to_premium';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -43,11 +43,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     has_battle_pass = true;
   } else {
     //返回用户未开始赛季的数据
-    const userMetric: any = await UserMetrics.findOne({ user_id: userId });
-    if (userMetric) {
-      is_premium = Boolean(userMetric.tetra_holder);
-    }
-    await generateUserBattlePass(userId, current_season.id, is_premium ? BattlePassType.PremiumPass : BattlePassType.StandardPass);
+    is_premium = await isPremiumSatisfied(userId);
   }
 
   res.json(
@@ -56,8 +52,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
       has_battle_pass: has_battle_pass, //是否拥有赛季通行证
       is_premium: is_premium, //是否为高阶通行证
       max_lv: max_lv, //用户当前最大等级
-      start_time:current_season.start_time,
-      end_time:current_season.end_time,
+      start_time: current_season.start_time,
+      end_time: current_season.end_time,
       standard_pass: standard_pass, //标准通行证
       premium_pass: premium_pass, //高阶通行证
     }),
@@ -169,28 +165,6 @@ export async function getCurrentBattleSeasonId(): Promise<any> {
   return current_season.id;
 }
 
-async function generateUserBattlePass(user_id: string, season_id: number, type: string) {
-  //创建赛季通行证
-  await UserBattlePassSeasons.insertMany([
-    {
-      "user_id": user_id,
-      "battlepass_season_id": season_id,
-      "started": false,
-      "finished_tasks": 0,
-      "max_lv": 0,
-      "type": type,
-      "reward_records": {
-        "standard": null,
-        "premium": null
-      },
-      "total_moon_beam": 0,
-      "created_time": Date.now(),
-      "updated_time": Date.now()
-    }
-  ]).catch((error: Error) => {
-    console.log(error);
-  });
-}
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({
