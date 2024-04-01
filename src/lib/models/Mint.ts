@@ -11,8 +11,6 @@ enum MintStatus {
     Qualified = 'qualified',
     // Mint中
     Minting = 'minting',
-    // 已上链，但是未确认
-    Confirming = 'confirming',
     // 已确认
     Confirmed = 'confirmed',
 }
@@ -38,8 +36,8 @@ export interface IMint extends Document {
     obtained_time: number,
     // 开始mint时间(获取badge签名时设置该时间)，毫秒时间戳
     start_mint_time: number,
-    // 链上交易检测时间，毫秒时间戳
-    tx_detected_time: number,
+    // 交易id
+    transaction_id: string,
     // 链上交易确认时间，毫秒时间戳
     tx_confirmed_time: number,
     // mint污点，用于确保mint的唯一性，比如用户不能多次获取同一个徽章的同一个等级，同一个接收者地址不能多次获取同一个徽章
@@ -51,19 +49,21 @@ const MintSchema = new Schema<IMint>({
     chain_id: {type: String},
     source_type: {type: String},
     source_id: {type: String},
+    badge_level: {type: Number},
     user_id: {type: String},
     status: {type: String},
     receiver_addr: {type: String},
     obtained_time: {type: Number},
     start_mint_time: {type: Number},
-    tx_detected_time: {type: Number},
+    transaction_id: {type: String},
     tx_confirmed_time: {type: Number},
-    badge_level: {type: Number},
     taint: {type: [String]},
 });
 
 MintSchema.index({id: 1}, {unique: true});
 MintSchema.index({taint: 1}, {unique: true});
+MintSchema.index({source_type: 1,source_id:1});
+MintSchema.index({user_id: 1});
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();

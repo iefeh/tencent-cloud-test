@@ -10,6 +10,8 @@ import {genLoginJWT} from "@/lib/particle.network/auth";
 import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
+import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from '@/lib/models/UserMoonBeamAudit';
+import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -88,6 +90,7 @@ async function doUserLogin(res: any, inviter: IUser, user: IUser, email: string)
             user_id: uuidv4(),
             email: email,
             username: email.split("@")[0],
+            moon_beam: inviter ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0,
             avatar_url: process.env.DEFAULT_AVATAR_URL,
             created_time: Date.now(),
         });
@@ -101,6 +104,8 @@ async function doUserLogin(res: any, inviter: IUser, user: IUser, email: string)
                     created_time: Date.now(),
                 });
                 await invite.save(opts);
+                await saveNewInviteeRegistrationMoonBeamAudit(user.user_id, inviter.user_id, session);
+                await incrUserMetric(inviter.user_id, Metric.TotalInvitee, 1, session);
             }
         })
 
