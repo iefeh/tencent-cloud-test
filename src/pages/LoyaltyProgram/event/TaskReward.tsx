@@ -5,7 +5,6 @@ import { FullEventItem, claimEventRewardAPI } from '@/http/services/task';
 import { useContext, useState } from 'react';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
-import Participants from './components/Participants';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 import { EventStatus } from '@/constant/task';
@@ -73,8 +72,6 @@ function TaskReward(props: Props) {
           )}
         </div>
       </div>
-
-      <Participants item={item} />
     </div>
   );
 }
