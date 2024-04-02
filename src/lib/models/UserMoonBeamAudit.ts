@@ -1,5 +1,6 @@
 import {Document, models, Schema} from 'mongoose';
 import connectToMongoDbDev from "@/lib/mongodb/client";
+import { increaseUserMoonBeam } from './User';
 
 export enum UserMoonBeamAuditType {
     // 任务
@@ -82,4 +83,22 @@ export async function saveNewInviteeRegistrationMoonBeamAudit(inviteeId: string,
         created_time: Date.now(),
     });
     return await audit.save({session});
+}
+
+export async function saveInviteeNoviceBadgeMoonBeam(inviteeId: string, inviterId: any, session: any) {
+    if (!inviterId) {
+        return;
+    }
+    // 保存邀请者的MB审计记录
+    const audit = new UserMoonBeamAudit({
+        user_id: inviterId,
+        type: UserMoonBeamAuditType.InviteeNoviceBadge,
+        moon_beam_delta: INVITEE_NOVICE_BADGE_MOON_BEAM_DELTA,
+        reward_taint: `invitee_novice_badge_${inviteeId}`,
+        corr_id: inviteeId,
+        created_time: Date.now(),
+    });
+    await audit.save({session});
+    // 添加邀请者的MB
+    await increaseUserMoonBeam(inviterId, INVITEE_NOVICE_BADGE_MOON_BEAM_DELTA, session);
 }
