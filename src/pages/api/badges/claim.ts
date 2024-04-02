@@ -74,6 +74,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
     const inviterId = await checkNoviceNotchInviter(userId, badge);
+    console.log('inviterId:', inviterId);
     // 构建领取徽章对象
     const claimBadge: any = {};
     const now = Date.now();
@@ -113,7 +114,8 @@ async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<
   if (!badge) {
     return null;
   }
-  if (badge.id !== process.env.NOVICE_NOTCH_BADGE_ID) {
+  if (badge.id !== process.env.NOICE_BADGE_ID) {
+    console.log('badge.id:', badge.id);
     return null;
   }
   // 当前是新手徽章，检查用户的邀请人
