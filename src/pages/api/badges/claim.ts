@@ -91,7 +91,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         $set: claimBadge,
       }, opts);
       if (inviterId) {
-        await incrUserMetric(userId, Metric.TotalNoviceBadgeInvitee, 1, session);
+        await incrUserMetric(inviterId, Metric.TotalNoviceBadgeInvitee, 1, session);
       }
     });
     // 当有MB下发时，刷新用户的MB缓存
