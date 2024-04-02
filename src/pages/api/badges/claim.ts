@@ -7,7 +7,7 @@ import Badge, { BadgeSeries, IBadges } from '@/lib/models/Badge';
 import { errorInterceptor } from '@/lib/middleware/error';
 import { ResponseData } from '@/lib/response/response';
 import { redis } from '@/lib/redis/client';
-import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import UserMoonBeamAudit, { saveInviteeNoviceBadgeMoonBeam, UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import doTransaction from '@/lib/mongodb/transaction';
 import { th } from 'date-fns/locale';
 import logger from '@/lib/logger/winstonLogger';
@@ -74,7 +74,6 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
     const inviterId = await checkNoviceNotchInviter(userId, badge);
-    console.log('inviterId:', inviterId);
     // 构建领取徽章对象
     const claimBadge: any = {};
     const now = Date.now();
@@ -92,9 +91,15 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         $set: claimBadge,
       }, opts);
       if (inviterId) {
+        // 当前用户有邀请人，更新邀请人的指标，添加用户的邀请奖励
         await incrUserMetric(inviterId, Metric.TotalNoviceBadgeInvitee, 1, session);
+        await saveInviteeNoviceBadgeMoonBeam(userId, inviterId, session);
       }
     });
+    // 当有邀请人时，刷新邀请人的MB缓存
+    if (inviterId) {
+      await try2AddUser2MBLeaderboard(inviterId);
+    }
     // 当有MB下发时，刷新用户的MB缓存
     if (reward.mb > 0) {
       await try2AddUser2MBLeaderboard(userId);
@@ -115,7 +120,6 @@ async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<
     return null;
   }
   if (badge.id !== process.env.NOICE_BADGE_ID) {
-    console.log('badge.id:', badge.id);
     return null;
   }
   // 当前是新手徽章，检查用户的邀请人
