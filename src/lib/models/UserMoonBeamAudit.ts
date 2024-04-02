@@ -14,6 +14,8 @@ export enum UserMoonBeamAuditType {
     InviteeRegistration = "invitee_registration",
     // 被邀请用户完成新手徽章，当用户得到新手徽章时视为完成注册，会给邀请者奖励
     InviteeNoviceBadge = "invitee_novice_badge",
+    // 赛季通行证奖励领取
+    BattlePass = "battle_pass",
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)

@@ -2,17 +2,17 @@ import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
-import Badge, { BadgeSeries } from '@/lib/models/Badge';
 import { errorInterceptor } from '@/lib/middleware/error';
-import { ResponseData } from '@/lib/response/response';
 import { redis } from '@/lib/redis/client';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import doTransaction from '@/lib/mongodb/transaction';
-import { th } from 'date-fns/locale';
-import logger from '@/lib/logger/winstonLogger';
 import { try2AddUser2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
+import UserBattlePassSeasons from '@/lib/models/UserBattlePassSeasons';
+import { BattlepassRewardType } from '@/lib/models/BattlePassSeasons';
+import { getCurrentBattleSeason, isPremiumSatisfied } from '@/lib/battlepass/battlepass';
+import UserMetrics from '@/lib/models/UserMetrics';
+import { sendBadgeCheckMessages } from '@/lib/kafka/client';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -24,15 +24,15 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   }
   const userId = req.userId!;
   const rewardType = String(reward_type);
-  const level = String(lv); 
+  const level = String(lv);
 
-  await try2ClaimReward(userId,rewardType,level);
+  const data = await try2ClaimReward(userId, rewardType, level);
 
-  res.json(response.success());
+  res.json(data);
 });
 
 async function try2ClaimReward(userId: string, rewardType: string, level: string): Promise<any> {
-  const claimLock = `claim_badge_lock:${rewardType}:${userId}`;
+  const claimLock = `claim_battlepass_reward_lock:${level}:${rewardType}:${userId}`;
   const locked = await redis.set(claimLock, Date.now(), "EX", 60, "NX");
   if (!locked) {
     return response.success({
@@ -40,52 +40,95 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     })
   }
   try {
-    // 检查用户达成的徽章
-    const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: rewardType });
-    if (!userBadge) {
-      return response.success({
-        result: 'Badge not obtained.',
-      });
+    //若为高阶通证领取奖励，需要判断当前是否仍有资格
+    if (rewardType === BattlepassRewardType.Premium) {
+      const isPremium: boolean = await isPremiumSatisfied(userId);
+      if (!isPremium) {
+        return response.success({ result: "You are not meet the condition for PREMIUM." });
+      }
     }
-    const series = userBadge.series.get(level)
-    if (!series) {
-      return response.success({
-        result: 'You are not eligible to claim this badge level.',
-      });
+
+    //检查用户是否有赛季通行证
+    const currentBattleSeason = await getCurrentBattleSeason();
+    if (!currentBattleSeason) {
+      return response.success({ result: "Out of battle pass season." });
     }
-    // 检查用户是否已经领取过该徽章
-    if (series.claimed_time) {
-      return response.success({
-        result: 'Badge already claimed.',
-      });
+
+    const userBattlepass = await UserBattlePassSeasons.findOne({ user_id: userId, battlepass_season_id: currentBattleSeason.id })
+    if (!userBattlepass) {
+      return response.success({ result: "You don't have a battle pass." });
     }
-    const reward = await constructBadgeMoonbeamReward(userBadge, level)
-    // 构建领取徽章对象
-    const claimBadge: any = {};
+    //检查用户满足该等级领取条件
+    let satisfied: boolean = false;
+    let targetRecord: any;
+    if (rewardType === BattlepassRewardType.Premium) {
+      for (let p of Object.keys(userBattlepass.reward_records.get('premium'))) {
+        if (p === level) {
+          targetRecord = userBattlepass.reward_records.get('premium')[p];
+          if (targetRecord.claimed_time) {
+            return response.success({ result: 'You already claimed reward.' })
+          }
+          satisfied = true;
+          break;
+        }
+      }
+    } else {
+      for (let p of Object.keys(userBattlepass.reward_records.get('standard'))) {
+        if (p === level) {
+          targetRecord = userBattlepass.reward_records.get('standard')[p];
+          if (targetRecord.claimed_time) {
+            return response.success({ result: 'You already claimed reward.' });
+          }
+          satisfied = true;
+          break;
+        }
+      }
+    }
+    if (!satisfied) {
+      return response.success({ result: "You are not meet the condition for reward." });
+    }
+
+    // 构建奖励领取对象
+    const reward = await constructBattlepassMoonbeamReward(userId, currentBattleSeason, rewardType, level)
+    if (reward.mb === 0) {
+      return response.success({ result: "Internal error." });
+    }
+    //创建用赛季通证奖励领取对象
+    const claimReward: any = {};
     const now = Date.now();
-    for (let s of reward.series) {
-      claimBadge[`series.${s}.claimed_time`] = now;
+    //claimReward[`reward_records.${rewardType}.${level}.satisfied_time`] = targetRecord.satisfied_time;
+    claimReward[`reward_records.${rewardType}.${level}.claimed_time`] = now;
+    claimReward['$inc'] = { total_moon_beam: reward.mb };
+    claimReward['updated_time'] = now;
+
+    const metricUpdate: any = {};
+    if (rewardType === BattlepassRewardType.Premium) {
+      metricUpdate[`battlepass_season_${currentBattleSeason.id}_premium_pass`] = userBattlepass.finished_tasks;
     }
+    metricUpdate[`battlepass_season_${currentBattleSeason.id}_standard_pass`] = userBattlepass.finished_tasks;
     // 领取徽章、发放用户奖励
     await doTransaction(async (session) => {
       const opts = { session };
       if (reward.mb > 0) {
-        await UserMoonBeamAudit.bulkSave(reward.audits, opts);
+        await reward.audit.save(opts);
         await User.updateOne({ user_id: userId }, { $inc: { moon_beam: reward.mb } }, opts);
       }
-      await UserBadges.updateOne({ user_id: userId, badge_id: rewardType }, {
-        $set: claimBadge,
+      await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: currentBattleSeason.id }, {
+        $set: claimReward,
       }, opts);
+      await UserMetrics.updateOne({ user_id: userId }, metricUpdate, opts);
     });
+    //发送消息给消息队列，检查一下，是否满足徽章下发条件
+    await sendBadgeCheckMessages(userId, metricUpdate);
     // 当有MB下发时，刷新用户的MB缓存
     if (reward.mb > 0) {
       await try2AddUser2MBLeaderboard(userId);
       return response.success({
-        result: `You have claimed badge and received ${reward.mb} MB.`,
+        result: `You have claimed reward and received ${reward.mb} MB.`,
       });
     }
     return response.success({
-      result: 'You have claimed badge.',
+      result: 'You have claimed reward.',
     });
   } finally {
     await redis.del(claimLock);
@@ -93,65 +136,38 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
 }
 
 // 构建徽章下发的奖励，如MB
-async function constructBadgeMoonbeamReward(userBadge: IUserBadges, level: string): Promise<{ mb: number, series: string[], audits: any[] }> {
-  const badge = await Badge.findOne({ id: userBadge.badge_id });
-  if (!badge) {
-    throw new Error(`Badge ${userBadge.badge_id} should but not found.`);
+async function constructBattlepassMoonbeamReward(userId: string, currentBattleSeason: any, rewardType: string, level: string): Promise<{ mb: number, audit: any }> {
+  //判断是否为高阶通证下发奖励
+  let targetReward: any;
+  if (rewardType === BattlepassRewardType.Premium) {
+    for (let c of currentBattleSeason.premium_pass.keys()) {
+      if (c === level) {
+        targetReward = currentBattleSeason.premium_pass.get(c);
+        break;
+      }
+    }
+  } else {
+    for (let c of currentBattleSeason.standard_pass.keys()) {
+      if (c === level) {
+        targetReward = currentBattleSeason.standard_pass.get(c);
+        break;
+      }
+    }
   }
-  let badgeSeries: any[] = [];
-  // 把徽章系列转为列表，并且加上level属性
-  badge.series.forEach((bs: BadgeSeries, lvl: string) => {
-    badgeSeries.push({
-      ...bs,
-      level: lvl,
-    });
-  });
-  // 按level进行升序排列
-  badgeSeries = badgeSeries.sort((a, b) => a.level - b.level);
+  if (!targetReward) {
+    return { mb: 0, audit: undefined }
+  }
 
-  // 遍历系列，领取直到level的所有未领取的奖励
-  let rewards: any[] = [];
-  let mb = 0;
-  let claimSeries: string[] = [];
-  const now = Date.now();
-  for (let s of badgeSeries) {
-    if (Number(s.level) > Number(level)) {
-      break;
-    }
-    // 检查是否已经领取
-    const claimedLvl = userBadge.series.get(s.level);
-    if (claimedLvl && claimedLvl.claimed_time) {
-      // 已经领取奖励，直接跳过
-      logger.debug(`user ${userBadge.user_id} badge ${badge.id} series ${s.level} claimed, skip.`);
-      continue;
-    }
-    // 检查当前徽章的奖励
-    if (s.reward_moon_beam == undefined) {
-      throw new Error(`Badge ${badge.id} series ${s.level} reward_moon_beam should but not found.`);
-    }
-    // 记录领取的系列等级，用户标识已经领取对应系列的奖励
-    claimSeries.push(s.level);
-    if (s.reward_moon_beam == 0) {
-      logger.debug(`Badge ${badge.id} series ${s.level} reward_moon_beam is 0, skip.`);
-      continue;
-    }
-    logger.debug(`user ${userBadge.user_id} claiming badge ${badge.id} series ${s.level} mb ${s.reward_moon_beam}.`);
-    mb += s.reward_moon_beam;
-    rewards.push(new UserMoonBeamAudit({
-      user_id: userBadge.user_id,
-      type: UserMoonBeamAuditType.Badges,
-      moon_beam_delta: s.reward_moon_beam,
-      reward_taint: `badge:${userBadge.badge_id},level:${s.level},user:${userBadge.user_id}`,
-      corr_id: userBadge.badge_id,
-      extra_info: s.level,
-      created_time: now,
-    }));
-  }
-  return {
-    mb,
-    series: claimSeries,
-    audits: rewards,
-  };
+  let audit = new UserMoonBeamAudit({
+    user_id: userId,
+    type: UserMoonBeamAuditType.BattlePass,
+    moon_beam_delta: targetReward.reward_moon_beam,
+    reward_taint: `season_id:${currentBattleSeason.id},type:${rewardType},level:${level},user:${userId}`,
+    corr_id: currentBattleSeason.id,
+    extra_info: level,
+    created_time: Date.now(),
+  })
+  return { mb: targetReward.reward_moon_beam, audit: audit }
 }
 
 // this will run if none of the above matches

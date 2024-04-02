@@ -1,8 +1,13 @@
 import { Document, models, Schema } from 'mongoose';
 import connectToMongoDbDev from '@/lib/mongodb/client';
 
+export enum BattlepassRewardType {
+  Premium = 'premium',
+  Standard = 'standard',
+}
 
 export type PassSeries = {
+  reward_type: BattlepassRewardType;
   // 赛季等级达成条件
   task_line: number;
   // 奖励的MB数量

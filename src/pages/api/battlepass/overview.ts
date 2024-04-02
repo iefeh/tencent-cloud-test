@@ -7,7 +7,6 @@ import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePa
 import Badges from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
 import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
-import UserBadges from '@/lib/models/UserBadges';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -23,9 +22,9 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   let isPremium: boolean = false;
   //处理通行证各等级信息
   let userBattleSeason: any;
-  
-  const userId = req.userId!;
 
+  const userId = req.userId;
+  console.log(userId);
   if (userId) {
     userBattleSeason = await UserBattlePassSeasons.findOne({
       user_id: userId,

@@ -24,8 +24,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
       "finished_tasks": 0,
       "max_lv": 0,
       "reward_records": {
-        "standard": null,
-        "premium": null
+        "standard": {},
+        "premium": {}
       },
       "total_moon_beam": 0,
       "created_time": Date.now(),
