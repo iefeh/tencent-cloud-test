@@ -1,6 +1,6 @@
 import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import Image from 'next/image';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import shortCardBgImg from 'img/common/battlepass/bg_card_short.png';
@@ -15,11 +15,7 @@ interface Props {
 }
 
 const BattlePassCard: FC<Props> = ({ block, noPass }) => {
-  const { init } = useBattlePassContext();
-
-  useEffect(() => {
-    noPass || init();
-  }, []);
+  // const {} = useBattlePassContext();
 
   return (
     <div
