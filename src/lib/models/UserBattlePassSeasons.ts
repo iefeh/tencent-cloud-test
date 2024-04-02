@@ -20,7 +20,6 @@ type RewardRecords = {
 export interface IUserBattlePassSeasons extends Document {
   user_id: string; //用户ID
   battlepass_season_id: number; //赛季ID
-  started: boolean; //赛季是否已启动
   finished_tasks: number; //完成任务数
   max_lv: number; //赛季最大等级
   reward_records: RewardRecords; //奖励记录，记录用户各等级达成时间和领取时间
@@ -32,7 +31,6 @@ export interface IUserBattlePassSeasons extends Document {
 const UserBattlePassSeasonsSchema = new Schema({
   user_id: { type: String, required: true },
   battlepass_season_id: { type: Number, required: true },
-  started: { type: Boolean, default: false },
   finished_tasks: { type: Number },
   max_lv: { type: Number },
   reward_records: { type: Map },
