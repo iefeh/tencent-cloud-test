@@ -17,21 +17,22 @@ import User from '@/lib/models/User';
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
-  const { badge_id, badge_lv } = req.body;
-  if (!badge_id || !badge_lv) {
+  const { reward_type, lv } = req.body;
+  if (!reward_type || !lv) {
     res.json(response.invalidParams());
     return;
   }
+  const userId = req.userId!;
+  const rewardType = String(reward_type);
+  const level = String(lv); 
 
-  const badgeId = String(badge_id);
-  const lv = String(badge_lv);
-  let userId = req.userId!;
-  const data = await try2ClaimBadge(userId, badgeId, lv)
-  res.json(data);
+  await try2ClaimReward(userId,rewardType,level);
+
+  res.json(response.success());
 });
 
-async function try2ClaimBadge(userId: string, badgeId: string, level: string): Promise<any> {
-  const claimLock = `claim_badge_lock:${badgeId}:${userId}`;
+async function try2ClaimReward(userId: string, rewardType: string, level: string): Promise<any> {
+  const claimLock = `claim_badge_lock:${rewardType}:${userId}`;
   const locked = await redis.set(claimLock, Date.now(), "EX", 60, "NX");
   if (!locked) {
     return response.success({
@@ -40,7 +41,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
   }
   try {
     // 检查用户达成的徽章
-    const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: badgeId });
+    const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: rewardType });
     if (!userBadge) {
       return response.success({
         result: 'Badge not obtained.',
@@ -72,7 +73,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         await UserMoonBeamAudit.bulkSave(reward.audits, opts);
         await User.updateOne({ user_id: userId }, { $inc: { moon_beam: reward.mb } }, opts);
       }
-      await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
+      await UserBadges.updateOne({ user_id: userId, badge_id: rewardType }, {
         $set: claimBadge,
       }, opts);
     });

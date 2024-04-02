@@ -55,3 +55,17 @@ export async function updateUserBattlepassMetricAndBadgeCheck(userId: string, qu
     });//检查是否可以下发徽章
   }
 }
+
+
+//判断用户是否具有高阶通行证资格
+export async function isPremiumSatisfied(user_id: string): Promise<boolean> {
+  const user_metric: any = await UserMetrics.findOne({ user_id: user_id });
+  let satisfied: boolean = false;
+  if (user_metric) {
+    if (Number(user_metric.tetra_holder) === 1) {
+      satisfied = true;
+    }
+  }
+
+  return satisfied;
+}
