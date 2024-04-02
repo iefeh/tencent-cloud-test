@@ -1,0 +1,28 @@
+import Image from 'next/image';
+import { FC } from 'react';
+import earthBgImg from 'img/common/battlepass/bg_index_earth.png';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import ArrowRightSVG from 'svg/arrow_right.svg';
+import styles from './index.module.css';
+
+const IndexScreen: FC = () => {
+  return (
+    <div className="oppo-box w-full h-[44.1875rem] relative z-10 flex justify-center items-center">
+      <Image className="object-contain bg-bottom" src={earthBgImg} alt="" fill sizes="100%" />
+
+      <div className="font-semakin text-[9.375rem] text-transparent relative z-0">
+        <div className={styles.strokeText} data-text="Rock’it"></div>
+        <div className={styles.strokeText} data-text="To the Moon"></div>
+      </div>
+
+      <LGButton
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 uppercase"
+        label="Tasks"
+        actived
+        suffix={<ArrowRightSVG className="w-7 h-7" />}
+      />
+    </div>
+  );
+};
+
+export default IndexScreen;
