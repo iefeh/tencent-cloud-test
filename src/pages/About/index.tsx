@@ -13,7 +13,7 @@ import { FreeMode, Mousewheel } from "swiper/modules";
 import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
 import PageDesc from "../components/common/PageDesc";
 import Head from "next/head";
-import EntertainmentSlide from "../components/home/EntertainmentSlide";
+import EntertainmentSlide from "./EntertainmentSlide";
 import { scrollRef, scrollStart } from "../../hooks/scroll";
 
 interface Figure {
@@ -218,7 +218,7 @@ export default function About({
               onSwiper={setSwiperFigure}
             >
               <SwiperSlide>
-                <EntertainmentSlide needAni={true} />
+                <EntertainmentSlide />
 
                 <div className="mask absolute left-[80vw] top-0 h-screen w-[40vw]"></div>
               </SwiperSlide>
