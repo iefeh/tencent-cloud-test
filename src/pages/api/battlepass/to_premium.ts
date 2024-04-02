@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
-import { getCurrentBattleSeasonId } from './overview';
+import { getCurrentBattleSeasonId } from '@/lib/battlepass/battlepass';
 import UserMetrics from '@/lib/models/UserMetrics';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -15,7 +15,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   //将用户通行证由低阶切换至高阶
   let success: boolean = true;
   let msg: string = "";
-  const user_metric = await UserMetrics.findOne({ user_id: userId });
   const satisfied: boolean = await isPremiumSatisfied(userId);
   if (satisfied) {
     const season_id = await getCurrentBattleSeasonId();
@@ -40,12 +39,12 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 export async function isPremiumSatisfied(user_id: string): Promise<boolean> {
   const user_metric: any = await UserMetrics.findOne({ user_id: user_id });
   let satisfied: boolean = false;
-  if(user_metric){
+  if (user_metric) {
     if (Number(user_metric.tetra_holder) === 1) {
       satisfied = true;
     }
   }
-  
+
   return satisfied;
 }
 // this will run if none of the above matches

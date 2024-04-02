@@ -8,6 +8,7 @@ export enum BattlePassType {
 //用户达成的奖励
 type Reward = {
   satisfied_time: number;
+  expired_time?: number;//通过过期时间确保用户没法取得升级为高阶通证之前的奖励。
   claimed_time?: number;
 };
 
@@ -43,7 +44,6 @@ const UserBattlePassSeasonsSchema = new Schema({
 });
 
 UserBattlePassSeasonsSchema.index({ user_id: 1, battlepass_season_id: 1 }, { unique: true });
-UserBattlePassSeasonsSchema.index({ user_id: 1 }, { unique: true });
 
 const connection = connectToMongoDbDev();
 const UserBattlePassSeasons =

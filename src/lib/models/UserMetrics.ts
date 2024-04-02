@@ -46,6 +46,9 @@ export enum Metric {
   //NFT等级，对应创世者徽章
   TetraHolder = 'tetra_holder',
   //新手任务完成徽章
+  //第1赛季完成任务数记录字段
+  BattlepassSeason1PremiumPass = 'battlepass_season_1_premium_pass',
+  BattlepassSeason1StandardPass = 'battlepass_season_1_standard_pass'
 }
 
 // 用户内部指标，存放单独的集合
@@ -88,6 +91,9 @@ export interface IUserMetrics extends Document {
   retweet_count: number;
   //NFT等级
   tetra_holder: number;
+  //第1赛季完成任务数
+  battlepass_season_1_premium_pass: number;
+  battlepass_season_1_standard_pass: number;
   // 创建时间毫秒时间戳
   created_time: number;
 }
@@ -116,6 +122,8 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   twitter_followed_astrark: { Type: Number },
   retweet_count: { Type: Number },
   tetra_holder: { Type: Number },
+  battlepass_season_1_premium_pass: { Type: Number },
+  battlepass_season_1_standard_pass: { Type: Number },
   created_time: { type: Number, required: true },
 });
 

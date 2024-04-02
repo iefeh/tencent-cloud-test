@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBattlePassSeasons from '@/lib/models/UserBattlePassSeasons';
-import { getCurrentBattleSeasonId } from './overview';
+import { getCurrentBattleSeasonId } from '@/lib/battlepass/battlepass';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
