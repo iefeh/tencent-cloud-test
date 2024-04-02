@@ -3,8 +3,8 @@ import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
-import { getCurrentBattleSeasonId } from './overview';
-import { isPremiumSatisfied } from './to_premium';
+import { getCurrentBattleSeasonId } from '@/lib/battlepass/battlepass';
+import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -23,10 +23,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
       "started": false,
       "finished_tasks": 0,
       "max_lv": 0,
-      "type": is_premium ? BattlePassType.PremiumPass : BattlePassType.StandardPass,
       "reward_records": {
-        "standard": null,
-        "premium": null
+        "standard": {},
+        "premium": {}
       },
       "total_moon_beam": 0,
       "created_time": Date.now(),

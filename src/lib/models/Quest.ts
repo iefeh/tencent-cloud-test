@@ -1,5 +1,5 @@
-import {Document, Schema, models, model} from 'mongoose'
-import {QuestRewardType, QuestType} from "@/lib/quests/types";
+import { Document, Schema, models, model } from 'mongoose'
+import { QuestRewardType, QuestType } from "@/lib/quests/types";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
@@ -30,6 +30,8 @@ export interface IQuest extends Document {
         range_reward_ids: string[],
         // 徽章列表id，任务可能会奖励的徽章，这里只是为了展示用.
         badge_ids: string[],
+        //任务权重
+        season_pass_progress: number
     },
     // 任务是否激活，不展示未激活
     active: boolean;
@@ -48,28 +50,30 @@ export interface IQuest extends Document {
 }
 
 const QuestSchema = new Schema<IQuest>({
-    id: {type: String, required: true},
-    name: {type: String},
-    description: {type: String, default: null},
-    tip: {type: String, default: null},
-    type: {type: String},
+    id: { type: String, required: true },
+    name: { type: String },
+    description: { type: String, default: null },
+    tip: { type: String, default: null },
+    type: { type: String },
     properties: Schema.Types.Mixed,
     reward: {
-        type: {type: String},
-        amount: {type: Number},
-        amount_formatted: {type: String},
+        type: { type: String },
+        amount: { type: Number },
+        amount_formatted: { type: String },
         range_reward_ids: [String],
+        badge_ids: [String],
+        season_pass_progress: { type: Number }
     },
-    active: {type: Boolean, default: false},
-    order: {type: Number},
-    start_time: {type: Number},
-    end_time: {type: Number},
-    created_time: {type: Number},
-    updated_time: {type: Number},
-    deleted_time: {type: Number},
+    active: { type: Boolean, default: false },
+    order: { type: Number },
+    start_time: { type: Number },
+    end_time: { type: Number },
+    created_time: { type: Number },
+    updated_time: { type: Number },
+    deleted_time: { type: Number },
 });
 // 任务唯一索引
-QuestSchema.index({id: 1}, {unique: true});
+QuestSchema.index({ id: 1 }, { unique: true });
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();

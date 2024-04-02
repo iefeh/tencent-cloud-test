@@ -8,6 +8,7 @@ export enum BattlePassType {
 //用户达成的奖励
 type Reward = {
   satisfied_time: number;
+  expired_time?: number;//通过过期时间确保用户没法取得升级为高阶通证之前的奖励。
   claimed_time?: number;
 };
 
@@ -22,7 +23,6 @@ export interface IUserBattlePassSeasons extends Document {
   started: boolean; //赛季是否已启动
   finished_tasks: number; //完成任务数
   max_lv: number; //赛季最大等级
-  type: BattlePassType; //通证类型
   reward_records: RewardRecords; //奖励记录，记录用户各等级达成时间和领取时间
   total_moon_beam: number; //该赛季获得的MB数
   created_time: number; //创建时间
@@ -35,7 +35,6 @@ const UserBattlePassSeasonsSchema = new Schema({
   started: { type: Boolean, default: false },
   finished_tasks: { type: Number },
   max_lv: { type: Number },
-  type: { type: String },
   reward_records: { type: Map },
   total_moon_beam: { type: Number },
   created_time: { type: Number },
@@ -43,7 +42,6 @@ const UserBattlePassSeasonsSchema = new Schema({
 });
 
 UserBattlePassSeasonsSchema.index({ user_id: 1, battlepass_season_id: 1 }, { unique: true });
-UserBattlePassSeasonsSchema.index({ user_id: 1 }, { unique: true });
 
 const connection = connectToMongoDbDev();
 const UserBattlePassSeasons =

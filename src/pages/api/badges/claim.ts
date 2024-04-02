@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
-import Badge, { BadgeSeries } from '@/lib/models/Badge';
+import Badge, { BadgeSeries, IBadges } from '@/lib/models/Badge';
 import { errorInterceptor } from '@/lib/middleware/error';
 import { ResponseData } from '@/lib/response/response';
 import { redis } from '@/lib/redis/client';
@@ -13,6 +13,8 @@ import { th } from 'date-fns/locale';
 import logger from '@/lib/logger/winstonLogger';
 import { try2AddUser2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
+import UserInvite from '@/lib/models/UserInvite';
+import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -39,6 +41,18 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     })
   }
   try {
+    // 检查徽章
+    const badge = await Badge.findOne({ id: badgeId });
+    if (!badge) {
+      return response.success({
+        result: "Unknown badge.",
+      })
+    }
+    if (!badge.active) {
+      return response.success({
+        result: "Badge cannot be clamed temporarily.",
+      })
+    }
     // 检查用户达成的徽章
     const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: badgeId });
     if (!userBadge) {
@@ -58,14 +72,15 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         result: 'Badge already claimed.',
       });
     }
-    const reward = await constructBadgeMoonbeamReward(userBadge, level)
+    const reward = await constructBadgeMoonbeamReward(userBadge, level);
+    const inviterId = await checkNoviceNotchInviter(userId, badge);
     // 构建领取徽章对象
     const claimBadge: any = {};
     const now = Date.now();
     for (let s of reward.series) {
       claimBadge[`series.${s}.claimed_time`] = now;
     }
-    // 领取徽章、发放用户奖励
+    // 领取徽章、发放用户奖励、邀请者拉新指标更新
     await doTransaction(async (session) => {
       const opts = { session };
       if (reward.mb > 0) {
@@ -75,6 +90,9 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
         $set: claimBadge,
       }, opts);
+      if (inviterId) {
+        await incrUserMetric(inviterId, Metric.TotalNoviceBadgeInvitee, 1, session);
+      }
     });
     // 当有MB下发时，刷新用户的MB缓存
     if (reward.mb > 0) {
@@ -89,6 +107,21 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
   } finally {
     await redis.del(claimLock);
   }
+}
+
+async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<string | null> {
+  if (!badge) {
+    return null;
+  }
+  if (badge.id !== process.env.NOVICE_NOTCH_BADGE_ID) {
+    return null;
+  }
+  // 当前是新手徽章，检查用户的邀请人
+  const inviter = await UserInvite.findOne({ invitee_id: userId });
+  if (!inviter) {
+    return null;
+  }
+  return inviter.user_id;
 }
 
 // 构建徽章下发的奖励，如MB

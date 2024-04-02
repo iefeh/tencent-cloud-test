@@ -2,8 +2,7 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {redis} from "@/lib/redis/client";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {signupConfirmationExpired} from "@/lib/response/response";
+import {UserContextRequest} from "@/lib/middleware/auth";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
 import User from "@/lib/models/User";
@@ -19,6 +18,8 @@ import {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {errorInterceptor} from "@/lib/middleware/error";
 import {timeoutInterceptor} from "@/lib/middleware/timeout";
 import logger from "@/lib/logger/winstonLogger";
+import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from "@/lib/models/UserMoonBeamAudit";
+import { Metric, incrUserMetric } from "@/lib/models/UserMetrics";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -35,6 +36,7 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
     const payload = JSON.parse(payloadStr) as SignupPayload;
     // 保存用户信息
     try {
+        payload.user.moon_beam = payload.invite?NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0;
         await doTransaction(async function (session) {
             const opts = {session};
             const user = new User(payload.user);
@@ -65,6 +67,8 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
             if (payload.invite) {
                 const invite = new UserInvite(payload.invite);
                 await invite.save(opts);
+                await saveNewInviteeRegistrationMoonBeamAudit(payload.user.user_id, payload.invite.user_id, session);
+                await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
             }
         });
     } catch (e) {

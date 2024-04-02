@@ -1,42 +1,19 @@
 import { Document, models, Schema } from 'mongoose';
 import connectToMongoDbDev from '@/lib/mongodb/client';
 
-type Reward = {
-  reward_moon_beam: number;
-  badge_id: string;
-};
-
-export type PassSeries = {
-  // 赛季等级达成条件
-  requirements: Requirement[];
-  // 奖励的MB数量
-  reward: Reward;
-  //等级图标
-  image_url?: string;
-};
-
-export type Requirement = {
-  // 必须满足的条件类型，可以为白名单、指标等
-  type: RequirementType;
-  // 必须满足的条件属性，根据type不同，属性不同
-  properties: any;
-};
-
-export enum RequirementType {
-  // 用户指标
-  Metric = 'metric',
+export enum BattlepassRewardType {
+  Premium = 'premium',
+  Standard = 'standard',
 }
 
-//前置条件
-export type Precondition = {
-  mandatory: boolean; //是否必须完成
-  metric: string; //指标名称
-};
-
-//前置条件配置
-export type PreconditionConfig = {
-  optional_tasks_require: number; //可选必须完成数量
-  preconditions: Precondition[]; //所有任务ID
+export type PassSeries = {
+  reward_type: BattlepassRewardType;
+  // 赛季等级达成条件
+  task_line: number;
+  // 奖励的MB数量
+  reward_moon_beam: number;
+  //徽章ID
+  badge_id: string;
 };
 
 export interface IBattlePassSeasons extends Document {
