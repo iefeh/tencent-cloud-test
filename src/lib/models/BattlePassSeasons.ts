@@ -59,9 +59,3 @@ const BattlePassSeasons =
   models.BattlePassSeasons ||
   connection.model<IBattlePassSeasons>('BattlePassSeasons', BattlePassSeasonSchema, 'battle_pass_seasons');
 export default BattlePassSeasons;
-
-export async function getCurrentSeasonId(): Promise<number> {
-  const now: number = Date.now();
-  const current_season = await BattlePassSeasons.findOne({ start_time: { $lte: now }, end_time: { $gte: now } });
-  return current_season ? current_season.id : undefined;
-}
