@@ -6,6 +6,8 @@ import ArrowRightSVG from 'svg/arrow_right.svg';
 import styles from './index.module.css';
 import DoubleArrowLeftSVG from 'svg/arrow_double_left.svg';
 import { cn } from '@nextui-org/react';
+import Orbit from '@/components/common/Orbit';
+import starImg from 'img/loyalty/season/orbit_star.png';
 
 interface Props {
   onExplore?: () => void;
@@ -14,7 +16,24 @@ interface Props {
 const IndexScreen: FC<Props> = ({ onExplore }) => {
   return (
     <div className="oppo-box w-full h-screen relative z-10 flex justify-center items-center">
-      <Image className="object-contain bg-bottom" src={earthBgImg} alt="" fill sizes="100%" />
+      <div className="w-full h-[44.1875rem] absolute left-0 bottom-0">
+        <Image className="object-contain bg-bottom" src={earthBgImg} alt="" fill sizes="100%" />
+      </div>
+
+      <Orbit
+        className="!absolute top-[12rem] left-1/2 -translate-x-1/2 z-0"
+        scale={150}
+        defaultDeg={-20}
+        star={<Image className="w-7 h-7" src={starImg} alt="" />}
+      />
+
+      <Orbit
+        className="!absolute top-[4rem] left-1/2 -translate-x-1/2 z-0"
+        scale={160}
+        defaultDeg={12}
+        antiClock
+        star={<Image className="w-7 h-7" src={starImg} alt="" />}
+      />
 
       <div className="font-semakin text-[9.375rem] text-transparent relative z-0">
         <div className={styles.strokeText} data-text="Rock’it">
