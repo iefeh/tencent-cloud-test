@@ -2,50 +2,57 @@ import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import BattlePassSeasons, { BattlePassRewardItemType, PassSeries } from '@/lib/models/BattlePassSeasons';
+import { BattlePassRewardItemType, PassSeries } from '@/lib/models/BattlePassSeasons';
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
 import Badges from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
-import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
+import { getCurrentBattleSeason, premiumSatisfy } from '@/lib/battlepass/battlepass';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).get(async (req, res) => {
   //获得当前赛季
-  const currentSeason = await getCurrentSeason();
+  const currentSeason = await getCurrentBattleSeason();
   if (!currentSeason) {
     res.json(response.notFound('season not found.'));
     return;
   }
 
   //判断是否已参与赛季
-  let isPremium: boolean = false;
-  //处理通行证各等级信息
-  let userBattleSeason: any;
-
   const userId = req.userId;
+  let userBattleSeason: any;//用户赛季通行证
+  let hasBattlePass: boolean = false;
+  let maxLv: number = 0;
+  let passInfo: any = { is_premium: false };
   if (userId) {
     userBattleSeason = await UserBattlePassSeasons.findOne({
       user_id: userId,
       battlepass_season_id: currentSeason.id,
     });
-    isPremium = await isPremiumSatisfied(userId);
+    //判断用户是否有赛季通证
+    if (userBattleSeason) {
+      //取出赛季通行证中的信息
+      maxLv = userBattleSeason.max_lv;
+      hasBattlePass = true;
+      if (userBattleSeason.is_premium) {
+        passInfo.is_premium = userBattleSeason.is_premium;
+        passInfo.premium_type = userBattleSeason.premium_type;
+      } else {
+        passInfo = await premiumSatisfy(userId);
+      }
+    }
   }
 
   let premiumPass: any[];
   let standardPass: any[];
   [premiumPass, standardPass] = await enrichBattlepassLevelInfos(currentSeason, userBattleSeason);
-  let hasBattlePass: boolean = false;
-  let maxLv: number = 0;
-  if (userBattleSeason) {
-    maxLv = userBattleSeason.max_lv;
-    hasBattlePass = true;
-  }
 
   res.json(
     response.success({
       has_battle_pass: hasBattlePass, //是否拥有赛季通行证
-      is_premium: isPremium, //是否为高阶通行证
+      is_premium: passInfo.is_premium, //是否为高阶通行证
+      premium_type: passInfo.premium_type,//高阶通证类型
+      all_requirements: passInfo.is_premium ? undefined : passInfo.all_requirements,
       max_lv: maxLv, //用户当前最大等级
       start_time: currentSeason.start_time,
       end_time: currentSeason.end_time,
@@ -55,24 +62,20 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   );
 });
 
-async function getCurrentSeason(): Promise<any> {
-  //获得当前赛季
-  const now: number = Date.now();
-  const current_season = await BattlePassSeasons.findOne({ start_time: { $lte: now }, end_time: { $gte: now } });
-
-  return current_season;
-}
-
+//增加赛季通证各等级信息，主要是徽章信息
 async function enrichBattlepassLevelInfos(current_season: any, user_battle_season: any): Promise<any[]> {
   let premium_pass: any[] = [];
   let standard_pass: any[] = [];
   let badge_ids: any[] = [];
   let badge_id: string;
+
+  //处理标准通证，为了方便后续处理，将所以等级转化为数组
   current_season.standard_pass.forEach((ps: PassSeries, lvl: string) => {
     standard_pass.push({
       ...ps,
       lv: lvl,
     });
+    //将各等级中的徽章ID保存起来，用于后续查找
     for (let r of ps.rewards) {
       if (r.type === BattlePassRewardItemType.Badge) {
         badge_id = r.properties.badge_id;
@@ -82,6 +85,7 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
       }
     }
   });
+  //同样的方式处理高阶通证，和各等级徽章ID
   current_season.premium_pass.forEach((ps: PassSeries, lvl: string) => {
     premium_pass.push({
       ...ps,
@@ -96,6 +100,7 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
       }
     }
   });
+  //根据等级进行排序
   standard_pass = standard_pass.sort((a, b) => a.lv - b.lv);
   premium_pass = premium_pass.sort((a, b) => a.lv - b.lv);
 
@@ -117,9 +122,9 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
   for (let b of badges) {
     for (let k of Object.keys(b.series)) {
       targetSeries = b.series[String(k)];
-      delete targetSeries.requirements;
-      delete targetSeries.open_for_mint;
-      delete targetSeries.reward_moon_beam;
+      // delete targetSeries.requirements;
+      // delete targetSeries.open_for_mint;
+      // delete targetSeries.reward_moon_beam;
       badgeInfos.set(b.id + k, targetSeries);
     }
   }
