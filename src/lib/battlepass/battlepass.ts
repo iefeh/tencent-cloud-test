@@ -107,10 +107,16 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
       for (let p of r.properties) {
         targetBadge = badgeInfos.get(p.badge_id)
         if (targetBadge) {
-          if (targetBadge.series[p.lvl]?.claimed_time != null) {
-            badgeSatisfied = true;
-          } else {
-            badgeSatisfied = false;
+          for (let s of Object.keys(targetBadge.series)) {
+            if (targetBadge.series[s]?.claimed_time != null) {
+              //判断是否有更高阶的徽章被领取
+              if (Number(s) >= Number(p.lvl)) {
+                badgeSatisfied = true;
+                break;
+              }
+            } else {
+              badgeSatisfied = false;
+            }
           }
         }
         //当有多个徽章等级要求时，出现一个不满足即退出不再进行判断，即多徽章要求之间是且的关系。若需要徽章之间是或的关系，则可以配置成单个的要求。
@@ -135,7 +141,7 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
       for (let p of r.properties) {
         const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
         if (userWallet) {
-          const userNFT = await ContractNFT.findOne({ wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, transaction_status: 'confirmed' });
+          const userNFT = await ContractNFT.findOne({ wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, deleted_time: null, transaction_status: 'confirmed' });
           nftSatisfied = !!userNFT;
         } else {
           nftSatisfied = false;
