@@ -20,7 +20,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     {
       "user_id": user_id,
       "battlepass_season_id": season_id,
-      "started": false,
       "finished_tasks": 0,
       "max_lv": 0,
       "reward_records": {

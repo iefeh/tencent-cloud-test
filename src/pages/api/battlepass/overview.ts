@@ -2,7 +2,7 @@ import type { NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
 import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import BattlePassSeasons from '@/lib/models/BattlePassSeasons';
+import BattlePassSeasons, { BattlePassRewardItemType, PassSeries } from '@/lib/models/BattlePassSeasons';
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
 import Badges from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
@@ -24,7 +24,6 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   let userBattleSeason: any;
 
   const userId = req.userId;
-  console.log(userId);
   if (userId) {
     userBattleSeason = await UserBattlePassSeasons.findOne({
       user_id: userId,
@@ -36,19 +35,15 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   let premiumPass: any[];
   let standardPass: any[];
   [premiumPass, standardPass] = await enrichBattlepassLevelInfos(currentSeason, userBattleSeason);
-
-  let started: boolean = false;
   let hasBattlePass: boolean = false;
   let maxLv: number = 0;
   if (userBattleSeason) {
-    started = userBattleSeason.started;
     maxLv = userBattleSeason.max_lv;
     hasBattlePass = true;
   }
 
   res.json(
     response.success({
-      started: started, //用户赛季是否已开始
       has_battle_pass: hasBattlePass, //是否拥有赛季通行证
       is_premium: isPremium, //是否为高阶通行证
       max_lv: maxLv, //用户当前最大等级
@@ -71,21 +66,38 @@ async function getCurrentSeason(): Promise<any> {
 async function enrichBattlepassLevelInfos(current_season: any, user_battle_season: any): Promise<any[]> {
   let premium_pass: any[] = [];
   let standard_pass: any[] = [];
-
   let badge_ids: any[] = [];
   let badge_id: string;
-  for (let s of current_season.standard_pass.keys()) {
-    badge_id = current_season.standard_pass.get(s).badge_id;
-    if (badge_id) {
-      badge_ids.push(badge_id);
+  current_season.standard_pass.forEach((ps: PassSeries, lvl: string) => {
+    standard_pass.push({
+      ...ps,
+      lv: lvl,
+    });
+    for (let r of ps.rewards) {
+      if (r.type === BattlePassRewardItemType.Badge) {
+        badge_id = r.properties.badge_id;
+        if (badge_id && badge_ids.indexOf(badge_id) === -1) {
+          badge_ids.push(badge_id);
+        }
+      }
     }
-  }
-  for (let s of current_season.premium_pass.keys()) {
-    badge_id = current_season.premium_pass.get(s).badge_id;
-    if (badge_id) {
-      badge_ids.push(badge_id);
+  });
+  current_season.premium_pass.forEach((ps: PassSeries, lvl: string) => {
+    premium_pass.push({
+      ...ps,
+      lv: lvl,
+    });
+    for (let r of ps.rewards) {
+      if (r.type === BattlePassRewardItemType.Badge) {
+        badge_id = r.properties.badge_id;
+        if (badge_id && badge_ids.indexOf(badge_id) === -1) {
+          badge_ids.push(badge_id);
+        }
+      }
     }
-  }
+  });
+  standard_pass = standard_pass.sort((a, b) => a.lv - b.lv);
+  premium_pass = premium_pass.sort((a, b) => a.lv - b.lv);
 
   //查询徽章信息
   let pipeline: PipelineStage[] = [
@@ -100,44 +112,50 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
   ];
   let badges: any[] = await Badges.aggregate(pipeline);
   //处理徽章图标等信息
-  let badge_infos: Map<string, any> = new Map();
-  let target_series: any;
+  let badgeInfos: Map<string, any> = new Map();
+  let targetSeries: any;
   for (let b of badges) {
     for (let k of Object.keys(b.series)) {
-      target_series = b.series[String(k)];
-      delete target_series.requirements;
-      delete target_series.open_for_mint;
-      delete target_series.reward_moon_beam;
-      badge_infos.set(b.id + k, target_series);
+      targetSeries = b.series[String(k)];
+      delete targetSeries.requirements;
+      delete targetSeries.open_for_mint;
+      delete targetSeries.reward_moon_beam;
+      badgeInfos.set(b.id + k, targetSeries);
     }
   }
-
-  //拼接用户徽章信息
-  for (let s of current_season.standard_pass.keys()) {
-    target_series = current_season.standard_pass.get(s);
-    badge_id = target_series.badge_id;
-    target_series.lv = s;
-    target_series.icon_url = badge_infos.get(badge_id + s).icon_url;
-    target_series.image_url = badge_infos.get(badge_id + s).image_url;
-    target_series.description = badge_infos.get(badge_id + s).description;
-    if (user_battle_season) {
-      target_series.satisfied_time = user_battle_season.reward_records.standard?.get(s)?.satisfied_time;
-      target_series.claimed_time = user_battle_season.reward_records.standard?.get(s)?.claimed_time;
+  let record: any;
+  //拼接用户徽章和领取信息信息
+  for (let s of standard_pass) {
+    for (let r of s.rewards) {
+      if (r.type === BattlePassRewardItemType.Badge) {
+        badge_id = r.properties.badge_id;
+        r.properties.icon_url = badgeInfos.get(badge_id + s.lv).icon_url;
+        r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
+        r.properties.description = badgeInfos.get(badge_id + s.lv).description;
+      }
     }
-    standard_pass.push(target_series);
+    if (user_battle_season) {
+      record = user_battle_season.reward_records.get('standard')[s.lv];
+      s.satisfied_time = record?.satisfied_time;
+      s.claimed_time = record?.claimed_time;
+    }
+    // standard_pass.push(targetSeries);
   }
-  for (let s of current_season.premium_pass.keys()) {
-    target_series = current_season.premium_pass.get(s)
-    badge_id = target_series.badge_id;
-    target_series.lv = s;
-    target_series.icon_url = badge_infos.get(badge_id + s).icon_url;
-    target_series.image_url = badge_infos.get(badge_id + s).image_url;
-    target_series.description = badge_infos.get(badge_id + s).description;
-    if (user_battle_season) {
-      target_series.satisfied_time = user_battle_season.reward_records.premium_pass?.get(s)?.satisfied_time;
-      target_series.claimed_time = user_battle_season.reward_records.premium_pass?.get(s)?.claimed_time;
+  for (let s of premium_pass) {
+    for (let r of s.rewards) {
+      if (r.type === BattlePassRewardItemType.Badge) {
+        badge_id = r.properties.badge_id;
+        r.properties.icon_url = badgeInfos.get(badge_id + s.lv).icon_url;
+        r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
+        r.properties.description = badgeInfos.get(badge_id + s.lv).description;
+      }
     }
-    premium_pass.push(target_series);
+    if (user_battle_season) {
+      record = user_battle_season.reward_records.get('premium')[s.lv];
+      s.satisfied_time = record?.satisfied_time;
+      s.claimed_time = record?.claimed_time;
+    }
+    // premium_pass.push(targetSeries);
   }
 
   return [premium_pass, standard_pass];

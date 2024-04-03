@@ -6,14 +6,25 @@ export enum BattlepassRewardType {
   Standard = 'standard',
 }
 
+export enum BattlePassRewardItemType {
+  Badge = 'badge',//奖励徽章
+  MoonBeam = 'moon_beam'//奖励mb
+}
+
+type Reward = {
+  type: BattlePassRewardItemType
+  properties: any;
+}
+
 export type PassSeries = {
   reward_type: BattlepassRewardType;
   // 赛季等级达成条件
   task_line: number;
-  // 奖励的MB数量
-  reward_moon_beam: number;
-  //徽章ID
-  badge_id: string;
+  // // 奖励的MB数量
+  // reward_moon_beam: number;
+  // //徽章ID
+  // badge_id: string;
+  rewards: Reward[]
 };
 
 export interface IBattlePassSeasons extends Document {

@@ -9,7 +9,7 @@ import doTransaction from '@/lib/mongodb/transaction';
 import { try2AddUser2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
 import UserBattlePassSeasons from '@/lib/models/UserBattlePassSeasons';
-import { BattlepassRewardType } from '@/lib/models/BattlePassSeasons';
+import { BattlepassRewardType, BattlePassRewardItemType } from '@/lib/models/BattlePassSeasons';
 import { getCurrentBattleSeason, isPremiumSatisfied } from '@/lib/battlepass/battlepass';
 import UserMetrics from '@/lib/models/UserMetrics';
 import { sendBadgeCheckMessages } from '@/lib/kafka/client';
@@ -91,14 +91,13 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     // 构建奖励领取对象
     const reward = await constructBattlepassMoonbeamReward(userId, currentBattleSeason, rewardType, level)
     if (reward.mb === 0) {
-      return response.success({ result: "Internal error." });
+      return response.success({ result: "Do not reward moon beam." });
     }
     //创建用赛季通证奖励领取对象
     const claimReward: any = {};
     const now = Date.now();
     //claimReward[`reward_records.${rewardType}.${level}.satisfied_time`] = targetRecord.satisfied_time;
     claimReward[`reward_records.${rewardType}.${level}.claimed_time`] = now;
-    claimReward['$inc'] = { total_moon_beam: reward.mb };
     claimReward['updated_time'] = now;
 
     const metricUpdate: any = {};
@@ -115,6 +114,7 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
       }
       await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: currentBattleSeason.id }, {
         $set: claimReward,
+        $inc: { total_moon_beam: reward.mb }
       }, opts);
       await UserMetrics.updateOne({ user_id: userId }, metricUpdate, opts);
     });
@@ -157,17 +157,28 @@ async function constructBattlepassMoonbeamReward(userId: string, currentBattleSe
   if (!targetReward) {
     return { mb: 0, audit: undefined }
   }
+  //获得奖励mb的奖励
+  let moonBeamReward: any;
+  for (let r of targetReward.rewards) {
+    if (r.type === BattlePassRewardItemType.MoonBeam) {
+      moonBeamReward = r;
+      break;
+    }
+  }
+  if (!moonBeamReward) {
+    return { mb: 0, audit: undefined }
+  }
 
   let audit = new UserMoonBeamAudit({
     user_id: userId,
     type: UserMoonBeamAuditType.BattlePass,
-    moon_beam_delta: targetReward.reward_moon_beam,
+    moon_beam_delta: moonBeamReward.properties.reward_moon_beam,
     reward_taint: `season_id:${currentBattleSeason.id},type:${rewardType},level:${level},user:${userId}`,
     corr_id: currentBattleSeason.id,
     extra_info: level,
     created_time: Date.now(),
   })
-  return { mb: targetReward.reward_moon_beam, audit: audit }
+  return { mb: audit.moon_beam_delta, audit: audit }
 }
 
 // this will run if none of the above matches
