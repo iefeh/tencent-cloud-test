@@ -1,6 +1,6 @@
 import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import Image from 'next/image';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import shortCardBgImg from 'img/common/battlepass/bg_card_short.png';
@@ -15,7 +15,11 @@ interface Props {
 }
 
 const BattlePassCard: FC<Props> = ({ block, noPass }) => {
-  // const {} = useBattlePassContext();
+  const { info, init } = useBattlePassContext();
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <div
@@ -52,7 +56,7 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
         <LGButton
           className="uppercase"
           label="Explore Now"
-          link="/LoyaltyProgram/season"
+          link={noPass || !info ? '/LoyaltyProgram/season/foresight' : '/LoyaltyProgram/season'}
           actived
           suffix={noPass ? <ArrowRightSVG className="w-7 h-7" /> : undefined}
         />

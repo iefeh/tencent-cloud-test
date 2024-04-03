@@ -40,6 +40,7 @@ const config: Config = {
       },
       colors: {
         notion: '#ff4848',
+        'basic-blue': '#4C95C7',
         'basic-yellow': '#f6c799',
         'basic-gray': '#1D1D1D',
         'light-gray': '#999999',
@@ -65,7 +66,8 @@ const config: Config = {
         base: '0.625rem',
       },
       spacing: {
-        ten: '0.625rem'
+        ten: '0.625rem',
+        '1px': '1px',
       }
     },
   },

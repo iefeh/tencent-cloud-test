@@ -1,12 +1,31 @@
 import http from '../index';
 
-export interface BattlePassDTO {
-  reward_moon_beam: number;
-  badge_id: string;
-  icon_url: string;
-  image_url: string;
-  description: string;
+export interface BattlePassBadgeRewardDTO {
+  type: 'badge';
+  properties: {
+    badge_id: string;
+    description: string;
+    icon_url: string;
+    image_url: string;
+  };
+}
+
+export interface BattlePassMBRewardDTO {
+  type: 'moon_beam';
+  properties: {
+    reward_moon_beam: number;
+  };
+}
+
+export type BattlePassRewardDTO = BattlePassBadgeRewardDTO | BattlePassMBRewardDTO;
+
+export interface BattlePassLevelDTO {
   lv: string;
+  reward_type: string;
+  rewards: BattlePassRewardDTO[];
+  task_line: number;
+  satisfied_time?: number | null;
+  claimed_time?: number | null;
 }
 
 export interface BattleInfoDTO {
@@ -22,7 +41,8 @@ export interface BattleInfoDTO {
   start_time: number;
   /** 结束时间 */
   end_time: number;
-  standard_pass: BattlePassDTO[];
+  standard_pass?: BattlePassLevelDTO[];
+  premium_pass?: BattlePassLevelDTO[];
 }
 
 export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
