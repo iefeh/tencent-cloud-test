@@ -168,15 +168,15 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
                 updated_time: Date.now()
             }, { upsert: true, session: session });
             //指标不采用inc的原因是防止中途用户从标准通证升级为高阶通证，导致任务数不对。
-            let metricUpdateDoc: any = {};
-            metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_standard_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
-            if (userBattlepass.type === BattlePassType.PremiumPass) {
-                metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_premium_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
-            }
-            await UserMetrics.updateOne({ user_id: userId }, metricUpdateDoc, { upsert: true, session: session });
-            await sendBadgeCheckMessages(userId, metricUpdateDoc).catch((error: Error) => {
-                console.log(error);
-            });//检查是否可以下发徽章;//检查是否可以下发徽章
+            // let metricUpdateDoc: any = {};
+            // metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_standard_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
+            // if (userBattlepass.type === BattlePassType.PremiumPass) {
+            //     metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_premium_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
+            // }
+            // await UserMetrics.updateOne({ user_id: userId }, metricUpdateDoc, { upsert: true, session: session });
+            // await sendBadgeCheckMessages(userId, metricUpdateDoc).catch((error: Error) => {
+            //     console.log(error);
+            // });//检查是否可以下发徽章;//检查是否可以下发徽章
         }
     });
     return totalMbDelta;
