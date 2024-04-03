@@ -4,7 +4,6 @@ import earthBgImg from 'img/common/battlepass/bg_index_earth.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import ArrowRightSVG from 'svg/arrow_right.svg';
 import styles from './index.module.css';
-import rocketImg from 'img/loyalty/season/rocket.png';
 
 const IndexScreen: FC = () => {
   return (
@@ -25,12 +24,6 @@ const IndexScreen: FC = () => {
         label="Tasks"
         actived
         suffix={<ArrowRightSVG className="w-7 h-7" />}
-      />
-
-      <Image
-        className="w-[3.75rem] h-[19.3125rem] object-contain absolute left-1/2 -top-8 -translate-x-1/2 z-0"
-        src={rocketImg}
-        alt=""
       />
     </div>
   );
