@@ -3,12 +3,17 @@ import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
 import RocketScreen from '@/components/LoyaltyProgram/season/hasPass/RocketScreen';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import rocketImg from 'img/loyalty/season/rocket.png';
 
 function SeasonBattle() {
   const { init } = useBattlePassContext();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  function onExplore() {
+    contentRef.current?.scrollTo({ top: window.innerHeight });
+  }
 
   useEffect(() => {
     init();
@@ -21,8 +26,8 @@ function SeasonBattle() {
       </Head>
 
       <div className="w-full h-screen">
-        <div className="w-full h-screen rotate-180 overflow-y-auto [&>.oppo-box]:rotate-180">
-          <HasPassIndexScreen />
+        <div ref={contentRef} className="w-full h-screen rotate-180 overflow-y-auto [&>.oppo-box]:rotate-180">
+          <HasPassIndexScreen onExplore={onExplore} />
 
           <RocketScreen />
 

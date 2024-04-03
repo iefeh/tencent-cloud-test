@@ -4,8 +4,14 @@ import earthBgImg from 'img/common/battlepass/bg_index_earth.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import ArrowRightSVG from 'svg/arrow_right.svg';
 import styles from './index.module.css';
+import DoubleArrowLeftSVG from 'svg/arrow_double_left.svg';
+import { cn } from '@nextui-org/react';
 
-const IndexScreen: FC = () => {
+interface Props {
+  onExplore?: () => void;
+}
+
+const IndexScreen: FC<Props> = ({ onExplore }) => {
   return (
     <div className="oppo-box w-full h-screen relative z-10 flex justify-center items-center">
       <Image className="object-contain bg-bottom" src={earthBgImg} alt="" fill sizes="100%" />
@@ -24,6 +30,19 @@ const IndexScreen: FC = () => {
         label="Tasks"
         actived
         suffix={<ArrowRightSVG className="w-7 h-7" />}
+      />
+
+      <LGButton
+        className={cn([
+          'w-[7.5rem] h-[7.5rem] text-base font-semakin leading-5',
+          'absolute left-1/2 top-24 -translate-x-1/2',
+          "!bg-[url('/img/loyalty/season/btn_circle.png')] bg-contain bg-no-repeat",
+          '[&>div]:whitespace-normal [&>div]:flex-col',
+        ])}
+        label="Explore Now"
+        actived
+        prefix={<DoubleArrowLeftSVG className="w-4 h-4 mx-auto rotate-90 font-bold mb-1" />}
+        onClick={onExplore}
       />
     </div>
   );
