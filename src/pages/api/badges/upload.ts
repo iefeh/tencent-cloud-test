@@ -14,7 +14,8 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 const NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
 
 router.post(async (req, res) => {
-    const badgesDirPath = "/Users/yuanyouhe/projects/MoonveilEntertainment/moonveil-site/src/pages/api/badges/images";
+    return;
+    const badgesDirPath = "";
     const badgeNames = fs.readdirSync(badgesDirPath);
     for (const badgeName of badgeNames) {
         const badgeDirPath = path.join(badgesDirPath, badgeName);
