@@ -2,6 +2,7 @@ import { FC } from 'react';
 import Step from './Step';
 import { useBattlePassContext } from '@/store/BattlePass';
 import PrefixStep from './PrefixStep';
+import { observer } from 'mobx-react-lite';
 
 const Ladder: FC = () => {
   const { info } = useBattlePassContext();
@@ -30,4 +31,4 @@ const Ladder: FC = () => {
   );
 };
 
-export default Ladder;
+export default observer(Ladder);

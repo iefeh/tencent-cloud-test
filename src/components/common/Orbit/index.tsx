@@ -93,7 +93,7 @@ const Orbit: FC<Props> = ({ className, scale = 1, speed = 1, defaultDeg = 0, sta
       ])}
       style={{ width: size, height: size }}
     >
-      <div ref={starRef}>{star}</div>
+      {star && <div ref={starRef}>{star}</div>}
     </div>
   );
 };

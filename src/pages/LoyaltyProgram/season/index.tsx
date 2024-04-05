@@ -3,17 +3,29 @@ import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
 import RocketScreen from '@/components/LoyaltyProgram/season/hasPass/RocketScreen';
-import { useEffect, useRef } from 'react';
+import { UIEventHandler, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import rocketImg from 'img/loyalty/season/rocket.png';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import ArrowRightSVG from 'svg/arrow_right.svg';
+import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
 
 function SeasonBattle() {
   const { init } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [afterIndexPage, setAfterIndexPage] = useState(false);
 
   function onExplore() {
     contentRef.current?.scrollTo({ top: window.innerHeight });
   }
+
+  const onContentScroll: UIEventHandler<HTMLDivElement> = (e) => {
+    const {
+      currentTarget: { scrollTop },
+    } = e;
+
+    console.log(scrollTop);
+  };
 
   useEffect(() => {
     init();
@@ -25,15 +37,15 @@ function SeasonBattle() {
         <title>Season | Moonveil Entertainment</title>
       </Head>
 
-      <div className="w-full h-screen">
-        <div ref={contentRef} className="w-full h-screen rotate-180 overflow-y-auto [&>.oppo-box]:rotate-180">
+      <div className="w-full h-screen relative">
+        <div
+          ref={contentRef}
+          className="w-full h-screen rotate-180 overflow-y-auto overflow-x-hidden [&>.oppo-box]:rotate-180"
+          onScroll={onContentScroll}
+        >
           <HasPassIndexScreen onExplore={onExplore} />
 
           <RocketScreen />
-
-          <div className="bg-red-300 w-full h-screen">3</div>
-          <div className="bg-blue-300 w-full h-screen">4</div>
-          <div className="bg-gray-400 w-full h-screen">5</div>
 
           <Image
             className="oppo-box w-[3.75rem] h-[19.3125rem] object-contain absolute left-1/2 top-[100vh] -translate-x-1/2 z-10"
@@ -41,6 +53,15 @@ function SeasonBattle() {
             alt=""
           />
         </div>
+
+        <LGButton
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 uppercase"
+          label="Tasks"
+          actived
+          suffix={<ArrowRightSVG className="w-7 h-7" />}
+        />
+
+        <FloatParts />
       </div>
     </section>
   );
