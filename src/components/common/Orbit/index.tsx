@@ -9,13 +9,23 @@ interface Props {
   star?: JSX.Element;
   antiClock?: boolean;
   sinkTime?: number;
+  isCircle?: boolean;
 }
 
-const Orbit: FC<Props> = ({ className, scale = 1, speed = 1, defaultDeg = 0, star, antiClock, sinkTime = 2000 }) => {
+const Orbit: FC<Props> = ({
+  className,
+  scale = 1,
+  speed = 1,
+  defaultDeg = 0,
+  star,
+  antiClock,
+  sinkTime = 2000,
+  isCircle,
+}) => {
   const size = `${scale}rem`;
   const containerRef = useRef<HTMLDivElement>(null);
   const starRef = useRef<HTMLDivElement>(null);
-  const maxDegRef = useRef(0);
+  const maxDegRef = useRef(Infinity);
   const rafIdRef = useRef(0);
   const lastElRef = useRef(0);
   const lastDegRef = useRef(defaultDeg);
@@ -31,30 +41,37 @@ const Orbit: FC<Props> = ({ className, scale = 1, speed = 1, defaultDeg = 0, sta
       return;
     }
 
-    if (isSinkingRef.current) {
-      if (diff >= sinkTime) {
-        isSinkingRef.current = false;
-        lastElRef.current = el;
-        isSunriseRef.current = true;
-        starRef.current.style.visibility = 'visible';
+    if (!isCircle) {
+      if (isSinkingRef.current) {
+        if (diff >= sinkTime) {
+          isSinkingRef.current = false;
+          lastElRef.current = el;
+          isSunriseRef.current = true;
+          starRef.current.style.visibility = 'visible';
+        }
+        rafIdRef.current = requestAnimationFrame(runOrbitAni);
+        return;
       }
-      rafIdRef.current = requestAnimationFrame(runOrbitAni);
-      return;
-    }
 
-    if (isSunriseRef.current) {
-      isSunriseRef.current = false;
-    } else if (Math.abs(Math.abs(lastDegRef.current) - Math.abs(maxDegRef.current)) < Number.EPSILON) {
-      lastDegRef.current = -lastDegRef.current;
+      if (isSunriseRef.current) {
+        isSunriseRef.current = false;
+      } else if (Math.abs(Math.abs(lastDegRef.current) - Math.abs(maxDegRef.current)) < Number.EPSILON) {
+        lastDegRef.current = -lastDegRef.current;
 
-      isSinkingRef.current = true;
-      starRef.current.style.visibility = 'hidden';
-      rafIdRef.current = requestAnimationFrame(runOrbitAni);
-      return;
+        isSinkingRef.current = true;
+        starRef.current.style.visibility = 'hidden';
+        rafIdRef.current = requestAnimationFrame(runOrbitAni);
+        return;
+      }
     }
 
     const diffDeg = diff * speed * 0.005 * (antiClock ? -1 : 1);
-    const currentDeg = Math.max(Math.min(lastDegRef.current + diffDeg, maxDegRef.current), -maxDegRef.current);
+    let currentDeg = (lastDegRef.current + diffDeg) % 360;
+
+    if (!isCircle) {
+      currentDeg = Math.max(Math.min(currentDeg, maxDegRef.current), -maxDegRef.current);
+    }
+
     starRef.current.style.transform = `rotateZ(${currentDeg}deg) translateY(-${scale / 2}rem)`;
 
     lastDegRef.current = currentDeg;
@@ -67,11 +84,14 @@ const Orbit: FC<Props> = ({ className, scale = 1, speed = 1, defaultDeg = 0, sta
     if (!containerRef.current || !starRef.current) return;
     const { parentElement, clientWidth } = containerRef.current;
 
-    // 留出星体宽度，防止日落时仍然可见
-    const maxWidth = (parentElement?.clientWidth || 0) + starRef.current.clientWidth * 2;
-    if (!maxWidth) return;
+    if (!isCircle) {
+      // 留出星体宽度，防止日落时仍然可见
+      const maxWidth = (parentElement?.clientWidth || 0) + starRef.current.clientWidth * 2;
+      if (!maxWidth) return;
 
-    maxDegRef.current = Math.abs((Math.asin(maxWidth / clientWidth) * 180) / Math.PI);
+      maxDegRef.current = Math.abs((Math.asin(maxWidth / clientWidth) * 180) / Math.PI);
+    }
+
     lastElRef.current = performance.now();
     rafIdRef.current = requestAnimationFrame(runOrbitAni);
 

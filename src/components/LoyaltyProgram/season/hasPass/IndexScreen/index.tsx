@@ -7,8 +7,8 @@ import DoubleArrowLeftSVG from 'svg/arrow_double_left.svg';
 import { cn } from '@nextui-org/react';
 import Orbit from '@/components/common/Orbit';
 import starImg from 'img/loyalty/season/orbit_star.png';
-import Astronaut from '../../Planetoid';
-import Planetoid from '../../Astronaut';
+import Astronaut from '../../Astronaut';
+import Planetoid from '../../Planetoid';
 
 interface Props {
   onExplore?: () => void;
@@ -25,7 +25,7 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
         className="!absolute top-[12rem] left-1/2 -translate-x-1/2 z-0"
         scale={150}
         defaultDeg={-20}
-        speed={0.4}
+        speed={1.2}
         sinkTime={5000}
         star={<Image className="w-7 h-7" src={starImg} alt="" />}
       />
@@ -34,7 +34,7 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
         className="!absolute top-[4rem] left-1/2 -translate-x-1/2 z-0"
         scale={160}
         defaultDeg={12}
-        speed={1.2}
+        speed={0.8}
         sinkTime={3000}
         antiClock
         star={<Image className="w-7 h-7" src={starImg} alt="" />}

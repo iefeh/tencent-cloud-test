@@ -7,7 +7,7 @@ const FloatParts: FC = () => {
     <>
       <BattlePass className="!absolute left-16 bottom-16" />
 
-      <PremiumPass className="!absolute right-16 bottom-16" />
+      <PremiumPass className="!absolute right-16 bottom-48" />
     </>
   );
 };
