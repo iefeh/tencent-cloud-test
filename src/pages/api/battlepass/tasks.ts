@@ -1,30 +1,40 @@
 import type { NextApiResponse } from "next";
 import { createRouter } from "next-connect";
-import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import { PipelineStage } from 'mongoose';
 import { enrichUserQuests } from "@/lib/quests/questEnrichment";
 import { getMaxLevelBadge } from "@/pages/api/badges/display";
-import { getCurrentBattleSeason } from '@/lib/battlepass/battlepass';
+import { getCurrentBattleSeason, getUserBattlePass } from "@/lib/battlepass/battlepass";
+
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).post(async (req, res) => {
-    const user_id = req.userId;
-    const userId = String(user_id);
-    const { page_num, page_size } = req.query;
-    if (!page_num || !page_size) {
+router.use(mustAuthInterceptor).get(async (req, res) => {
+    const { page_num, page_size, category } = req.query;
+    let { tag } = req.query;
+    if (!category || !page_num || !page_size) {
         res.json(response.invalidParams());
         return
     }
-    //获得当前赛季
-    const current_season = await getCurrentBattleSeason();
+    let t: string | undefined;
+    if (tag) {
+        t = String(tag);
+    }
+
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
-
-    const pagination = await paginationQuests(pageNum, pageSize);
+    const userId = req.userId!;
+    //判断用户是否拥有赛季通行证
+    const battlepass = await getUserBattlePass(userId!);
+    if (!battlepass) {
+        res.json(response.invalidParams({
+            msg: "user do not have battle pass."
+        }));
+    }
+    //查询查询符合要求的活动
+    const pagination = await paginationQuests(pageNum, pageSize, String(category), t, userId);
     if (pagination.total == 0 || pagination.quests.length == 0) {
         // 当前没有匹配的数据
         res.json(response.success({
@@ -42,6 +52,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     await loadBadgeInfo(quests);
     enrichQuestNewTag(quests);
     res.json(response.success({
+        tags: pagination.tags,
+        current_tag: tag ? tag : undefined,
         total: pagination.total,
         page_num: pageNum,
         page_size: pageSize,
@@ -74,24 +86,52 @@ async function loadBadgeInfo(quests: any[]) {
     }
 }
 
-async function paginationQuests(pageNum: number, pageSize: number): Promise<{ total: number, quests: any[] }> {
+async function paginationQuests(pageNum: number, pageSize: number, category: string, tag: string | undefined, userId: string): Promise<{ tags: any[], total: number, quests: any[] }> {
     const skip = (pageNum - 1) * pageSize;
-    const now = Date.now();
-    const aggregateQuery: PipelineStage[] = [
-        {
-            $match: {
-                'active': true,
-                'deleted_time': null,
-                'start_time': { $lte: now },
-                'end_time': { $gt: now },
-            }
-        },
+    const currentSeason = await getCurrentBattleSeason();
+    let aggregateQuery: PipelineStage[] = [];
+
+    let matchOptions: any = {
+        $match: {
+            'active': true,
+            'deleted_time': null,
+            'category': category,
+            //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,若结束时间在赛季期间可能会有公平性问题，即赛季未开始任务就已经完成了。
+            'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time },
+        }
+    };
+
+    const tags = await loadTags(matchOptions);
+
+    if (tag) {
+        matchOptions.$match.tag = tag;
+    }
+
+    aggregateQuery.push(matchOptions,
         {
             $sort: {
                 // 按照'order'升序排序
                 'order': 1
             }
-        },
+        }, {
+        $lookup: {
+            from: 'quest_achievements',
+            let: { quest_id: '$id' },
+            pipeline: [
+                {
+                    $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $eq: ['$quest_id', '$$quest_id'] }] } },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        user_id: 1,
+                        quest_id: 1
+                    }
+                }
+            ],
+            as: 'achievements',
+        }
+    },
         {
             $project: {
                 '_id': 0,
@@ -108,16 +148,51 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
                 metadata: [{ $count: "total" }],
                 data: [{ $skip: skip }, { $limit: pageSize }]
             }
-        }
-    ];
+        });
+
     const results = await Quest.aggregate(aggregateQuery);
     if (results[0].metadata.length == 0) {
-        return { total: 0, quests: [] }
+        return { tags: tags, total: 0, quests: [] }
     }
-    return { total: results[0].metadata[0].total, quests: results[0].data }
+    return { tags: tags, total: results[0].metadata[0].total, quests: results[0].data }
 }
 
+async function loadTags(matchOptions: any): Promise<any> {
+    let aggregateQuery: PipelineStage[] = [];
+    aggregateQuery.push(matchOptions, {
+        $group: {
+            _id: '$tag'
+        }
+    }, {//使用vlookup获得该种类下面的所有任务
+        $lookup: {
+            from: 'quest_classifications',
+            let: { id: '$_id' },
+            pipeline: [
+                {
+                    $match: { $expr: { $and: [{ $eq: ['$id', '$$id'] }] } },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        id: 1,
+                        name: 1,
+                        order: 1
+                    }
+                }
+            ],
+            as: 'tag_info',
+        },
+    }, {
+        $sort: { 'tag_info.order': 1 }
+    }, {
+        $unwind: '$tag_info'
+    }, {
+        $project: { _id: 0, tag: '$_id', name: '$tag_info.name' }
+    })
 
+    const tags = await Quest.aggregate(aggregateQuery);
+    return tags;
+}
 // this will run if none of the above matches
 router.all((req, res) => {
     res.status(405).json({

@@ -9,6 +9,10 @@ export interface IQuest extends Document {
     id: string,
     // 任务名称
     name: string,
+    //长期任务的种类
+    category: string,
+    //任务标签
+    tag: string,
     // 任务描述
     description: string,
     // 任务提醒
@@ -52,6 +56,8 @@ export interface IQuest extends Document {
 const QuestSchema = new Schema<IQuest>({
     id: { type: String, required: true },
     name: { type: String },
+    category: { type: String },
+    tag: { type: String },
     description: { type: String, default: null },
     tip: { type: String, default: null },
     type: { type: String },
