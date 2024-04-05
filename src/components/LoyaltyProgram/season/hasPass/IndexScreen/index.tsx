@@ -25,8 +25,8 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
         className="!absolute top-[12rem] left-1/2 -translate-x-1/2 z-0"
         scale={150}
         defaultDeg={-20}
-        speed={0.01}
-        sinkTime={3000}
+        speed={0.4}
+        sinkTime={5000}
         star={<Image className="w-7 h-7" src={starImg} alt="" />}
       />
 
@@ -35,6 +35,7 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
         scale={160}
         defaultDeg={12}
         speed={1.2}
+        sinkTime={3000}
         antiClock
         star={<Image className="w-7 h-7" src={starImg} alt="" />}
       />

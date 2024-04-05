@@ -9,9 +9,10 @@ import rocketImg from 'img/loyalty/season/rocket.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import ArrowRightSVG from 'svg/arrow_right.svg';
 import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
+import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen';
 
 function SeasonBattle() {
-  const { init } = useBattlePassContext();
+  const { init, hasAcheivedFinalPass } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const [afterIndexPage, setAfterIndexPage] = useState(false);
 
@@ -24,7 +25,7 @@ function SeasonBattle() {
       currentTarget: { scrollTop },
     } = e;
 
-    console.log(scrollTop);
+    // console.log(scrollTop);
   };
 
   useEffect(() => {
@@ -46,6 +47,8 @@ function SeasonBattle() {
           <HasPassIndexScreen onExplore={onExplore} />
 
           <RocketScreen />
+
+          {hasAcheivedFinalPass && <FinalScreen />}
 
           <Image
             className="oppo-box w-[3.75rem] h-[19.3125rem] object-contain absolute left-1/2 top-[100vh] -translate-x-1/2 z-10"

@@ -24,9 +24,7 @@ const bgImgs = [
 ];
 
 const FinalReward: FC<Props> = ({ className }) => {
-  const { info } = useBattlePassContext();
-  const { standard_pass = [], premium_pass = [] } = info || {};
-  const finalPass = standard_pass[standard_pass.length - 1] || premium_pass[premium_pass.length - 1];
+  const { finalPass } = useBattlePassContext();
   const { rewards = [] } = finalPass || {};
   const { lv, reward_type, satisfied_time, claimed_time } = finalPass || {};
   const isPremium = reward_type === 'premium';

@@ -1,4 +1,4 @@
-import { BattleInfoDTO, queryBattleInfoAPI } from '@/http/services/battlepass';
+import { BattleInfoDTO, BattlePassLevelDTO, queryBattleInfoAPI } from '@/http/services/battlepass';
 import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
@@ -26,6 +26,17 @@ class BattlePassStore {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  get finalPass(): BattlePassLevelDTO | undefined {
+    const { standard_pass = [], premium_pass = [] } = this.info || {};
+    const finalPass = standard_pass[standard_pass.length - 1] || premium_pass[premium_pass.length - 1];
+    return finalPass;
+  }
+
+  get hasAcheivedFinalPass() {
+    const { satisfied_time } = this.finalPass || {};
+    return !!satisfied_time;
   }
 
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
