@@ -22,6 +22,7 @@ const Ladder: FC = () => {
         <div key={index} className="relative w-0 h-0 z-0">
           <Step
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            isFinal={index === (standard_pass?.length || 0) - 1}
             standardItem={starndardItem}
             premiumItem={premium_pass?.[index]}
           />
