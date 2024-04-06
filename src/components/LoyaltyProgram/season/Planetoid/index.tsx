@@ -9,7 +9,7 @@ interface Props {
 
 const Planetoid: FC<Props> = ({ className }) => {
   return (
-    <div className={cn(['relative', className])}>
+    <div className={cn(['relative animate-float5', className])}>
       <Image className="object-contain" src={planetoidImg} alt="" fill sizes="100%" />
     </div>
   );

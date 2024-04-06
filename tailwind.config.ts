@@ -27,6 +27,20 @@ const config: Config = {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-100%)' },
         },
+        float: {
+          '0%': {
+            transform: 'translateY(0) scale(1)',
+            opacity: '1',
+          },
+          '50%': {
+            transform: 'translateY(-1rem) scale(1.05)',
+            opacity: '0.8',
+          },
+          '100%': {
+            transform: 'translateY(0) scale(1)',
+            opacity: '1',
+          },
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -48,6 +62,8 @@ const config: Config = {
       },
       animation: {
         spin5: 'spin 5s linear infinite',
+        float3: 'float 3s ease-in-out infinite',
+        float5: 'float 5s ease-in-out infinite',
       },
       fontSize: {
         'fz-12': '12px',
@@ -68,7 +84,7 @@ const config: Config = {
       spacing: {
         ten: '0.625rem',
         '1px': '1px',
-      }
+      },
     },
   },
   darkMode: 'class',

@@ -9,7 +9,7 @@ interface Props {
 
 const Astronaut: FC<Props> = ({ className }) => {
   return (
-    <div className={cn(['relative', className])}>
+    <div className={cn(['relative animate-float3', className])}>
       <Image className="object-contain" src={astronautImg} alt="" fill sizes="100%" />
     </div>
   );

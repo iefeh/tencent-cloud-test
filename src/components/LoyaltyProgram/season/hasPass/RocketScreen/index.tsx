@@ -31,6 +31,7 @@ const RocketScreen: FC = () => {
 
     const direction = currentY.current < targetY.current ? 1 : -1;
     const ty = currentY.current + diff * 0.1 * direction;
+    if (ty < targetY.current) return;
     const targetDirection = ty < targetY.current ? 1 : -1;
 
     currentY.current = ty;
@@ -68,19 +69,23 @@ const RocketScreen: FC = () => {
         hasAcheivedFinalPass ? 'mt-[19rem]' : 'mt-60',
       ])}
     >
-      <div className="w-[21.125rem] h-[32.6875rem] absolute left-0 bottom-[52.3125rem]">
+      {/* 半圆星球 */}
+      <div className="w-[21.125rem] h-[32.6875rem] absolute left-0 bottom-[52.3125rem] animate-float5">
         <Image className="object-contain" src={halfPlanetImg} alt="" fill sizes="100%" />
       </div>
 
-      <div className="w-[12.375rem] h-[13.3125rem] absolute left-[21.5rem] bottom-[90rem]">
+      {/* 碎裂彗星 */}
+      <div className="w-[12.375rem] h-[13.3125rem] absolute left-[21.5rem] bottom-[90rem] animate-float3">
         <Image className="object-contain" src={rocksImg} alt="" fill sizes="100%" />
       </div>
 
-      <div className="w-[35.625rem] h-[14.625rem] absolute right-0 bottom-[119rem]">
+      {/* UFO */}
+      <div className="w-[35.625rem] h-[14.625rem] absolute right-0 bottom-[119rem] animate-float5">
         <Image className="object-contain" src={ufoImg} alt="" fill sizes="100%" />
       </div>
 
-      <div className="w-[20.75rem] h-[13rem] absolute right-[8.5rem] bottom-[164rem]">
+      {/* 人造卫星 */}
+      <div className="w-[20.75rem] h-[13rem] absolute right-[8.5rem] bottom-[164rem] animate-float3">
         <Image className="object-contain" src={satelliteImg} alt="" fill sizes="100%" />
       </div>
 
