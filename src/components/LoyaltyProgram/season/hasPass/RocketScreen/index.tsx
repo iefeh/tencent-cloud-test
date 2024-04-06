@@ -10,6 +10,7 @@ import rocksImg from 'img/loyalty/season/rocks.png';
 import halfPlanetImg from 'img/loyalty/season/half_planet.png';
 import satelliteImg from 'img/loyalty/season/satellite.png';
 import Planetoid from '../../Planetoid';
+import rocketImg from 'img/loyalty/season/rocket.png';
 
 const RocketScreen: FC = () => {
   const { hasAcheivedFinalPass } = useBattlePassContext();
@@ -44,6 +45,12 @@ const RocketScreen: FC = () => {
       {hasAcheivedFinalPass || <FinalReward className="mb-16 mt-60" />}
 
       <Ladder />
+
+      <Image
+        className="oppo-box w-[3.75rem] h-[19.3125rem] object-contain absolute left-1/2 -bottom-80 -translate-x-1/2 z-10"
+        src={rocketImg}
+        alt=""
+      />
     </div>
   );
 };

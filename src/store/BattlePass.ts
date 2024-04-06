@@ -39,6 +39,16 @@ class BattlePassStore {
     return !!satisfied_time;
   }
 
+  get maxAcheviedLv() {
+    const { standard_pass = [] } = this.info || {};
+    return standard_pass.reduce((p, c) => (p = !!c.satisfied_time ? Math.max(p, +c.lv) : p), 0) + 1;
+  }
+
+  get currentProgress() {
+    const maxLv = +(this.finalPass?.lv || 0);
+    return this.maxAcheviedLv / maxLv;
+  }
+
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
 
   init = throttle(async (force = false) => {

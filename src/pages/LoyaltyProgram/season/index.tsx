@@ -4,8 +4,6 @@ import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
 import RocketScreen from '@/components/LoyaltyProgram/season/hasPass/RocketScreen';
 import { UIEventHandler, useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
-import rocketImg from 'img/loyalty/season/rocket.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import ArrowRightSVG from 'svg/arrow_right.svg';
 import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
@@ -16,7 +14,7 @@ import { throttle } from 'lodash';
 import { createBattlePassAPI } from '@/http/services/battlepass';
 
 function SeasonBattle() {
-  const { init, info, hasAcheivedFinalPass } = useBattlePassContext();
+  const { init, info, hasAcheivedFinalPass, currentProgress } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const [afterIndexPage, setAfterIndexPage] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -27,7 +25,11 @@ function SeasonBattle() {
   }, 500);
 
   function onExplore() {
-    contentRef.current?.scrollTo({ top: window.innerHeight });
+    const resHeight = 15 + 18 * currentProgress * 10;
+    const fontSize = parseInt(document.documentElement.style.fontSize) || 16;
+    const top = resHeight * fontSize + window.innerHeight / 2;
+
+    contentRef.current?.scrollTo({ top });
   }
 
   const onContentScroll: UIEventHandler<HTMLDivElement> = (e) => {
@@ -62,12 +64,6 @@ function SeasonBattle() {
           <RocketScreen />
 
           {hasAcheivedFinalPass && <FinalScreen />}
-
-          <Image
-            className="oppo-box w-[3.75rem] h-[19.3125rem] object-contain absolute left-1/2 top-[100vh] -translate-x-1/2 z-10"
-            src={rocketImg}
-            alt=""
-          />
         </div>
 
         <LGButton
