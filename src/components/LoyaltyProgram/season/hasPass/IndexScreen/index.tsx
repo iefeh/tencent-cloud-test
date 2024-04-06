@@ -15,6 +15,8 @@ interface Props {
 }
 
 const IndexScreen: FC<Props> = ({ onExplore }) => {
+  const starNode = <Image className="w-7 h-7" src={starImg} alt="" />;
+
   return (
     <div className="oppo-box w-full h-screen relative z-10 flex justify-center items-center">
       <div className="w-full h-[44.1875rem] absolute left-0 bottom-0">
@@ -26,8 +28,8 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
         scale={150}
         defaultDeg={-20}
         speed={1.2}
-        sinkTime={5000}
-        star={<Image className="w-7 h-7" src={starImg} alt="" />}
+        sinkTime={3000}
+        star={starNode}
       />
 
       <Orbit
@@ -35,12 +37,19 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
         scale={160}
         defaultDeg={12}
         speed={0.8}
-        sinkTime={3000}
+        sinkTime={5000}
         antiClock
-        star={<Image className="w-7 h-7" src={starImg} alt="" />}
+        star={starNode}
       />
 
-      <Orbit className="!absolute -top-[4rem] left-1/2 -translate-x-1/2 z-0" scale={170} />
+      <Orbit
+        className="!absolute -top-[4rem] left-1/2 -translate-x-1/2 z-0"
+        scale={170}
+        defaultDeg={-36}
+        speed={0.4}
+        sinkTime={8000}
+        star={starNode}
+      />
 
       <Astronaut className="!absolute right-[4.6875rem] bottom-[33.1875rem] w-[11.8125rem] h-[13.5625rem]" />
 

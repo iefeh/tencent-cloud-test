@@ -10,11 +10,14 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import ArrowRightSVG from 'svg/arrow_right.svg';
 import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
 import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen';
+import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
+import { useDisclosure } from '@nextui-org/react';
 
 function SeasonBattle() {
   const { init, hasAcheivedFinalPass } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const [afterIndexPage, setAfterIndexPage] = useState(false);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function onExplore() {
     contentRef.current?.scrollTo({ top: window.innerHeight });
@@ -64,7 +67,9 @@ function SeasonBattle() {
           suffix={<ArrowRightSVG className="w-7 h-7" />}
         />
 
-        <FloatParts />
+        <FloatParts onRuleClick={onOpen} />
+
+        <RuleModal isOpen={isOpen} onOpenChange={onOpenChange} />
       </div>
     </section>
   );

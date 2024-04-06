@@ -43,6 +43,10 @@ export interface BattleInfoDTO {
   end_time: number;
   standard_pass?: BattlePassLevelDTO[];
   premium_pass?: BattlePassLevelDTO[];
+  all_requirements?: {
+    badge: string[];
+    nft: string[];
+  };
 }
 
 export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
