@@ -11,13 +11,20 @@ import ArrowRightSVG from 'svg/arrow_right.svg';
 import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
 import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen';
 import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
-import { useDisclosure } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
+import { throttle } from 'lodash';
+import { createBattlePassAPI } from '@/http/services/battlepass';
 
 function SeasonBattle() {
-  const { init, hasAcheivedFinalPass } = useBattlePassContext();
+  const { init, info, hasAcheivedFinalPass } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const [afterIndexPage, setAfterIndexPage] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [loading, setLoading] = useState(false);
+
+  const createBattlePass = throttle(async () => {
+    await createBattlePassAPI();
+  }, 500);
 
   function onExplore() {
     contentRef.current?.scrollTo({ top: window.innerHeight });
@@ -44,7 +51,10 @@ function SeasonBattle() {
       <div className="w-full h-screen relative">
         <div
           ref={contentRef}
-          className="w-full h-screen rotate-180 overflow-y-auto overflow-x-hidden [&>.oppo-box]:rotate-180"
+          className={cn([
+            'w-full h-screen rotate-180 overflow-y-auto overflow-x-hidden [&>.oppo-box]:rotate-180',
+            !info && '!overflow-hidden',
+          ])}
           onScroll={onContentScroll}
         >
           <HasPassIndexScreen onExplore={onExplore} />

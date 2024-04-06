@@ -56,3 +56,7 @@ export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
 export function claimBattleRewardAPI(data: { reward_type: string; lv: number }): Promise<{ result: string }> {
   return http.post('/api/battlepass/claim', JSON.stringify(data));
 }
+
+export function createBattlePassAPI() {
+  return http.get('/api/battlepass/participate');
+}

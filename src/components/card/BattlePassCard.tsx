@@ -56,9 +56,7 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
         <LGButton
           className="uppercase"
           label="Explore Now"
-          link={
-            noPass || !info || !info.has_battle_pass ? '/LoyaltyProgram/season/foresight' : '/LoyaltyProgram/season'
-          }
+          link={!noPass ? '/LoyaltyProgram/season/foresight' : '/LoyaltyProgram/season'}
           actived
           suffix={noPass ? <ArrowRightSVG className="w-7 h-7" /> : undefined}
         />
