@@ -41,9 +41,9 @@ class BattlePassStore {
 
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
 
-  init = throttle(async () => {
+  init = throttle(async (force = false) => {
     const now = performance.now();
-    if (now - this.lastEl < 5000) return;
+    if (!force && now - this.lastEl < 5000) return;
 
     const res = await queryBattleInfoAPI();
     this.setInfo(res);

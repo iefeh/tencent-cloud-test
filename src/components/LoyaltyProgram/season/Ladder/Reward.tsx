@@ -1,17 +1,20 @@
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import lockedYellowBg from 'img/loyalty/season/bg_reward_yellow_locked.png';
 import acheivedYellowBg from 'img/loyalty/season/bg_reward_yellow_achevied.png';
 import claimedYellowBg from 'img/loyalty/season/bg_reward_yellow_claimed.png';
 import lockedBlueBg from 'img/loyalty/season/bg_reward_blue_locked.png';
 import acheivedBlueBg from 'img/loyalty/season/bg_reward_blue_achevied.png';
 import claimedBlueBg from 'img/loyalty/season/bg_reward_blue_claimed.png';
-import { BattlePassBadgeRewardDTO, BattlePassLevelDTO } from '@/http/services/battlepass';
+import { BattlePassBadgeRewardDTO, BattlePassLevelDTO, claimBattleRewardAPI } from '@/http/services/battlepass';
 import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import claimedIcon from 'img/loyalty/season/icon_claimed.png';
 import { cn } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import { throttle } from 'lodash';
+import { toast } from 'react-toastify';
+import { useBattlePassContext } from '@/store/BattlePass';
 
 interface Props {
   item?: BattlePassLevelDTO;
@@ -23,6 +26,7 @@ const bgImgs = [
 ];
 
 const Reward: FC<Props> = ({ item }) => {
+  const { init } = useBattlePassContext();
   const { lv, reward_type, satisfied_time, claimed_time, rewards } = item || {};
   const isPremium = reward_type === 'premium';
   const locked = !satisfied_time;
@@ -30,6 +34,18 @@ const Reward: FC<Props> = ({ item }) => {
   const claimed = !!claimed_time;
   const bgImg = bgImgs[isPremium ? 0 : 1]?.[claimed ? 2 : acheived ? 1 : 0];
   const badgeReward = (rewards || []).find((re) => re.type === 'badge') as BattlePassBadgeRewardDTO | undefined;
+  const [loading, setLoading] = useState(false);
+
+  const onClaim = throttle(async () => {
+    setLoading(true);
+    const data = { reward_type: reward_type!, lv: +(lv || 0) };
+    const res = await claimBattleRewardAPI(data);
+    if (res.result) {
+      toast.success(res.result);
+    }
+    await init(true);
+    setLoading(false);
+  }, 500);
 
   const line = (
     <div
@@ -56,7 +72,15 @@ const Reward: FC<Props> = ({ item }) => {
             <div className="relative z-0 w-[6.25rem] h-[6.25rem] overflow-hidden rounded-full flex items-end">
               <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
 
-              {acheived && !claimed && <LGButton className="w-full h-[1.75rem] rounded-none" label="Claim" actived />}
+              {acheived && !claimed && (
+                <LGButton
+                  className="w-full h-[1.75rem] rounded-none"
+                  label="Claim"
+                  actived
+                  loading={loading}
+                  onClick={onClaim}
+                />
+              )}
             </div>
           )}
 
