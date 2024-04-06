@@ -12,8 +12,9 @@ const RuleButton: FC<Props> = ({ className, onRuleClick }) => {
   return (
     <div className={cn(['flex items-center', className])}>
       <Tooltip
+        classNames={{ content: 'p-4 border-1 border-[#2A2A2A] rounded-base' }}
         content={
-          <div className="max-w-[24.25rem] p-4 border-1 border-[#2A2A2A] rounded-base">
+          <div className="max-w-[24.25rem]">
             Level up your season Pass by joining our tasks and events to unlock more exciting rewards!
           </div>
         }

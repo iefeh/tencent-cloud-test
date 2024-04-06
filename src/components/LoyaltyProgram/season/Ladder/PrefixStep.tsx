@@ -7,12 +7,13 @@ import BattlePass from '../BattlePass';
 
 interface Props {
   className?: string;
+  onRuleClick?: () => void;
 }
 
-const PrefixStep: FC<Props> = ({ className }) => {
+const PrefixStep: FC<Props> = ({ className, onRuleClick }) => {
   return (
     <div className={cn(['flex justify-between items-center', className])}>
-      <BattlePass className="w-[11.0625rem]" />
+      <BattlePass className="w-[11.0625rem]" onRuleClick={onRuleClick} />
 
       <div className="w-[17.75rem]"></div>
 

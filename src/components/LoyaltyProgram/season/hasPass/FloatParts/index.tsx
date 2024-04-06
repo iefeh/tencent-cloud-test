@@ -10,7 +10,7 @@ interface Props {
 const FloatParts: FC<Props> = ({ onRuleClick }) => {
   return (
     <>
-      <BattlePass className="!absolute left-16 bottom-16" />
+      <BattlePass className="!absolute left-16 bottom-16" onRuleClick={onRuleClick} />
 
       <PremiumPass className="!absolute right-16 bottom-48" />
 
