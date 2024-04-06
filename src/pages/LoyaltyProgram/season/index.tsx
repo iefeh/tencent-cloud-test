@@ -20,11 +20,14 @@ function SeasonBattle() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
-  const createBattlePass = throttle(async () => {
-    await createBattlePassAPI();
-  }, 500);
+  async function onExplore() {
+    if (!info?.has_battle_pass) {
+      setLoading(true);
+      await createBattlePassAPI();
+      await init(true);
+      setLoading(false);
+    }
 
-  function onExplore() {
     const resHeight = 15 + 18 * currentProgress * 10;
     const fontSize = parseInt(document.documentElement.style.fontSize) || 16;
     const top = resHeight * fontSize + window.innerHeight / 2;
@@ -59,7 +62,7 @@ function SeasonBattle() {
           ])}
           onScroll={onContentScroll}
         >
-          <HasPassIndexScreen onExplore={onExplore} />
+          <HasPassIndexScreen loading={loading} onExplore={onExplore} />
 
           <RocketScreen />
 

@@ -10,12 +10,14 @@ import starImg from 'img/loyalty/season/orbit_star.png';
 import Astronaut from '../../Astronaut';
 import Planetoid from '../../Planetoid';
 import { useBattlePassContext } from '@/store/BattlePass';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
+  loading?: boolean;
   onExplore?: () => void;
 }
 
-const IndexScreen: FC<Props> = ({ onExplore }) => {
+const IndexScreen: FC<Props> = ({ loading, onExplore }) => {
   const { info } = useBattlePassContext();
   const starNode = <Image className="w-7 h-7" src={starImg} alt="" />;
 
@@ -67,18 +69,21 @@ const IndexScreen: FC<Props> = ({ onExplore }) => {
       </div>
 
       {info && (
-        <LGButton
-          className={cn([
-            'w-[7.5rem] h-[7.5rem] text-base font-semakin leading-5',
-            'absolute left-1/2 top-24 -translate-x-1/2',
-            "!bg-[url('/img/loyalty/season/btn_circle.png')] bg-contain bg-no-repeat",
-            '[&>div]:whitespace-normal [&>div]:flex-col',
-          ])}
-          label="Explore Now"
-          actived
-          prefix={<DoubleArrowLeftSVG className="w-4 h-4 mx-auto rotate-90 font-bold mb-1" />}
-          onClick={onExplore}
-        />
+        <div className={cn(['w-[7.5rem] h-[7.5rem]', 'absolute left-1/2 top-24 -translate-x-1/2'])}>
+          <LGButton
+            className={cn([
+              'w-full h-full text-base font-semakin leading-5',
+              "!bg-[url('/img/loyalty/season/btn_circle.png')] bg-contain bg-no-repeat",
+              '[&>div]:whitespace-normal [&>div]:flex-col',
+            ])}
+            label="Explore Now"
+            actived
+            prefix={<DoubleArrowLeftSVG className="w-4 h-4 mx-auto rotate-90 font-bold mb-1" />}
+            onClick={onExplore}
+          />
+
+          {loading && <CircularLoading noBlur loadingText="" />}
+        </div>
       )}
     </div>
   );
