@@ -45,8 +45,17 @@ class BattlePassStore {
   }
 
   get currentProgress() {
-    const maxLv = +(this.finalPass?.lv || 0);
-    return this.maxAcheviedLv / maxLv;
+    const { max_lv = 0, current_progress = 0, is_premium, standard_pass = [], premium_pass = [] } = this.info || {};
+    const nextLv = max_lv + 1;
+    const passList = (is_premium ? premium_pass : standard_pass) || [];
+    const currentPass = passList.find((p) => +p.lv === max_lv);
+    const nextPass = passList.find((p) => +p.lv === nextLv);
+    const lastPass = passList[passList.length - 1];
+    const mainProgress = +lastPass?.lv > 0 ? current_progress / +lastPass.lv : 0;
+    const periodLine = current_progress - +(currentPass?.task_line || 0);
+    const periodTargetLine = +(nextPass?.task_line || 0) - +(currentPass?.task_line || 0);
+    const periodProgress = periodTargetLine > 0 ? periodLine / periodTargetLine : 0;
+    return mainProgress + periodProgress;
   }
 
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
