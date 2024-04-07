@@ -45,6 +45,8 @@ class BattlePassStore {
   }
 
   get currentProgress() {
+    if (this.hasAcheivedFinalPass) return 1;
+
     const { max_lv = 0, current_progress = 0, is_premium, standard_pass = [], premium_pass = [] } = this.info || {};
     const nextLv = max_lv + 1;
     const passList = (is_premium ? premium_pass : standard_pass) || [];
@@ -55,7 +57,6 @@ class BattlePassStore {
     const periodLine = current_progress - +(currentPass?.task_line || 0);
     const periodTargetLine = +(nextPass?.task_line || 0) - +(currentPass?.task_line || 0);
     const periodProgress = periodTargetLine > 0 ? periodLine / periodTargetLine : 0;
-    console.log(mainProgress, periodProgress);
     return mainProgress + periodProgress * 0.1;
   }
 
