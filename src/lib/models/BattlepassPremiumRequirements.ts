@@ -3,7 +3,8 @@ import connectToMongoDbDev from '@/lib/mongodb/client';
 //用户高阶通证获得类型
 export enum BattlePassRequirementType {
   NFT = 'nft',
-  Badge = 'badge'
+  Badge = 'badge',
+  WhiteList = 'white_list'
 }
 
 export interface IBattlepassPremiumRequirement extends Document {

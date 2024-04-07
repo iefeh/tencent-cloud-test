@@ -14,7 +14,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
   let result: boolean = true;
   const season_id = await getCurrentBattleSeasonId();
-  const is_premium = await isPremiumSatisfied(userId);
   //创建通证
   await UserBattlePassSeasons.insertMany([
     {
@@ -34,6 +33,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     console.log(error);
     result = false;
   });
+  const is_premium = await isPremiumSatisfied(userId);
   res.json(
     response.success({
       is_premium: is_premium,
