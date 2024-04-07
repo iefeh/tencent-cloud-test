@@ -12,6 +12,7 @@ import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
 import { cn, useDisclosure } from '@nextui-org/react';
 import { createBattlePassAPI } from '@/http/services/battlepass';
 import MeteorLayer from '@/components/LoyaltyProgram/season/MeteorLayer';
+import ShineBackground from '@/components/LoyaltyProgram/season/ShineBackground';
 
 function SeasonBattle() {
   const { init, info, hasAcheivedFinalPass, progressInfo } = useBattlePassContext();
@@ -64,6 +65,8 @@ function SeasonBattle() {
           ])}
           onScroll={onContentScroll}
         >
+          <ShineBackground key={info?.has_battle_pass ? 1 : 0} />
+
           <HasPassIndexScreen loading={loading} onExplore={onExplore} />
 
           {info?.has_battle_pass && <RocketScreen />}
