@@ -74,6 +74,7 @@ function SeasonBattle() {
           className="absolute bottom-10 left-1/2 -translate-x-1/2 uppercase"
           label="Tasks"
           actived
+          link={`${window?.location?.origin}/LoyaltyProgram/earn?from=lp`}
           suffix={<ArrowRightSVG className="w-7 h-7" />}
         />
 
