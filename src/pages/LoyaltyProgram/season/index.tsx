@@ -10,13 +10,12 @@ import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
 import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen';
 import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
 import { cn, useDisclosure } from '@nextui-org/react';
-import { throttle } from 'lodash';
 import { createBattlePassAPI } from '@/http/services/battlepass';
 
 function SeasonBattle() {
   const { init, info, hasAcheivedFinalPass, currentProgress } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
-  const [afterIndexPage, setAfterIndexPage] = useState(false);
+  const [floatVisible, setFloatVisible] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
@@ -37,10 +36,10 @@ function SeasonBattle() {
 
   const onContentScroll: UIEventHandler<HTMLDivElement> = (e) => {
     const {
-      currentTarget: { scrollTop },
+      currentTarget: { scrollTop, scrollHeight, clientHeight },
     } = e;
 
-    // console.log(scrollTop);
+    setFloatVisible(scrollTop > 5 && (!hasAcheivedFinalPass || scrollHeight - scrollTop - clientHeight > 5));
   };
 
   useEffect(() => {
@@ -51,6 +50,7 @@ function SeasonBattle() {
     <section className="w-full">
       <Head>
         <title>Season | Moonveil Entertainment</title>
+        <link rel="preload" href="/img/loyalty/season/rocket.png" crossOrigin="anonymous"></link>
       </Head>
 
       <div className="w-full h-screen relative">
@@ -58,13 +58,13 @@ function SeasonBattle() {
           ref={contentRef}
           className={cn([
             'w-full h-screen rotate-180 overflow-y-auto overflow-x-hidden [&>.oppo-box]:rotate-180',
-            !info && '!overflow-hidden',
+            !info?.has_battle_pass && '!overflow-hidden',
           ])}
           onScroll={onContentScroll}
         >
           <HasPassIndexScreen loading={loading} onExplore={onExplore} />
 
-          <RocketScreen />
+          {info?.has_battle_pass && <RocketScreen />}
 
           {hasAcheivedFinalPass && <FinalScreen />}
         </div>
@@ -73,10 +73,11 @@ function SeasonBattle() {
           className="absolute bottom-10 left-1/2 -translate-x-1/2 uppercase"
           label="Tasks"
           actived
+          link={`${window?.location?.origin}/LoyaltyProgram/earn?from=lp`}
           suffix={<ArrowRightSVG className="w-7 h-7" />}
         />
 
-        <FloatParts onRuleClick={onOpen} />
+        <FloatParts visible={floatVisible} onRuleClick={onOpen} />
 
         <RuleModal isOpen={isOpen} onOpenChange={onOpenChange} />
       </div>

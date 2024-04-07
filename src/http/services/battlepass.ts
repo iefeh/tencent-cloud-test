@@ -47,6 +47,7 @@ export interface BattleInfoDTO {
     badge: string[];
     nft: string[];
   };
+  current_progress: number;
 }
 
 export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
