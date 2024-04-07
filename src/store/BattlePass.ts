@@ -51,11 +51,12 @@ class BattlePassStore {
     const currentPass = passList.find((p) => +p.lv === max_lv);
     const nextPass = passList.find((p) => +p.lv === nextLv);
     const lastPass = passList[passList.length - 1];
-    const mainProgress = +lastPass?.lv > 0 ? current_progress / +lastPass.lv : 0;
+    const mainProgress = +lastPass?.lv > 0 ? max_lv / +lastPass.lv : 0;
     const periodLine = current_progress - +(currentPass?.task_line || 0);
     const periodTargetLine = +(nextPass?.task_line || 0) - +(currentPass?.task_line || 0);
     const periodProgress = periodTargetLine > 0 ? periodLine / periodTargetLine : 0;
-    return mainProgress + periodProgress;
+    console.log(mainProgress, periodProgress);
+    return mainProgress + periodProgress * 0.1;
   }
 
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
