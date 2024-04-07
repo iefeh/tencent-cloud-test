@@ -23,7 +23,8 @@ const Rocket: FC = () => {
     }
 
     const direction = currentY.current < targetY.current ? 1 : -1;
-    const ty = currentY.current + diff * 0.1 * direction;
+    const speed = 0.1 * (1 + Math.floor(currentProgress / 0.1) * 0.15);
+    const ty = currentY.current + diff * speed * direction;
     if (ty < targetY.current) return;
     const targetDirection = ty < targetY.current ? 1 : -1;
 
