@@ -29,8 +29,9 @@ class BattlePassStore {
   }
 
   get finalPass(): BattlePassLevelDTO | undefined {
-    const { standard_pass = [], premium_pass = [] } = this.info || {};
-    const finalPass = standard_pass[standard_pass.length - 1] || premium_pass[premium_pass.length - 1];
+    const { is_premium, standard_pass = [], premium_pass = [] } = this.info || {};
+    const passList = is_premium ? premium_pass : standard_pass;
+    const finalPass = passList[passList.length - 1];
     return finalPass;
   }
 

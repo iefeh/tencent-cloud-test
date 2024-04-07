@@ -30,6 +30,7 @@ const FinalScreen: FC = () => {
           scale={52}
           defaultDeg={12}
           speed={3}
+          antiClock
           star={starImgNode}
         />
 
