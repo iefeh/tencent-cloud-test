@@ -16,7 +16,7 @@ import { createBattlePassAPI } from '@/http/services/battlepass';
 function SeasonBattle() {
   const { init, info, hasAcheivedFinalPass, currentProgress } = useBattlePassContext();
   const contentRef = useRef<HTMLDivElement>(null);
-  const [afterIndexPage, setAfterIndexPage] = useState(false);
+  const [floatVisible, setFloatVisible] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
@@ -37,10 +37,10 @@ function SeasonBattle() {
 
   const onContentScroll: UIEventHandler<HTMLDivElement> = (e) => {
     const {
-      currentTarget: { scrollTop },
+      currentTarget: { scrollTop, scrollHeight, clientHeight },
     } = e;
 
-    // console.log(scrollTop);
+    setFloatVisible(scrollTop > 5 && (!hasAcheivedFinalPass || scrollHeight - scrollTop - clientHeight > 5));
   };
 
   useEffect(() => {
@@ -77,7 +77,7 @@ function SeasonBattle() {
           suffix={<ArrowRightSVG className="w-7 h-7" />}
         />
 
-        <FloatParts onRuleClick={onOpen} />
+        <FloatParts visible={floatVisible} onRuleClick={onOpen} />
 
         <RuleModal isOpen={isOpen} onOpenChange={onOpenChange} />
       </div>

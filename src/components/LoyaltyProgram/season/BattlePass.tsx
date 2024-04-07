@@ -2,7 +2,7 @@ import BasicButton from '@/pages/components/common/BasicButton';
 import { useBattlePassContext } from '@/store/BattlePass';
 import { Tooltip, cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import nftPassImg from 'img/loyalty/season/pass_nft.png';
 import badgePassImg from 'img/loyalty/season/pass_badge.png';
 import buyPassImg from 'img/loyalty/season/pass_buy.png';
@@ -11,15 +11,19 @@ import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import activedIcon from 'img/loyalty/season/icon_claimed.png';
 import Link from 'next/link';
 import { URL_OPENSEA } from '@/constant/common';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 interface Props {
   className?: string;
+  float?: boolean;
+  visible?: boolean;
   onRuleClick?: () => void;
 }
 
-const BattlePass: FC<Props> = ({ className, onRuleClick }) => {
+const BattlePass: FC<Props> = ({ className, float, visible, onRuleClick }) => {
   const { info } = useBattlePassContext();
   const { is_premium } = info || {};
+  const nodeRef = useRef<HTMLDivElement>(null);
   const passList = [
     {
       actived: false,
@@ -35,8 +39,8 @@ const BattlePass: FC<Props> = ({ className, onRuleClick }) => {
     },
   ];
 
-  return (
-    <div className={cn(['flex flex-col items-center', className])}>
+  const content = (
+    <div ref={nodeRef} className={cn(['flex flex-col items-center', className])}>
       <div className="flex items-center gap-ten">
         {passList.map((item, index) => {
           const passBody = (
@@ -117,6 +121,14 @@ const BattlePass: FC<Props> = ({ className, onRuleClick }) => {
         </Tooltip>
       )}
     </div>
+  );
+
+  if (!float) return content;
+
+  return (
+    <CSSTransition in={visible} classNames="transition-fade-left" nodeRef={nodeRef} timeout={800}>
+      {content}
+    </CSSTransition>
   );
 };
 
