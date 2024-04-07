@@ -10,7 +10,6 @@ import FloatParts from '@/components/LoyaltyProgram/season/hasPass/FloatParts';
 import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen';
 import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
 import { cn, useDisclosure } from '@nextui-org/react';
-import { throttle } from 'lodash';
 import { createBattlePassAPI } from '@/http/services/battlepass';
 
 function SeasonBattle() {
