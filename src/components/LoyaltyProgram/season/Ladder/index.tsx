@@ -5,14 +5,15 @@ import PrefixStep from './PrefixStep';
 import { observer } from 'mobx-react-lite';
 
 const Ladder: FC = () => {
-  const { info, currentProgress } = useBattlePassContext();
+  const { info, progressInfo } = useBattlePassContext();
+  const { totalProgress } = progressInfo || {};
   const { standard_pass, premium_pass } = info || {};
   return (
     <div className="relative z-0 flex flex-col-reverse gap-y-72">
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-ten h-full border-1 border-white/20">
         <div
           className="absolute -left-1px bottom-0 w-ten bg-basic-yellow"
-          style={{ height: `${currentProgress * 100}%` }}
+          style={{ height: `${totalProgress * 100}%` }}
         ></div>
       </div>
 

@@ -5,7 +5,8 @@ import { observer } from 'mobx-react-lite';
 import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
 
 const Rocket: FC = () => {
-  const { currentProgress } = useBattlePassContext();
+  const { progressInfo } = useBattlePassContext();
+  const { totalProgress } = progressInfo;
   const rocketRef = useRef<HTMLDivElement>(null);
   const targetY = useRef(0);
   const currentY = useRef(0);
@@ -23,7 +24,7 @@ const Rocket: FC = () => {
     }
 
     const direction = currentY.current < targetY.current ? 1 : -1;
-    const speed = 0.1 * (1 + Math.floor(currentProgress / 0.1) * 0.15);
+    const speed = 0.1 * (1 + Math.floor(totalProgress / 0.1) * 0.15);
     const ty = currentY.current + diff * speed * direction;
     if (ty < targetY.current) return;
     const targetDirection = ty < targetY.current ? 1 : -1;
@@ -37,10 +38,10 @@ const Rocket: FC = () => {
   }
 
   function initLaunch() {
-    if (currentProgress === Infinity || Number.isNaN(currentProgress) || !rocketRef.current) return;
+    if (totalProgress === Infinity || Number.isNaN(totalProgress) || !rocketRef.current) return;
 
     const fontSize = parseInt(document.documentElement.style.fontSize) || 16;
-    targetY.current = -currentProgress * 10 * fontSize * 18;
+    targetY.current = -totalProgress * 10 * fontSize * 18;
     lastElRef.current = performance.now();
 
     if (rafIdRef.current) {
@@ -60,7 +61,7 @@ const Rocket: FC = () => {
     initLaunch();
 
     return () => turnOff();
-  }, [currentProgress]);
+  }, [totalProgress]);
 
   useEffect(() => {
     if (visible) {

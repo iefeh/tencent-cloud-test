@@ -30,7 +30,7 @@ const FinalReward: FC<Props> = ({ className, visible }) => {
         <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />
 
         <div className="relative z-0 w-28 h-28 overflow-hidden rounded-full flex items-end">
-          <Image className="object-cover" src={image_url} alt="" fill sizes="100%" />
+          {image_url && <Image className="object-cover" src={image_url} alt="" fill sizes="100%" />}
         </div>
 
         <div

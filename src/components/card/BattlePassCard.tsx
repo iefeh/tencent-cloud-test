@@ -15,7 +15,9 @@ interface Props {
 }
 
 const BattlePassCard: FC<Props> = ({ block, noPass }) => {
-  const { info, init } = useBattlePassContext();
+  const { info, init, progressInfo, hasAcheivedFinalPass } = useBattlePassContext();
+  const { max_lv, has_battle_pass } = info || {};
+  const { periodProgress } = progressInfo || {};
 
   useEffect(() => {
     init();
@@ -56,7 +58,7 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
         <LGButton
           className="uppercase"
           label="Explore Now"
-          link={!noPass ? '/LoyaltyProgram/season/foresight' : '/LoyaltyProgram/season'}
+          link={!noPass && !has_battle_pass ? '/LoyaltyProgram/season/foresight' : '/LoyaltyProgram/season'}
           actived
           suffix={noPass ? <ArrowRightSVG className="w-7 h-7" /> : undefined}
         />
@@ -72,9 +74,9 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
               labelWrapper: 'absolute w-full top-6 left-0 text-base',
               label: 'tracking-wider font-medium',
             }}
-            label="Lv.1"
-            value={65}
-            valueLabel="LV.2"
+            label={`Lv.${max_lv || 0}${hasAcheivedFinalPass ? ' MAX' : ''}`}
+            value={periodProgress * 100}
+            valueLabel={hasAcheivedFinalPass ? ' ' : `Lv.${(max_lv || 0) + 1 || '--'}`}
             showValueLabel={true}
           />
         )}

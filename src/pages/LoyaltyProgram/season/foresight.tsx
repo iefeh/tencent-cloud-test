@@ -4,14 +4,22 @@ import MainScreen from '@/components/LoyaltyProgram/season/noPass/MainScreen';
 import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { FC, useEffect } from 'react';
 
 const ForeSightPage: FC = () => {
   const { info, init } = useBattlePassContext();
+  const router = useRouter();
 
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (info && info.has_battle_pass) {
+      router.replace('/LoyaltyProgram/season');
+    }
+  }, [info]);
 
   return (
     <section className="w-full">

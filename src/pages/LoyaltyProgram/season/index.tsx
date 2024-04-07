@@ -11,9 +11,11 @@ import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen'
 import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
 import { cn, useDisclosure } from '@nextui-org/react';
 import { createBattlePassAPI } from '@/http/services/battlepass';
+import MeteorLayer from '@/components/LoyaltyProgram/season/MeteorLayer';
 
 function SeasonBattle() {
-  const { init, info, hasAcheivedFinalPass, currentProgress } = useBattlePassContext();
+  const { init, info, hasAcheivedFinalPass, progressInfo } = useBattlePassContext();
+  const { totalProgress } = progressInfo || {};
   const contentRef = useRef<HTMLDivElement>(null);
   const [floatVisible, setFloatVisible] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -27,7 +29,7 @@ function SeasonBattle() {
       setLoading(false);
     }
 
-    const resHeight = 15 + 18 * currentProgress * 10;
+    const resHeight = 15 + 18 * totalProgress * 10;
     const fontSize = parseInt(document.documentElement.style.fontSize) || 16;
     const top = resHeight * fontSize + window.innerHeight / 2;
 
@@ -50,7 +52,7 @@ function SeasonBattle() {
     <section className="w-full">
       <Head>
         <title>Season | Moonveil Entertainment</title>
-        <link rel="preload" href="/img/loyalty/season/rocket.png" crossOrigin="anonymous"></link>
+        <link rel="preload" as="image" href="/img/loyalty/season/rocket.png" crossOrigin="anonymous"></link>
       </Head>
 
       <div className="w-full h-screen relative">
@@ -78,6 +80,8 @@ function SeasonBattle() {
         />
 
         <FloatParts visible={floatVisible} onRuleClick={onOpen} />
+
+        <MeteorLayer />
 
         <RuleModal isOpen={isOpen} onOpenChange={onOpenChange} />
       </div>
