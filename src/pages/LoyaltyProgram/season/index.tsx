@@ -51,6 +51,7 @@ function SeasonBattle() {
     <section className="w-full">
       <Head>
         <title>Season | Moonveil Entertainment</title>
+        <link rel="preload" href="/img/loyalty/season/rocket.png" crossOrigin="anonymous"></link>
       </Head>
 
       <div className="w-full h-screen relative">

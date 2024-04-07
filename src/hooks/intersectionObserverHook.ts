@@ -1,7 +1,7 @@
 import { MutableRefObject, useEffect, useState } from "react";
 
 interface Props {
-    currentRef: MutableRefObject<null>;
+    currentRef: MutableRefObject<HTMLElement | null>;
     options?: IntersectionObserverInit;
 }
 
