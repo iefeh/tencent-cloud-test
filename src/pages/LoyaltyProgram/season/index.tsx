@@ -58,13 +58,13 @@ function SeasonBattle() {
           ref={contentRef}
           className={cn([
             'w-full h-screen rotate-180 overflow-y-auto overflow-x-hidden [&>.oppo-box]:rotate-180',
-            !info && '!overflow-hidden',
+            !info?.has_battle_pass && '!overflow-hidden',
           ])}
           onScroll={onContentScroll}
         >
           <HasPassIndexScreen loading={loading} onExplore={onExplore} />
 
-          <RocketScreen />
+          {info?.has_battle_pass && <RocketScreen />}
 
           {hasAcheivedFinalPass && <FinalScreen />}
         </div>
