@@ -6,6 +6,7 @@ import UserBadges from '../models/UserBadges';
 import { PipelineStage } from 'mongoose';
 import UserWallet from '../models/UserWallet';
 import ContractNFT from '../models/ContractNFT';
+import { sendBattlepassCheckMessage } from '../kafka/client';
 
 //获得当前赛季ID
 export async function getCurrentBattleSeasonId(): Promise<any> {
@@ -48,6 +49,8 @@ export async function updateUserBattlepass(userId: string, questId: string, mbAm
       $inc: { finished_tasks: seasonPassProgress, total_moon_beam: mbAmont },
       updated_time: Date.now()
     }, { upsert: true, session: session });
+    //检查赛季进度
+    await sendBattlepassCheckMessage(userId);
   }
 }
 
@@ -73,7 +76,7 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
   let result = await premiumSatisfyByBadge(userId, userBattlepass.season_id, requirements, allRequirements);
   if (!result.is_premium) {
     //判断白名单是否满足要求
-    result = await premiumSatisfyByWhiteList(userId, userBattlepass.season_id, requirements, allRequirements);
+    //result = await premiumSatisfyByWhiteList(userId, userBattlepass.season_id, requirements, allRequirements);
   }
   if (!result.is_premium) {
     console.log("whitelist"+result.is_premium);
