@@ -48,8 +48,8 @@ async function getUserTasksOverviewRawInfo(userId: string): Promise<any> {
             $match: {
               'active': true,
               'deleted_time': null,
-              //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,若结束时间在赛季期间可能会有公平性问题，即赛季未开始任务就已经完成了。 
-              'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time },
+              //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,结束时间在赛季期间或开始时间结束时间横跨整个赛季。
+              '$and': [{ '$or': [{ 'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'end_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'start_time': { $lte: currentSeason.start_time }, 'end_time': { $gte: currentSeason.end_time } }] }],
               $expr: { $and: [{ $eq: ['$category', '$$category'] }] }
             },
           },

@@ -4,7 +4,7 @@ import connectToMongoDbDev from '@/lib/mongodb/client';
 export enum BattlePassRequirementType {
   NFT = 'nft',
   Badge = 'badge',
-  WhiteList = 'white_list'
+  WhiteList = 'whitelist'
 }
 
 export interface IBattlepassPremiumRequirement extends Document {

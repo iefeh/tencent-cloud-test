@@ -60,7 +60,7 @@ export async function isPremiumSatisfied(userId: string): Promise<boolean> {
 //判断用户是否高阶通证，及具体的类型
 export async function premiumSatisfy(userId: string): Promise<{ premium_type: string, is_premium: boolean, all_requirements: any }> {
   let satisfied: boolean = false;
-  let allRequirements: any = { badge: [], nft: [] };
+  let allRequirements: any = { badge: [], nft: [], whitelist: [] };
   const seasonId = await getCurrentBattleSeasonId();
   //先查询用户是否已依据徽章获得高阶通证资格
   const userBattlepass = await UserBattlePassSeasons.findOne({ user_id: userId, battlepass_season_id: seasonId });
@@ -68,8 +68,25 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
     return { premium_type: userBattlepass.premium_type, is_premium: userBattlepass.is_premium, all_requirements: allRequirements };
   }
 
-  //先判断徽章是否达到要求,取出徽章ID用于查询
+  //先判断徽章是否达到要求
   const requirements = await BattlePassPremiumRequirements.find({ season_id: seasonId });
+  let result = await premiumSatisfyByBadge(userId, userBattlepass.season_id, requirements, allRequirements);
+  if (!result.is_premium) {
+    //判断白名单是否满足要求
+    result = await premiumSatisfyByWhiteList(userId, userBattlepass.season_id, requirements, allRequirements);
+  }
+  if (!result.is_premium) {
+    console.log("whitelist"+result.is_premium);
+    //判断白名单是否满足要求
+    result = await premiumSatisfyByNFT(userId, userBattlepass.season_id, requirements, allRequirements);
+  }
+  
+  return { premium_type: result.premium_type, is_premium: result.is_premium, all_requirements: allRequirements };
+}
+
+//判断徽章获得情况，判断是否满足高阶条件
+async function premiumSatisfyByBadge(userId: string, seasonId: number, requirements: any[], allRequirements: any): Promise<{ premium_type: string, is_premium: boolean }> {
+  //取出徽章ID用于查询
   let badgeIds: string[] = [];
   for (let r of requirements) {
     if (r.type === BattlePassRequirementType.Badge) {
@@ -124,20 +141,54 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
           break;
         }
       }
+      //出现满足的徽章条件即退出
       if (badgeSatisfied) {
-        satisfied = badgeSatisfied;
-        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.Badge, is_premium: satisfied });
-        return { premium_type: BattlePassRequirementType.Badge, is_premium: satisfied, all_requirements: allRequirements };
+        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.Badge, is_premium: badgeSatisfied, updated_time: Date.now()  });
+        break;
       }
     }
   }
+  
+  return { premium_type: BattlePassRequirementType.Badge, is_premium: badgeSatisfied };
+}
 
-  //处理NFT类要求，分开判断的原因是防止NFT类先满足了高阶通证的要求，导致不能使用徽章判断降低数据库负担
+async function premiumSatisfyByWhiteList(userId: string, seasonId: number, requirements: any[], allRequirements: any): Promise<{ premium_type: string, is_premium: boolean }> {
+  let whitelistSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为NFT类要求
+    if (r.type === BattlePassRequirementType.WhiteList) {
+      allRequirements.whitelist.push(r.description);
+      //判断所有的NFT要求
+      for (let p of r.properties) {
+        const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+        if (userWallet) {
+          const userNFT = await ContractNFT.findOne({ wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, deleted_time: null, transaction_status: 'confirmed' });
+          whitelistSatisfied = !!userNFT;
+        } else {
+          whitelistSatisfied = false;
+        }
+        //当有多个NFT持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要NFT之间是或的关系，则可以配置成单个的要求。
+        if (!whitelistSatisfied) {
+          break;
+        }
+      }
+      if (whitelistSatisfied) {
+        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.WhiteList, is_premium: whitelistSatisfied });
+        break;
+      }
+    }
+  }
+  return { premium_type: BattlePassRequirementType.WhiteList, is_premium: whitelistSatisfied };
+}
+
+//判断NFT获得情况，判断是否满足高阶条件
+async function premiumSatisfyByNFT(userId: string, seasonId: number, requirements: any[], allRequirements: any): Promise<{ premium_type: string, is_premium: boolean }> {
   let nftSatisfied: boolean = false;
   for (let r of requirements) {
     //是否为NFT类要求
     if (r.type === BattlePassRequirementType.NFT) {
       allRequirements.nft.push(r.description);
+      //判断所有的NFT要求
       for (let p of r.properties) {
         const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
         if (userWallet) {
@@ -152,11 +203,9 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
         }
       }
       if (nftSatisfied) {
-        satisfied = nftSatisfied;
         break;
       }
     }
   }
-
-  return { premium_type: BattlePassRequirementType.NFT, is_premium: satisfied, all_requirements: allRequirements };
+  return { premium_type: BattlePassRequirementType.NFT, is_premium: nftSatisfied };
 }
