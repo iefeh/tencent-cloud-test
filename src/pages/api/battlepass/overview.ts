@@ -24,6 +24,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   let hasBattlePass: boolean = false;
   let maxLv: number = 0;
   let passInfo: any = { is_premium: false };
+  let currentProgress: number = 0
   if (userId) {
     userBattleSeason = await UserBattlePassSeasons.findOne({
       user_id: userId,
@@ -34,6 +35,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
       //取出赛季通行证中的信息
       maxLv = userBattleSeason.max_lv;
       hasBattlePass = true;
+      currentProgress = userBattleSeason.finished_tasks;
       if (userBattleSeason.is_premium) {
         passInfo.is_premium = userBattleSeason.is_premium;
         passInfo.premium_type = userBattleSeason.premium_type;
@@ -54,6 +56,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
       premium_type: passInfo.premium_type,//高阶通证类型
       all_requirements: passInfo.is_premium ? undefined : passInfo.all_requirements,
       max_lv: maxLv, //用户当前最大等级
+      current_progress: currentProgress,//当前任务进度
       start_time: currentSeason.start_time,
       end_time: currentSeason.end_time,
       standard_pass: standardPass, //标准通行证
