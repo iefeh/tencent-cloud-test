@@ -11,7 +11,7 @@ import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import activedIcon from 'img/loyalty/season/icon_claimed.png';
 import Link from 'next/link';
 import { URL_OPENSEA } from '@/constant/common';
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group';
 
 interface Props {
   className?: string;
@@ -26,15 +26,15 @@ const BattlePass: FC<Props> = ({ className, float, visible, onRuleClick }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const passList = [
     {
-      actived: false,
+      actived: info?.is_premium && info?.premium_type === 'nft',
       img: nftPassImg,
     },
     {
-      actived: false,
+      actived: info?.is_premium && info?.premium_type === 'badge',
       img: badgePassImg,
     },
     {
-      actived: false,
+      actived: info?.is_premium && info?.premium_type === 'whitelist',
       img: buyPassImg,
     },
   ];

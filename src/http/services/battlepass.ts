@@ -48,6 +48,7 @@ export interface BattleInfoDTO {
     nft: string[];
   };
   current_progress: number;
+  premium_type?: string;
 }
 
 export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
