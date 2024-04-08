@@ -1,11 +1,10 @@
-import { Divider, Tab, Tabs, cn } from '@nextui-org/react';
-import { FC, useState } from 'react';
-import InviteesGroup from '../InviteesGroup';
-import { Invitee } from '@/http/services/profile';
+import { cn } from '@nextui-org/react';
+import { FC } from 'react';
+import { useInviteStore } from '@/store/Invite';
+import { observer } from 'mobx-react-lite';
 
 const InviteesTabs: FC = () => {
-  const [completedData, setCompletedData] = useState<Invitee[]>([]);
-  const [inProgressData, setInProgressData] = useState<Invitee[]>([]);
+  const { milestone } = useInviteStore();
 
   return (
     <div className="flex-1">
@@ -17,7 +16,7 @@ const InviteesTabs: FC = () => {
         <span className="text-basic-yellow">+30 Moon Beams</span> per person, while successful indirect referrals earn{' '}
         <span className="text-basic-yellow">+5 Moon Beams</span> per person, with no upper limit.
         <br />
-        More details please view <span className="text-basic-yellow underline cursor-pointer">Rules</span>
+        More details please view <span className="text-basic-yellow underline cursor-pointer">Rules</span>.
       </div>
 
       <div
@@ -32,12 +31,12 @@ const InviteesTabs: FC = () => {
 
         <div className="flex justify-between gap-4 mt-4">
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="text-[#B38C55]">+{milestone?.successful_direct_invitee || 0} Users</p>
             <p className="mt-4">Successful Direct Referrals</p>
           </div>
 
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="text-[#B38C55]">+{milestone?.direct_invitee || 0} Users</p>
             <p className="mt-4">Registration Process Incomplete</p>
           </div>
         </div>
@@ -55,12 +54,12 @@ const InviteesTabs: FC = () => {
 
         <div className="flex justify-between gap-4 mt-4">
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="text-[#B38C55]">+{milestone?.successful_indirect_invitee || 0} Users</p>
             <p className="mt-4">Successful Indirect Referrals</p>
           </div>
 
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="text-[#B38C55]">+{milestone?.indirect_invitee || 0} Users</p>
             <p className="mt-4">Total MBs Earned From Indirect Invite</p>
           </div>
         </div>
@@ -69,4 +68,4 @@ const InviteesTabs: FC = () => {
   );
 };
 
-export default InviteesTabs;
+export default observer(InviteesTabs);
