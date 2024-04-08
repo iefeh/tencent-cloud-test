@@ -14,7 +14,8 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 const NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
 
 router.post(async (req, res) => {
-    const badgesDirPath = "./images";
+    return;
+    const badgesDirPath = "";
     const badgeNames = fs.readdirSync(badgesDirPath);
     for (const badgeName of badgeNames) {
         const badgeDirPath = path.join(badgesDirPath, badgeName);
@@ -22,7 +23,11 @@ router.post(async (req, res) => {
         let series = new Map<string, BadgeSeries>();
         for (const fileName of imageFiles) {
             const badgePath = path.join(badgeDirPath, fileName);
-            const badgeLevel = fileName.substr(-5, 1);
+            const matchs = fileName.match(/\d+/);
+            if (!matchs) {
+                throw new Error(`empty matches from ${fileName}`);
+            }
+            const badgeLevel = String(matchs[0]);
             const s3BadgeName = badgeName.toLowerCase().replaceAll(" ", "_");
             // 如果图片不是webp格式，转换为webp
             const icon = sharp(badgePath);
@@ -35,7 +40,7 @@ router.post(async (req, res) => {
             await upload2public("moonveil-public", `badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`, iconBuffer, "image/webp");
             await upload2public("moonveil-public", `badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`, buffer, "image/webp");
             series.set(badgeLevel, {
-                description: "",
+                description: "Unlock this badge by successfully invite 1 new user.",
                 icon_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`,
                 image_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`,
                 // 初始化requirements
@@ -43,9 +48,9 @@ router.post(async (req, res) => {
                     {
                         type: RequirementType.Metric,
                         properties: {
-                            metric: "retweet_count",
+                            metric: "total_novice_badge_invitee",
                             operator: ">=",
-                            value: 0,
+                            value: 1,
                         },
                     }
                 ],

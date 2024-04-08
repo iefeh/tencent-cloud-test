@@ -1,19 +1,28 @@
-import User, {IUser} from "@/lib/models/User";
-import {redis} from "@/lib/redis/client";
+import User, { IUser } from "@/lib/models/User";
+import { redis } from "@/lib/redis/client";
 import logger from "@/lib/logger/winstonLogger";
 import * as Sentry from "@sentry/nextjs";
 
-export async function try2AddUser2MBLeaderboard(userId: string) {
+export async function try2AddUsers2MBLeaderboard(...userIds: string[]) {
+    if (!userIds || userIds.length === 0) {
+        return;
+    }
+    const validUserIds = Array.from(new Set(userIds.filter(Boolean)));
+    if (validUserIds.length === 0) {
+        return;
+    }
     try {
-        const user = await User.findOne({user_id: userId, deleted_time: null}, {moon_beam: 1, _id: -1});
-        if (!user) {
+        const users = await User.find({ user_id: { $in: validUserIds }, deleted_time: null }, { user_id: 1, moon_beam: 1, _id: 0 });
+        if (!users) {
             return;
         }
-        if (user.moon_beam == undefined) {
-            logger.warn(`user ${userId} moon beam should but not found.`);
-            return;
+        for (let user of users) {
+            if (user.moon_beam == undefined) {
+                logger.warn(`user ${user.user_id} moon beam should but not found.`);
+                continue;
+            }
+            redis.zadd("moon_beam_lb", user.moon_beam, user.user_id);
         }
-        redis.zadd("moon_beam_lb", user.moon_beam, userId);
     } catch (e) {
         console.error("try to add user to MB leaderboard:", e)
         Sentry.captureException(e);
@@ -38,7 +47,7 @@ export async function getMBLeaderboardTopUsers(userId: string): Promise<mbLeader
     for (let i = 0; i < topUsers.length; i += 2) {
         userIds.push(topUsers[i]);
     }
-    const users = await User.find({user_id: {$in: userIds}, deleted_time: null}, {
+    const users = await User.find({ user_id: { $in: userIds }, deleted_time: null }, {
         _id: 0,
         user_id: 1,
         username: 1,
