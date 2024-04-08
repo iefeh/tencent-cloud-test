@@ -50,6 +50,11 @@ export enum Metric {
   TotalInvitee = 'total_invitee',
   // 总计已经完成新手徽章Novice Notch的被邀请人数
   TotalNoviceBadgeInvitee = 'total_novice_badge_invitee',
+
+  // 总计非直接被邀请的人数
+  TotalIndirectInvitee = 'total_indirect_invitee',
+  // 总计已经完成新手徽章Novice Notch的非直接被邀请人数
+  TotalIndirectNoviceBadgeInvitee = 'total_indirect_novice_badge_invitee',
   // 总计已校验钱包资产的被邀请人数
   TotalWalletVerifiedInvitee = 'total_wallet_verified_invitee',
 
@@ -60,9 +65,11 @@ export enum Metric {
   TotalInviteeWalletNftUsdValue = 'total_invitee_wallet_nft_usd_value',
   // 被邀请人总计钱包资产价值 = 钱包token价值+WalletNFTUSDValue
   TotalInviteeWalletAssetUsdValue = 'total_invitee_wallet_asset_usd_value',
+
   //第1赛季完成任务数记录字段
   BattlepassSeason1PremiumPass = 'battlepass_season_1_premium_pass',
   BattlepassSeason1StandardPass = 'battlepass_season_1_standard_pass'
+
 }
 
 // 用户内部指标，存放单独的集合
@@ -105,14 +112,22 @@ export interface IUserMetrics extends Document {
   retweet_count: number;
   // NFT等级
   tetra_holder: number;
+  
   //第1赛季完成任务数
   battlepass_season_1_premium_pass: number;
   battlepass_season_1_standard_pass: number;
+
 
   // 被邀请人数
   total_invitee: number;
   // 总计已经完成新手徽章Novice Notch的被邀请人数
   total_novice_badge_invitee: number;
+
+  // 总计非直接被邀请的人数
+  total_indirect_invitee: number;
+  // 总计已经完成新手徽章Novice Notch的非直接被邀请人数
+  total_indirect_novice_badge_invitee: number;
+
   // 总计已校验钱包资产的被邀请人数
   total_wallet_verified_invitee: number;
   // 被邀请人总计钱包token价值
@@ -154,6 +169,10 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   battlepass_season_1_standard_pass: { Type: Number },
   total_invitee: { Type: Number },
   total_novice_badge_invitee: { Type: Number },
+  total_invitee: { Type: Number },
+  total_novice_badge_invitee: { Type: Number },
+  total_indirect_invitee: { Type: Number },
+  total_indirect_novice_badge_invitee: { Type: Number },
   total_wallet_verified_invitee: { Type: Number },
   total_invitee_wallet_token_usd_value: { Type: Number },
   total_invitee_wallet_nft_usd_value: { Type: Number },
