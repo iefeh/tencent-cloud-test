@@ -64,6 +64,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         result: 'You are not eligible to claim this badge level.',
       });
     }
+    
     // 检查用户是否已经领取过该徽章
     if (series.claimed_time) {
       return response.success({
