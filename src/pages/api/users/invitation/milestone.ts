@@ -25,7 +25,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const userBadgeMap: Map<string, IUserBadges> =new Map<string, IUserBadges>(userBadges.map(badge => {
         return [badge.badge_id, badge];
     }));
-    
     // 封装推荐相关徽章：外交官进度，与其他推荐徽章
     // 所有徽章均封装当前用户的达成与领取进度.
     let referralBadges: any[] = [];
