@@ -151,6 +151,17 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
             },
             { upsert: true, session: session },
         );
+         //用户是否已有赛季通行证
+         if (userBattlepass) {
+            //更新赛季通行证中的完成任务数和moon_beam数
+            await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: userBattlepass.battlepass_season_id }, {
+                $inc: { finished_tasks: seasonPassProgress, total_moon_beam: totalMbDelta },
+                updated_time: Date.now()
+            }, { upsert: true, session: session });
+            //检查赛季进度
+            await sendBattlepassCheckMessage(userId);
+        }
+
         if (totalMbDelta <= 0) {
             return;
         }
@@ -160,26 +171,7 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
         }
         // 更新用户的MB余额
         await User.updateOne({ user_id: userId }, { $inc: { moon_beam: totalMbDelta } }, opts);
-        //用户是否已有赛季通行证
-        if (userBattlepass) {
-            //更新赛季通行证中的完成任务数和moon_beam数
-            await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: userBattlepass.battlepass_season_id }, {
-                $inc: { finished_tasks: seasonPassProgress, total_moon_beam: totalMbDelta },
-                updated_time: Date.now()
-            }, { upsert: true, session: session });
-            //检查赛季进度
-            await sendBattlepassCheckMessage(userId);
-            //指标不采用inc的原因是防止中途用户从标准通证升级为高阶通证，导致任务数不对。
-            // let metricUpdateDoc: any = {};
-            // metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_standard_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
-            // if (userBattlepass.type === BattlePassType.PremiumPass) {
-            //     metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_premium_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
-            // }
-            // await UserMetrics.updateOne({ user_id: userId }, metricUpdateDoc, { upsert: true, session: session });
-            // await sendBadgeCheckMessages(userId, metricUpdateDoc).catch((error: Error) => {
-            //     console.log(error);
-            // });//检查是否可以下发徽章;//检查是否可以下发徽章
-        }
+       
     });
     return totalMbDelta;
 }

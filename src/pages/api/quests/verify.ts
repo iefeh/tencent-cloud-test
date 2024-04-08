@@ -81,6 +81,9 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             // 钱包资产任务添加检查CD
             await addWalletVerificationCDForIP(req);
         }
+        if (!result.claimed_amount) {
+            result.claimed_amount = 0;
+        }
         await updateUserBattlepass(userId, quest_id, Number(result.claimed_amount), undefined);
         res.json(response.success(result));
     } catch (error) {
