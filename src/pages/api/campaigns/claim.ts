@@ -22,7 +22,7 @@ import { try2AddUser2MBLeaderboard } from "@/lib/redis/moonBeamLeaderboard";
 import { getUserBattlePass } from "@/lib/battlepass/battlepass";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserBattlePassSeasons, { BattlePassType } from "@/lib/models/UserBattlePassSeasons";
-import { sendBadgeCheckMessages } from '@/lib/kafka/client';
+import { sendBadgeCheckMessages, sendBattlepassCheckMessage } from '@/lib/kafka/client';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -167,6 +167,8 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
                 $inc: { finished_tasks: seasonPassProgress, total_moon_beam: totalMbDelta },
                 updated_time: Date.now()
             }, { upsert: true, session: session });
+            //检查赛季进度
+            await sendBattlepassCheckMessage(userId);
             //指标不采用inc的原因是防止中途用户从标准通证升级为高阶通证，导致任务数不对。
             // let metricUpdateDoc: any = {};
             // metricUpdateDoc[`battlepass_season_${userBattlepass.battlepass_season_id}_standard_pass`] = userBattlepass.finished_tasks + seasonPassProgress;
