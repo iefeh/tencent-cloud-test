@@ -18,7 +18,6 @@ import UserMoonBeamAudit, { UserMoonBeamAuditType } from "@/lib/models/UserMoonB
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
-import { try2AddUser2MBLeaderboard } from "@/lib/redis/moonBeamLeaderboard";
 import { getUserBattlePass } from "@/lib/battlepass/battlepass";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserBattlePassSeasons, { BattlePassType } from "@/lib/models/UserBattlePassSeasons";
