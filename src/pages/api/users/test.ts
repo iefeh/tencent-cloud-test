@@ -14,7 +14,7 @@ import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBea
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
-import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 import {allowIP2VerifyWalletAsset, retryAllowToSendRequest2Reservoir} from "@/lib/redis/ratelimit";
 import logger from "@/lib/logger/winstonLogger";
 import {redis} from "@/lib/redis/client";
@@ -152,7 +152,7 @@ async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
     })
     // 刷新用户的缓存
     if (increasedReward != 0) {
-        await try2AddUsers2MBLeaderboard(userId);
+        await try2AddUser2MBLeaderboard(userId);
     }
     // await promiseSleep(10000);
 }
@@ -404,7 +404,7 @@ async function refreshUserMoonbeamCache() {
 async function loadMoonbeamIntoCache() {
     const users = await User.find({moon_beam: {$gte: 0}}, {_id: 0, user_id: 1});
     for (let user of users) {
-        await try2AddUsers2MBLeaderboard(user.user_id);
+        await try2AddUser2MBLeaderboard(user.user_id);
     }
 }
 

@@ -22,7 +22,7 @@ export interface IUserBadges extends Document {
   display_order: number;
 }
 
-export type UserBadgeSeries = {
+type UserBadgeSeries = {
   // 获取时间，毫秒时间戳
   obtained_time: number;
   // 领取时间，毫秒时间戳

@@ -1,14 +1,6 @@
 import { Kafka, Message, Producer } from 'kafkajs';
-import logger from '../logger/winstonLogger';
 
-let producer: Producer;
-
-async function connectKafkaProducer(): Promise<Producer> {
-  // 如果已经存在producer，则直接返回
-  if (producer) {
-    return producer;
-  }
-  // 创建新的producer
+export function getKafkaProducer(): Producer {
   const broker = process.env.KAFKA_BROKER!;
   if (!broker) {
     throw new Error('Please define the KAFKA_BROKER environment variable');
@@ -24,42 +16,40 @@ async function connectKafkaProducer(): Promise<Producer> {
 
   const kafka = new Kafka({
     clientId: 'my-app',
-    // MSK集群broker列表
-    brokers: [broker],
-    ssl: true,
+    brokers: [broker], // 替换为你的MSK集群broker列表
+    ssl: {
+      rejectUnauthorized: true,
+    },
     sasl: {
-      // 根据设置，可能是'scram-sha-256'或'scram-sha-512'
-      mechanism: 'plain',
+      mechanism: 'plain', // 根据你的设置，可能是'scram-sha-256'或'scram-sha-512'
       username: username,
       password: password,
     },
   });
 
-  producer = kafka.producer();
-  await producer.connect(); 
-  return producer;
+  return kafka.producer();
 }
+
+export default getKafkaProducer;
 
 //发送单条消息
 export async function sendBadgeCheckMessage(userId: string, metric: string) {
-  logger.debug("connecting to kafka producer");
-  const producer = await connectKafkaProducer();
-  logger.debug("sending badge check message");
+  const producer = getKafkaProducer();
+  await producer.connect();
   const jsonStr = JSON.stringify({ userId: userId, metric: metric, timestamp: Date.now() });
   await producer.send({
     topic: 'badge-distributes',
     messages: [{ value: jsonStr }],
   });
-  logger.debug("badge check message sent");
-  // 由于我们是serverless环境，不优雅的断开连接
-  // await producer.disconnect();
+
+  // 断开连接
+  await producer.disconnect();
 }
 
 //发送多条消息
 export async function sendBadgeCheckMessages(userId: string, metrics: { [key: string]: string | number | boolean }) {
-  logger.debug("connecting to kafka producer");
-  const producer = await connectKafkaProducer();
-  logger.debug("sending badge check messages");
+  const producer = getKafkaProducer();
+  await producer.connect();
   const msgs: Message[] = [];
 
   for (const [metric, value] of Object.entries(metrics)) {
@@ -72,7 +62,7 @@ export async function sendBadgeCheckMessages(userId: string, metrics: { [key: st
     topic: 'badge-distributes',
     messages: msgs,
   });
-  logger.debug("badge check messages sent");
-  // 由于我们是serverless环境，不优雅的断开连接
-  // await producer.disconnect();
+
+  // 断开连接
+  await producer.disconnect();
 }

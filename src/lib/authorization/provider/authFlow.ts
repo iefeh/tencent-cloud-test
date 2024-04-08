@@ -12,9 +12,8 @@ import * as Sentry from '@sentry/nextjs';
 import UserInvite from "@/lib/models/UserInvite";
 import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
 import {v4 as uuidv4} from "uuid";
-import UserMetrics, { Metric, incrUserMetric } from "@/lib/models/UserMetrics";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 import { tr } from "date-fns/locale";
-import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from "@/lib/models/UserMoonBeamAudit";
 
 export interface ValidationResult {
     passed: boolean,
@@ -151,9 +150,8 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
     // 默认当前是登录流程，如果用户不存在，则需要创建新的用户与用户绑定
     const isNewUser = !userConnection;
     if (isNewUser) {
-        // 新创建用户与其社交绑定，如果有邀请者，则添加邀请记录与奖励
+        // 新创建用户与其社交绑定
         const newUser = authFlow.constructNewUser(authParty);
-        newUser.moon_beam = authPayload.inviter_id ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0;
         userConnection = authFlow.constructUserConnection(newUser.user_id, authParty);
         await doTransaction(async (session) => {
             const opts = {session};
@@ -167,11 +165,6 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
                     created_time: Date.now(),
                 });
                 await invite.save(opts);
-                await saveNewInviteeRegistrationMoonBeamAudit(newUser.user_id, authPayload.inviter_id, session);
-                await incrUserMetric(authPayload.inviter_id, Metric.TotalInvitee, 1, session);
-                if (authPayload.indirect_inviter_id) {
-                    await incrUserMetric(authPayload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
-                }
             }
         });
     }
@@ -204,7 +197,6 @@ async function doUserSignupConfirmation(authFlow: AuthFlowBase, authPayload: Aut
             invitee_id: newUser.user_id,
             created_time: Date.now(),
         };
-        payload.indirect_inviter_id = authPayload.indirect_inviter_id;
     }
     // 生成二次确认的注册token
     const token = await generateUserSignupSession(payload);
