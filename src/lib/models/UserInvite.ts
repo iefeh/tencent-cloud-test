@@ -16,8 +16,8 @@ const UserInviteSchema = new Schema<IUserInvite>({
     created_time: {type: Number, required: true},
 });
 
-UserInviteSchema.index({invitee_id: 1}, {unique: true});
 UserInviteSchema.index({user_id: 1, invitee_id: 1});
+UserInviteSchema.index({invitee_id: 1});
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();
 const UserInvite = models.UserInvite || connection.model<IUserInvite>('UserInvite', UserInviteSchema, 'user_invites');

@@ -42,7 +42,6 @@ const config: Config = {
         notion: '#ff4848',
         'basic-yellow': '#f6c799',
         'basic-gray': '#1D1D1D',
-        'light-gray': '#999999',
         'deep-yellow': '#96775A',
       },
       animation: {
@@ -63,9 +62,6 @@ const config: Config = {
       },
       borderRadius: {
         base: '0.625rem',
-      },
-      spacing: {
-        ten: '0.625rem',
       },
     },
   },

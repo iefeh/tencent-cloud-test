@@ -9,10 +9,8 @@ export interface AuthorizationPayload {
     authorization_user_id?: string;
     // 当前授权的code识别码
     code_challenge?: string;
-    // 新用户注册时的邀请人id
+    // 新用户登录时的邀请人id
     inviter_id?: string;
-    // 新用户注册时的非直接邀请人id
-    indirect_inviter_id?: string;
     // 注册模式
     signup_mode?: string;
 }

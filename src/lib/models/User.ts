@@ -60,8 +60,3 @@ UserSchema.index({invite_code: 1}, {unique: true, partialFilterExpression: {emai
 const connection = connectToMongoDbDev();
 const User = models.User || connection.model<IUser>('User', UserSchema, 'users');
 export default User;
-
-// 增加用户MB
-export async function increaseUserMoonBeam(user_id: string, delta: number, session: any) {
-    return await User.updateOne({user_id}, {$inc: {moon_beam: delta}}, {session});
-}
