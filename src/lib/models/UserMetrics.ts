@@ -50,6 +50,10 @@ export enum Metric {
   TotalInvitee = 'total_invitee',
   // 总计已经完成新手徽章Novice Notch的被邀请人数
   TotalNoviceBadgeInvitee = 'total_novice_badge_invitee',
+  // 总计非直接被邀请的人数
+  TotalIndirectInvitee = 'total_indirect_invitee',
+  // 总计已经完成新手徽章Novice Notch的非直接被邀请人数
+  TotalIndirectNoviceBadgeInvitee = 'total_indirect_novice_badge_invitee',
   // 总计已校验钱包资产的被邀请人数
   TotalWalletVerifiedInvitee = 'total_wallet_verified_invitee',
 
@@ -107,6 +111,10 @@ export interface IUserMetrics extends Document {
   total_invitee: number;
   // 总计已经完成新手徽章Novice Notch的被邀请人数
   total_novice_badge_invitee: number;
+  // 总计非直接被邀请的人数
+  total_indirect_invitee: number;
+  // 总计已经完成新手徽章Novice Notch的非直接被邀请人数
+  total_indirect_novice_badge_invitee: number;
   // 总计已校验钱包资产的被邀请人数
   total_wallet_verified_invitee: number;
   // 被邀请人总计钱包token价值
@@ -146,6 +154,8 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   tetra_holder: { Type: Number },
   total_invitee: { Type: Number },
   total_novice_badge_invitee: { Type: Number },
+  total_indirect_invitee: { Type: Number },
+  total_indirect_novice_badge_invitee: { Type: Number },
   total_wallet_verified_invitee: { Type: Number },
   total_invitee_wallet_token_usd_value: { Type: Number },
   total_invitee_wallet_nft_usd_value: { Type: Number },

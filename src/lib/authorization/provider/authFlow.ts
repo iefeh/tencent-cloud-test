@@ -169,6 +169,9 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
                 await invite.save(opts);
                 await saveNewInviteeRegistrationMoonBeamAudit(newUser.user_id, authPayload.inviter_id, session);
                 await incrUserMetric(authPayload.inviter_id, Metric.TotalInvitee, 1, session);
+                if (authPayload.indirect_inviter_id) {
+                    await incrUserMetric(authPayload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
+                }
             }
         });
     }
@@ -201,6 +204,7 @@ async function doUserSignupConfirmation(authFlow: AuthFlowBase, authPayload: Aut
             invitee_id: newUser.user_id,
             created_time: Date.now(),
         };
+        payload.indirect_inviter_id = authPayload.indirect_inviter_id;
     }
     // 生成二次确认的注册token
     const token = await generateUserSignupSession(payload);

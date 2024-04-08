@@ -18,7 +18,7 @@ import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBea
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
-import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -47,7 +47,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         }
         const totalMB = await claimCampaignRewards(userId, campaign);
         if (totalMB > 0) {
-            await try2AddUser2MBLeaderboard(userId);
+            await try2AddUsers2MBLeaderboard(userId);
         }
         // 检查用户是否已经完成所有任务
         res.json(response.success({

@@ -75,4 +75,6 @@ export interface SignupPayload {
     third_party_user?: any;
     // 邀请信息
     invite?: any;
+    // 非直接邀请信息
+    indirect_inviter_id?: string;
 }
