@@ -25,8 +25,9 @@ const RewardHistory: FC = () => {
     <div className="flex-1">
       <div className="font-semakin text-2xl">Reward History</div>
 
-      <div className="text-base text-[#999]">
-        Earned <span className="text-basic-yellow mt-2">7</span> Moon Beams
+      <div className="text-base text-[#999] mt-8">
+        A total of <span className="text-basic-yellow font-semakin">1,000</span> Moon Beams were received from Referral
+        Milestone Badges.
       </div>
 
       <Tabs

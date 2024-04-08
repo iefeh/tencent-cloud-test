@@ -44,12 +44,12 @@ const InviteCard = function () {
       <div className="flex flex-col justify-between relative z-0 h-full">
         <div>
           <div className="bg-[linear-gradient(300deg,#EFEBC5_0%,#D9A970_100%)] bg-clip-text text-transparent font-semakin text-2xl">
-            Invite New Users to Join Moonveil Community
+            Invite New Users to Join the Moonveil Ecosystem
           </div>
 
           <ul className="text-[#999] mt-[1.125rem]">
             <li>You will receive continuous MB rewards through the participant&apos;s engagement.</li>
-            <li>Invitees will receive 25 bonus Moon Beams as a reward</li>
+            <li>Invitees will receive 15 bonus Moon Beams as a reward</li>
           </ul>
         </div>
 

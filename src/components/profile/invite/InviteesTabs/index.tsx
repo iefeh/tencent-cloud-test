@@ -1,4 +1,4 @@
-import { Divider, Tab, Tabs } from '@nextui-org/react';
+import { Divider, Tab, Tabs, cn } from '@nextui-org/react';
 import { FC, useState } from 'react';
 import InviteesGroup from '../InviteesGroup';
 import { Invitee } from '@/http/services/profile';
@@ -11,37 +11,58 @@ const InviteesTabs: FC = () => {
     <div className="flex-1">
       <div className="font-semakin text-2xl">Invitee&apos;s Task Progress</div>
 
-      <div className="text-base text-[#999]">
-        Successfully invited <span className="text-basic-yellow mt-2">7</span> people
+      <div className="text-base text-[#999] mt-8">
+        There are two types of referrals: <span className="text-basic-yellow">&quot;Direct Referral&quot;</span> and{' '}
+        <span className="text-basic-yellow">&quot;Indirect Referral.&quot;</span> Successful direct referrals earn{' '}
+        <span className="text-basic-yellow">+30 Moon Beams</span> per person, while successful indirect referrals earn{' '}
+        <span className="text-basic-yellow">+5 Moon Beams</span> per person, with no upper limit.
+        <br />
+        More details please view <span className="text-basic-yellow underline cursor-pointer">Rules</span>
       </div>
 
-      <Tabs
-        variant="underlined"
-        classNames={{
-          base: 'mt-7',
-          cursor: 'w-full bg-basic-yellow',
-          tab: 'text-base',
-          tabContent: 'text-white hover:text-white group-data-[selected=true]:text-basic-yellow',
-        }}
+      <div
+        className={cn([
+          'w-full rounded-base border-1 border-basic-gray transition-colors',
+          'hover:border-basic-yellow',
+          'font-semakin text-center',
+          'px-6 py-4 mt-4',
+        ])}
       >
-        <Tab title="Social Media Connect" />
-        <Tab title="Wallet Connect" />
-      </Tabs>
+        <div className="text-2xl">Direct Referrals</div>
 
-      <div className="mx-10">
-        <InviteesGroup className="mt-10" title="Completed" items={completedData} />
+        <div className="flex justify-between gap-4 mt-4">
+          <div className="flex-1 shrink-0">
+            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="mt-4">Successful Direct Referrals</p>
+          </div>
 
-        <Divider className="my-8 bg-white/10" />
+          <div className="flex-1 shrink-0">
+            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="mt-4">Registration Process Incomplete</p>
+          </div>
+        </div>
+      </div>
 
-        <InviteesGroup title="In Progress" items={inProgressData} />
+      <div
+        className={cn([
+          'w-full rounded-base border-1 border-basic-gray transition-colors',
+          'hover:border-basic-yellow',
+          'font-semakin text-center',
+          'px-6 py-4 mt-4',
+        ])}
+      >
+        <div className="text-2xl">Indirect Referrals</div>
 
-        <Divider className="my-8 bg-white/10" />
+        <div className="flex justify-between gap-4 mt-4">
+          <div className="flex-1 shrink-0">
+            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="mt-4">Successful Indirect Referrals</p>
+          </div>
 
-        <div className="text-[#999] text-sm">
-          *After the invited user completes the registration of their account and binds their social account, the
-          inviter will receive corresponding rewards.
-          <br />
-          Social account platforms that need to be linked: Twitter, Discord, Telegram
+          <div className="flex-1 shrink-0">
+            <p className="text-[#B38C55]">+100 Users</p>
+            <p className="mt-4">Total MBs Earned From Indirect Invite</p>
+          </div>
         </div>
       </div>
     </div>

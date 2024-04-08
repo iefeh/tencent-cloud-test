@@ -93,8 +93,14 @@ const MBProgress: FC = () => {
 
   return (
     <div className="mt-16 w-full">
+      <div className="text-base">
+        In addition to 25 Moon Beams for each successful direct invite, reaching milestones will earn you up to an extra
+        3300+ bonus Moon beams.
+      </div>
+
       <div className="font-semakin text-2xl">
-        Continue inviting to earn an additional <span className="text-basic-yellow">1,000+ points</span>
+        A total of <span className="text-basic-yellow">1,000 Moon Beams</span> were received from our Referral Program
+        now.
       </div>
 
       <div ref={containerRef} className="w-full h-60 relative px-12">
