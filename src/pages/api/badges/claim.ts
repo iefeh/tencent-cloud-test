@@ -11,8 +11,11 @@ import doTransaction from '@/lib/mongodb/transaction';
 import logger from '@/lib/logger/winstonLogger';
 import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
+import UserInvite from '@/lib/models/UserInvite';
+import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { getInviterFromDirectInviteUser, inviter } from '@/lib/common/inviter';
+
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -71,7 +74,11 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       });
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
+
+    const inviterId = await checkNoviceNotchInviter(userId, badge);
+
     const inviter = await checkNoviceNotchInviter(userId, badge);
+
     // 构建领取徽章对象
     const claimBadge: any = {};
     const now = Date.now();
@@ -88,6 +95,10 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
         $set: claimBadge,
       }, opts);
+
+      if (inviterId) {
+        await incrUserMetric(inviterId, Metric.TotalNoviceBadgeInvitee, 1, session);
+
       if (inviter) {
         // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
         await incrUserMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);
@@ -95,6 +106,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
           await incrUserMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
         }
         await saveInviterMoonBeamReward(userId, inviter.direct, inviter.indirect, session);
+
       }
     });
     // 尝试刷新对应用户的MB缓存
@@ -117,6 +129,21 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
   }
 }
 
+
+async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<string | null> {
+  if (!badge) {
+    return null;
+  }
+  if (badge.id !== process.env.NOVICE_NOTCH_BADGE_ID) {
+    return null;
+  }
+  // 当前是新手徽章，检查用户的邀请人
+  const inviter = await UserInvite.findOne({ invitee_id: userId });
+  if (!inviter) {
+    return null;
+  }
+  return inviter.user_id;
+
 async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<inviter | null> {
   if (!badge) {
     return null;
@@ -125,6 +152,7 @@ async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<
     return null;
   }
   return getInviterFromDirectInviteUser(userId);
+
 }
 
 // 构建徽章下发的奖励，如MB

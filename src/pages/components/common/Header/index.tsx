@@ -79,6 +79,12 @@ const routeText: RouteMenu[] = [
         route: '/LoyaltyProgram/earn?from=lp',
         // disabled: true,
       },
+
+      {
+        name: "Rock'it to the Moon",
+        route: '/LoyaltyProgram/season',
+      },
+
       // {
       //   name: 'MB=MVP',
       //   route: '/LoyaltyProgram/Exchange',
