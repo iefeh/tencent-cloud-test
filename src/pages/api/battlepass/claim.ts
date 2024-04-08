@@ -6,7 +6,7 @@ import { errorInterceptor } from '@/lib/middleware/error';
 import { redis } from '@/lib/redis/client';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import doTransaction from '@/lib/mongodb/transaction';
-import { try2AddUser2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
+import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
 import UserBattlePassSeasons from '@/lib/models/UserBattlePassSeasons';
 import { BattlepassRewardType, BattlePassRewardItemType } from '@/lib/models/BattlePassSeasons';
@@ -122,7 +122,7 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     await sendBadgeCheckMessages(userId, metricUpdate);
     // 当有MB下发时，刷新用户的MB缓存
     if (reward.mb > 0) {
-      await try2AddUser2MBLeaderboard(userId);
+      await try2AddUsers2MBLeaderboard(userId);
       return response.success({
         result: `You have claimed reward and received ${reward.mb} MB.`,
       });

@@ -112,7 +112,7 @@ export interface IUserMetrics extends Document {
   retweet_count: number;
   // NFT等级
   tetra_holder: number;
-  
+
   //第1赛季完成任务数
   battlepass_season_1_premium_pass: number;
   battlepass_season_1_standard_pass: number;
@@ -167,8 +167,6 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   tetra_holder: { Type: Number },
   battlepass_season_1_premium_pass: { Type: Number },
   battlepass_season_1_standard_pass: { Type: Number },
-  total_invitee: { Type: Number },
-  total_novice_badge_invitee: { Type: Number },
   total_invitee: { Type: Number },
   total_novice_badge_invitee: { Type: Number },
   total_indirect_invitee: { Type: Number },
