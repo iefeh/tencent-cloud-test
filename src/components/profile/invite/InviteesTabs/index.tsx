@@ -36,7 +36,9 @@ const InviteesTabs: FC = () => {
           </div>
 
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+{milestone?.direct_invitee || 0} Users</p>
+            <p className="text-[#B38C55]">
+              +{(milestone?.direct_invitee || 0) - (milestone?.successful_direct_invitee || 0)} Users
+            </p>
             <p className="mt-4">Registration Process Incomplete</p>
           </div>
         </div>
@@ -59,7 +61,7 @@ const InviteesTabs: FC = () => {
           </div>
 
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+{milestone?.indirect_invitee || 0} Users</p>
+            <p className="text-[#B38C55]">+{milestone?.successful_indirect_invitee_reward || 0} Users</p>
             <p className="mt-4">Total MBs Earned From Indirect Invite</p>
           </div>
         </div>
