@@ -40,7 +40,7 @@ const MBProgress: FC = () => {
 
     containerRef.current.style.setProperty(
       '--progress',
-      `calc(${(rate * 100).toFixed(2)}% - ${Math.max(6 * rate, 3)}rem)`,
+      `calc(${(rate * 100).toFixed(2)}% - ${Math.max(18 * rate, 12)}rem)`,
     );
   }, [currentInvited, diplomat]);
 
@@ -58,8 +58,9 @@ const MBProgress: FC = () => {
       </div>
 
       <div className="font-semakin text-2xl mt-2">
-        A total of <span className="text-basic-yellow">1,000 Moon Beams</span> were received from our Referral Program
-        now.
+        A total of{' '}
+        <span className="text-basic-yellow">{(milestone?.total_reward || 0).toLocaleString('en-US')} Moon Beams</span>{' '}
+        were received from our Referral Program now.
       </div>
 
       <div ref={containerRef} className="w-full h-60 relative px-12">
@@ -74,8 +75,8 @@ const MBProgress: FC = () => {
           >
             {diplomat!.series.map((item, index) => (
               <SwiperSlide key={index}>
-                <div className="flex flex-col items-center">
-                  <Image className="w-24 h-24 object-contain" src={item.image_url} alt="" sizes="100%" />
+                <div className="flex flex-col items-center max-w-[6rem]">
+                  <Image className="w-24 h-24 object-contain bg-black" src={item.image_url} alt="" sizes="100%" />
 
                   <div className="uppercase text-basic-yellow font-semakin text-lg mt-4">
                     {index === 0 ? diplomat!.name || '--' : `+${item.reward_moon_beam} mb`}
@@ -95,7 +96,7 @@ const MBProgress: FC = () => {
                       ? 'Completed'
                       : index === inProgressIndex
                       ? 'In Progress'
-                      : `${item.milestone} invitees`}
+                      : `${item.milestone || '--'} invitees`}
                   </div>
                 </div>
               </SwiperSlide>

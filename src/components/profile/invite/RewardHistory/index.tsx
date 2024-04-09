@@ -15,8 +15,11 @@ const RewardHistory: FC = () => {
       <div className="font-semakin text-2xl">Reward History</div>
 
       <div className="text-base text-[#999] mt-8">
-        A total of <span className="text-basic-yellow font-semakin">1,000</span> Moon Beams were received from Referral
-        Milestone Badges.
+        A total of{' '}
+        <span className="text-basic-yellow font-semakin">
+          {(milestone?.total_claimed_badge_reward || 0).toLocaleString('en-US')}
+        </span>{' '}
+        Moon Beams were received from Referral Milestone Badges.
       </div>
 
       <div className="border-1 border-basic-gray rounded-base hover:border-basic-yellow transition-colors px-4 mt-4">
@@ -35,7 +38,7 @@ const RewardHistory: FC = () => {
 
             return (
               <Tab key={index} title={item.name}>
-                <div className="flex flex-col items-center pt-8 pb-4 px-6">
+                <div className="flex flex-col items-center text-center pt-8 pb-4 px-12">
                   <Image
                     className={cn(['w-60 h-60 object-contain', bigSerie.obtained || 'grayscale opacity-50'])}
                     src={bigSerie.image_url || helpIcon}
@@ -65,6 +68,7 @@ const RewardHistory: FC = () => {
                           <Image
                             className={cn([
                               'w-[4.375rem] h-[4.375rem] object-contain',
+                              (!child.obtained || childIndex > bigIndex) && 'grayscale opacity-50',
                               child.obtained && childIndex === bigIndex && 'border-1 border-basic-yellow rounded-base',
                             ])}
                             src={child.icon_url}
