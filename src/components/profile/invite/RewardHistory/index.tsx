@@ -33,8 +33,9 @@ const RewardHistory: FC = () => {
           }}
         >
           {(referrals || []).map((item, index) => {
-            const bigIndex = item.series.findIndex((s) => !s.obtained) - 1;
-            const bigSerie = item.series[Math.max(bigIndex, 0)];
+            const unobtainedIndex = item.series.findIndex((s) => !s.obtained);
+            const bigIndex = unobtainedIndex < 0 ? item.series.length - 1 : Math.max(unobtainedIndex - 1, 0);
+            const bigSerie = item.series[bigIndex];
 
             return (
               <Tab key={index} title={item.name}>
@@ -64,11 +65,15 @@ const RewardHistory: FC = () => {
                           <Image className="w-[0.875rem] h-4 mt-7 mx-1" src={arrowIcon} alt="" width={28} height={32} />
                         )}
 
-                        <div className="flex flex-col items-center">
+                        <div
+                          className={cn([
+                            'flex flex-col items-center',
+                            (!child.obtained || childIndex > bigIndex) && 'grayscale opacity-50',
+                          ])}
+                        >
                           <Image
                             className={cn([
                               'w-[4.375rem] h-[4.375rem] object-contain',
-                              (!child.obtained || childIndex > bigIndex) && 'grayscale opacity-50',
                               child.obtained && childIndex === bigIndex && 'border-1 border-basic-yellow rounded-base',
                             ])}
                             src={child.icon_url}
