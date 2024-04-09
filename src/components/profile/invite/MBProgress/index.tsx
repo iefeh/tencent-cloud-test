@@ -75,7 +75,7 @@ const MBProgress: FC = () => {
             {diplomat!.series.map((item, index) => (
               <SwiperSlide key={index}>
                 <div className="flex flex-col items-center">
-                  <Image className="w-12 h-12 object-contain" src={item.image_url} alt="" sizes="100%" />
+                  <Image className="w-24 h-24 object-contain" src={item.image_url} alt="" sizes="100%" />
 
                   <div className="uppercase text-basic-yellow font-semakin text-lg mt-4">
                     {index === 0 ? diplomat!.name || '--' : `+${item.reward_moon_beam} mb`}
