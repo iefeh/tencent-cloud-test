@@ -17,10 +17,11 @@ interface Props {
   className?: string;
   float?: boolean;
   visible?: boolean;
+  hideTitle?: boolean;
   onRuleClick?: () => void;
 }
 
-const BattlePass: FC<Props> = ({ className, float, visible, onRuleClick }) => {
+const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleClick }) => {
   const { info } = useBattlePassContext();
   const { is_premium } = info || {};
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -82,7 +83,9 @@ const BattlePass: FC<Props> = ({ className, float, visible, onRuleClick }) => {
         })}
       </div>
 
-      <div className="font-semakin text-3xl text-basic-yellow uppercase w-max mt-3">Premium Pass</div>
+      <div className={cn(['font-semakin text-3xl text-basic-yellow uppercase w-max mt-3', hideTitle && 'hidden'])}>
+        Premium Pass
+      </div>
 
       {is_premium ? (
         <BasicButton className="uppercase w-max mt-3" label="Premium Pass Activated" disabled />
