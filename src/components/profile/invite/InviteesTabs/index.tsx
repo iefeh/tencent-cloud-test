@@ -3,7 +3,11 @@ import { FC } from 'react';
 import { useInviteStore } from '@/store/Invite';
 import { observer } from 'mobx-react-lite';
 
-const InviteesTabs: FC = () => {
+interface Props {
+  onRuleClick?: () => void;
+}
+
+const InviteesTabs: FC<Props> = ({ onRuleClick }) => {
   const { milestone } = useInviteStore();
 
   return (
@@ -16,7 +20,11 @@ const InviteesTabs: FC = () => {
         <span className="text-basic-yellow">+30 Moon Beams</span> per person, while successful indirect referrals earn{' '}
         <span className="text-basic-yellow">+5 Moon Beams</span> per person, with no upper limit.
         <br />
-        More details please view <span className="text-basic-yellow underline cursor-pointer">Rules</span>.
+        More details please view{' '}
+        <span className="text-basic-yellow underline cursor-pointer" onClick={onRuleClick}>
+          Rules
+        </span>
+        .
       </div>
 
       <div

@@ -31,3 +31,9 @@ interface PagiInfo {
   pageIndex: number;
   pageSize: number;
 }
+
+interface ModalProps {
+  isOpen: boolean;
+  onOpen?: () => void;
+  onOpenChange?: (val: boolean) => void;
+}
