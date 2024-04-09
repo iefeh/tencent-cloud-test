@@ -32,22 +32,22 @@ const InviteesTabs: FC<Props> = ({ onRuleClick }) => {
           'w-full rounded-base border-1 border-basic-gray transition-colors',
           'hover:border-basic-yellow',
           'font-semakin text-center',
-          'px-6 py-4 mt-4',
+          'px-6 py-4 mt-4 h-60',
         ])}
       >
-        <div className="text-2xl">Direct Referrals</div>
+        <div className="text-2xl mt-4">Direct Referrals</div>
 
-        <div className="flex justify-between gap-4 mt-4">
+        <div className="flex justify-between gap-4 mt-8">
           <div className="flex-1 shrink-0">
             <p className="text-[#B38C55]">+{milestone?.successful_direct_invitee || 0} Users</p>
-            <p className="mt-4">Successful Direct Referrals</p>
+            <p className="mt-8 font-poppins">Successful Direct Referrals</p>
           </div>
 
           <div className="flex-1 shrink-0">
             <p className="text-[#B38C55]">
               +{(milestone?.direct_invitee || 0) - (milestone?.successful_direct_invitee || 0)} Users
             </p>
-            <p className="mt-4">Registration Process Incomplete</p>
+            <p className="mt-8 font-poppins">Registration Process Incomplete</p>
           </div>
         </div>
       </div>
@@ -57,20 +57,20 @@ const InviteesTabs: FC<Props> = ({ onRuleClick }) => {
           'w-full rounded-base border-1 border-basic-gray transition-colors',
           'hover:border-basic-yellow',
           'font-semakin text-center',
-          'px-6 py-4 mt-4',
+          'px-6 py-4 mt-8 h-60',
         ])}
       >
-        <div className="text-2xl">Indirect Referrals</div>
+        <div className="text-2xl mt-4">Indirect Referrals</div>
 
-        <div className="flex justify-between gap-4 mt-4">
+        <div className="flex justify-between gap-4 mt-8">
           <div className="flex-1 shrink-0">
             <p className="text-[#B38C55]">+{milestone?.successful_indirect_invitee || 0} Users</p>
-            <p className="mt-4">Successful Indirect Referrals</p>
+            <p className="mt-8 font-poppins">Successful Indirect Referrals</p>
           </div>
 
           <div className="flex-1 shrink-0">
             <p className="text-[#B38C55]">+{milestone?.successful_indirect_invitee_reward || 0} MBS</p>
-            <p className="mt-4">Total MBs Earned From Indirect Invite</p>
+            <p className="mt-8 font-poppins">Total MBs Earned From Indirect Invite</p>
           </div>
         </div>
       </div>
