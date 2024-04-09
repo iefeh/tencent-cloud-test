@@ -5,10 +5,12 @@ import { cn } from '@nextui-org/react';
 
 export default function CircularLoading({
   noBlur,
+  loadingText = 'Loading',
   className,
   cirleClassName,
 }: {
   noBlur?: boolean;
+  loadingText?: string;
   className?: string;
   cirleClassName?: string;
 }) {
@@ -36,7 +38,7 @@ export default function CircularLoading({
         aria-label="Loading..."
       >
         <Image className="overflow-hidden rounded-full animate-spin" src={loadingImg} alt="" fill sizes="100%" />
-        <span className="relative z-0 font-semakin text-basic-yellow">Loading</span>
+        <span className="relative z-0 font-semakin text-basic-yellow">{loadingText}</span>
       </div>
     </div>
   );

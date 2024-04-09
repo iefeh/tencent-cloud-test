@@ -27,3 +27,23 @@ interface UpdateUserInfoDto {
 export function updateUserInfoAPI(data: UpdateUserInfoDto): Promise<boolean | null> {
   return http.post('/api/users/profile', JSON.stringify(data));
 }
+
+export interface Invitee {
+  avatar: string;
+  nickname: string;
+  details?: string;
+  reward?: number;
+  isSocialConnect?: boolean;
+  completed?: boolean;
+}
+
+export function queryInviteesAPI(data: { isSocialConnect: boolean; completed: boolean }): Promise<Invitee[]> {
+  let result: Invitee[] = [];
+  if (data.completed) {
+    result = [];
+  } else {
+    result = [];
+  }
+
+  return Promise.resolve(result);
+}

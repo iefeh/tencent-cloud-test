@@ -76,3 +76,17 @@ export async function sendBadgeCheckMessages(userId: string, metrics: { [key: st
   // 由于我们是serverless环境，不优雅的断开连接
   // await producer.disconnect();
 }
+
+export async function sendBattlepassCheckMessage(userId: string) {
+  logger.debug("connecting to kafka producer");
+  const producer = await connectKafkaProducer();
+  logger.debug("sending battlepass check message");
+  const jsonStr = JSON.stringify({ userId: userId, timestamp: Date.now() });
+  await producer.send({
+    topic: 'battlepass-check',
+    messages: [{ value: jsonStr }],
+  });
+  logger.debug("battlepass check message sent");
+  // 由于我们是serverless环境，不优雅的断开连接
+  // await producer.disconnect();
+}

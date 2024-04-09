@@ -14,10 +14,15 @@ export enum UserMoonBeamAuditType {
     Badges = "badges",
     // 被邀请用户注册
     InviteeRegistration = "invitee_registration",
+    // 被邀请用户完成新手徽章，当用户得到新手徽章时视为完成注册，会给邀请者奖励
+    InviteeNoviceBadge = "invitee_novice_badge",
+    // 赛季通行证奖励领取
+    BattlePass = "battle_pass",
     // 直接推荐人奖励，当被邀请用户得到新手徽章时视为完成注册，会给邀请者奖励
     DirectReferral = "direct_referral",
     // 间接推荐人奖励，当被邀请用户得到新手徽章时视为完成注册，会给间接邀请者奖励
     IndirectReferral = "indirect_referral",
+
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
@@ -70,9 +75,13 @@ export default UserMoonBeamAudit;
 // 新用户被邀请注册的MB加成
 export const NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA = 15;
 // 被邀请者完成新手徽章的MB加成
+
+export const INVITEE_NOVICE_BADGE_MOON_BEAM_DELTA = 30;
+
 export const DIRECT_REFERRAL_MOON_BEAM_DELTA = 30;
 // 间接推荐人的MB加成
 export const INDIRECT_REFERRAL_MOON_BEAM_DELTA = 5;
+
 
 // 保存新用户被邀请注册的审计记录
 export async function saveNewInviteeRegistrationMoonBeamAudit(inviteeId: string, inviterId: any, session: any) {
@@ -88,6 +97,7 @@ export async function saveNewInviteeRegistrationMoonBeamAudit(inviteeId: string,
         created_time: Date.now(),
     });
     return await audit.save({session});
+
 }
 
 export async function saveInviterMoonBeamReward(inviteeId: string, inviterId: string, indirectInviterId: string, session: any) {
@@ -120,4 +130,5 @@ export async function saveInviterMoonBeamReward(inviteeId: string, inviterId: st
     });
     await indirectInviterAudit.save({session});
     await increaseUserMoonBeam(indirectInviterId, INDIRECT_REFERRAL_MOON_BEAM_DELTA, session);
+
 }

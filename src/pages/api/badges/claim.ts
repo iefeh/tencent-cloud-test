@@ -11,8 +11,10 @@ import doTransaction from '@/lib/mongodb/transaction';
 import logger from '@/lib/logger/winstonLogger';
 import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
+import UserInvite from '@/lib/models/UserInvite';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { getInviteRelationshipFromDirectInviteUser, inviteRelationship } from '@/lib/common/inviter';
+
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -72,7 +74,10 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       });
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
+
+
     const inviter = await checkNoviceNotchInviter(userId, badge);
+
     // 构建领取徽章对象
     const claimBadge: any = {};
     const now = Date.now();
@@ -89,6 +94,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
         $set: claimBadge,
       }, opts);
+
       if (inviter) {
         // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
         await incrUserMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);

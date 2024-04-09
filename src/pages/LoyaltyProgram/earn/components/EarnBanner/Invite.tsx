@@ -8,17 +8,32 @@ import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import InviteCardModal from '@/pages/components/common/InviteCardModal';
+import { useRouter } from 'next/router';
+import { cn } from '@nextui-org/react';
 
-const Invite = function () {
-  const { userInfo, toggleInviteModal } = useContext(MobxContext);
+interface Props {
+  inProfie?: boolean;
+}
+
+const Invite = function ({ inProfie }: Props) {
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const router = useRouter();
 
   function onInviteClick() {
-    if (!userInfo) return;
-    toggleInviteModal();
+    if (!userInfo) {
+      toggleLoginModal(true);
+    } else {
+      router.push('/Profile/invite');
+    }
   }
 
   return (
-    <div className="w-[42.5rem] h-[15rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2rem] pr-[2rem] pb-[2.5rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500">
+    <div
+      className={cn([
+        'w-[42.5rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2rem] pr-[2rem] pb-[2.5rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500',
+        inProfie ? 'h-[13.75rem]' : 'h-[15rem]',
+      ])}
+    >
       <Image src={inviteBgImg} alt="" fill />
 
       <div className="flex flex-col justify-between relative z-0 h-full">
