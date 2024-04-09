@@ -1,18 +1,19 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
-import {constructQuest} from "@/lib/quests/constructor";
-import {redis} from "@/lib/redis/client";
-import {try2AddUser2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import { constructQuest } from "@/lib/quests/constructor";
+import { redis } from "@/lib/redis/client";
+import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
 import * as Sentry from "@sentry/nextjs";
-import {errorInterceptor} from "@/lib/middleware/error";
-import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import {QuestType} from "@/lib/quests/types";
-import {addWalletVerificationCDForIP, checkWalletVerificationCDForIP} from "@/lib/redis/verifyWallet";
+import { errorInterceptor } from "@/lib/middleware/error";
+import { timeoutInterceptor } from "@/lib/middleware/timeout";
+import { QuestType } from "@/lib/quests/types";
+import { addWalletVerificationCDForIP, checkWalletVerificationCDForIP } from "@/lib/redis/verifyWallet";
+import { updateUserBattlepass } from "@/lib/battlepass/battlepass"
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -23,12 +24,12 @@ const defaultErrorResponse = response.success({
 })
 
 router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse, 15000)).post(async (req, res) => {
-    const {quest_id} = req.body;
+    const { quest_id } = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
         return;
     }
-    const quest = await Quest.findOne({id: quest_id, active: true, deleted_time: null});
+    const quest = await Quest.findOne({ id: quest_id, active: true, deleted_time: null });
     if (!quest) {
         res.json(response.notFound("Unknown quest."));
         return;
@@ -74,12 +75,16 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         // 申领任务奖励
         const result = await questImpl.claimReward(userId);
         if (result.claimed_amount && result.claimed_amount > 0) {
-            await try2AddUser2MBLeaderboard(userId);
+            await try2AddUsers2MBLeaderboard(userId);
         }
         if (result.claimed_amount != undefined && quest.type == QuestType.ConnectWallet) {
             // 钱包资产任务添加检查CD
             await addWalletVerificationCDForIP(req);
         }
+        if (!result.claimed_amount) {
+            result.claimed_amount = 0;
+        }
+        await updateUserBattlepass(userId, quest_id, Number(result.claimed_amount), undefined);
         res.json(response.success(result));
     } catch (error) {
         logger.error(error);

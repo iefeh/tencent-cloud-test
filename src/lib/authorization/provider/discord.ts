@@ -51,7 +51,8 @@ export async function generateAuthorizationURL(req: any, res: any) {
         landing_url: landing_url,
         flow: currFlow,
         authorization_user_id: req.userId,
-        inviter_id: checkResult.inviter?.user_id,
+        inviter_id: checkResult.inviter?.direct,
+        indirect_inviter_id: checkResult.inviter?.indirect,
         signup_mode: signup_mode,
     };
     const state = uuidv4();

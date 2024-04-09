@@ -10,6 +10,8 @@ import {v4 as uuidv4} from "uuid";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
 import {AuthorizationType, SignupPayload} from "@/lib/authorization/types";
+import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from '@/lib/models/UserMoonBeamAudit';
+import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -92,6 +94,7 @@ async function createUserAndWallet(address: string, inviter: any): Promise<IUser
         user_id: uuidv4(),
         username: address,
         avatar_url: process.env.DEFAULT_AVATAR_URL,
+        moon_beam: inviter ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0,
         created_time: Date.now(),
     });
     const userWallet = new UserWallet({
@@ -99,6 +102,7 @@ async function createUserAndWallet(address: string, inviter: any): Promise<IUser
         wallet_addr: address.toLowerCase(),
         created_time: user.created_time,
     });
+    // 保存用户登录钱包信息、邀请记录、被邀请者MB奖励记录、邀请者拉新指标
     await doTransaction(async (session) => {
         const opts = {session};
         await user.save(opts);
@@ -110,6 +114,8 @@ async function createUserAndWallet(address: string, inviter: any): Promise<IUser
                 created_time: Date.now(),
             });
             await invite.save(opts);
+            await saveNewInviteeRegistrationMoonBeamAudit(user.user_id, inviter.user_id, session);
+            await incrUserMetric(inviter.user_id, Metric.TotalInvitee, 1, session);
         }
     });
     return userWallet;
