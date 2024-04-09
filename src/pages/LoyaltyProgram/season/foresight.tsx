@@ -15,12 +15,6 @@ const ForeSightPage: FC = () => {
     init();
   }, []);
 
-  // useEffect(() => {
-  //   if (info && info.has_battle_pass) {
-  //     router.replace('/LoyaltyProgram/season');
-  //   }
-  // }, [info]);
-
   return (
     <section className="w-full">
       <Head>

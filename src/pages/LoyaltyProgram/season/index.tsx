@@ -32,8 +32,7 @@ function SeasonBattle() {
 
     if (!info?.has_battle_pass) {
       setLoading(true);
-      await createBattlePassAPI();
-      await init(true);
+      await init(true, true);
       setLoading(false);
     }
 
