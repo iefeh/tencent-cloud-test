@@ -61,7 +61,7 @@ const InviteesTabs: FC = () => {
           </div>
 
           <div className="flex-1 shrink-0">
-            <p className="text-[#B38C55]">+{milestone?.successful_indirect_invitee_reward || 0} Users</p>
+            <p className="text-[#B38C55]">+{milestone?.successful_indirect_invitee_reward || 0} MBS</p>
             <p className="mt-4">Total MBs Earned From Indirect Invite</p>
           </div>
         </div>
