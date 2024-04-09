@@ -1,0 +1,117 @@
+import CircularLoading from '@/pages/components/common/CircularLoading';
+import Image from 'next/image';
+import { FC, useEffect, useRef, useState } from 'react';
+import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
+import { FreeMode } from 'swiper/modules';
+import { cn } from '@nextui-org/react';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import styles from './index.module.css';
+import { useInviteStore } from '@/store/Invite';
+import { observer } from 'mobx-react-lite';
+
+const MBProgress: FC = () => {
+  const { milestone, loading } = useInviteStore();
+  const { diplomat, successful_direct_invitee: currentInvited = 0 } = milestone || {};
+  const [inProgressIndex, setInProgressIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const swiperRef = useRef<SwiperClass | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let rate = 0;
+
+    if (!diplomat || diplomat.series.length < 1) {
+      setInProgressIndex(-1);
+    } else {
+      const { series } = diplomat;
+      const index = series.findIndex((item) => (item.milestone || 0) > currentInvited);
+      setInProgressIndex(index);
+
+      if (index < 0) {
+        rate = 1;
+      } else {
+        const targetInvitees = series[index].milestone || 0;
+        const lastInvitees = series[index - 1]?.milestone || 0;
+        const period = (currentInvited - lastInvitees) / (targetInvitees - lastInvitees);
+        rate = Math.min(Math.max((index + period) / series.length, 0), 1);
+      }
+    }
+
+    containerRef.current.style.setProperty(
+      '--progress',
+      `calc(${(rate * 100).toFixed(2)}% - ${Math.max(6 * rate, 3)}rem)`,
+    );
+  }, [currentInvited, diplomat]);
+
+  useEffect(() => {
+    if (!swiperRef.current) return;
+
+    swiperRef.current.slideTo(inProgressIndex, 0);
+  }, [inProgressIndex]);
+
+  return (
+    <div className="mt-16 w-full">
+      <div className="text-base">
+        In addition to 25 Moon Beams for each successful direct invite, reaching milestones will earn you up to an extra
+        3300+ bonus Moon beams.
+      </div>
+
+      <div className="font-semakin text-2xl mt-2">
+        A total of <span className="text-basic-yellow">1,000 Moon Beams</span> were received from our Referral Program
+        now.
+      </div>
+
+      <div ref={containerRef} className="w-full h-60 relative px-12">
+        {(diplomat?.series?.length || 0) > 0 ? (
+          <Swiper
+            className={cn(['relative', styles.progressSwiper])}
+            modules={[FreeMode]}
+            freeMode={true}
+            slidesPerView="auto"
+            spaceBetween="4.5rem"
+            onInit={(swiper) => (swiperRef.current = swiper)}
+          >
+            {diplomat!.series.map((item, index) => (
+              <SwiperSlide key={index}>
+                <div className="flex flex-col items-center">
+                  <Image className="w-12 h-12 object-contain" src={item.image_url} alt="" sizes="100%" />
+
+                  <div className="uppercase text-basic-yellow font-semakin text-lg mt-4">
+                    {index === 0 ? diplomat!.name || '--' : `+${item.reward_moon_beam} mb`}
+                  </div>
+
+                  <div
+                    className={cn([
+                      'text-base mt-7',
+                      index < inProgressIndex
+                        ? 'text-[#666]'
+                        : index === inProgressIndex
+                        ? 'text-basic-yellow'
+                        : 'text-white',
+                    ])}
+                  >
+                    {index < inProgressIndex
+                      ? 'Completed'
+                      : index === inProgressIndex
+                      ? 'In Progress'
+                      : `${item.milestone} invitees`}
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : (
+          <div className="h-full flex flex-col py-2 items-center justify-center text-xl">
+            <p className="shrink-0">More exciting rewards coming soon.</p>
+            <p className="shrink-0">Stay tuned!</p>
+          </div>
+        )}
+
+        {loading && <CircularLoading />}
+      </div>
+    </div>
+  );
+};
+
+export default observer(MBProgress);

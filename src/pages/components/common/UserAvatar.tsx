@@ -49,10 +49,11 @@ const UserAvatar = () => {
     //   title: 'Check-In',
     //   icon: checkinImg,
     // },
-    // {
-    //   title: 'Invite New Users',
-    //   icon: inviteImg,
-    // },
+    {
+      title: 'Invite New Users',
+      icon: inviteImg,
+      path: '/Profile/invite'
+    },
     // {
     //   title: 'Settings',
     //   icon: settingsImg,
