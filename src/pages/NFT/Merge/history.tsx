@@ -1,5 +1,5 @@
 import { MergeListItem, queryMergeListAPI } from '@/http/services/mint';
-import PaginationRenderItem from '@/pages/LoyaltyProgram/earn/components/TaskTabs/components/PaginationRenderItem';
+import PaginationRenderItem from '@/components/LoyaltyProgram/earn/TaskTabs/components/PaginationRenderItem';
 import { MobxContext } from '@/pages/_app';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
