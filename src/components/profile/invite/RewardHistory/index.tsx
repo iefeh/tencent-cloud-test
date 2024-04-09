@@ -1,10 +1,10 @@
 import { Tab, Tabs, cn } from '@nextui-org/react';
 import { FC, Fragment } from 'react';
 import { useInviteStore } from '@/store/Invite';
-import { InviteReferral } from '@/http/services/invite';
 import Image from 'next/image';
 import arrowIcon from 'img/profile/badges/icon_arrow.png';
 import helpIcon from 'img/profile/badges/icon_help.png';
+import { observer } from 'mobx-react-lite';
 
 const RewardHistory: FC = () => {
   const { milestone } = useInviteStore();
@@ -30,8 +30,6 @@ const RewardHistory: FC = () => {
           }}
         >
           {(referrals || []).map((item, index) => {
-            if (item.series.length < 1) return null;
-
             const bigIndex = item.series.findIndex((s) => !s.obtained) - 1;
             const bigSerie = item.series[Math.max(bigIndex, 0)];
 
@@ -57,7 +55,7 @@ const RewardHistory: FC = () => {
                   </div>
 
                   <div className="flex justify-center gap-4 mt-6">
-                    {item.series.map((child, childIndex) => (
+                    {(item.series || []).map((child, childIndex) => (
                       <Fragment key={childIndex}>
                         {childIndex > 0 && item.series?.[childIndex - 1] && (
                           <Image className="w-[0.875rem] h-4 mt-7 mx-1" src={arrowIcon} alt="" width={28} height={32} />
@@ -98,4 +96,4 @@ const RewardHistory: FC = () => {
   );
 };
 
-export default RewardHistory;
+export default observer(RewardHistory);
