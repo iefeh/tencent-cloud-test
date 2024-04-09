@@ -38,7 +38,7 @@ const RewardHistory: FC = () => {
 
             return (
               <Tab key={index} title={item.name}>
-                <div className="flex flex-col items-center pt-8 pb-4 px-6">
+                <div className="flex flex-col items-center text-center pt-8 pb-4 px-12">
                   <Image
                     className={cn(['w-60 h-60 object-contain', bigSerie.obtained || 'grayscale opacity-50'])}
                     src={bigSerie.image_url || helpIcon}
@@ -68,6 +68,7 @@ const RewardHistory: FC = () => {
                           <Image
                             className={cn([
                               'w-[4.375rem] h-[4.375rem] object-contain',
+                              (!child.obtained || childIndex > bigIndex) && 'grayscale opacity-50',
                               child.obtained && childIndex === bigIndex && 'border-1 border-basic-yellow rounded-base',
                             ])}
                             src={child.icon_url}
