@@ -13,7 +13,6 @@ import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
 import UserInvite from '@/lib/models/UserInvite';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
-import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { getInviterFromDirectInviteUser, inviter } from '@/lib/common/inviter';
 
 
@@ -67,6 +66,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         result: 'You are not eligible to claim this badge level.',
       });
     }
+    
     // 检查用户是否已经领取过该徽章
     if (series.claimed_time) {
       return response.success({
@@ -75,7 +75,6 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
 
-    const inviterId = await checkNoviceNotchInviter(userId, badge);
 
     const inviter = await checkNoviceNotchInviter(userId, badge);
 
@@ -95,9 +94,6 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
         $set: claimBadge,
       }, opts);
-
-      if (inviterId) {
-        await incrUserMetric(inviterId, Metric.TotalNoviceBadgeInvitee, 1, session);
 
       if (inviter) {
         // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
@@ -128,21 +124,6 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     await redis.del(claimLock);
   }
 }
-
-
-async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<string | null> {
-  if (!badge) {
-    return null;
-  }
-  if (badge.id !== process.env.NOVICE_NOTCH_BADGE_ID) {
-    return null;
-  }
-  // 当前是新手徽章，检查用户的邀请人
-  const inviter = await UserInvite.findOne({ invitee_id: userId });
-  if (!inviter) {
-    return null;
-  }
-  return inviter.user_id;
 
 async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<inviter | null> {
   if (!badge) {
