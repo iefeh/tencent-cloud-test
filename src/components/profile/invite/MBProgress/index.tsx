@@ -63,10 +63,10 @@ const MBProgress: FC = () => {
         were received from our Referral Program now.
       </div>
 
-      <div ref={containerRef} className="w-full h-60 relative px-12">
+      <div ref={containerRef} className="w-full h-60 relative">
         {(diplomat?.series?.length || 0) > 0 ? (
           <Swiper
-            className={cn(['relative', styles.progressSwiper])}
+            className={cn(['relative !px-12', styles.progressSwiper])}
             modules={[FreeMode]}
             freeMode={true}
             slidesPerView="auto"
@@ -74,11 +74,11 @@ const MBProgress: FC = () => {
             onInit={(swiper) => (swiperRef.current = swiper)}
           >
             {diplomat!.series.map((item, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide key={index} className="!h-auto">
                 <div className="flex flex-col items-center max-w-[6rem]">
                   <Image className="w-24 h-24 object-contain bg-black" src={item.image_url} alt="" sizes="100%" />
 
-                  <div className="uppercase text-basic-yellow font-semakin text-lg mt-4">
+                  <div className="uppercase text-basic-yellow font-semakin text-lg mt-4 flex-1 text-center">
                     {index === 0 ? diplomat!.name || '--' : `+${item.reward_moon_beam} mb`}
                   </div>
 
