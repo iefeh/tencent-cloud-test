@@ -58,8 +58,9 @@ const MBProgress: FC = () => {
       </div>
 
       <div className="font-semakin text-2xl mt-2">
-        A total of <span className="text-basic-yellow">1,000 Moon Beams</span> were received from our Referral Program
-        now.
+        A total of{' '}
+        <span className="text-basic-yellow">{(milestone?.total_reward || 0).toLocaleString('en-US')} Moon Beams</span>{' '}
+        were received from our Referral Program now.
       </div>
 
       <div ref={containerRef} className="w-full h-60 relative px-12">
