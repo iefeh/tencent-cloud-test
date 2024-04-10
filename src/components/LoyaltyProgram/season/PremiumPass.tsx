@@ -33,7 +33,7 @@ const FinalReward: FC<Props> = ({ className, visible }) => {
 
             <div className="font-semakin text-3xl relative z-0 text-basic-yellow">Win $MORE Token Now!</div>
 
-            <div className="relative z-0 text-xl mt-4">
+            <div className="relative z-0 text-xl mt-8">
               Level up your season pass, win more Moon Beams to secure your{' '}
               <span className="text-basic-yellow">$MORE</span> token airdrop.
             </div>

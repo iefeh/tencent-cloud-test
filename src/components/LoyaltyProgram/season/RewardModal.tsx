@@ -82,7 +82,7 @@ const RewardModal: FC<Props> = ({ item, isOpen, onClose, onOpenChange }) => {
                 className="uppercase w-full h-9"
                 label={currentClaimed ? 'Claimed' : 'Claim'}
                 actived
-                disabled={currentClaimed}
+                disabled={currentClaimed || !item.satisfied_time}
                 loading={loading}
                 onClick={onClaim}
               />
