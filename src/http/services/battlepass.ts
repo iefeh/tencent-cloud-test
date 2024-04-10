@@ -1,4 +1,5 @@
 import http from '../index';
+import type { TaskListItem } from './task';
 
 export interface BattlePassBadgeRewardDTO {
   type: 'badge';
@@ -61,4 +62,27 @@ export function claimBattleRewardAPI(data: { reward_type: string; lv: number }):
 
 export function createBattlePassAPI() {
   return http.get('/api/battlepass/participate');
+}
+
+export interface TaskTag {
+  tag: string;
+  name: string;
+}
+
+export interface TaskCategory {
+  id: string;
+  name: string;
+  quest_count: number;
+  achieve_count: number;
+  image_url: string;
+}
+
+export function queryTaskCategoriesAPI(): Promise<{ result: TaskCategory[] }> {
+  return http.get('/api/battlepass/tasks_overview');
+}
+
+export function queryTasksAPI(
+  params: PageQueryDto & { category: string },
+): Promise<PageResDTO<TaskListItem> & { tags: TaskTag[]; current_tag: string }> {
+  return http.get('/api/battlepass/tasks', { params });
 }

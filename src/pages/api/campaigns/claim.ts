@@ -134,7 +134,7 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
             return reward.season_pass_progress;
         }
         return tasks;
-    }, 1)
+    }, 1);
     // 添加用户的活动奖励领取记录
     const now = Date.now();
     await doTransaction(async (session) => {

@@ -172,7 +172,7 @@ async function constructBattlepassMoonbeamReward(userId: string, currentBattleSe
   let audit = new UserMoonBeamAudit({
     user_id: userId,
     type: UserMoonBeamAuditType.BattlePass,
-    moon_beam_delta: moonBeamReward.properties.reward_moon_beam,
+    moon_beam_delta: moonBeamReward.properties.amount,
     reward_taint: `season_id:${currentBattleSeason.id},type:${rewardType},level:${level},user:${userId}`,
     corr_id: currentBattleSeason.id,
     extra_info: level,
