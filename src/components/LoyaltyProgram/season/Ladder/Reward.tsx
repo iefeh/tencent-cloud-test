@@ -10,11 +10,12 @@ import claimedBlueBg from 'img/loyalty/season/bg_reward_blue_claimed.png';
 import { BattlePassBadgeRewardDTO, BattlePassLevelDTO, claimBattleRewardAPI } from '@/http/services/battlepass';
 import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import claimedIcon from 'img/loyalty/season/icon_claimed.png';
-import { cn } from '@nextui-org/react';
+import { Tooltip, cn } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 import { useBattlePassContext } from '@/store/BattlePass';
+import RewardTooltip from './RewardTooltip';
 
 interface Props {
   item?: BattlePassLevelDTO;
@@ -64,52 +65,54 @@ const Reward: FC<Props> = ({ item }) => {
     <>
       {!isPremium && line}
 
-      <div className="relative">
-        <div className="w-[11.0625rem] h-[11.0625rem] relative flex justify-center items-center">
-          {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
+      <RewardTooltip items={item?.rewards}>
+        <div className="relative cursor-pointer">
+          <div className="w-[11.0625rem] h-[11.0625rem] relative flex justify-center items-center">
+            {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
 
-          {badgeReward && (
-            <div className="relative z-0 w-[6.25rem] h-[6.25rem] overflow-hidden rounded-full flex items-end">
-              <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
+            {badgeReward && (
+              <div className="relative z-0 w-[6.25rem] h-[6.25rem] overflow-hidden rounded-full flex items-end">
+                <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
 
-              {acheived && !claimed && (
-                <LGButton
-                  className="w-full h-[1.75rem] rounded-none"
-                  label="Claim"
-                  actived
-                  loading={loading}
-                  onClick={onClaim}
-                />
-              )}
-            </div>
-          )}
+                {acheived && !claimed && (
+                  <LGButton
+                    className="w-full h-[1.75rem] rounded-none"
+                    label="Claim"
+                    actived
+                    loading={loading}
+                    onClick={onClaim}
+                  />
+                )}
+              </div>
+            )}
 
-          {locked && (
-            <Image
-              className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
-              src={lockedIcon}
-              alt=""
-            />
-          )}
+            {locked && (
+              <Image
+                className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
+                src={lockedIcon}
+                alt=""
+              />
+            )}
 
-          {claimed && (
-            <Image
-              className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
-              src={claimedIcon}
-              alt=""
-            />
-          )}
+            {claimed && (
+              <Image
+                className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
+                src={claimedIcon}
+                alt=""
+              />
+            )}
+          </div>
+
+          <div
+            className={cn([
+              'absolute -bottom-9 left-1/2 -translate-x-1/2 text-lg',
+              locked ? 'text-[#CCCCCC]' : isPremium ? 'text-basic-yellow' : 'text-basic-blue',
+            ])}
+          >
+            Lv.{lv || '--'}
+          </div>
         </div>
-
-        <div
-          className={cn([
-            'absolute -bottom-9 left-1/2 -translate-x-1/2 text-lg',
-            locked ? 'text-[#CCCCCC]' : isPremium ? 'text-basic-yellow' : 'text-basic-blue',
-          ])}
-        >
-          Lv.{lv || '--'}
-        </div>
-      </div>
+      </RewardTooltip>
 
       {isPremium && line}
     </>
