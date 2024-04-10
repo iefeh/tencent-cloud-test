@@ -13,8 +13,10 @@ import { cn, useDisclosure } from '@nextui-org/react';
 import { createBattlePassAPI } from '@/http/services/battlepass';
 import MeteorLayer from '@/components/LoyaltyProgram/season/MeteorLayer';
 import ShineBackground from '@/components/LoyaltyProgram/season/ShineBackground';
+import { useUserContext } from '@/store/User';
 
 function SeasonBattle() {
+  const { userInfo, toggleLoginModal } = useUserContext();
   const { init, info, hasAcheivedFinalPass, progressInfo } = useBattlePassContext();
   const { totalProgress } = progressInfo || {};
   const contentRef = useRef<HTMLDivElement>(null);
@@ -23,10 +25,14 @@ function SeasonBattle() {
   const [loading, setLoading] = useState(false);
 
   async function onExplore() {
+    if (!userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
+
     if (!info?.has_battle_pass) {
       setLoading(true);
-      await createBattlePassAPI();
-      await init(true);
+      await init(true, true);
       setLoading(false);
     }
 

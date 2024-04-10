@@ -31,3 +31,7 @@ interface PagiInfo {
   pageIndex: number;
   pageSize: number;
 }
+
+interface ClassNameProps {
+  className?: string;
+}

@@ -1,4 +1,4 @@
-import { BattleInfoDTO, BattlePassLevelDTO, queryBattleInfoAPI } from '@/http/services/battlepass';
+import { BattleInfoDTO, BattlePassLevelDTO, createBattlePassAPI, queryBattleInfoAPI } from '@/http/services/battlepass';
 import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
@@ -73,14 +73,23 @@ class BattlePassStore {
 
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
 
-  init = throttle(async (force = false) => {
+  init = throttle(async (force = false, needCreatePass = false) => {
     const now = performance.now();
     if (!force && now - this.lastEl < 5000) return;
 
-    const res = await queryBattleInfoAPI();
+    let res = await queryBattleInfoAPI();
+    if (needCreatePass && !!res.start_time && !res.has_battle_pass) {
+      await this.createPass();
+      res = await queryBattleInfoAPI();
+    }
+
     this.setInfo(res);
     this.lastEl = performance.now();
   }, 500);
+
+  createPass = () => {
+    return createBattlePassAPI();
+  };
 }
 
 export default BattlePassStore;

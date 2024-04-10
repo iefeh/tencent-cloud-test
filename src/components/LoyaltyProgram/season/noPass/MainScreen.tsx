@@ -1,5 +1,5 @@
 import BattlePassCard from '@/components/card/BattlePassCard';
-import Rank from '@/pages/LoyaltyProgram/earn/components/BannerAndRank/Rank';
+import Rank from '@/components/LoyaltyProgram/earn/BannerAndRank/Rank';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 import UserCard from './UserCard';
