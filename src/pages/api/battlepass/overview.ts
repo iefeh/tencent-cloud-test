@@ -114,6 +114,7 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
       $project: {
         _id: 0,
         id: 1,
+        name: 1,
         series: 1,
       },
     },
@@ -125,6 +126,7 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
   for (let b of badges) {
     for (let k of Object.keys(b.series)) {
       targetSeries = b.series[String(k)];
+      targetSeries.name = b.name;
       // delete targetSeries.requirements;
       // delete targetSeries.open_for_mint;
       // delete targetSeries.reward_moon_beam;
@@ -137,9 +139,11 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
     for (let r of s.rewards) {
       if (r.type === BattlePassRewardItemType.Badge) {
         badge_id = r.properties.badge_id;
-        r.properties.icon_url = badgeInfos.get(badge_id + s.lv).icon_url;
+        r.properties.amount = 1;
+        r.properties.name = badgeInfos.get(badge_id + s.lv).name;
         r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
         r.properties.description = badgeInfos.get(badge_id + s.lv).description;
+        delete r.properties.badge_id;
       }
     }
     if (user_battle_season) {
@@ -153,9 +157,11 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
     for (let r of s.rewards) {
       if (r.type === BattlePassRewardItemType.Badge) {
         badge_id = r.properties.badge_id;
-        r.properties.icon_url = badgeInfos.get(badge_id + s.lv).icon_url;
+        r.properties.amount = 1;
+        r.properties.name = badgeInfos.get(badge_id + s.lv).name;
         r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
         r.properties.description = badgeInfos.get(badge_id + s.lv).description;
+        delete r.properties.badge_id;
       }
     }
     if (user_battle_season) {
