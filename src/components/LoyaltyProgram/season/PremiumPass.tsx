@@ -52,7 +52,7 @@ const FinalReward: FC<Props> = ({ className, visible }) => {
 
           <div
             className={cn([
-              'img-box relative z-0 w-28 h-28 overflow-hidden rounded-full',
+              'img-box relative z-0 w-48 h-48 overflow-hidden rounded-full',
               'flex items-end',
               'bg-no-repeat bg-contain',
               'transition-background',

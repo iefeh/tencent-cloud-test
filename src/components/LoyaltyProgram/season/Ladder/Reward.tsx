@@ -72,7 +72,7 @@ const Reward: FC<Props> = ({ item, onItemClick }) => {
             {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
 
             {badgeReward && (
-              <div className="relative z-0 w-[6.25rem] h-[6.25rem] overflow-hidden rounded-full flex items-end">
+              <div className="relative z-0 w-[7.5rem] h-[7.5rem] overflow-hidden rounded-full flex items-end">
                 <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
 
                 {acheived && !claimed && (
