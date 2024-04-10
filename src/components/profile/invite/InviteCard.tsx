@@ -54,7 +54,7 @@ const InviteCard = function ({ onRuleClick }: Props) {
           </div>
 
           <ul className="text-[#999] mt-[1.125rem]">
-            <li>You will receive continuous MB rewards through the participant&apos;s engagement.</li>
+            <li>You will receive continuous Moon Beams rewards through the participant&apos;s engagement.</li>
             <li>Invitees will receive 15 bonus Moon Beams as a reward</li>
           </ul>
         </div>

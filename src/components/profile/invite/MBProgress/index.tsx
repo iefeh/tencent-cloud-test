@@ -56,7 +56,7 @@ const MBProgress: FC = () => {
   return (
     <div className="mt-16 w-full">
       <div className="text-base">
-        In addition to 25 Moon Beams for each successful direct invite, reaching milestones will earn you up to an extra
+        In addition to 30 Moon Beams for each successful direct invite, reaching milestones will earn you up to an extra
         3300+ bonus Moon beams.
       </div>
 
