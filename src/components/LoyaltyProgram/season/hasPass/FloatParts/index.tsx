@@ -19,7 +19,7 @@ const FloatParts: FC<Props> = ({ visible, onRuleClick }) => {
         onRuleClick={onRuleClick}
       />
 
-      <PremiumPass className={cn(['!absolute right-16 bottom-48', visible || 'opacity-0'])} visible={visible} />
+      <PremiumPass className={cn(['!absolute right-32 bottom-48', visible || 'opacity-0'])} visible={visible} />
 
       <RuleButton
         className={cn(['!absolute right-16 bottom-16', visible || 'opacity-0'])}

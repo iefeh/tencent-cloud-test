@@ -26,7 +26,7 @@ const FinalReward: FC<Props> = ({ className, visible }) => {
     <CSSTransition in={visible} classNames="transition-fade-right" nodeRef={nodeRef} timeout={800}>
       <Tooltip
         placement="top"
-        classNames={{ content: 'bg-transparent' }}
+        classNames={{ content: 'bg-transparent translate-y-[4.75rem]' }}
         content={
           <div className="w-[31.25rem] h-[15.125rem] relative pt-12 text-left px-8">
             <Image className="object-contain rotate-180" src={tooltipBgImg} alt="" fill sizes="100%" />
@@ -52,7 +52,7 @@ const FinalReward: FC<Props> = ({ className, visible }) => {
 
           <div
             className={cn([
-              'img-box relative z-0 w-48 h-48 overflow-hidden rounded-full',
+              'img-box relative z-0 w-[12.5rem] h-[12.5rem] overflow-hidden rounded-full',
               'flex items-end',
               'bg-no-repeat bg-contain',
               'transition-background',
