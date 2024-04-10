@@ -75,7 +75,7 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
 
       <div className={cn(['flex gap-5 items-center relative z-0 w-[36.625rem]', noPass && 'mt-12'])}>
         <LGButton
-          className="uppercase"
+          className="uppercase animate-breathShadow"
           label="Explore Now"
           actived
           suffix={noPass ? <ArrowRightSVG className="w-7 h-7" /> : undefined}
