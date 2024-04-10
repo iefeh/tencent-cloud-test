@@ -6,11 +6,14 @@ import InviteesTabs from '@/components/profile/invite/InviteesTabs';
 import RewardHistory from '@/components/profile/invite/RewardHistory';
 import { createContext } from 'react';
 import InviteStore, { useInviteStore } from '@/store/Invite';
+import InvitationRulesModal from '@/components/modal/InvitationRulesModal';
+import { useDisclosure } from '@nextui-org/react';
 
 export const InviteContext = createContext(new InviteStore());
 
 export default function ProfileEditPage() {
   const inviteStore = useInviteStore();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   inviteStore.init();
 
@@ -27,17 +30,19 @@ export default function ProfileEditPage() {
 
       <InviteContext.Provider value={inviteStore}>
         <div className="max-w-[75rem] mx-auto mt-10">
-          <InviteCard />
+          <InviteCard onRuleClick={onOpen} />
 
           <MBProgress />
 
           <div className="flex gap-10 mt-16">
-            <InviteesTabs />
+            <InviteesTabs onRuleClick={onOpen} />
 
             <RewardHistory />
           </div>
         </div>
       </InviteContext.Provider>
+
+      <InvitationRulesModal isOpen={isOpen} onOpenChange={onOpenChange} />
     </section>
   );
 }

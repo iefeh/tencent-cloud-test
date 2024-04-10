@@ -89,6 +89,10 @@ const routeText: RouteMenu[] = [
       //   name: 'MB=MVP',
       //   route: '/LoyaltyProgram/Exchange',
       // },
+      {
+        name: 'Referral Program',
+        route: '/Profile/invite',
+      },
     ],
   },
 ];
