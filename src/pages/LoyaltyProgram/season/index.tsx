@@ -17,7 +17,7 @@ import { useUserContext } from '@/store/User';
 
 function SeasonBattle() {
   const { userInfo, toggleLoginModal } = useUserContext();
-  const { init, info, hasAcheivedFinalPass, progressInfo } = useBattlePassContext();
+  const { init, setInfo, info, hasAcheivedFinalPass, progressInfo } = useBattlePassContext();
   const { totalProgress } = progressInfo || {};
   const contentRef = useRef<HTMLDivElement>(null);
   const [floatVisible, setFloatVisible] = useState(false);
@@ -55,6 +55,14 @@ function SeasonBattle() {
     init();
   }, []);
 
+  useEffect(() => {
+    init();
+
+    if (!userInfo) {
+      contentRef.current?.scrollTo({ top: 0 });
+    }
+  }, [userInfo]);
+
   return (
     <section className="w-full">
       <Head>
@@ -77,7 +85,7 @@ function SeasonBattle() {
 
           {info?.has_battle_pass && <RocketScreen />}
 
-          <FinalScreen />
+          {info && <FinalScreen />}
         </div>
 
         <LGButton
