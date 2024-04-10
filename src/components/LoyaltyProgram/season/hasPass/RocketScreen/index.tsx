@@ -66,9 +66,10 @@ const RocketScreen: FC = () => {
 
       <Rocket />
 
-      {currentItem && (
+      {/* 暂时隐藏弹窗 */}
+      {/* {currentItem && (
         <RewardModal item={currentItem} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onCloseCallback} />
-      )}
+      )} */}
     </div>
   );
 };
