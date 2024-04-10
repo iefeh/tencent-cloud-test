@@ -82,10 +82,12 @@ export async function premiumSatisfy(userId: string): Promise<{ premium_type: st
   const requirements = await BattlePassPremiumRequirements.find({ season_id: seasonId });
   let result = await premiumSatisfyByBadge(userId, userBattlepass.battlepass_season_id, requirements, allRequirements);
   if (!result.is_premium) {
+    console.log("whitelist");
     //判断白名单是否满足要求
     result = await premiumSatisfyByWhiteList(userId, userBattlepass.battlepass_season_id, requirements, allRequirements);
   }
   if (!result.is_premium) {
+    console.log("NFT");
     //判断NFT是否满足要求
     result = await premiumSatisfyByNFT(userId, userBattlepass.battlepass_season_id, requirements, allRequirements);
   }
@@ -201,7 +203,7 @@ async function premiumSatisfyByWhiteList(userId: string, seasonId: number, requi
       }
       //如果用户通过白名单获得高阶通证，则需要进行更新
       if (whitelistSatisfied) {
-        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.WhiteList, is_premium: whitelistSatisfied });
+        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.WhiteList, is_premium: whitelistSatisfied, updated_time: Date.now() });
         break;
       }
     }

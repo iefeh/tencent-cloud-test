@@ -41,6 +41,12 @@ const config: Config = {
             opacity: '1',
           },
         },
+        breathShadow: {
+          '50%': {
+            'box-shadow': '0 0 1rem 0.5rem #f6c799',
+            transform: 'scale(1.03)',
+          },
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -64,6 +70,7 @@ const config: Config = {
         spin5: 'spin 5s linear infinite',
         float3: 'float 3s ease-in-out infinite',
         float5: 'float 5s ease-in-out infinite',
+        breathShadow: 'breathShadow 3s ease-in-out infinite',
       },
       fontSize: {
         'fz-12': '12px',

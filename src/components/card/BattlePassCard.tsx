@@ -8,16 +8,35 @@ import longCardBgImg from 'img/common/battlepass/bg_card_long.png';
 import highCardBgImg from 'img/common/battlepass/bg_card_high.png';
 import ArrowRightSVG from 'svg/arrow_right.svg';
 import { Progress, cn } from '@nextui-org/react';
+import { throttle } from 'lodash';
+import { useUserContext } from '@/store/User';
+import { useRouter } from 'next/router';
 
 interface Props {
   block?: boolean;
+  /** 是否位于赛季前置页面 */
   noPass?: boolean;
 }
 
 const BattlePassCard: FC<Props> = ({ block, noPass }) => {
-  const { info, init, progressInfo, hasAcheivedFinalPass } = useBattlePassContext();
+  const { userInfo, toggleLoginModal } = useUserContext();
+  const { info, init, progressInfo, hasAcheivedFinalPass, createPass } = useBattlePassContext();
   const { max_lv, has_battle_pass } = info || {};
   const { periodProgress } = progressInfo || {};
+  const router = useRouter();
+
+  const onExplore = throttle(async () => {
+    if (!userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
+
+    if (!has_battle_pass) {
+      await createPass();
+    }
+
+    router.push(noPass ? '/LoyaltyProgram/season' : '/LoyaltyProgram/season/foresight');
+  }, 500);
 
   useEffect(() => {
     init();
@@ -56,11 +75,11 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
 
       <div className={cn(['flex gap-5 items-center relative z-0 w-[36.625rem]', noPass && 'mt-12'])}>
         <LGButton
-          className="uppercase"
+          className="uppercase animate-breathShadow"
           label="Explore Now"
-          link={!noPass && !has_battle_pass ? '/LoyaltyProgram/season/foresight' : '/LoyaltyProgram/season'}
           actived
           suffix={noPass ? <ArrowRightSVG className="w-7 h-7" /> : undefined}
+          onClick={onExplore}
         />
 
         {noPass || (

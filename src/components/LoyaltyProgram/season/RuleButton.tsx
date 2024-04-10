@@ -15,7 +15,7 @@ const RuleButton: FC<Props> = ({ className, visible, onRuleClick }) => {
 
   return (
     <CSSTransition in={visible} classNames="transition-fade-right" nodeRef={nodeRef} timeout={800}>
-      <div ref={nodeRef} className={cn(['flex items-center', className])}>
+      <div ref={nodeRef} className={cn(['flex items-center gap-ten', className])}>
         <Tooltip
           classNames={{ content: 'p-4 border-1 border-[#2A2A2A] rounded-base' }}
           content={
@@ -25,7 +25,7 @@ const RuleButton: FC<Props> = ({ className, visible, onRuleClick }) => {
           }
         >
           <div>
-            <WarningSVG className="fill-white w-6 h-6 mr-ten" />
+            <WarningSVG className="fill-white w-6 h-6" />
           </div>
         </Tooltip>
 

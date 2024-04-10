@@ -13,9 +13,11 @@ import claimedBlueBg from 'img/loyalty/season/bg_reward_blue_claimed.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import claimedIcon from 'img/loyalty/season/icon_claimed.png';
+import RewardTooltip from './Ladder/RewardTooltip';
 
 interface Props {
   className?: string;
+  onItemClick?: (item?: BattlePassLevelDTO) => void;
 }
 
 const bgImgs = [
@@ -23,10 +25,9 @@ const bgImgs = [
   [lockedBlueBg, acheivedBlueBg, claimedBlueBg],
 ];
 
-const FinalReward: FC<Props> = ({ className }) => {
+const FinalReward: FC<Props> = ({ className, onItemClick }) => {
   const { finalPass } = useBattlePassContext();
-  const { rewards = [] } = finalPass || {};
-  const { lv, reward_type, satisfied_time, claimed_time } = finalPass || {};
+  const { lv, reward_type, satisfied_time, claimed_time, rewards = [] } = finalPass || {};
   const isPremium = reward_type === 'premium';
   const locked = !satisfied_time;
   const acheived = !!satisfied_time;
@@ -35,36 +36,46 @@ const FinalReward: FC<Props> = ({ className }) => {
   const badgeReward = (rewards || []).find((re) => re.type === 'badge') as BattlePassBadgeRewardDTO | undefined;
 
   return (
-    <div className={cn(['relative', className])}>
-      <div className="w-[22.125rem] h-[22.125rem] relative flex justify-center items-center">
-        {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
+    <RewardTooltip items={rewards}>
+      <div className={cn(['relative cursor-pointer', className])} onClick={() => onItemClick?.(finalPass)}>
+        <div className="w-[22.125rem] h-[22.125rem] relative flex justify-center items-center">
+          {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
 
-        {badgeReward && (
-          <div className="relative z-0 w-[12.5rem] h-[12.5rem] overflow-hidden rounded-full flex items-end">
-            <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
+          {badgeReward && (
+            <div className="relative z-0 w-60 h-60 overflow-hidden rounded-full flex items-end">
+              <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
 
-            {acheived && !claimed && <LGButton className="w-full h-[2.5rem] rounded-none" label="Claim" actived />}
-          </div>
-        )}
+              {acheived && !claimed && <LGButton className="w-full h-[2.5rem] rounded-none" label="Claim" actived />}
+            </div>
+          )}
 
-        {locked && (
-          <Image className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]" src={lockedIcon} alt="" />
-        )}
+          {locked && (
+            <Image
+              className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
+              src={lockedIcon}
+              alt=""
+            />
+          )}
 
-        {claimed && (
-          <Image className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]" src={claimedIcon} alt="" />
-        )}
+          {claimed && (
+            <Image
+              className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
+              src={claimedIcon}
+              alt=""
+            />
+          )}
+        </div>
+
+        <div
+          className={cn([
+            'absolute -bottom-9 left-1/2 -translate-x-1/2 text-lg',
+            locked ? 'text-[#CCCCCC]' : isPremium ? 'text-basic-yellow' : 'text-basic-blue',
+          ])}
+        >
+          Lv.{lv || '--'}
+        </div>
       </div>
-
-      <div
-        className={cn([
-          'absolute -bottom-9 left-1/2 -translate-x-1/2 text-lg',
-          locked ? 'text-[#CCCCCC]' : isPremium ? 'text-basic-yellow' : 'text-basic-blue',
-        ])}
-      >
-        Lv.{lv || '--'}
-      </div>
-    </div>
+    </RewardTooltip>
   );
 };
 

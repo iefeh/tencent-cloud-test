@@ -32,7 +32,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }));
 });
 //查询用户任务情况总览，先通过查询分类表获取所有的分类，再分别vlookup quests表和quest_achievements表，获得对应的任务数量和完成情况。
-async function getUserTasksOverviewRawInfo(userId: string): Promise<any> {
+export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> {
   const currentSeason = await getCurrentBattleSeason();
   const pipeline: PipelineStage[] = [
     {
@@ -94,6 +94,7 @@ async function getUserTasksOverviewRawInfo(userId: string): Promise<any> {
         _id: 0,
         id: 1,
         name: 1,
+        image_url: 1,
         quests: 1,
         quest_count: { $size: '$quests' }
       }

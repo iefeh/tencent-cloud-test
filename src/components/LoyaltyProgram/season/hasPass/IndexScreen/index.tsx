@@ -72,9 +72,11 @@ const IndexScreen: FC<Props> = ({ loading, onExplore }) => {
         <div className={cn(['w-[7.5rem] h-[7.5rem]', 'absolute left-1/2 top-24 -translate-x-1/2'])}>
           <LGButton
             className={cn([
-              'w-full h-full text-base font-semakin leading-5',
+              'w-full h-full text-base font-semakin leading-5 rounded-full',
               "!bg-[url('/img/loyalty/season/btn_circle.png')] bg-contain bg-no-repeat",
               '[&>div]:whitespace-normal [&>div]:flex-col',
+              // 'shadow-[0_0_2rem_0.5rem] shadow-basic-yellow',
+              'shadow-basic-yellow animate-breathShadow',
             ])}
             label="Explore Now"
             actived

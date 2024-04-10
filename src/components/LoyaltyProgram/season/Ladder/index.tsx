@@ -3,8 +3,13 @@ import Step from './Step';
 import { useBattlePassContext } from '@/store/BattlePass';
 import PrefixStep from './PrefixStep';
 import { observer } from 'mobx-react-lite';
+import { BattlePassLevelDTO } from '@/http/services/battlepass';
 
-const Ladder: FC = () => {
+interface Props {
+  onItemClick?: (item?: BattlePassLevelDTO) => void;
+}
+
+const Ladder: FC<Props> = ({ onItemClick }) => {
   const { info, progressInfo } = useBattlePassContext();
   const { totalProgress } = progressInfo || {};
   const { standard_pass, premium_pass } = info || {};
@@ -28,6 +33,7 @@ const Ladder: FC = () => {
             isFinal={index === (standard_pass?.length || 0) - 1}
             standardItem={starndardItem}
             premiumItem={premium_pass?.[index]}
+            onItemClick={onItemClick}
           />
         </div>
       ))}

@@ -16,7 +16,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import { MBHistoryRecord, queryMBHistoryListAPI } from '@/http/services/profile';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
-import PaginationRenderItem from '@/pages/LoyaltyProgram/earn/components/TaskTabs/components/PaginationRenderItem';
+import PaginationRenderItem from '@/components/LoyaltyProgram/earn/TaskTabs/components/PaginationRenderItem';
 import { observer } from 'mobx-react-lite';
 import { MobxContext } from '@/pages/_app';
 
