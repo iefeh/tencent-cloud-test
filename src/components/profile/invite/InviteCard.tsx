@@ -10,8 +10,14 @@ import copyIcon from 'img/profile/copy.png';
 import linkIcon from 'img/profile/icon_link.png';
 import { toast } from 'react-toastify';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import helpIcon from 'img/invite/icon_help_colored.png';
+import HelpSVG from 'svg/help.svg';
 
-const InviteCard = function () {
+interface Props {
+  onRuleClick?: () => void;
+}
+
+const InviteCard = function ({ onRuleClick }: Props) {
   const { userInfo, toggleInviteModal } = useContext(MobxContext);
 
   function onInviteClick() {
@@ -88,6 +94,14 @@ const InviteCard = function () {
 
         <Image className="relative z-0" src={mbImg} alt="" />
       </div>
+
+      <LGButton
+        className="w-[7.5rem] h-[1.875rem] absolute top-11 right-8"
+        label="Rules"
+        actived
+        prefix={<HelpSVG className="w-[1.125rem] h-[1.125rem] fill-black mr-2" />}
+        onClick={onRuleClick}
+      />
 
       <InviteCardModal />
     </div>
