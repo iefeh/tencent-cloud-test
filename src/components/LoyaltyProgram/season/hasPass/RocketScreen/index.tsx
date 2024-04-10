@@ -16,12 +16,17 @@ import { BattlePassLevelDTO } from '@/http/services/battlepass';
 
 const RocketScreen: FC = () => {
   const { hasAcheivedFinalPass } = useBattlePassContext();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BattlePassLevelDTO | undefined>();
 
   function onItemClick(item?: BattlePassLevelDTO) {
     setCurrentItem(item);
     if (!!item) onOpen();
+  }
+
+  function onCloseCallback() {
+    onClose();
+    setCurrentItem(undefined);
   }
 
   return (
@@ -61,7 +66,9 @@ const RocketScreen: FC = () => {
 
       <Rocket />
 
-      <RewardModal item={currentItem} isOpen={isOpen} onOpenChange={onOpenChange} />
+      {currentItem && (
+        <RewardModal item={currentItem} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onCloseCallback} />
+      )}
     </div>
   );
 };

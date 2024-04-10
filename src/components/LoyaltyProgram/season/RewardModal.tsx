@@ -9,12 +9,13 @@ import { toast } from 'react-toastify';
 import { useBattlePassContext } from '@/store/BattlePass';
 
 interface Props extends ModalProps {
-  item?: BattlePassLevelDTO;
+  item: BattlePassLevelDTO;
+  onClose?: () => void;
 }
 
-const RewardModal: FC<Props> = ({ item, isOpen, onOpenChange }) => {
+const RewardModal: FC<Props> = ({ item, isOpen, onClose, onOpenChange }) => {
   const { init } = useBattlePassContext();
-  const { rewards = [], reward_type, lv, claimed_time } = item || {};
+  const { rewards = [], reward_type, lv, claimed_time } = item;
   const [loading, setLoading] = useState(false);
   const [currentClaimed, setCurrentClaimed] = useState(!!claimed_time);
 
@@ -35,6 +36,7 @@ const RewardModal: FC<Props> = ({ item, isOpen, onOpenChange }) => {
       classNames={{ header: 'p-0', closeButton: 'z-10', body: '26.25rem' }}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      onClose={onClose}
     >
       <ModalContent>
         {(onClose) => (
@@ -74,7 +76,7 @@ const RewardModal: FC<Props> = ({ item, isOpen, onOpenChange }) => {
             <ModalFooter>
               <LGButton
                 className="uppercase w-full h-9"
-                label="Claim"
+                label={currentClaimed ? 'Claimed' : 'Claim'}
                 actived
                 disabled={currentClaimed}
                 loading={loading}
