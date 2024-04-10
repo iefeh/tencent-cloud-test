@@ -8,8 +8,10 @@ import Orbit from '@/components/common/Orbit';
 import starImg from 'img/loyalty/season/orbit_star.png';
 import Planetoid from '../../Planetoid';
 import Astronaut from '../../Astronaut';
+import { useBattlePassContext } from '@/store/BattlePass';
 
 const FinalScreen: FC = () => {
+  const { hasAcheivedFinalPass } = useBattlePassContext();
   const starImgNode = <Image className="w-7 h-7" src={starImg} alt="" />;
 
   return (
@@ -46,13 +48,22 @@ const FinalScreen: FC = () => {
 
       <div className="relative z-0 w-full h-screen flex flex-col justify-center items-center">
         <div
-          className={cn(['font-semakin text-[6.25rem] text-transparent leading-none relative z-0', styles.strokeText])}
+          className={cn([
+            'font-semakin text-[6.25rem] text-transparent leading-none relative z-0',
+            hasAcheivedFinalPass ? 'visible' : 'invisible',
+            styles.strokeText,
+          ])}
           data-text="Congratulations!"
         >
           Congratulations!
         </div>
 
-        <div className="mt-12 font-decima text-lg max-w-[35rem] text-center relative z-0">
+        <div
+          className={cn([
+            'mt-12 font-decima text-lg max-w-[35rem] text-center relative z-0',
+            hasAcheivedFinalPass ? 'visible' : 'invisible',
+          ])}
+        >
           Congratulations on completing all the tasks and reaching the highest level this season! Thank you for your
           hard work and support. We will soon be releasing new content, so stay tuned!
         </div>

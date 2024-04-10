@@ -77,7 +77,7 @@ function SeasonBattle() {
 
           {info?.has_battle_pass && <RocketScreen />}
 
-          {hasAcheivedFinalPass && <FinalScreen />}
+          <FinalScreen />
         </div>
 
         <LGButton

@@ -60,7 +60,7 @@ const RocketScreen: FC = () => {
 
       <Planetoid className="w-[5.4375rem] h-[7.9375rem] !absolute left-40 bottom-[36rem]" />
 
-      {hasAcheivedFinalPass || <FinalReward className="mb-16 mt-60" />}
+      {/* {hasAcheivedFinalPass || <FinalReward className="mb-16 mt-60" />} */}
 
       <Ladder onItemClick={onItemClick} />
 
