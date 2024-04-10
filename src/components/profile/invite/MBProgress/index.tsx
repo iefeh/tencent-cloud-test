@@ -2,20 +2,23 @@ import CircularLoading from '@/pages/components/common/CircularLoading';
 import Image from 'next/image';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
-import { FreeMode } from 'swiper/modules';
+import { FreeMode, Navigation } from 'swiper/modules';
 import { cn } from '@nextui-org/react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import styles from './index.module.css';
 import { useInviteStore } from '@/store/Invite';
 import { observer } from 'mobx-react-lite';
+import arrowImg from 'img/astrark/arrow.png';
 
 const MBProgress: FC = () => {
   const { milestone, loading } = useInviteStore();
-  const { diplomat, successful_direct_invitee: currentInvited = 0 } = milestone || {};
+  let { diplomat, successful_direct_invitee: currentInvited = 0 } = milestone || {};
   const [inProgressIndex, setInProgressIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const swiperRef = useRef<SwiperClass | null>(null);
+  const navigationPrevRef = useRef(null);
+  const navigationNextRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -67,16 +70,22 @@ const MBProgress: FC = () => {
         {(diplomat?.series?.length || 0) > 0 ? (
           <Swiper
             className={cn(['relative !px-12', styles.progressSwiper])}
-            modules={[FreeMode]}
+            modules={[FreeMode, Navigation]}
             freeMode={true}
             slidesPerView="auto"
             spaceBetween="4.5rem"
+            navigation={{
+              prevEl: navigationPrevRef.current,
+              nextEl: navigationNextRef.current,
+            }}
             onInit={(swiper) => (swiperRef.current = swiper)}
           >
             {diplomat!.series.map((item, index) => (
               <SwiperSlide key={index} className="!h-auto">
                 <div className="flex flex-col items-center max-w-[6rem]">
-                  <Image className="w-24 h-24 object-contain bg-black" src={item.image_url} alt="" sizes="100%" />
+                  <div className="w-24 h-24 relative">
+                    <Image className="object-contain bg-black" src={item.image_url} alt="" fill sizes="100%" />
+                  </div>
 
                   <div className="uppercase text-basic-yellow font-semakin text-lg mt-4 flex-1 text-center">
                     {index === 0 ? diplomat!.name || '--' : `+${item.reward_moon_beam} mb`}
@@ -101,6 +110,20 @@ const MBProgress: FC = () => {
                 </div>
               </SwiperSlide>
             ))}
+
+            <div
+              ref={navigationPrevRef}
+              className="absolute left-0 top-1/2 -translate-y-1/2 rotate-90 cursor-pointer z-10"
+            >
+              <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
+            </div>
+
+            <div
+              ref={navigationNextRef}
+              className="absolute right-0 top-1/2 -translate-y-1/2 -rotate-90 cursor-pointer z-10"
+            >
+              <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
+            </div>
           </Swiper>
         ) : (
           <div className="h-full flex flex-col py-2 items-center justify-center text-xl">
