@@ -15,6 +15,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const inviteBadgeIds: string[] = [
         process.env.DIPLOMAT_INSIGNIA_BADGE_ID!,
         process.env.WEALTHY_CIRCLE_CONNECTOR_BADGE_ID!,
+        process.env.NFT_BRIDGER_BADGE_ID!,
     ];
     const badges = await Badges.find({ id: { $in: inviteBadgeIds }, deleted_time: null }, { _id: 0, name: 1, id: 1, obtain_url: 1, series: 1 }).lean();
     if (badges.length != inviteBadgeIds.length) {
