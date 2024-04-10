@@ -34,10 +34,10 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
       actived: info?.is_premium && info?.premium_type === 'badge',
       img: badgePassImg,
     },
-    {
-      actived: info?.is_premium && info?.premium_type === 'whitelist',
-      img: buyPassImg,
-    },
+    // {
+    //   actived: info?.is_premium && info?.premium_type === 'whitelist',
+    //   img: buyPassImg,
+    // },
   ];
 
   const content = (
