@@ -26,7 +26,7 @@ const FinalReward: FC<Props> = ({ className, visible }) => {
     <CSSTransition in={visible} classNames="transition-fade-right" nodeRef={nodeRef} timeout={800}>
       <Tooltip
         placement="top"
-        classNames={{ content: 'bg-transparent translate-y-[4.75rem]' }}
+        classNames={{ content: 'bg-transparent translate-y-[4.75rem] shadow-none' }}
         content={
           <div className="w-[31.25rem] h-[15.125rem] relative pt-12 text-left px-8">
             <Image className="object-contain rotate-180" src={tooltipBgImg} alt="" fill sizes="100%" />

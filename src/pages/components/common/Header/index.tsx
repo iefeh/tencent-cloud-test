@@ -82,7 +82,7 @@ const routeText: RouteMenu[] = [
 
       {
         name: "Rock'it to the Moon",
-        route: '/LoyaltyProgram/season/foresight',
+        route: '/LoyaltyProgram/season',
       },
 
       // {

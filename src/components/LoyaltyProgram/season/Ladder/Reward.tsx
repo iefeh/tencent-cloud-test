@@ -67,7 +67,7 @@ const Reward: FC<Props> = ({ item, onItemClick }) => {
       {!isPremium && line}
 
       <RewardTooltip items={item?.rewards}>
-        <div className="relative cursor-pointer" onClick={() => onItemClick?.(item)}>
+        <div className="relative" onClick={() => onItemClick?.(item)}>
           <div className="w-[11.0625rem] h-[11.0625rem] relative flex justify-center items-center">
             {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
 

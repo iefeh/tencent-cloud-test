@@ -15,7 +15,7 @@ const RewardTooltip: FC<Props> = ({ items = [], children }) => {
   return (
     <Tooltip
       placement="bottom"
-      classNames={{ content: 'bg-transparent' }}
+      classNames={{ content: 'bg-transparent shadow-none' }}
       content={
         <div className="w-[31.25rem] h-[15.125rem] relative pt-8 text-center">
           <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />
