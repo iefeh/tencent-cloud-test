@@ -48,9 +48,9 @@ const RewardModal: FC<Props> = ({ item, isOpen, onClose, onOpenChange }) => {
             </ModalHeader>
 
             <ModalBody>
-              {rewards.length === 1 ? (
+              {rewards.length !== 1 ? (
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-40 h-40 relative">
+                  <div className="w-40 h-40 relative mt-4">
                     <Image
                       className="object-contain"
                       src={(rewards[0]?.properties as any).image_url}
@@ -58,6 +58,10 @@ const RewardModal: FC<Props> = ({ item, isOpen, onClose, onOpenChange }) => {
                       fill
                       sizes="100%"
                     />
+
+                    <div className="absolute right-4 bottom-4 text-basic-yellow text-sm">
+                      x{(rewards[0]?.properties as any).amount || 0}
+                    </div>
                   </div>
 
                   <div className="font-semakin text-xl bg-gradient-to-r from-[#CAA67E] to-[#EDE0B9] bg-clip-text text-transparent mt-8">

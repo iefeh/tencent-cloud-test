@@ -35,7 +35,9 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
           <SwiperSlide key={index} className="!w-max [&+.swiper-slide]:ml-4">
             <div className="flex flex-col items-center w-min text-center">
               <div className="relative w-[5.625rem] h-[5.625rem]">
-                {img && <Image className="object-contain" src={img} alt="" fill sizes="100%" />}
+                {img && <Image className="object-contain scale-50 origin-center" src={img} alt="" fill sizes="100%" />}
+
+                <div className="absolute right-2 bottom-2 text-basic-yellow text-sm">x{prop.amount || 0}</div>
               </div>
 
               <div className="w-full line-clamp-3 text-[#999999] mt-ten">{text}</div>
