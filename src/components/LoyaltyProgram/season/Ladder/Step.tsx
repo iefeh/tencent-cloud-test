@@ -11,18 +11,19 @@ interface Props {
   isFinal?: boolean;
   standardItem?: BattlePassLevelDTO;
   premiumItem?: BattlePassLevelDTO;
+  onItemClick?: (item?: BattlePassLevelDTO) => void;
 }
 
-const Step: FC<Props> = ({ className, isFinal, standardItem, premiumItem }) => {
+const Step: FC<Props> = ({ className, isFinal, standardItem, premiumItem, onItemClick }) => {
   const isNodeAchevied = !!standardItem?.satisfied_time || !!premiumItem?.satisfied_time;
 
   return (
     <div className={cn(['flex justify-between items-center', className])}>
       {isFinal || (
         <>
-          <Reward item={premiumItem} />
+          <Reward item={premiumItem} onItemClick={onItemClick} />
 
-          <Reward item={standardItem} />
+          <Reward item={standardItem} onItemClick={onItemClick} />
         </>
       )}
 

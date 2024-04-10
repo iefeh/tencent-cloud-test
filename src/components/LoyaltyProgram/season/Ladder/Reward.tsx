@@ -10,7 +10,7 @@ import claimedBlueBg from 'img/loyalty/season/bg_reward_blue_claimed.png';
 import { BattlePassBadgeRewardDTO, BattlePassLevelDTO, claimBattleRewardAPI } from '@/http/services/battlepass';
 import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import claimedIcon from 'img/loyalty/season/icon_claimed.png';
-import { Tooltip, cn } from '@nextui-org/react';
+import { cn } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
@@ -19,6 +19,7 @@ import RewardTooltip from './RewardTooltip';
 
 interface Props {
   item?: BattlePassLevelDTO;
+  onItemClick?: (item?: BattlePassLevelDTO) => void;
 }
 
 const bgImgs = [
@@ -26,7 +27,7 @@ const bgImgs = [
   [lockedBlueBg, acheivedBlueBg, claimedBlueBg],
 ];
 
-const Reward: FC<Props> = ({ item }) => {
+const Reward: FC<Props> = ({ item, onItemClick }) => {
   const { init } = useBattlePassContext();
   const { lv, reward_type, satisfied_time, claimed_time, rewards } = item || {};
   const isPremium = reward_type === 'premium';
@@ -66,7 +67,7 @@ const Reward: FC<Props> = ({ item }) => {
       {!isPremium && line}
 
       <RewardTooltip items={item?.rewards}>
-        <div className="relative cursor-pointer">
+        <div className="relative cursor-pointer" onClick={() => onItemClick?.(item)}>
           <div className="w-[11.0625rem] h-[11.0625rem] relative flex justify-center items-center">
             {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
 

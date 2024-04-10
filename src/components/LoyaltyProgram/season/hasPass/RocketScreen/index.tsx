@@ -1,9 +1,9 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Ladder from '../../Ladder';
 import FinalReward from '../../FinalReward';
 import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
-import { cn } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
 import Image from 'next/image';
 import ufoImg from 'img/loyalty/season/ufo.png';
 import rocksImg from 'img/loyalty/season/rocks.png';
@@ -11,9 +11,18 @@ import halfPlanetImg from 'img/loyalty/season/half_planet.png';
 import satelliteImg from 'img/loyalty/season/satellite.png';
 import Planetoid from '../../Planetoid';
 import Rocket from '../Rocket';
+import RewardModal from '../../RewardModal';
+import { BattlePassLevelDTO } from '@/http/services/battlepass';
 
 const RocketScreen: FC = () => {
   const { hasAcheivedFinalPass } = useBattlePassContext();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [currentItem, setCurrentItem] = useState<BattlePassLevelDTO | undefined>();
+
+  function onItemClick(item?: BattlePassLevelDTO) {
+    setCurrentItem(item);
+    if (!!item) onOpen();
+  }
 
   return (
     <div
@@ -48,9 +57,11 @@ const RocketScreen: FC = () => {
 
       {hasAcheivedFinalPass || <FinalReward className="mb-16 mt-60" />}
 
-      <Ladder />
+      <Ladder onItemClick={onItemClick} />
 
       <Rocket />
+
+      <RewardModal item={currentItem} isOpen={isOpen} onOpenChange={onOpenChange} />
     </div>
   );
 };

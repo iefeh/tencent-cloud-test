@@ -35,3 +35,9 @@ interface PagiInfo {
 interface ClassNameProps {
   className?: string;
 }
+
+interface ModalProps {
+  isOpen: boolean;
+  onOpen?: () => void;
+  onOpenChange?: (val: boolean) => void;
+}

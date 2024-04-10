@@ -28,12 +28,12 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
     >
       {items.map((item, index) => {
         const prop = item.properties as any;
-        const img = prop.image;
+        const img = prop.image_url;
         const text = prop.name || '--';
 
         return (
           <SwiperSlide key={index} className="!w-max [&+.swiper-slide]:ml-4">
-            <div className="flex flex-col items-center w-min">
+            <div className="flex flex-col items-center w-min text-center">
               <div className="relative w-[5.625rem] h-[5.625rem]">
                 {img && <Image className="object-contain" src={img} alt="" fill sizes="100%" />}
               </div>
