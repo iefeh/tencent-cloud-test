@@ -11,15 +11,15 @@ import Image from 'next/image';
 import BattlePass from '../LoyaltyProgram/season/BattlePass';
 import RuleButton from '../LoyaltyProgram/season/RuleButton';
 import RuleModal from '../LoyaltyProgram/season/RuleModal';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {}
 
 const TaskPassCard: FC<Props> = ({}) => {
-  const { userInfo, toggleLoginModal } = useUserContext();
+  const { userInfo } = useUserContext();
   const { info, init, progressInfo, hasAcheivedFinalPass, createPass } = useBattlePassContext();
-  const { max_lv, has_battle_pass } = info || {};
+  const { max_lv } = info || {};
   const { periodProgress } = progressInfo || {};
-  const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
@@ -63,6 +63,8 @@ const TaskPassCard: FC<Props> = ({}) => {
       <RuleButton className="ml-4 mb-1 self-end flex-row-reverse" visible onRuleClick={onOpen} />
 
       <RuleModal isOpen={isOpen} onOpenChange={onOpenChange} />
+
+      {!info && <CircularLoading />}
     </div>
   );
 };
