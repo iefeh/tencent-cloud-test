@@ -1,15 +1,19 @@
 import { Document, models, PipelineStage, Schema } from 'mongoose'
 import connectToMongoDbDev from '../mongodb/client'
-import { pipe } from 'gsap';
+
+export enum CDKRewardType {
+  MoonBeam = 'moon_beam',
+  Badge = 'badge'
+}
 
 export interface ICDK extends Document {
   id: string,//CDK id
   template_id: string,//CDK模板ID
   cdk: string,//CDK显示内容
   created_time: number,//创建时间
-  redeem_taints: string[],//兑换污点
-  redeem_user_id: string,//兑换USER_ID
-  redeem_time: number//兑换时间
+  expired_time: number,//过期时间
+  max_redeem_count: number,//最大可领取数量，值为0或无效值则表示无领取上限
+  current_redeem_count: number,//当前领取数量
 }
 
 const CDKSchema = new Schema<ICDK>({
@@ -17,25 +21,34 @@ const CDKSchema = new Schema<ICDK>({
   template_id: { type: String, required: true },
   cdk: { type: String, required: true },
   created_time: { type: Number },
-  redeem_taints: { type: [String] },
-  redeem_user_id: { type: String },
-  redeem_time: { type: Number }
+  expired_time: { type: Number },
+  max_redeem_count: { type: Number },
+  current_redeem_count: { type: Number, default: 0 },
 });
 
 CDKSchema.index({ id: 1 }, { unique: true })
 CDKSchema.index({ cdk: 1 }, { unique: true })
-CDKSchema.index({ redeem_taints: 1 }, { unique: true })
 
 const connection = connectToMongoDbDev();
 const CDK = models.CDK || connection.model<ICDK>('CDK', CDKSchema, 'cdk');
 export default CDK;
 
 //查询CDK信息
-export async function getCDKInfos(cdk: string): Promise<any[]> {
-  console.log(cdk);
+export async function getCDKInfo(cdk: string): Promise<any> {
   const pipeline: PipelineStage[] = [{
     $match: {
       cdk: cdk
+    }
+  }, {
+    $lookup: {
+      from: 'cdk_redeem_record',
+      let: { cdk: '$cdk' },
+      as: "redeem_record",
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$cdk', '$$cdk'] }] } }
+      }, {
+        $project: { _id: 0, redeem_user_id: 1 }
+      }]
     }
   }, {
     $lookup: {
@@ -61,12 +74,26 @@ export async function getCDKInfos(cdk: string): Promise<any[]> {
     $unwind: '$channel'
   }, {
     $project: {
+      id: 0,
       _id: 0,
+      __v: 0,
+      template_id: 0,
+      created_time: 0,
+      'template._id': 0,
+      'template.__v': 0,
+      'template.channel_id': 0,
+      'template.created_time': 0,
+      'channel._id': 0,
+      'channel.name': 0,
+      'channel.prefix': 0,
+      'channel.remark': 0,
+      'channel.created_time': 0,
+      'channel.updated_time': 0,
+      'channel.__v': 0,
     }
   }];
 
-
   const result = await CDK.aggregate(pipeline);
-  console.log(result);
-  return result;
+  console.log(result[0]);
+  return result[0];
 }

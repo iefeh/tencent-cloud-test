@@ -13,7 +13,11 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
   const userId = req.userId!;
-  getUserBattlePass(userId);
+  const userBattlePass = await getUserBattlePass(userId);
+  if (!userBattlePass) {
+    res.json(response.notFound("Battlepass not found."));
+    return;
+  }
   const result = await getUserTasksOverviewRawInfo(userId);
   let achieveCount: number;
   //处理返回的结果
@@ -28,7 +32,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     c.achieve_count = achieveCount;
   }
   res.json(response.success({
-    result
+    is_premium: userBattlePass.is_premium,
+    finished_tasks: userBattlePass.finished_tasks,
+    result: result
   }));
 });
 //查询用户任务情况总览，先通过查询分类表获取所有的分类，再分别vlookup quests表和quest_achievements表，获得对应的任务数量和完成情况。

@@ -1,4 +1,4 @@
-import {Document, models, Schema} from 'mongoose';
+import { Document, models, Schema } from 'mongoose';
 import connectToMongoDbDev from "@/lib/mongodb/client";
 import { increaseUserMoonBeam } from './User';
 import UserInvite from './UserInvite';
@@ -22,7 +22,8 @@ export enum UserMoonBeamAuditType {
     DirectReferral = "direct_referral",
     // 间接推荐人奖励，当被邀请用户得到新手徽章时视为完成注册，会给间接邀请者奖励
     IndirectReferral = "indirect_referral",
-
+    // CDK兑换所得MB
+    CDK = "cdk",
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
@@ -54,19 +55,19 @@ export interface IUserMoonBeamAudit extends Document {
 }
 
 const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
-    user_id: {type: String, required: true},
-    type: {type: String, required: true},
-    moon_beam_delta: {type: Number, required: true},
-    reward_taint: {type: String, default: null},
-    corr_id: {type: String},
-    extra_info: {type: String},
-    created_time: {type: Number},
-    deleted_time: {type: Number},
+    user_id: { type: String, required: true },
+    type: { type: String, required: true },
+    moon_beam_delta: { type: Number, required: true },
+    reward_taint: { type: String, default: null },
+    corr_id: { type: String },
+    extra_info: { type: String },
+    created_time: { type: Number },
+    deleted_time: { type: Number },
 });
 
-UserMoonBeamAuditSchema.index({user_id: 1, type: 1});
-UserMoonBeamAuditSchema.index({corr_id: 1, user_id: 1});
-UserMoonBeamAuditSchema.index({reward_taint: 1, deleted_time: 1}, {unique: true});
+UserMoonBeamAuditSchema.index({ user_id: 1, type: 1 });
+UserMoonBeamAuditSchema.index({ corr_id: 1, user_id: 1 });
+UserMoonBeamAuditSchema.index({ reward_taint: 1, deleted_time: 1 }, { unique: true });
 
 const connection = connectToMongoDbDev();
 const UserMoonBeamAudit = models.UserMoonBeamAudit || connection.model<IUserMoonBeamAudit>("UserMoonBeamAudit", UserMoonBeamAuditSchema, 'user_moon_beam_audit');
@@ -96,7 +97,7 @@ export async function saveNewInviteeRegistrationMoonBeamAudit(inviteeId: string,
         corr_id: inviterId,
         created_time: Date.now(),
     });
-    return await audit.save({session});
+    return await audit.save({ session });
 
 }
 
@@ -113,7 +114,7 @@ export async function saveInviterMoonBeamReward(inviteeId: string, inviterId: st
         corr_id: inviteeId,
         created_time: Date.now(),
     });
-    await inviterAudit.save({session});
+    await inviterAudit.save({ session });
     await increaseUserMoonBeam(inviterId, DIRECT_REFERRAL_MOON_BEAM_DELTA, session);
 
     // 保存间接邀请者的MB审计记录与奖励
@@ -128,7 +129,7 @@ export async function saveInviterMoonBeamReward(inviteeId: string, inviterId: st
         corr_id: inviteeId,
         created_time: Date.now(),
     });
-    await indirectInviterAudit.save({session});
+    await indirectInviterAudit.save({ session });
     await increaseUserMoonBeam(indirectInviterId, INDIRECT_REFERRAL_MOON_BEAM_DELTA, session);
 
 }
