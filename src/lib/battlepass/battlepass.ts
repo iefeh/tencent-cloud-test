@@ -463,3 +463,20 @@ export async function findUserWithEmailWhitelist(userId: string, whitelistId: st
   }
   return undefined
 }
+
+export async function getAllRequirements(): Promise<any> {
+  const seasonId: string = await getCurrentBattleSeasonId();
+  const requirements = await BattlePassPremiumRequirements.find({ season_id: seasonId });
+  let allRequirements: any = { badge: [], nft: [], whitelist: [] };
+  for (let r of requirements) {
+    //是否为徽章类要求
+    if (r.type === BattlePassRequirementType.Badge) {
+      allRequirements.badge.push(r.description);
+    } else if (r.type === BattlePassRequirementType.WhiteList) {
+      allRequirements.whitelist.push(r.description);
+    } else {
+      allRequirements.nft.push(r.description);
+    }
+  }
+  return allRequirements
+}

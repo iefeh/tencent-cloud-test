@@ -43,7 +43,7 @@ const FinalReward: FC<Props> = ({ className, onItemClick }) => {
 
           {badgeReward && (
             <div className="relative z-0 w-60 h-60 overflow-hidden rounded-full flex items-end">
-              <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
+              <Image className="object-cover" src={badgeReward.properties.image_url} alt="" fill sizes="100%" />
 
               {acheived && !claimed && <LGButton className="w-full h-[2.5rem] rounded-none" label="Claim" actived />}
             </div>

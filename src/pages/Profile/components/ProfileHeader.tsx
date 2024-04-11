@@ -21,7 +21,7 @@ export default function ProfileHeader() {
 
   return (
     <div className="w-full flex justify-between items-center">
-      <UserProfile avatarClassName="w-[6.875rem] h-[6.875rem]" walletClassName="mt-4" />
+      <UserProfile avatarClassName="w-[6.875rem] h-[6.875rem]" walletClassName="mt-4" showRedeem />
 
       <span>
         <IconLink icon={editImg} label="Edit" onClick={onEditClick} />

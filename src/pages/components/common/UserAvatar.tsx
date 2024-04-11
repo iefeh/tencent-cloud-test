@@ -26,7 +26,7 @@ interface HeaderMenuItem {
 
 const UserAvatar = () => {
   const router = useRouter();
-  const { userInfo, logout } = useContext(MobxContext);
+  const { userInfo, logout, toggleRedeemModal } = useContext(MobxContext);
   const ref = useRef(null);
   const [menuState, toggle] = useMenuState({ transition: true });
   const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
@@ -59,6 +59,11 @@ const UserAvatar = () => {
     //   icon: settingsImg,
     // },
     {
+      title: 'Redeem Code',
+      icon: settingsImg,
+      onClick: () => toggleRedeemModal(true),
+    },
+    {
       title: 'Log Out',
       icon: logoutImg,
       onClick: onOpen,
@@ -85,7 +90,7 @@ const UserAvatar = () => {
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
         <div className="avatar rounded-full overflow-hidden w-12 h-12 relative">
-          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes='100%' />
+          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes="100%" />
         </div>
       </div>
 
