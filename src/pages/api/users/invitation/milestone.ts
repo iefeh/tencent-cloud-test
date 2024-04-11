@@ -75,7 +75,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
         // 外交官徽章，全系列返回，用于页面整体进度展示
         if (isDiplomatBadge) {
-            badge.series = seriesList;
+            // 不返回最后一级
+            badge.series = seriesList.slice(0, -1);
             diplomatBadge = badge;
             continue;
         }
