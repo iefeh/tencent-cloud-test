@@ -21,7 +21,6 @@ export function useBattlePassStore() {
 }
 
 class BattlePassStore {
-  private lastEl = 0;
   info: BattleInfoDTO | null = null;
 
   constructor() {
@@ -73,10 +72,8 @@ class BattlePassStore {
 
   setInfo = (data: BattleInfoDTO | null) => (this.info = data);
 
+  // force参数用于节流，已弃用，占位
   init = throttle(async (force = false, needCreatePass = false) => {
-    const now = performance.now();
-    if (!force && now - this.lastEl < 5000) return;
-
     let res = await queryBattleInfoAPI();
     if (needCreatePass && !!res.start_time && !res.has_battle_pass) {
       await this.createPass();
@@ -84,7 +81,6 @@ class BattlePassStore {
     }
 
     this.setInfo(res);
-    this.lastEl = performance.now();
   }, 500);
 
   createPass = () => {
