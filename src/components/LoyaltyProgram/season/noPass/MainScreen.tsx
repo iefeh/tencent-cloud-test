@@ -3,6 +3,7 @@ import Rank from '@/components/LoyaltyProgram/earn/BannerAndRank/Rank';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 import UserCard from './UserCard';
+import Invite from '../../earn/EarnBanner/Invite';
 
 const MainScreen: FC = () => {
   return (
@@ -14,6 +15,8 @@ const MainScreen: FC = () => {
 
         <div>
           <UserCard />
+
+          <Invite className='mt-8' inProfie />
         </div>
       </div>
     </div>

@@ -10,11 +10,11 @@ import { observer } from 'mobx-react-lite';
 import InviteCardModal from '@/pages/components/common/InviteCardModal';
 import { cn } from '@nextui-org/react';
 
-interface Props {
+interface Props extends ClassNameProps {
   inProfie?: boolean;
 }
 
-const Invite = function ({ inProfie }: Props) {
+const Invite = function ({ className, inProfie }: Props) {
   const { userInfo, toggleInviteModal } = useContext(MobxContext);
 
   function onInviteClick() {
@@ -27,6 +27,7 @@ const Invite = function ({ inProfie }: Props) {
       className={cn([
         'w-[42.5rem] relative overflow-hidden rounded-[0.625rem] border-1 border-basic-gray pt-[2rem] pr-[2rem] pb-[2.5rem] pl-[2.375rem] flex justify-between items-center hover:border-basic-yellow transition-[border-color] duration-500',
         inProfie ? 'h-[13.75rem]' : 'h-[15rem]',
+        className,
       ])}
     >
       <Image src={inviteBgImg} alt="" fill />
