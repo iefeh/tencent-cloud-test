@@ -20,6 +20,7 @@ import { cn } from '@nextui-org/react';
 import UserInfo from '../UserInfo';
 import Link from 'next/link';
 import Notification from './Notification';
+import RedeemModal from '@/components/common/modal/RedeemModal';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -201,6 +202,8 @@ const Header = () => {
       </div>
 
       <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
+
+      <RedeemModal />
     </section>
   );
 };
