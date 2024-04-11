@@ -17,14 +17,18 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
   return (
     <Swiper
       className={cn(['!px-[3.125rem]', className])}
+      wrapperClass={items.length > 3 ? '' : '!transform-none !w-min mx-auto'}
       modules={[Navigation, FreeMode]}
       slidesPerView="auto"
       freeMode={true}
       spaceBetween="1rem"
-      navigation={{
-        prevEl: navigationPrevRef.current,
-        nextEl: navigationNextRef.current,
-      }}
+      centeredSlides
+      navigation={
+        items.length > 3 && {
+          prevEl: navigationPrevRef.current,
+          nextEl: navigationNextRef.current,
+        }
+      }
     >
       {items.map((item, index) => {
         const prop = item.properties as any;
@@ -35,7 +39,7 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
           <SwiperSlide key={index} className="!w-max [&+.swiper-slide]:ml-4">
             <div className="flex flex-col items-center w-min text-center">
               <div className="relative w-[5.625rem] h-[5.625rem]">
-                {img && <Image className="object-contain scale-50 origin-center" src={img} alt="" fill sizes="100%" />}
+                {img && <Image className="object-contain" src={img} alt="" fill sizes="100%" />}
 
                 <div className="absolute right-2 bottom-2 text-basic-yellow text-sm">x{prop.amount || 0}</div>
               </div>
@@ -46,19 +50,23 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
         );
       })}
 
-      <div
-        ref={navigationPrevRef}
-        className="absolute left-0 top-[2.8125rem] -translate-y-1/2 rotate-90 cursor-pointer z-10"
-      >
-        <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
-      </div>
+      {items.length > 3 && (
+        <>
+          <div
+            ref={navigationPrevRef}
+            className="absolute left-0 top-[2.8125rem] -translate-y-1/2 rotate-90 cursor-pointer z-10"
+          >
+            <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
+          </div>
 
-      <div
-        ref={navigationNextRef}
-        className="absolute right-0 top-[2.8125rem] -translate-y-1/2 -rotate-90 cursor-pointer z-10"
-      >
-        <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
-      </div>
+          <div
+            ref={navigationNextRef}
+            className="absolute right-0 top-[2.8125rem] -translate-y-1/2 -rotate-90 cursor-pointer z-10"
+          >
+            <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
+          </div>
+        </>
+      )}
     </Swiper>
   );
 };

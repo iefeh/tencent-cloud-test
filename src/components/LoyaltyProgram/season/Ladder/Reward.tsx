@@ -67,13 +67,13 @@ const Reward: FC<Props> = ({ item, onItemClick }) => {
       {!isPremium && line}
 
       <RewardTooltip items={item?.rewards}>
-        <div className="relative cursor-pointer" onClick={() => onItemClick?.(item)}>
+        <div className="relative" onClick={() => onItemClick?.(item)}>
           <div className="w-[11.0625rem] h-[11.0625rem] relative flex justify-center items-center">
             {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
 
             {badgeReward && (
               <div className="relative z-0 w-[7.5rem] h-[7.5rem] overflow-hidden rounded-full flex items-end">
-                <Image className="object-cover" src={badgeReward.properties.icon_url} alt="" fill sizes="100%" />
+                <Image className="object-cover" src={badgeReward.properties.image_url} alt="" fill sizes="100%" />
 
                 {acheived && !claimed && (
                   <LGButton

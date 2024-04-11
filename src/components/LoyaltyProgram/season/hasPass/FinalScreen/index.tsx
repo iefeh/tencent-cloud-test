@@ -98,9 +98,10 @@ const FinalScreen: FC = () => {
 
       <Astronaut className="!absolute right-[21.6875rem] top-[45.625rem] w-[11.8125rem] h-[13.5625rem]" />
 
-      {currentItem && (
+      {/* 暂时隐藏弹窗 */}
+      {/* {currentItem && (
         <RewardModal item={currentItem} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onCloseCallback} />
-      )}
+      )} */}
     </div>
   );
 };
