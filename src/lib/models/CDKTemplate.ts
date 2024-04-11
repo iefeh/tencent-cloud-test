@@ -8,11 +8,7 @@ export interface ICDKTemplate extends Document {
   description: string,//模板描述
   rewards: any[],//奖励
   active: boolean,//是否上线
-  expired_time: number,//过期时间
-  max_redeem_count: number,//最大可领取数量，值为0或无效值则表示无领取上限
-  current_redeem_count: number,//当前领取数量
-  created_time: number,
-  updated_time: number
+  created_time: number
 }
 
 const CDKTemplateSchema = new Schema<ICDKTemplate>({
@@ -21,11 +17,7 @@ const CDKTemplateSchema = new Schema<ICDKTemplate>({
   description: { type: String },
   rewards: { type: [Object] },
   active: { type: Boolean, default: false },
-  expired_time: { type: Number },
-  max_redeem_count: { type: Number, default: 0 },
-  current_redeem_count: { type: Number, default: 0 },
-  created_time: { type: Number },
-  updated_time: { type: Number }
+  created_time: { type: Number }
 });
 
 CDKTemplateSchema.index({ id: 1 }, { unique: true })
