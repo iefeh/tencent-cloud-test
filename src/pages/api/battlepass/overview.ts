@@ -6,7 +6,7 @@ import { BattlePassRewardItemType, PassSeries } from '@/lib/models/BattlePassSea
 import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
 import Badges from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
-import { getCurrentBattleSeason, premiumSatisfy } from '@/lib/battlepass/battlepass';
+import { getAllRequirements, getCurrentBattleSeason, premiumSatisfy } from '@/lib/battlepass/battlepass';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -44,6 +44,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
       }
     }
   }
+  const allRequirements = await getAllRequirements();
 
   let premiumPass: any[];
   let standardPass: any[];
@@ -54,7 +55,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
       has_battle_pass: hasBattlePass, //是否拥有赛季通行证
       is_premium: passInfo.is_premium, //是否为高阶通行证
       premium_type: passInfo.premium_type,//高阶通证类型
-      all_requirements: passInfo.is_premium ? undefined : passInfo.all_requirements,
+      all_requirements: allRequirements,
       max_lv: maxLv, //用户当前最大等级
       current_progress: currentProgress,//当前任务进度
       start_time: currentSeason.start_time,

@@ -29,6 +29,7 @@ class UserStore {
   // timer = 0;
   isConnect = false;
   newUserModalVisible = false;
+  redeemModalVisible = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -209,6 +210,14 @@ class UserStore {
       this.newUserModalVisible = visible;
     } else {
       this.newUserModalVisible = !this.inviteModalVisible;
+    }
+  };
+
+  toggleRedeemModal = (visible?: boolean) => {
+    if (typeof visible === 'boolean') {
+      this.redeemModalVisible = visible;
+    } else {
+      this.redeemModalVisible = !this.redeemModalVisible;
     }
   };
 }
