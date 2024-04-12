@@ -16,7 +16,7 @@ const MainScreen: FC = () => {
         <div>
           <UserCard />
 
-          <Invite className='mt-8' inProfie />
+          <Invite className="mt-8" isReferral />
         </div>
       </div>
     </div>
