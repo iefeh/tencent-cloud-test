@@ -12,6 +12,7 @@ import CDKRedeemRecord from '@/lib/models/CDKRedeemRecord';
 import Badges, { RequirementType } from '@/lib/models/Badge';
 import Whitelist from '@/lib/models/Whitelist';
 import { WhitelistEntityType } from '@/lib/quests/types';
+import { redis } from '@/lib/redis/client';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -22,82 +23,92 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     res.json(response.invalidParams());
     return;
   }
+  const userId = req.userId!;
+  const redeemLock = `redeem_cdk_lock:${cdk}:${userId}`;
+  const locked = await redis.set(redeemLock, Date.now(), 'EX', 60, 'NX');
+  if (!locked) {
+    return response.success({
+      result: 'Redeem is under a waiting period, please try again later.',
+    });
+  }
+  try {
+    let success: boolean = false;
+    //查询CDK信息
+    const cdkTemp = String(cdk);
+    const cdkInfo = await getCDKInfo(cdkTemp);
 
-  let success: boolean = false;
-  //查询CDK信息
-  const cdkTemp = String(cdk);
-  const cdkInfo = await getCDKInfo(cdkTemp);
-
-  //CDK不存在
-  if (!cdkInfo) {
-    res.json(
-      response.notFound({
-        success: success,
-        msg: 'CDKey not found.',
-      }),
-    );
-    return;
-  }
-  //CDK未启用
-  if (!cdkInfo.template.active) {
-    res.json(
-      response.invalidParams({
-        success: success,
-        msg: 'CDKey inactive.',
-      }),
-    );
-    return;
-  }
-  //CDK未启用
-  if (cdkInfo.expired_time < Date.now()) {
-    res.json(
-      response.invalidParams({
-        success: success,
-        msg: 'CDKey expired.',
-      }),
-    );
-    return;
-  }
-  //是否已领取
-  if (cdkInfo.redeem_record.length > 0) {
-    res.json(
-      response.invalidParams({
-        success: success,
-        msg: 'CDKey already claimed.',
-      }),
-    );
-    return;
-  }
-  //是否仍可领取
-  if (cdkInfo.template.max_redeem_count === 0 || cdkInfo.max_redeem_count > cdkInfo.current_redeem_count) {
-    //构建CDK升级数据
-    const userId = req.userId!;
-
-    await redeemCDK(cdkInfo, userId).catch((error: Error) => {
-      console.log(error);
+    //CDK不存在
+    if (!cdkInfo) {
       res.json(
-        response.success({
-          success: false,
-          msg: 'Redeem fail.',
+        response.notFound({
+          success: success,
+          msg: 'CDKey not found.',
         }),
       );
       return;
-    });
+    }
+    //CDK未启用
+    if (!cdkInfo.template.active) {
+      res.json(
+        response.invalidParams({
+          success: success,
+          msg: 'CDKey inactive.',
+        }),
+      );
+      return;
+    }
+    //CDK未启用
+    if (cdkInfo.expired_time < Date.now()) {
+      res.json(
+        response.invalidParams({
+          success: success,
+          msg: 'CDKey expired.',
+        }),
+      );
+      return;
+    }
+    //是否已领取
+    if (cdkInfo.redeem_record.length > 0) {
+      res.json(
+        response.invalidParams({
+          success: success,
+          msg: 'CDKey already claimed.',
+        }),
+      );
+      return;
+    }
+    //是否仍可领取
+    if (cdkInfo.template.max_redeem_count === 0 || cdkInfo.max_redeem_count > cdkInfo.current_redeem_count) {
+      //构建CDK升级数据
 
-    success = true;
-    res.json(
-      response.success({
-        success: success,
-        msg: 'Redeem success.',
-        reward: cdkInfo.template.rewards,
-      }),
-    );
-  } else {
-    res.json(
-      response.invalidParams({
-        msg: 'CDKey redemption has reached the maximum limitation.',
-      }),
-    );
+      await redeemCDK(cdkInfo, userId).catch((error: Error) => {
+        console.log(error);
+        res.json(
+          response.success({
+            success: false,
+            msg: 'Redeem fail.',
+          }),
+        );
+        return;
+      });
+
+      success = true;
+      res.json(
+        response.success({
+          success: success,
+          msg: 'Redeem success.',
+          reward: cdkInfo.template.rewards,
+        }),
+      );
+    } else {
+      res.json(
+        response.invalidParams({
+          msg: 'CDKey redemption has reached the maximum limitation.',
+        }),
+      );
+    }
+  } finally {
+    await redis.del(redeemLock);
   }
 });
 
