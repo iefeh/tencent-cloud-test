@@ -25,6 +25,35 @@ import RedeemModal from '@/components/common/modal/RedeemModal';
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   {
+    name: 'Rock’it to the Moon',
+    route: '/LoyaltyProgram/season',
+    children: [
+      {
+        name: 'Loyalty Program',
+        route: '/LoyaltyProgram/intro',
+      },
+      {
+        name: 'Season System',
+        route: '/LoyaltyProgram/season/foresight',
+        // disabled: true,
+      },
+
+      // {
+      //   name: "Rock'it to the Moon",
+      //   route: '/LoyaltyProgram/season',
+      // },
+
+      // {
+      //   name: 'MB=MVP',
+      //   route: '/LoyaltyProgram/Exchange',
+      // },
+      {
+        name: 'Referral Program',
+        route: '/Profile/invite',
+      },
+    ],
+  },
+  {
     name: 'AstrArk',
     children: [
       // {
@@ -66,34 +95,6 @@ const routeText: RouteMenu[] = [
       //   name: 'TETRA NFT Merge',
       //   route: '/NFT/Merge',
       // },
-    ],
-  },
-  {
-    name: 'Loyalty Program',
-    children: [
-      {
-        name: 'Loyalty System',
-        route: '/LoyaltyProgram/intro',
-      },
-      {
-        name: 'Earn Moon Beams',
-        route: '/LoyaltyProgram/earn?from=lp',
-        // disabled: true,
-      },
-
-      {
-        name: "Rock'it to the Moon",
-        route: '/LoyaltyProgram/season',
-      },
-
-      // {
-      //   name: 'MB=MVP',
-      //   route: '/LoyaltyProgram/Exchange',
-      // },
-      {
-        name: 'Referral Program',
-        route: '/Profile/invite',
-      },
     ],
   },
 ];
