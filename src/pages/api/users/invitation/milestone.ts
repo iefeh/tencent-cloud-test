@@ -10,7 +10,6 @@ import { DIRECT_REFERRAL_MOON_BEAM_DELTA, INDIRECT_REFERRAL_MOON_BEAM_DELTA } fr
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
-    console.log(req.userId);
     // 查询拉新相关徽章
     const inviteBadgeIds: string[] = [
         process.env.DIPLOMAT_INSIGNIA_BADGE_ID!,
@@ -51,7 +50,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         // 封装用户达成等级与领取情况
         if (userBadge) {
             // 计算用户从该徽章获取到的MB奖励值
-            console.log(userBadge.series);
             userBadge.series.forEach((value: UserBadgeSeries, level: string) => {
                 if (value.claimed_time) {
                     const seriesConfig = seriesList.find(series => String(series.level) == level);
@@ -59,7 +57,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
                 }
             });
             // 默认已达成的最大的徽章等级以下的等级已达成并且已经领取，用户在领取最高等级徽章时会下发对应等级及以下等级未领取的奖励。
-            console.log(Array.from(userBadge.series.keys()));
             const maxLevelObtained = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level)));
             seriesList.map(series => {
                 if (series.level < maxLevelObtained) {
@@ -85,7 +82,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         // 假如用户未达成，当前也默认返回4条数据
         if (userBadge) {
             const maxObtainedLevelIndex = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level))) -1;
-            console.log(maxObtainedLevelIndex);
             let endIndex = maxObtainedLevelIndex + 1;
             let startIndex = maxObtainedLevelIndex - 2;
             if (endIndex > seriesList.length - 1) {
@@ -98,10 +94,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
             if (endIndex - startIndex < 4) {
                 endIndex = startIndex + 4;
             }
-            console.log(startIndex, endIndex);
             badge.series = seriesList.slice(startIndex, endIndex);
         } else {
-            console.log(seriesList.slice(0, 4));
             badge.series = seriesList.slice(0, 4);
         }
         referralBadges.push(badge);
