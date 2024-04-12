@@ -11,9 +11,21 @@ interface Props {
 }
 
 const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
-  const { info } = useBattlePassContext();
-  const { all_requirements: { badge = [], nft = [] } = {} } = info || {};
-
+  // const { info } = useBattlePassContext();
+  // const { all_requirements: { badge = [], nft = [] } = {} } = info || {};
+  const nft:string[] = [
+    "Moonveil’s Destiny TETRA NFT",
+    "Moonveil’s Eternity TETRA NFT"
+  ];
+  const badge:string[] = [
+    "Steam Era Badge Lv 4 or above",
+    "Opulent Overlord Badge Lv 5 or above",
+    "Fortune Maestro Badge Lv 3 or above",
+    "X Factor Badge Lv 4 or above",
+    "AstrArk Alpha Tester Badge Lv5",
+    "Diplomat's Insignia Badge Lv6 or above",
+    "Lucky Draw Master Badge Lv2 or above",
+  ];
   return (
     <Modal
       backdrop="blur"
