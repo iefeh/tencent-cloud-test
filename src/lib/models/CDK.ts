@@ -94,6 +94,5 @@ export async function getCDKInfo(cdk: string): Promise<any> {
   }];
 
   const result = await CDK.aggregate(pipeline);
-  console.log(result[0]);
   return result[0];
 }
