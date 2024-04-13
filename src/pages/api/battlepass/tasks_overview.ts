@@ -43,7 +43,8 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
   const pipeline: PipelineStage[] = [
     {
       $match: {
-        type: ClassificationType.Category
+        type: ClassificationType.Category,
+        active: true
       }
     }, {//使用vlookup获得该种类下面的所有任务
       $lookup: {
