@@ -135,26 +135,16 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
     }
   }
   let record: any;
+  let claimed:boolean;
   //拼接用户徽章和领取信息信息
   for (let s of standard_pass) {
-    for (let r of s.rewards) {
-      if (r.type === BattlePassRewardItemType.Badge) {
-        badge_id = r.properties.badge_id;
-        r.properties.amount = 1;
-        r.properties.name = badgeInfos.get(badge_id + s.lv).name;
-        r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
-        r.properties.description = badgeInfos.get(badge_id + s.lv).description;
-        delete r.properties.badge_id;
-      }
-    }
+    claimed = false;
     if (user_battle_season) {
       record = user_battle_season.reward_records.get('standard')[s.lv];
       s.satisfied_time = record?.satisfied_time;
       s.claimed_time = record?.claimed_time;
+      claimed = !!s.claimed_time;
     }
-    // standard_pass.push(targetSeries);
-  }
-  for (let s of premium_pass) {
     for (let r of s.rewards) {
       if (r.type === BattlePassRewardItemType.Badge) {
         badge_id = r.properties.badge_id;
@@ -163,12 +153,34 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
         r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
         r.properties.description = badgeInfos.get(badge_id + s.lv).description;
         delete r.properties.badge_id;
+      }else{
+        if(!claimed){
+          delete r.properties.description_claimed;
+        }
       }
     }
+  }
+  for (let s of premium_pass) {
+    claimed = false;
     if (user_battle_season) {
       record = user_battle_season.reward_records.get('premium')[s.lv];
       s.satisfied_time = record?.satisfied_time;
       s.claimed_time = record?.claimed_time;
+      claimed = !!s.claimed_time;
+    }
+    for (let r of s.rewards) {
+      if (r.type === BattlePassRewardItemType.Badge) {
+        badge_id = r.properties.badge_id;
+        r.properties.amount = 1;
+        r.properties.name = badgeInfos.get(badge_id + s.lv).name;
+        r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
+        r.properties.description = badgeInfos.get(badge_id + s.lv).description;
+        delete r.properties.badge_id;
+      }else{
+        if(!claimed){
+          delete r.properties.description_claimed;
+        }
+      }
     }
     // premium_pass.push(targetSeries);
   }

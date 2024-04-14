@@ -103,8 +103,9 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     const metricUpdate: any = {};
     if (rewardType === BattlepassRewardType.Premium) {
       metricUpdate[`battlepass_season_${currentBattleSeason.id}_premium_pass`] = userBattlepass.finished_tasks;
+    }else{
+      metricUpdate[`battlepass_season_${currentBattleSeason.id}_standard_pass`] = userBattlepass.finished_tasks;
     }
-    metricUpdate[`battlepass_season_${currentBattleSeason.id}_standard_pass`] = userBattlepass.finished_tasks;
     // 领取徽章、发放用户奖励
     await doTransaction(async (session) => {
       const opts = { session };

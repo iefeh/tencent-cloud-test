@@ -34,12 +34,12 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
         const prop = item.properties as any;
         const img = prop.image_url;
         const text = prop.name || '--';
-        let imgWidth = 120;
-        let imgHeight = 120;
+        let imgWidth = 100;
+        let imgHeight = 100;
         if (text === "MOON BEAMS")
         {
-          imgWidth = 80;
-          imgHeight = 80
+          imgWidth = 70;
+          imgHeight = 70;
         }
 
         return (
