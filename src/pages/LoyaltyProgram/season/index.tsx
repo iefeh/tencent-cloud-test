@@ -88,13 +88,15 @@ function SeasonBattle() {
           {info && <FinalScreen />}
         </div>
 
-        <LGButton
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 uppercase"
-          label="Tasks"
-          actived
-          link={`${window?.location?.origin}/LoyaltyProgram/earn?from=lp`}
-          suffix={<ArrowRightSVG className="w-7 h-7" />}
-        />
+        <div className='w-[7.6rem] h-[2.5rem] absolute left-1/2 bottom-10 -translate-x-1/2'>
+          <LGButton
+            className="uppercase animate-breathShadow"
+            label="Tasks"
+            actived
+            link={`${window?.location?.origin}/LoyaltyProgram/earn?from=lp`}
+            suffix={<ArrowRightSVG className="w-7 h-7" />}
+          />
+        </div>
 
         <FloatParts visible={floatVisible} onRuleClick={onOpen} />
 

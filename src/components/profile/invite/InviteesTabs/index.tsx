@@ -32,7 +32,7 @@ const InviteesTabs: FC<Props> = ({ onRuleClick }) => {
           'w-full rounded-base border-1 border-basic-gray transition-colors',
           'hover:border-basic-yellow',
           'font-semakin text-center',
-          'px-6 py-4 mt-4 h-60',
+          'px-6 py-4 mt-4 h-[16.5rem]',
         ])}
       >
         <div className="text-2xl mt-4">Direct Referrals</div>
@@ -57,7 +57,7 @@ const InviteesTabs: FC<Props> = ({ onRuleClick }) => {
           'w-full rounded-base border-1 border-basic-gray transition-colors',
           'hover:border-basic-yellow',
           'font-semakin text-center',
-          'px-6 py-4 mt-8 h-60',
+          'px-6 py-4 mt-8 h-[16.5rem]',
         ])}
       >
         <div className="text-2xl mt-4">Indirect Referrals</div>

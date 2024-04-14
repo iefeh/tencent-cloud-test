@@ -4,6 +4,7 @@ export interface InviteReferral {
   id: string;
   name: string;
   obtain_url: string;
+  description: string;
   series: DiplomatSerie[];
 }
 
