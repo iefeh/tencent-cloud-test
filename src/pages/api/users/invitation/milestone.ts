@@ -42,7 +42,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     let diplomatBadge: any = {};
     let totalClaimedMbFromBadge = 0;
     for (let badge of badges) {
-        let badgeWithAlias: BadgeWithAlias = {id: badge.id, name: badge.name, alias: "", obtain_url: badge.obtain_url, series: badge.series, description: ""};
+        let badgeWithAlias: BadgeWithAlias = {id: badge.id, name: badge.name, alias: badge.name, obtain_url: badge.obtain_url, series: badge.series, description: ""};
         // 修改徽章名称为别名
         const aliasAndDescription = inviteBadgesAliasAndDescription.get(badgeWithAlias.id);
         if (aliasAndDescription) {
