@@ -37,7 +37,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     let success: boolean = false;
     //查询CDK信息
     const cdkTemp = String(cdk);
+
     const cdkInfo = await getCDKInfo(cdkTemp, userId);
+
 
     //CDK不存在
     if (!cdkInfo) {
@@ -226,7 +228,6 @@ async function redeemBadgeReward(userId: string, cdk: string, session: any, rewa
       { session: session },
     );
   }
-  
 }
 
 // this will run if none of the above matches

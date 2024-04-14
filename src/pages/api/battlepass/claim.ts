@@ -44,7 +44,7 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     if (rewardType === BattlepassRewardType.Premium) {
       const isPremium: boolean = await isPremiumSatisfied(userId);
       if (!isPremium) {
-        return response.success({ result: "You are not meet the condition for PREMIUM." });
+        return response.success({ result: "You do not meet the condition for PREMIUM." });
       }
     }
 

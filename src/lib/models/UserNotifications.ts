@@ -1,5 +1,6 @@
 import { Document, Schema, models } from 'mongoose';
 import connectToMongoDbDev from '@/lib/mongodb/client';
+import { v4 as uuidV4 } from 'uuid';
 //用户提醒
 export interface IUserNotification extends Document {
   //用户ID
@@ -31,3 +32,19 @@ const UserNotifications =
   models.UserNotification ||
   connection.model<IUserNotification>('UserNotifications', UserNotificationSchema, 'user_notifications');
 export default UserNotifications;
+
+// 保存用户通知.
+export async function createUserNotification(userId: string, content: string, link: string | null = null, session?: any): Promise<void> {
+  const ntfn = new UserNotifications({
+    user_id: userId,
+    notification_id: uuidV4(),
+    content: content,
+    link: link,
+    created_time: Date.now(),
+  });
+  if (session) {
+    await ntfn.save({ session });
+  } else {
+    await ntfn.save();
+  }
+}

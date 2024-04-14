@@ -11,11 +11,11 @@ interface Props {
 
 const routeText = [
   { name: 'Home', route: '/' },
+  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
   { name: 'AstrArk', route: '/AstrArk' },
   { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
-  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
 ];
 
 export default function Sidebar({ visible, onClose }: Props) {

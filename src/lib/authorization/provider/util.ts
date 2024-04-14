@@ -6,9 +6,9 @@ import {AuthorizationType, AuthToken} from "@/lib/authorization/types";
 import OAuthToken from "@/lib/models/OAuthToken";
 import axios from "axios";
 import getMongoConnection from "@/lib/mongodb/client";
-import { getInviterFromDirectInviteCode, inviter } from "@/lib/common/inviter";
+import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from "@/lib/common/inviter";
 
-export async function checkGetAuthorizationURLPrerequisite(req: any, res: any): Promise<{ passed: boolean, inviter?: inviter }> {
+export async function checkGetAuthorizationURLPrerequisite(req: any, res: any): Promise<{ passed: boolean, inviter?: inviteRelationship | null }> {
     // 检查用户的授权落地页
     const {landing_url, invite_code, signup_mode} = req.query;
     if (!landing_url) {
@@ -21,10 +21,10 @@ export async function checkGetAuthorizationURLPrerequisite(req: any, res: any): 
     }
     // 检查注册邀请码
     await getMongoConnection();
-    let inviter: any;
+    let inviter: inviteRelationship | null = null;
     // 确保当前是在登录，即用户一定不存在.
     if (!req.userId && invite_code) {
-        const inviter = getInviterFromDirectInviteCode(invite_code)
+        inviter = await getInviteRelationshipFromDirectInviteCode(invite_code);
         if (!inviter) {
             res.json(response.unknownInviteCode());
             return {passed: false};

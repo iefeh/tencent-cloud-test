@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import InviteCardModal from '@/pages/components/common/InviteCardModal';
+import { useRouter } from 'next/router';
 import { cn } from '@nextui-org/react';
 import referralBgImg from 'img/loyalty/season/bg_referral.png';
 
@@ -17,11 +18,15 @@ interface Props extends ClassNameProps {
 }
 
 const Invite = function ({ className, inProfie, isReferral }: Props) {
-  const { userInfo, toggleInviteModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
+  const router = useRouter();
 
   function onInviteClick() {
-    if (!userInfo) return;
-    toggleInviteModal();
+    if (!userInfo) {
+      toggleLoginModal(true);
+    } else {
+      router.push('/Profile/invite');
+    }
   }
 
   return (

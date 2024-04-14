@@ -4,11 +4,12 @@ import { FC, useState } from 'react';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 import { useUserContext } from '@/store/User';
+import { exchangeRedeemCode } from '@/http/services/cdk';
 import BasicButton from '@/pages/components/common/BasicButton';
 import { observer } from 'mobx-react-lite';
 
 const RedeemModal: FC = () => {
-  const STANDARD_CODE_LENGTH = 12;
+  const MIN_CODE_LENGTH = 10;
   const { redeemModalVisible, toggleRedeemModal } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState('');
@@ -19,9 +20,23 @@ const RedeemModal: FC = () => {
 
   const onConfirm = throttle(async () => {
     setLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
+    const res = await exchangeRedeemCode({ cdk: code });
+    if (res.success) {
+      let rewardDescription = "";
+      for (let item of res.reward) 
+      {
+        if (rewardDescription.length > 0)
+        {
+          rewardDescription += ",";
+        }
+        rewardDescription += `${item.amount} ${item.description}`;
+      }
+      toast.success(`Congratulations on redeeming ${rewardDescription}! Check your rewards in the User Center now.`);
+    }
+    else {
+      toast.error(res.msg);
+    }
+    setCode('');
     setLoading(false);
   }, 500);
 
@@ -47,7 +62,6 @@ const RedeemModal: FC = () => {
                 placeholder="Your redeem code."
                 variant="bordered"
                 classNames={{ inputWrapper: 'h-full !rounded-base mt-6 mb-4', input: 'text-center' }}
-                maxLength={STANDARD_CODE_LENGTH}
                 value={code}
                 onValueChange={onCodeChange}
               />
@@ -60,7 +74,7 @@ const RedeemModal: FC = () => {
                 className="uppercase h-9"
                 label="Confirm"
                 actived
-                disabled={code.length !== STANDARD_CODE_LENGTH}
+                disabled={code.length < MIN_CODE_LENGTH}
                 loading={loading}
                 onClick={onConfirm}
               />
