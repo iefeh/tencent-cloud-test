@@ -9,7 +9,7 @@ import BasicButton from '@/pages/components/common/BasicButton';
 import { observer } from 'mobx-react-lite';
 
 const RedeemModal: FC = () => {
-  const STANDARD_CODE_LENGTH = 18;
+  const MIN_CODE_LENGTH = 10;
   const { redeemModalVisible, toggleRedeemModal } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState('');
@@ -62,7 +62,6 @@ const RedeemModal: FC = () => {
                 placeholder="Your redeem code."
                 variant="bordered"
                 classNames={{ inputWrapper: 'h-full !rounded-base mt-6 mb-4', input: 'text-center' }}
-                maxLength={STANDARD_CODE_LENGTH}
                 value={code}
                 onValueChange={onCodeChange}
               />
@@ -75,7 +74,7 @@ const RedeemModal: FC = () => {
                 className="uppercase h-9"
                 label="Confirm"
                 actived
-                disabled={code.length !== STANDARD_CODE_LENGTH}
+                disabled={code.length < MIN_CODE_LENGTH}
                 loading={loading}
                 onClick={onConfirm}
               />
