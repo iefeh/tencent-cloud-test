@@ -34,17 +34,26 @@ const RewardsBelt: FC<Props> = ({ className, items = [] }) => {
         const prop = item.properties as any;
         const img = prop.image_url;
         const text = prop.name || '--';
+        let imgWidth = 120;
+        let imgHeight = 120;
+        if (text === "MOON BEAMS")
+        {
+          imgWidth = 80;
+          imgHeight = 80
+        }
 
         return (
           <SwiperSlide key={index} className="!w-max [&+.swiper-slide]:ml-4">
             <div className="flex flex-col items-center w-min text-center">
-              <div className="relative w-[5.625rem] h-[5.625rem]">
-                {img && <Image className="object-contain" src={img} alt="" fill sizes="100%" />}
+              <div className="relative w-[7.625rem] h-[5.625rem] bg-black">
+                {
+                  img && <Image className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 object-contain" src={img} alt="" width={imgWidth} height={imgHeight} />
+                }
 
                 <div className="absolute right-2 bottom-2 text-basic-yellow text-sm">x{prop.amount || 0}</div>
               </div>
 
-              <div className="w-full line-clamp-3 text-[#999999] mt-ten">{text}</div>
+              <div className="w-full line-clamp-2 text-[#999999] mt-ten">{text}</div>
             </div>
           </SwiperSlide>
         );

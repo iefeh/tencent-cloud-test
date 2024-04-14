@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { Pagination, Select, SelectItem, cn } from '@nextui-org/react';
 import PaginationRenderItem from './PaginationRenderItem';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { EventItem, EventPageQueryDTO, queryEventListAPI } from '@/http/services/task';
 import { toast } from 'react-toastify';
@@ -18,6 +19,7 @@ export default function SeasonalCampaigns() {
   const [total, setTotal] = useState(0);
   const [eventStatus, setEventStatus] = useState('all');
   const [loading, setLoading] = useState(false);
+  const { userInfo } = useContext(MobxContext);
 
   function onTaskClick(task: EventItem) {
     window.open(`${location.origin}/LoyaltyProgram/event?id=${task.id}`);
@@ -28,10 +30,18 @@ export default function SeasonalCampaigns() {
     const params = Object.assign(pagi.current, pagiParams);
 
     try {
-      const res = await queryEventListAPI(params);
-      const { campaigns, total } = res;
-      setTasks(campaigns || []);
-      setTotal(Math.ceil((total || 0) / (pagiParams.page_size || 9)));
+      if (userInfo)
+      {
+        const res = await queryEventListAPI(params);
+        const { campaigns, total } = res;
+        setTasks(campaigns || []);
+        setTotal(Math.ceil((total || 0) / (pagiParams.page_size || 9)));
+      }
+      else
+      {
+        setTasks([]);
+        setTotal(0);
+      }
     } catch (error: any) {
       toast.error(error?.message || error);
     } finally {
@@ -114,7 +124,6 @@ export default function SeasonalCampaigns() {
             </div>
           );
         })}
-
         {loading && <CircularLoading />}
       </div>
 
@@ -157,8 +166,7 @@ export default function SeasonalCampaigns() {
 
       {tasks.length < 1 && !loading && (
         <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
-          <p>More exciting events coming soon.</p>
-          <p>Stay tuned!</p>
+          <p>Please log in and claim your season pass first to unlock tasks & events.</p>
           <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
         </div>
       )}

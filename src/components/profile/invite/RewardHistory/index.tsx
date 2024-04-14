@@ -22,7 +22,7 @@ const RewardHistory: FC = () => {
         Moon Beams were received from Referral Milestone Badges.
       </div>
 
-      <div className="border-1 border-basic-gray rounded-base hover:border-basic-yellow transition-colors px-4 mt-4 h-[37.92rem]">
+      <div className="border-1 border-basic-gray rounded-base hover:border-basic-yellow transition-colors px-4 mt-4 h-[40.92rem]">
         <Tabs
           variant="underlined"
           classNames={{
@@ -39,6 +39,9 @@ const RewardHistory: FC = () => {
 
             return (
               <Tab key={index} title={item.name}>
+                <div className="text-base text-[#999] mt-8">
+                {item.description}
+                </div>
                 <div className="flex flex-col items-center text-center pt-8 pb-4 px-12">
                   <Image
                     className={cn(['w-60 h-60 object-contain', bigSerie.obtained || 'grayscale opacity-50'])}

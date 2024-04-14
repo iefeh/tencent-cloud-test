@@ -2,7 +2,8 @@ import { TaskCategory, queryTaskCategoriesAPI } from '@/http/services/battlepass
 import { cn } from '@nextui-org/react';
 import { throttle } from 'lodash';
 import Image from 'next/image';
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
+import { MobxContext } from '@/pages/_app';
 import taskBgImg from 'img/loyalty/season/bg_reward_final.png';
 import teamsImg from 'img/loyalty/task/teams.png';
 import CircularLoading from '@/pages/components/common/CircularLoading';
@@ -14,12 +15,19 @@ interface Props extends ClassNameProps {
 const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<TaskCategory[]>([]);
+  const { userInfo } = useContext(MobxContext);
 
   const queryCategories = throttle(async () => {
     setLoading(true);
-    const res = await queryTaskCategoriesAPI();
-
-    setCategories(res.result || []);
+    if (userInfo)
+    {
+      const res = await queryTaskCategoriesAPI();
+      setCategories(res?.result || []);
+    }
+    else
+    {
+      setCategories([]);
+    }
     setLoading(false);
   }, 500);
 
@@ -64,8 +72,7 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
 
         {categories.length < 1 && !loading && (
           <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
-            <p>More exciting events coming soon.</p>
-            <p>Stay tuned!</p>
+            <p><br/><br/><br/><br/><br/><br/><br/><br/>Please log in and claim your season pass first to unlock tasks & events.</p>
             <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
           </div>
         )}
