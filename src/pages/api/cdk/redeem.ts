@@ -13,6 +13,8 @@ import Badges, { RequirementType } from '@/lib/models/Badge';
 import Whitelist from '@/lib/models/Whitelist';
 import { WhitelistEntityType } from '@/lib/quests/types';
 import { redis } from '@/lib/redis/client';
+import UserNotifications from '@/lib/models/UserNotifications';
+import { generateUUID } from 'three/src/math/MathUtils';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -134,6 +136,16 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
           break;
         case CDKRewardType.Badge:
           await redeemBadgeReward(userId, cdkInfo.cdk, session, reward);
+          if (reward.alert) {
+            await new UserNotifications({
+              user_id: userId,
+              notification_id: generateUUID(),
+              content: reward.alert,
+              link: '',
+              //创建时间
+              created_time: Date.now(),
+            }).save();
+          }
           break;
       }
     }
