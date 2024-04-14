@@ -37,7 +37,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     let success: boolean = false;
     //查询CDK信息
     const cdkTemp = String(cdk);
-    const cdkInfo = await getCDKInfo(cdkTemp);
+    const cdkInfo = await getCDKInfo(cdkTemp, userId);
 
     //CDK不存在
     if (!cdkInfo) {
@@ -205,18 +205,28 @@ async function redeemBadgeReward(userId: string, cdk: string, session: any, rewa
   if (!whitelistRequirement) {
     throw new Error('Badge type is not whitelist.');
   }
-  //将用户添加至白名单中
-  await Whitelist.insertMany(
-    [
-      {
-        whitelist_id: whitelistRequirement.properties.whitelist_id,
-        whitelist_entity_type: WhitelistEntityType.UserId,
-        whitelist_entity_id: userId,
-        created_time: Date.now(),
-      },
-    ],
-    { session: session },
-  );
+  //判断用户是否已在白名单中
+  const whitelist:any = await Whitelist.findOne({
+    whitelist_id: whitelistRequirement.properties.whitelist_id,
+    whitelist_entity_type: WhitelistEntityType.UserId,
+    whitelist_entity_id: userId
+  })
+
+  if(!whitelist){
+      //将用户添加至白名单中
+    await Whitelist.insertMany(
+      [
+        {
+          whitelist_id: whitelistRequirement.properties.whitelist_id,
+          whitelist_entity_type: WhitelistEntityType.UserId,
+          whitelist_entity_id: userId,
+          created_time: Date.now(),
+        },
+      ],
+      { session: session },
+    );
+  }
+  
 }
 
 // this will run if none of the above matches
@@ -232,64 +242,3 @@ export default router.handler({
     res.status(500).json(response.serverError());
   },
 });
-
-async function generate() {
-  new CDKTemplate({
-    id: '73321633-59c4-40d2-afa2-ab9532112ffb',
-    channel_id: '38de0eb7-2e20-4c0b-9664-f7ee6471bfe2',
-    description: 'TEST TEST TEST',
-    rewards: [{ type: CDKRewardType.MoonBeam, image_url: '', amount: 25, description: '' }],
-    active: true,
-    created_time: 1712846680352,
-  }).save();
-
-  new CDK({
-    id: 'a7eb0577-40d9-4075-b988-f91aa2df0b0e',
-    template_id: '73321633-59c4-40d2-afa2-ab9532112ffb',
-    cdk: 'APDMTPP-7025-DAD4',
-    created_time: Date.now(),
-    expired_time: Date.now(),
-    max_redeem_count: 100,
-    current_redeem_count: 0,
-  }).save();
-
-  new CDK({
-    id: 'f8d9f4d9-2f67-41d6-81b8-d055ab3a51bb',
-    template_id: '73321633-59c4-40d2-afa2-ab9532112ffb',
-    cdk: 'APDMTPP-4KMW-7OV7',
-    created_time: Date.now(),
-    expired_time: Date.now(),
-    max_redeem_count: 100,
-    current_redeem_count: 0,
-  }).save();
-
-  new CDK({
-    id: '1d28bc99-2342-4c4d-9920-ffae2e8d8cce',
-    template_id: '73321633-59c4-40d2-afa2-ab9532112ffb',
-    cdk: 'APDMTPP-Y1VO-9MKO',
-    created_time: Date.now(),
-    expired_time: Date.now(),
-    max_redeem_count: 100,
-    current_redeem_count: 0,
-  }).save();
-
-  new CDK({
-    id: '9344c6fb-cc9f-4176-8c0e-480830dbbc9e',
-    template_id: '73321633-59c4-40d2-afa2-ab9532112ffb',
-    cdk: 'APDMTPP-06CS-MTJ0',
-    created_time: Date.now(),
-    expired_time: Date.now(),
-    max_redeem_count: 100,
-    current_redeem_count: 0,
-  }).save();
-
-  new CDK({
-    id: '0f50a9bd-4604-456c-9b3d-7e822f3ee56c',
-    template_id: '73321633-59c4-40d2-afa2-ab9532112ffb',
-    cdk: 'APDMTPP-BAHP-YAYL',
-    created_time: Date.now(),
-    expired_time: Date.now(),
-    max_redeem_count: 100,
-    current_redeem_count: 0,
-  }).save();
-}
