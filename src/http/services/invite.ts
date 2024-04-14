@@ -3,6 +3,7 @@ import http from '../index';
 export interface InviteReferral {
   id: string;
   name: string;
+  alias: string;
   obtain_url: string;
   description: string;
   series: DiplomatSerie[];

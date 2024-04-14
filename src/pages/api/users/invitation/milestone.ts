@@ -7,23 +7,27 @@ import Badges, { RequirementType } from "@/lib/models/Badge";
 import UserBadges, { IUserBadges, UserBadgeSeries } from "@/lib/models/UserBadges";
 import { DIRECT_REFERRAL_MOON_BEAM_DELTA, INDIRECT_REFERRAL_MOON_BEAM_DELTA } from "@/lib/models/UserMoonBeamAudit";
 
-interface badgeAliasAndDescription
+interface BadgeWithAlias
 {
-    alias: String,
-    description: String
+    id: string,
+    name: string,
+    alias: string,
+    obtain_url: string,
+    description: string,
+    series: any
 }
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     // 定义拉新徽章，别名和说明，没有别名就默认使用徽章名称
-    const inviteBadgesAliasAndDescription = new Map<string, badgeAliasAndDescription>([
+    const inviteBadgesAliasAndDescription = new Map<string, any>([
         [process.env.DIPLOMAT_INSIGNIA_BADGE_ID!, {alias: "", description: ""}],
-        [process.env.WEALTHY_CIRCLE_CONNECTOR_BADGE_ID!, {alias: "Invitees’ Token Verification", description: "You can unlock this badge when your invitees verify their wallet token assets and receive extra Moon Beams."}],
-        [process.env.NFT_BRIDGER_BADGE_ID!, {alias: "Invitees’ NFT Verification", description: "You can unlock this badge when your invitees verify their wallet NFT assets and receive extra Moon Beams."}],
+        [process.env.WEALTHY_CIRCLE_CONNECTOR_BADGE_ID!, {alias: "Invitees’ Token Verification", description: "verify their wallet token assets"}],
+        [process.env.NFT_BRIDGER_BADGE_ID!, {alias: "Invitees’ NFT Verification", description: "verify their wallet NFT assets"}],
     ]);
     const inviteBadgeIds: string[] = Array.from(inviteBadgesAliasAndDescription.keys());
-    const badges = await Badges.find({ id: { $in: inviteBadgeIds }, deleted_time: null }, { _id: 0, name: 1, id: 1, obtain_url: 1, series: 1, description: 1 }).lean();
+    const badges = await Badges.find({ id: { $in: inviteBadgeIds }, deleted_time: null }, { _id: 0, name: 1, id: 1, obtain_url: 1, series: 1 }).lean();
     if (badges.length != inviteBadgeIds.length) {
         throw new Error(`invite badges length mismatch`);
     }
@@ -38,16 +42,17 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     let diplomatBadge: any = {};
     let totalClaimedMbFromBadge = 0;
     for (let badge of badges) {
+        let badgeWithAlias: BadgeWithAlias = {id: badge.id, name: badge.name, alias: "", obtain_url: badge.obtain_url, series: badge.series, description: ""};
         // 修改徽章名称为别名
-        const aliasAndDescription = inviteBadgesAliasAndDescription.get(badge.id);
+        const aliasAndDescription = inviteBadgesAliasAndDescription.get(badgeWithAlias.id);
         if (aliasAndDescription) {
-            badge.name = aliasAndDescription.alias;
-            badge.description = aliasAndDescription.description;
+            badgeWithAlias.alias = aliasAndDescription.alias;
+            badgeWithAlias.description = aliasAndDescription.description;
         }
-        const isDiplomatBadge = badge.id == process.env.DIPLOMAT_INSIGNIA_BADGE_ID;
-        const userBadge = userBadgeMap.get(badge.id);
-        const seriesList = Object.keys(badge.series).map(level => {
-            const series = badge.series[level];
+        const isDiplomatBadge = badgeWithAlias.id == process.env.DIPLOMAT_INSIGNIA_BADGE_ID;
+        const userBadge = userBadgeMap.get(badgeWithAlias.id);
+        const seriesList = Object.keys(badgeWithAlias.series).map(level => {
+            const series = badgeWithAlias.series[level];
             series.level = Number(level);
             series.obtained = false;
             series.claimed = false;
@@ -86,8 +91,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         // 外交官徽章，全系列返回，用于页面整体进度展示
         if (isDiplomatBadge) {
             // 不返回最后一级
-            badge.series = seriesList.slice(0, -1);
-            diplomatBadge = badge;
+            badgeWithAlias.series = seriesList.slice(0, -1);
+            diplomatBadge = badgeWithAlias;
             continue;
         }
 
@@ -107,11 +112,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
             if (endIndex - startIndex < 4) {
                 endIndex = startIndex + 4;
             }
-            badge.series = seriesList.slice(startIndex, endIndex);
+            badgeWithAlias.series = seriesList.slice(startIndex, endIndex);
         } else {
-            badge.series = seriesList.slice(0, 4);
+            badgeWithAlias.series = seriesList.slice(0, 4);
         }
-        referralBadges.push(badge);
+        referralBadges.push(badgeWithAlias);
     }
 
     // 获取用户的拉新进度信息

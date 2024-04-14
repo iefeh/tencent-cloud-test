@@ -38,9 +38,9 @@ const RewardHistory: FC = () => {
             const bigSerie = item.series[bigIndex];
 
             return (
-              <Tab key={index} title={item.name}>
+              <Tab key={index} title={item.alias}>
                 <div className="text-base text-[#999] mt-8">
-                {item.description}
+                You can unlock this badge when your invitees <span className="text-basic-yellow">{item.description}</span> and receive extra Moon Beams.
                 </div>
                 <div className="flex flex-col items-center text-center pt-8 pb-4 px-12">
                   <Image
