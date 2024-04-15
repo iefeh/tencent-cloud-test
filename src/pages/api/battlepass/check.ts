@@ -4,9 +4,10 @@ import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import BattlePassSeasons from '@/lib/models/BattlePassSeasons';
 import UserMetrics from '@/lib/models/UserMetrics';
+import { errorInterceptor } from '@/lib/middleware/error';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const user_id = req.userId;
   const userId = String(user_id);
 

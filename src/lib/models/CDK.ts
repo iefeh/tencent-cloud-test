@@ -34,7 +34,8 @@ const CDK = models.CDK || connection.model<ICDK>('CDK', CDKSchema, 'cdk');
 export default CDK;
 
 //查询CDK信息
-export async function getCDKInfo(cdk: string): Promise<any> {
+export async function getCDKInfo(cdk: string, userId: string): Promise<any> {
+
   const pipeline: PipelineStage[] = [{
     $match: {
       cdk: cdk
@@ -45,7 +46,7 @@ export async function getCDKInfo(cdk: string): Promise<any> {
       let: { cdk: '$cdk' },
       as: "redeem_record",
       pipeline: [{
-        $match: { $expr: { $and: [{ $eq: ['$cdk', '$$cdk'] }] } }
+        $match: { $expr: { $and: [{ $eq: ['$cdk', '$$cdk'] }, { $eq: ['$redeem_user_id', userId] }] } }
       }, {
         $project: { _id: 0, redeem_user_id: 1 }
       }]

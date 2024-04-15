@@ -7,10 +7,11 @@ import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePa
 import Badges from '@/lib/models/Badge';
 import { PipelineStage } from 'mongoose';
 import { getAllRequirements, getCurrentBattleSeason, premiumSatisfy } from '@/lib/battlepass/battlepass';
+import { errorInterceptor } from '@/lib/middleware/error';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(maybeAuthInterceptor).get(async (req, res) => {
+router.use(errorInterceptor(), maybeAuthInterceptor).get(async (req, res) => {
   //获得当前赛季
   const currentSeason = await getCurrentBattleSeason();
   if (!currentSeason) {
@@ -135,7 +136,7 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
     }
   }
   let record: any;
-  let claimed:boolean;
+  let claimed: boolean;
   //拼接用户徽章和领取信息信息
   for (let s of standard_pass) {
     claimed = false;
@@ -153,8 +154,8 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
         r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
         r.properties.description = badgeInfos.get(badge_id + s.lv).description;
         delete r.properties.badge_id;
-      }else{
-        if(!claimed){
+      } else {
+        if (!claimed) {
           delete r.properties.description_claimed;
         }
       }
@@ -176,8 +177,8 @@ async function enrichBattlepassLevelInfos(current_season: any, user_battle_seaso
         r.properties.image_url = badgeInfos.get(badge_id + s.lv).image_url;
         r.properties.description = badgeInfos.get(badge_id + s.lv).description;
         delete r.properties.badge_id;
-      }else{
-        if(!claimed){
+      } else {
+        if (!claimed) {
           delete r.properties.description_claimed;
         }
       }

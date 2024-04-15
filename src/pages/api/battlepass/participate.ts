@@ -7,10 +7,11 @@ import { getCurrentBattleSeason, getCurrentBattleSeasonId } from '@/lib/battlepa
 import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
 import { getUserTasksOverviewRawInfo } from './tasks_overview';
 import { sendBattlepassCheckMessage } from '@/lib/kafka/client';
+import { errorInterceptor } from '@/lib/middleware/error';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const user_id = req.userId;
   const userId = String(user_id);
 
