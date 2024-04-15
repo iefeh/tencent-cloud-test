@@ -103,7 +103,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
       if (c.user_badges.length > 0) {
         c.has_series = Object.keys(c.series).length > 1;
 
-        maxLv = -Infinity;
+        maxLv = 0;
         //获取用户最大等级
         claimed = false;
         for (let k of Object.keys(c.user_badges[0].series)) {
