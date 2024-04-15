@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import MediaIconBar from '../MediaIconBar';
 import styles from './index.module.css';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   visible?: boolean;
@@ -11,7 +12,7 @@ interface Props {
 
 const routeText = [
   { name: 'Home', route: '/' },
-  //{ name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
+  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
   { name: 'AstrArk', route: '/AstrArk' },
   { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
@@ -38,6 +39,11 @@ export default function Sidebar({ visible, onClose }: Props) {
     }
   }
 
+  let mobileRoute = routeText;
+  if (isMobile) {
+    mobileRoute = routeText.filter((item) => item.name !== 'Loyalty Program');
+  }
+
   return createPortal(
     <div
       onClick={onClose}
@@ -45,7 +51,7 @@ export default function Sidebar({ visible, onClose }: Props) {
       onScroll={(e) => e.stopPropagation()}
     >
       <div className="content flex-1 flex flex-col font-semakin text-center items-center justify-center">
-        {routeText.map((value, index) => (
+        {mobileRoute.map((value, index) => (
           <div
             className={`max-md:leading-[5.5rem] m-2 transition-all duration-300 hover:text-[#F6C799] text-4xl leading-[7.5rem] ${
               LoginSegments() === value.route && 'text-[#F6C799]'

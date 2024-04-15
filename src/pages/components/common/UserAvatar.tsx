@@ -16,6 +16,7 @@ import settingsImg from 'img/header/icon_settings.png';
 import logoutImg from 'img/header/icon_logout.png';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from './buttons/LGButton';
+import { isMobile } from 'react-device-detect';
 
 interface HeaderMenuItem {
   title: string;
@@ -49,11 +50,11 @@ const UserAvatar = () => {
     //   title: 'Check-In',
     //   icon: checkinImg,
     // },
-    //{
-    //  title: 'Invite New Users',
-    //  icon: inviteImg,
-    //  path: '/Profile/invite'
-    //},
+    {
+     title: 'Invite New Users',
+     icon: inviteImg,
+     path: '/Profile/invite'
+    },
     // {
     //   title: 'Settings',
     //   icon: settingsImg,
@@ -86,6 +87,11 @@ const UserAvatar = () => {
     setLogoutLoading(false);
   }
 
+  let mobileMenus: HeaderMenuItem[] = menus;
+  if (isMobile) {
+    mobileMenus = menus.filter((item) => item.title !== 'Invite New Users');
+  }
+
   return (
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
@@ -113,7 +119,7 @@ const UserAvatar = () => {
 
         <MenuDivider className="!mx-[1.125rem] bg-[#1f1f1f]" />
 
-        {menus.map((menu, index) => (
+        {mobileMenus.map((menu, index) => (
           <MenuItem key={index} onClick={() => onMenuClick(menu)}>
             {menu.icon && <Image width={24} height={24} src={menu.icon} alt="" />}
             <span className="ml-[0.875rem] font-poppins-medium uppercase text-[14px]">{menu.title}</span>
