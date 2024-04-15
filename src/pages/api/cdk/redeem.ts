@@ -4,7 +4,7 @@ import * as response from '@/lib/response/response';
 import doTransaction from '@/lib/mongodb/transaction';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import CDK, { getCDKInfo, CDKRewardType } from '@/lib/models/CDK';
-import CDKTemplate from '@/lib/models/CDKTemplate';
+import { errorInterceptor } from '@/lib/middleware/error';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
@@ -18,7 +18,7 @@ import { generateUUID } from 'three/src/math/MathUtils';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const { cdk } = req.query;
 
   if (!cdk) {

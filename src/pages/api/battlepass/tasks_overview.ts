@@ -2,16 +2,14 @@ import type { NextApiResponse } from "next";
 import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
-import Quest from "@/lib/models/Quest";
 import { PipelineStage } from 'mongoose';
-import { enrichUserQuests } from "@/lib/quests/questEnrichment";
-import { getMaxLevelBadge } from "@/pages/api/badges/display";
+import { errorInterceptor } from '@/lib/middleware/error';
 import QuestClassification, { ClassificationType } from "@/lib/models/QuestClassification";
 import { getCurrentBattleSeason, getUserBattlePass } from "@/lib/battlepass/battlepass";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const userId = req.userId!;
   const userBattlePass = await getUserBattlePass(userId);
   if (!userBattlePass) {

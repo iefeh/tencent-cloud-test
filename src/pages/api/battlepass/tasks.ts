@@ -7,11 +7,12 @@ import { PipelineStage } from 'mongoose';
 import { enrichUserQuests } from "@/lib/quests/questEnrichment";
 import { getMaxLevelBadge } from "@/pages/api/badges/display";
 import { getCurrentBattleSeason, getUserBattlePass } from "@/lib/battlepass/battlepass";
+import { errorInterceptor } from '@/lib/middleware/error';
 
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     const { page_num, page_size, category } = req.query;
     let { tag } = req.query;
     if (!category || !page_num || !page_size) {
