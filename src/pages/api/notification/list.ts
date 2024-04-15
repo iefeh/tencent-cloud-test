@@ -23,7 +23,8 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }
 
   const data: any[] = await getUserNotifications(String(userId), pageNum, pageSize);
-  if (data[0].metadata[0].total == 0) {
+  if (data[0].metadata.length == 0 || data[0].metadata[0].total == 0) {
+    data[0].metadata[0] = { total: 0 };
     data[0].data = [];
   }
 
@@ -37,7 +38,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
   res.json(
     response.success({
-      total: data[0].metadata[0].total ,
+      total: data[0].metadata[0].total,
       has_unread: has_unread,
       data: data[0].data,
     }),
