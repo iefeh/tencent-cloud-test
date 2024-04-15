@@ -28,10 +28,10 @@ const routeText: RouteMenu[] = [
     name: 'Rock’it to the Moon',
     route: '/LoyaltyProgram/season',
     children: [
-      {
-        name: 'Loyalty Program',
-        route: '/LoyaltyProgram/intro',
-      },
+      //{
+      //  name: 'Loyalty Program',
+      //  route: '/LoyaltyProgram/intro',
+      //},
       {
         name: 'Season System',
         route: '/LoyaltyProgram/season/foresight',

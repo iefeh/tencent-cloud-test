@@ -11,7 +11,7 @@ interface Props {
 
 const routeText = [
   { name: 'Home', route: '/' },
-  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
+  //{ name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
   { name: 'AstrArk', route: '/AstrArk' },
   { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
