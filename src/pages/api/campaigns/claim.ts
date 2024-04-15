@@ -159,8 +159,6 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
                 $inc: { finished_tasks: seasonPassProgress, total_moon_beam: totalMbDelta },
                 updated_time: Date.now()
             }, { upsert: true, session: session });
-            //检查赛季进度
-            await sendBattlepassCheckMessage(userId);
         }
 
         if (totalMbDelta <= 0) {
@@ -172,8 +170,11 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
         }
         // 更新用户的MB余额
         await User.updateOne({ user_id: userId }, { $inc: { moon_beam: totalMbDelta } }, opts);
-       
     });
+    if (userBattlepass) {
+        //检查赛季进度
+        await sendBattlepassCheckMessage(userId);
+    }
     return totalMbDelta;
 }
 
