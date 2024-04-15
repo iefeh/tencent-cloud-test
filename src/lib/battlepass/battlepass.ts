@@ -147,6 +147,8 @@ async function premiumSatisfyByBadge(userId: string, seasonId: number, requireme
               badgeSatisfied = false;
             }
           }
+        } else {
+          badgeSatisfied = false;
         }
         //当有多个徽章等级要求时，出现一个不满足即退出不再进行判断，即多徽章要求之间是且的关系。若需要徽章之间是或的关系，则可以配置成单个的要求。
         if (!badgeSatisfied) {
