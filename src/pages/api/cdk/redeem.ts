@@ -45,7 +45,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
       res.json(
         response.notFound({
           success: success,
-          msg: 'CDKey not found.',
+          msg: 'Invalid redeem code.',
         }),
       );
       return;
@@ -53,9 +53,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     //CDK未启用
     if (!cdkInfo.template.active) {
       res.json(
-        response.invalidParams({
+        response.success({
           success: success,
-          msg: 'CDKey inactive.',
+          msg: 'The redeem code has expired.',
         }),
       );
       return;
@@ -63,9 +63,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     //CDK未启用
     if (cdkInfo.expired_time < Date.now()) {
       res.json(
-        response.invalidParams({
+        response.success({
           success: success,
-          msg: 'CDKey expired.',
+          msg: 'The redeem code has expired.',
         }),
       );
       return;
@@ -73,9 +73,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     //是否已领取
     if (cdkInfo.redeem_record.length > 0) {
       res.json(
-        response.invalidParams({
+        response.success({
           success: success,
-          msg: 'CDKey already claimed.',
+          msg: 'The redeem code has expired.',
         }),
       );
       return;
@@ -106,7 +106,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     } else {
       res.json(
         response.invalidParams({
-          msg: 'CDKey redemption has reached the maximum limitation.',
+          msg: 'The redeem code has expired.',
         }),
       );
     }
@@ -128,7 +128,7 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
     redeemRecord.redeem_taint = [`user_id:${userId},channel_id:${cdkInfo.channel.id}`];
     const history = await CDKRedeemRecord.findOne({ redeem_taint: redeemRecord.redeem_taint[0] });
     if (history) {
-      return "A CDKey for the same channel has been redeemed.";
+      return "Redeem code type conflict, cannot claim the same reward again.";
     }
   }
 
