@@ -146,7 +146,7 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
               link: '',
               //创建时间
               created_time: Date.now(),
-            }).save();
+            }).save({ session: session });
           }
           break;
       }
@@ -208,14 +208,14 @@ async function redeemBadgeReward(userId: string, cdk: string, session: any, rewa
     throw new Error('Badge type is not whitelist.');
   }
   //判断用户是否已在白名单中
-  const whitelist:any = await Whitelist.findOne({
+  const whitelist: any = await Whitelist.findOne({
     whitelist_id: whitelistRequirement.properties.whitelist_id,
     whitelist_entity_type: WhitelistEntityType.UserId,
     whitelist_entity_id: userId
   })
 
-  if(!whitelist){
-      //将用户添加至白名单中
+  if (!whitelist) {
+    //将用户添加至白名单中
     await Whitelist.insertMany(
       [
         {
