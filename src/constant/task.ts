@@ -89,4 +89,5 @@ export const enum EVENT_REWARD_TYPE {
   BADGE = 'badge',
   LUCKY_DRAW = 'lucky_draw',
   NFT_BONUS = 'nft_bonus',
+  TASK = 'task',
 }

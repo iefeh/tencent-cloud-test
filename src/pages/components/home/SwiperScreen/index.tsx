@@ -3,6 +3,8 @@ import { Pagination, Autoplay, Navigation } from 'swiper/modules';
 import IndexSlide from '../IndexSlide';
 import RaceSlide from '../RaceSlide';
 import EntertainmentSlide from '../EntertainmentSlide';
+import LoyaltyProgramSlide from '../LoyaltyProgramSlide';
+import InviteNewSlide from '../InviteNewSlide';
 import LimitedTestSlide from '../LimitedTestSlide';
 import YellowCircle from '../../common/YellowCircle';
 import { useEffect, useState, useRef } from 'react';
@@ -58,7 +60,15 @@ export default function SwiperScreen() {
         </SwiperSlide> */}
 
         <SwiperSlide>
-          <BadgeSlide needAni={needAnis[0]} />
+          <LoyaltyProgramSlide needAni={needAnis[0]}/>
+        </SwiperSlide>
+
+        <SwiperSlide>
+          <InviteNewSlide needAni={needAnis[1]}/>
+        </SwiperSlide>
+
+        <SwiperSlide>
+          <BadgeSlide needAni={needAnis[2]} />
         </SwiperSlide>
 
         {/* <SwiperSlide>
