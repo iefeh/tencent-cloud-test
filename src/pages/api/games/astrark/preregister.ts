@@ -14,6 +14,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     if (result.modifiedCount > 0) {
         await redis.incr(`astrark_preregistration_count`);
     }
+    
     res.json(response.success());
 });
 
