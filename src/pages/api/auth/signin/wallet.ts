@@ -12,6 +12,7 @@ import UserInvite from "@/lib/models/UserInvite";
 import {AuthorizationType, SignupPayload} from "@/lib/authorization/types";
 import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from '@/lib/models/UserMoonBeamAudit';
 import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
+import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from '@/lib/common/inviter';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -27,9 +28,9 @@ router.post(async (req, res) => {
         return
     }
 
-    let inviter: any;
+    let inviter: inviteRelationship | null = null;
     if (invite_code) {
-        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        inviter = await getInviteRelationshipFromDirectInviteCode(invite_code);
         if (!inviter) {
             res.json(response.unknownInviteCode());
             return
@@ -56,7 +57,7 @@ router.post(async (req, res) => {
     }));
 });
 
-async function doSignupConfirmation(res: any, address: string, inviter: any) {
+async function doSignupConfirmation(res: any, address: string, inviter: inviteRelationship | null) {
     // 构建注册的负载信息
     const now = Date.now();
     const userId = uuidv4();
@@ -76,10 +77,11 @@ async function doSignupConfirmation(res: any, address: string, inviter: any) {
     };
     if (inviter) {
         payload.invite = {
-            user_id: inviter.user_id,
+            user_id: inviter.direct,
             invitee_id: userId,
             created_time: now,
         };
+        payload.indirect_inviter_id = inviter.indirect;
     }
     // 生成二次确认的注册token
     const token = await generateUserSignupSession(payload);

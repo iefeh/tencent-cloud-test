@@ -10,4 +10,6 @@ declare global {
             conn: Connection;
         };
     };
+
+    var ethereum: any;
 }

@@ -11,8 +11,10 @@ import doTransaction from '@/lib/mongodb/transaction';
 import logger from '@/lib/logger/winstonLogger';
 import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
+import UserInvite from '@/lib/models/UserInvite';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
-import { getInviterFromDirectInviteUser, inviter } from '@/lib/common/inviter';
+import { getInviteRelationshipFromDirectInviteUser, inviteRelationship } from '@/lib/common/inviter';
+
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -64,6 +66,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         result: 'You are not eligible to claim this badge level.',
       });
     }
+    
     // 检查用户是否已经领取过该徽章
     if (series.claimed_time) {
       return response.success({
@@ -71,7 +74,10 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       });
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
+
+
     const inviter = await checkNoviceNotchInviter(userId, badge);
+
     // 构建领取徽章对象
     const claimBadge: any = {};
     const now = Date.now();
@@ -88,13 +94,14 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
         $set: claimBadge,
       }, opts);
+
       if (inviter) {
         // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
         await incrUserMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);
+        await saveInviterMoonBeamReward(userId, inviter.direct, inviter.indirect, session);
         if (inviter.indirect) {
           await incrUserMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
         }
-        await saveInviterMoonBeamReward(userId, inviter.direct, inviter.indirect, session);
       }
     });
     // 尝试刷新对应用户的MB缓存
@@ -117,14 +124,14 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
   }
 }
 
-async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<inviter | null> {
+async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<inviteRelationship | null> {
   if (!badge) {
     return null;
   }
   if (badge.id !== process.env.NOICE_BADGE_ID) {
     return null;
   }
-  return getInviterFromDirectInviteUser(userId);
+  return getInviteRelationshipFromDirectInviteUser(userId);
 }
 
 // 构建徽章下发的奖励，如MB

@@ -7,22 +7,33 @@ import Badges, { RequirementType } from "@/lib/models/Badge";
 import UserBadges, { IUserBadges, UserBadgeSeries } from "@/lib/models/UserBadges";
 import { DIRECT_REFERRAL_MOON_BEAM_DELTA, INDIRECT_REFERRAL_MOON_BEAM_DELTA } from "@/lib/models/UserMoonBeamAudit";
 
+interface BadgeWithAlias
+{
+    id: string,
+    name: string,
+    alias: string,
+    obtain_url: string,
+    description: string,
+    series: any
+}
+
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
-    console.log(req.userId);
-    // 查询拉新相关徽章
-    const inviteBadgeIds: string[] = [
-        process.env.DIPLOMAT_INSIGNIA_BADGE_ID!,
-        process.env.WEALTHY_CIRCLE_CONNECTOR_BADGE_ID!,
-    ];
+    // 定义拉新徽章，别名和说明，没有别名就默认使用徽章名称
+    const inviteBadgesAliasAndDescription = new Map<string, any>([
+        [process.env.DIPLOMAT_INSIGNIA_BADGE_ID!, {alias: "", description: ""}],
+        [process.env.WEALTHY_CIRCLE_CONNECTOR_BADGE_ID!, {alias: "Invitees’ Token Verification", description: "verify their wallet token assets"}],
+        [process.env.NFT_BRIDGER_BADGE_ID!, {alias: "Invitees’ NFT Verification", description: "verify their wallet NFT assets"}],
+    ]);
+    const inviteBadgeIds: string[] = Array.from(inviteBadgesAliasAndDescription.keys());
     const badges = await Badges.find({ id: { $in: inviteBadgeIds }, deleted_time: null }, { _id: 0, name: 1, id: 1, obtain_url: 1, series: 1 }).lean();
     if (badges.length != inviteBadgeIds.length) {
         throw new Error(`invite badges length mismatch`);
     }
     // 查询用户的徽章情况，以丰富徽章进度信息
     const userBadges = await UserBadges.find({ user_id: req.userId, badge_id: { $in: inviteBadgeIds } }, { _id: 0, badge_id: 1, series: 1 })
-    const userBadgeMap: Map<string, IUserBadges> =new Map<string, IUserBadges>(userBadges.map(badge => {
+    const userBadgeMap: Map<string, IUserBadges> = new Map<string, IUserBadges>(userBadges.map(badge => {
         return [badge.badge_id, badge];
     }));
     // 封装推荐相关徽章：外交官进度，与其他推荐徽章
@@ -31,10 +42,17 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     let diplomatBadge: any = {};
     let totalClaimedMbFromBadge = 0;
     for (let badge of badges) {
-        const isDiplomatBadge = badge.id == process.env.DIPLOMAT_INSIGNIA_BADGE_ID;
-        const userBadge = userBadgeMap.get(badge.id);
-        const seriesList = Object.keys(badge.series).map(level => {
-            const series = badge.series[level];
+        let badgeWithAlias: BadgeWithAlias = {id: badge.id, name: badge.name, alias: badge.name, obtain_url: badge.obtain_url, series: badge.series, description: ""};
+        // 修改徽章名称为别名
+        const aliasAndDescription = inviteBadgesAliasAndDescription.get(badgeWithAlias.id);
+        if (aliasAndDescription) {
+            badgeWithAlias.alias = aliasAndDescription.alias;
+            badgeWithAlias.description = aliasAndDescription.description;
+        }
+        const isDiplomatBadge = badgeWithAlias.id == process.env.DIPLOMAT_INSIGNIA_BADGE_ID;
+        const userBadge = userBadgeMap.get(badgeWithAlias.id);
+        const seriesList = Object.keys(badgeWithAlias.series).map(level => {
+            const series = badgeWithAlias.series[level];
             series.level = Number(level);
             series.obtained = false;
             series.claimed = false;
@@ -50,7 +68,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         // 封装用户达成等级与领取情况
         if (userBadge) {
             // 计算用户从该徽章获取到的MB奖励值
-            console.log(userBadge.series);
             userBadge.series.forEach((value: UserBadgeSeries, level: string) => {
                 if (value.claimed_time) {
                     const seriesConfig = seriesList.find(series => String(series.level) == level);
@@ -58,7 +75,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
                 }
             });
             // 默认已达成的最大的徽章等级以下的等级已达成并且已经领取，用户在领取最高等级徽章时会下发对应等级及以下等级未领取的奖励。
-            console.log(Array.from(userBadge.series.keys()));
             const maxLevelObtained = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level)));
             seriesList.map(series => {
                 if (series.level < maxLevelObtained) {
@@ -74,16 +90,16 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
         // 外交官徽章，全系列返回，用于页面整体进度展示
         if (isDiplomatBadge) {
-            badge.series = seriesList;
-            diplomatBadge = badge;
+            // 不返回最后一级
+            badgeWithAlias.series = seriesList.slice(0, -1);
+            diplomatBadge = badgeWithAlias;
             continue;
         }
 
         // 其他推荐徽章保留用户达成等级与下一级，假如达成是第5级，那会返回级别 [lv3,lv4,lv5,lv6]
         // 假如用户未达成，当前也默认返回4条数据
         if (userBadge) {
-            const maxObtainedLevelIndex = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level))) -1;
-            console.log(maxObtainedLevelIndex);
+            const maxObtainedLevelIndex = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level))) - 1;
             let endIndex = maxObtainedLevelIndex + 1;
             let startIndex = maxObtainedLevelIndex - 2;
             if (endIndex > seriesList.length - 1) {
@@ -96,13 +112,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
             if (endIndex - startIndex < 4) {
                 endIndex = startIndex + 4;
             }
-            console.log(startIndex, endIndex);
-            badge.series = seriesList.slice(startIndex, endIndex);
+            badgeWithAlias.series = seriesList.slice(startIndex, endIndex);
         } else {
-            console.log(seriesList.slice(0, 4));
-            badge.series = seriesList.slice(0, 4);
+            badgeWithAlias.series = seriesList.slice(0, 4);
         }
-        referralBadges.push(badge);
+        referralBadges.push(badgeWithAlias);
     }
 
     // 获取用户的拉新进度信息
@@ -122,7 +136,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     milestone.successful_direct_invitee_reward = milestone.successful_direct_invitee * DIRECT_REFERRAL_MOON_BEAM_DELTA;
     milestone.successful_indirect_invitee_reward = milestone.successful_indirect_invitee * INDIRECT_REFERRAL_MOON_BEAM_DELTA;
     // 总计奖励值
-    milestone.total_reward = milestone.successful_direct_invitee_reward+milestone.successful_indirect_invitee_reward+ milestone.total_claimed_badge_reward;
+    milestone.total_reward = milestone.successful_direct_invitee_reward + milestone.successful_indirect_invitee_reward + milestone.total_claimed_badge_reward;
     return res.json(response.success(milestone));
 });
 

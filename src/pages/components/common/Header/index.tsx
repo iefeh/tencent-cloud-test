@@ -20,9 +20,40 @@ import { cn } from '@nextui-org/react';
 import UserInfo from '../UserInfo';
 import Link from 'next/link';
 import Notification from './Notification';
+import RedeemModal from '@/components/common/modal/RedeemModal';
+import { isMobile } from 'react-device-detect';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
+  {
+    name: 'Rock’it to the Moon',
+    route: '/LoyaltyProgram/season',
+    children: [
+      {
+       name: 'Loyalty Program',
+       route: '/LoyaltyProgram/intro',
+      },
+      {
+        name: 'Season System',
+        route: '/LoyaltyProgram/season/foresight',
+        // disabled: true,
+      },
+
+      // {
+      //   name: "Rock'it to the Moon",
+      //   route: '/LoyaltyProgram/season',
+      // },
+
+      // {
+      //   name: 'MB=MVP',
+      //   route: '/LoyaltyProgram/Exchange',
+      // },
+      {
+        name: 'Referral Program',
+        route: '/Profile/invite',
+      },
+    ],
+  },
   {
     name: 'AstrArk',
     children: [
@@ -64,24 +95,6 @@ const routeText: RouteMenu[] = [
       // {
       //   name: 'TETRA NFT Merge',
       //   route: '/NFT/Merge',
-      // },
-    ],
-  },
-  {
-    name: 'Loyalty Program',
-    children: [
-      {
-        name: 'Loyalty System',
-        route: '/LoyaltyProgram/intro',
-      },
-      {
-        name: 'Earn Moon Beams',
-        route: '/LoyaltyProgram/earn?from=lp',
-        // disabled: true,
-      },
-      // {
-      //   name: 'MB=MVP',
-      //   route: '/LoyaltyProgram/Exchange',
       // },
     ],
   },
@@ -150,6 +163,14 @@ const Header = () => {
     return menu.route === route || menu.children?.some((item) => item.route === route);
   }
 
+  let mobileRoute: RouteMenu[] = routeText;
+  if (isMobile) {
+    for (let item of mobileRoute) {
+      if (item.name === 'Rock’it to the Moon') {
+        item.children = item.children?.filter((item) => item.name !== 'Loyalty Program');
+      }
+    }
+  }
   return (
     <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
       <div className="flex-[1]">
@@ -159,7 +180,7 @@ const Header = () => {
       </div>
 
       <div className="font-semakin flex items-center max-lg:hidden">
-        {routeText.map((value, index) => (
+        {mobileRoute.map((value, index) => (
           <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
         ))}
       </div>
@@ -195,6 +216,8 @@ const Header = () => {
       </div>
 
       <Sidebar visible={listOpen} onClose={() => setListOpen(false)} />
+
+      <RedeemModal />
     </section>
   );
 };

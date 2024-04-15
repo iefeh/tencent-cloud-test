@@ -1,24 +1,29 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import logger from "@/lib/logger/winstonLogger";
-import {redis} from "@/lib/redis/client";
+import { redis } from "@/lib/redis/client";
 import * as Sentry from "@sentry/nextjs";
-import {errorInterceptor} from "@/lib/middleware/error";
-import {timeoutInterceptor} from "@/lib/middleware/timeout";
-import Campaign, {CampaignRewardType, ICampaign} from "@/lib/models/Campaign";
+import { errorInterceptor } from "@/lib/middleware/error";
+import { timeoutInterceptor } from "@/lib/middleware/timeout";
+import Campaign, { CampaignRewardType, ICampaign } from "@/lib/models/Campaign";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import RewardAccelerator, {IRewardAccelerator} from "@/lib/models/RewardAccelerator";
-import {NftHolderReward, RewardAcceleratorType} from "@/lib/accelerator/types";
-import {NftHolderAccelerator} from "@/lib/accelerator/implementations/nftHolder";
-import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
-import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
+import RewardAccelerator, { IRewardAccelerator } from "@/lib/models/RewardAccelerator";
+import { NftHolderReward, RewardAcceleratorType } from "@/lib/accelerator/types";
+import { NftHolderAccelerator } from "@/lib/accelerator/implementations/nftHolder";
+import UserWallet, { IUserWallet } from "@/lib/models/UserWallet";
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from "@/lib/models/UserMoonBeamAudit";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import doTransaction from "@/lib/mongodb/transaction";
 import User from "@/lib/models/User";
+import { getUserBattlePass } from "@/lib/battlepass/battlepass";
+import UserMetrics from "@/lib/models/UserMetrics";
+import UserBattlePassSeasons, { BattlePassType } from "@/lib/models/UserBattlePassSeasons";
+import { sendBadgeCheckMessages, sendBattlepassCheckMessage } from '@/lib/kafka/client';
 import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -61,14 +66,14 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
 });
 
 async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICampaign | null> {
-    const {campaign_id} = req.body;
+    const { campaign_id } = req.body;
     if (!campaign_id) {
         res.json(response.invalidParams());
         return null;
     }
     const userId = req.userId!;
     // 查询活动
-    const campaign = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
+    const campaign = await Campaign.findOne({ id: campaign_id, active: true, deleted_time: null }, {
         _id: 0,
         description: 0
     });
@@ -86,7 +91,7 @@ async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICamp
     const claimed = await CampaignAchievement.findOne({
         campaign_id: campaign_id,
         user_id: userId,
-        claimed_time: {$gt: 0}
+        claimed_time: { $gt: 0 }
     });
     if (claimed) {
         res.json(response.success({
@@ -101,8 +106,8 @@ async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICamp
     // 查询用户所有已经校验的任务
     const questAchievements = await QuestAchievement.find({
         user_id: userId,
-        quest_id: {$in: taskIds},
-        verified_time: {$gt: 0},
+        quest_id: { $in: taskIds },
+        verified_time: { $gt: 0 },
     }, {
         _id: 0,
         quest_id: 1
@@ -121,13 +126,22 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
     const audits = await constructUserMbReward(userId, campaign);
     // 计算用户最终获得的总的MB奖励
     const totalMbDelta = audits.reduce((acc, audit) => acc + audit.moon_beam_delta, 0);
+    //获得用户赛季相关信息
+    const userBattlepass = await getUserBattlePass(userId);
+    //判断奖励中是否有高权重的奖励
+    const seasonPassProgress = campaign.rewards.reduce((tasks, reward) => {
+        if (reward.type === CampaignRewardType.Task) {
+            return reward.season_pass_progress;
+        }
+        return tasks;
+    }, 1);
     // 添加用户的活动奖励领取记录
     const now = Date.now();
     await doTransaction(async (session) => {
-        const opts = {session};
+        const opts = { session };
         // 保存用户的活动奖励领取记录
         await CampaignAchievement.updateOne(
-            {user_id: userId, campaign_id: campaign.id, claimed_time: null},
+            { user_id: userId, campaign_id: campaign.id, claimed_time: null },
             {
                 $set: {
                     claimed_time: now,
@@ -136,8 +150,19 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
                     created_time: now,
                 },
             },
-            {upsert: true, session: session},
+            { upsert: true, session: session },
         );
+         //用户是否已有赛季通行证
+         if (userBattlepass) {
+            //更新赛季通行证中的完成任务数和moon_beam数
+            await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: userBattlepass.battlepass_season_id }, {
+                $inc: { finished_tasks: seasonPassProgress, total_moon_beam: totalMbDelta },
+                updated_time: Date.now()
+            }, { upsert: true, session: session });
+            //检查赛季进度
+            await sendBattlepassCheckMessage(userId);
+        }
+
         if (totalMbDelta <= 0) {
             return;
         }
@@ -146,7 +171,8 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
             await audit.save(opts);
         }
         // 更新用户的MB余额
-        await User.updateOne({user_id: userId}, {$inc: {moon_beam: totalMbDelta}}, opts);
+        await User.updateOne({ user_id: userId }, { $inc: { moon_beam: totalMbDelta } }, opts);
+       
     });
     return totalMbDelta;
 }
@@ -175,13 +201,13 @@ async function constructUserAcceleratedMbReward(userId: string, campaign: ICampa
     const userinfo = new Map<RewardAcceleratorType, any>();
     const audits: any[] = [];
     // 计算用户的加速器加成
-    const accelerators = await RewardAccelerator.find({id: {$in: rewardAccelerators}}) as IRewardAccelerator[];
+    const accelerators = await RewardAccelerator.find({ id: { $in: rewardAccelerators } }) as IRewardAccelerator[];
     for (let accelerator of accelerators) {
         switch (accelerator.type) {
             case RewardAcceleratorType.NFTHolder:
                 if (!userinfo.has(accelerator.type)) {
                     // 需要查询用户的绑定的钱包地址
-                    const wallet = await UserWallet.findOne({user_id: userId, deleted_time: null}) as IUserWallet;
+                    const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null }) as IUserWallet;
                     userinfo.set(accelerator.type, wallet?.wallet_addr);
                 }
                 const wallet = userinfo.get(accelerator.type);
@@ -241,6 +267,7 @@ function constructUserBaseMbReward(userId: string, campaign: ICampaign): any[] {
     return [baseAudit];
 }
 
+//获得用户赛季
 // this will run if none of the above matches
 router.all((req, res) => {
     res.status(405).json({

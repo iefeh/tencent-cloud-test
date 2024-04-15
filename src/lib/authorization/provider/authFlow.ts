@@ -167,7 +167,9 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
                     created_time: Date.now(),
                 });
                 await invite.save(opts);
+                // 当前用户添加被邀请奖励
                 await saveNewInviteeRegistrationMoonBeamAudit(newUser.user_id, authPayload.inviter_id, session);
+                // 直接或间接邀请者添加邀请数
                 await incrUserMetric(authPayload.inviter_id, Metric.TotalInvitee, 1, session);
                 if (authPayload.indirect_inviter_id) {
                     await incrUserMetric(authPayload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);

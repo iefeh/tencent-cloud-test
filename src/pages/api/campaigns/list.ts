@@ -74,6 +74,7 @@ async function paginationCampaigns(pageNum: number, pageSize: number, campaignSt
         'active': true,
         'deleted_time': null,
     };
+    campaignStatus = "ongoing" as CampaignStatus;//season switch.
     switch (campaignStatus) {
         case CampaignStatus.Upcoming:
             matchStage['start_time'] = {$gt: Date.now()};

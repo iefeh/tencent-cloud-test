@@ -1,7 +1,7 @@
 import User from "../models/User";
 import UserInvite from "../models/UserInvite";
 
-export async function getInviterFromDirectInviteUser(userId: string): Promise<inviter | null> {
+export async function getInviteRelationshipFromDirectInviteUser(userId: string): Promise<inviteRelationship | null> {
     // 检查用户的直接邀请人
     const directInviter = await UserInvite.findOne({ invitee_id: userId });
     if (!directInviter) {
@@ -15,7 +15,7 @@ export async function getInviterFromDirectInviteUser(userId: string): Promise<in
     }
 }
 
-export async function getInviterFromDirectInviteCode(inviteCode: string): Promise<inviter | null> {
+export async function getInviteRelationshipFromDirectInviteCode(inviteCode: string): Promise<inviteRelationship | null> {
     // 检查用户的直接邀请人
     const directInviter = await User.findOne({ invite_code: inviteCode }, { _id: 0, user_id: 1 });
     if (!directInviter) {
@@ -29,7 +29,7 @@ export async function getInviterFromDirectInviteCode(inviteCode: string): Promis
     }
 }
 
-export type inviter = {
+export type inviteRelationship = {
     // 直接邀请人
     direct: string;
     // 间接邀请人
