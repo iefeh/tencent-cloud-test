@@ -18,7 +18,7 @@ import { generateUUID } from 'three/src/math/MathUtils';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
+router.use(mustAuthInterceptor).get(async (req, res) => {
   const { cdk } = req.query;
 
   if (!cdk) {
@@ -90,7 +90,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
         res.json(
           response.success({
             success: false,
-            msg: 'Redeem fail.',
+            msg: 'Redeem fail. Maybe a CDKey for the same channel has been redeemed.',
           }),
         );
         return;
