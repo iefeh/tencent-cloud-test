@@ -128,7 +128,7 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
     redeemRecord.redeem_taint = [`user_id:${userId},channel_id:${cdkInfo.channel.id}`];
     const history = await CDKRedeemRecord.findOne({ redeem_taint: redeemRecord.redeem_taint[0] });
     if (history) {
-      return "Maybe a CDKey for the same channel has been redeemed.";
+      return "A CDKey for the same channel has been redeemed.";
     }
   }
 
