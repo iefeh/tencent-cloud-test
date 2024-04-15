@@ -4,7 +4,6 @@ import * as response from '@/lib/response/response';
 import doTransaction from '@/lib/mongodb/transaction';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import CDK, { getCDKInfo, CDKRewardType } from '@/lib/models/CDK';
-import { errorInterceptor } from '@/lib/middleware/error';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import { try2AddUsers2MBLeaderboard } from '@/lib/redis/moonBeamLeaderboard';
 import User from '@/lib/models/User';
@@ -85,25 +84,25 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     if (cdkInfo.template.max_redeem_count === 0 || cdkInfo.max_redeem_count > cdkInfo.current_redeem_count) {
       //构建CDK升级数据
 
-      await redeemCDK(cdkInfo, userId).catch((error: Error) => {
-        console.log(error);
+      const result = await redeemCDK(cdkInfo, userId);
+      if (result) {
         res.json(
           response.success({
-            success: false,
-            msg: 'Redeem fail. Maybe a CDKey for the same channel has been redeemed.',
+            success: success,
+            msg: result
+          })
+        );
+      } else {
+        success = true;
+        res.json(
+          response.success({
+            success: success,
+            msg: 'Redeem success.',
+            reward: cdkInfo.template.rewards,
           }),
         );
         return;
-      });
-
-      success = true;
-      res.json(
-        response.success({
-          success: success,
-          msg: 'Redeem success.',
-          reward: cdkInfo.template.rewards,
-        }),
-      );
+      }
     } else {
       res.json(
         response.invalidParams({
@@ -127,6 +126,10 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
   //若相同渠道的CDK不允许重复领取，则修改taint.
   if (!cdkInfo.channel.repeat_claimable) {
     redeemRecord.redeem_taint = [`user_id:${userId},channel_id:${cdkInfo.channel.id}`];
+    const history = await CDKRedeemRecord.findOne({ redeem_taint: redeemRecord.redeem_taint[0] });
+    if (history) {
+      return "Maybe a CDKey for the same channel has been redeemed.";
+    }
   }
 
   const result = await doTransaction(async (session) => {
