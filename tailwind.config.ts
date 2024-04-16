@@ -60,6 +60,7 @@ const config: Config = {
       },
       colors: {
         notion: '#ff4848',
+        'basic-red': '#FF0000',
         'basic-blue': '#4C95C7',
         'basic-yellow': '#f6c799',
         'basic-gray': '#1D1D1D',
