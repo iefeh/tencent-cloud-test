@@ -21,6 +21,10 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const userId = req.userId!;
   const pageNum: number = Number(page_num);
   const pageSize: number = Number(page_size);
+  if(pageNum <= 0 || pageSize <= 0){
+    res.json(response.invalidParams());
+    return;
+  }
   //查询CDK的奖励信息
   const pagination: any = await paginationCDKRedeemHistory(userId, pageNum, pageSize);
 
