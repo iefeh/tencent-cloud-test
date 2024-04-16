@@ -30,9 +30,6 @@ export default function Rewards(props: Props) {
     setRewards(list);
   }, [item]);
 
-  let task = rewards.filter(item => item.type === EVENT_REWARD_TYPE.TASK);
-  let taskAmount = task && task.length > 0 ? task[0].amount : 0;
-
   return (
     <div className="mt-[1.875rem]">
       <div className="font-semakin text-xl text-basic-yellow">Rewards</div>
@@ -121,6 +118,15 @@ export default function Rewards(props: Props) {
                   </p>
                 </div>
               );
+            } else if (reward.type === EVENT_REWARD_TYPE.TASK) {
+              tooltipContent = (
+                <div className="px-8 py-4 max-w-lg flex">
+                  <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
+                  <p className="text-base">
+                    After completing this event, your Season Pass can level up, advancing you {reward.amount} tasks further in the season.
+                  </p>
+                </div>
+              );
             }
 
             if (!tooltipContent) return row;
@@ -131,25 +137,6 @@ export default function Rewards(props: Props) {
               </Tooltip>
             );
           })}
-          {taskAmount && taskAmount > 0 ?
-            <Tooltip key='taskNote' content={(
-              <div className="px-8 py-4 max-w-lg flex">
-                <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
-                <p className="text-base">
-                  After completing this event, your Season Pass can level up, advancing you <span className='text-basic-red'>{taskAmount}</span> tasks further in the season.
-                </p>
-              </div>
-            )}>
-              <div
-                key='taskNote'
-                className="flex justify-between items-center font-semakin text-lg leading-none text-basic-yellow relative z-0"
-              >
-                <div>Season Pass Progress</div>
-                  <div className="flex items-center gap-1">
-                    <span>+ <span className='text-basic-red'>{taskAmount}</span> TASKS</span>
-                  </div>
-              </div>
-            </Tooltip> : null}
         </div>
       </div>
     </div>
