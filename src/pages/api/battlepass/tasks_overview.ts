@@ -31,6 +31,8 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   res.json(response.success({
     is_premium: userBattlePass.is_premium,
+    premium_type: userBattlePass.premium_type,
+    premium_source: userBattlePass.premium_source,
     finished_tasks: userBattlePass.finished_tasks,
     result: result
   }));
