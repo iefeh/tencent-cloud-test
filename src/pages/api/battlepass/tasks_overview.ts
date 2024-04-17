@@ -13,7 +13,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const userId = req.userId!;
   const userBattlePass = await getUserBattlePass(userId);
   if (!userBattlePass) {
-    res.json(response.notFound("Battlepass not found."));
+    res.json(response.notFound("Please claim your Season Pass first."));
     return;
   }
   const result = await getUserTasksOverviewRawInfo(userId);
@@ -40,6 +40,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
 //查询用户任务情况总览，先通过查询分类表获取所有的分类，再分别vlookup quests表和quest_achievements表，获得对应的任务数量和完成情况。
 export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> {
   const currentSeason = await getCurrentBattleSeason();
+  const now = Date.now();
   const pipeline: PipelineStage[] = [
     {
       $match: {
@@ -55,6 +56,8 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
             $match: {
               'active': true,
               'deleted_time': null,
+              'start_time': { $lte: now },
+              'end_time': { $gt: now },
               //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,结束时间在赛季期间或开始时间结束时间横跨整个赛季。
               '$and': [{ '$or': [{ 'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'end_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'start_time': { $lte: currentSeason.start_time }, 'end_time': { $gte: currentSeason.end_time } }] }],
               $expr: { $and: [{ $eq: ['$category', '$$category'] }] }
@@ -109,6 +112,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
   ];
 
   const result = await QuestClassification.aggregate(pipeline);
+
   return result;
 }
 

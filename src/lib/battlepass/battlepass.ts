@@ -14,6 +14,7 @@ import UserTwitter from '../models/UserTwitter';
 import UserGoogle from '../models/UserGoogle';
 import UserSteam from '../models/UserSteam';
 import User from '../models/User';
+import { generateBattlepass } from '@/pages/api/battlepass/participate';
 
 //获得当前赛季ID
 export async function getCurrentBattleSeasonId(): Promise<any> {
@@ -35,8 +36,19 @@ export async function getCurrentBattleSeason(): Promise<any> {
 
 //获得用户赛季
 export async function getUserBattlePass(user_id: string): Promise<any> {
-  const season_id: any = await getCurrentBattleSeasonId();
-  const user_season_pass = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season_id });
+  const season: any = await getCurrentBattleSeason();
+  //非赛季时间
+  if(!season){
+    return undefined;
+  }
+
+  let user_season_pass:any = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
+  if(!user_season_pass){
+    //创建普通通证
+    await generateBattlepass(user_id,season);
+    user_season_pass = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
+  }
+  
   return user_season_pass;
 }
 
