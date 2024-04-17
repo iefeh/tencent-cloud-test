@@ -40,6 +40,7 @@ router.use(errorInterceptor(), maybeAuthInterceptor).get(async (req, res) => {
       if (userBattleSeason.is_premium) {
         passInfo.is_premium = userBattleSeason.is_premium;
         passInfo.premium_type = userBattleSeason.premium_type;
+        passInfo.premium_source = userBattleSeason.premium_source;
       } else {
         passInfo = await premiumSatisfy(userId);
       }
@@ -56,6 +57,7 @@ router.use(errorInterceptor(), maybeAuthInterceptor).get(async (req, res) => {
       has_battle_pass: hasBattlePass, //是否拥有赛季通行证
       is_premium: passInfo.is_premium, //是否为高阶通行证
       premium_type: passInfo.premium_type,//高阶通证类型
+      premium_source: passInfo.premium_source,//高阶通证类型
       all_requirements: allRequirements,
       max_lv: maxLv, //用户当前最大等级
       current_progress: currentProgress,//当前任务进度

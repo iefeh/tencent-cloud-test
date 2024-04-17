@@ -23,6 +23,7 @@ export interface IUserBattlePassSeasons extends Document {
   battlepass_season_id: number; //赛季ID
   is_premium: boolean;//是否高阶
   premium_type: BattlePassRequirementType//高阶通证类型，主要是徽章、NFT。
+  premium_source: string;//高阶通证来源
   finished_tasks: number; //完成任务数
   max_lv: number; //赛季最大等级
   reward_records: RewardRecords; //奖励记录，记录用户各等级达成时间和领取时间
@@ -36,6 +37,7 @@ const UserBattlePassSeasonsSchema = new Schema({
   battlepass_season_id: { type: Number, required: true },
   is_premium: { type: Boolean },
   premium_type: { type: String },
+  premium_source: { type: String },
   finished_tasks: { type: Number },
   max_lv: { type: Number },
   reward_records: { type: Map },
