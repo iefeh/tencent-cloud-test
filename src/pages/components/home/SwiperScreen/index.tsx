@@ -26,7 +26,7 @@ export default function SwiperScreen() {
         loop
         // 视频10s自动切换，图片5s自动切换
         // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        autoplay={{ delay: 15000, disableOnInteraction: false }}
         speed={2000}
         slidesPerView={1}
         onSlideChangeTransitionStart={(swiper) => {
