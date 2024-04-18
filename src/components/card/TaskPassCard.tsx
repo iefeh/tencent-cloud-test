@@ -12,6 +12,7 @@ import BattlePass from '../LoyaltyProgram/season/BattlePass';
 import RuleButton from '../LoyaltyProgram/season/RuleButton';
 import RuleModal from '../LoyaltyProgram/season/RuleModal';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { isMobile } from 'react-device-detect';
 
 interface Props {}
 
@@ -32,13 +33,14 @@ const TaskPassCard: FC<Props> = ({}) => {
         'relative overflow-hidden flex items-center bg-black',
         'w-full h-[12.5rem] py-[3.125rem] pr-[10.5rem] pl-[2.8125rem]',
         'rounded-[0.625rem] border-1 border-[#1D1D1D] transition-[border-color] hover:border-basic-yellow',
+        isMobile && 'flex-col h-auto !px-4',
       ])}
     >
       <div className="relative w-[6.25rem] h-[6.25rem] border-1 border-basic-yellow rounded-full overflow-hidden shrink-0">
         {userInfo?.avatar_url && <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes="100%" />}
       </div>
 
-      <div className="flex flex-col gap-5 relative z-0 w-[36.625rem] ml-6 -mt-7">
+      <div className={cn(['flex flex-col gap-5 relative z-0 ml-6 -mt-7', isMobile ? 'w-full mt-8' : 'w-[36.625rem]'])}>
         <div className="text-2xl">{userInfo?.username || '--'}</div>
 
         <Progress
@@ -58,9 +60,13 @@ const TaskPassCard: FC<Props> = ({}) => {
         />
       </div>
 
-      <BattlePass className="!items-start ml-[9.75rem]" hideTitle />
+      <BattlePass className={cn(['!items-start', isMobile ? 'mt-16 self-start' : 'ml-[9.75rem]'])} hideTitle />
 
-      <RuleButton className="ml-4 mb-1 self-end flex-row-reverse" visible onRuleClick={onOpen} />
+      <RuleButton
+        className={cn(['flex-row-reverse', isMobile ? 'mt-8 self-start' : 'ml-4 mb-1 self-end'])}
+        visible
+        onRuleClick={onOpen}
+      />
 
       <RuleModal isOpen={isOpen} onOpenChange={onOpenChange} />
 
