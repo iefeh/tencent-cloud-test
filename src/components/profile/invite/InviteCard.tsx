@@ -53,13 +53,17 @@ const InviteCard = function ({ onRuleClick }: Props) {
             Invite New Users to Join the Moonveil Ecosystem
           </div>
 
-          <ul className="text-[#999] mt-[1.125rem]">
+          <ul className="text-[#999] mt-[0.625rem]">
             <li>You will receive continuous Moon Beams rewards through the participant&apos;s engagement.</li>
-            <li>Invitees will receive 15 bonus Moon Beams as a reward</li>
+            <li>Invitees will receive 15 bonus Moon Beams as a reward.</li>
+            <li>
+              Please note that only new users who receive the{' '}
+              <span className="text-basic-yellow">Novice Notch Badge</span> are counted as successful registration.
+            </li>
           </ul>
         </div>
 
-        <div className="flex items-center relative z-0">
+        <div className="flex items-center relative z-0 mt-2">
           <LGButton className="uppercase" label="Invite Now" actived onClick={onInviteClick} />
 
           <div className="text-sm ml-9">
