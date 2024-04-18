@@ -84,7 +84,9 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         if (!result.claimed_amount) {
             result.claimed_amount = 0;
         }
-        await updateUserBattlepass(userId, quest_id, Number(result.claimed_amount), undefined);
+        if(result.verified){
+            await updateUserBattlepass(userId, quest_id, Number(result.claimed_amount), undefined);
+        }
         res.json(response.success(result));
     } catch (error) {
         logger.error(error);
