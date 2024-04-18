@@ -33,6 +33,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
         res.json(response.invalidParams({
             msg: "user do not have battle pass."
         }));
+        return;
     }
     //查询查询符合要求的活动
     const pagination = await paginationQuests(pageNum, pageSize, String(category), t, userId);
@@ -91,11 +92,13 @@ async function paginationQuests(pageNum: number, pageSize: number, category: str
     const skip = (pageNum - 1) * pageSize;
     const currentSeason = await getCurrentBattleSeason();
     let aggregateQuery: PipelineStage[] = [];
-
+    const now = Date.now();
     let matchOptions: any = {
         $match: {
             'active': true,
             'deleted_time': null,
+            'start_time': { $lte: now },
+            'end_time': { $gt: now },
             'category': category,
             //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,结束时间在赛季期间或开始时间结束时间横跨整个赛季。
             '$and': [{ '$or': [{ 'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'end_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'start_time': { $lte: currentSeason.start_time }, 'end_time': { $gte: currentSeason.end_time } }] }],
