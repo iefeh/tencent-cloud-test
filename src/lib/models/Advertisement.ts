@@ -1,6 +1,7 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
+
 export interface IAdvertisement extends Document {
     // 广告id
     id: string;

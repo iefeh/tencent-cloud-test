@@ -3,6 +3,8 @@ import { Pagination, Autoplay, Navigation } from 'swiper/modules';
 import IndexSlide from '../IndexSlide';
 import RaceSlide from '../RaceSlide';
 import EntertainmentSlide from '../EntertainmentSlide';
+import LoyaltyProgramSlide from '../LoyaltyProgramSlide';
+import InviteNewSlide from '../InviteNewSlide';
 import LimitedTestSlide from '../LimitedTestSlide';
 import YellowCircle from '../../common/YellowCircle';
 import { useEffect, useState, useRef } from 'react';
@@ -24,7 +26,7 @@ export default function SwiperScreen() {
         loop
         // 视频10s自动切换，图片5s自动切换
         // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        autoplay={{ delay: 15000, disableOnInteraction: false }}
         speed={2000}
         slidesPerView={1}
         onSlideChangeTransitionStart={(swiper) => {
@@ -58,7 +60,15 @@ export default function SwiperScreen() {
         </SwiperSlide> */}
 
         <SwiperSlide>
-          <BadgeSlide needAni={needAnis[0]} />
+          <LoyaltyProgramSlide needAni={needAnis[0]}/>
+        </SwiperSlide>
+
+        <SwiperSlide>
+          <InviteNewSlide needAni={needAnis[1]}/>
+        </SwiperSlide>
+
+        <SwiperSlide>
+          <BadgeSlide needAni={needAnis[2]} />
         </SwiperSlide>
 
         {/* <SwiperSlide>
