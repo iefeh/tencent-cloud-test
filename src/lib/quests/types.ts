@@ -17,6 +17,7 @@ export enum QuestType {
     UserMetric = "user_metric",
     HoldNFT = "hold_nft",
     SendDiscordMessage = "send_discord_message",
+    TwitterFollower = "twitter_follower",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)

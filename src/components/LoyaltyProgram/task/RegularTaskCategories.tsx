@@ -7,6 +7,7 @@ import { MobxContext } from '@/pages/_app';
 import taskBgImg from 'img/loyalty/season/bg_reward_final.png';
 import teamsImg from 'img/loyalty/task/teams.png';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { isMobile } from 'react-device-detect';
 
 interface Props extends ClassNameProps {
   onCategoryClick?: (item: TaskCategory) => void;
@@ -19,13 +20,10 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
 
   const queryCategories = throttle(async () => {
     setLoading(true);
-    if (userInfo)
-    {
+    if (userInfo) {
       const res = await queryTaskCategoriesAPI();
       setCategories(res?.result || []);
-    }
-    else
-    {
+    } else {
       setCategories([]);
     }
     setLoading(false);
@@ -37,7 +35,12 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
 
   return (
     <div className={className}>
-      <div className="flex flex-wrap justify-between gap-7 mt-9 w-full min-h-[20rem] relative">
+      <div
+        className={cn([
+          'flex flex-wrap gap-7 mt-9 w-full min-h-[20rem] relative',
+          isMobile ? 'justify-center' : 'justify-between',
+        ])}
+      >
         {categories.map((item, index) => {
           if (!item) return null;
 
@@ -72,7 +75,17 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
 
         {categories.length < 1 && !loading && (
           <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
-            <p><br/><br/><br/><br/><br/><br/><br/><br/>Please log in and claim your season pass first to unlock tasks & events.</p>
+            <p>
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              Please log in and claim your season pass first to unlock tasks & events.
+            </p>
             <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
           </div>
         )}

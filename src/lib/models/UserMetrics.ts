@@ -68,8 +68,10 @@ export enum Metric {
 
   //第1赛季完成任务数记录字段
   BattlepassSeason1PremiumPass = 'battlepass_season_1_premium_pass',
-  BattlepassSeason1StandardPass = 'battlepass_season_1_standard_pass'
+  BattlepassSeason1StandardPass = 'battlepass_season_1_standard_pass',
 
+  //推特粉丝数
+  TwitterFollowerCount='twitter_follower_count',
 }
 
 // 用户内部指标，存放单独的集合

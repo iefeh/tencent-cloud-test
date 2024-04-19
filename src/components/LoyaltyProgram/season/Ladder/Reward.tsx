@@ -16,6 +16,7 @@ import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 import { useBattlePassContext } from '@/store/BattlePass';
 import RewardTooltip from './RewardTooltip';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   item?: BattlePassLevelDTO;
@@ -52,7 +53,8 @@ const Reward: FC<Props> = ({ item, onItemClick }) => {
   const line = (
     <div
       className={cn([
-        'w-[8.875rem] h-[0.25rem] rounded-l-md shadow-[0_0_0.5rem_1px]',
+        'h-[0.25rem] rounded-l-md shadow-[0_0_0.5rem_1px]',
+        isMobile ? 'w-12' : 'w-[8.875rem]',
         locked
           ? 'bg-[#333333] shadow-transparent'
           : isPremium

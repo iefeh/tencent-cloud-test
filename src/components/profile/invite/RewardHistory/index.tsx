@@ -5,10 +5,120 @@ import Image from 'next/image';
 import arrowIcon from 'img/profile/badges/icon_arrow.png';
 import helpIcon from 'img/profile/badges/icon_help.png';
 import { observer } from 'mobx-react-lite';
+import { isMobile } from 'react-device-detect';
 
 const RewardHistory: FC = () => {
   const { milestone } = useInviteStore();
-  const { referrals } = milestone || {};
+  let { referrals } = milestone || {};
+
+  referrals = [
+    {
+      id: '579dbc86-c188-5c46-89cb-7c80aa715e32',
+      name: 'Wealthy Circle Connector',
+      alias: 'Invitees’ Token Verification',
+      obtain_url: '',
+      series: [
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet token assets on the Moonveil Loyalty Program.',
+          icon_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl1/icon.webp',
+          image_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl1/img.webp',
+          reward_moon_beam: 0,
+          level: 1,
+          obtained: false,
+          claimed: false,
+        },
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet token assets on the Moonveil Loyalty Program.',
+          icon_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl2/icon.webp',
+          image_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl2/img.webp',
+          reward_moon_beam: 0,
+          level: 2,
+          obtained: false,
+          claimed: false,
+        },
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet token assets on the Moonveil Loyalty Program.',
+          icon_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl3/icon.webp',
+          image_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl3/img.webp',
+          reward_moon_beam: 30,
+          level: 3,
+          obtained: false,
+          claimed: false,
+        },
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet token assets on the Moonveil Loyalty Program.',
+          icon_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl4/icon.webp',
+          image_url:
+            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/wealthy_circle_connector/lvl4/img.webp',
+          reward_moon_beam: 40,
+          level: 4,
+          obtained: false,
+          claimed: false,
+        },
+      ],
+      description: 'verify their wallet token assets',
+    },
+    {
+      id: '7ce89d3d-2a30-549b-9b24-c52bf68cf086',
+      name: 'NFT Bridger',
+      alias: 'Invitees’ NFT Verification',
+      obtain_url: '',
+      series: [
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet NFT assets on the Moonveil Loyalty Program.',
+          icon_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl1/icon.webp',
+          image_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl1/img.webp',
+          reward_moon_beam: 0,
+          level: 1,
+          obtained: false,
+          claimed: false,
+        },
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet NFT assets on the Moonveil Loyalty Program.',
+          icon_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl2/icon.webp',
+          image_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl2/img.webp',
+          reward_moon_beam: 0,
+          level: 2,
+          obtained: false,
+          claimed: false,
+        },
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet NFT assets on the Moonveil Loyalty Program.',
+          icon_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl3/icon.webp',
+          image_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl3/img.webp',
+          reward_moon_beam: 30,
+          level: 3,
+          obtained: false,
+          claimed: false,
+        },
+        {
+          description:
+            'Unlock this badge when your invitees verify their wallet NFT assets on the Moonveil Loyalty Program.',
+          icon_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl4/icon.webp',
+          image_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/nft_bridger/lvl4/img.webp',
+          reward_moon_beam: 40,
+          level: 4,
+          obtained: false,
+          claimed: false,
+        },
+      ],
+      description: 'verify their wallet NFT assets',
+    },
+  ];
 
   return (
     <div className="flex-1">
@@ -22,7 +132,12 @@ const RewardHistory: FC = () => {
         Moon Beams were received from Referral Milestone Badges.
       </div>
 
-      <div className="border-1 border-basic-gray rounded-base hover:border-basic-yellow transition-colors px-4 mt-4 h-[40.92rem]">
+      <div
+        className={cn([
+          'border-1 border-basic-gray rounded-base hover:border-basic-yellow transition-colors px-4 mt-4',
+          isMobile ? 'h-auto' : 'h-[40.92rem]',
+        ])}
+      >
         <Tabs
           variant="underlined"
           classNames={{
@@ -40,9 +155,10 @@ const RewardHistory: FC = () => {
             return (
               <Tab key={index} title={item.alias}>
                 <div className="text-base text-[#999] mt-8">
-                You can unlock this badge when your invitees <span className="text-basic-yellow">{item.description}</span> and receive extra Moon Beams.
+                  You can unlock this badge when your invitees{' '}
+                  <span className="text-basic-yellow">{item.description}</span> and receive extra Moon Beams.
                 </div>
-                <div className="flex flex-col items-center text-center pt-8 pb-4 px-12">
+                <div className={cn(['flex flex-col items-center text-center pt-8 pb-4', isMobile ? 'px-4' : 'px-12'])}>
                   <Image
                     className={cn(['w-60 h-60 object-contain', bigSerie.obtained || 'grayscale opacity-50'])}
                     src={bigSerie.image_url || helpIcon}
@@ -66,7 +182,12 @@ const RewardHistory: FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex justify-center gap-4 mt-6">
+                  <div
+                    className={cn([
+                      'flex gap-4 mt-6',
+                      isMobile ? 'w-full justify-start overflow-x-auto' : 'justify-center',
+                    ])}
+                  >
                     {(item.series || []).map((child, childIndex) => (
                       <Fragment key={childIndex}>
                         {childIndex > 0 && item.series?.[childIndex - 1] && (

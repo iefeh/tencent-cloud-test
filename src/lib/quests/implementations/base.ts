@@ -167,6 +167,7 @@ export abstract class QuestBase {
             });
             return {done: true, duplicated: false}
         } catch (error) {
+            console.log(error);
             if (isDuplicateKeyError(error)) {
                 return {done: false, duplicated: true}
             }

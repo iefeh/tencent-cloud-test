@@ -17,7 +17,7 @@ export interface DiplomatSerie {
   level: number;
   obtained: boolean;
   claimed: boolean;
-  milestone: number;
+  milestone?: number;
 }
 
 interface InviteDiplomat {

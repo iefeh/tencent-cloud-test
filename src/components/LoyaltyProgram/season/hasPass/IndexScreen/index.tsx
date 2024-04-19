@@ -11,6 +11,7 @@ import Astronaut from '../../Astronaut';
 import Planetoid from '../../Planetoid';
 import { useBattlePassContext } from '@/store/BattlePass';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   loading?: boolean;
@@ -55,11 +56,23 @@ const IndexScreen: FC<Props> = ({ loading, onExplore }) => {
         star={starNode}
       />
 
-      <Astronaut className="!absolute right-[4.6875rem] bottom-[33.1875rem] w-[11.8125rem] h-[13.5625rem]" />
+      <Astronaut
+        className={cn([
+          '!absolute w-[11.8125rem] h-[13.5625rem]',
+          isMobile ? 'right-8 bottom-64' : 'right-[4.6875rem] bottom-[33.1875rem]',
+        ])}
+      />
 
-      <Planetoid className="!absolute left-40 bottom-[44.5rem] w-[5.4375rem] h-[7.9375rem]" />
+      <Planetoid
+        className={cn([
+          '!absolute w-[5.4375rem] h-[7.9375rem]',
+          isMobile ? 'left-10 bottom-20' : 'left-40 bottom-[44.5rem]',
+        ])}
+      />
 
-      <div className="font-semakin text-[9.375rem] text-transparent relative z-0">
+      <div
+        className={cn(['font-semakin text-transparent relative z-0', isMobile ? 'text-[6.25rem]' : 'text-[9.375rem]'])}
+      >
         <div className={styles.strokeText} data-text="Rock’it">
           Rock’it
         </div>

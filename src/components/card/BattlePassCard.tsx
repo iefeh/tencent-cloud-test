@@ -11,6 +11,7 @@ import { Progress, cn } from '@nextui-org/react';
 import { throttle } from 'lodash';
 import { useUserContext } from '@/store/User';
 import { useRouter } from 'next/router';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   block?: boolean;
@@ -45,14 +46,15 @@ const BattlePassCard: FC<Props> = ({ block, noPass }) => {
   return (
     <div
       className={cn([
-        'relative overflow-hidden rounded-[0.625rem] border-1 border-[#1D1D1D] flex flex-col justify-between pt-[2.375rem] pb-[3.25rem] pr-[10.5rem] pl-[2.1875rem] hover:border-basic-yellow transition-[border-color]',
+        'relative overflow-hidden rounded-[0.625rem] border-1 border-[#1D1D1D] flex flex-col justify-between hover:border-basic-yellow transition-[border-color]',
         block ? 'w-full h-[18.75rem]' : 'w-[42.5rem] h-[13.75rem]',
+        isMobile ? '!w-full !h-80 p-4' : 'pt-[2.375rem] pb-[3.25rem] pr-[10.5rem] pl-[2.1875rem]',
         noPass && '!w-full !h-[32.5rem] !rounded-none !justify-center',
       ])}
     >
       <Image
         className="object-cover"
-        src={noPass ? highCardBgImg : block ? longCardBgImg : shortCardBgImg}
+        src={isMobile ? shortCardBgImg : noPass ? highCardBgImg : block ? longCardBgImg : shortCardBgImg}
         alt=""
         fill
       />

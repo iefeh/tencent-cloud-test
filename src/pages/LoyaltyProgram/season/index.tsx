@@ -88,7 +88,7 @@ function SeasonBattle() {
           {info && <FinalScreen />}
         </div>
 
-        <div className='w-[7.6rem] h-[2.5rem] absolute left-1/2 bottom-10 -translate-x-1/2'>
+        <div className="w-[7.6rem] h-[2.5rem] absolute left-1/2 bottom-10 -translate-x-1/2">
           <LGButton
             className="uppercase animate-breathShadow"
             label="Tasks"
