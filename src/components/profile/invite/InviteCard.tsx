@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import helpIcon from 'img/invite/icon_help_colored.png';
 import HelpSVG from 'svg/help.svg';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   onRuleClick?: () => void;
@@ -40,11 +41,12 @@ const InviteCard = function ({ onRuleClick }: Props) {
   return (
     <div
       className={cn([
-        'w-full h-[15rem] relative overflow-hidden  pt-[2rem] pr-44 pb-[2.5rem] pl-[2.375rem]',
+        'w-full relative overflow-hidden',
         'hover:border-basic-yellow transition-[border-color] duration-500',
         'rounded-[0.625rem] border-1 border-basic-gray',
         'flex justify-between items-center',
-        "bg-[url('/img/loyalty/earn/bg_earn_banner_invite.jpg')] bg-contain bg-right bg-no-repeat",
+        "bg-[url('/img/loyalty/earn/bg_earn_banner_invite.jpg')] bg-contain bg-no-repeat",
+        isMobile ? 'flex-col h-auto p-4 bg-top' : 'h-[15rem] pt-[2rem] pr-44 pb-[2.5rem] pl-[2.375rem] bg-right',
       ])}
     >
       <div className="flex flex-col justify-between relative z-0 h-full">
@@ -53,16 +55,20 @@ const InviteCard = function ({ onRuleClick }: Props) {
             Invite New Users to Join the Moonveil Ecosystem
           </div>
 
-          <ul className="text-[#999] mt-[1.125rem]">
+          <ul className="text-[#999] mt-[0.625rem]">
             <li>You will receive continuous Moon Beams rewards through the participant&apos;s engagement.</li>
-            <li>Invitees will receive 15 bonus Moon Beams as a reward</li>
+            <li>Invitees will receive 15 bonus Moon Beams as a reward.</li>
+            <li>
+              Please note that only new users who receive the{' '}
+              <span className="text-basic-yellow">Novice Notch Badge</span> are counted as successful registration.
+            </li>
           </ul>
         </div>
 
-        <div className="flex items-center relative z-0">
+        <div className={cn(['flex relative z-0', isMobile ? 'flex-col gap-4 mt-6' : 'items-center mt-2'])}>
           <LGButton className="uppercase" label="Invite Now" actived onClick={onInviteClick} />
 
-          <div className="text-sm ml-9">
+          <div className={cn(['text-sm', isMobile || 'ml-9'])}>
             <span>My Invitation Code: </span>
             <span>{userInfo?.invite_code || '--'}</span>
             {userInfo?.invite_code && (
@@ -75,7 +81,7 @@ const InviteCard = function ({ onRuleClick }: Props) {
             )}
           </div>
 
-          <div className="text-sm ml-9">
+          <div className={cn(['text-sm', isMobile || 'ml-9'])}>
             <span>My Invitation Link</span>
             {userInfo?.invite_code && (
               <Image
@@ -89,14 +95,14 @@ const InviteCard = function ({ onRuleClick }: Props) {
         </div>
       </div>
 
-      <div className="w-32 h-32 relative flex justify-center items-center shrink-0">
+      <div className={cn(['w-32 h-32 relative flex justify-center items-center shrink-0', isMobile && 'hidden'])}>
         <Image className="animate-spin5" src={circleOutsideImg} alt="" fill />
 
         <Image className="relative z-0" src={mbImg} alt="" />
       </div>
 
       <LGButton
-        className="w-[7.5rem] h-[1.875rem] absolute top-11 right-8"
+        className={cn(['w-[7.5rem] h-[1.875rem] absolute', isMobile ? 'top-20 right-4' : 'top-11 right-8'])}
         label="Rules"
         actived
         prefix={<HelpSVG className="w-[1.125rem] h-[1.125rem] fill-black mr-2" />}

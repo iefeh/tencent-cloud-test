@@ -12,6 +12,7 @@ import { useBattlePassContext } from '@/store/BattlePass';
 import { observer } from 'mobx-react-lite';
 import RewardModal from '../../RewardModal';
 import { BattlePassLevelDTO } from '@/http/services/battlepass';
+import { isMobile } from 'react-device-detect';
 
 const FinalScreen: FC = () => {
   const { hasAcheivedFinalPass } = useBattlePassContext();
@@ -31,7 +32,12 @@ const FinalScreen: FC = () => {
   const starImgNode = <Image className="w-7 h-7" src={starImg} alt="" />;
 
   return (
-    <div className="oppo-box w-full pb-28 relative z-10 bg-[url('/img/loyalty/season/bg_moon.png')] bg-[length:69rem_53rem] bg-center bg-no-repeat overflow-x-hidden overflow-y-visible">
+    <div
+      className={cn([
+        "oppo-box w-full pb-28 relative z-10 bg-[url('/img/loyalty/season/bg_moon.png')] bg-[length:69rem_53rem] bg-center bg-no-repeat overflow-x-hidden overflow-y-visible",
+        isMobile && 'px-4',
+      ])}
+    >
       <div className="absolute top-[calc(50%_+_0.5rem)] left-[calc(50%_+_0.8rem)] -translate-x-1/2 -translate-y-1/2 z-0">
         <Orbit
           className="!absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
@@ -62,12 +68,18 @@ const FinalScreen: FC = () => {
         />
       </div>
 
-      <div className="relative z-0 w-full h-screen flex flex-col justify-center items-center">
+      <div
+        className={cn([
+          'relative w-full h-screen flex flex-col justify-center items-center',
+          isMobile ? 'z-20' : 'z-0',
+        ])}
+      >
         <div
           className={cn([
-            'font-semakin text-[6.25rem] text-transparent leading-none relative z-0',
+            'font-semakin text-transparent leading-none relative z-0',
             hasAcheivedFinalPass ? 'visible' : 'invisible',
             styles.strokeText,
+            isMobile ? 'text-[4.25rem] break-all' : 'text-[6.25rem]',
           ])}
           data-text="Congratulations!"
         >
@@ -94,9 +106,19 @@ const FinalScreen: FC = () => {
         </div>
       </div>
 
-      <Planetoid className="!absolute w-[5.4375rem] h-[7.9375rem] left-[18.4375rem] top-[16.625rem]" />
+      <Planetoid
+        className={cn([
+          '!absolute w-[5.4375rem] h-[7.9375rem]',
+          isMobile ? 'left-8 top-32' : 'left-[18.4375rem] top-[16.625rem]',
+        ])}
+      />
 
-      <Astronaut className="!absolute right-[21.6875rem] top-[45.625rem] w-[11.8125rem] h-[13.5625rem]" />
+      <Astronaut
+        className={cn([
+          '!absolute w-[11.8125rem] h-[13.5625rem]',
+          isMobile ? 'right-4 top-[40rem]' : 'right-[21.6875rem] top-[45.625rem]',
+        ])}
+      />
 
       {/* 暂时隐藏弹窗 */}
       {/* {currentItem && (

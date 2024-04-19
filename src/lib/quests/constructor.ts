@@ -15,6 +15,7 @@ import { HoldNFTQuest } from "@/lib/quests/implementations/holdNFTQuest";
 import { LikeTweetQuest } from "@/lib/quests/implementations/likeTweetQuest";
 import { SendDiscordMessageQuest } from "@/lib/quests/implementations/sendDiscordMessageQuest";
 import { CommentTweetQuest } from "./implementations/commentTweetQuest";
+import { TwitterFollowerQuest } from "./implementations/twitterFollowerQuest";
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -47,6 +48,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new WhitelistQuest(quest);
         case QuestType.HoldNFT:
             return new HoldNFTQuest(quest);
+        case QuestType.TwitterFollower:
+            return new TwitterFollowerQuest(quest);
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }
