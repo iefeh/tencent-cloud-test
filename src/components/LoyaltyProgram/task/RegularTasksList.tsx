@@ -460,7 +460,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
               <Image className="w-8 h-8" src={mbImg} alt="" />
 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-                {task.reward.amount_formatted} MBs
+                {task.reward.amount_formatted} Moon Beams
               </span>
             </div>
 
