@@ -1,11 +1,11 @@
 import * as response from "@/lib/response/response";
-import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import {v4 as uuidv4} from "uuid";
-import {redis} from "@/lib/redis/client";
-import {AuthorizationType, OAuthOptions} from "@/lib/authorization/types";
-import {OAuthProvider} from "@/lib/authorization/oauth";
-import {AuthFlowBase, ValidationResult} from "@/lib/authorization/provider/authFlow";
-import {NextApiResponse} from "next";
+import { AuthorizationFlow, AuthorizationPayload } from "@/lib/models/authentication";
+import { v4 as uuidv4 } from "uuid";
+import { redis } from "@/lib/redis/client";
+import { AuthorizationType, OAuthOptions } from "@/lib/authorization/types";
+import { OAuthProvider } from "@/lib/authorization/oauth";
+import { AuthFlowBase, ValidationResult } from "@/lib/authorization/provider/authFlow";
+import { NextApiResponse } from "next";
 import {
     checkGetAuthorizationURLPrerequisite, deleteAuthToken,
     saveRotateAuthToken,
@@ -16,6 +16,7 @@ import User from "@/lib/models/User";
 import OAuthToken from "@/lib/models/OAuthToken";
 import logger from "@/lib/logger/winstonLogger";
 import { Metric } from "@/lib/models/UserMetrics";
+import { sendTwitterFollowerCountRefreshMessage } from "@/lib/kafka/client";
 
 const twitterOAuthOps: OAuthOptions = {
     clientId: process.env.TWITTER_CLIENT_ID!,
@@ -38,7 +39,7 @@ export const twitterOAuthProvider = new OAuthProvider(twitterOAuthOps);
 
 export async function generateAuthorizationURL(req: any, res: any) {
     // 检查用户的授权落地页
-    const {landing_url, signup_mode} = req.query;
+    const { landing_url, signup_mode } = req.query;
     const checkResult = await checkGetAuthorizationURLPrerequisite(req, res);
     if (!checkResult.passed) {
         return;
@@ -85,7 +86,7 @@ export class TwitterAuthFlow extends AuthFlowBase {
     }
 
     async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
-        const {code} = req.query;
+        const { code } = req.query;
         const authToken = await twitterOAuthProvider.authenticate({
             code: code as string,
             code_verifier: authPayload.code_challenge,
@@ -109,7 +110,12 @@ export class TwitterAuthFlow extends AuthFlowBase {
             platform: AuthorizationType.Twitter,
             platform_id: connection.id,
             deleted_time: null
-        }, {$set: userTokenUpdates}, {upsert: true});
+        }, { $set: userTokenUpdates }, { upsert: true });
+        //发送更新用户推特粉丝数消息
+        const ut = await UserTwitter.findOne({ twitter_id: connection.id });
+        if (ut) {
+            await sendTwitterFollowerCountRefreshMessage(ut.user_id);
+        }
         return connection;
     }
 
@@ -118,7 +124,7 @@ export class TwitterAuthFlow extends AuthFlowBase {
     }
 
     async queryUserConnectionFromParty(party: any): Promise<any> {
-        return await UserTwitter.findOne({'twitter_id': party.id, 'deleted_time': null})
+        return await UserTwitter.findOne({ 'twitter_id': party.id, 'deleted_time': null })
     }
 
     constructUserConnection(userId: string, authParty: any): any {
