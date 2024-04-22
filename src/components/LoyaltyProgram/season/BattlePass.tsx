@@ -6,7 +6,7 @@ import { FC, useRef } from 'react';
 import nftPassImg from 'img/loyalty/season/pass_nft.png';
 import badgePassImg from 'img/loyalty/season/pass_badge.png';
 import buyPassImg from 'img/loyalty/season/pass_buy.png';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import activedIcon from 'img/loyalty/season/icon_claimed.png';
 import Link from 'next/link';
@@ -23,15 +23,15 @@ interface Props {
 
 const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleClick }) => {
   const { info } = useBattlePassContext();
-  const { is_premium } = info || {};
+  const { is_premium, premium_type } = info || {};
   const nodeRef = useRef<HTMLDivElement>(null);
-  const passList = [
+  const passList: { actived: boolean; img: StaticImageData | string }[] = [
     {
-      actived: info?.is_premium && info?.premium_type === 'nft',
+      actived: !!is_premium && info?.premium_type === 'nft',
       img: nftPassImg,
     },
     {
-      actived: info?.is_premium && info?.premium_type === 'badge',
+      actived: !!is_premium && info?.premium_type === 'badge',
       img: badgePassImg,
     },
     // {
@@ -39,6 +39,13 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
     //   img: buyPassImg,
     // },
   ];
+
+  if (is_premium && premium_type === 'whitelist') {
+    passList.push({
+      actived: true,
+      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
+    });
+  }
 
   const content = (
     <div ref={nodeRef} className={cn(['flex flex-col items-center', className])}>
@@ -52,7 +59,7 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
                 item.actived ? 'border-basic-yellow' : 'border-[#2C2C2C]',
               ])}
             >
-              <Image className="object-contain" src={item.img} alt="" fill sizes="100%" />
+              <Image className="object-contain rounded-base" src={item.img} alt="" fill sizes="100%" />
 
               <Image
                 className="object-contain w-4 h-4 absolute -top-[0.1875rem] -right-[0.1875rem]"
@@ -62,21 +69,30 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
             </div>
           );
 
-          if (index !== 0) return passBody;
+          if (index === 1) return passBody;
+
+          let tooltipContent: JSX.Element | null = null;
+
+          if (index === 0) {
+            tooltipContent = (
+              <div className="max-w-[31.25rem] py-4 px-7">
+                TETRA Holder: TETRA NFT holders are eligible to claim the Premium Pass{' '}
+                <span className="text-basic-yellow">during the holding period</span>.{' '}
+                <Link className="underline text-basic-yellow" href={URL_OPENSEA} target="_blank">
+                  Get TETRA Now
+                </Link>
+              </div>
+            );
+          } else if (index === 2) {
+            tooltipContent = (
+              <div className="max-w-[31.25rem] py-4 px-7">
+                Your Premium Season Pass is unlocked because you are a holder of Moonveil Premium Pass whitelist.
+              </div>
+            );
+          }
 
           return (
-            <Tooltip
-              key={index}
-              content={
-                <div className="max-w-[31.25rem] py-4 px-7">
-                  TETRA Holder: TETRA NFT holders are eligible to claim the Premium Pass{' '}
-                  <span className="text-basic-yellow">during the holding period</span>.{' '}
-                  <Link className="underline text-basic-yellow" href={URL_OPENSEA} target="_blank">
-                    Get TETRA Now
-                  </Link>
-                </div>
-              }
-            >
+            <Tooltip key={index} content={tooltipContent}>
               {passBody}
             </Tooltip>
           );
