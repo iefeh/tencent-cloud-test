@@ -11,7 +11,7 @@ import { timeoutInterceptor } from "@/lib/middleware/timeout";
 import Campaign, { CampaignRewardType, ICampaign } from "@/lib/models/Campaign";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import RewardAccelerator, { IRewardAccelerator } from "@/lib/models/RewardAccelerator";
-import { NftHolderReward, RewardAcceleratorType } from "@/lib/accelerator/types";
+import { BadgeHolderReward, NftHolderReward, RewardAcceleratorType } from "@/lib/accelerator/types";
 import { NftHolderAccelerator } from "@/lib/accelerator/implementations/nftHolder";
 import UserWallet, { IUserWallet } from "@/lib/models/UserWallet";
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from "@/lib/models/UserMoonBeamAudit";
@@ -22,7 +22,9 @@ import { getUserBattlePass } from "@/lib/battlepass/battlepass";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserBattlePassSeasons, { BattlePassType } from "@/lib/models/UserBattlePassSeasons";
 import { sendBadgeCheckMessages, sendBattlepassCheckMessage } from '@/lib/kafka/client';
-import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import { try2AddUsers2MBLeaderboard } from "@/lib/redis/moonBeamLeaderboard";
+import { BadgeHolderAccelerator } from "@/lib/accelerator/implementations/badgeHolder";
+import UserBadges from "@/lib/models/UserBadges";
 
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -152,8 +154,8 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
             },
             { upsert: true, session: session },
         );
-         //用户是否已有赛季通行证
-         if (userBattlepass) {
+        //用户是否已有赛季通行证
+        if (userBattlepass) {
             //更新赛季通行证中的完成任务数和moon_beam数
             await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: userBattlepass.battlepass_season_id }, {
                 $inc: { finished_tasks: seasonPassProgress, total_moon_beam: totalMbDelta },
@@ -239,6 +241,52 @@ async function constructUserAcceleratedMbReward(userId: string, campaign: ICampa
                     extra_info: accelerator.id,
                     created_time: Date.now(),
                 }));
+                break;
+            case RewardAcceleratorType.BadgeHolder:
+                //徽章持有者加速器
+                const badgeHolderAccelerator = new BadgeHolderAccelerator(accelerator);
+                const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: badgeHolderAccelerator.accelerator.properties.badge_id })
+                //若用户未持有此徽章，则继续
+                if (!userBadge) {
+                    continue;
+                }
+                //获取用户已领取的该徽章最高等级
+                let lv: number = 0;
+                for (let s of userBadge.series.keys()) {
+                    //用户获得该徽章且已领取
+                    if (Number(s) >= lv && userBadge.series.get(s).claimed_time) {
+                        lv = Number(s);
+                    }
+                }
+
+                if (lv == 0) {
+                    //用户未持有可供加速的徽章
+                    continue;
+                }
+
+                const badgeReward: BadgeHolderReward = {
+                    lv: lv,
+                    base_moon_beam: baseMbReward,
+                    bonus_moon_beam: 0,
+                };
+                //进行加速
+                const badgeHolderReward = await badgeHolderAccelerator.accelerate(badgeReward);
+                logger.info(`User ${userId} accelerated ${badgeHolderReward.bonus_moon_beam} MB from campaign ${campaign.id} accelerator ${accelerator.id}.`);
+                if (badgeHolderReward.bonus_moon_beam == 0) {
+                    continue;
+                }
+                //添加Mb奖励
+                const campaignTaint = `${campaign.id},${accelerator.id},badge,${userBadge.badge_id}`
+                audits.push(new UserMoonBeamAudit({
+                    user_id: userId,
+                    type: UserMoonBeamAuditType.CampaignBonus,
+                    moon_beam_delta: badgeHolderReward.bonus_moon_beam,
+                    reward_taint: campaignTaint,
+                    corr_id: campaign.id,
+                    extra_info: accelerator.id,
+                    created_time: Date.now(),
+                }));
+                break;
         }
     }
     return audits;
