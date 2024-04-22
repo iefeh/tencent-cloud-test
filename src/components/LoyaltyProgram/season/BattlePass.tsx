@@ -23,7 +23,7 @@ interface Props {
 
 const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleClick }) => {
   const { info } = useBattlePassContext();
-  const { is_premium, premium_type } = info || {};
+  const { is_premium, premium_type, premium_source } = info || {};
   const nodeRef = useRef<HTMLDivElement>(null);
   const passList: { actived: boolean; img: StaticImageData | string }[] = [
     {
@@ -69,8 +69,6 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
             </div>
           );
 
-          if (index === 1) return passBody;
-
           let tooltipContent: JSX.Element | null = null;
 
           if (index === 0) {
@@ -81,6 +79,13 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
                 <Link className="underline text-basic-yellow" href={URL_OPENSEA} target="_blank">
                   Get TETRA Now
                 </Link>
+              </div>
+            );
+          } else if (index === 1) {
+            tooltipContent = (
+              <div className="max-w-[31.25rem] py-4 px-7">
+                Your Premium Season Pass is unlocked because you are a holder of{' '}
+                <span className="text-basic-yellow">{premium_source || '--'}</span>.
               </div>
             );
           } else if (index === 2) {

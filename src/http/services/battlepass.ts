@@ -50,6 +50,7 @@ export interface BattleInfoDTO {
   };
   current_progress: number;
   premium_type?: string;
+  premium_source?: string;
 }
 
 export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
