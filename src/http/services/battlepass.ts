@@ -75,6 +75,7 @@ export interface TaskCategory {
   quest_count: number;
   achieve_count: number;
   image_url: string;
+  is_new?: boolean;
 }
 
 export function queryTaskCategoriesAPI(): Promise<{ result: TaskCategory[] }> {

@@ -69,6 +69,12 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
               <div className="mt-1">
                 Tasks: {item.achieve_count || 0}/{item.quest_count || 0}
               </div>
+
+              {item.is_new && (
+                <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute right-4 top-2 p-2 z-10">
+                  NEW
+                </div>
+              )}
             </div>
           );
         })}
