@@ -169,14 +169,14 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
                         } else {
                             if (s.lv > bonusLv) {
                                 // 计算奖励Mb
+                                bonusLv = s.lv;
+                                accelerator.properties.lv = bonusLv;
                                 accelerator.properties.reward_bonus = s.reward_bonus;
                                 accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
-                                bonusLv = s.lv;
                             }
                         }
                     }
                 };
-                accelerator.name = `${accelerator.name} Lv${bonusLv}`;
             }
             // 求和加速效果
             campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
