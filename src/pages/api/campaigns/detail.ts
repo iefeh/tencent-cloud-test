@@ -173,6 +173,7 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
                                 accelerator.properties.lv = bonusLv;
                                 accelerator.properties.reward_bonus = s.reward_bonus;
                                 accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+                                accelerator.name = `Lv${bonusLv} ${accelerator.name}`
                             }
                         }
                     }
