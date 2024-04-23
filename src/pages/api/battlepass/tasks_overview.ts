@@ -18,16 +18,21 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   const result = await getUserTasksOverviewRawInfo(userId);
   let achieveCount: number;
+  let isNew: boolean;
   //处理返回的结果
   for (let c of result) {
     achieveCount = 0;
+    isNew = false;
     for (let q of c.quests) {
       if (q.achieve_count) {
         achieveCount++;
+      } else if (Date.now() - q.created_time < 7 * 24 * 3600 * 1000) {
+        isNew = true;
       }
     }
     delete c.quests;//删除任务的具体信息。
     c.achieve_count = achieveCount;
+    c.is_new = isNew;
   }
   res.json(response.success({
     is_premium: userBattlePass.is_premium,
@@ -86,6 +91,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
             $project: {
               _id: 0,
               id: 1,
+              created_time: 1,
               achievements: 1,
               achieve_count: { $size: '$achievements' }
             }

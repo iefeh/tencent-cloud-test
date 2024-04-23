@@ -29,7 +29,7 @@ const RuleButton: FC<Props> = ({ className, visible, onRuleClick }) => {
           </div>
         </Tooltip>
 
-        <BasicButton label="Rule" onClick={onRuleClick} />
+        <BasicButton label="Rules" onClick={onRuleClick} />
       </div>
     </CSSTransition>
   );

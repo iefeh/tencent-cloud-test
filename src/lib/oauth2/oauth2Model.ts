@@ -12,6 +12,7 @@ const oauth2Model = {
     if (access_token) {
       access_token.access_token = token.accessToken;
       access_token.access_token_expires_at = token.accessTokenExpiresAt;
+      access_token.scope = token.scope;
       await access_token.save();
     }
     else {
@@ -39,6 +40,8 @@ const oauth2Model = {
     if (authorization_code) {
       authorization_code.authorization_code = code.authorizationCode;
       authorization_code.expires_at = code.expiresAt;
+      authorization_code.redirect_uri = code.redirectUri;
+      authorization_code.scope = code.scope;
       await authorization_code.save();
     }
     else {

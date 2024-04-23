@@ -7,6 +7,7 @@ import server from '../../../lib/oauth2/oauth2Server'
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.post(async (req, res) => {
+  //根据授权码返回access token
   try {
     server.token(new Request(req), new Response(res))
     .then(
