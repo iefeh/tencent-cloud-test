@@ -13,51 +13,59 @@ import CircularLoading from '../components/common/CircularLoading';
 import { oauthAuthorization } from '@/http/services/oauth2';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import { appendQueryParamsToUrl } from "@/lib/common/url";
+import { appendQueryParamsToUrl } from '@/lib/common/url';
+import { OAuth2ScopeAuth } from '@/lib/models/OAuth2Scopes';
+
+interface RouteQuery {
+  client_id: string;
+  client_name: string;
+  icon_url: string;
+  redirect_uri: string;
+  response_type: string;
+  state: string;
+  scope: string;
+}
 
 const OAuthPage: FC & BasePage = () => {
   const router = useRouter();
+  const query = router.query as unknown as RouteQuery;
   const { userInfo, token, toggleLoginModal, logout } = useUserContext();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const projectInfo = {
-    title: 'Gyoza',
-    fullTitle: 'Project Gyoza',
-    logo: '',
+    title: query.client_name,
+    fullTitle: `Project ${query.client_name}`,
+    logo: query.icon_url,
   };
-  const authList = [
-    'View your username and profile photo',
-    'View your wallet address',
-    'Use your wallet address for on-chain interactions',
-  ];
+
+  const scopes = query.scope ? query.scope.split(' ') : [];
+  const authList = scopes.map((scope) => OAuth2ScopeAuth[scope] || []).flat();
   const tipsList = [
-    'After authorization, you will be redirected to Gyoza.com.',
+    `After authorization, you will be redirected to ${query.redirect_uri}.`,
     "Your authorization may expire. You'll need to reauthorize to continue using these features.",
-    'By authorizing, you agree to Gyoza Privacy Policy and Terms of Service.',
+    `By authorizing, you agree to ${query.client_name} Privacy Policy and Terms of Service.`,
   ];
 
   const onAuth = throttle(async () => {
     setLoading(true);
     try {
-      let { authorization_code, expires_at, state } = await oauthAuthorization(
-        {
-          client_id: router.query.client_id as string,
-          redirect_uri: router.query.redirect_uri as string,
-          response_type: router.query.response_type as string,
-          state: router.query.state as string,
-          scope: router.query.scope as string
-        });
+      let { authorization_code, expires_at, state } = await oauthAuthorization({
+        client_id: router.query.client_id as string,
+        redirect_uri: router.query.redirect_uri as string,
+        response_type: router.query.response_type as string,
+        state: router.query.state as string,
+        scope: router.query.scope as string,
+      });
       if (authorization_code) {
         const landing_url = appendQueryParamsToUrl(router.query.redirect_uri as string, {
           authorization_code: authorization_code,
           expires_at: expires_at,
-          state: state
+          state: state,
         });
-        router.push(landing_url);
+        window.location.href = landing_url;
       }
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error(error?.message || error);
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
