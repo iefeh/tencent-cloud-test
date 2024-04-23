@@ -14,7 +14,11 @@ import Rocket from '../Rocket';
 import RewardModal from '../../RewardModal';
 import { BattlePassLevelDTO } from '@/http/services/battlepass';
 
-const RocketScreen: FC = () => {
+interface Props {
+  onRuleClick?: () => void;
+}
+
+const RocketScreen: FC<Props> = ({ onRuleClick }) => {
   const { hasAcheivedFinalPass } = useBattlePassContext();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BattlePassLevelDTO | undefined>();
@@ -62,7 +66,7 @@ const RocketScreen: FC = () => {
 
       {/* {hasAcheivedFinalPass || <FinalReward className="mb-16 mt-60" />} */}
 
-      <Ladder onItemClick={onItemClick} />
+      <Ladder onItemClick={onItemClick} onRuleClick={onRuleClick} />
 
       <Rocket />
 
