@@ -97,7 +97,7 @@ const OAuthPage: FC & BasePage = () => {
     if (!errorMsg) return;
 
     toast.error(errorMsg);
-  }, []);
+  }, [query.error]);
 
   return (
     <div className="w-screen h-screen relative">
