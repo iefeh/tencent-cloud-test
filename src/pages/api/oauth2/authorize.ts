@@ -13,43 +13,55 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
   // 验证请求参数，确认用户已登录（或重定向到登录页面），向用户展示授权页面
+  let error = "";
+  let landing_url = "";
   try {
     const { client_id, redirect_uri, response_type, state, scope } = req.query;
     if (!client_id) {
-      res.json(response.invalidParams({ message: 'Missing parameter: `client_id`' }));
+      error = 'Missing parameter: `client_id`';
     }
     let client = await oauth2Model.getClient(client_id as string);
     if (!client) {
-      res.json(response.invalidParams({ message: 'Missing parameter: `invalid client_id`' }));
+      error = 'Missing parameter: `invalid client_id`';
     }
     if (!redirect_uri || !URL.canParse(redirect_uri as string)) {
-      res.json(response.invalidParams({ message: 'Invalid request: `redirect_uri` is not a valid URI' }));
+      error = 'Invalid request: `redirect_uri` is not a valid URI';
     }
     if (!response_type) {
-      res.json(response.invalidParams({ message: 'Missing parameter: `response_type`' }));
+      error = 'Missing parameter: `response_type`';
     }
     if (!state) {
-      res.json(response.invalidParams({ message: 'Missing parameter: `state`' }));
+      error = 'Missing parameter: `state`';
     }
     if (!scope || scope.length === 0) {
-      res.json(response.invalidParams({ message: 'Missing parameter: `scope`' }));
+      error = 'Missing parameter: `scope`';
     }
     if (!String(scope).split(' ').every(s => Object.values(OAuth2Scopes).includes(s as OAuth2Scopes))) {
-      res.json(response.invalidParams({ message: 'Invalid request: `scope` is not valid' }));
+      error = 'Invalid request: `scope` is not valid';
     }
-    const landing_url = appendQueryParamsToUrl('/oauth', {
-      client_id: client_id,
-      client_name: client?.name,
-      icon_url: client?.icon_url,
-      redirect_uri: redirect_uri,
-      response_type: response_type,
-      state: state,
-      scope: scope
-    });
+    if (error) {
+      landing_url = appendQueryParamsToUrl('/oauth', {
+        error: error
+      });
+    }
+    else {
+      landing_url = appendQueryParamsToUrl('/oauth', {
+        client_id: client_id,
+        client_name: client?.name,
+        icon_url: client?.icon_url,
+        redirect_uri: redirect_uri,
+        response_type: response_type,
+        state: state,
+        scope: scope
+      });
+    }
     res.redirect(landing_url);
   }
   catch (error: any) {
-    res.json(response.invalidParams({ message: error.message }));
+    landing_url = appendQueryParamsToUrl('/oauth', {
+      error: error.message
+    });
+    res.redirect(landing_url);
   }
   return;
 });
