@@ -34,11 +34,17 @@ const OAuthPage: FC & BasePage = () => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
+  const title = formatName(query.client_name);
   const projectInfo = {
-    title: query.client_name,
-    fullTitle: `Project ${query.client_name}`,
+    title,
+    fullTitle: `Project ${title}`,
     logo: query.icon_url,
   };
+
+  function formatName(val: string) {
+    if (val.length <= 8) return val;
+    return `${val.substring(0, 4)}...${val.substring(val.length - 4)}`;
+  }
 
   const scopes = query.scope ? query.scope.split(' ') : [];
   const authList = scopes.map((scope) => OAuth2ScopeAuth[scope] || []).flat();
@@ -159,7 +165,7 @@ const OAuthPage: FC & BasePage = () => {
 
                 <div className="border-1 border-basic-gray rounded-base p-4">
                   <p className="text-basic-yellow">
-                    By clicking &quot;Authorize,&quot; you agree to allow the Gyoza app developers to:
+                    By clicking &quot;Authorize,&quot; you agree to allow the {title} app developers to:
                   </p>
 
                   <ul>
@@ -175,7 +181,7 @@ const OAuthPage: FC & BasePage = () => {
                   </ul>
                 </div>
 
-                <ul>
+                <ul className="text-[#999]">
                   {tipsList.map((item, index) => (
                     <li key={index} className="flex mt-1">
                       <div className="w-3 h-3 rounded-full bg-[#999] shrink-0 mt-[0.375rem]"></div>
