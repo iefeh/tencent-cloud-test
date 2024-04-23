@@ -41,3 +41,8 @@ interface ModalProps {
   onOpen?: () => void;
   onOpenChange?: (val: boolean) => void;
 }
+
+interface BasePage {
+  noLoading?: boolean;
+  hideLoginCloseButton?: boolean;
+}
