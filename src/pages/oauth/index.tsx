@@ -24,6 +24,7 @@ interface RouteQuery {
   response_type: string;
   state: string;
   scope: string;
+  error?: string;
 }
 
 const OAuthPage: FC & BasePage = () => {
@@ -90,6 +91,13 @@ const OAuthPage: FC & BasePage = () => {
 
     toggleLoginModal(true);
   }, [token]);
+
+  useEffect(() => {
+    const errorMsg = query.error;
+    if (!errorMsg) return;
+
+    toast.error(errorMsg);
+  }, []);
 
   return (
     <div className="w-screen h-screen relative">
