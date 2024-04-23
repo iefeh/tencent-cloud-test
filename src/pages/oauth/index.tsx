@@ -10,8 +10,13 @@ import BasicButton from '../components/common/BasicButton';
 import LGButton from '../components/common/buttons/LGButton';
 import { throttle } from 'lodash';
 import CircularLoading from '../components/common/CircularLoading';
+import { oauthAuthorization } from '@/http/services/oauth2';
+import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
+import { appendQueryParamsToUrl } from "@/lib/common/url";
 
 const OAuthPage: FC & BasePage = () => {
+  const router = useRouter();
   const { userInfo, token, toggleLoginModal, logout } = useUserContext();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
@@ -34,6 +39,27 @@ const OAuthPage: FC & BasePage = () => {
 
   const onAuth = throttle(async () => {
     setLoading(true);
+    try {
+      let { authorization_code, expires_at, state } = await oauthAuthorization(
+        {
+          client_id: router.query.client_id as string,
+          redirect_uri: router.query.redirect_uri as string,
+          response_type: router.query.response_type as string,
+          state: router.query.state as string,
+          scope: router.query.scope as string
+        });
+      if (authorization_code) {
+        const landing_url = appendQueryParamsToUrl(router.query.redirect_uri as string, {
+          authorization_code: authorization_code,
+          expires_at: expires_at,
+          state: state
+        });
+        router.push(landing_url);
+      }
+    }
+    catch (error: any) {
+      toast.error(error?.message || error);
+    }
     await new Promise((resolve) => setTimeout(resolve, 500));
     setLoading(false);
   }, 500);
