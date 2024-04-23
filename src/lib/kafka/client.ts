@@ -101,5 +101,5 @@ export async function sendTwitterFollowerCountRefreshMessage(userId: string) {
     topic: 'twitter-follower-count-refresh',
     messages: [{ value: jsonStr }],
   });
-  logger.debug("sending twitter follower count refresh message sent");
+  logger.debug("twitter follower count refresh message sent");
 }
