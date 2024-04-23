@@ -33,8 +33,7 @@ export async function maybeAuthInterceptor(req: UserContextRequest, res: NextApi
         const userId = await redis.get(`user_session:${authorization}`);
         if (userId) {
             // 将用户数据添加到请求对象中
-            // req.userId = userId;
-            req.userId = 'f30010e1-7af4-4237-8a36-782b65aad9fb';
+            req.userId = userId;
         }
     }
     next();

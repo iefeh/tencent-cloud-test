@@ -158,40 +158,45 @@ export default function Rewards(props: Props) {
                             {accsIndex + 1}. {accs[0].description}
                           </p>
 
-                          {accs.map((acc, accIndex) => {
-                            return (
-                              <div key={accIndex} className="flex pl-3 mt-2">
-                                <span className="w-3 h-3 rounded-full bg-white mr-2 mt-1"></span>
+                          {accs[0].type === AcceleratorType.BADGE &&
+                          !accs.some((acc) => acc.properties.reward_bonus > 0) ? (
+                            <div className="flex pl-3 mt-2">
+                              <span className="w-3 h-3 rounded-full bg-white mr-2 mt-1"></span>
+                              
+                              <span>You currently do not have any qualifying badges.</span>
+                            </div>
+                          ) : (
+                            accs.map((acc, accIndex) => {
+                              return (
+                                <div key={accIndex} className="flex pl-3 mt-2">
+                                  <span className="w-3 h-3 rounded-full bg-white mr-2 mt-1"></span>
 
-                                <span>
-                                  <span>{acc.name}</span>, +{acc.properties.reward_bonus * 100}%,{' '}
-                                  {acc.properties.reward_bonus_moon_beam} MBs
-                                  {acc.type === AcceleratorType.NFT && <> per item</>}
-                                  {acc.properties.nft_market_url && (
-                                    <>
-                                      ,{' '}
-                                      <a
-                                        className="underline text-basic-blue"
-                                        href={acc.properties.nft_market_url}
-                                        target="_blank"
-                                      >
-                                        Go get
-                                      </a>
-                                    </>
-                                  )}
-                                  !
-                                </span>
-                              </div>
-                            );
-                          })}
+                                  <span>
+                                    <span>{acc.name}</span>, +{acc.properties.reward_bonus * 100}%,{' '}
+                                    {acc.properties.reward_bonus_moon_beam} MBs
+                                    {acc.type === AcceleratorType.NFT && <> per item</>}
+                                    {acc.properties.nft_market_url && (
+                                      <>
+                                        ,{' '}
+                                        <a
+                                          className="underline text-basic-blue"
+                                          href={acc.properties.nft_market_url}
+                                          target="_blank"
+                                        >
+                                          Go get
+                                        </a>
+                                      </>
+                                    )}
+                                    !
+                                  </span>
+                                </div>
+                              );
+                            })
+                          )}
                         </li>
                       ))}
                     </ul>
                   </div>
-
-                  {totalMultipliers > 0 && (
-                    <div className="text-lg text-basic-yellow">You currently do not have any qualifying badges.</div>
-                  )}
                 </div>
               );
             } else if (reward.type === EVENT_REWARD_TYPE.BADGE) {
