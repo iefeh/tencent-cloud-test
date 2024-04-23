@@ -2,7 +2,7 @@ import { PipelineStage } from 'mongoose';
 import UserTwitter from '@/lib/models/UserTwitter';
 import { IQuest } from '@/lib/models/Quest';
 import { TweetInteraction, checkClaimableResult, claimRewardResult } from '@/lib/quests/types';
-import { ConnectTwitterQuest } from './connectTwitterQuest';
+import { ConnectTwitterQuest, queryUserTwitterAuthorization } from './connectTwitterQuest';
 import TwitterTopicTweet from '@/lib/models/TwitterTopicTweet';
 import QuestAchievement from '@/lib/models/QuestAchievement';
 import { LikeTweetQuest } from './likeTweetQuest';
