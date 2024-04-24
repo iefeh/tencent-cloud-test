@@ -13,6 +13,8 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
   // 验证请求参数，确认用户已登录（或重定向到登录页面），向用户展示授权页面
+  let error = "";
+  let landing_url = "";
   try {
     const { client_id, redirect_uri, response_type, state, scope } = req.query;
     let error = "";
@@ -58,7 +60,10 @@ router.get(async (req, res) => {
     res.redirect(landing_url);
   }
   catch (error: any) {
-    res.json(response.invalidParams({ message: error.message }));
+    landing_url = appendQueryParamsToUrl('/oauth', {
+      error: error.message
+    });
+    res.redirect(landing_url);
   }
   return;
 });
