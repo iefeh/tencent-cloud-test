@@ -7,7 +7,7 @@ import Quest from "@/lib/models/Quest";
 import logger from "@/lib/logger/winstonLogger";
 import { constructQuest } from "@/lib/quests/constructor";
 import { redis } from "@/lib/redis/client";
-import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
+import { try2AddUsers2MBLeaderboard } from "@/lib/redis/moonBeamLeaderboard";
 import * as Sentry from "@sentry/nextjs";
 import { errorInterceptor } from "@/lib/middleware/error";
 import { timeoutInterceptor } from "@/lib/middleware/timeout";
@@ -81,11 +81,9 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             // 钱包资产任务添加检查CD
             await addWalletVerificationCDForIP(req);
         }
-        if (!result.claimed_amount) {
-            result.claimed_amount = 0;
-        }
-        if(result.verified){
-            await updateUserBattlepass(userId, quest_id, Number(result.claimed_amount), undefined);
+
+        if (result.claimed_amount && result.claimed_amount > 0) {
+            await updateUserBattlepass(userId, quest_id, result.claimed_amount, undefined);
         }
         res.json(response.success(result));
     } catch (error) {
