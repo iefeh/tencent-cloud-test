@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
 import { OAuth2ScopeAuth } from '@/lib/models/OAuth2Scopes';
+import errorIcon from 'img/icon/icon_error.png';
 
 interface RouteQuery {
   client_id: string;
@@ -113,7 +114,7 @@ const OAuthPage: FC & BasePage = () => {
       <Modal
         placement="center"
         classNames={{
-          base: 'max-w-[32rem] bg-[#070707]',
+          base: query.error ? 'max-w-[42rem] bg-[#1c1c1c]' : 'max-w-[32rem] bg-[#070707]',
           body: 'pt-12 pb-6 flex flex-col items-center',
           footer: 'justify-between',
         }}
@@ -128,10 +129,14 @@ const OAuthPage: FC & BasePage = () => {
             <>
               <ModalBody>
                 {query.error ? (
-                  <div className="px-20 pb-8 w-full mt-7 text-xl">
-                    <div className="text-basic-yellow text-2xl">Error:</div>
+                  <div className="px-20 pb-24 w-full mt-7 text-xl">
+                    <div className="text-basic-yellow text-3xl flex items-center">
+                      <Image className="w-8 h-8" src={errorIcon} alt="" width={48} height={48} />
 
-                    <div className="mt-4">{query.error}</div>
+                      <span className="font-semakin ml-4 mt-2">Error</span>
+                    </div>
+
+                    <div className="mt-8">{query.error}</div>
                   </div>
                 ) : (
                   <>
