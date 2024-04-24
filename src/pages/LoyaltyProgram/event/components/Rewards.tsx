@@ -5,6 +5,7 @@ import { EventReward, EventRewardAcceleratorProperty, FullEventItem } from '@/ht
 import trifleImg from 'img/nft/trifle/trifle_active_1.jpg';
 import badgeImg from 'img/loyalty/season/pass_badge.png';
 import lockImg from 'img/loyalty/season/icon_locked.png';
+import claimedImg from 'img/loyalty/season/icon_claimed.png';
 import { useEffect, useState } from 'react';
 import { Tooltip, cn } from '@nextui-org/react';
 import { AcceleratorType, EVENT_REWARD_TYPE } from '@/constant/task';
@@ -100,7 +101,7 @@ export default function Rewards(props: Props) {
                         <div
                           className={cn([
                             'w-8 h-8 relative border-1 [&+div]:ml-2 rounded-md',
-                            total > 0 ? 'border-basic-yellow/30' : 'border-basic-gray',
+                            total > 0 ? 'border-basic-yellow' : 'border-[#2C2C2C]',
                           ])}
                           key={accsIndex}
                         >
@@ -112,7 +113,11 @@ export default function Rewards(props: Props) {
                             sizes="100%"
                           />
 
-                          {total < 1 && <Image className="absolute -top-1 -right-1 w-3 h-3" src={lockImg} alt="" />}
+                          <Image
+                            className="absolute -top-1 -right-1 w-3 h-3"
+                            src={total > 0 ? claimedImg : lockImg}
+                            alt=""
+                          />
                         </div>
                       );
                     })}
@@ -162,7 +167,7 @@ export default function Rewards(props: Props) {
                           !accs.some((acc) => acc.properties.reward_bonus > 0) ? (
                             <div className="flex pl-3 mt-2">
                               <span className="w-3 h-3 rounded-full bg-white mr-2 mt-1"></span>
-                              
+
                               <span>You currently do not have any qualifying badges.</span>
                             </div>
                           ) : (
@@ -220,7 +225,8 @@ export default function Rewards(props: Props) {
                 <div className="px-8 py-4 max-w-lg flex">
                   <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
                   <p className="text-base">
-                    After completing this event, your Season Pass can level up, advancing you {reward.amount} tasks further in the season.
+                    After completing this event, your Season Pass can level up, advancing you {reward.amount} tasks
+                    further in the season.
                   </p>
                 </div>
               );
