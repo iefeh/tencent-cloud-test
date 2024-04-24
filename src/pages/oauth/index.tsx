@@ -15,6 +15,8 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
 import { OAuth2ScopeAuth } from '@/lib/models/OAuth2Scopes';
+import errorIcon from 'img/icon/icon_error.png';
+import { formatUserName } from '@/utils/common';
 
 interface RouteQuery {
   client_id: string;
@@ -24,6 +26,7 @@ interface RouteQuery {
   response_type: string;
   state: string;
   scope: string;
+  error?: string;
 }
 
 const OAuthPage: FC & BasePage = () => {
@@ -33,11 +36,18 @@ const OAuthPage: FC & BasePage = () => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
+  const title = formatName(query.client_name);
   const projectInfo = {
-    title: query.client_name,
-    fullTitle: `Project ${query.client_name}`,
+    title,
+    fullTitle: `Project ${title}`,
     logo: query.icon_url,
   };
+
+  function formatName(val: string) {
+    val = val || '';
+    if (val.length <= 8) return val;
+    return `${val.substring(0, 4)}...${val.substring(val.length - 4)}`;
+  }
 
   const scopes = query.scope ? query.scope.split(' ') : [];
   const authList = scopes.map((scope) => OAuth2ScopeAuth[scope] || []).flat();
@@ -80,6 +90,16 @@ const OAuthPage: FC & BasePage = () => {
     setLoginLoading(false);
   });
 
+  function onCloseClick() {
+    const url = appendQueryParamsToUrl(query.redirect_uri, {
+      state: query.state,
+      error: 'access_denied',
+      error_description: 'The request has been denied',
+    });
+
+    window.location.href = url;
+  }
+
   useEffect(() => {
     if (!userInfo) return;
     onOpen();
@@ -98,7 +118,7 @@ const OAuthPage: FC & BasePage = () => {
       <Modal
         placement="center"
         classNames={{
-          base: 'max-w-[32rem] bg-[#070707]',
+          base: query.error ? 'max-w-[42rem] bg-[#1c1c1c]' : 'max-w-[32rem] bg-[#070707]',
           body: 'pt-12 pb-6 flex flex-col items-center',
           footer: 'justify-between',
         }}
@@ -112,77 +132,99 @@ const OAuthPage: FC & BasePage = () => {
           {(onClose) => (
             <>
               <ModalBody>
-                <div className="flex justify-between items-center px-20 w-full mt-7 text-xl">
-                  <div className="relative w-16 h-16">
-                    <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
-                      {projectInfo.title}
+                {query.error ? (
+                  <div className="px-20 pb-24 w-full mt-7 text-xl">
+                    <div className="text-basic-yellow text-3xl flex items-center">
+                      <Image className="w-8 h-8" src={errorIcon} alt="" width={48} height={48} />
+
+                      <span className="font-semakin ml-4 mt-2">Error</span>
                     </div>
 
-                    {projectInfo.logo && (
-                      <Image className="object-cover rounded-full" src={projectInfo.logo} alt="" fill sizes="100%" />
-                    )}
+                    <div className="mt-8">{query.error}</div>
                   </div>
-
-                  <DotSVG className="w-4 h-4 fill-gray-300" />
-
-                  <div className="relative w-16 h-16">
-                    <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
-                      {userInfo?.username || '--'}
-                    </div>
-
-                    <Image
-                      className="object-cover rounded-full"
-                      src={userInfo?.avatar_url || ''}
-                      alt=""
-                      fill
-                      sizes="100%"
-                    />
-                  </div>
-                </div>
-
-                <div className="text-xl text-basic-yellow">{projectInfo.fullTitle}</div>
-
-                <p className="text-center px-12 text-lg">
-                  wants to access your moonveil.gg account {userInfo?.username}.{' '}
-                  <a className="text-basic-blue hover:underline cursor-pointer" onClick={onSwithAccount}>
-                    Not you?
-                  </a>
-                </p>
-
-                <div className="border-1 border-basic-gray rounded-base p-4">
-                  <p className="text-basic-yellow">
-                    By clicking &quot;Authorize,&quot; you agree to allow the Gyoza app developers to:
-                  </p>
-
-                  <ul>
-                    {authList.map((item, index) => (
-                      <li key={index} className="flex mt-2">
-                        <div className="relative w-6 h-6 mt-1 shrink-0">
-                          <Image className="object-contain" src={iconImg} alt="" fill sizes="100%" />
+                ) : (
+                  <>
+                    <div className="flex justify-between items-center px-20 w-full mt-7 text-xl">
+                      <div className="relative w-16 h-16">
+                        <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
+                          {projectInfo.title}
                         </div>
 
-                        <div className="ml-4 text-lg">{item}</div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {projectInfo.logo && (
+                          <Image
+                            className="object-cover rounded-full"
+                            src={projectInfo.logo}
+                            alt=""
+                            fill
+                            sizes="100%"
+                          />
+                        )}
+                      </div>
 
-                <ul>
-                  {tipsList.map((item, index) => (
-                    <li key={index} className="flex mt-1">
-                      <div className="w-3 h-3 rounded-full bg-[#999] shrink-0 mt-[0.375rem]"></div>
+                      <DotSVG className="w-4 h-4 fill-gray-300" />
 
-                      <div className="ml-4">{item}</div>
-                    </li>
-                  ))}
-                </ul>
+                      <div className="relative w-16 h-16">
+                        <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
+                          {formatUserName(userInfo?.username) || '--'}
+                        </div>
+
+                        <Image
+                          className="object-cover rounded-full"
+                          src={userInfo?.avatar_url || ''}
+                          alt=""
+                          fill
+                          sizes="100%"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="text-xl text-basic-yellow">{projectInfo.fullTitle}</div>
+
+                    <p className="text-center px-12 text-lg">
+                      wants to access your moonveil.gg account {formatUserName(userInfo?.username) || '--'}.{' '}
+                      <a className="text-basic-blue hover:underline cursor-pointer" onClick={onSwithAccount}>
+                        Not you?
+                      </a>
+                    </p>
+
+                    <div className="border-1 border-basic-gray rounded-base p-4">
+                      <p className="text-basic-yellow">
+                        By clicking &quot;Authorize,&quot; you agree to allow the {title} app developers to:
+                      </p>
+
+                      <ul>
+                        {authList.map((item, index) => (
+                          <li key={index} className="flex mt-2">
+                            <div className="relative w-6 h-6 mt-1 shrink-0">
+                              <Image className="object-contain" src={iconImg} alt="" fill sizes="100%" />
+                            </div>
+
+                            <div className="ml-4 text-lg">{item}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <ul className="text-[#999]">
+                      {tipsList.map((item, index) => (
+                        <li key={index} className="flex mt-1">
+                          <div className="w-3 h-3 rounded-full bg-[#999] shrink-0 mt-[0.375rem]"></div>
+
+                          <div className="ml-4">{item}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </ModalBody>
 
-              <ModalFooter>
-                <BasicButton label="Cancel" onClick={() => window.close()} />
+              {!query.error && (
+                <ModalFooter>
+                  <BasicButton label="Cancel" onClick={onCloseClick} />
 
-                <LGButton label="Authorize" actived loading={loading} onClick={onAuth} />
-              </ModalFooter>
+                  <LGButton label="Authorize" actived loading={loading} onClick={onAuth} />
+                </ModalFooter>
+              )}
 
               {loginLoading && <CircularLoading />}
             </>
