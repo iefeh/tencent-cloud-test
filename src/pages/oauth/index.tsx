@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
 import { OAuth2ScopeAuth } from '@/lib/models/OAuth2Scopes';
 import errorIcon from 'img/icon/icon_error.png';
+import { formatUserName } from '@/utils/common';
 
 interface RouteQuery {
   client_id: string;
@@ -89,6 +90,16 @@ const OAuthPage: FC & BasePage = () => {
     setLoginLoading(false);
   });
 
+  function onCloseClick() {
+    const url = appendQueryParamsToUrl(query.redirect_uri, {
+      state: query.state,
+      error: 'access_denied',
+      error_description: 'The request has been denied',
+    });
+
+    window.location.href = url;
+  }
+
   useEffect(() => {
     if (!userInfo) return;
     onOpen();
@@ -99,13 +110,6 @@ const OAuthPage: FC & BasePage = () => {
 
     toggleLoginModal(true);
   }, [token]);
-
-  // useEffect(() => {
-  //   const errorMsg = query.error;
-  //   if (!errorMsg) return;
-
-  //   toast.error(errorMsg);
-  // }, [query.error]);
 
   return (
     <div className="w-screen h-screen relative">
@@ -161,7 +165,7 @@ const OAuthPage: FC & BasePage = () => {
 
                       <div className="relative w-16 h-16">
                         <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
-                          {userInfo?.username || '--'}
+                          {formatUserName(userInfo?.username) || '--'}
                         </div>
 
                         <Image
@@ -177,7 +181,7 @@ const OAuthPage: FC & BasePage = () => {
                     <div className="text-xl text-basic-yellow">{projectInfo.fullTitle}</div>
 
                     <p className="text-center px-12 text-lg">
-                      wants to access your moonveil.gg account {userInfo?.username}.{' '}
+                      wants to access your moonveil.gg account {formatUserName(userInfo?.username) || '--'}.{' '}
                       <a className="text-basic-blue hover:underline cursor-pointer" onClick={onSwithAccount}>
                         Not you?
                       </a>
@@ -216,7 +220,7 @@ const OAuthPage: FC & BasePage = () => {
 
               {!query.error && (
                 <ModalFooter>
-                  <BasicButton label="Cancel" onClick={() => window.close()} />
+                  <BasicButton label="Cancel" onClick={onCloseClick} />
 
                   <LGButton label="Authorize" actived loading={loading} onClick={onAuth} />
                 </ModalFooter>
