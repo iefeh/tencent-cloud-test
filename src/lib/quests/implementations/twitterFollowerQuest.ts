@@ -10,8 +10,6 @@ import { QuestBase } from "@/lib/quests/implementations/base";
 import logger from "@/lib/logger/winstonLogger";
 import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 import { sendBadgeCheckMessage } from "@/lib/kafka/client";
-import UserBadges from "@/lib/models/UserBadges";
-
 
 export class TwitterFollowerQuest extends QuestBase {
     constructor(quest: IQuest) {
@@ -45,11 +43,12 @@ export class TwitterFollowerQuest extends QuestBase {
         try {
 
             const data: any = await twitterRequest.get(queryFollowerURL);
-
+            const claimable: boolean = data.data.public_metrics.followers_count >= 1000;
             return {
-                claimable: true,
+                claimable: claimable,
                 // 把用户的twitter id返回，用于后续的奖励计算
                 extra: { twitter_id: twitterAuth.twitter_id, followers_count: data.data.public_metrics.followers_count },
+                tip: claimable ? undefined : "Your follower count verification did not meet the requirements. Please check your account information.",
             }
         } catch (error) {
             if (!isAxiosError(error)) {
@@ -117,6 +116,7 @@ export class TwitterFollowerQuest extends QuestBase {
             }
         }
         await sendBadgeCheckMessage(userId, Metric.TwitterFollowerCount);
+
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
