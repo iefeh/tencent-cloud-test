@@ -69,6 +69,8 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
             </div>
           );
 
+          if (!is_premium && index !== 0) return passBody;
+
           let tooltipContent: JSX.Element | null = null;
 
           if (index === 0) {
