@@ -42,6 +42,7 @@ const OAuthPage: FC & BasePage = () => {
   };
 
   function formatName(val: string) {
+    val = val || '';
     if (val.length <= 8) return val;
     return `${val.substring(0, 4)}...${val.substring(val.length - 4)}`;
   }
@@ -98,12 +99,12 @@ const OAuthPage: FC & BasePage = () => {
     toggleLoginModal(true);
   }, [token]);
 
-  useEffect(() => {
-    const errorMsg = query.error;
-    if (!errorMsg) return;
+  // useEffect(() => {
+  //   const errorMsg = query.error;
+  //   if (!errorMsg) return;
 
-    toast.error(errorMsg);
-  }, [query.error]);
+  //   toast.error(errorMsg);
+  // }, [query.error]);
 
   return (
     <div className="w-screen h-screen relative">
@@ -126,77 +127,95 @@ const OAuthPage: FC & BasePage = () => {
           {(onClose) => (
             <>
               <ModalBody>
-                <div className="flex justify-between items-center px-20 w-full mt-7 text-xl">
-                  <div className="relative w-16 h-16">
-                    <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
-                      {projectInfo.title}
-                    </div>
+                {query.error ? (
+                  <div className="px-20 pb-8 w-full mt-7 text-xl">
+                    <div className="text-basic-yellow text-2xl">Error:</div>
 
-                    {projectInfo.logo && (
-                      <Image className="object-cover rounded-full" src={projectInfo.logo} alt="" fill sizes="100%" />
-                    )}
+                    <div className="mt-4">{query.error}</div>
                   </div>
-
-                  <DotSVG className="w-4 h-4 fill-gray-300" />
-
-                  <div className="relative w-16 h-16">
-                    <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
-                      {userInfo?.username || '--'}
-                    </div>
-
-                    <Image
-                      className="object-cover rounded-full"
-                      src={userInfo?.avatar_url || ''}
-                      alt=""
-                      fill
-                      sizes="100%"
-                    />
-                  </div>
-                </div>
-
-                <div className="text-xl text-basic-yellow">{projectInfo.fullTitle}</div>
-
-                <p className="text-center px-12 text-lg">
-                  wants to access your moonveil.gg account {userInfo?.username}.{' '}
-                  <a className="text-basic-blue hover:underline cursor-pointer" onClick={onSwithAccount}>
-                    Not you?
-                  </a>
-                </p>
-
-                <div className="border-1 border-basic-gray rounded-base p-4">
-                  <p className="text-basic-yellow">
-                    By clicking &quot;Authorize,&quot; you agree to allow the {title} app developers to:
-                  </p>
-
-                  <ul>
-                    {authList.map((item, index) => (
-                      <li key={index} className="flex mt-2">
-                        <div className="relative w-6 h-6 mt-1 shrink-0">
-                          <Image className="object-contain" src={iconImg} alt="" fill sizes="100%" />
+                ) : (
+                  <>
+                    <div className="flex justify-between items-center px-20 w-full mt-7 text-xl">
+                      <div className="relative w-16 h-16">
+                        <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
+                          {projectInfo.title}
                         </div>
 
-                        <div className="ml-4 text-lg">{item}</div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {projectInfo.logo && (
+                          <Image
+                            className="object-cover rounded-full"
+                            src={projectInfo.logo}
+                            alt=""
+                            fill
+                            sizes="100%"
+                          />
+                        )}
+                      </div>
 
-                <ul className="text-[#999]">
-                  {tipsList.map((item, index) => (
-                    <li key={index} className="flex mt-1">
-                      <div className="w-3 h-3 rounded-full bg-[#999] shrink-0 mt-[0.375rem]"></div>
+                      <DotSVG className="w-4 h-4 fill-gray-300" />
 
-                      <div className="ml-4">{item}</div>
-                    </li>
-                  ))}
-                </ul>
+                      <div className="relative w-16 h-16">
+                        <div className="absolute left-1/2 -translate-x-1/2 -top-3 -translate-y-full w-max">
+                          {userInfo?.username || '--'}
+                        </div>
+
+                        <Image
+                          className="object-cover rounded-full"
+                          src={userInfo?.avatar_url || ''}
+                          alt=""
+                          fill
+                          sizes="100%"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="text-xl text-basic-yellow">{projectInfo.fullTitle}</div>
+
+                    <p className="text-center px-12 text-lg">
+                      wants to access your moonveil.gg account {userInfo?.username}.{' '}
+                      <a className="text-basic-blue hover:underline cursor-pointer" onClick={onSwithAccount}>
+                        Not you?
+                      </a>
+                    </p>
+
+                    <div className="border-1 border-basic-gray rounded-base p-4">
+                      <p className="text-basic-yellow">
+                        By clicking &quot;Authorize,&quot; you agree to allow the {title} app developers to:
+                      </p>
+
+                      <ul>
+                        {authList.map((item, index) => (
+                          <li key={index} className="flex mt-2">
+                            <div className="relative w-6 h-6 mt-1 shrink-0">
+                              <Image className="object-contain" src={iconImg} alt="" fill sizes="100%" />
+                            </div>
+
+                            <div className="ml-4 text-lg">{item}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <ul className="text-[#999]">
+                      {tipsList.map((item, index) => (
+                        <li key={index} className="flex mt-1">
+                          <div className="w-3 h-3 rounded-full bg-[#999] shrink-0 mt-[0.375rem]"></div>
+
+                          <div className="ml-4">{item}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </ModalBody>
 
-              <ModalFooter>
-                <BasicButton label="Cancel" onClick={() => window.close()} />
+              {!query.error && (
+                <ModalFooter>
+                  <BasicButton label="Cancel" onClick={() => window.close()} />
 
-                <LGButton label="Authorize" actived loading={loading} onClick={onAuth} />
-              </ModalFooter>
+                  <LGButton label="Authorize" actived loading={loading} onClick={onAuth} />
+                </ModalFooter>
+              )}
 
               {loginLoading && <CircularLoading />}
             </>
