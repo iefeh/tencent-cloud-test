@@ -117,7 +117,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       });
     }
     return response.success({
-      result: 'You have claimed badge.',
+      result: 'You have claimed a badge.',
     });
   } finally {
     await redis.del(claimLock);
