@@ -7,15 +7,18 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
+import LoginModal from './components/common/LoginModal';
 
 export default function RootLayout({
   children,
   isInWhiteList,
   hasNoHeader,
+  hideLoginCloseButton,
 }: {
   children: React.ReactNode;
   isInWhiteList: boolean;
   hasNoHeader: boolean;
+  hideLoginCloseButton?: boolean;
 }) {
   return (
     <React.Fragment>
@@ -29,6 +32,8 @@ export default function RootLayout({
         {hasNoHeader || <Header />}
 
         <main className="dark page-container w-full h-full">{children}</main>
+
+        <LoginModal hideCloseButton={hideLoginCloseButton} />
       </Suspense>
       {/* </main> */}
     </React.Fragment>

@@ -173,8 +173,8 @@ function loadVideo(path: string) {
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
-  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
+  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
@@ -296,7 +296,11 @@ export default function App({ Component, pageProps }: AppProps) {
               {!isInWhiteList && loading ? (
                 <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
               ) : (
-                <RootLayout isInWhiteList={isInWhiteList} hasNoHeader={hasNoHeader}>
+                <RootLayout
+                  isInWhiteList={isInWhiteList}
+                  hasNoHeader={hasNoHeader}
+                  hideLoginCloseButton={(Component as any).hideLoginCloseButton}
+                >
                   <Component {...pageProps} />
                 </RootLayout>
               )}

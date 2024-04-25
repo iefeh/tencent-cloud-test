@@ -30,8 +30,12 @@ const routeText: RouteMenu[] = [
     route: '/LoyaltyProgram/season',
     children: [
       {
-       name: 'Loyalty Program',
-       route: '/LoyaltyProgram/intro',
+        name: 'Season Task & Event',
+        route: '/LoyaltyProgram/earn?from=lp',
+      },
+      {
+        name: 'Loyalty Program',
+        route: '/LoyaltyProgram/intro',
       },
       {
         name: 'Season System',
@@ -84,10 +88,10 @@ const routeText: RouteMenu[] = [
         name: 'TETRA NFT Series',
         route: '/TetraNFT',
       },
-      {
-        name: 'Get Involved',
-        route: '/LoyaltyProgram/earn?from=nft',
-      },
+      // {
+      //   name: 'Get Involved',
+      //   route: '/LoyaltyProgram/earn?from=nft',
+      // },
       // {
       //   name: 'Mint Now',
       //   route: '/NFT/Mint',

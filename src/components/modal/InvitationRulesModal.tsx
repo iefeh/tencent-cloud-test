@@ -9,7 +9,7 @@ function InvitationRulesModal({ isOpen, onOpenChange }: ModalProps) {
       placement="center"
       isOpen={isOpen}
       classNames={{
-        base: 'bg-black',
+        base: 'bg-black max-w-[42rem]',
         header: 'p-0',
         closeButton: 'z-10',
         body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] py-8 px-10 max-h-[37.5rem] overflow-y-auto',
@@ -39,8 +39,16 @@ function InvitationRulesModal({ isOpen, onOpenChange }: ModalProps) {
                   </p>
 
                   <p>
-                    - Please note that only new users who receive the Novice Notch Badge are counted as successful
-                    registration. The Novice Notch Badge can be obtained by completing Social Media Connection tasks.
+                    - Please note that only new users who receive the{' '}
+                    <a
+                      className="text-basic-yellow hover:underline"
+                      href="/LoyaltyProgram/event?id=6becf936-fdf6-4807-876f-552d723b3c4a"
+                      target="_blank"
+                    >
+                      Novice Notch Badge
+                    </a>{' '}
+                    are counted as successful registration. The Novice Notch Badge can be obtained by completing Social
+                    Media Connection tasks.
                   </p>
 
                   <p>
@@ -68,6 +76,13 @@ function InvitationRulesModal({ isOpen, onOpenChange }: ModalProps) {
                   <div>
                     · The inviter will receive continuous rewards for invitees&apos; in-game engagements and
                     achievements.
+                  </div>
+                </li>
+
+                <li>
+                  <div>
+                    · Moonveil will conduct a secondary verification of the referral results. Moon Beams gained through
+                    inappropriate bot behavior will be cleared.
                   </div>
                 </li>
               </ul>

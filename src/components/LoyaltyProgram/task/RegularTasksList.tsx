@@ -425,7 +425,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
     }, []);
 
     return (
-      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
+      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[1.25rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
         <div className="text-xl">{task.name}</div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
@@ -460,7 +460,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
               <Image className="w-8 h-8" src={mbImg} alt="" />
 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-                {task.reward.amount_formatted} MBs
+                {task.reward.amount_formatted} Moon Beams
               </span>
             </div>
 

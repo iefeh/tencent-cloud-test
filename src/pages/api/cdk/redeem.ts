@@ -14,6 +14,7 @@ import { WhitelistEntityType } from '@/lib/quests/types';
 import { redis } from '@/lib/redis/client';
 import UserNotifications from '@/lib/models/UserNotifications';
 import { generateUUID } from 'three/src/math/MathUtils';
+import UserBadges from '@/lib/models/UserBadges';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -141,16 +142,6 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
           break;
         case CDKRewardType.Badge:
           await redeemBadgeReward(userId, cdkInfo.cdk, session, reward);
-          if (reward.alert) {
-            await new UserNotifications({
-              user_id: userId,
-              notification_id: generateUUID(),
-              content: reward.alert,
-              link: '',
-              //创建时间
-              created_time: Date.now(),
-            }).save({ session: session });
-          }
           break;
       }
     }
@@ -184,52 +175,50 @@ async function redeemMoonBeamReward(userId: string, cdk: string, session: any, r
 }
 
 async function redeemBadgeReward(userId: string, cdk: string, session: any, reward: any) {
+  const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
+  if(userBadge){
+    return;
+  }
+
   const badge = await Badges.findOne({ id: reward.badge_id });
   //徽章不存在
   if (!badge) {
     throw new Error('Badge not exists.');
   }
-  let series: any;
+  let series: number = 0;
   for (let s of badge.series.keys()) {
-    series = badge.series.get(s);
+    series = s;
     break;
   }
-  if (!series) {
+  if (series == 0) {
     throw new Error('Badge series not exists.');
   }
-
-  //检测要求
-  let whitelistRequirement: any;
-  for (let r of series.requirements) {
-    if (r.type === RequirementType.Whitelist) {
-      whitelistRequirement = r;
-      break;
-    }
-  }
-  //判断是否为白名单徽章
-  if (!whitelistRequirement) {
-    throw new Error('Badge type is not whitelist.');
-  }
-  //判断用户是否已在白名单中
-  const whitelist: any = await Whitelist.findOne({
-    whitelist_id: whitelistRequirement.properties.whitelist_id,
-    whitelist_entity_type: WhitelistEntityType.UserId,
-    whitelist_entity_id: userId
-  })
-
-  if (!whitelist) {
-    //将用户添加至白名单中
-    await Whitelist.insertMany(
-      [
-        {
-          whitelist_id: whitelistRequirement.properties.whitelist_id,
-          whitelist_entity_type: WhitelistEntityType.UserId,
-          whitelist_entity_id: userId,
-          created_time: Date.now(),
-        },
-      ],
-      { session: session },
-    );
+  const now = Date.now();
+  await UserBadges.insertMany(
+    [
+      {
+        user_id: userId,
+        badge_id: reward.badge_id,
+        badge_taints: [`user_id: ${userId},badge_id:${reward.badge_id},cdk:${cdk}`],
+        series: { [series]: { obtained_time: now } },
+        display: false,
+        created_time: now,
+        updated_time: now,
+        order: 1,
+        display_order: 1,
+      },
+    ],
+    { session: session },
+  );
+  if (reward.alert) {
+    await new UserNotifications({
+      user_id: userId,
+      notification_id: generateUUID(),
+      content: reward.alert.content,
+      link: reward.alert.link,
+      //创建时间
+      created_time: Date.now(),
+    }).save();
   }
 }
 

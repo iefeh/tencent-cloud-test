@@ -1,5 +1,6 @@
 import { Kafka, Message, Producer } from 'kafkajs';
 import logger from '../logger/winstonLogger';
+import { Metric } from '../models/UserMetrics';
 
 let producer: Producer;
 
@@ -36,7 +37,7 @@ async function connectKafkaProducer(): Promise<Producer> {
   });
 
   producer = kafka.producer();
-  await producer.connect(); 
+  await producer.connect();
   return producer;
 }
 
@@ -89,4 +90,16 @@ export async function sendBattlepassCheckMessage(userId: string) {
   logger.debug("battlepass check message sent");
   // 由于我们是serverless环境，不优雅的断开连接
   // await producer.disconnect();
+}
+
+export async function sendTwitterFollowerCountRefreshMessage(userId: string) {
+  logger.debug("connecting to kafka producer");
+  const producer = await connectKafkaProducer();
+  logger.debug("sending twitter follower count refresh message");
+  const jsonStr = JSON.stringify({ userId: userId, metric: Metric.TwitterFollowerCount, timestamp: Date.now() });
+  await producer.send({
+    topic: 'twitter-follower-count-refresh',
+    messages: [{ value: jsonStr }],
+  });
+  logger.debug("twitter follower count refresh message sent");
 }

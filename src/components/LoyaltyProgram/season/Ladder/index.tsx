@@ -7,9 +7,10 @@ import { BattlePassLevelDTO } from '@/http/services/battlepass';
 
 interface Props {
   onItemClick?: (item?: BattlePassLevelDTO) => void;
+  onRuleClick?: () => void;
 }
 
-const Ladder: FC<Props> = ({ onItemClick }) => {
+const Ladder: FC<Props> = ({ onItemClick, onRuleClick }) => {
   const { info, progressInfo } = useBattlePassContext();
   const { totalProgress } = progressInfo || {};
   const { standard_pass, premium_pass } = info || {};
@@ -23,7 +24,7 @@ const Ladder: FC<Props> = ({ onItemClick }) => {
       </div>
 
       <div className="relative w-0 h-0 z-0">
-        <PrefixStep className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <PrefixStep className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" onRuleClick={onRuleClick} />
       </div>
 
       {(standard_pass || []).map((starndardItem, index) => (

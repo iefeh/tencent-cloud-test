@@ -1,22 +1,42 @@
-import {AuthorizationType} from "@/lib/authorization/types";
-import {Metric} from "@/lib/models/UserMetrics";
+import { AuthorizationType } from "@/lib/authorization/types";
+import { Metric } from "@/lib/models/UserMetrics";
 
 export enum QuestType {
+    // 绑定钱包
     ConnectWallet = "connect_wallet",
+    // 绑定twitter
     ConnectTwitter = "connect_twitter",
+    // 绑定discord
     ConnectDiscord = "connect_discord",
+    // 绑定telegram
     ConnectTelegram = "connect_telegram",
+    // 绑定steam
     ConnectSteam = "connect_steam",
+    // twitter关注
     FollowOnTwitter = "follow_on_twitter",
+    // 转推
     RetweetTweet = "retweet_tweet",
+    // 点赞
     LikeTweet = "like_tweet",
+    // 评论
     CommentTweet = "comment_tweet",
+    // twitter话题(发推参与话题)
+    TwitterTopic = "twitter_topic",
+    // 推文互动(点赞、评论、转推)
+    TweetInteraction = "tweet_interaction",
+    // 加入discord社区
     JoinDiscordServer = "join_discord_server",
+    // 持有discord角色
     HoldDiscordRole = "hold_discord_role",
+    // 白名单
     Whitelist = "whitelist",
+    // 用户指标，见集合user_metrics
     UserMetric = "user_metric",
+    // 持有NFT
     HoldNFT = "hold_nft",
+    // 发送discord消息
     SendDiscordMessage = "send_discord_message",
+    // twitter的关注者数
     TwitterFollower = "twitter_follower",
 }
 
@@ -60,6 +80,26 @@ export type SendDiscordMessage = {
     // 发送的结束时间，毫秒时间戳
     end_time: number;
     // 任务地址
+    url: string;
+}
+
+export type TwitterTopic = {
+    // 关联的话题id，见集合twitter_topic_tweets
+    topic_id: string;
+    // 任务地址，根据话题参数构建的创建推文的链接
+    // 格式：@xxx \n text \n #topic,
+    // 如：https://twitter.com/intent/post?text=@twitterapi%20custom%0ashare%0atext&hashtags=example,demo
+    url: string;
+}
+
+export type TweetInteraction = {
+    // 关联的话题id，见集合twitter_topic_tweets
+    topic_id: string;
+    // 互动的目标推文地址
+    tweet_url: string;
+    // 互动推文id
+    tweet_id: string;
+    // 任务地址，用户评论推文的intent地址，点赞或者转推由API自动进行.
     url: string;
 }
 

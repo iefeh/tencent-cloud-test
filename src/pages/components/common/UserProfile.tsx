@@ -6,6 +6,7 @@ import { cn } from '@nextui-org/react';
 import { toast } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
 import LGButton from './buttons/LGButton';
+import { formatUserName } from '@/utils/common';
 
 interface Props {
   className?: string;
@@ -70,7 +71,7 @@ function UserProfile(props: Props) {
             usernameClassName,
           ])}
         >
-          {username}
+          {formatUserName(username)}
         </div>
         <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
           <span>{desc || getWallet()}</span>

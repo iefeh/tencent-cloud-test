@@ -153,7 +153,7 @@ export function useEmail() {
   };
 }
 
-const LoginModal = function () {
+const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean }) {
   const {
     isConnect,
     loginModalVisible,
@@ -353,6 +353,7 @@ const LoginModal = function () {
           header: 'pt-7 pl-10 pr-[2.6875rem]',
           body: 'pl-10 pr-[2.6875rem] pb-[3.125rem]',
         }}
+        hideCloseButton={hideCloseButton}
         isOpen={loginModalVisible}
         onOpenChange={toggleLoginModal}
         isDismissable={false}
