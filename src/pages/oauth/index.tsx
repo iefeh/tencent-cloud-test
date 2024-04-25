@@ -42,6 +42,19 @@ const OAuthPage: FC & BasePage = () => {
     fullTitle: `Project ${title}`,
     logo: query.icon_url,
   };
+  let error = query.error;
+
+  if (
+    !query.redirect_uri ||
+    !query.client_id ||
+    !query.client_name ||
+    !query.icon_url ||
+    !query.response_type ||
+    !query.scope ||
+    !query.state
+  ) {
+    error = 'Invalid Authorization Flow';
+  }
 
   function formatName(val: string) {
     val = val || '';
@@ -118,7 +131,7 @@ const OAuthPage: FC & BasePage = () => {
       <Modal
         placement="center"
         classNames={{
-          base: query.error ? 'max-w-[42rem] bg-[#1c1c1c]' : 'max-w-[32rem] bg-[#070707]',
+          base: error ? 'max-w-[42rem] bg-[#1c1c1c]' : 'max-w-[32rem] bg-[#070707]',
           body: 'pt-12 pb-6 flex flex-col items-center',
           footer: 'justify-between',
         }}
@@ -132,7 +145,7 @@ const OAuthPage: FC & BasePage = () => {
           {(onClose) => (
             <>
               <ModalBody>
-                {query.error ? (
+                {error ? (
                   <div className="px-20 pb-24 w-full mt-7 text-xl">
                     <div className="text-basic-yellow text-3xl flex items-center">
                       <Image className="w-8 h-8" src={errorIcon} alt="" width={48} height={48} />
@@ -140,7 +153,7 @@ const OAuthPage: FC & BasePage = () => {
                       <span className="font-semakin ml-4 mt-2">Error</span>
                     </div>
 
-                    <div className="mt-8">{query.error}</div>
+                    <div className="mt-8">{error}</div>
                   </div>
                 ) : (
                   <>
@@ -218,7 +231,7 @@ const OAuthPage: FC & BasePage = () => {
                 )}
               </ModalBody>
 
-              {!query.error && (
+              {!error && (
                 <ModalFooter>
                   <BasicButton label="Cancel" onClick={onCloseClick} />
 
