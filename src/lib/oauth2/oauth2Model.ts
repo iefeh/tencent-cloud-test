@@ -147,7 +147,7 @@ const oauth2Model = {
         id: client.client_id,
         name: client.client_name,
         icon_url: client.icon_url,
-        redirectUris: client.redirect_uris,
+        redirect_uris: client.redirect_uris,
         grants: client.grants
       };
     }

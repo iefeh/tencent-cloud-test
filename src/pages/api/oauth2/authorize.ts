@@ -26,9 +26,10 @@ router.get(async (req, res) => {
     if (!client) {
       error = 'Missing parameter: `invalid client_id`';
     }
-    if (!redirect_uri || !URL.canParse(redirect_uri as string)) {
+    if (!redirect_uri || client?.redirect_uris.includes(redirect_uri as string) === false){
       error = 'Invalid request: `redirect_uri` is not a valid URI';
     }
+
     if (!response_type) {
       error = 'Missing parameter: `response_type`';
     }
