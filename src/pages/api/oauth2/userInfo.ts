@@ -28,8 +28,9 @@ router.get(async (req, res) => {
             avatar_url: user.avatar_url,
             particle: {
                 evm_wallet: user.particle.evm_wallet,
-                web_token: user.particle.web_token,
-                user_id: user.particle.user_id
+                // 暂不返回，后续磋商
+                // web_token: user.particle.web_token,
+                // user_id: user.particle.user_id
             },
             wallet: wallet_addr
           }}));
