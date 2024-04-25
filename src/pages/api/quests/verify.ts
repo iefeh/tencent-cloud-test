@@ -76,15 +76,13 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         const result = await questImpl.claimReward(userId);
         if (result.claimed_amount && result.claimed_amount > 0) {
             await try2AddUsers2MBLeaderboard(userId);
+            await updateUserBattlepass(userId, quest_id, result.claimed_amount, undefined);
         }
         if (result.claimed_amount != undefined && quest.type == QuestType.ConnectWallet) {
             // 钱包资产任务添加检查CD
             await addWalletVerificationCDForIP(req);
         }
 
-        if (result.claimed_amount && result.claimed_amount > 0) {
-            await updateUserBattlepass(userId, quest_id, result.claimed_amount, undefined);
-        }
         res.json(response.success(result));
     } catch (error) {
         logger.error(error);
