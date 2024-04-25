@@ -7,12 +7,12 @@ import { appendQueryParamsToUrl } from "@/lib/common/url";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import oauth2Model from "@/lib/oauth2/oauth2Model";
 import User from "@/lib/models/User";
+import {responseOnOauthError} from "@/lib/oauth2/response";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.get(async (req, res) => {
   // 验证请求参数，确认用户已登录（或重定向到登录页面），向用户展示授权页面
-  let error = "";
   let landing_url = "";
   try {
     const { client_id, redirect_uri, response_type, state, scope } = req.query;
@@ -83,13 +83,12 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.success({ authorization_code: code.authorizationCode, expires_at: code.expires_at, state: req.body.state }));
       })
       .catch(function(error: any) {
-        res.json(response.invalidParams({ message: error.message }));
+        return responseOnOauthError(res, error);
       });
   }
   catch (error: any) {
-    res.json(response.invalidParams({ message: error.message }));
+    return responseOnOauthError(res, error);
   }
-  return;
 });
 
 // this will run if none of the above matches
