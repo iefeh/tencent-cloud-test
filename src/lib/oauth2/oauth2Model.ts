@@ -2,7 +2,6 @@ import OAuth2Client from "@/lib/models/OAuth2Client";
 import OAuth2Token from "@/lib/models/OAuth2Token";
 import OAuth2AuthorizationCode from "@/lib/models/OAuth2AuthorizationCode";
 import User from "@/lib/models/User";
-import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import * as jwt from "jsonwebtoken";
 
 const oauth2Model = {
@@ -119,7 +118,7 @@ const oauth2Model = {
 
   validateScope: function (user: any, client: any, scope: string) {
   //检查授权域
-    if (!scope || !scope.split(' ').every(s => Object.values(OAuth2Scopes).includes(s as OAuth2Scopes))) {
+    if (!scope || !scope.split(' ').every(s => client?.scopes.includes(s))) {
       return false;
     }
     return scope;
@@ -147,7 +146,7 @@ const oauth2Model = {
         id: client.client_id,
         name: client.client_name,
         icon_url: client.icon_url,
-        redirect_uris: client.redirect_uris,
+        redirectUris: client.redirect_uris,
         grants: client.grants,
         scopes: client.scopes,
       };

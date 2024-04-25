@@ -7,7 +7,6 @@ import { appendQueryParamsToUrl } from "@/lib/common/url";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import oauth2Model from "@/lib/oauth2/oauth2Model";
 import User from "@/lib/models/User";
-import { OAuth2Scopes } from "@/lib/models/OAuth2Scopes";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -26,7 +25,7 @@ router.get(async (req, res) => {
     if (!client) {
       error = 'Missing parameter: `invalid client_id`';
     }
-    if (!redirect_uri || client?.redirect_uris.includes(redirect_uri as string) === false){
+    if (!redirect_uri || client?.redirectUris.includes(redirect_uri as string) === false){
       error = 'Invalid request: `redirect_uri` is not a valid URI';
     }
     if (!response_type) {
