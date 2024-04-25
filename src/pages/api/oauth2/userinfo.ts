@@ -1,11 +1,12 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
-import { Request, Response } from 'oauth2-server'
+import {InvalidTokenError, Request, Response} from 'oauth2-server'
 import server from '../../../lib/oauth2/oauth2Server'
 import {UserContextRequest} from "@/lib/middleware/auth";
 import UserWallet from '../../../lib/models/UserWallet';
 import { OAuth2Scopes } from '../../../lib/models/OAuth2Scopes';
+import {unauthorized} from "@/lib/response/response";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.get(async (req, res) => {
@@ -20,7 +21,7 @@ router.get(async (req, res) => {
         if (user_wallet) {
           wallet_addr = user_wallet.wallet_addr;
         }
-        res.json(response.success({ 
+        res.json(response.success({
           user: {
             user_id: user.user_id,
             username: user.username,
@@ -37,11 +38,19 @@ router.get(async (req, res) => {
       })
       .catch(
         function(error: any) {
-          res.json(response.invalidParams({ message: error.message }));
+            // 判断error是否为InvalidTokenError
+            if (error instanceof InvalidTokenError) {
+                return res.json(response.unauthorized({ message: error.message }));
+            }
+            res.json(response.invalidParams({ message: error.message }));
         });
   }
   catch (error: any) {
-    res.json(response.invalidParams({ message: error.message }));
+      // 判断error是否为InvalidTokenError
+      if (error instanceof InvalidTokenError) {
+          return res.json(response.unauthorized({ message: error.message }));
+      }
+      res.json(response.invalidParams({ message: error.message }));
   }
   return;
 });
