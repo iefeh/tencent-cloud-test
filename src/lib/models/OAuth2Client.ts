@@ -14,6 +14,8 @@ export interface IOAuth2Client extends Document {
     redirect_uris:  string[],
     // 客户授权类型
     grants: string[],
+    // 授权的域
+    scopes: string[],
     // 访问token有效期, 单位为秒
     access_token_lifetime: number,
 }
@@ -25,6 +27,7 @@ const OAuth2ClientSchema = new Schema<IOAuth2Client>({
     icon_url: { type: String },
     redirect_uris: {type: [String]},
     grants: {type: [String]},
+    scopes: {type: [String]},
     access_token_lifetime: {type: Number}
 });
 OAuth2ClientSchema.index({client_id: 1}, {unique: true});

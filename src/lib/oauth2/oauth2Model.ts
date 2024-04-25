@@ -148,7 +148,8 @@ const oauth2Model = {
         name: client.client_name,
         icon_url: client.icon_url,
         redirect_uris: client.redirect_uris,
-        grants: client.grants
+        grants: client.grants,
+        scopes: client.scopes,
       };
     }
     else {

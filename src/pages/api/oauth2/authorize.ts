@@ -29,7 +29,6 @@ router.get(async (req, res) => {
     if (!redirect_uri || client?.redirect_uris.includes(redirect_uri as string) === false){
       error = 'Invalid request: `redirect_uri` is not a valid URI';
     }
-
     if (!response_type) {
       error = 'Missing parameter: `response_type`';
     }
@@ -39,7 +38,7 @@ router.get(async (req, res) => {
     if (!scope || scope.length === 0) {
       error = 'Missing parameter: `scope`';
     }
-    if (!String(scope).split(' ').every(s => Object.values(OAuth2Scopes).includes(s as OAuth2Scopes))) {
+    if (!String(scope).split(' ').every(s => client?.scopes.includes(s))) {
       error = 'Invalid request: `scope` is not valid';
     }
     if (error) {
