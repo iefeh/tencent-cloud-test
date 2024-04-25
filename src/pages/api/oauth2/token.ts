@@ -4,9 +4,11 @@ import * as response from "@/lib/response/response";
 import { Request, Response } from 'oauth2-server'
 import {UserContextRequest} from "@/lib/middleware/auth";
 import server from '../../../lib/oauth2/oauth2Server'
+import {responseOnOauthError} from "@/lib/oauth2/response";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.post(async (req, res) => {
+  throw new Error('Not implemented');
   //根据授权码返回access token
   try {
     server.token(new Request(req), new Response(res))
@@ -16,13 +18,12 @@ router.post(async (req, res) => {
       })
     .catch(
     function(error: any) {
-      res.json(response.invalidParams({ message: error.message }));
+      return responseOnOauthError(res, error);
     });
   }
   catch (error: any) {
-    res.json(response.invalidParams({ message: error.message }));
+    return responseOnOauthError(res, error);
   }
-  return;
 })
 
 // this will run if none of the above matches

@@ -1,11 +1,12 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
-import { Request, Response } from 'oauth2-server'
+import {Request, Response} from 'oauth2-server'
 import server from '../../../lib/oauth2/oauth2Server'
 import {UserContextRequest} from "@/lib/middleware/auth";
 import UserWallet from '../../../lib/models/UserWallet';
-import { OAuth2Scopes } from '../../../lib/models/OAuth2Scopes';
+import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
+import {responseOnOauthError} from "@/lib/oauth2/response";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.get(async (req, res) => {
@@ -20,7 +21,7 @@ router.get(async (req, res) => {
         if (user_wallet) {
           wallet_addr = user_wallet.wallet_addr;
         }
-        res.json(response.success({ 
+        res.json(response.success({
           user: {
             user_id: user.user_id,
             username: user.username,
@@ -37,13 +38,12 @@ router.get(async (req, res) => {
       })
       .catch(
         function(error: any) {
-          res.json(response.invalidParams({ message: error.message }));
+           return responseOnOauthError(res, error);
         });
   }
   catch (error: any) {
-    res.json(response.invalidParams({ message: error.message }));
+      return responseOnOauthError(res, error);
   }
-  return;
 });
 
 // this will run if none of the above matches
