@@ -1,5 +1,5 @@
 export enum OAuth2Scopes {
-  UserInfo = "userInfo"
+  UserInfo = "userinfo"
 }
 
 export const OAuth2ScopeAuth: {[key: string]: string[]} = {
