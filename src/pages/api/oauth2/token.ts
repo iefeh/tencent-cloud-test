@@ -8,7 +8,6 @@ import {responseOnOauthError} from "@/lib/oauth2/response";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.post(async (req, res) => {
-  throw new Error('Not implemented');
   //根据授权码返回access token
   try {
     server.token(new Request(req), new Response(res))
