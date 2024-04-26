@@ -27,6 +27,7 @@ export interface TaskListItem {
   authorization: string | null;
   user_authorized?: boolean;
   verified?: boolean;
+  verify_disabled?: boolean;
   achieved?: boolean;
   started?: boolean;
   start_time?: number;

@@ -15,6 +15,7 @@ export const enum QuestType {
   RetweetTweet = 'retweet_tweet',
   CommentTweet = 'comment_tweet',
   LikeTwitter = 'like_tweet',
+  TweetInteraction = 'tweet_interaction',
   HoldDiscordRole = 'hold_discord_role',
   Whitelist = 'whitelist',
   GamePreRegister = 'game_pre_register',

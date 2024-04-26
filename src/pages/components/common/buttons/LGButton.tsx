@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, cn } from '@nextui-org/react';
+import { Button, Tooltip, cn } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { HTMLAttributeAnchorTarget, useEffect, useRef } from 'react';
 
@@ -14,6 +14,7 @@ interface Props {
   linearDisabled?: boolean;
   squared?: boolean;
   target?: HTMLAttributeAnchorTarget;
+  tooltip?: string | boolean | JSX.Element;
   onClick?: () => void;
   hasCD?: boolean;
   cd?: number;
@@ -28,6 +29,7 @@ export default function LGButton(props: Props) {
     actived,
     disabled,
     linearDisabled,
+    tooltip,
     onClick,
     link,
     target,
@@ -86,7 +88,7 @@ export default function LGButton(props: Props) {
     };
   }, [hasCD]);
 
-  return (
+  const button = (
     <Button
       className={cn([
         'h-auto text-sm px-6 py-1 border-2 border-solid text-white transition-all duration-1000 font-poppins-medium bg-transparent cursor-pointer box-border',
@@ -119,5 +121,13 @@ export default function LGButton(props: Props) {
         ></div>
       )}
     </Button>
+  );
+
+  if (!tooltip || loading || (!disabled && !hasCD)) return button;
+
+  return (
+    <Tooltip content={tooltip}>
+      <div>{button}</div>
+    </Tooltip>
   );
 }
