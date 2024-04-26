@@ -92,14 +92,17 @@ function EventTasks(props: EventTaskProps) {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectTexts, achieved, verified } = task;
+    const { connectTexts, achieved, verified, verify_disabled } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const isNeedConnect = !!task.properties.url;
-    const [verifiable, setVerifiable] = useState(!verified && (!task.properties.is_prepared || achieved));
+    const [verifiable, setVerifiable] = useState(
+      !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
+    );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
+    const isTweetInteration = task.type === QuestType.TweetInteraction;
 
     const connectType = task.authorization || '';
     const {
@@ -219,7 +222,15 @@ function EventTasks(props: EventTaskProps) {
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           hasCD={hasVerifyCD}
-          cd={30}
+          tooltip={
+            isTweetInteration && (
+              <div className="max-w-[25rem] px-4 py-3">
+                * Please be aware that data verification may take a moment. Please wait for a few minutes before
+                clicking &apos;Verify&apos; button.
+              </div>
+            )
+          }
+          cd={isTweetInteration ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);

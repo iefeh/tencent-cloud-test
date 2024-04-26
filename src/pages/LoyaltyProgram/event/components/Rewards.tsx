@@ -248,7 +248,7 @@ export default function Rewards(props: Props) {
                   <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
                   <p className="text-base">
                     After completing this event, your Season Pass can level up, advancing you{' '}
-                    <span className="text-basic-red">{taskAmount}</span> tasks further in the season.
+                    <span className="text-basic-yellow">{taskAmount}</span> tasks further in the season.
                   </p>
                 </div>
               }
@@ -260,7 +260,7 @@ export default function Rewards(props: Props) {
                 <div>Season Pass Progress</div>
                 <div className="flex items-center gap-1">
                   <span>
-                    + <span className="text-basic-red">{taskAmount}</span> TASKS
+                    + <span className="text-basic-yellow">{taskAmount}</span> TASKS
                   </span>
                 </div>
               </div>

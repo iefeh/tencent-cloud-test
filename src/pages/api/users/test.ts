@@ -24,7 +24,8 @@ import Moralis from 'moralis';
 import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/models/UserMetricReward";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {promiseSleep} from "@/lib/common/sleep";
-
+import {v4 as uuidv4} from "uuid";
+import { randomBytes } from 'crypto';
 
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
 sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
@@ -32,8 +33,17 @@ sdk.server('https://api.reservoir.tools');
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
+function generateSecretKey(length: number = 32): string {
+    // 生成指定长度的随机字节
+    const secretKey = randomBytes(length);
+    // 将随机字节转换为 base64 编码以便于存储和使用
+    return secretKey.toString('base64');
+}
+
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
 router.get(async (req, res) => {
+    console.log("client id:", uuidv4());
+    console.log("client sec:", generateSecretKey());
     try {
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
