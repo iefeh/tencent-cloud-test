@@ -60,7 +60,7 @@ async function enrichTaskVerification(userId: string, quests: any[], claimed: bo
             let userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
             if (userTwitter) {
                 let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: quest.topic_id });
-                if (!tweet) {
+                if (!!!tweet) {
                     quest.verify_disabled = true;
                 }
             }
