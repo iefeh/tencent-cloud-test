@@ -4,8 +4,11 @@ import { FreeMode, Mousewheel } from 'swiper/modules';
 import shardBgImg from 'img/astrark/pre-register/bg_reward_shard.jpg';
 import packageBgImg from 'img/astrark/pre-register/bg_reward_package.jpg';
 import shardRewardImg from 'img/astrark/pre-register/reward_shard.png';
+import reward2Img from 'img/astrark/pre-register/reward_2.png';
+import reward3Img from 'img/astrark/pre-register/reward_3.png';
+import reward4Img from 'img/astrark/pre-register/reward_4.png';
 import packageRewardImg from 'img/astrark/pre-register/reward_package.png';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import { cn } from '@nextui-org/react';
 import { PreRegisterInfoDTO } from '@/http/services/astrark';
 import completedIconImg from 'img/astrark/pre-register/icon_completed.png';
@@ -21,6 +24,7 @@ interface RewardItem {
   desc: string;
   reached?: boolean;
   reachAmount: number;
+  img: StaticImageData;
 }
 
 export default function RewardSwiper({ preInfo }: { preInfo: PreRegisterInfoDTO | null }) {
@@ -30,24 +34,28 @@ export default function RewardSwiper({ preInfo }: { preInfo: PreRegisterInfoDTO 
       type: RewardType.SHARD,
       desc: 'Perth Shard X 300',
       reachAmount: 10000,
+      img: shardRewardImg,
     },
     {
       target: '50k',
       type: RewardType.PACKAGE,
       desc: 'Perth Shard X 300<br./>Fuel package(small) X 4<br/>Mysterious',
       reachAmount: 50000,
+      img: reward2Img,
     },
     {
       target: '100k',
       type: RewardType.PACKAGE,
       desc: "Exceptional Crew's Chest X 1",
       reachAmount: 100000,
+      img: reward3Img,
     },
     {
       target: '500k',
       type: RewardType.PACKAGE,
       desc: 'Immortal Crew Chest X 1<br/>Fuel package(medium) X 4',
       reachAmount: 500000,
+      img: reward4Img,
     },
   ]);
 
@@ -108,11 +116,7 @@ export default function RewardSwiper({ preInfo }: { preInfo: PreRegisterInfoDTO 
                 <span className="inline-block overflow-hidden w-[0.4375rem] h-[0.4375rem] rounded-full bg-current -mt-1"></span>
               </span>
 
-              <Image
-                className="mt-9 w-[11.875rem] h-[6.25rem] object-cover"
-                src={item.type === RewardType.SHARD ? shardRewardImg : packageRewardImg}
-                alt=""
-              />
+              <Image className="mt-9 w-[11.875rem] h-[6.25rem] object-contain" src={item.img} alt="" />
 
               <div className="mt-6 w-full h-[0.0625rem] bg-gradient-to-r from-transparent via-[rgba(246,199,153,0.3)] to-transparent"></div>
 
