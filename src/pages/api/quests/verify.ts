@@ -56,12 +56,16 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
     }
     const lockKey = `claim_quest_lock:${quest_id}:${userId}`;
     try {
-        // 每隔30秒允许校验一次相同任务
-        const locked = await redis.set(lockKey, Date.now(), "EX", 30, "NX");
+        // 普通任务每隔30秒允许校验一次相同任务,QuestType.TweetInteraction为3分钟
+        let interval: number = 30;
+        if (quest.type === QuestType.TweetInteraction) {
+            interval = 3 * 60;
+        }
+        const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
         if (!locked) {
             res.json(response.success({
                 verified: false,
-                tip: "Verification is under a 30s waiting period, please try again later.",
+                tip: `Verification is under a ${interval}s waiting period, please try again later.`,
             }));
             return;
         }
