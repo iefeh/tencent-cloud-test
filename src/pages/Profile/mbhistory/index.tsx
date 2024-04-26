@@ -1,8 +1,11 @@
 import PaginationRenderItem from '@/components/LoyaltyProgram/task/PaginationRenderItem';
 import { MBHistoryRecord, queryMBHistoryListAPI } from '@/http/services/profile';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 import { useUserContext } from '@/store/User';
 import {
+  Listbox,
+  ListboxItem,
   Pagination,
   ScrollShadow,
   Tab,
@@ -27,9 +30,10 @@ const MBHistoryPage: FC = () => {
   const tabs = ['Regular Task', 'Event'];
   const [selectedKey, setSelectedKey] = useState(router.query.tabKey?.toString() || tabs[0]);
 
-  const [items, setItems] = useState<MBHistoryRecord[]>([]);
+  const [items, setItems] = useState<MBHistoryRecord[][]>([]);
   const pagiInfo = useRef<PagiInfo>({ pageIndex: 1, pageSize: 10 });
   const [pagiTotal, setPagiTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   function onSelectionChange(key: Key) {
     const str = key.toString();
@@ -43,16 +47,37 @@ const MBHistoryPage: FC = () => {
     const { pageIndex, pageSize } = pagi;
     const data = { page_num: pageIndex, page_size: pageSize };
 
+    setLoading(true);
+
     try {
       const res = await queryMBHistoryListAPI(data);
       const { quests, total } = res;
       Object.assign(pagiInfo.current, pagi);
       setPagiTotal(Math.ceil((+total || 0) / pageSize));
-      setItems(quests || []);
+      setItems(formatItems(quests || []));
     } catch (error: any) {
       // toast.error(error?.message || error);
       console.log(error);
     }
+
+    setLoading(false);
+  }
+
+  function formatItems(data: MBHistoryRecord[]) {
+    const list: MBHistoryRecord[][] = [];
+
+    let last: MBHistoryRecord | null = null;
+    data.forEach((item) => {
+      if (!last || item.name !== last.name) {
+        list.push([item]);
+        last = last || item;
+      } else {
+        list[list.length - 1].push(item);
+        last = item;
+      }
+    });
+
+    return list;
   }
 
   function formatTime(time: number) {
@@ -64,6 +89,10 @@ const MBHistoryPage: FC = () => {
 
     const pagi = { ...pagiInfo.current, pageIndex: page };
     queryItems(pagi);
+  }
+
+  function formatMB(value: number) {
+    return `+ ${value || 0} MB`;
   }
 
   useEffect(() => {
@@ -88,7 +117,7 @@ const MBHistoryPage: FC = () => {
 
       <AutoBreadcrumbs hrefs={['/Profile']} />
 
-      <div className="mt-8 w-full">
+      <div className="mt-8 w-full relative">
         <Tabs
           aria-label="Options"
           color="primary"
@@ -112,36 +141,37 @@ const MBHistoryPage: FC = () => {
                 </div>
               }
             >
+              <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-10 gap-4">
+                <li className="flex-[428]">Item</li>
+                <li className="flex-[264]">Reward Type</li>
+                <li className="flex-[224]">Moon Beams</li>
+                <li className="flex-[156]">Time</li>
+              </ul>
+
               <ScrollShadow className="w-full h-[31.375rem] font-poppins-medium">
-                <Table
-                  className="mt-[1.875rem]"
-                  aria-label="Events participated"
-                  classNames={{
-                    wrapper: 'bg-black p-0 rounded-none border-1 border-[#1E1E1E] font-poppins-medium',
-                    thead: '[&>tr:last-child]:hidden [&>tr]:border-none',
-                    tbody: 'pl-[2.1875rem] pr-[1.1875rem] ',
-                    tr: '!rounded-none relative base-tr',
-                    th: 'bg-[#111111] !rounded-none [&:first-child]:pl-[2.1875rem] [&:last-child]:pr-[2.1875rem]',
-                    td: '[&:first-child]:pl-[2.1875rem] [&:last-child]:pr-[2.1875rem]',
-                  }}
-                >
-                  <TableHeader>
-                    <TableColumn>Item</TableColumn>
-                    <TableColumn>Reward Type</TableColumn>
-                    <TableColumn>Moon Beams</TableColumn>
-                    <TableColumn>Time</TableColumn>
-                  </TableHeader>
-                  <TableBody emptyContent={'Coming Soon.'}>
-                    {items.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.type}</TableCell>
-                        <TableCell>{row.moon_beam_delta}</TableCell>
-                        <TableCell>{formatTime(row.created_time)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <Listbox items={items} classNames={{ base: 'p-0 bg-black' }} label="Moon Beams History">
+                  {(list) => (
+                    <ListboxItem
+                      key={`${list[0].name}_${list[0].quest_id}`}
+                      className="rounded-none p-0 !bg-transparent"
+                      textValue={list[0].name}
+                    >
+                      <ul className="text-base text-white transition-colors border-1 border-transparent rounded-base hover:border-basic-yellow">
+                        {list.map((item) => (
+                          <li
+                            key={`${item.quest_id}_${item.created_time}`}
+                            className="flex justify-between items-center h-16 text-[#999] px-10 gap-4"
+                          >
+                            <div className="flex-[428]">{item.name || '--'}</div>
+                            <div className="flex-[264]">{item.type || '--'}</div>
+                            <div className="flex-[224] text-basic-yellow">{formatMB(item.moon_beam_delta)}</div>
+                            <div className="flex-[156]">{formatTime(item.created_time)}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    </ListboxItem>
+                  )}
+                </Listbox>
               </ScrollShadow>
 
               {items.length > 0 && (
@@ -164,6 +194,8 @@ const MBHistoryPage: FC = () => {
             </Tab>
           ))}
         </Tabs>
+
+        {loading && <CircularLoading />}
       </div>
     </section>
   );
