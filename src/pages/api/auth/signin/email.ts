@@ -10,6 +10,9 @@ import {genLoginJWT} from "@/lib/particle.network/auth";
 import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
+import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from '@/lib/models/UserMoonBeamAudit';
+import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
+import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from '@/lib/common/inviter';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -35,9 +38,9 @@ router.post(async (req, res) => {
         return
     }
     // 检查邀请码
-    let inviter: any;
+    let inviter: inviteRelationship | null = null;
     if (invite_code) {
-        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        inviter = await getInviteRelationshipFromDirectInviteCode(invite_code);
         if (!inviter) {
             res.json(response.unknownInviteCode());
             return
@@ -47,13 +50,13 @@ router.post(async (req, res) => {
     let user = await User.findOne({'email': email});
     const isNewUser = !user;
     if (isNewUser && signup_mode) {
-        await doSignupConfirmation(res, inviter, user as IUser, email);
+        await doSignupConfirmation(res, inviter, email);
         return;
     }
     await doUserLogin(res, inviter, user as IUser, email);
 });
 
-async function doSignupConfirmation(res: any, inviter: IUser, user: IUser, email: string) {
+async function doSignupConfirmation(res: any, inviter: inviteRelationship | null, email: string) {
     // 构建注册的负载信息
     const payload: SignupPayload = {
         authorization_type: AuthorizationType.Email,
@@ -67,10 +70,11 @@ async function doSignupConfirmation(res: any, inviter: IUser, user: IUser, email
     };
     if (inviter) {
         payload.invite = {
-            user_id: inviter.user_id,
-            invitee_id: user.user_id,
+            user_id: inviter.direct,
+            invitee_id: payload.user.user_id,
             created_time: Date.now(),
         };
+        payload.indirect_inviter_id = inviter.indirect;
     }
     // 删除验证码
     await redis.del(`${CaptchaType.LoginCaptcha}:${email}`);
@@ -81,13 +85,14 @@ async function doSignupConfirmation(res: any, inviter: IUser, user: IUser, email
     }));
 }
 
-async function doUserLogin(res: any, inviter: IUser, user: IUser, email: string) {
+async function doUserLogin(res: any, inviter: inviteRelationship | null, user: IUser, email: string) {
     const isNewUser = !user;
     if (isNewUser) {
         user = new User({
             user_id: uuidv4(),
             email: email,
             username: email.split("@")[0],
+            moon_beam: inviter ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0,
             avatar_url: process.env.DEFAULT_AVATAR_URL,
             created_time: Date.now(),
         });
@@ -96,11 +101,18 @@ async function doUserLogin(res: any, inviter: IUser, user: IUser, email: string)
             await user.save(opts);
             if (inviter) {
                 const invite = new UserInvite({
-                    user_id: inviter.user_id,
+                    user_id: inviter.direct,
                     invitee_id: user.user_id,
                     created_time: Date.now(),
                 });
                 await invite.save(opts);
+                // 当前用户添加被邀请奖励
+                await saveNewInviteeRegistrationMoonBeamAudit(user.user_id, inviter.direct, session);
+                // 直接或间接邀请者添加邀请数
+                await incrUserMetric(inviter.direct, Metric.TotalInvitee, 1, session);
+                if (inviter.indirect) {
+                    await incrUserMetric(inviter.indirect, Metric.TotalIndirectInvitee, 1, session);
+                }
             }
         })
 

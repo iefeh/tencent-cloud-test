@@ -2,10 +2,11 @@ import Head from 'next/head';
 import ProfileHeader from './components/ProfileHeader';
 import MoonBeams from './components/MoonBeams';
 import MyBadges from './components/MyBadges';
-import DailyCheckIn from '../LoyaltyProgram/earn/components/EarnBanner/DailyCheckIn';
-import Invite from '../LoyaltyProgram/earn/components/EarnBanner/Invite';
+import DailyCheckIn from '@/components/LoyaltyProgram/earn/EarnBanner/DailyCheckIn';
+import Invite from '@/components/LoyaltyProgram/earn/EarnBanner/Invite';
 import MyNFT from './components/MyNFT';
 import EventsParticipated from './components/EventsParticipated';
+import BattlePassCard from '@/components/card/BattlePassCard';
 
 export default function ProfilePage() {
   return (
@@ -26,7 +27,10 @@ export default function ProfilePage() {
 
         {/* <DailyCheckIn /> */}
 
-        <Invite />
+        {/* 如果增加拉新模块，将赛季模块放到最后并设置block=true */}
+        <BattlePassCard />
+
+        <Invite inProfie />
       </div>
 
       <MyNFT />

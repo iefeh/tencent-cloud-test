@@ -10,6 +10,9 @@ import {v4 as uuidv4} from "uuid";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
 import {AuthorizationType, SignupPayload} from "@/lib/authorization/types";
+import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from '@/lib/models/UserMoonBeamAudit';
+import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
+import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from '@/lib/common/inviter';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -25,9 +28,9 @@ router.post(async (req, res) => {
         return
     }
 
-    let inviter: any;
+    let inviter: inviteRelationship | null = null;
     if (invite_code) {
-        inviter = await User.findOne({invite_code: invite_code}, {_id: 0, user_id: 1});
+        inviter = await getInviteRelationshipFromDirectInviteCode(invite_code);
         if (!inviter) {
             res.json(response.unknownInviteCode());
             return
@@ -54,7 +57,7 @@ router.post(async (req, res) => {
     }));
 });
 
-async function doSignupConfirmation(res: any, address: string, inviter: any) {
+async function doSignupConfirmation(res: any, address: string, inviter: inviteRelationship | null) {
     // 构建注册的负载信息
     const now = Date.now();
     const userId = uuidv4();
@@ -74,10 +77,11 @@ async function doSignupConfirmation(res: any, address: string, inviter: any) {
     };
     if (inviter) {
         payload.invite = {
-            user_id: inviter.user_id,
+            user_id: inviter.direct,
             invitee_id: userId,
             created_time: now,
         };
+        payload.indirect_inviter_id = inviter.indirect;
     }
     // 生成二次确认的注册token
     const token = await generateUserSignupSession(payload);
@@ -92,6 +96,7 @@ async function createUserAndWallet(address: string, inviter: any): Promise<IUser
         user_id: uuidv4(),
         username: address,
         avatar_url: process.env.DEFAULT_AVATAR_URL,
+        moon_beam: inviter ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0,
         created_time: Date.now(),
     });
     const userWallet = new UserWallet({
@@ -99,6 +104,7 @@ async function createUserAndWallet(address: string, inviter: any): Promise<IUser
         wallet_addr: address.toLowerCase(),
         created_time: user.created_time,
     });
+    // 保存用户登录钱包信息、邀请记录、被邀请者MB奖励记录、邀请者拉新指标
     await doTransaction(async (session) => {
         const opts = {session};
         await user.save(opts);
@@ -110,6 +116,8 @@ async function createUserAndWallet(address: string, inviter: any): Promise<IUser
                 created_time: Date.now(),
             });
             await invite.save(opts);
+            await saveNewInviteeRegistrationMoonBeamAudit(user.user_id, inviter.user_id, session);
+            await incrUserMetric(inviter.user_id, Metric.TotalInvitee, 1, session);
         }
     });
     return userWallet;

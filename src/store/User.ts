@@ -8,10 +8,12 @@ import {
   logoutAPI,
   signInParticleAPI,
 } from '@/http/services/login';
+import { MobxContext } from '@/pages/_app';
 import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
 import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
 class UserStore {
@@ -27,6 +29,7 @@ class UserStore {
   // timer = 0;
   isConnect = false;
   newUserModalVisible = false;
+  redeemModalVisible = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -209,6 +212,18 @@ class UserStore {
       this.newUserModalVisible = !this.inviteModalVisible;
     }
   };
+
+  toggleRedeemModal = (visible?: boolean) => {
+    if (typeof visible === 'boolean') {
+      this.redeemModalVisible = visible;
+    } else {
+      this.redeemModalVisible = !this.redeemModalVisible;
+    }
+  };
 }
 
 export default UserStore;
+
+export function useUserContext() {
+  return useContext(MobxContext);
+}

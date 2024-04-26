@@ -40,3 +40,5 @@ next-env.d.ts
 .sentryclirc
 /src/pages/api/badges/images/
 /.vscode
+
+debug.log

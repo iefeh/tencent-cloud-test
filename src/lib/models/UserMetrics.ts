@@ -43,9 +43,35 @@ export enum Metric {
 
   // 奔走相告徽章，完成转推次数
   RetweetCount = 'retweet_count',
-  //NFT等级，对应创世者徽章
+  // NFT等级，对应创世者徽章
   TetraHolder = 'tetra_holder',
-  //新手任务完成徽章
+
+  // 总计被邀请的人数
+  TotalInvitee = 'total_invitee',
+  // 总计已经完成新手徽章Novice Notch的被邀请人数
+  TotalNoviceBadgeInvitee = 'total_novice_badge_invitee',
+
+  // 总计非直接被邀请的人数
+  TotalIndirectInvitee = 'total_indirect_invitee',
+  // 总计已经完成新手徽章Novice Notch的非直接被邀请人数
+  TotalIndirectNoviceBadgeInvitee = 'total_indirect_novice_badge_invitee',
+  // 总计已校验钱包资产的被邀请人数
+  TotalWalletVerifiedInvitee = 'total_wallet_verified_invitee',
+
+  // 被邀请人的资产只在他首次verify时计算，后续reverify不再更新
+  // 被邀请人总计钱包token价值
+  TotalInviteeWalletTokenUsdValue = 'total_invitee_wallet_token_usd_value',
+  // 被邀请人总计钱包NFT价值
+  TotalInviteeWalletNftUsdValue = 'total_invitee_wallet_nft_usd_value',
+  // 被邀请人总计钱包资产价值 = 钱包token价值+WalletNFTUSDValue
+  TotalInviteeWalletAssetUsdValue = 'total_invitee_wallet_asset_usd_value',
+
+  //第1赛季完成任务数记录字段
+  BattlepassSeason1PremiumPass = 'battlepass_season_1_premium_pass',
+  BattlepassSeason1StandardPass = 'battlepass_season_1_standard_pass',
+
+  //推特粉丝数
+  TwitterFollowerCount = 'twitter_follower_count',
 }
 
 // 用户内部指标，存放单独的集合
@@ -86,8 +112,34 @@ export interface IUserMetrics extends Document {
 
   // 转推次数
   retweet_count: number;
-  //NFT等级
+  // NFT等级
   tetra_holder: number;
+
+  //第1赛季完成任务数
+  battlepass_season_1_premium_pass: number;
+  battlepass_season_1_standard_pass: number;
+
+
+  // 被邀请人数
+  total_invitee: number;
+  // 总计已经完成新手徽章Novice Notch的被邀请人数
+  total_novice_badge_invitee: number;
+
+  // 总计非直接被邀请的人数
+  total_indirect_invitee: number;
+  // 总计已经完成新手徽章Novice Notch的非直接被邀请人数
+  total_indirect_novice_badge_invitee: number;
+
+  // 总计已校验钱包资产的被邀请人数
+  total_wallet_verified_invitee: number;
+  // 被邀请人总计钱包token价值
+  total_invitee_wallet_token_usd_value: number;
+  // 被邀请人总计钱包NFT价值
+  total_invitee_wallet_nft_usd_value: number;
+  // 被邀请人总计钱包资产价值 = 钱包token价值+WalletNFTUSDValue
+  total_invitee_wallet_asset_usd_value: number;
+  //推特粉丝数
+  twitter_follower_count: number;
   // 创建时间毫秒时间戳
   created_time: number;
 }
@@ -116,6 +168,17 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   twitter_followed_astrark: { Type: Number },
   retweet_count: { Type: Number },
   tetra_holder: { Type: Number },
+  battlepass_season_1_premium_pass: { Type: Number },
+  battlepass_season_1_standard_pass: { Type: Number },
+  total_invitee: { Type: Number },
+  total_novice_badge_invitee: { Type: Number },
+  total_indirect_invitee: { Type: Number },
+  total_indirect_novice_badge_invitee: { Type: Number },
+  total_wallet_verified_invitee: { Type: Number },
+  total_invitee_wallet_token_usd_value: { Type: Number },
+  total_invitee_wallet_nft_usd_value: { Type: Number },
+  total_invitee_wallet_asset_usd_value: { Type: Number },
+  twitter_follower_count: { type: Number },
   created_time: { type: Number, required: true },
 });
 
@@ -160,4 +223,37 @@ export async function createUserMetrics(userId: string, metrics: { [key: string]
   await sendBadgeCheckMessages(userId, setOperations);
 
   return result;
+}
+
+
+export async function incrUserMetric(userId: string, metric: Metric, incrValue: number, session: any) {
+  await UserMetrics.updateOne(
+    { user_id: userId },
+    {
+      $inc: { [metric]: incrValue },
+      $setOnInsert: {
+        created_time: Date.now(),
+      },
+    },
+    { upsert: true, session: session },
+  );
+  await sendBadgeCheckMessage(userId, metric);
+}
+
+export async function incrUserMetrics(userId: string, metrics: { [key: string]: string | number | boolean }, session: any) {
+  let incOps: any = {};
+  for (const [metric, value] of Object.entries(metrics)) {
+    incOps[metric] = value;
+  }
+  await UserMetrics.updateOne(
+    { user_id: userId },
+    {
+      $inc: incOps,
+      $setOnInsert: {
+        created_time: Date.now(),
+      },
+    },
+    { upsert: true, session: session },
+  );
+  await sendBadgeCheckMessages(userId, incOps);
 }

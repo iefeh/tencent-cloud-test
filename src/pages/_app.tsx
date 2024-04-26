@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import '@/styles/dialog.css';
+import '@/styles/transition.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
@@ -69,6 +70,7 @@ import { KEY_INVITE_CODE } from '@/constant/storage';
 import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
+import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -171,8 +173,8 @@ function loadVideo(path: string) {
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
-  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
+  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
@@ -180,6 +182,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
+  const bpStore = useBattlePassStore();
 
   if (router.query.invite_code) {
     localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
@@ -289,13 +292,19 @@ export default function App({ Component, pageProps }: AppProps) {
       <Web3ModalProvider>
         <NextUIProvider navigate={router.push}>
           <MobxContext.Provider value={store}>
-            {!isInWhiteList && loading ? (
-              <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-            ) : (
-              <RootLayout isInWhiteList={isInWhiteList} hasNoHeader={hasNoHeader}>
-                <Component {...pageProps} />
-              </RootLayout>
-            )}
+            <BattlePassContext.Provider value={bpStore}>
+              {!isInWhiteList && loading ? (
+                <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+              ) : (
+                <RootLayout
+                  isInWhiteList={isInWhiteList}
+                  hasNoHeader={hasNoHeader}
+                  hideLoginCloseButton={(Component as any).hideLoginCloseButton}
+                >
+                  <Component {...pageProps} />
+                </RootLayout>
+              )}
+            </BattlePassContext.Provider>
           </MobxContext.Provider>
         </NextUIProvider>
       </Web3ModalProvider>

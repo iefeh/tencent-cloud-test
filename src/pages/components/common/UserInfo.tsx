@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
 import UserAvatar from './UserAvatar';
 import BasicButton from './BasicButton';
-import LoginModal from './LoginModal';
 import { observer } from 'mobx-react-lite';
 
 const UserInfo = function () {
@@ -21,8 +20,6 @@ const UserInfo = function () {
           />
         </>
       )}
-
-      <LoginModal />
     </>
   );
 };

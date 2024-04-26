@@ -22,6 +22,7 @@ export const enum QuestType {
   JOIN_DISCORD_SERVER = 'join_discord_server',
   ASTRARK_PRE_REGISTER = 'user_metric',
   SEND_DISCORD_MESSAGE = 'send_discord_message',
+  TwitterFollower = 'twitter_follower',
 }
 
 export const enum QuestRewardType {
@@ -88,5 +89,11 @@ export const enum EVENT_REWARD_TYPE {
   MOON_BEAM = 'moon_beam',
   BADGE = 'badge',
   LUCKY_DRAW = 'lucky_draw',
-  NFT_BONUS = 'nft_bonus',
+  Multiplier = 'multiplier',
+  TASK = 'task',
+}
+
+export const enum AcceleratorType {
+  NFT = 'nft_holder',
+  BADGE = 'badge_holder',
 }

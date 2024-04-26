@@ -5,6 +5,8 @@ import copyImg from 'img/profile/copy.png';
 import { cn } from '@nextui-org/react';
 import { toast } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
+import LGButton from './buttons/LGButton';
+import { formatUserName } from '@/utils/common';
 
 interface Props {
   className?: string;
@@ -15,11 +17,22 @@ interface Props {
   desc?: string | JSX.Element;
   copyText?: string;
   copyIcon?: string | StaticImageData;
+  showRedeem?: boolean;
 }
 
 function UserProfile(props: Props) {
-  const { className, avatarClassName, usernameClassName, walletClassName, hideCopy, desc, copyText, copyIcon } = props;
-  const { userInfo } = useContext(MobxContext);
+  const {
+    className,
+    avatarClassName,
+    usernameClassName,
+    walletClassName,
+    hideCopy,
+    desc,
+    copyText,
+    copyIcon,
+    showRedeem,
+  } = props;
+  const { userInfo, toggleRedeemModal } = useContext(MobxContext);
   if (!userInfo) return null;
 
   const { avatar_url, username, wallet } = userInfo;
@@ -58,7 +71,7 @@ function UserProfile(props: Props) {
             usernameClassName,
           ])}
         >
-          {username}
+          {formatUserName(username)}
         </div>
         <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
           <span>{desc || getWallet()}</span>
@@ -70,6 +83,8 @@ function UserProfile(props: Props) {
               onClick={onCopy}
             />
           )}
+
+          {showRedeem && <LGButton className="ml-4" label="Redeem" actived onClick={toggleRedeemModal} />}
         </div>
       </div>
     </div>

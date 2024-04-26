@@ -1,0 +1,504 @@
+import BattlePassSeasons from '@/lib/models/BattlePassSeasons';
+import UserBattlePassSeasons, { BattlePassType } from '@/lib/models/UserBattlePassSeasons';
+import Quest from '@/lib/models/Quest';
+import BattlePassPremiumRequirements, { BattlePassRequirementType } from '../models/BattlepassPremiumRequirements';
+import UserBadges from '../models/UserBadges';
+import { PipelineStage } from 'mongoose';
+import UserWallet from '../models/UserWallet';
+import ContractNFT from '../models/ContractNFT';
+import { sendBattlepassCheckMessage } from '../kafka/client';
+import { WhitelistEntityType } from '../quests/types';
+import Whitelist from '../models/Whitelist';
+import UserDiscord from '../models/UserDiscord';
+import UserTwitter from '../models/UserTwitter';
+import UserGoogle from '../models/UserGoogle';
+import UserSteam from '../models/UserSteam';
+import User from '../models/User';
+import { generateBattlepass } from '@/pages/api/battlepass/participate';
+
+//获得当前赛季ID
+export async function getCurrentBattleSeasonId(): Promise<any> {
+  const now: number = Date.now();
+  const current_season = await BattlePassSeasons.findOne({ start_time: { $lte: now }, end_time: { $gte: now } });
+  //是否
+  if (current_season) {
+    return current_season.id;
+  } else {
+    return undefined;
+  }
+}
+//获取当前赛季
+export async function getCurrentBattleSeason(): Promise<any> {
+  const now: number = Date.now();
+  const current_season = await BattlePassSeasons.findOne({ start_time: { $lte: now }, end_time: { $gte: now } });
+  return current_season;
+}
+
+//获得用户赛季
+export async function getUserBattlePass(user_id: string): Promise<any> {
+  const season: any = await getCurrentBattleSeason();
+  //非赛季时间
+  if(!season){
+    return undefined;
+  }
+
+  let user_season_pass:any = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
+  if(!user_season_pass){
+    //创建普通通证
+    await generateBattlepass(user_id,season);
+    user_season_pass = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
+  }
+  
+  return user_season_pass;
+}
+
+//完成quest时，更新用户通行证信息
+export async function updateUserBattlepass(userId: string, questId: string, mbAmont: number, session: any) {
+  const userBattlepass = await getUserBattlePass(userId);
+  //判断用户是否有通行证
+  if (userBattlepass) {
+    const quest = await Quest.findOne({ id: questId });
+    //普通任务，赛季进度+1
+    let seasonPassProgress: number = 1;
+    if (quest.reward.season_pass_progress) {
+      //特殊任务根据配置而定
+      seasonPassProgress = quest.reward.season_pass_progress;
+    }
+    await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: userBattlepass.battlepass_season_id }, {
+      $inc: { finished_tasks: seasonPassProgress, total_moon_beam: mbAmont },
+      updated_time: Date.now()
+    }, { upsert: true, session: session });
+    //检查赛季进度
+    await sendBattlepassCheckMessage(userId);
+  }
+}
+
+//判断用户是否具有高阶通行证资格
+export async function isPremiumSatisfied(userId: string): Promise<boolean> {
+  const result = await premiumSatisfy(userId);
+  return result.is_premium;
+}
+
+//判断用户是否高阶通证，及具体的类型
+export async function premiumSatisfy(userId: string): Promise<{ premium_type: string, is_premium: boolean, premium_source: string }> {
+
+  const seasonId = await getCurrentBattleSeasonId();
+  if (!seasonId) {
+    throw new Error("Battle season is not exists.");
+  }
+  //先查询用户是否已依据徽章获得高阶通证资格
+  let userBattlepass = await UserBattlePassSeasons.findOne({ user_id: userId, battlepass_season_id: seasonId })
+  if (userBattlepass && userBattlepass.is_premium) {
+    return { premium_type: userBattlepass.premium_type, is_premium: userBattlepass.is_premium, premium_source: userBattlepass.premium_source };
+  }
+
+  //先判断徽章是否达到要求
+  const requirements = await BattlePassPremiumRequirements.find({ season_id: seasonId });
+  let result = await premiumSatisfyByBadge(userId, seasonId, requirements);
+  if (!result.is_premium) {
+    //判断白名单是否满足要求
+    result = await premiumSatisfyByWhiteList(userId, seasonId, requirements);
+  }
+  if (!result.is_premium) {
+    //判断NFT是否满足要求
+    result = await premiumSatisfyByNFT(userId, seasonId, requirements);
+  }
+
+  return { premium_type: result.premium_type, is_premium: result.is_premium, premium_source: result.premium_source };
+}
+
+//判断徽章获得情况，判断是否满足高阶条件
+async function premiumSatisfyByBadge(userId: string, seasonId: number, requirements: any[]): Promise<{ premium_type: string, is_premium: boolean, premium_source: string }> {
+  //取出徽章ID用于查询
+  let badgeIds: string[] = [];
+  for (let r of requirements) {
+    if (r.type === BattlePassRequirementType.Badge) {
+      for (let p of r.properties) {
+        badgeIds.push(p.badge_id);
+      }
+    }
+  }
+  //查询用户已拥有的徽章
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      badge_id: { $in: badgeIds }
+    }
+  }, {
+    $project: {
+      badge_id: 1,
+      series: 1
+    }
+  }];
+  const userBadges: any[] = await UserBadges.aggregate(pipeline);
+  //处理徽章查询结果，方便根据徽章ID，取出徽章信息
+  let badgeInfos: Map<string, any> = new Map();
+  for (let b of userBadges) {
+    badgeInfos.set(b.badge_id, b);
+  }
+
+  //判断徽章是否满足要求
+  let targetBadge: any;
+  let badgeSatisfied: boolean = false;
+  let premiumSource: string = '';
+  for (let r of requirements) {
+    //是否为徽章类要求
+    if (r.type === BattlePassRequirementType.Badge) {
+      for (let p of r.properties) {
+        targetBadge = badgeInfos.get(p.badge_id)
+        if (targetBadge) {
+          for (let s of Object.keys(targetBadge.series)) {
+            if (targetBadge.series[s]?.claimed_time != null) {
+              //判断是否有更高阶的徽章被领取
+              if (Number(s) >= Number(p.lvl)) {
+                if (premiumSource.length > 0) {
+                  premiumSource = premiumSource + ' and Lv' + s + " " + p.name;
+                } else {
+                  premiumSource = 'Lv' + s + " " + p.name;
+                }
+                badgeSatisfied = true;
+                break;
+              }
+            } else {
+              badgeSatisfied = false;
+            }
+          }
+        } else {
+          badgeSatisfied = false;
+        }
+        //当有多个徽章等级要求时，出现一个不满足即退出不再进行判断，即多徽章要求之间是且的关系。若需要徽章之间是或的关系，则可以配置成单个的要求。
+        if (!badgeSatisfied) {
+          break;
+        }
+      }
+      //出现满足的徽章条件即退出
+      if (badgeSatisfied) {
+        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.Badge, premium_source: premiumSource, is_premium: badgeSatisfied, updated_time: Date.now() });
+        break;
+      }
+    }
+  }
+
+  return { premium_type: BattlePassRequirementType.Badge, is_premium: badgeSatisfied, premium_source: premiumSource };
+}
+
+async function premiumSatisfyByWhiteList(userId: string, seasonId: number, requirements: any[]): Promise<{ premium_type: string, is_premium: boolean, premium_source: string }> {
+  let whitelistSatisfied: boolean = false;
+  let userWhitelist: any;
+  let premiumSource: any = '';
+  for (let r of requirements) {
+    //是否为白名单类要求
+    if (r.type === BattlePassRequirementType.WhiteList) {
+      //allRequirements.whitelist.push(r.description);
+      //判断所有的白名单要求
+      premiumSource = r.description;
+      for (let p of r.properties) {
+        switch (p.whitelist_entity_type) {
+          case WhitelistEntityType.WalletAddr:
+            userWhitelist = await findUserWithWalletWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.DiscordId:
+            userWhitelist = await findUserWithDiscordWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.TwitterId:
+            userWhitelist = await findUserWithTwitterWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.GoogleId:
+            userWhitelist = await findUserWithGoogleWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.SteamId:
+            userWhitelist = await findUserWithSteamWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.UserId:
+            userWhitelist = await findUserWithUserWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.Email:
+            userWhitelist = await findUserWithEmailWhitelist(userId, p.whitelist_id);
+            break;
+        }
+        whitelistSatisfied = !!userWhitelist;
+
+        if (!whitelistSatisfied) {
+          break;
+        }
+      }
+      //如果用户通过白名单获得高阶通证，则需要进行更新
+      if (whitelistSatisfied) {
+        await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: seasonId }, { premium_type: BattlePassRequirementType.WhiteList, premium_source: premiumSource, is_premium: whitelistSatisfied, updated_time: Date.now() });
+        break;
+      }
+    }
+  }
+  return { premium_type: BattlePassRequirementType.WhiteList, is_premium: whitelistSatisfied, premium_source: premiumSource };
+}
+
+//判断NFT获得情况，判断是否满足高阶条件
+async function premiumSatisfyByNFT(userId: string, seasonId: number, requirements: any[]): Promise<{ premium_type: string, is_premium: boolean, premium_source: string }> {
+  let nftSatisfied: boolean = false;
+  let premiumSource: string = '';
+  for (let r of requirements) {
+    //是否为NFT类要求
+    if (r.type === BattlePassRequirementType.NFT) {
+      //判断所有的NFT要求
+      for (let p of r.properties) {
+        premiumSource = p.name;
+        const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+        if (userWallet) {
+          const userNFT = await ContractNFT.findOne({ wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, deleted_time: null, transaction_status: 'confirmed' });
+          nftSatisfied = !!userNFT;
+        } else {
+          nftSatisfied = false;
+        }
+        //当有多个NFT持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要NFT之间是或的关系，则可以配置成单个的要求。
+        if (!nftSatisfied) {
+          break;
+        }
+      }
+      if (nftSatisfied) {
+        break;
+      }
+    }
+  }
+  return { premium_type: BattlePassRequirementType.NFT, is_premium: nftSatisfied, premium_source: premiumSource };
+}
+//判断用户是否在wallet_addr类型的白名单中
+export async function findUserWithWalletWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$wallet_addr' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'wallet'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'wallet.whitelist_id': 1,
+      'wallet.whitelist_entity_id': 1,
+      user_count: { $size: '$wallet' }
+    }
+  }]
+  let users: any = await UserWallet.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+//判断用户是否在discord_id类型的白名单中
+export async function findUserWithDiscordWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$discord_id' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'discord'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'discord.whitelist_id': 1,
+      'discord.whitelist_entity_id': 1,
+      user_count: { $size: '$discord' }
+    }
+  }]
+  let users: any = await UserDiscord.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+//判断用户是否在twitter_id类型的白名单中
+export async function findUserWithTwitterWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$twitter_id' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'twitter'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'twitter.whitelist_id': 1,
+      'twitter.whitelist_entity_id': 1,
+      user_count: { $size: '$twitter' }
+    }
+  }]
+  let users: any = await UserTwitter.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+//判断用户是否在google_id类型的白名单中
+export async function findUserWithGoogleWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$google_id' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'google'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'google.whitelist_id': 1,
+      'google.whitelist_entity_id': 1,
+      user_count: { $size: '$google' }
+    }
+  }]
+  let users: any = await UserGoogle.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+//判断用户是否在steam_id类型的白名单中
+export async function findUserWithSteamWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$steam_id' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'steam'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'steam.whitelist_id': 1,
+      'steam.whitelist_entity_id': 1,
+      user_count: { $size: '$steam' }
+    }
+  }]
+  let users: any = await UserSteam.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+//判断用户是否在user_id类型的白名单中
+export async function findUserWithUserWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$user_id' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'user'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'user.whitelist_id': 1,
+      'user.whitelist_entity_id': 1,
+      user_count: { $size: '$user' }
+    }
+  }]
+  let users: any = await User.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+//判断用户是否在email类型的白名单中
+export async function findUserWithEmailWhitelist(userId: string, whitelistId: string): Promise<any> {
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      deleted_time: null
+    }
+  }, {
+    $lookup: {
+      from: 'whitelists',
+      let: { whitelist_entity_id: '$email' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$whitelist_id', whitelistId] }, { $eq: ['$whitelist_entity_id', '$$whitelist_entity_id'] }] } },
+      }],
+      as: 'email'
+    }
+  }, {
+    $project: {
+      _id: 0,
+      user_id: 1,
+      'email.whitelist_id': 1,
+      'email.whitelist_entity_id': 1,
+      user_count: { $size: '$email' }
+    }
+  }]
+  let users: any = await User.aggregate(pipeline);
+  //判断是否有白名单数据
+  if (users.length === 1 && users[0].user_count > 0) {
+    return users[0];
+  }
+  return undefined
+}
+
+export async function getAllRequirements(): Promise<any> {
+  const seasonId: string = await getCurrentBattleSeasonId();
+  const requirements = await BattlePassPremiumRequirements.find({ season_id: seasonId });
+  let allRequirements: any = { badge: [], nft: [], whitelist: [] };
+  for (let r of requirements) {
+    //是否为徽章类要求
+    if (r.type === BattlePassRequirementType.Badge) {
+      allRequirements.badge.push(r.description);
+    } else if (r.type === BattlePassRequirementType.WhiteList) {
+      allRequirements.whitelist.push(r.description);
+    } else {
+      allRequirements.nft.push(r.description);
+    }
+  }
+  return allRequirements
+}

@@ -1,5 +1,5 @@
-import {Document, Schema, models, model} from 'mongoose'
-import connectToMongoDbDev, {connectToMongoDbDiscord} from "@/lib/mongodb/client";
+import { Document, Schema, models, model } from 'mongoose'
+import connectToMongoDbDev, { connectToMongoDbDiscord } from "@/lib/mongodb/client";
 
 
 export enum CampaignRewardType {
@@ -9,6 +9,8 @@ export enum CampaignRewardType {
     Badge = 'badge',
     // 抽奖机会
     LuckyDraw = 'lucky_draw',
+    //任务数
+    Task = 'task',
 }
 
 // 活动奖励
@@ -24,6 +26,8 @@ type CampaignReward = {
     amount: number,
     //徽章ID
     badge_id: string,
+    //任务权重
+    season_pass_progress: number
 }
 
 export enum CampaignStatus {
@@ -78,23 +82,23 @@ export interface ICampaign extends Document {
 }
 
 const CampaignSchema = new Schema<ICampaign>({
-    id: {type: String, required: true},
-    name: {type: String},
-    description: {type: String},
-    image_url: {type: String},
-    active: {type: Boolean},
-    start_time: {type: Number},
-    end_time: {type: Number},
+    id: { type: String, required: true },
+    name: { type: String },
+    description: { type: String },
+    image_url: { type: String },
+    active: { type: Boolean },
+    start_time: { type: Number },
+    end_time: { type: Number },
     tasks: Schema.Types.Mixed,
     rewards: Schema.Types.Mixed,
     claim_settings: Schema.Types.Mixed,
-    created_time: {type: Number},
-    updated_time: {type: Number},
-    deleted_time: {type: Number},
+    created_time: { type: Number },
+    updated_time: { type: Number },
+    deleted_time: { type: Number },
 });
 
 // 活动唯一id
-CampaignSchema.index({id: 1}, {unique: true});
+CampaignSchema.index({ id: 1 }, { unique: true });
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();

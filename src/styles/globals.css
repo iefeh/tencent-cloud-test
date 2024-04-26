@@ -118,6 +118,7 @@ body {
 
 * {
   scrollbar-width: none;
+  scroll-behavior: smooth;
 }
 
 li::marker {

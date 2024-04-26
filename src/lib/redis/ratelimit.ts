@@ -37,7 +37,7 @@ export const allowToSendCaptcha = async (captchaTyp: CaptchaType, email: string,
     if (!emailRes.allowed) {
         return false;
     }
-    // 检查IP当天发送次数
+    // 检查IP当天发送次数， 注意这里获取到的IP有问题，不能使用.
     // const ipRes = await limiter.allowPerHour(`email_captcha:${ip}`, 30, 24);
     // return ipRes.allowed > 0
     return true;

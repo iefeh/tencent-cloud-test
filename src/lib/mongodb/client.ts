@@ -19,7 +19,7 @@ if (!cached) {
 function connectToDatabase(uri: string): Connection {
     let cached = global.mongooseConnections[uri];
     if (!cached) {
-        cached = global.mongooseConnections[uri] = {conn: mongoose.createConnection(uri, {})};
+        cached = global.mongooseConnections[uri] = {conn: mongoose.createConnection(uri, {autoIndex: false,})};
     }
     return cached.conn;
 }

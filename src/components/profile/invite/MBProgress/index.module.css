@@ -1,0 +1,41 @@
+.progressSwiper {
+  :global {
+    .swiper-wrapper {
+      width: max-content;
+    }
+
+    .swiper-wrapper::before {
+      content: '';
+      position: absolute;
+      left: 6rem;
+      top: 6.5rem;
+      width: calc(100% - 9rem);
+      height: 0.25rem;
+      background-color: rgb(255 255 255 / 0.1);
+      z-index: 0;
+    }
+
+    .swiper-wrapper::after {
+      content: '';
+      position: absolute;
+      left: 6rem;
+      top: 6.5rem;
+      width: var(--progress);
+      height: 0.25rem;
+      background-color: #a9895a;
+      border-radius: 2px;
+      z-index: 0;
+    }
+
+    .swiper-slide {
+      width: max-content;
+      height: 100%;
+      padding-top: 3.75rem;
+      z-index: 1;
+    }
+
+    .swiper-slide + .swiper-slide {
+      margin-left: 4.5rem;
+    }
+  }
+}
