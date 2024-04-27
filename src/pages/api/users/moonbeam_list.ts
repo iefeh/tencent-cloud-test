@@ -208,7 +208,6 @@ async function enrichMbsDetail(tab: string, seasonId: string, mbs: any[]): Promi
                     mb.type = `${multipliersNameMap.get(mb.extra_info)} Multiplier`;
                 } else {
                     mb.type = "Season Milestone";
-                    console.log(mb);
                     if (mb.reward_taint.indexOf("standard") !== -1) {
                         mb.item = `Achieve S${seasonId} Standard Pass Lv${mb.extra_info}`;
                     } else {
