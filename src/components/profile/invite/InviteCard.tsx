@@ -60,7 +60,14 @@ const InviteCard = function ({ onRuleClick }: Props) {
             <li>Invitees will receive 15 bonus Moon Beams as a reward.</li>
             <li>
               Please note that only new users who receive the{' '}
-              <span className="text-basic-yellow">Novice Notch Badge</span> are counted as successful registration.
+              <a
+                className="text-basic-yellow hover:underline"
+                href="/LoyaltyProgram/event?id=6becf936-fdf6-4807-876f-552d723b3c4a"
+                target="_blank"
+              >
+                Novice Notch Badge
+              </a>{' '}
+              are counted as successful registration.
             </li>
           </ul>
         </div>

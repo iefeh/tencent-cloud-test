@@ -50,6 +50,7 @@ export interface BattleInfoDTO {
   };
   current_progress: number;
   premium_type?: string;
+  premium_source?: string;
 }
 
 export function queryBattleInfoAPI(): Promise<BattleInfoDTO> {
@@ -75,6 +76,7 @@ export interface TaskCategory {
   quest_count: number;
   achieve_count: number;
   image_url: string;
+  is_new?: boolean;
 }
 
 export function queryTaskCategoriesAPI(): Promise<{ result: TaskCategory[] }> {

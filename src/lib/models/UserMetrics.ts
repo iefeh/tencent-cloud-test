@@ -71,7 +71,7 @@ export enum Metric {
   BattlepassSeason1StandardPass = 'battlepass_season_1_standard_pass',
 
   //推特粉丝数
-  TwitterFollowerCount='twitter_follower_count',
+  TwitterFollowerCount = 'twitter_follower_count',
 }
 
 // 用户内部指标，存放单独的集合
@@ -138,7 +138,8 @@ export interface IUserMetrics extends Document {
   total_invitee_wallet_nft_usd_value: number;
   // 被邀请人总计钱包资产价值 = 钱包token价值+WalletNFTUSDValue
   total_invitee_wallet_asset_usd_value: number;
-
+  //推特粉丝数
+  twitter_follower_count: number;
   // 创建时间毫秒时间戳
   created_time: number;
 }
@@ -177,6 +178,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   total_invitee_wallet_token_usd_value: { Type: Number },
   total_invitee_wallet_nft_usd_value: { Type: Number },
   total_invitee_wallet_asset_usd_value: { Type: Number },
+  twitter_follower_count: { type: Number },
   created_time: { type: Number, required: true },
 });
 

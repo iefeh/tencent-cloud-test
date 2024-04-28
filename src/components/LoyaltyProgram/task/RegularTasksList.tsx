@@ -137,15 +137,18 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectTexts, achieved, verified } = task;
+    const { connectTexts, achieved, verified, verify_disabled } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
-    const [verifiable, setVerifiable] = useState(verified ? canReverify : !task.properties.is_prepared || achieved);
+    const [verifiable, setVerifiable] = useState(
+      !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
+    );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
+    const isTweetInteration = task.type === QuestType.TweetInteraction;
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -277,7 +280,15 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           hasCD={hasVerifyCD}
-          cd={30}
+          tooltip={
+            isTweetInteration && (
+              <div className="max-w-[25rem] px-4 py-3">
+                * Please be aware that data verification may take a moment. Please wait for a few minutes before
+                clicking &apos;Verify&apos; button.
+              </div>
+            )
+          }
+          cd={isTweetInteration ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -425,7 +436,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
     }, []);
 
     return (
-      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.375rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
+      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[1.25rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
         <div className="text-xl">{task.name}</div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
@@ -460,7 +471,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
               <Image className="w-8 h-8" src={mbImg} alt="" />
 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-                {task.reward.amount_formatted} MBs
+                {task.reward.amount_formatted} Moon Beams
               </span>
             </div>
 

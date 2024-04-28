@@ -13,18 +13,15 @@ interface Props {
 const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
   // const { info } = useBattlePassContext();
   // const { all_requirements: { badge = [], nft = [] } = {} } = info || {};
-  const nft:string[] = [
-    "Moonveil’s Destiny TETRA NFT",
-    "Moonveil’s Eternity TETRA NFT"
-  ];
-  const badge:string[] = [
-    "Steam Era Badge Lv 4 or above",
-    "Opulent Overlord Badge Lv 5 or above",
-    "Fortune Maestro Badge Lv 3 or above",
-    "X Factor Badge Lv 4 or above",
-    "AstrArk Alpha Tester Badge Lv5",
+  const nft: string[] = ['Moonveil’s Destiny TETRA NFT', 'Moonveil’s Eternity TETRA NFT'];
+  const badge: string[] = [
+    'Steam Era Badge Lv 4 or above',
+    'Opulent Overlord Badge Lv 5 or above',
+    'Fortune Maestro Badge Lv 3 or above',
+    'X Factor Badge Lv 4 or above',
+    'AstrArk Alpha Tester Badge Lv5',
     "Diplomat's Insignia Badge Lv6 or above",
-    "Lucky Draw Master Badge Lv2 or above",
+    'Lucky Draw Master Badge Lv2 or above',
   ];
   return (
     <Modal
@@ -56,7 +53,7 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
               </p>
 
               <ul>
-                <li className="text-white">
+                <li className="text-basic-yellow">
                   <b>1. How to level up?</b>
                 </li>
 
@@ -67,7 +64,7 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
               </ul>
 
               <ul>
-                <li className="text-white">
+                <li className="text-basic-yellow">
                   <b>2. What can I win during this Season?</b>
                 </li>
 
@@ -97,7 +94,7 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
               </ul>
 
               <ul>
-                <li className="text-white">
+                <li className="text-basic-yellow">
                   <b>3. How to claim the Standard Season Pass?</b>
                 </li>
 
@@ -107,7 +104,7 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
               </ul>
 
               <ul>
-                <li className="text-white">
+                <li className="text-basic-yellow">
                   <b>4. How to claim the Premium Season Pass?</b>
                 </li>
 
@@ -132,11 +129,26 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
                     <div className="indent-[3em]">- More supported Badges coming soon</div>
                   </p>
                   <p className="indent-[2em]">Stay tuned for more ways to acquire the premium season pass.</p>
+                  <p className="indent-[2em]">
+                    You can win those badges by completing our season{' '}
+                    <a className="text-basic-yellow underline" href="/LoyaltyProgram/season/foresight" target="_blank">
+                      Tasks and Events
+                    </a>
+                    . Check more details from the{' '}
+                    <a className="text-basic-yellow underline" href="/Profile/MyBadges" target="_blank">
+                      Badge Center
+                    </a>
+                    .
+                  </p>
+                  <p className="indent-[2em] text-basic-yellow font-bold">
+                    * Please note that Premium Reward benefits start from the moment you claim your Premium Pass.
+                    Unclaimed rewards will not be compensated, so claim early for the best advantage!
+                  </p>
                 </li>
               </ul>
 
               <ul>
-                <li className="text-white">
+                <li className="text-basic-yellow">
                   <b>5. Important info to know:</b>
                 </li>
 
@@ -150,7 +162,7 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
                 </li>
               </ul>
 
-              <p className="text-white text-lg">Let&apos;s rock it to the moon together!</p>
+              <p className="text-basic-yellow text-lg">Let&apos;s rock it to the moon together!</p>
             </ModalBody>
           </>
         )}

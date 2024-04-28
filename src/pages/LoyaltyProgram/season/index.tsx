@@ -83,7 +83,7 @@ function SeasonBattle() {
 
           <HasPassIndexScreen loading={loading} onExplore={onExplore} />
 
-          {info?.has_battle_pass && <RocketScreen />}
+          {info?.has_battle_pass && <RocketScreen onRuleClick={onOpen} />}
 
           {info && <FinalScreen />}
         </div>

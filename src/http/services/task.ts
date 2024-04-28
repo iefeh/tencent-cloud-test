@@ -1,4 +1,4 @@
-import { EVENT_REWARD_TYPE, EventStatus, QuestType } from '@/constant/task';
+import { AcceleratorType, EVENT_REWARD_TYPE, EventStatus, QuestType } from '@/constant/task';
 import http from '../index';
 
 export interface TaskProperties {
@@ -27,6 +27,7 @@ export interface TaskListItem {
   authorization: string | null;
   user_authorized?: boolean;
   verified?: boolean;
+  verify_disabled?: boolean;
   achieved?: boolean;
   started?: boolean;
   start_time?: number;
@@ -131,7 +132,7 @@ export interface EventRewardAcceleratorProperty {
 
 export interface EventRewardAccelerator {
   id: string;
-  type: string;
+  type: AcceleratorType;
   name: string;
   description: string;
   image_url: string;
