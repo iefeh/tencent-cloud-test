@@ -129,7 +129,7 @@ async function getAuthorizationCode(authorizationCode: string) {
 // 删除授权码，使用后立即删除避免重复使用
 // https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#revokeauthorizationcode-code
 async function revokeAuthorizationCode(code: any) {
-    await OAuth2AuthorizationCode.deleteOne({authorization_code: code.code});
+    await OAuth2AuthorizationCode.deleteOne({authorization_code: code.authorizationCode});
     return true;
 }
 
