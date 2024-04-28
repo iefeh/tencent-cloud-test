@@ -74,19 +74,23 @@ const OAuthPage: FC & BasePage = () => {
     setLoading(true);
     try {
       let { authorization_code, expires_at, state } = await oauthAuthorization({
-        client_id: router.query.client_id as string,
-        redirect_uri: router.query.redirect_uri as string,
-        response_type: router.query.response_type as string,
-        state: router.query.state as string,
-        scope: router.query.scope as string,
+        // client_id: router.query.client_id as string,
+        // redirect_uri: router.query.redirect_uri as string,
+        // response_type: router.query.response_type as string,
+        // state: router.query.state as string,
+        // scope: router.query.scope as string,
+        // 此处直接透传从服务器传递过来的查询参数到请求体
+        ...router.query,
       });
       if (authorization_code) {
-        const landing_url = appendQueryParamsToUrl(router.query.redirect_uri as string, {
+        // 解构查询参数
+        const {client_id, redirect_uri,response_type, scope, code_challenge,code_challenge_method, ...restQuery} = router.query;
+        const landingURL = appendQueryParamsToUrl(redirect_uri as string, {
+          ...restQuery,
           authorization_code: authorization_code,
-          expires_at: expires_at,
-          state: state,
+          expires_at: expires_at
         });
-        window.location.href = landing_url;
+        window.location.href = landingURL;
       }
     } catch (error: any) {
       toast.error(error?.message || error);
