@@ -1,6 +1,6 @@
-import {NextApiRequest, NextApiResponse} from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import * as response from "@/lib/response/response";
-import {redis} from "@/lib/redis/client";
+import { redis } from "@/lib/redis/client";
 
 // UserContextRequest 请求携带用户上下文信息
 export interface UserContextRequest extends NextApiRequest {
