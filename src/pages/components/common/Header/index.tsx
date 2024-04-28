@@ -30,8 +30,8 @@ const routeText: RouteMenu[] = [
     route: '/LoyaltyProgram/season',
     children: [
       {
-       name: 'Loyalty Program',
-       route: '/LoyaltyProgram/intro',
+        name: 'Loyalty Program',
+        route: '/LoyaltyProgram/intro',
       },
       {
         name: 'Season System',
@@ -51,6 +51,10 @@ const routeText: RouteMenu[] = [
       {
         name: 'Referral Program',
         route: '/Profile/invite',
+      },
+      {
+        name: '“More and $MORE” Lottery',
+        route: '/lottery',
       },
     ],
   },
