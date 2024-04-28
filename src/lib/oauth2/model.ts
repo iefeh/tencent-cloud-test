@@ -19,7 +19,7 @@ export const OAuthModel = {
 };
 
 // 保存访问token
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#savetoken-token-client-user-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#savetoken-token-client-user
 async function saveAccessToken(token: any, client: any, user: any) {
     await OAuth2Token.updateOne(
         {user_id: user.user_id, client_id: client.id},
@@ -45,7 +45,7 @@ async function saveAccessToken(token: any, client: any, user: any) {
 }
 
 // 保存授权码，只会在authorization_code模式时调用
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#saveauthorizationcode-code-client-user-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#saveauthorizationcode-code-client-user
 async function saveAuthorizationCode(code: any, client: any, user: any) {
     console.log("code:",code);
     console.log("client:",client);
@@ -78,7 +78,7 @@ async function saveAuthorizationCode(code: any, client: any, user: any) {
 }
 
 // 获取访问token
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#getaccesstoken-accesstoken-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#getaccesstoken-accesstoken
 async function getAccessToken(accessToken: string) {
     let token = await OAuth2Token.findOne({access_token: accessToken});
     if (!token) {
@@ -96,7 +96,7 @@ async function getAccessToken(accessToken: string) {
 }
 
 // 生成单个访问token
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#generateaccesstoken-client-user-scope-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#generateaccesstoken-client-user-scope
 function generateAccessToken(client: any, user: any, scope: any) {
     const bf = Buffer.from(process.env.AUTH_ENCRYPTION_KEY_BASE64!, 'base64');
     return jwt.sign({client_id: client.id, user_id: user.user_id, scope: scope}, bf, {
@@ -106,7 +106,7 @@ function generateAccessToken(client: any, user: any, scope: any) {
 }
 
 // 获取授权码
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#getauthorizationcode-authorizationcode-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#getauthorizationcode-authorizationcode
 async function getAuthorizationCode(authorizationCode: string) {
     let code = await OAuth2AuthorizationCode.findOne({authorization_code: authorizationCode});
     if (!code) {
@@ -127,14 +127,14 @@ async function getAuthorizationCode(authorizationCode: string) {
 }
 
 // 删除授权码，使用后立即删除避免重复使用
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#revokeauthorizationcode-code-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#revokeauthorizationcode-code
 async function revokeAuthorizationCode(code: any) {
-    await OAuth2AuthorizationCode.deleteOne({authorization_code: code.authorization_code});
+    await OAuth2AuthorizationCode.deleteOne({authorization_code: code.code});
     return true;
 }
 
 // 校验当前域对特定客户的授权
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#validatescope-user-client-scope-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#validatescope-user-client-scope
 function validateClientScope(user: any, client: any, scope: string[]) {
     if (!scope || scope.length == 0) {
         return false;
@@ -148,7 +148,7 @@ function validateClientScope(user: any, client: any, scope: string[]) {
 }
 
 // 校验访问token的scope
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#verifyscope-accesstoken-scope-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#verifyscope-accesstoken-scope
 function verifyAccessTokenScope(accessToken: any, requestedScopes: string[]) {
     if (!accessToken.scope) {
         return false;
@@ -158,7 +158,7 @@ function verifyAccessTokenScope(accessToken: any, requestedScopes: string[]) {
 }
 
 // 获取客户端
-// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#getclient-clientid-clientsecret-callback
+// https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#getclient-clientid-clientsecret
 async function getClientInfo(clientId: string, clientSecret?: string) {
     let params: any = {client_id: clientId};
     if (clientSecret) {
