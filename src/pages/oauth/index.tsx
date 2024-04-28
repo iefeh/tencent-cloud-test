@@ -83,8 +83,8 @@ const OAuthPage: FC & BasePage = () => {
         ...router.query,
       });
       if (authorization_code) {
-        // 解构查询参数
-        const {client_id, redirect_uri,response_type, scope, code_challenge,code_challenge_method, ...restQuery} = router.query;
+        // 解构查询参数，保留除授权参数外的其他参数为透传参数
+        const {client_id, redirect_uri,response_type, scope, code_challenge,code_challenge_method,client_name, icon_url, ...restQuery} = router.query;
         const landingURL = appendQueryParamsToUrl(redirect_uri as string, {
           ...restQuery,
           authorization_code: authorization_code,
