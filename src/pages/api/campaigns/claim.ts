@@ -276,7 +276,7 @@ async function constructUserAcceleratedMbReward(userId: string, campaign: ICampa
                     continue;
                 }
                 //添加Mb奖励
-                const campaignTaint = `${campaign.id},${accelerator.id},badge,${userBadge.badge_id}`
+                const campaignTaint = `userid:${userId},campaign:${campaign.id},${accelerator.id},badge,${userBadge.badge_id}`
                 audits.push(new UserMoonBeamAudit({
                     user_id: userId,
                     type: UserMoonBeamAuditType.CampaignBonus,
