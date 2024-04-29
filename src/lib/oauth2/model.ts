@@ -47,9 +47,6 @@ async function saveAccessToken(token: any, client: any, user: any) {
 // 保存授权码，只会在authorization_code模式时调用
 // https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#saveauthorizationcode-code-client-user
 async function saveAuthorizationCode(code: any, client: any, user: any) {
-    console.log("code:",code);
-    console.log("client:",client);
-    console.log("user:",user);
     await OAuth2AuthorizationCode.updateOne(
         {user_id: user.user_id, client_id: client.id},
         {
@@ -139,9 +136,7 @@ function validateClientScope(user: any, client: any, scope: string[]) {
     if (!scope || scope.length == 0) {
         return false;
     }
-    console.log("validateClientScope:",client?.scopes, scope);
     if (!scope.every(s => client?.scopes.includes(s))) {
-        console.log('scope not match');
         return false;
     }
     return scope;
