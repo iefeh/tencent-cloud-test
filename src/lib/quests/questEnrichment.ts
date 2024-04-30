@@ -9,6 +9,8 @@ import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
 import { getUserFirstWhitelist, queryUserAuth } from "@/lib/common/user";
 import { constructQuest } from "@/lib/quests/constructor";
+import UserTwitter from "../models/UserTwitter";
+import TwitterTopicTweet from "../models/TwitterTopicTweet";
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -82,8 +84,26 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         corr_id: 1,
     });
     const verified = new Map<string, boolean>(verifiedQuests.map(q => [q.corr_id, true]));
-    // 添加任务校验标识
-    quests.forEach(quest => quest.verified = verified.has(quest.id));
+    
+    quests.forEach(async quest => {
+        // 添加任务校验标识
+        quest.verified = verified.has(quest.id);
+        // 添加禁止verify标识
+        quest.verify_disabled = false;
+        // 若已校验，则不再需要判断是否需要启用禁用verify.
+        if(!quest.verified){
+            if (quest.type === QuestType.TweetInteraction || quest.type === QuestType.TwitterTopic) {
+                let userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
+                if (userTwitter) {
+                    let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: quest.properties.topic_id });
+                    if (!tweet) {
+                        quest.verify_disabled = true;
+                    }
+                }
+            }
+        }
+    });
+
 }
 
 // 为任务添加achieved字段，标识当前用户是否已经达成任务
