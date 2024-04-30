@@ -368,7 +368,7 @@ function EventTasks(props: EventTaskProps) {
         </div>
 
         {isInProcessing && (
-          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0">
+          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0 ml-4 shrink-0">
             {started ? <TaskButtons task={task} /> : <TaskCountDown durationTime={started_after || 0} />}
           </div>
         )}
