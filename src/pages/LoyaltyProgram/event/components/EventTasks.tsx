@@ -224,8 +224,9 @@ function EventTasks(props: EventTaskProps) {
           tooltip={
             isLongCD && (
               <div className="max-w-[25rem] px-4 py-3">
-                * Please be aware that data verification may take a moment. Please wait for a few minutes before
-                clicking &apos;Verify&apos; button.
+                * Please note that data verification may take a moment. You will need to wait for about 5 minutes before
+                the &apos;Verify&apos; button becomes clickable. If you fail the verification process, you can try again
+                after 10 minutes.
               </div>
             )
           }
