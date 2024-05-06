@@ -141,13 +141,20 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   let nextSixDrawCumulativeProbabilities = 0;
   let result: IUserLotteryRewardItem[] = [];
   let availableRewards: LotteryRewardItem[] = [];
+  let granteedRewards: LotteryRewardItem[] = [];
   // 筛选抽奖奖励, 如果抽奖次数不满足奖励门槛则去掉对应奖励
-  lotteryPool!.rewards.map(reward => {
+  for (let reward of lotteryPool!.rewards) {
+    // 检查本次抽取是否满足保底次数, 如果是则添加奖品
+    for (let granteedDrawCount of reward.granted_draw_count) {
+      if (lotteryPool!.total_draw_amount < granteedDrawCount && (lotteryPool!.total_draw_amount + drawCount) >= granteedDrawCount) {
+        granteedRewards.push(reward);
+      }
+    }
     if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool!.total_draw_amount >= reward.min_reward_draw_amount))
       && (reward.inventory_amount === null || reward.inventory_amount > 0)) {
-        availableRewards.push(reward);
-      }
-  });
+      availableRewards.push(reward);
+    }
+  }
   const firstThreeThresholds = availableRewards.map(reward => (firstThreeDrawCumulativeProbabilities += reward.first_three_draw_probability));
   const nextSixThresholds = availableRewards.map(reward => (nextSixDrawCumulativeProbabilities += reward.next_six_draw_probability));
   const totalUserDrawAmount = userLotteryPool? userLotteryPool.draw_amount % 10 : 0;
@@ -157,10 +164,10 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     // 根据用户已抽取次数计算当前是第几抽
     let currentDrawNo = totalUserDrawAmount + i;
     if (currentDrawNo <= 3) {
-      getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, availableRewards, itemInventoryDeltaMap, result);
+      getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, granteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
     else {
-      getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, availableRewards, itemInventoryDeltaMap, result);
+      getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, granteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
   }
   // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
@@ -212,30 +219,40 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   }
 }
 
-function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]) {
-  const random = Math.random() * drawCumulativeProbabilities;
-  for (let j = 0; j < drawThresholds.length; j++) {
-    if (random <= drawThresholds[j]) {
-      let reward = availableRewards[j];
-      let inventoryDelta = -1;
-      if (itemInventoryDeltaMap.has(reward.item_id)) {
-        inventoryDelta = itemInventoryDeltaMap.get(reward.item_id)! - 1;
+function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], granteedRewards: LotteryRewardItem[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]) {
+  let reward: LotteryRewardItem;
+  // 优先抽取保底避免无人抽中
+  if (granteedRewards && granteedRewards.length > 0) {
+    reward = granteedRewards.pop()!;
+  }
+  else {
+  // 如无保底, 则抽取常规奖品
+    const random = Math.random() * drawCumulativeProbabilities;
+    for (let j = 0; j < drawThresholds.length; j++) {
+      if (random <= drawThresholds[j]) {
+        reward = availableRewards[j];
+        // 计算库存扣减数量, 注意: 保底奖品不考虑库存
+        let inventoryDelta = -1;
+        if (itemInventoryDeltaMap.has(reward.item_id)) {
+          inventoryDelta = itemInventoryDeltaMap.get(reward.item_id)! - 1;
+        }
+        itemInventoryDeltaMap.set(reward.item_id, inventoryDelta);
+        break;
       }
-      itemInventoryDeltaMap.set(reward.item_id, inventoryDelta);
-      result.push({
-        item_id: reward.item_id,
-        reward_id: uuidv4(),
-        reward_type: reward.reward_type,
-        reward_name: reward.reward_name, 
-        icon_url: reward.icon_url, 
-        reward_level: reward.reward_level,
-        claimed: false,
-        reward_claim_type: reward.reward_claim_type, 
-        amount: reward.amount
-      });
-      break;
     }
   }
+  result.push({
+    item_id: reward!.item_id,
+    reward_id: uuidv4(),
+    reward_type: reward!.reward_type,
+    reward_name: reward!.reward_name, 
+    icon_url: reward!.icon_url, 
+    reward_level: reward!.reward_level,
+    claimed: false,
+    reward_claim_type: reward!.reward_claim_type, 
+    amount: reward!.amount
+  });
+  return;
 }
 
 // this will run if none of the above matches
