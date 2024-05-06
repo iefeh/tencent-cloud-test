@@ -1,5 +1,5 @@
-import OAuth2Client from "@/lib/models/OAuth2Client";
-import OAuth2Token from "@/lib/models/OAuth2Token";
+import OAuth2Client, {IOAuth2Client} from "@/lib/models/OAuth2Client";
+import OAuth2Token, {IOAuth2Token} from "@/lib/models/OAuth2Token";
 import OAuth2AuthorizationCode from "@/lib/models/OAuth2AuthorizationCode";
 import User from "@/lib/models/User";
 import * as jwt from "jsonwebtoken";
