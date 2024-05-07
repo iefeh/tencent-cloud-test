@@ -15,6 +15,8 @@ import { redis } from '@/lib/redis/client';
 import UserNotifications from '@/lib/models/UserNotifications';
 import { generateUUID } from 'three/src/math/MathUtils';
 import UserBadges from '@/lib/models/UserBadges';
+import Mint, { MintSourceType, MintStatus } from '@/lib/models/Mint';
+import { keccak256 } from 'js-sha3';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -176,7 +178,7 @@ async function redeemMoonBeamReward(userId: string, cdk: string, session: any, r
 
 async function redeemBadgeReward(userId: string, cdk: string, session: any, reward: any) {
   const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
-  if(userBadge){
+  if (userBadge) {
     return;
   }
 
@@ -210,6 +212,13 @@ async function redeemBadgeReward(userId: string, cdk: string, session: any, rewa
     ],
     { session: session },
   );
+
+  // 添加mint
+  if (badge.series.get(series).open_for_mint) {
+    const mint = constructMint(userId, badge, String(series));
+    await Mint.insertMany([mint], { session: session },);
+  }
+
   if (reward.alert) {
     await new UserNotifications({
       user_id: userId,
@@ -220,6 +229,25 @@ async function redeemBadgeReward(userId: string, cdk: string, session: any, rewa
       created_time: Date.now(),
     }).save();
   }
+}
+
+function constructMint(userId: string, badge: any, series: string): any {
+  const taint = `${badge.id}-${userId}-${series}`;
+  const mintId = `0x${keccak256(taint)}`;
+
+  const mint = new Mint({
+    id: mintId,
+    chain_id: badge.chain_id,
+    source_type: MintSourceType.Badges,
+    source_id: badge.id,
+    badge_level: series,
+    user_id: userId,
+    status: MintStatus.Qualified,
+    obtained_time: Date.now(),
+    taints: [taint]
+  })
+
+  return mint;
 }
 
 // this will run if none of the above matches

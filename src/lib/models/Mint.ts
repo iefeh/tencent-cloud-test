@@ -1,12 +1,12 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
-enum MintSourceType {
+export enum MintSourceType {
     // 徽章
     Badges = 'badges',
 }
 
-enum MintStatus {
+export enum MintStatus {
     // 已获得，但是未上链
     Qualified = 'qualified',
     // Mint中
@@ -64,7 +64,7 @@ const MintSchema = new Schema<IMint>({
 });
 
 MintSchema.index({id: 1}, {unique: true});
-MintSchema.index({taint: 1}, {unique: true});
+MintSchema.index({taints: 1}, {unique: true});
 MintSchema.index({source_type: 1, source_id: 1});
 MintSchema.index({user_id: 1});
 
