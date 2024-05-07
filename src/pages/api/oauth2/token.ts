@@ -15,7 +15,6 @@ router.post(async (req, res) => {
         if (req.body.code_verifier) {
             requireClientSecret = false;
         }
-        console.log("request body:",req.body);
         const token = await OAuth2Server.token(new Request(req), new Response(res), {
             accessTokenLifetime: 60 * 60 * 24 * 30,
             requireClientAuthentication: requireClientSecret,
