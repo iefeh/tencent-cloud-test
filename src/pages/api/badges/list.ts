@@ -7,6 +7,7 @@ import Badges, { IBadges } from '@/lib/models/Badge';
 import { PipelineStage, StringExpressionOperator } from 'mongoose';
 import { Data3DTexture } from 'three';
 import { ka } from 'date-fns/locale';
+import Mint from '@/lib/models/Mint';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -97,12 +98,12 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
   let claimed_count: number = 0;
   let claimed: boolean;
   let maxLv: number;
+  let claimedLv: number = 0;
   if (results.length > 0) {
     for (let c of results[0].data) {
       let series: any = [];
-      if (c.user_badges.length > 0) {
+      if (c.user_badges.length > 0) {// 用户已获得该徽章
         c.has_series = Object.keys(c.series).length > 1;
-
         maxLv = 0;
         //获取用户最大等级
         claimed = false;
@@ -112,12 +113,11 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
           }
           if (c.user_badges[0].series[k].claimed_time != null) {
             claimed = true;
+            claimedLv = Number(k);
           }
         }
-        if (claimed) {
-          claimed_count++;
-        }
-      
+
+
         let distributedBadge = c.user_badges[0].series[String(maxLv)];
         let orgBadgeData = c.series[String(maxLv)];
         let nextLvBadge = c.series[String(maxLv + 1)];
@@ -126,6 +126,13 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
         distributedBadge.description = orgBadgeData.description;
         distributedBadge.icon_url = orgBadgeData.icon_url;
         distributedBadge.image_url = orgBadgeData.image_url;
+        if (claimed) {
+          // 获取MINT信息
+          const mintInfo = await getMintInfo(userId, c.id, String(claimedLv));
+          distributedBadge.mint = mintInfo;
+          claimed_count++;
+        }
+
         series.push(distributedBadge);
         c.display = c.user_badges[0].display;
         c.display_order = c.user_badges[0].display_order;
@@ -135,7 +142,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
           nextLvBadge.name = c.name;
           nextLvBadge.lv = maxLv + 1;
           series.push(nextLvBadge);
-        } 
+        }
         c.user_id = distributedBadge.user_id;
       } else {
         c.has_series = Object.keys(c.series).length > 1;
@@ -159,7 +166,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
   return [data, claimed_count];
 }
 
-export async function getCliamedCount(userId: string): Promise<number> {
+export async function getClaimedCount(userId: string): Promise<number> {
   let results: any[] = await UserBadges.find({ user_id: userId }, { _id: 0, series: 1 });
   let claimed_count: number = 0;
   for (let b of results) {
@@ -171,6 +178,11 @@ export async function getCliamedCount(userId: string): Promise<number> {
     }
   }
   return claimed_count;
+}
+
+// 查询mint信息
+async function getMintInfo(userId: string, sourceId: string, level: string): Promise<any> {
+  return await Mint.findOne({ user_id: userId, source_id: sourceId, badge_level: level }, { _id: 0, id: 1, status: 1, obtained_time: 1 })
 }
 
 // this will run if none of the above matches
