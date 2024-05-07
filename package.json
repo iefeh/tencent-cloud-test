@@ -49,6 +49,7 @@
     "moralis": "^2.23.2",
     "next": "13.5.4",
     "next-connect": "^1.0.0-next.4",
+    "nft.storage": "^7.1.1",
     "okx-api": "^1.1.5",
     "qrcode": "^1.5.3",
     "raw-body": "^2.5.2",

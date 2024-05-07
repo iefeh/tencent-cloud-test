@@ -42,6 +42,8 @@ export interface IMint extends Document {
     tx_confirmed_time: number,
     // mint污点，用于确保mint的唯一性，比如用户不能多次获取同一个徽章的同一个等级，同一个接收者地址不能多次获取同一个徽章
     taints: string[],
+    // mint的元数据ipfs哈希
+    metadata_ipfs_hash: string,
 }
 
 const MintSchema = new Schema<IMint>({
@@ -58,6 +60,7 @@ const MintSchema = new Schema<IMint>({
     transaction_hash: {type: String},
     tx_confirmed_time: {type: Number},
     taints: {type: [String]},
+    metadata_ipfs_hash: {type: String},
 });
 
 MintSchema.index({id: 1}, {unique: true});

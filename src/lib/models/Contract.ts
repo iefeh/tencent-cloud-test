@@ -1,6 +1,13 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
+// 枚举合约分类，我们平台的合约类型，如SBT、DESTINY NFT等
+export enum ContractCategory {
+    SBT = 'SBT',
+    DESTINY_TETRA = 'DESTINY_TETRA',
+    ETERNITY_TETRA = 'ETERNITY_TETRA',
+}
+
 export interface IContract extends Document {
     // 链id
     chain_id: string;
@@ -8,21 +15,21 @@ export interface IContract extends Document {
     address: string;
     // 合约名称
     name: string;
+    // 合约类别
+    category: ContractCategory;
 }
 
 const ContractSchema = new Schema<IContract>({
-    user_id: {type: String, required: true},
-    wallet_addr: {type: String, required: true},
-    created_time: {type: Number, required: true},
-    deleted_time: {type: Number, default: null},
+    chain_id: {type: String, required: true},
+    address: {type: String, required: true},
+    name: {type: String, required: true},
+    category: {type: String, required: true},
 });
 
-// 同一个用户不允许绑定多个钱包
-ContractSchema.index({user_id: 1, deleted_time: 1}, {unique: true});
-// 同一个钱包不允许多绑定
-ContractSchema.index({wallet_addr: 1, deleted_time: 1}, {unique: true});
+
+ContractSchema.index({chain_id: 1, category: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();
-const Contract = models.Contract || connection.model<IContract>('Contract', ContractSchema, 'contract');
+const Contract = models.Contract || connection.model<IContract>('Contract', ContractSchema, 'contracts');
 export default Contract;
