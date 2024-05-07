@@ -1,4 +1,11 @@
+import { BadgeMintStatus } from '@/constant/badge';
 import http from '../index';
+
+export interface BadgeMint {
+  id:string;
+  status: BadgeMintStatus;
+  obtained_time: number | null;
+}
 
 export interface BadgeSerie {
   claimed_time: number | null;
@@ -8,6 +15,7 @@ export interface BadgeSerie {
   lv: number;
   name: string;
   obtained_time: number | null;
+  mint: BadgeMint | null;
 }
 
 export interface BadgeItem {
@@ -22,9 +30,6 @@ export interface BadgeItem {
   display_order?: number;
   has_series?: boolean;
   series?: BadgeSerie[];
-  mintable?: boolean;
-  minting?: boolean;
-  minted?: boolean;
 }
 
 export function queryBadgesPageListAPI(
