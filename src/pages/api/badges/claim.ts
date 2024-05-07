@@ -76,7 +76,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
     // 添加mint
-    let mint = undefined;
+    let mint: any = undefined;
     if (badge.series.get(level).open_for_mint) {
       mint = constructMint(userId, badge, level);
     }
