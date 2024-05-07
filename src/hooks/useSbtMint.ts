@@ -1,5 +1,5 @@
 import { throttle } from 'lodash';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Contract, BrowserProvider, JsonRpcSigner } from 'ethers';
 import { MintPermit } from '@/http/services/badges';
 import { toast } from 'react-toastify';
@@ -110,6 +110,10 @@ export default function useSbtMint() {
     await mint(permit);
     setLoading(false);
   }
+
+  useEffect(() => {
+    initProvider();
+  }, []);
 
   return { onButtonClick };
 }
