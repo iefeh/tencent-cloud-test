@@ -1,12 +1,12 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 import DisplayBadges, { type DisplayBadgesRef } from '../components/DisplayBadges';
-import MyBadges from './components/MyBadges';
-import useMyBadges from './hooks/useMyBadges';
-import useDisplayBadges from './hooks/useDisplayBadges';
+import MyBadges from '../../../components/profile/badges/components/MyBadges';
+import useMyBadges from '@/hooks/pages/profile/badges/hooks/useMyBadges';
+import useDisplayBadges from '@/hooks/pages/profile/badges/hooks/useDisplayBadges';
 import { throttle } from 'lodash';
 import { cn, useDisclosure } from '@nextui-org/react';
-import BadgeModal from './components/BadgeModal';
+import BadgeModal from '../../../components/profile/badges/components/BadgeModal';
 import { useEffect, useRef, useState } from 'react';
 import { BadgeItem, toggleBadgeDisplayAPI } from '@/http/services/badges';
 import { observer } from 'mobx-react-lite';
