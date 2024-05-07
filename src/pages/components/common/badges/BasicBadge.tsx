@@ -96,7 +96,7 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
             radius="none"
             isLoading={loading}
             disabled={!mint || mint.status !== BadgeMintStatus.QUALIFIED}
-            onPress={() => onMintClick(item?.badge_id)}
+            onPress={() => onMintClick(mint.id)}
           >
             {mint.status === BadgeMintStatus.MINTING ? 'SBT Minting' : 'Mint SBT'}
           </Button>

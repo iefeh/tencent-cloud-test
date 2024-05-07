@@ -72,11 +72,11 @@ export default function BadgeModal(props: Props) {
   }
 
   async function onMintClick() {
-    if (!onMint || !item?.badge_id) return;
+    if (!onMint || !mint?.id) return;
 
     setLoading(true);
     try {
-      await onMint(item.badge_id);
+      await onMint(mint.id);
     } catch (error) {
       console.log('Badge Mint Error:', error);
     } finally {

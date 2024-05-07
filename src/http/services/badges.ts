@@ -2,7 +2,7 @@ import { BadgeMintStatus } from '@/constant/badge';
 import http from '../index';
 
 export interface BadgeMint {
-  id:string;
+  id: string;
   status: BadgeMintStatus;
   obtained_time: number | null;
 }
@@ -66,4 +66,22 @@ export function sortDisplayBadgesAPI(
   data: { badge_id: string; display: boolean; display_order: number }[],
 ): Promise<boolean> {
   return http.post('/api/badges/saveDisplay', JSON.stringify(data));
+}
+
+export interface MintPermit {
+  uri: string;
+  recipient: string;
+  reqId: string;
+  expiredTime: number;
+  signature: string;
+}
+
+export interface MintPermitResDTO {
+  chain_id: string;
+  contract_address: string;
+  permit: MintPermit;
+}
+
+export function queryMintPermitAPI(params: { mint_id: string }): Promise<MintPermitResDTO> {
+  return http.get('/api/mints/permit', { params });
 }
