@@ -78,7 +78,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     // 添加mint
     let mint = undefined;
     if (badge.series.get(level).open_for_mint) {
-      mint = constructMint(userId, badge, String(level));
+      mint = constructMint(userId, badge, level);
     }
 
     const inviter = await checkNoviceNotchInviter(userId, badge);

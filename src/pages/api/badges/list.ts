@@ -98,7 +98,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
   let claimed_count: number = 0;
   let claimed: boolean;
   let maxLv: number;
-  let claimedLv: number = 0;
+  let claimedLv: string;
   if (results.length > 0) {
     for (let c of results[0].data) {
       let series: any = [];
@@ -113,7 +113,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
           }
           if (c.user_badges[0].series[k].claimed_time != null) {
             claimed = true;
-            claimedLv = Number(k);
+            claimedLv = k;
           }
         }
 
@@ -128,7 +128,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
         distributedBadge.image_url = orgBadgeData.image_url;
         if (claimed) {
           // 获取MINT信息
-          const mintInfo = await getMintInfo(userId, c.id, String(claimedLv));
+          const mintInfo = await getMintInfo(userId, c.id, claimedLv!);
           distributedBadge.mint = mintInfo;
           claimed_count++;
         }
