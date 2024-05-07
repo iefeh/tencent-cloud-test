@@ -20,8 +20,7 @@ const nftStorage = new NFTStorage({ token: process.env.NFTSTORAGE_KEY! });
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-// .use(mustAuthInterceptor)
-router.get(async (req, res) => {
+router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
     const { mint_id } = req.query;
     if (!mint_id) {
