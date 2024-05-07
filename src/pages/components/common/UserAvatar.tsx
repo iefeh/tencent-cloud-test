@@ -46,14 +46,19 @@ const UserAvatar = () => {
       icon: badgeImg,
       path: '/Profile/MyBadges',
     },
+    {
+      title: 'My Assets',
+      icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/nft/img_4+revised.png',
+      path: '/Profile/MyAssets',
+    },
     // {
     //   title: 'Check-In',
     //   icon: checkinImg,
     // },
     {
-     title: 'Invite New Users',
-     icon: inviteImg,
-     path: '/Profile/invite'
+      title: 'Invite New Users',
+      icon: inviteImg,
+      path: '/Profile/invite',
     },
     // {
     //   title: 'Settings',
@@ -121,7 +126,7 @@ const UserAvatar = () => {
 
         {mobileMenus.map((menu, index) => (
           <MenuItem key={index} onClick={() => onMenuClick(menu)}>
-            {menu.icon && <Image width={24} height={24} src={menu.icon} alt="" />}
+            {menu.icon && <Image width={24} height={24} src={menu.icon} alt="" unoptimized />}
             <span className="ml-[0.875rem] font-poppins-medium uppercase text-[14px]">{menu.title}</span>
           </MenuItem>
         ))}

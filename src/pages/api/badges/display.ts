@@ -4,7 +4,7 @@ import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import Badges from '@/lib/models/Badge';
 import { PipelineStage, StringExpressionOperator } from 'mongoose';
-import { getCliamedCount, loadAllBadges } from './list';
+import { getClaimedCount, loadAllBadges } from './list';
 import UserBadges, { IUserBadges } from '@/lib/models/UserBadges';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -27,7 +27,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 });
 async function getUserDisplayedBadges(userId: string): Promise<[any[], number]> {
   let claimed: boolean;
-  let claimed_count: number = await getCliamedCount(userId);
+  let claimed_count: number = await getClaimedCount(userId);
   let results: any[] = await loadUserDisplayBadges(userId, 1, 5, true);
 
   //const badges = await Badges.find({id: badgeId});

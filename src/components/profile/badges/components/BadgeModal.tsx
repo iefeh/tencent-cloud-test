@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Fragment, useState } from 'react';
 import helpIcon from 'img/profile/badges/icon_help.png';
 import arrowIcon from 'img/profile/badges/icon_arrow.png';
+import { BadgeMintStatus } from '@/constant/badge';
 
 interface Props {
   item: BadgeItem | null;
@@ -39,6 +40,7 @@ export default function BadgeModal(props: Props) {
     lv: bagLv,
     image_url: bagImageUrl,
     icon_url: bagIconUrl,
+    mint,
   } = validSerie || {};
 
   const claimed = !!display || !!claimed_time;
@@ -70,11 +72,11 @@ export default function BadgeModal(props: Props) {
   }
 
   async function onMintClick() {
-    if (!onMint || !item?.badge_id) return;
+    if (!onMint || !mint?.id) return;
 
     setLoading(true);
     try {
-      await onMint(item.badge_id);
+      await onMint(mint.id);
     } catch (error) {
       console.log('Badge Mint Error:', error);
     } finally {
@@ -184,17 +186,17 @@ export default function BadgeModal(props: Props) {
                   />
                 )}
 
-                {claimed && item?.mintable && !item?.minted && (
+                {claimed && mint && [BadgeMintStatus.QUALIFIED, BadgeMintStatus.MINTING].includes(mint.status) && (
                   <LGButton
-                    label={item.minting ? 'SBT Minting' : 'Mint SBT'}
+                    label={mint.status === BadgeMintStatus.MINTING ? 'SBT Minting' : 'Mint SBT'}
                     actived
                     className={cn([
                       'w-full !text-white uppercase mt-9',
-                      item.minting ||
+                      mint.status === BadgeMintStatus.MINTING ||
                         'bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] hover:bg-[linear-gradient(270deg,#CC6AFF,#258FFB)]',
                     ])}
                     loading={loading}
-                    disabled={item.minting}
+                    disabled={mint.status !== BadgeMintStatus.QUALIFIED}
                     onClick={onMintClick}
                   />
                 )}

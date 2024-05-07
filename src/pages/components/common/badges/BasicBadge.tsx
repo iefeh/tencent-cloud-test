@@ -5,6 +5,7 @@ import { Button, cn } from '@nextui-org/react';
 import { BadgeItem } from '@/http/services/badges';
 import lockIcon from 'img/profile/badges/icon_lock.png';
 import { forwardRef, useState } from 'react';
+import { BadgeMintStatus } from '@/constant/badge';
 
 interface BasicBadgeProps {
   item?: BadgeItem | null;
@@ -21,7 +22,14 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
 
   const { series, display, image_url: displayImageUrl, icon_url: displayIconUrl, lv: displayLv } = item || {};
   const validSerie = series?.[0] || series?.[1];
-  const { claimed_time, obtained_time, lv: bagLv, image_url: bagImageUrl, icon_url: bagIconUrl } = validSerie || {};
+  const {
+    claimed_time,
+    obtained_time,
+    lv: bagLv,
+    image_url: bagImageUrl,
+    icon_url: bagIconUrl,
+    mint,
+  } = validSerie || {};
 
   const claimed = !!claimed_time;
   const achieved = !!obtained_time;
@@ -42,8 +50,8 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
     }
   }
 
-  async function onMintClick(id: string) {
-    if (!onMint) return;
+  async function onMintClick(id?: string) {
+    if (!onMint || !id) return;
 
     setLoading(true);
     try {
@@ -80,17 +88,17 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       )}
 
       {/* Mint按钮 */}
-      {claimed && item?.mintable && !item?.minted && (
+      {claimed && mint && [BadgeMintStatus.QUALIFIED, BadgeMintStatus.MINTING].includes(mint.status) && (
         <div className="absolute left-0 bottom-0 w-full h-6">
           <div className="absolute inset-0 bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] opacity-70 z-0 transition-opacity bg"></div>
           <Button
             className="absolute inset-0 h-full z-10 bg-transparent text-sm leading-none uppercase"
             radius="none"
             isLoading={loading}
-            disabled={item.minting}
-            onPress={() => onMintClick(item.badge_id)}
+            disabled={!mint || mint.status !== BadgeMintStatus.QUALIFIED}
+            onPress={() => onMintClick(mint.id)}
           >
-            {item.minting ? 'SBT Minting' : 'Mint SBT'}
+            {mint.status === BadgeMintStatus.MINTING ? 'SBT Minting' : 'Mint SBT'}
           </Button>
         </div>
       )}
@@ -134,7 +142,7 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
       )}
 
       {/* SBT标志 */}
-      {item?.minted && (
+      {mint && mint.status === BadgeMintStatus.MINTED && (
         <span className="absolute top-0 right-0 font-semakin text-basic-yellow text-xs leading-none px-1 h-[1.0625rem] inline-flex items-center border-1 border-[#333] rounded-[0.3125rem] bg-black series">
           <span className="relative top-[0.0625rem] bg-[linear-gradient(300deg,#E9E7D1_0%,#CC6AFF_0%,#258FFB_100%)] bg-clip-text text-transparent">
             SBT
