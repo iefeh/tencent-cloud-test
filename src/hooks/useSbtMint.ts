@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import sbtContractABI from '@/http/sbt_abi.json';
 import { WALLECT_NETWORKS } from '@/constant/mint';
+import { parseChainIdToHex } from './utils';
 
 export default function useSbtMint() {
   const { walletProvider } = useWeb3ModalProvider();
@@ -63,7 +64,7 @@ export default function useSbtMint() {
     try {
       await walletProvider?.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: targetChainId }],
+        params: [{ chainId: parseChainIdToHex(targetChainId) }],
       });
       await initProvider();
     } catch (error: any) {
