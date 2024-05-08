@@ -67,7 +67,7 @@ export default function useMyBadges() {
     setMintLoading(true);
 
     const res = await queryMintPermitAPI({ mint_id: id });
-    if (res) {
+    if (res && res.chain_id && res.permit) {
       await onButtonClick(res.chain_id, res.permit);
       await queryMyBadges();
     }
