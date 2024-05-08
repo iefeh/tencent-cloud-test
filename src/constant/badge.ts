@@ -1,7 +1,7 @@
 export const MAX_DISPLAY_COUNT = 5;
 
 export const enum BadgeMintStatus {
-  QUALIFIED = "qualified",
+  QUALIFIED = 'qualified',
   MINTING = 'minting',
-  MINTED = 'minted',
+  MINTED = 'confirmed',
 }
