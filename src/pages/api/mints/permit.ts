@@ -49,6 +49,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     }
     mint.metadata_ipfs_hash = await getBadgeSeriesMetadataHash(mint);
     const permit = await constructMintPermit(mint, sbtContract.address, userWallet.wallet_addr);
+    await redis.del(lockKey);
     return res.json(response.success({
         chain_id: mint.chain_id,
         contract_address: sbtContract.address,
