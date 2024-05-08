@@ -16,7 +16,6 @@ export default function useSbtMint() {
   const { address, isConnected } = useWeb3ModalAccount();
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
-  const [isNetCorrected, setIsNetCorrected] = useState(false);
 
   function toastError(error: any, step = '') {
     console.log('nft error', step, error);
@@ -34,7 +33,6 @@ export default function useSbtMint() {
       const network = await provider.current.getNetwork();
       const chainId = network.chainId;
       const isNetCorrected = chainId.toString() === targetChainId;
-      setIsNetCorrected(isNetCorrected);
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
@@ -60,24 +58,26 @@ export default function useSbtMint() {
     }
   }
 
-  async function switchNetwork(targetChainId: string) {
+  async function switchNetwork(targetChainId: string): Promise<boolean> {
     try {
       await walletProvider?.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: parseChainIdToHex(targetChainId) }],
       });
       await initProvider();
+      return true;
     } catch (error: any) {
       if (error?.code === 4902 || error?.code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await addNetwork(targetChainId);
-        if (res) {
-          await switchNetwork(targetChainId);
-        }
+        if (!res) return false;
+        return await switchNetwork(targetChainId);
       } else {
         toastError(error, 'switchNetwork');
       }
     }
+
+    return false;
   }
 
   const mint = throttle(async (permit: MintPermit) => {
@@ -98,13 +98,13 @@ export default function useSbtMint() {
 
     setLoading(true);
 
-    if (!isNetCorrected) {
-      const res = await checkNetwork(targetChainId);
-      if (!res) {
-        await switchNetwork(targetChainId);
+    const res = await checkNetwork(targetChainId);
+    if (!res) {
+      const switchRes = await switchNetwork(targetChainId);
+      if (!switchRes) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-      return;
     }
 
     await mint(permit);
