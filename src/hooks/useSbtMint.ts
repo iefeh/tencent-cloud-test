@@ -1,7 +1,7 @@
 import { throttle } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { Contract, BrowserProvider, JsonRpcSigner } from 'ethers';
-import { MintPermit } from '@/http/services/badges';
+import { MintPermitResDTO } from '@/http/services/badges';
 import { toast } from 'react-toastify';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import sbtContractABI from '@/http/sbt_abi.json';
@@ -12,8 +12,7 @@ export default function useSbtMint() {
   const { walletProvider } = useWeb3ModalProvider();
   const provider = useRef(new BrowserProvider(walletProvider!));
   const signer = useRef<JsonRpcSigner | null>(null);
-  const contract = useRef<Contract | null>(null);
-  const { address, isConnected } = useWeb3ModalAccount();
+  const { isConnected } = useWeb3ModalAccount();
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +24,6 @@ export default function useSbtMint() {
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
-    contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, sbtContractABI, signer.current);
   }
 
   async function checkNetwork(targetChainId: string) {
@@ -80,9 +78,10 @@ export default function useSbtMint() {
     return false;
   }
 
-  const mint = throttle(async (permit: MintPermit) => {
+  const mint = throttle(async (data: MintPermitResDTO) => {
     try {
-      const transaction = await contract.current!.mint(permit);
+      const contract = new Contract(data.contract_address, sbtContractABI, signer.current);
+      const transaction = await contract.mint(data.permit);
       const result = await transaction.wait();
       console.log('mint result:', result);
     } catch (error: any) {
@@ -90,7 +89,7 @@ export default function useSbtMint() {
     }
   }, 500);
 
-  async function onButtonClick(targetChainId: string, permit: MintPermit) {
+  async function onButtonClick(data: MintPermitResDTO) {
     if (!isConnected) {
       open();
       return;
@@ -98,16 +97,16 @@ export default function useSbtMint() {
 
     setLoading(true);
 
-    const res = await checkNetwork(targetChainId);
+    const res = await checkNetwork(data.chain_id);
     if (!res) {
-      const switchRes = await switchNetwork(targetChainId);
+      const switchRes = await switchNetwork(data.chain_id);
       if (!switchRes) {
         setLoading(false);
         return;
       }
     }
 
-    await mint(permit);
+    await mint(data);
     setLoading(false);
   }
 
@@ -115,5 +114,5 @@ export default function useSbtMint() {
     initProvider();
   }, []);
 
-  return { onButtonClick };
+  return { loading, onButtonClick };
 }
