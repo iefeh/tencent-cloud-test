@@ -195,7 +195,7 @@ export default function BadgeModal(props: Props) {
                       mint.status === BadgeMintStatus.MINTING ||
                         'bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] hover:bg-[linear-gradient(270deg,#CC6AFF,#258FFB)]',
                     ])}
-                    loading={loading}
+                    loading={loading || mint.status === BadgeMintStatus.MINTING}
                     disabled={mint.status !== BadgeMintStatus.QUALIFIED}
                     onClick={onMintClick}
                   />
