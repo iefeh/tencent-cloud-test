@@ -147,6 +147,8 @@ export interface FullEventItem extends EventItem {
     require_authorization: string;
     success_message: string;
     reward_accelerators: EventRewardAccelerator[];
+    total_reward_bonus: number;
+    total_reward_bonus_moon_beam: number;
   };
 }
 
