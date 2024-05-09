@@ -47,6 +47,17 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
     rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
     blockExplorerUrls: ['https://mumbai.polygonscan.com'],
   },
+  80002: {
+    chainId: parseChainIdToHex('80002'),
+    chainName: 'Amoy',
+    nativeCurrency: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc-amoy.polygon.technology'],
+    blockExplorerUrls: ['https://amoy.polygonscan.com'],
+  },
   137: {
     chainId: parseChainIdToHex('137'),
     chainName: 'Polygon Mainnet',

@@ -102,7 +102,7 @@ function EventTasks(props: EventTaskProps) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
-    const isTweetInteration = task.type === QuestType.TweetInteraction;
+    const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
 
     const connectType = task.authorization || '';
     const {
@@ -165,9 +165,8 @@ function EventTasks(props: EventTaskProps) {
             onOpen();
           } else if (res.tip) {
             toast.error(res.tip);
+            setHasVerifyCD(true);
           }
-
-          setHasVerifyCD(true);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTasks?.();
@@ -223,14 +222,15 @@ function EventTasks(props: EventTaskProps) {
           disabled={!verifiable}
           hasCD={hasVerifyCD}
           tooltip={
-            isTweetInteration && (
+            isLongCD && (
               <div className="max-w-[25rem] px-4 py-3">
-                * Please be aware that data verification may take a moment. Please wait for a few minutes before
-                clicking &apos;Verify&apos; button.
+                * Please note that data verification may take a moment. You will need to wait for about 5 minutes before
+                the &apos;Verify&apos; button becomes clickable. If you fail the verification process, you can try again
+                after 10 minutes.
               </div>
             )
           }
-          cd={isTweetInteration ? 180 : 30}
+          cd={isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -369,7 +369,7 @@ function EventTasks(props: EventTaskProps) {
         </div>
 
         {isInProcessing && (
-          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0">
+          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0 ml-4 shrink-0">
             {started ? <TaskButtons task={task} /> : <TaskCountDown durationTime={started_after || 0} />}
           </div>
         )}

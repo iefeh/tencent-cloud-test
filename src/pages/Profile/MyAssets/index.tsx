@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import ProfileHeader from '../components/ProfileHeader';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 
 export default function ProfilePage() {

@@ -19,7 +19,7 @@ export async function sendCaptcha(captchaType: CaptchaType, req: UserContextRequ
         await redis.setex(emailKey, 60 * 60 * 15, process.env.APPLE_REVIEW_PASSWORD!);
         res.json(response.success());
         return;
-    }
+    } 
     if (email == process.env.GOOGLE_REVIEW_USERNAME) {
         await redis.setex(emailKey, 60 * 60 * 15, process.env.GOOGLE_REVIEW_PASSWORD!);
         res.json(response.success());

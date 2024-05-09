@@ -25,10 +25,10 @@ function MyNFT() {
   return (
     <div className="mt-20">
       <div className="flex justify-between items-center">
-        <div className="font-semakin text-2xl text-basic-yellow">My NFT（{total}）</div>
+        <div className="font-semakin text-2xl text-basic-yellow">My Asset（{total}）</div>
 
-        <Link href="/NFT/Merge/history" className="text-basic-yellow">
-          Merge History &gt;&gt;
+        <Link href="/Profile/MyAssets" className="text-basic-yellow">
+          More Asset &gt;&gt;
         </Link>
       </div>
 

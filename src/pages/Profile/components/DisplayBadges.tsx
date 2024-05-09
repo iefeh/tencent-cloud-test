@@ -13,7 +13,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import useSort from '../MyBadges/hooks/useSort';
+import useSort from '@/hooks/pages/profile/badges/hooks/useSort';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
