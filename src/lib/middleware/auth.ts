@@ -42,7 +42,7 @@ export async function mustAuthInterceptor(req: UserContextRequest, res: NextApiR
     }
 
     // 将用户数据添加到请求对象中
-    req.userId = userId;
+    req.userId = userId; 
 
     next();
 }
