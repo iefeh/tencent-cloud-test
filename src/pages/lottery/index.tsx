@@ -2,6 +2,8 @@ import CoverScreen from '@/components/lottery/screens/CoverScreen';
 import Head from 'next/head';
 import { FC } from 'react';
 import ScrollDownArrow from '../components/common/ScrollDownArrow';
+import DrawScreen from '@/components/lottery/screens/DrawScreen';
+import { createPortal } from 'react-dom';
 
 const LotteryPage: FC = () => {
   return (
@@ -12,7 +14,9 @@ const LotteryPage: FC = () => {
 
       <CoverScreen />
 
-      <ScrollDownArrow />
+      <DrawScreen />
+
+      {createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
     </section>
   );
 };
