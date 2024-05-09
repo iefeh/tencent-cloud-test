@@ -15,9 +15,7 @@ export async function dynamicCors(req: UserContextRequest, res: NextApiResponse,
     const requestedHeaders = req.headers;
     if (requestedHeaders) {
         for (const header in requestedHeaders) {
-            if (header.toLowerCase().startsWith('x-')) {
-                res.setHeader(`Access-Control-Allow-Headers`, `${res.getHeader('Access-Control-Allow-Headers')}, ${header}`);
-            }
+            res.setHeader(`Access-Control-Allow-Headers`, `${res.getHeader('Access-Control-Allow-Headers')}, ${header}`);
         }
     }
     res.setHeader('Access-Control-Allow-Credentials', 'true');
