@@ -25,7 +25,7 @@ import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/mode
 import {AuthorizationType} from "@/lib/authorization/types";
 import {promiseSleep} from "@/lib/common/sleep";
 import {v4 as uuidv4} from "uuid";
-import { randomBytes } from 'crypto';
+import {randomBytes, createHash} from 'crypto';
 
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
 sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
@@ -44,6 +44,29 @@ function generateSecretKey(length: number = 32): string {
 router.get(async (req, res) => {
     console.log("client id:", uuidv4());
     console.log("client sec:", generateSecretKey());
+
+    const base64URLEncode = str => str.toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '')
+
+// This is the code_verifier, which is INITIALLY KEPT SECRET on the client
+// and which is later passed as request param to the token endpoint.
+// DO NOT SEND this with the authorization request!
+    const codeVerifier = base64URLEncode(randomBytes(32))
+
+// This is the hashed version of the verifier, which is sent to the authorization endpoint.
+// This is named t(code_verifier) in the above workflow
+// Send this with the authorization request!
+    const codeChallenge = base64URLEncode(createHash('sha256').update(codeVerifier).digest())
+
+// This is the name of the code challenge method
+// This is named t_m in the above workflow
+// Send this with the authorization request!
+    const codeChallengeMethod = 'S256'
+    console.log("codeVerifier:", codeVerifier);
+    console.log("codeChallenge:", codeChallenge);
+    console.log("codeChallengeMethod:", codeChallengeMethod);
     try {
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");

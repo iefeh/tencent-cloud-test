@@ -1,0 +1,15 @@
+.base-tr:after {
+  content: '';
+  display: block;
+  width: calc(100% - 4.375rem);
+  height: 1px;
+  background-color: #1d1d1d;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+thead .base-tr:after {
+  width: 100%;
+}

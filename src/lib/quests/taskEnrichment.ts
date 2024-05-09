@@ -56,7 +56,7 @@ async function enrichTaskVerification(userId: string, quests: any[], claimed: bo
         quest.verified = false;
         quest.verify_disabled = false;
         // 若为推特交互类任务, 则需要检查后台是否已获取到评论,若未获取到则禁用verify按钮
-        if (quest.type === QuestType.TweetInteraction) {
+        if (quest.type === QuestType.TweetInteraction || quest.type === QuestType.TwitterTopic) {
             let userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
             if (userTwitter) {
                 let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: quest.properties.topic_id });

@@ -4,20 +4,25 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 export interface IOAuth2AuthorizationCode extends Document {
     authorization_code: string;
     expires_at: Date;
-    redirect_uri: string[];
-    scope: string;
+    redirect_uri: string;
+    scope: string[];
     client_id: string;
     user_id: string;
+    code_challenge: string;
+    code_challenge_method: string;
 }
 
 const OAuth2AuthorizationCodeSchema = new Schema<IOAuth2AuthorizationCode>({
     authorization_code: { type: String, required: true },
     expires_at: { type: Date, required: true },
-    redirect_uri: { type: [String] },
-    scope: { type: String },
+    redirect_uri: { type: String },
+    scope: { type: [String] },
     client_id: { type: String, required: true },
-    user_id: { type: String, required: true }
+    user_id: { type: String, required: true },
+    code_challenge: { type: String },
+    code_challenge_method: { type: String },
 });
+
 // 客户唯一索引，同一个在对应客户只会存在一个有效的code
 OAuth2AuthorizationCodeSchema.index({ authorization_code: 1, expires_at: 1 }, { unique: true });
 OAuth2AuthorizationCodeSchema.index({ authorization_code: 1 });

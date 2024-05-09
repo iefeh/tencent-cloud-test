@@ -58,7 +58,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
     try {
         // 普通任务每隔30秒允许校验一次相同任务,QuestType.TweetInteraction为3分钟
         let interval: number = 30;
-        if (quest.type === QuestType.TweetInteraction) {
+        if (quest.type === QuestType.TweetInteraction || quest.type === QuestType.TwitterTopic) {
             interval = 3 * 60;
         }
         const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
