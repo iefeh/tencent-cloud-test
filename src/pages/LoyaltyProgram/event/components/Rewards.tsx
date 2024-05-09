@@ -62,7 +62,7 @@ export default function Rewards(props: Props) {
 
   const accelerators = Object.values(acceleratorsDict);
   const totalMultipliers = +(item?.claim_settings?.total_reward_bonus || 0) * 100;
-  const totalMBs = motoAccelerators.reduce((p, c) => (p += +c.properties.reward_bonus_moon_beam || 0), 0);
+  const totalMBs = +(item?.claim_settings.total_reward_bonus_moon_beam || 0);
 
   return (
     <div className="mt-[1.875rem]">
