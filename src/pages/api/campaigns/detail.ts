@@ -141,14 +141,14 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
                 continue;
             }
             //判断是否持有对应NFT
-            const nft = await ContractNFT.findOne({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
-            if (nft) {
-                accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+            const nft = await ContractNFT.find({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
+            if (nft && nft.length > 0) {
+                accelerator.properties.reward_bonus_moon_beam = nft.length * Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+                campaign.claim_settings.total_reward_bonus += nft.length * accelerator.properties.reward_bonus;
             } else {
                 accelerator.properties.reward_bonus = 0;
             }
             // 求和加速效果
-            campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
             campaign.claim_settings.total_reward_bonus_moon_beam += accelerator.properties.reward_bonus_moon_beam;
             delete accelerator.properties.contract_address;
         }
