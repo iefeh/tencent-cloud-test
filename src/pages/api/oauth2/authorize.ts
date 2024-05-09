@@ -3,7 +3,7 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import OAuth2Server from '@/lib/oauth2/server'
 import {appendQueryParamsToUrl} from "@/lib/common/url";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import {dynamicCors, mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {OAuthModel} from "@/lib/oauth2/model";
 import User from "@/lib/models/User";
 import {responseOnOauthError} from "@/lib/oauth2/response";
@@ -11,7 +11,7 @@ import {Request, Response} from '@node-oauth/oauth2-server';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.get(async (req, res) => {
+router.use(dynamicCors).get(async (req, res) => {
     // 验证请求参数，确认用户已登录（或重定向到登录页面），向用户展示授权页面
     let landing_url = "";
     try {

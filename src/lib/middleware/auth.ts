@@ -7,6 +7,29 @@ export interface UserContextRequest extends NextApiRequest {
     userId?: string;
 }
 
+export async function dynamicCors(req: UserContextRequest, res: NextApiResponse, next: () => void) {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*'); // 允许任何来源
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // 动态允许请求中的头部
+    const requestedHeaders = req.headers;
+    if (requestedHeaders) {
+        for (const header in requestedHeaders) {
+            if (header.toLowerCase().startsWith('x-')) {
+                res.setHeader(`Access-Control-Allow-Headers`, `${res.getHeader('Access-Control-Allow-Headers')}, ${header}`);
+            }
+        }
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    // 直接对OPTIONS请求返回200
+    if (req.method === 'OPTIONS') {
+        res.status(200).end(); 
+        return;
+    }
+    next();
+}
+
 // mustAuthInterceptor 强制授权拦截器，如果用户未授权则直接返回
 export async function mustAuthInterceptor(req: UserContextRequest, res: NextApiResponse, next: () => void) {
     const authorization = req.headers.authorization;

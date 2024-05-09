@@ -1,13 +1,13 @@
 import {createRouter} from "next-connect";
 import type {NextApiResponse} from "next";
 import * as response from "@/lib/response/response";
-import {UserContextRequest} from "@/lib/middleware/auth";
+import {UserContextRequest, dynamicCors} from "@/lib/middleware/auth";
 import OAuth2Server from '@/lib/oauth2/server'
 import {responseOnOauthError} from "@/lib/oauth2/response";
 import { Request, Response } from '@node-oauth/oauth2-server';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
-router.post(async (req, res) => {
+router.use(dynamicCors).post(async (req, res) => {
     //根据授权码返回access token
     try {
         // 如当前用户使用了PKCE，则允许不传client_secret
