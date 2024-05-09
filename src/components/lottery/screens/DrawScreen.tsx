@@ -1,7 +1,30 @@
+import Image from 'next/image';
 import { FC } from 'react';
+import MBInfo from '../MBInfo';
+import drawBottomPlanetImg from 'img/lottery/draw_bottom_planet.png';
 
 const DrawScreen: FC & BasePage = () => {
-  return <div className="relative w-screen h-screen bg-[url('')]"></div>;
+  return (
+    <div className="relative w-screen h-screen">
+      {/* 背景层 */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2"
+          src={drawBottomPlanetImg}
+          alt=""
+          unoptimized
+        />
+      </div>
+
+      {/* 动画层 */}
+      <div className="absolute inset-0 z-10"></div>
+
+      {/* 操作层 */}
+      <div className="absolute inset-0 z-20">
+        <MBInfo className="absolute left-16 top-32" />
+      </div>
+    </div>
+  );
 };
 
 export default DrawScreen;

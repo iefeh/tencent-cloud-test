@@ -1,0 +1,34 @@
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import { cn } from '@nextui-org/react';
+import Image from 'next/image';
+import { FC } from 'react';
+import mbInfoBGImg from 'img/lottery/bg_mb_info.png';
+import mbImg from 'img/loyalty/earn/mb.png';
+
+const MBInfo: FC<ClassNameProps> = ({ className }) => {
+  return (
+    <div
+      className={cn([
+        'w-[29.5625rem] h-[7.0625rem] pl-[0.875rem] pr-[1.3125rem]',
+        'relative flex justify-between items-center',
+        className,
+      ])}
+    >
+      <Image src={mbInfoBGImg} alt="" fill sizes="100%" unoptimized />
+
+      <Image className="w-16 h-16 object-contain relative z-0" src={mbImg} alt="" unoptimized />
+
+      <div className="flex-1 font-semakin relative z-0 ml-6">
+        <div className="text-[2rem]">5678</div>
+        <div className="text-sm">moon beams</div>
+      </div>
+
+      <div className="flex flex-col relative z-0">
+        <LGButton className="uppercase font-bold" label="Season Pass" link="/LoyaltyProgram/season/foresight" />
+        <LGButton className="mt-4 uppercase font-bold" label="Draw History" actived />
+      </div>
+    </div>
+  );
+};
+
+export default MBInfo;
