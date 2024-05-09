@@ -141,7 +141,7 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
                 continue;
             }
             //判断是否持有对应NFT
-            const nft = await ContractNFT.findOne({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
+            const nft = await ContractNFT.find({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
             if (nft && nft.length > 0) {
                 if(accelerator.properties.support_stacking){
                     accelerator.properties.reward_bonus_moon_beam = nft.length * Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
