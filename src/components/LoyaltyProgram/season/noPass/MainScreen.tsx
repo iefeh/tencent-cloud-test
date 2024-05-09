@@ -3,9 +3,9 @@ import Rank from '@/components/LoyaltyProgram/earn/BannerAndRank/Rank';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 import UserCard from './UserCard';
-import Invite from '../../earn/EarnBanner/Invite';
 import { cn } from '@nextui-org/react';
 import { isMobile } from 'react-device-detect';
+import LotteryCard from './LotteryCard';
 
 const MainScreen: FC = () => {
   return (
@@ -18,7 +18,7 @@ const MainScreen: FC = () => {
         <div>
           <UserCard />
 
-          <Invite className={cn(['mt-8', isMobile && '!h-64'])} isReferral />
+          <LotteryCard />
         </div>
       </div>
     </div>
