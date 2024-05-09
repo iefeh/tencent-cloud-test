@@ -148,7 +148,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
-    const isTweetInteration = task.type === QuestType.TweetInteraction;
+    const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -221,9 +221,8 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
             onOpen();
           } else if (res.tip) {
             toast.error(res.tip);
+            setHasVerifyCD(true);
           }
-
-          setHasVerifyCD(true);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTask();
@@ -281,14 +280,15 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
           disabled={!verifiable}
           hasCD={hasVerifyCD}
           tooltip={
-            isTweetInteration && (
+            isLongCD && (
               <div className="max-w-[25rem] px-4 py-3">
-                * Please be aware that data verification may take a moment. Please wait for a few minutes before
-                clicking &apos;Verify&apos; button.
+                * Please note that data verification may take a moment. You will need to wait for about 5 minutes before
+                the &apos;Verify&apos; button becomes clickable. If you fail the verification process, you can try again
+                after 10 minutes.
               </div>
             )
           }
-          cd={isTweetInteration ? 180 : 30}
+          cd={isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -436,7 +436,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
     }, []);
 
     return (
-      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[1.25rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
+      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
         <div className="text-xl">{task.name}</div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
