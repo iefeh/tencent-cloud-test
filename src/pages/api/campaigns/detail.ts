@@ -191,6 +191,9 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
             delete accelerator.properties.series;
         }
     }
+
+    campaign.claim_settings.total_reward_bonus = campaign.claim_settings.total_reward_bonus.toFixed(4);
+    campaign.claim_settings.total_reward_bonus_moon_beam = campaign.claim_settings.total_reward_bonus_moon_beam.toFixed(4);
 }
 // this will run if none of the above matches
 router.all((req, res) => {
