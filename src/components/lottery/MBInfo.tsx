@@ -2,7 +2,6 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
-import mbInfoBGImg from 'img/lottery/bg_mb_info.png';
 import mbImg from 'img/loyalty/earn/mb.png';
 
 const MBInfo: FC<ClassNameProps> = ({ className }) => {
@@ -14,7 +13,13 @@ const MBInfo: FC<ClassNameProps> = ({ className }) => {
         className,
       ])}
     >
-      <Image src={mbInfoBGImg} alt="" fill sizes="100%" unoptimized />
+      <Image
+        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_mb_info.png"
+        alt=""
+        fill
+        sizes="100%"
+        unoptimized
+      />
 
       <Image className="w-16 h-16 object-contain relative z-0" src={mbImg} alt="" unoptimized />
 

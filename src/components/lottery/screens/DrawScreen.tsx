@@ -1,19 +1,22 @@
 import Image from 'next/image';
 import { FC } from 'react';
 import MBInfo from '../MBInfo';
-import drawBottomPlanetImg from 'img/lottery/draw_bottom_planet.png';
+import TicketsInfo from '../TicketsInfo';
 
 const DrawScreen: FC & BasePage = () => {
   return (
     <div className="relative w-screen h-screen">
       {/* 背景层 */}
       <div className="absolute inset-0 z-0">
-        <Image
-          className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2"
-          src={drawBottomPlanetImg}
-          alt=""
-          unoptimized
-        />
+        <div className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2">
+          <Image
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/draw_bottom_planet.png"
+            alt=""
+            fill
+            sizes="100%"
+            unoptimized
+          />
+        </div>
       </div>
 
       {/* 动画层 */}
@@ -21,7 +24,9 @@ const DrawScreen: FC & BasePage = () => {
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20">
-        <MBInfo className="absolute left-16 top-32" />
+        <MBInfo className="!absolute left-16 top-32" />
+
+        <TicketsInfo className="!absolute left-16 top-[16.5625rem]" />
       </div>
     </div>
   );
