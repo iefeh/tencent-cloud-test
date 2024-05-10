@@ -1,4 +1,8 @@
 import { useEffect, useRef } from 'react';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
 
 export default function useCountdown(targetTime: number, currentTime = Date.now(), callback?: (time: number) => void) {
   const lastTimestamp = useRef(performance.now());

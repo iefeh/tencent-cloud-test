@@ -1,9 +1,15 @@
+import useCountdown from '@/hooks/useCountdown';
 import { cn } from '@nextui-org/react';
+import dayjs from 'dayjs';
 import Image from 'next/image';
 import { FC, Fragment, useState } from 'react';
 
 const TimeoutInfo: FC<ClassNameProps> = ({ className }) => {
   const [times, setTimes] = useState(['00', '00', '00', '00']);
+  useCountdown(dayjs().add(1, 'day').valueOf(), dayjs().valueOf(), (leftTime) => {
+    const duration = dayjs.duration(leftTime);
+    setTimes(duration.format('DD:HH:mm:ss').split(':'));
+  });
 
   return (
     <div className={cn(['w-[26.375rem] h-[7.625rem] pl-[1.8125rem] pr-[1.625rem] pt-4 relative', className])}>

@@ -32,7 +32,7 @@ const DrawScreen: FC & BasePage = () => {
 
         <TimeoutInfo className="!absolute right-16 top-32" />
 
-        <DrawLimitsInfo className="!absolute right-16 top-[16.5625rem]" />
+        <DrawLimitsInfo className="!absolute right-16 top-[17.125rem]" />
       </div>
     </div>
   );
