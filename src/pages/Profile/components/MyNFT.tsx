@@ -1,5 +1,5 @@
 import { Divider, cn } from '@nextui-org/react';
-import NFT from '@/pages/components/common/nft/NFT';
+import NFT from '@/components/nft/NFT';
 import { observer } from 'mobx-react-lite';
 import { queryMyNFTListAPI, type NFTItem } from '@/http/services/mint';
 import { isMobile } from 'react-device-detect';

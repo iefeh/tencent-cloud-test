@@ -3,7 +3,7 @@ import { MobxContext } from '@/pages/_app';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import Video from '@/pages/components/common/Video';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import MergeNFT from '@/pages/components/common/nft/MergeNFT';
+import MergeNFT from '@/components/nft/MergeNFT';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';

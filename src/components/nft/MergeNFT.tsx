@@ -3,7 +3,7 @@ import bgImg from 'img/nft/common/bg_nft.png';
 import activeBgImg from 'img/nft/common/bg_nft_active.png';
 import selectedBgImg from 'img/nft/merge/bg_nft_actived.png';
 import emptyNFTImg from 'img/nft/merge/bg_nft_inactived.png';
-import Video from '../Video';
+import Video from '../../pages/components/common/Video';
 import pendingImg from 'img/profile/pending.png';
 import transferringImg from 'img/profile/transferring.png';
 import burningImg from 'img/profile/burning.png';

@@ -2,6 +2,7 @@ import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 import { useState } from 'react';
 import MyAssets from '@/components/profile/assets/MyAssets';
+import DisplayAssets from '@/components/profile/assets/DisplayAssets';
 
 export default function ProfilePage() {
   const [total, setTotal] = useState(0);
@@ -19,6 +20,8 @@ export default function ProfilePage() {
 
       <div className="mt-12">
         <div className="font-semakin text-basic-yellow text-2xl">Display</div>
+
+        <DisplayAssets items={[]} />
       </div>
 
       <div className="mt-12">

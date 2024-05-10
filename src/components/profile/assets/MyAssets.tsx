@@ -1,12 +1,18 @@
 import { Tab, Tabs } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { FC, Key, useState } from 'react';
 import Assets from './Assets';
+import usePageQuery from '@/hooks/usePageQuery';
+import { MyNFTQueryParams, NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
+import { NFTCategory } from '@/constant/nft';
 
 const MyAssets: FC = () => {
-  const [tabs, setTabs] = useState(['Regular Tasks', 'Events']);
-  const [selectedKey, setSelectedKey] = useState('');
+  const [tabs, setTabs] = useState([NFTCategory.TETRA_NFT, NFTCategory.SBT]);
+  const [selectedKey, setSelectedKey] = useState(NFTCategory.TETRA_NFT);
+  const { loading, data, total } = usePageQuery<NFTItem, MyNFTQueryParams>({ key: 'nfts', fn: queryMyNFTListAPI });
 
-  function onSelectionChange() {}
+  function onSelectionChange(key: Key) {
+    setSelectedKey(key.toString() as NFTCategory);
+  }
 
   return (
     <div className="flex">
@@ -31,11 +37,11 @@ const MyAssets: FC = () => {
                 <span>{tab}</span>
               </div>
             }
-          >
-            <Assets />
-          </Tab>
+          ></Tab>
         ))}
       </Tabs>
+
+      <Assets items={data} />
     </div>
   );
 };

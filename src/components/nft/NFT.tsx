@@ -2,7 +2,7 @@ import Image, { StaticImageData } from 'next/image';
 import bgImg from 'img/nft/common/bg_nft.png';
 import activeBgImg from 'img/nft/common/bg_nft_active.png';
 import emptyNFTImg from 'img/nft/common/nft_empty.jpg';
-import Video from '../Video';
+import Video from '../../pages/components/common/Video';
 import pendingImg from 'img/profile/pending.png';
 import transferringImg from 'img/profile/transferring.png';
 import burningImg from 'img/profile/burning.png';

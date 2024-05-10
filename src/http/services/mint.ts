@@ -21,7 +21,12 @@ export interface MergeListItem extends NFTItem {
   request_token_metadata: (TokenMetadata | null)[];
 }
 
-export function queryMyNFTListAPI(params: PageQueryDto): Promise<PageResDTO<NFTItem> & { wallet_connected: boolean }> {
+export type MyNFTQueryParams = PageQueryDto & { category?: string };
+
+export function queryMyNFTListAPI(
+  params: MyNFTQueryParams,
+): Promise<PageResDTO<NFTItem> & { wallet_connected: boolean }> {
+  params.category = params.category || 'TEATRA_NFT';
   return http.get('/api/users/nft/list', { params });
 }
 
