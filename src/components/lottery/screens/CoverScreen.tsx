@@ -14,6 +14,8 @@ const CoverScreen: FC = () => {
 
       <PageDesc
         className="relative z-0"
+        needAni
+        baseAniTY
         title={
           <div className="text-6xl uppercase font-semakin">
             <span>Welcome to</span>
