@@ -1,7 +1,11 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
+import { useState } from 'react';
+import MyAssets from '@/components/profile/assets/MyAssets';
 
 export default function ProfilePage() {
+  const [total, setTotal] = useState(0);
+
   return (
     <section
       id="luxy"
@@ -12,6 +16,16 @@ export default function ProfilePage() {
       </Head>
 
       <AutoBreadcrumbs hrefs={['/Profile']} />
+
+      <div className="mt-12">
+        <div className="font-semakin text-basic-yellow text-2xl">Display</div>
+      </div>
+
+      <div className="mt-12">
+        <div className="font-semakin text-basic-yellow text-2xl">My Asset ( {total} )</div>
+
+        <MyAssets />
+      </div>
     </section>
   );
 }
