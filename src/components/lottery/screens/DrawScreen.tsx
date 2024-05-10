@@ -6,6 +6,7 @@ import TimeoutInfo from '../TimeoutInfo';
 import DrawLimitsInfo from '../DrawLimitsInfo';
 import DrawScreenMainContent from '../DrawScreenMainContent';
 import DrawFooter from '../DrawFooter';
+import PlanetAni from '../PlanetAni';
 
 const DrawScreen: FC & BasePage = () => {
   return (
@@ -24,7 +25,9 @@ const DrawScreen: FC & BasePage = () => {
       </div>
 
       {/* 动画层 */}
-      <div className="absolute inset-0 z-10"></div>
+      <div className="absolute inset-0 z-10">
+        <PlanetAni />
+      </div>
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20 flex justify-center items-center">

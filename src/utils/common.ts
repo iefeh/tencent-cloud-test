@@ -7,3 +7,15 @@ export function formatUserName(val?: string) {
   if (val.length < 10) return val;
   return `${val.substring(0, 6)}...${val.substring(val.length - 4)}`;
 }
+
+export function loadImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve) => {
+    const img = new Image();
+    img.src = src;
+    img.style.display = 'none';
+
+    img.onload = () => resolve(img);
+
+    if (img.complete) resolve(img);
+  });
+}
