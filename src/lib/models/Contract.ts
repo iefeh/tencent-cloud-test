@@ -4,7 +4,14 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 // 枚举合约分类，我们平台的合约类型，如SBT、DESTINY NFT等
 export enum ContractCategory {
     SBT = 'SBT',
-    DESTINY_TETRA = 'DESTINY_TETRA',
+    TETRA_NFT = 'TEATRA_NFT',
+}
+
+// 子类型
+export enum ContractSubCategory {
+    // 徽章
+    BADGE = 'BADGE',
+    DESTINY_NFT = 'DESTINY_NFT',
     ETERNITY_TETRA = 'ETERNITY_TETRA',
 }
 
@@ -17,13 +24,16 @@ export interface IContract extends Document {
     name: string;
     // 合约类别
     category: ContractCategory;
+    // 子类别
+    sub_category: ContractSubCategory;
 }
 
 const ContractSchema = new Schema<IContract>({
     chain_id: {type: String, required: true},
-    address: {type: String, required: true},
-    name: {type: String, required: true},
-    category: {type: String, required: true},
+    address: {type: String},
+    name: {type: String},
+    category: {type: String},
+    sub_category: {type: String},
 });
 
 
