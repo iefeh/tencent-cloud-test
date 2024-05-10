@@ -13,9 +13,11 @@ export interface IUserFavouriteNFT extends Document {
     // NFT所在网络
     chain_id: string,
     // NFT合约地址
-    contract_addr: string,
+    contract_address: string,
     // NFT tokenId
     token_id: string,
+    // 排序
+    sort: number,
     // 创建时间毫秒时间戳
     created_time: number
 }
@@ -23,8 +25,9 @@ export interface IUserFavouriteNFT extends Document {
 const UserFavouriteNFTSchema = new Schema<IUserFavouriteNFT>({
     user_id: {type: String},
     chain_id: {type: String},
-    contract_addr: {type: String},
+    contract_address: {type: String},
     token_id: {type: String},
+    sort: {type: Number},
     created_time: {type: Number},
 });
 

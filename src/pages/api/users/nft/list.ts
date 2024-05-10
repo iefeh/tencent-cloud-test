@@ -63,7 +63,7 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }));
 });
 
-async function enrichNFTMetadata(nfts: any[]): Promise<void> {
+export async function enrichNFTMetadata(nfts: any[]): Promise<void> {
     for (let nft of nfts) {
         // 检查NFT的实际状态，如果NFT存在locked_as则需要修正当前的状态
         if (nft.locked_as) {
@@ -144,7 +144,6 @@ async function paginationWalletNFTs(contracts: IContract[],wallets: string[], pa
             $project: {
                 '_id': 0,
                 '__v': 0,
-                'wallet_addr': 0,
                 'created_time': 0,
                 'deleted_time': 0,
             }
