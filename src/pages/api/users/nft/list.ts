@@ -3,42 +3,45 @@ import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import { errorInterceptor } from "@/lib/middleware/error";
-import { redis } from "@/lib/redis/client";
 import User from "@/lib/models/User";
 import { timeoutInterceptor } from "@/lib/middleware/timeout";
-import connectToMongoDbDev, { isDuplicateKeyError } from "@/lib/mongodb/client";
 import UserWallet from "@/lib/models/UserWallet";
 import { PipelineStage } from "mongoose";
-import Quest from "@/lib/models/Quest";
 import ContractTokenMetadata from "@/lib/models/ContractTokenMetadata";
 import ContractNFT from "@/lib/models/ContractNFT";
-import { de } from "date-fns/locale";
+import logger from "@/lib/logger/winstonLogger";
+import Contract, { IContract } from "@/lib/models/Contract";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(async (req, res) => {
     const userId = req.userId!;
-    const { page_num, page_size } = req.query;
-    if (!page_num || !page_size) {
+    const { category,page_num, page_size } = req.query;
+    if (!category || !page_num || !page_size) {
         res.json(response.invalidParams());
         return
     }
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
+    // 查询目标合约类型
+    const contracts = await Contract.find({ category: category});
+    if (!contracts || contracts.length == 0) {
+        logger.warn(`Contract not found: ${category}`);
+        res.json(response.invalidParams());
+        return
+    }
+    // 查询用户的托管钱包
+    const user = await User.findOne({ user_id: userId}, { _id: 0, wallet_addr: 1 });
+    if (!user) {
+        logger.error(`User not found: ${userId}`);
+        res.json(response.serverError());
+        return
+    }
     // 检查用户当前绑定的钱包
     const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null }, { _id: 0, wallet_addr: 1 });
-    if (!wallet) {
-        // 当前没有匹配的数据
-        return res.json(response.success({
-            wallet_connected: false,
-            total: 0,
-            page_num: pageNum,
-            page_size: pageSize,
-            nfts: [],
-        }));
-    }
+    const wallets = [user.particle?.evm_wallet, wallet?.wallet_addr];
     // 检查用户的NFT
-    const pagination = await paginationWalletNFTs(wallet.wallet_addr, pageNum, pageSize);
+    const pagination = await paginationWalletNFTs(contracts, wallets, pageNum, pageSize);
     if (pagination.total == 0 || pagination.nfts.length == 0) {
         // 当前没有匹配的数据
         return res.json(response.success({
@@ -94,7 +97,8 @@ async function enrichNFTMetadata(nfts: any[]): Promise<void> {
         "contract_address": 1,
         "token_id": 1,
         "metadata.name": 1,
-        "metadata.animation_url": 1
+        "metadata.animation_url": 1,
+        "metadata.image": 1,
     }).lean();
     const tokenMetadataMap = new Map<string, any>(tokens.map(token => [`${token.chain_id},${token.contract_address},${token.token_id}`, token.metadata]));
     // 封装NFT的元信息
@@ -109,12 +113,24 @@ async function enrichNFTMetadata(nfts: any[]): Promise<void> {
     }
 }
 
-async function paginationWalletNFTs(wallet: string, pageNum: number, pageSize: number): Promise<{ total: number, nfts: any[] }> {
+async function paginationWalletNFTs(contracts: IContract[],wallets: string[], pageNum: number, pageSize: number): Promise<{ total: number, nfts: any[] }> {
+    // 构建查询的合约
+    let contractsFilter = contracts.map(contract => {
+        return {
+            chain_id: contract.chain_id,
+            contract_address: contract.address
+        };
+    });
     const skip = (pageNum - 1) * pageSize;
     const aggregateQuery: PipelineStage[] = [
         {
             $match: {
-                'wallet_addr': wallet,
+                $or: contractsFilter
+            }
+        },
+        {
+            $match: {
+                'wallet_addr': {$in: wallets},
                 'deleted_time': null
             }
         },
