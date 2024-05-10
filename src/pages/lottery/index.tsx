@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 
 const LotteryPage: FC = () => {
   return (
-    <section className="w-full">
+    <section className="w-full" id="luxy">
       <Head>
         <title>Lottery | Moonveil Entertainment</title>
       </Head>

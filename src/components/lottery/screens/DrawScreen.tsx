@@ -2,6 +2,8 @@ import Image from 'next/image';
 import { FC } from 'react';
 import MBInfo from '../MBInfo';
 import TicketsInfo from '../TicketsInfo';
+import TimeoutInfo from '../TimeoutInfo';
+import DrawLimitsInfo from '../DrawLimitsInfo';
 
 const DrawScreen: FC & BasePage = () => {
   return (
@@ -27,6 +29,10 @@ const DrawScreen: FC & BasePage = () => {
         <MBInfo className="!absolute left-16 top-32" />
 
         <TicketsInfo className="!absolute left-16 top-[16.5625rem]" />
+
+        <TimeoutInfo className="!absolute right-16 top-32" />
+
+        <DrawLimitsInfo className="!absolute right-16 top-[16.5625rem]" />
       </div>
     </div>
   );
