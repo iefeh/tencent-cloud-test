@@ -1,8 +1,6 @@
-import LGButton from '@/pages/components/common/buttons/LGButton';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
-import mbImg from 'img/loyalty/earn/mb.png';
 
 const DrawLimitsInfo: FC<ClassNameProps> = ({ className }) => {
   return (

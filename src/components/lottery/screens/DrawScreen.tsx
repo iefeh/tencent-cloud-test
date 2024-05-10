@@ -5,6 +5,7 @@ import TicketsInfo from '../TicketsInfo';
 import TimeoutInfo from '../TimeoutInfo';
 import DrawLimitsInfo from '../DrawLimitsInfo';
 import DrawScreenMainContent from '../DrawScreenMainContent';
+import DrawFooter from '../DrawFooter';
 
 const DrawScreen: FC & BasePage = () => {
   return (
@@ -34,6 +35,8 @@ const DrawScreen: FC & BasePage = () => {
         <TimeoutInfo className="!absolute right-16 top-32" />
 
         <DrawLimitsInfo className="!absolute right-16 top-[17.125rem]" />
+
+        <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" />
 
         <DrawScreenMainContent />
       </div>
