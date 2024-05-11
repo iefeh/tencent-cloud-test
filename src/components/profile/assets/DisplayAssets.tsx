@@ -1,8 +1,8 @@
 import useSort from '@/hooks/pages/profile/badges/hooks/useSort';
-import { NFTItem, queryDisplayNFTListAPI, updateDisplayNFTListAPI } from '@/http/services/mint';
+import { NFTItem, updateDisplayNFTListAPI } from '@/http/services/mint';
 import NFT from '@/components/nft/NFT';
 import { debounce } from 'lodash';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { Button, cn } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
@@ -17,16 +17,30 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   const [innerLoading, setInnerLoading] = useState(false);
   const { containerElRef } = useSort({
     onChange: debounce(async (evt) => {
+      setInnerLoading(true);
       const { newIndex, oldIndex } = evt;
       await onSort?.(newIndex!, oldIndex!);
+      setInnerLoading(false);
     }, 500),
   });
 
-  async function onSort(newIndex: number, oldIndex: number) {}
+  async function onSort(newIndex: number, oldIndex: number) {
+    const nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
+    console.log(newIndex, oldIndex, nextItems, items);
+    let newItem = nextItems[newIndex];
+    nextItems[newIndex] = nextItems[oldIndex];
+    nextItems[oldIndex] = newItem;
+    nextItems.forEach((item, index) => {
+      item.sort = index + 1;
+    });
+
+    const res = await updateDisplayNFTListAPI(nextItems);
+    if (!res) onUpdate?.();
+  }
 
   async function onRemove(index: number) {
     setInnerLoading(true);
-    const nextItems = items.slice();
+    const nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
     nextItems.splice(index, 1);
     nextItems.forEach((item, i) => {
       item.sort = i + 1;
