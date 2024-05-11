@@ -1,16 +1,39 @@
-import { NFTItem } from '@/http/services/mint';
+import { NFTItem, updateDisplayNFTListAPI } from '@/http/services/mint';
 import NFT from '@/components/nft/NFT';
 import { FC, useEffect, useState } from 'react';
 import { cn } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
 
 interface Props {
   items: NFTItem[];
+  displayItems: Partial<NFTItem>[];
+  onUpdate?: () => void;
 }
 
-const Assets: FC<Props & ClassNameProps> = ({ items, className }) => {
+const Assets: FC<Props & ClassNameProps> = ({ items, displayItems, className, onUpdate }) => {
   const [selectedNFT, setSelectedNFT] = useState<NFTItem | null>(null);
+  const [displayLoading, setDisplayLoading] = useState(false);
+
+  async function onDisplayClick() {
+    if (!selectedNFT) return;
+
+    setDisplayLoading(true);
+    const { contract_address, chain_id, token_id } = selectedNFT;
+    const nextDisplayItems = displayItems.slice();
+    nextDisplayItems.push({
+      contract_address,
+      chain_id,
+      token_id,
+      sort: displayItems.length,
+    });
+
+    const res = await updateDisplayNFTListAPI(nextDisplayItems);
+    if (!res) onUpdate?.();
+
+    setDisplayLoading(false);
+  }
 
   useEffect(() => {
     setSelectedNFT(items[0] || null);
@@ -60,7 +83,16 @@ const Assets: FC<Props & ClassNameProps> = ({ items, className }) => {
             <div className="text-sm mt-7">{dayjs(selectedNFT.confirmed_time).format('YYYY-MM-DD HH:mm:ss')}</div>
 
             <div className="mt-12">
-              <LGButton label="Display" actived />
+              <LGButton
+                label="Display"
+                actived
+                disabled={
+                  displayItems.length >= MAX_DISPLAY_ASSETS ||
+                  displayItems.some((item) => item.token_id === selectedNFT.token_id)
+                }
+                loading={displayLoading}
+                onClick={onDisplayClick}
+              />
             </div>
           </div>
         </div>

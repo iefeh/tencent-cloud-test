@@ -49,6 +49,6 @@ export function queryDisplayNFTListAPI(): Promise<NFTItem[]> {
   return http.get('/api/users/nft/favourite');
 }
 
-export function updateDisplayNFTListAPI(data: NFTItem[]): Promise<null> {
+export function updateDisplayNFTListAPI(data: Partial<NFTItem>[]): Promise<null> {
   return http.post('/api/users/nft/favourite', JSON.stringify(data));
 }

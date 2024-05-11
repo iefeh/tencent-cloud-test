@@ -1,13 +1,11 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
-import { useState } from 'react';
 import MyAssets from '@/components/profile/assets/MyAssets';
 import DisplayAssets from '@/components/profile/assets/DisplayAssets';
 import useDisplayAssets from '@/hooks/pages/profile/assets/useDisplayAssets';
 
 export default function ProfilePage() {
-  const [total, setTotal] = useState(0);
-  const { loading, data } = useDisplayAssets();
+  const { loading, data, queryData } = useDisplayAssets();
 
   return (
     <section
@@ -23,13 +21,11 @@ export default function ProfilePage() {
       <div className="mt-12">
         <div className="font-semakin text-basic-yellow text-2xl">Display</div>
 
-        <DisplayAssets items={data} />
+        <DisplayAssets items={data} loading={loading} onUpdate={queryData} />
       </div>
 
       <div className="mt-[4.5rem]">
-        <div className="font-semakin text-basic-yellow text-2xl">My Asset ( {total} )</div>
-
-        <MyAssets />
+        <MyAssets displayItems={data} onUpdate={queryData} />
       </div>
     </section>
   );

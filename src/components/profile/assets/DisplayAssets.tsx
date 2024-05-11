@@ -1,16 +1,20 @@
 import useSort from '@/hooks/pages/profile/badges/hooks/useSort';
-import { NFTItem, queryDisplayNFTListAPI } from '@/http/services/mint';
+import { NFTItem, queryDisplayNFTListAPI, updateDisplayNFTListAPI } from '@/http/services/mint';
 import NFT from '@/components/nft/NFT';
 import { debounce } from 'lodash';
 import { FC, useEffect, useState } from 'react';
 import { Button, cn } from '@nextui-org/react';
 import dayjs from 'dayjs';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
-  items: NFTItem[];
+  loading?: boolean;
+  items: Partial<NFTItem>[];
+  onUpdate?: () => void;
 }
 
-const DisplayAssets: FC<Props> = ({ items }) => {
+const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
+  const [innerLoading, setInnerLoading] = useState(false);
   const { containerElRef } = useSort({
     onChange: debounce(async (evt) => {
       const { newIndex, oldIndex } = evt;
@@ -20,8 +24,22 @@ const DisplayAssets: FC<Props> = ({ items }) => {
 
   async function onSort(newIndex: number, oldIndex: number) {}
 
+  async function onRemove(index: number) {
+    setInnerLoading(true);
+    const nextItems = items.slice();
+    nextItems.splice(index, 1);
+    nextItems.forEach((item, i) => {
+      item.sort = i + 1;
+    });
+
+    const res = await updateDisplayNFTListAPI(nextItems);
+    if (!res) onUpdate?.();
+
+    setInnerLoading(false);
+  }
+
   return (
-    <ul ref={containerElRef} className="flex items-center relative z-0 mt-6 bg-black">
+    <ul ref={containerElRef} className="flex items-center relative z-0 mt-6 bg-black min-h-[18.75rem]">
       {items.map((item, index) => (
         <li
           key={index}
@@ -34,7 +52,7 @@ const DisplayAssets: FC<Props> = ({ items }) => {
         >
           <NFT
             className="w-[8.3125rem] h-[8.3125rem]"
-            name={item.token_metadata?.name}
+            name={item.token_metadata?.name || '--'}
             src={item.token_metadata?.animation_url}
             status={item.transaction_status}
           />
@@ -44,11 +62,14 @@ const DisplayAssets: FC<Props> = ({ items }) => {
           <Button
             className="btn absolute bottom-0 left-0 w-full h-[1.875rem] bg-[#3253C0] hidden group-hover:block"
             radius="none"
+            onClick={() => onRemove(index)}
           >
             Remove
           </Button>
         </li>
       ))}
+
+      {(loading || innerLoading) && <CircularLoading />}
     </ul>
   );
 };

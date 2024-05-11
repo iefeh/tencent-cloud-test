@@ -4,8 +4,14 @@ import Assets from './Assets';
 import usePageQuery from '@/hooks/usePageQuery';
 import { MyNFTQueryParams, NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
 import { NFTCategory } from '@/constant/nft';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
-const MyAssets: FC = () => {
+interface Props {
+  displayItems: NFTItem[];
+  onUpdate?: () => void;
+}
+
+const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
   const [tabs, setTabs] = useState([
     {
       label: 'TETRA NFT',
@@ -31,36 +37,47 @@ const MyAssets: FC = () => {
     queryData();
   }
 
-  return (
-    <div>
-      <Tabs
-        aria-label="Options"
-        color="primary"
-        variant="underlined"
-        selectedKey={selectedKey}
-        classNames={{
-          base: 'mt-6',
-          tabList: 'gap-6 w-full relative rounded-none p-0',
-          cursor: 'w-full bg-basic-yellow',
-          tab: 'max-w-fit px-0 h-12 font-semakin',
-          tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
-        }}
-        onSelectionChange={onSelectionChange}
-      >
-        {tabs.map((tab) => (
-          <Tab
-            key={tab.key}
-            title={
-              <div className="flex items-center space-x-2">
-                <span>{tab.label}</span>
-              </div>
-            }
-          ></Tab>
-        ))}
-      </Tabs>
+  function onAssetsUpdate() {
+    queryData();
+    onUpdate?.();
+  }
 
-      <Assets items={data} />
-    </div>
+  return (
+    <>
+      <div className="font-semakin text-basic-yellow text-2xl">My Asset ( {total} )</div>
+
+      <div className="min-h-[25rem] relative">
+        <Tabs
+          aria-label="Options"
+          color="primary"
+          variant="underlined"
+          selectedKey={selectedKey}
+          classNames={{
+            base: 'mt-6',
+            tabList: 'gap-6 w-full relative rounded-none p-0',
+            cursor: 'w-full bg-basic-yellow',
+            tab: 'max-w-fit px-0 h-12 font-semakin',
+            tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
+          }}
+          onSelectionChange={onSelectionChange}
+        >
+          {tabs.map((tab) => (
+            <Tab
+              key={tab.key}
+              title={
+                <div className="flex items-center space-x-2">
+                  <span>{tab.label}</span>
+                </div>
+              }
+            ></Tab>
+          ))}
+        </Tabs>
+
+        <Assets items={data} displayItems={displayItems} onUpdate={onAssetsUpdate} />
+
+        {loading && <CircularLoading />}
+      </div>
+    </>
   );
 };
 
