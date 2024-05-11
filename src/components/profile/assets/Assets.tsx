@@ -52,28 +52,38 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
     <div className={cn(['flex flex-nowrap', className])}>
       <div className="flex-1">
         <div className="flex flex-wrap flex-1 content-start min-h-[35rem]">
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className={cn([
-                'w-[11.5625rem] h-[11.5625rem]',
-                'shrink-0 flex justify-center items-center',
-                'border-1 border-[#1D1D1D] transition-colors',
-                item && 'hover:border-basic-yellow',
-                item && selectedNFT === item && 'border-basic-yellow',
-                item ? 'cursor-pointer' : 'cursor-not-allowed',
-              ])}
-              onClick={() => item && setSelectedNFT(item)}
-            >
-              <NFT
-                className="w-[8.3125rem] h-[8.3125rem]"
-                name={item?.token_metadata?.name}
-                src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
-                isSrcImage={!item?.token_metadata?.animation_url}
-                status={item?.transaction_status}
-              />
-            </div>
-          ))}
+          {items.map((item, index) => {
+            const selected = !!item && selectedNFT === item;
+            const displayed = displayItems.some((di) => di.token_id === item?.token_id);
+
+            return (
+              <div
+                key={index}
+                className={cn([
+                  'w-[11.5625rem] h-[11.5625rem] relative',
+                  'shrink-0 flex justify-center items-center',
+                  'border-1 border-[#1D1D1D] transition-colors',
+                  item && 'hover:border-basic-yellow',
+                  selected && 'border-basic-yellow',
+                  item ? 'cursor-pointer' : 'cursor-not-allowed',
+                ])}
+                onClick={() => item && setSelectedNFT(item)}
+              >
+                <NFT
+                  className="w-[8.3125rem] h-[8.3125rem]"
+                  src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
+                  isSrcImage={!item?.token_metadata?.animation_url}
+                  status={item?.transaction_status}
+                />
+
+                {displayed && (
+                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs text-basic-yellow font-semakin px-1 border-1 border-basic-yellow/10 rounded-md">
+                    Displayed
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <CirclePagination total={total} className="mt-9 flex justify-center" onChange={onPagiChange} />
