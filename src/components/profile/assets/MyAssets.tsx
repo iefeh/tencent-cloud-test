@@ -1,28 +1,46 @@
 import { Tab, Tabs } from '@nextui-org/react';
-import { FC, Key, useState } from 'react';
+import { FC, Key, useRef, useState } from 'react';
 import Assets from './Assets';
 import usePageQuery from '@/hooks/usePageQuery';
 import { MyNFTQueryParams, NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
 import { NFTCategory } from '@/constant/nft';
 
 const MyAssets: FC = () => {
-  const [tabs, setTabs] = useState([NFTCategory.TETRA_NFT, NFTCategory.SBT]);
+  const [tabs, setTabs] = useState([
+    {
+      label: 'TETRA NFT',
+      key: NFTCategory.TETRA_NFT,
+    },
+    {
+      label: 'SBT',
+      key: NFTCategory.SBT,
+    },
+  ]);
   const [selectedKey, setSelectedKey] = useState(NFTCategory.TETRA_NFT);
-  const { loading, data, total } = usePageQuery<NFTItem, MyNFTQueryParams>({ key: 'nfts', fn: queryMyNFTListAPI });
+  const selectedKeyRef = useRef(selectedKey);
+  const { loading, data, total, queryData } = usePageQuery<NFTItem, MyNFTQueryParams>({
+    key: 'nfts',
+    fn: queryMyNFTListAPI,
+    paramsFn: () => ({ category: selectedKeyRef.current }),
+  });
 
   function onSelectionChange(key: Key) {
-    setSelectedKey(key.toString() as NFTCategory);
+    const newKey = key.toString() as NFTCategory;
+    setSelectedKey(newKey);
+    selectedKeyRef.current = newKey;
+    queryData();
   }
 
   return (
-    <div className="flex">
+    <div>
       <Tabs
         aria-label="Options"
         color="primary"
         variant="underlined"
         selectedKey={selectedKey}
         classNames={{
-          tabList: 'gap-6 w-full relative rounded-none p-0 border-b border-divider',
+          base: 'mt-6',
+          tabList: 'gap-6 w-full relative rounded-none p-0',
           cursor: 'w-full bg-basic-yellow',
           tab: 'max-w-fit px-0 h-12 font-semakin',
           tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
@@ -31,10 +49,10 @@ const MyAssets: FC = () => {
       >
         {tabs.map((tab) => (
           <Tab
-            key={tab}
+            key={tab.key}
             title={
               <div className="flex items-center space-x-2">
-                <span>{tab}</span>
+                <span>{tab.label}</span>
               </div>
             }
           ></Tab>

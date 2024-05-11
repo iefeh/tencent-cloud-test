@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 interface Props<T, P> {
   key: string;
   fn: (params: P) => Promise<PageResDTO<T>>;
+  paramsFn?: () => unknown;
 }
 
-export default function usePageQuery<T, P = PageQueryDto>({ key, fn }: Props<T, P>) {
+export default function usePageQuery<T, P = PageQueryDto>({ key, fn, paramsFn }: Props<T, P>) {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState<T[]>([]);
@@ -13,9 +14,11 @@ export default function usePageQuery<T, P = PageQueryDto>({ key, fn }: Props<T, 
 
   async function queryData() {
     setLoading(true);
-    const res = await fn(pagi.current);
-    setData(res[key] || []);
-    setTotal(res.total || 0);
+
+    const params = paramsFn ? Object.assign({}, pagi.current, paramsFn()) : pagi.current;
+    const res = await fn(params);
+    setData(res?.[key] || []);
+    setTotal(res?.total || 0);
     setLoading(false);
   }
 
@@ -28,5 +31,5 @@ export default function usePageQuery<T, P = PageQueryDto>({ key, fn }: Props<T, 
     queryData();
   }, []);
 
-  return { loading, data, total, onPageChange };
+  return { loading, data, total, onPageChange, queryData };
 }

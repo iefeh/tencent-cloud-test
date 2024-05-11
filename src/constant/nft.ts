@@ -1,4 +1,4 @@
 export const enum NFTCategory {
-  TETRA_NFT = 'TETRA_NFT',
+  TETRA_NFT = 'TEATRA_NFT',
   SBT = 'SBT',
 }
