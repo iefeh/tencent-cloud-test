@@ -18,7 +18,7 @@ const Assets: FC<Props & ClassNameProps> = ({ items, className }) => {
 
   return (
     <div className={cn(['flex flex-nowrap', className])}>
-      <div className="flex flex-wrap flex-1">
+      <div className="flex flex-wrap flex-1 content-start">
         {items.map((item, index) => (
           <div
             key={index}
