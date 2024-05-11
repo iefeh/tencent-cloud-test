@@ -3,7 +3,7 @@ import { FC, Key, useRef, useState } from 'react';
 import Assets from './Assets';
 import usePageQuery from '@/hooks/usePageQuery';
 import { MyNFTQueryParams, NFTItem, queryMyNFTListAPI } from '@/http/services/mint';
-import { NFTCategory } from '@/constant/nft';
+import { ASSETS_PAGE_SIZE, NFTCategory } from '@/constant/nft';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
@@ -24,7 +24,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
   ]);
   const [selectedKey, setSelectedKey] = useState(NFTCategory.TETRA_NFT);
   const selectedKeyRef = useRef(selectedKey);
-  const { loading, data, total, queryData } = usePageQuery<NFTItem, MyNFTQueryParams>({
+  const { loading, data, total, queryData, onPageChange } = usePageQuery<NFTItem, MyNFTQueryParams>({
     key: 'nfts',
     fn: queryMyNFTListAPI,
     paramsFn: () => ({ category: selectedKeyRef.current }),
@@ -73,7 +73,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
           ))}
         </Tabs>
 
-        <Assets items={data} displayItems={displayItems} onUpdate={onAssetsUpdate} />
+        <Assets total={Math.ceil(total / ASSETS_PAGE_SIZE)} items={data} displayItems={displayItems} onUpdate={onAssetsUpdate} onPageChange={onPageChange} />
 
         {loading && <CircularLoading />}
       </div>

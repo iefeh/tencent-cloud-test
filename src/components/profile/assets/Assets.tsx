@@ -1,18 +1,23 @@
-import { NFTItem, updateDisplayNFTListAPI } from '@/http/services/mint';
+import { MyNFTQueryParams, NFTItem, updateDisplayNFTListAPI } from '@/http/services/mint';
 import NFT from '@/components/nft/NFT';
 import { FC, useEffect, useState } from 'react';
 import { cn } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
+import CopyIcon from '@/components/common/IconButton/CopyIcon';
+import { formatUserName } from '@/utils/common';
+import CirclePagination from '@/components/common/CirclePagination';
 
 interface Props {
-  items: NFTItem[];
+  total: number;
+  items: (NFTItem | null)[];
   displayItems: Partial<NFTItem>[];
   onUpdate?: () => void;
+  onPageChange?: (params: Partial<MyNFTQueryParams>) => void;
 }
 
-const Assets: FC<Props & ClassNameProps> = ({ items, displayItems, className, onUpdate }) => {
+const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, className, onUpdate, onPageChange }) => {
   const [selectedNFT, setSelectedNFT] = useState<NFTItem | null>(null);
   const [displayLoading, setDisplayLoading] = useState(false);
 
@@ -35,34 +40,43 @@ const Assets: FC<Props & ClassNameProps> = ({ items, displayItems, className, on
     setDisplayLoading(false);
   }
 
+  function onPagiChange(index: number) {
+    onPageChange?.({ page_num: index });
+  }
+
   useEffect(() => {
     setSelectedNFT(items[0] || null);
   }, [items]);
 
   return (
     <div className={cn(['flex flex-nowrap', className])}>
-      <div className="flex flex-wrap flex-1 content-start">
-        {items.map((item, index) => (
-          <div
-            key={index}
-            className={cn([
-              'w-[11.5625rem] h-[11.5625rem]',
-              'shrink-0 flex justify-center items-center',
-              'border-1 border-[#1D1D1D] transition-colors hover:border-basic-yellow',
-              selectedNFT === item && 'border-basic-yellow',
-              'cursor-pointer',
-            ])}
-            onClick={() => setSelectedNFT(item)}
-          >
-            <NFT
-              className="w-[8.3125rem] h-[8.3125rem]"
-              name={item.token_metadata?.name}
-              src={item.token_metadata?.animation_url || item.token_metadata?.image}
-              isSrcImage={!item.token_metadata?.animation_url}
-              status={item.transaction_status}
-            />
-          </div>
-        ))}
+      <div className="flex-1">
+        <div className="flex flex-wrap flex-1 content-start min-h-[35rem]">
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className={cn([
+                'w-[11.5625rem] h-[11.5625rem]',
+                'shrink-0 flex justify-center items-center',
+                'border-1 border-[#1D1D1D] transition-colors',
+                item && 'hover:border-basic-yellow',
+                item && selectedNFT === item && 'border-basic-yellow',
+                item ? 'cursor-pointer' : 'cursor-not-allowed',
+              ])}
+              onClick={() => item && setSelectedNFT(item)}
+            >
+              <NFT
+                className="w-[8.3125rem] h-[8.3125rem]"
+                name={item?.token_metadata?.name}
+                src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
+                isSrcImage={!item?.token_metadata?.animation_url}
+                status={item?.transaction_status}
+              />
+            </div>
+          ))}
+        </div>
+
+        <CirclePagination total={total} className="mt-9 flex justify-center" onChange={onPagiChange} />
       </div>
 
       {selectedNFT && (
@@ -80,7 +94,14 @@ const Assets: FC<Props & ClassNameProps> = ({ items, displayItems, className, on
 
             <p className="text-sm text-[#999999] mt-6">--</p>
 
-            <div className="text-sm mt-7">{dayjs(selectedNFT.confirmed_time).format('YYYY-MM-DD HH:mm:ss')}</div>
+            <div className="text-sm mt-7 flex justify-between items-center">
+              <div>{dayjs(selectedNFT.confirmed_time).format('YYYY-MM-DD HH:mm:ss')}</div>
+
+              <div className="flex items-center bg-gradient-to-r from-basic-yellow/20 via-black/40  to-basic-yellow/20 px-2 py-1 rounded-md">
+                <span className="mr-2">{formatUserName(selectedNFT.wallet_addr || '--')}</span>
+                <CopyIcon text={selectedNFT.wallet_addr} />
+              </div>
+            </div>
 
             <div className="mt-12">
               <LGButton

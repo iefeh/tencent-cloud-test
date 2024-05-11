@@ -1,3 +1,4 @@
+import { ASSETS_PAGE_SIZE } from '@/constant/nft';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props<T, P> {
@@ -10,20 +11,24 @@ export default function usePageQuery<T, P = PageQueryDto>({ key, fn, paramsFn }:
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState<T[]>([]);
-  const pagi = useRef<P>({ page_num: 1, page_size: 10 } as P);
+  const pagi = useRef<P>({ page_num: 1, page_size: ASSETS_PAGE_SIZE } as P);
 
   async function queryData() {
     setLoading(true);
 
     const params = paramsFn ? Object.assign({}, pagi.current, paramsFn()) : pagi.current;
     const res = await fn(params);
-    setData(res?.[key] || []);
+    let list = res?.[key] || [];
+    if (list.length < ASSETS_PAGE_SIZE) {
+      list.push(...Array(ASSETS_PAGE_SIZE - list.length).fill(null));
+    }
+    setData(list);
     setTotal(res?.total || 0);
     setLoading(false);
   }
 
-  function onPageChange(params: P) {
-    pagi.current = params;
+  function onPageChange(params: Partial<P>) {
+    pagi.current = Object.assign({}, pagi.current, params);
     queryData();
   }
 

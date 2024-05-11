@@ -18,6 +18,7 @@ export interface NFTItem {
   token_metadata: TokenMetadata | null;
   confirmed_time?: number;
   sort?: number;
+  wallet_addr?: string;
 }
 
 export interface MergeListItem extends NFTItem {
