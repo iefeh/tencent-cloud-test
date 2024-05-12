@@ -6,6 +6,7 @@ interface TokenMetadata {
   animation_url?: string;
   image?: string;
   description?: string;
+  category?: string;
 }
 
 export interface NFTItem {

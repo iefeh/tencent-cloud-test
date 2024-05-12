@@ -26,7 +26,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
 
   async function onSort(newIndex: number, oldIndex: number) {
     let nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
-    nextItems = nextItems.filter(item => !!item);
+    nextItems = nextItems.filter((item) => !!item);
     let newItem = nextItems[newIndex];
     nextItems[newIndex] = nextItems[oldIndex];
     nextItems[oldIndex] = newItem;
@@ -41,7 +41,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   async function onRemove(index: number) {
     setInnerLoading(true);
     let nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
-    nextItems = nextItems.filter(item => !!item);
+    nextItems = nextItems.filter((item) => !!item);
     nextItems.splice(index, 1);
     nextItems.forEach((item, i) => {
       item.sort = i + 1;
@@ -65,12 +65,20 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
             'px-[3.375rem] pt-[2.875rem]',
           ])}
         >
-          <NFT
-            className="w-[8.3125rem] h-[8.3125rem]"
-            name={item ? item.token_metadata?.name || '--' : undefined}
-            src={item?.token_metadata?.animation_url}
-            status={item?.transaction_status}
-          />
+          <div className="relative">
+            <NFT
+              className="w-[8.3125rem] h-[8.3125rem]"
+              name={item ? item.token_metadata?.name || '--' : undefined}
+              src={item?.token_metadata?.animation_url}
+              status={item?.transaction_status}
+            />
+
+            {item && item.token_metadata?.category && (
+              <div className="font-semakin text-xs text-basic-yellow absolute -left-1 top-0">
+                {item.token_metadata?.category}
+              </div>
+            )}
+          </div>
 
           {item?.confirmed_time && (
             <div className="text-xs text-[#999999] mt-4">
