@@ -9,7 +9,7 @@ import LotteryPool, { LotteryRewardType } from "@/lib/models/LotteryPool";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import { redis } from "@/lib/redis/client";
 import TwitterTopicTweet from "@/lib/models/TwitterTopicTweet";
-import User from "@/lib/models/User";
+import { increaseUserMoonBeam } from "@/lib/models/User";
 import UserLotteryPool from "@/lib/models/UserLotteryPool";
 import UserLotteryDrawHistory, { IUserLotteryRewardItem } from "@/lib/models/UserLotteryDrawHistory";
 import UserTwitter from '@/lib/models/UserTwitter';
@@ -82,7 +82,7 @@ async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lot
   switch (userReward.reward_type) {
     case LotteryRewardType.MoonBeam: {
       await doTransaction( async session => {
-        await User.updateOne({ user_id: userId }, { $inc: { moon_beam: userReward.amount } });
+        await increaseUserMoonBeam(userId, userReward.amount, session);
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       }); 
       return { message: `You have claimed reward and received ${userReward.amount} mb.` };
