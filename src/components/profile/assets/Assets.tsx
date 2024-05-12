@@ -102,7 +102,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
           <div className="mt-9 pl-8 pr-10">
             <p className="text-2xl font-semakin">{selectedNFT.token_metadata?.name || '--'}</p>
 
-            <p className="text-sm text-[#999999] mt-6">--</p>
+            <p className="text-sm text-[#999999] mt-6">{selectedNFT.token_metadata?.description || '--'}</p>
 
             <div className="text-sm mt-7 flex justify-between items-center">
               <div>{dayjs(selectedNFT.confirmed_time).format('YYYY-MM-DD HH:mm:ss')}</div>
