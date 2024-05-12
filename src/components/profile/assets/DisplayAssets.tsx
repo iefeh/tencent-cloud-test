@@ -9,7 +9,7 @@ import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
   loading?: boolean;
-  items: Partial<NFTItem>[];
+  items: (Partial<NFTItem> | null)[];
   onUpdate?: () => void;
 }
 
@@ -25,8 +25,8 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   });
 
   async function onSort(newIndex: number, oldIndex: number) {
-    const nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
-    console.log(newIndex, oldIndex, nextItems, items);
+    let nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
+    nextItems = nextItems.filter(item => !!item);
     let newItem = nextItems[newIndex];
     nextItems[newIndex] = nextItems[oldIndex];
     nextItems[oldIndex] = newItem;
@@ -40,7 +40,8 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
 
   async function onRemove(index: number) {
     setInnerLoading(true);
-    const nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
+    let nextItems: Partial<NFTItem>[] = JSON.parse(JSON.stringify(items));
+    nextItems = nextItems.filter(item => !!item);
     nextItems.splice(index, 1);
     nextItems.forEach((item, i) => {
       item.sort = i + 1;
@@ -58,20 +59,24 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         <li
           key={index}
           className={cn([
-            'group drag-item',
+            item && 'group drag-item hover:border-basic-yellow',
             'w-60 h-[18.75rem] relative',
-            'border-1 border-[#1D1D1D] transition-colors hover:border-basic-yellow',
+            'border-1 border-[#1D1D1D] transition-colors',
             'px-[3.375rem] pt-[2.875rem]',
           ])}
         >
           <NFT
             className="w-[8.3125rem] h-[8.3125rem]"
-            name={item.token_metadata?.name || '--'}
-            src={item.token_metadata?.animation_url}
-            status={item.transaction_status}
+            name={item ? item.token_metadata?.name || '--' : undefined}
+            src={item?.token_metadata?.animation_url}
+            status={item?.transaction_status}
           />
 
-          <div className="text-xs text-[#999999] mt-4">{dayjs(item.confirmed_time).format('YYYY-MM-DD')} Obtained</div>
+          {item?.confirmed_time && (
+            <div className="text-xs text-[#999999] mt-4">
+              {dayjs(item.confirmed_time).format('YYYY-MM-DD')} Obtained
+            </div>
+          )}
 
           <Button
             className="btn absolute bottom-0 left-0 w-full h-[1.875rem] bg-[#3253C0] hidden group-hover:block"

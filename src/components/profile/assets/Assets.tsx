@@ -12,7 +12,7 @@ import CirclePagination from '@/components/common/CirclePagination';
 interface Props {
   total: number;
   items: (NFTItem | null)[];
-  displayItems: Partial<NFTItem>[];
+  displayItems: (Partial<NFTItem> | null)[];
   onUpdate?: () => void;
   onPageChange?: (params: Partial<MyNFTQueryParams>) => void;
 }
@@ -26,7 +26,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
 
     setDisplayLoading(true);
     const { contract_address, chain_id, token_id } = selectedNFT;
-    const nextDisplayItems = displayItems.slice();
+    const nextDisplayItems = displayItems.filter((item) => item) as Partial<NFTItem>[];
     nextDisplayItems.push({
       contract_address,
       chain_id,
@@ -54,7 +54,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
         <div className="flex flex-wrap flex-1 content-start min-h-[35rem]">
           {items.map((item, index) => {
             const selected = !!item && selectedNFT === item;
-            const displayed = displayItems.some((di) => di.token_id === item?.token_id);
+            const displayed = displayItems.some((di) => di && di.token_id === item?.token_id);
 
             return (
               <div
@@ -119,7 +119,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 actived
                 disabled={
                   displayItems.length >= MAX_DISPLAY_ASSETS ||
-                  displayItems.some((item) => item.token_id === selectedNFT.token_id)
+                  displayItems.some((item) => !!item && item.token_id === selectedNFT.token_id)
                 }
                 loading={displayLoading}
                 onClick={onDisplayClick}
