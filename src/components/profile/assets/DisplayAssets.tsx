@@ -59,7 +59,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         <li
           key={index}
           className={cn([
-            item && 'group drag-item hover:border-basic-yellow',
+            item ? 'group drag-item hover:border-basic-yellow' : 'cursor-not-allowed',
             'w-60 h-[18.75rem] relative',
             'border-1 border-[#1D1D1D] transition-colors',
             'px-[3.375rem] pt-[2.875rem]',
@@ -73,10 +73,8 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
               status={item?.transaction_status}
             />
 
-            {item && item.token_metadata?.category && (
-              <div className="font-semakin text-xs text-basic-yellow absolute -left-1 top-0">
-                {item.token_metadata?.category}
-              </div>
+            {item && item.type && (
+              <div className="font-semakin text-xs text-basic-yellow absolute -left-1 top-0">{item.type}</div>
             )}
           </div>
 

@@ -6,7 +6,6 @@ interface TokenMetadata {
   animation_url?: string;
   image?: string;
   description?: string;
-  category?: string;
 }
 
 export interface NFTItem {
@@ -21,6 +20,8 @@ export interface NFTItem {
   confirmed_time?: number;
   sort?: number;
   wallet_addr?: string;
+  type?: string;
+  expolorer_url?: string;
 }
 
 export interface MergeListItem extends NFTItem {
