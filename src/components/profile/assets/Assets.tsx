@@ -21,6 +21,7 @@ interface Props {
 const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, className, onUpdate, onPageChange }) => {
   const [selectedNFT, setSelectedNFT] = useState<NFTItem | null>(null);
   const [displayLoading, setDisplayLoading] = useState(false);
+  const validDisplayItemms = displayItems.filter((item) => !!item) as NFTItem[];
 
   async function onDisplayClick() {
     if (!selectedNFT) return;
@@ -52,9 +53,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
   return (
     <div className={cn(['flex flex-nowrap', className])}>
       <div className="flex-1">
-        <div
-          className={cn(['flex flex-wrap flex-1 content-start min-h-[35rem]', isMobile && 'justify-center gap-6'])}
-        >
+        <div className={cn(['flex flex-wrap flex-1 content-start min-h-[35rem]', isMobile && 'justify-center gap-6'])}>
           {items.map((item, index) => {
             const selected = !!item && selectedNFT === item;
             const displayed = displayItems.some((di) => di && di.token_id === item?.token_id);
@@ -123,8 +122,8 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 label="Display"
                 actived
                 disabled={
-                  displayItems.length >= MAX_DISPLAY_ASSETS ||
-                  displayItems.some((item) => !!item && item.token_id === selectedNFT.token_id)
+                  validDisplayItemms.length >= MAX_DISPLAY_ASSETS ||
+                  validDisplayItemms.some((item) => item.token_id === selectedNFT.token_id)
                 }
                 loading={displayLoading}
                 onClick={onDisplayClick}

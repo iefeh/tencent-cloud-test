@@ -69,7 +69,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
             'relative border-1 border-[#1D1D1D] transition-colors',
           ])}
         >
-          <div className={cn([isMobile ? 'w-32' : 'w-[8.3125rem] h-[8.3125rem]', 'relative'])}>
+          <div className={cn([isMobile ? 'w-32' : 'w-[8.3125rem]', 'relative'])}>
             <NFT
               className="w-full h-auto aspect-square"
               name={item ? item.token_metadata?.name || '--' : '　'}
