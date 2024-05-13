@@ -6,6 +6,7 @@ import { FC, useState } from 'react';
 import { Button, cn } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   loading?: boolean;
@@ -54,20 +55,22 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   }
 
   return (
-    <ul ref={containerElRef} className="flex items-center relative z-0 mt-6 bg-black min-h-[18.75rem]">
+    <ul
+      ref={containerElRef}
+      className={cn(['flex items-center z-0 mt-6 bg-black min-h-[18.75rem]', , isMobile ? 'w-max' : 'w-min'])}
+    >
       {items.map((item, index) => (
         <li
           key={index}
           className={cn([
-            item ? 'group drag-item hover:border-basic-yellow' : 'cursor-not-allowed',
-            'w-60 h-[18.75rem] relative',
-            'border-1 border-[#1D1D1D] transition-colors',
-            'px-[3.375rem] pt-[2.875rem]',
+            item && !isMobile ? 'drag-item w-60 h-[18.75rem] px-[3.375rem] pt-[2.875rem]' : 'px-6 py-8',
+            item ? 'group hover:border-basic-yellow' : 'cursor-not-allowed',
+            'relative border-1 border-[#1D1D1D] transition-colors',
           ])}
         >
-          <div className="relative">
+          <div className={cn([isMobile ? 'w-32' : 'w-[8.3125rem] h-[8.3125rem]', 'relative'])}>
             <NFT
-              className="w-[8.3125rem] h-[8.3125rem]"
+              className="w-full h-auto aspect-square"
               name={item ? item.token_metadata?.name || '--' : undefined}
               src={item?.token_metadata?.animation_url}
               status={item?.transaction_status}

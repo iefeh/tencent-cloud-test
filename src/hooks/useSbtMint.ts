@@ -78,12 +78,13 @@ export default function useSbtMint() {
     return false;
   }
 
-  const mint = throttle(async (data: MintPermitResDTO) => {
+  const mint = throttle(async (data: MintPermitResDTO): Promise<string | undefined> => {
     try {
       const contract = new Contract(data.contract_address, sbtContractABI, signer.current);
       const transaction = await contract.mint(data.permit);
       const result = await transaction.wait();
       console.log('mint result:', result);
+      return result;
     } catch (error: any) {
       toastError(error, 'mint');
     }
@@ -106,8 +107,10 @@ export default function useSbtMint() {
       }
     }
 
-    await mint(data);
+    const result = await mint(data);
     setLoading(false);
+
+    return !!result;
   }
 
   useEffect(() => {
