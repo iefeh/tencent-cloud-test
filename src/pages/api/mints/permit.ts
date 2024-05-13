@@ -12,8 +12,6 @@ import doTransaction from "@/lib/mongodb/transaction";
 import IpfsMetadata from "@/lib/models/IpfsMetadata";
 import UserWallet from "@/lib/models/UserWallet";
 import { ethers } from 'ethers';
-import { chain, min } from "lodash";
-import { contract } from "web3/lib/commonjs/eth.exports";
 
 const nftStorage = new NFTStorage({ token: process.env.NFTSTORAGE_KEY! });
 
