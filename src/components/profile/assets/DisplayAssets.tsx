@@ -63,30 +63,26 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         <li
           key={index}
           className={cn([
-            item && !isMobile && 'drag-item',
+            item && !isMobile && 'drag-item group',
             !isMobile ? 'w-60 h-[18.75rem] px-[3.375rem] pt-[2.875rem]' : 'px-6 py-8',
-            item ? 'group hover:border-basic-yellow' : 'cursor-not-allowed',
+            item ? 'hover:border-basic-yellow' : 'cursor-not-allowed',
             'relative border-1 border-[#1D1D1D] transition-colors',
           ])}
         >
           <div className={cn([isMobile ? 'w-32' : 'w-[8.3125rem] h-[8.3125rem]', 'relative'])}>
             <NFT
               className="w-full h-auto aspect-square"
-              name={item ? item.token_metadata?.name || '--' : undefined}
+              name={item ? item.token_metadata?.name || '--' : '　'}
               src={item?.token_metadata?.animation_url}
               status={item?.transaction_status}
             />
 
-            {item && item.type && (
-              <div className="font-semakin text-xs text-basic-yellow absolute -left-1 top-0">{item.type}</div>
-            )}
+            <div className="font-semakin text-xs text-basic-yellow absolute -left-1 top-0">{item?.type || '　'}</div>
           </div>
 
-          {item?.confirmed_time && (
-            <div className="text-xs text-[#999999] mt-4">
-              {dayjs(item.confirmed_time).format('YYYY-MM-DD')} Obtained
-            </div>
-          )}
+          <div className="text-xs text-[#999999] mt-4">
+            {item?.confirmed_time ? dayjs(item.confirmed_time).format('YYYY-MM-DD') + ' Obtained' : '　'}
+          </div>
 
           <Button
             className="btn absolute bottom-0 left-0 w-full h-[1.875rem] bg-[#3253C0] hidden group-hover:block"
