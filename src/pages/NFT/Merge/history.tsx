@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { useContext, useEffect, useRef, useState } from 'react';
 import teamsImg from 'img/loyalty/task/teams.png';
 import Video from '@/pages/components/common/Video';
-import NFT from '@/pages/components/common/nft/NFT';
+import NFT from '@/components/nft/NFT';
 import dayjs from 'dayjs';
 
 function NFTMergeHistoryPage({

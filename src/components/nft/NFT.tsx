@@ -2,7 +2,7 @@ import Image, { StaticImageData } from 'next/image';
 import bgImg from 'img/nft/common/bg_nft.png';
 import activeBgImg from 'img/nft/common/bg_nft_active.png';
 import emptyNFTImg from 'img/nft/common/nft_empty.jpg';
-import Video from '../Video';
+import Video from '../../pages/components/common/Video';
 import pendingImg from 'img/profile/pending.png';
 import transferringImg from 'img/profile/transferring.png';
 import burningImg from 'img/profile/burning.png';
@@ -15,6 +15,8 @@ interface NFTProps {
   className?: string;
   name?: string;
   src?: string;
+  isSrcImage?: boolean;
+  hideBorder?: boolean;
   status?: string;
   transactionStatus?: string;
   withControls?: boolean;
@@ -30,6 +32,8 @@ export default function NFT(props: NFTProps) {
     withControls = true,
     name,
     src,
+    isSrcImage,
+    hideBorder,
     status,
     transactionStatus,
     showSelection,
@@ -66,22 +70,26 @@ export default function NFT(props: NFTProps) {
   return (
     <div className="flex flex-col items-center shrink-0 relative" onClick={onNFTClick}>
       <div className={cn(['relative w-[16.5rem] h-[16.5rem] flex justify-center items-center bg-black', className])}>
-        <Image src={src ? activeBgImg : bgImg} alt="" fill />
+        {hideBorder || <Image src={src ? activeBgImg : bgImg} alt="" fill />}
 
         {src ? (
           <div className="relative z-0 w-4/5 h-4/5">
-            <Video
-              className="w-full h-full"
-              options={{
-                controls: withControls,
-                sources: [
-                  {
-                    src,
-                    type: 'video/webm',
-                  },
-                ],
-              }}
-            />
+            {isSrcImage ? (
+              <Image className="object-contain" src={src} alt="" fill sizes="100%" unoptimized />
+            ) : (
+              <Video
+                className="w-full h-full"
+                options={{
+                  controls: withControls,
+                  sources: [
+                    {
+                      src,
+                      type: 'video/webm',
+                    },
+                  ],
+                }}
+              />
+            )}
 
             {statusImg && (
               <>
@@ -96,7 +104,7 @@ export default function NFT(props: NFTProps) {
             )}
           </div>
         ) : (
-          <Image className="relative z-0 w-[13.125rem] h-[13.125rem]" src={emptyNFTImg} alt="" />
+          <Image className="relative z-0 w-4/5 h-4/5" src={emptyNFTImg} alt="" />
         )}
       </div>
 
