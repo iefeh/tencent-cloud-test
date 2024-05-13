@@ -22,7 +22,7 @@ export default function useBScroll(options: Options & { isMobileOnly?: boolean }
     return () => {
       if (bsRef.current) bsRef.current.destroy();
     };
-  }, []);
+  }, [() => scrollRef.current]);
 
   return { scrollRef, bsRef };
 }
