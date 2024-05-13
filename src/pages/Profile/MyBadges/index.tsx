@@ -13,6 +13,7 @@ import { observer } from 'mobx-react-lite';
 import { MAX_DISPLAY_COUNT } from '@/constant/badge';
 import { isMobile } from 'react-device-detect';
 import BScroll from 'better-scroll';
+import MintSuccessModal from '@/components/profile/badges/components/MintSuccessModal';
 
 function MyBadgesPage() {
   const {
@@ -28,6 +29,16 @@ function MyBadgesPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const bsRef = useRef<BScroll | null>(null);
   const dbRef = useRef<DisplayBadgesRef>(null);
+  const mintDisclosure = useDisclosure();
+
+  async function onMint(id: string) {
+    const res = await mintBadge(id);
+    if (!res) return;
+
+    setCurrentItem(null);
+    modalDisclosure.onClose();
+    mintDisclosure.onOpen();
+  }
 
   const updateBadges = throttle(async () => {
     await Promise.all([queryDisplayBadges(), queryMyBadges()]);
@@ -104,7 +115,7 @@ function MyBadgesPage() {
         badges={badges}
         loading={fullQueryLoading}
         onClaim={onClaimBadge}
-        onMint={mintBadge}
+        onMint={onMint}
         onView={onView}
       />
 
@@ -114,8 +125,10 @@ function MyBadgesPage() {
         canDisplay={validCount < MAX_DISPLAY_COUNT}
         onToggleDisplay={onToggleDisplay}
         onClaim={onClaimBadge}
-        onMint={mintBadge}
+        onMint={onMint}
       />
+
+      <MintSuccessModal disclosure={mintDisclosure} />
     </section>
   );
 }
