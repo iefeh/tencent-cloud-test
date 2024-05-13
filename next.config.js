@@ -30,6 +30,9 @@ const nextConfig = {
       {
         hostname: 'cdn.discordapp.com',
       },
+      {
+        hostname: 'cloudflare-ipfs.com',
+      },
     ],
   },
   webpack(config) {

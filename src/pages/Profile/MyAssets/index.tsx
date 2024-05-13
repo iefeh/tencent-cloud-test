@@ -1,7 +1,16 @@
 import Head from 'next/head';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
+import MyAssets from '@/components/profile/assets/MyAssets';
+import DisplayAssets from '@/components/profile/assets/DisplayAssets';
+import useDisplayAssets from '@/hooks/pages/profile/assets/useDisplayAssets';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
+  const { loading, data, queryData } = useDisplayAssets();
+  const [displayKey, setDisplayKey] = useState(Math.random().toString());
+
+  useEffect(() => setDisplayKey(Math.random().toString()), [data]);
+
   return (
     <section
       id="luxy"
@@ -12,6 +21,16 @@ export default function ProfilePage() {
       </Head>
 
       <AutoBreadcrumbs hrefs={['/Profile']} />
+
+      <div className="mt-12">
+        <div className="font-semakin text-basic-yellow text-2xl">Display</div>
+
+        <DisplayAssets key={displayKey} items={data} loading={loading} onUpdate={queryData} />
+      </div>
+
+      <div className="mt-[4.5rem]">
+        <MyAssets displayItems={data} onUpdate={queryData} />
+      </div>
     </section>
   );
 }
