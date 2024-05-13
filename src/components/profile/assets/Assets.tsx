@@ -113,8 +113,9 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
               </div>
             </div>
 
-            <div className="mt-12">
+            <div className="mt-12 flex justify-between items-center gap-x-4">
               <LGButton
+                className="flex-1"
                 label="Display"
                 actived
                 disabled={
@@ -123,6 +124,13 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 }
                 loading={displayLoading}
                 onClick={onDisplayClick}
+              />
+
+              <LGButton
+                className="flex-1"
+                label="Explore More"
+                disabled={!selectedNFT.expolorer_url}
+                link={selectedNFT.expolorer_url}
               />
             </div>
           </div>
