@@ -63,7 +63,8 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         <li
           key={index}
           className={cn([
-            item && !isMobile ? 'drag-item w-60 h-[18.75rem] px-[3.375rem] pt-[2.875rem]' : 'px-6 py-8',
+            item && !isMobile && 'drag-item',
+            !isMobile ? 'w-60 h-[18.75rem] px-[3.375rem] pt-[2.875rem]' : 'px-6 py-8',
             item ? 'group hover:border-basic-yellow' : 'cursor-not-allowed',
             'relative border-1 border-[#1D1D1D] transition-colors',
           ])}
