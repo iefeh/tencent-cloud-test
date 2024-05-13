@@ -8,6 +8,7 @@ import doTransaction from "@/lib/mongodb/transaction";
 import ContractNFT from "@/lib/models/ContractNFT";
 import logger from "@/lib/logger/winstonLogger";
 import { enrichNFTMetadata } from "./list";
+import Contract from "@/lib/models/Contract";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -40,7 +41,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         nft.sort = favourite.sort;
         nfts.push(nft);
     }
-    await enrichNFTMetadata(nfts);
+    // 查询所有的合约
+    const contracts = await Contract.find({});
+    await enrichNFTMetadata(contracts, nfts);
     return res.json(response.success(nfts));
 });
 

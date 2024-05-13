@@ -53,7 +53,7 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
         }));
     }
     const nfts = pagination.nfts;
-    await enrichNFTMetadata(nfts);
+    await enrichNFTMetadata(contracts, nfts);
     return res.json(response.success({
         wallet_connected: true,
         total: pagination.total,
@@ -63,7 +63,7 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor()).get(as
     }));
 });
 
-export async function enrichNFTMetadata(nfts: any[]): Promise<void> {
+export async function enrichNFTMetadata(contracts: IContract[],nfts: any[]): Promise<void> {
     for (let nft of nfts) {
         // 检查NFT的实际状态，如果NFT存在locked_as则需要修正当前的状态
         if (nft.locked_as) {
@@ -71,6 +71,10 @@ export async function enrichNFTMetadata(nfts: any[]): Promise<void> {
             delete nft.locked_as;
             delete nft.locked_time;
         }
+        // 设置NFT的类型，浏览器地址
+        const contract = contracts.find(contract => contract.chain_id == nft.chain_id && contract.address == nft.contract_address);
+        nft.type = contract?.category;
+        nft.expolorer_url = contract?.expolorer_url;
     }
     // 按照NFT的chain_id、contract_address进行分组token_id
     const nftMap = new Map<string, any[]>();
