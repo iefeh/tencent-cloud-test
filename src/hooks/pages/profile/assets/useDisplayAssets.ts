@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 export default function useDisplayAssets() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<NFTItem[]>([]);
+  const [data, setData] = useState<NFTItem[]>(Array(MAX_DISPLAY_ASSETS).fill(null));
 
   async function queryData() {
     setLoading(true);

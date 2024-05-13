@@ -8,6 +8,7 @@ import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
 import CopyIcon from '@/components/common/IconButton/CopyIcon';
 import { formatUserName } from '@/utils/common';
 import CirclePagination from '@/components/common/CirclePagination';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   total: number;
@@ -51,7 +52,9 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
   return (
     <div className={cn(['flex flex-nowrap', className])}>
       <div className="flex-1">
-        <div className="flex flex-wrap flex-1 content-start min-h-[35rem]">
+        <div
+          className={cn(['flex flex-wrap flex-1 content-start min-h-[35rem]', isMobile && 'justify-center gap-6'])}
+        >
           {items.map((item, index) => {
             const selected = !!item && selectedNFT === item;
             const displayed = displayItems.some((di) => di && di.token_id === item?.token_id);
@@ -60,7 +63,8 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
               <div
                 key={index}
                 className={cn([
-                  'w-[11.5625rem] h-[11.5625rem] relative',
+                  isMobile ? 'w-24 h-24' : 'w-[11.5625rem] h-[11.5625rem]',
+                  'relative',
                   'shrink-0 flex justify-center items-center',
                   'border-1 border-[#1D1D1D] transition-colors',
                   item && 'hover:border-basic-yellow',
@@ -70,7 +74,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 onClick={() => item && setSelectedNFT(item)}
               >
                 <NFT
-                  className="w-[8.3125rem] h-[8.3125rem]"
+                  className={isMobile ? 'w-20 h-20' : '"w-[8.3125rem] h-[8.3125rem]"'}
                   src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
                   isSrcImage={!item?.token_metadata?.animation_url}
                   status={item?.transaction_status}
@@ -89,7 +93,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
         <CirclePagination total={total} className="mt-9 flex justify-center" onChange={onPagiChange} />
       </div>
 
-      {selectedNFT && (
+      {selectedNFT && !isMobile && (
         <div className="shrink-0 w-[28rem]">
           <NFT
             className="w-[28rem] h-[28rem]"
