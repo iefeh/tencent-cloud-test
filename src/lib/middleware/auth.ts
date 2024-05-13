@@ -43,7 +43,6 @@ export async function mustAuthInterceptor(req: UserContextRequest, res: NextApiR
 
     // 将用户数据添加到请求对象中
     req.userId = userId; 
-    req.userId = 'faf5716d-439e-4680-98d1-577e6cab6edc';
 
     next();
 }
@@ -56,7 +55,6 @@ export async function maybeAuthInterceptor(req: UserContextRequest, res: NextApi
         if (userId) {
             // 将用户数据添加到请求对象中
             req.userId = userId;
-            req.userId = 'faf5716d-439e-4680-98d1-577e6cab6edc';
         }
     }
     next();
