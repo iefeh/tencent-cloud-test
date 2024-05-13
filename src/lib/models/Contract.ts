@@ -4,7 +4,7 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 // 枚举合约分类，我们平台的合约类型，如SBT、DESTINY NFT等
 export enum ContractCategory {
     SBT = 'SBT',
-    TETRA_NFT = 'TETRA_SERIES',
+    TETRA_NFT = 'TEATRA_NFT',
 }
 
 // 子类型
