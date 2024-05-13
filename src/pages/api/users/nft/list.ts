@@ -103,6 +103,7 @@ export async function enrichNFTMetadata(contracts: IContract[],nfts: any[]): Pro
         "metadata.name": 1,
         "metadata.animation_url": 1,
         "metadata.image": 1,
+        "metadata.description": 1,
     }).lean();
     const tokenMetadataMap = new Map<string, any>(tokens.map(token => [`${token.chain_id},${token.contract_address},${token.token_id}`, token.metadata]));
     // 封装NFT的元信息
