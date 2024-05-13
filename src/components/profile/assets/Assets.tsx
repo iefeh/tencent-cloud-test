@@ -74,7 +74,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 onClick={() => item && setSelectedNFT(item)}
               >
                 <NFT
-                  className={isMobile ? 'w-20 h-20' : '"w-[8.3125rem] h-[8.3125rem]"'}
+                  className={isMobile ? 'w-20 h-20' : 'w-[8.3125rem] h-[8.3125rem]'}
                   src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
                   isSrcImage={!item?.token_metadata?.animation_url}
                   status={item?.transaction_status}
