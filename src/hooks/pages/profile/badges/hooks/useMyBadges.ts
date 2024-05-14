@@ -60,12 +60,15 @@ export default function useMyBadges() {
   const mintBadge = throttle(async (id: string) => {
     setMintLoading(true);
 
+    let result = false;
     const res = await queryMintPermitAPI({ mint_id: id });
     if (res && res.chain_id && res.permit) {
-      await onButtonClick(res);
+      result = !!(await onButtonClick(res));
       await queryMyBadges();
     }
     setMintLoading(false);
+
+    return result;
   }, 500);
 
   useEffect(() => {

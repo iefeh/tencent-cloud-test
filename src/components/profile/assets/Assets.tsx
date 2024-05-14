@@ -8,6 +8,7 @@ import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
 import CopyIcon from '@/components/common/IconButton/CopyIcon';
 import { formatUserName } from '@/utils/common';
 import CirclePagination from '@/components/common/CirclePagination';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   total: number;
@@ -20,6 +21,7 @@ interface Props {
 const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, className, onUpdate, onPageChange }) => {
   const [selectedNFT, setSelectedNFT] = useState<NFTItem | null>(null);
   const [displayLoading, setDisplayLoading] = useState(false);
+  const validDisplayItemms = displayItems.filter((item) => !!item) as NFTItem[];
 
   async function onDisplayClick() {
     if (!selectedNFT) return;
@@ -51,7 +53,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
   return (
     <div className={cn(['flex flex-nowrap', className])}>
       <div className="flex-1">
-        <div className="flex flex-wrap flex-1 content-start min-h-[35rem]">
+        <div className={cn(['flex flex-wrap flex-1 content-start min-h-[35rem]', isMobile && 'justify-center gap-6'])}>
           {items.map((item, index) => {
             const selected = !!item && selectedNFT === item;
             const displayed = displayItems.some((di) => di && di.token_id === item?.token_id);
@@ -60,7 +62,8 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
               <div
                 key={index}
                 className={cn([
-                  'w-[11.5625rem] h-[11.5625rem] relative',
+                  isMobile ? 'w-24 h-24' : 'w-[11.5625rem] h-[11.5625rem]',
+                  'relative',
                   'shrink-0 flex justify-center items-center',
                   'border-1 border-[#1D1D1D] transition-colors',
                   item && 'hover:border-basic-yellow',
@@ -70,7 +73,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 onClick={() => item && setSelectedNFT(item)}
               >
                 <NFT
-                  className="w-[8.3125rem] h-[8.3125rem]"
+                  className={isMobile ? 'w-20 h-20' : 'w-[8.3125rem] h-[8.3125rem]'}
                   src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
                   isSrcImage={!item?.token_metadata?.animation_url}
                   status={item?.transaction_status}
@@ -89,7 +92,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
         <CirclePagination total={total} className="mt-9 flex justify-center" onChange={onPagiChange} />
       </div>
 
-      {selectedNFT && (
+      {selectedNFT && !isMobile && (
         <div className="shrink-0 w-[28rem]">
           <NFT
             className="w-[28rem] h-[28rem]"
@@ -105,7 +108,9 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
             <p className="text-sm text-[#999999] mt-6">{selectedNFT.token_metadata?.description || '--'}</p>
 
             <div className="text-sm mt-7 flex justify-between items-center">
-              <div>{dayjs(selectedNFT.confirmed_time).format('YYYY-MM-DD HH:mm:ss')}</div>
+              <div>
+                {selectedNFT.confirmed_time ? dayjs(selectedNFT.confirmed_time).format('YYYY-MM-DD HH:mm:ss') : '--'}
+              </div>
 
               <div className="flex items-center bg-gradient-to-r from-basic-yellow/20 via-black/40  to-basic-yellow/20 px-2 py-1 rounded-md">
                 <span className="mr-2">{formatUserName(selectedNFT.wallet_addr || '--')}</span>
@@ -119,8 +124,8 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 label="Display"
                 actived
                 disabled={
-                  displayItems.length >= MAX_DISPLAY_ASSETS ||
-                  displayItems.some((item) => !!item && item.token_id === selectedNFT.token_id)
+                  validDisplayItemms.length >= MAX_DISPLAY_ASSETS ||
+                  validDisplayItemms.some((item) => item.token_id === selectedNFT.token_id)
                 }
                 loading={displayLoading}
                 onClick={onDisplayClick}

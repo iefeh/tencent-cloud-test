@@ -3,7 +3,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Modal, ModalBody, ModalContent, cn } from '@nextui-org/react';
 import { divide, throttle } from 'lodash';
 import Image from 'next/image';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import helpIcon from 'img/profile/badges/icon_help.png';
 import arrowIcon from 'img/profile/badges/icon_arrow.png';
 import { BadgeMintStatus } from '@/constant/badge';
@@ -48,6 +48,9 @@ export default function BadgeModal(props: Props) {
   const image_url = displayImageUrl || bagImageUrl;
   const icon_url = displayIconUrl || bagIconUrl;
   const lv = displayLv || bagLv;
+  const [isContinue, setIsContinue] = useState(false);
+  const isMintLoading = mint?.status === BadgeMintStatus.MINTING || loading;
+  const canMint = !!mint && mint.status === BadgeMintStatus.QUALIFIED;
 
   const onToggleDisplayClick = throttle(async () => {
     if (!item?.badge_id || !onToggleDisplay) return;
@@ -72,6 +75,7 @@ export default function BadgeModal(props: Props) {
   }
 
   async function onMintClick() {
+    if (!isContinue) return setIsContinue(true);
     if (!onMint || !mint?.id) return;
 
     setLoading(true);
@@ -83,6 +87,10 @@ export default function BadgeModal(props: Props) {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    setIsContinue(false);
+  }, [item]);
 
   return (
     <>
@@ -173,7 +181,9 @@ export default function BadgeModal(props: Props) {
                 )}
 
                 <p className="text-base text-[#666] mt-5 px-8 [&+.btns]:mt-9">
-                  {description || item?.description || '--'}
+                  {!isContinue
+                    ? description || item?.description || '--'
+                    : 'If you want to mint the badge to a SBT on polygon, please click to continue.'}
                 </p>
 
                 {achieved && !claimed && (
@@ -188,15 +198,15 @@ export default function BadgeModal(props: Props) {
 
                 {claimed && mint && [BadgeMintStatus.QUALIFIED, BadgeMintStatus.MINTING].includes(mint.status) && (
                   <LGButton
-                    label={mint.status === BadgeMintStatus.MINTING ? 'SBT Minting' : 'Mint SBT'}
+                    label={isMintLoading ? 'SBT Minting' : isContinue ? 'Continue' : 'Mint SBT'}
                     actived
                     className={cn([
                       'w-full !text-white uppercase mt-9',
                       mint.status === BadgeMintStatus.MINTING ||
                         'bg-[linear-gradient(270deg,#CC6AFF,#258FFB)] hover:bg-[linear-gradient(270deg,#CC6AFF,#258FFB)]',
                     ])}
-                    loading={loading || mint.status === BadgeMintStatus.MINTING}
-                    disabled={mint.status !== BadgeMintStatus.QUALIFIED}
+                    loading={isMintLoading}
+                    disabled={!canMint}
                     onClick={onMintClick}
                   />
                 )}
