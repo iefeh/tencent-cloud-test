@@ -53,12 +53,16 @@ router.get(async (req, res) => {
 // This is the code_verifier, which is INITIALLY KEPT SECRET on the client
 // and which is later passed as request param to the token endpoint.
 // DO NOT SEND this with the authorization request!
-    const codeVerifier = base64URLEncode(randomBytes(32))
+    // const codeVerifier = base64URLEncode(randomBytes(32))
+    const codeVerifier = "408776";
 
 // This is the hashed version of the verifier, which is sent to the authorization endpoint.
 // This is named t(code_verifier) in the above workflow
 // Send this with the authorization request!
-    const codeChallenge = base64URLEncode(createHash('sha256').update(codeVerifier).digest())
+// codeVerifier: 408776
+// codeChallenge: 3Q88UPfYqbaaANEN_0bSj99m51Ju1pyUEKvfIc-JiNw
+// codeChallengeMethod: S256
+    const codeChallenge = base64URLEncode("dd0f3c50f7d8a9b69a00d10dff46d28fdf66e7526ed69c9410abdf21cf8988dc")
 
 // This is the name of the code challenge method
 // This is named t_m in the above workflow

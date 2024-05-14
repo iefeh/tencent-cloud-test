@@ -1,4 +1,5 @@
-import { BadgeItem, claimBadgeAPI, mintBadgeAPI, queryBadgesPageListAPI } from '@/http/services/badges';
+import useSbtMint from '@/hooks/useSbtMint';
+import { BadgeItem, claimBadgeAPI, queryBadgesPageListAPI, queryMintPermitAPI } from '@/http/services/badges';
 import { MobxContext } from '@/pages/_app';
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -13,6 +14,7 @@ export default function useMyBadges() {
   const [loading, setLoading] = useState(false);
   const [claimLoading, setClaimLoaing] = useState(false);
   const [mintLoading, setMintLoading] = useState(false);
+  const { onButtonClick } = useSbtMint();
 
   const queryMyBadges = throttle(async (condition?: Partial<PageQueryDto>) => {
     setLoading(true);
@@ -57,11 +59,16 @@ export default function useMyBadges() {
 
   const mintBadge = throttle(async (id: string) => {
     setMintLoading(true);
-    const res = await mintBadgeAPI(id);
-    if (res) {
+
+    let result = false;
+    const res = await queryMintPermitAPI({ mint_id: id });
+    if (res && res.chain_id && res.permit) {
+      result = !!(await onButtonClick(res));
       await queryMyBadges();
     }
     setMintLoading(false);
+
+    return result;
   }, 500);
 
   useEffect(() => {

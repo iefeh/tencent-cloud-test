@@ -63,9 +63,9 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         }));
     }
     const lockKey = `verify_campaign_task_lock:${campaign_id}:${task_id}:${userId}`;
-    // 普通任务每隔30秒允许校验一次相同任务,QuestType.TweetInteraction为3分钟
+    // 普通任务每隔30秒允许校验一次相同任务,QuestType.TweetInteraction和QuestType.TwitterTopic为3分钟
     let interval: number = 30;
-    if (task.type === QuestType.TweetInteraction) {
+    if (task.type === QuestType.TweetInteraction || task.type === QuestType.TwitterTopic) {
         interval = 3 * 60;
     }
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");

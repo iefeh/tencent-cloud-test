@@ -41,6 +41,8 @@ export type BadgeSeries = {
   reward_moon_beam: number;
   // 是否开放mint，当开放mint时，会在用户claim徽章后，生成用户徽章的mint记录.
   open_for_mint: boolean;
+  // 元信息的哈希
+  metadata_ipfs_hash: string;
 };
 
 // 要求类型

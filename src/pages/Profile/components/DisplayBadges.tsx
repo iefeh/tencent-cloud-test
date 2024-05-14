@@ -13,7 +13,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import useSort from '../MyBadges/hooks/useSort';
+import useSort from '@/hooks/pages/profile/badges/hooks/useSort';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
@@ -106,7 +106,7 @@ const DisplayBadgesPopover: ForwardRefRenderFunction<DisplayBadgesRef, Props> = 
   );
 
   return (
-    <ul ref={containerElRef} className={cn(['flex items-center relative z-0 gap-[1.125rem]', className])}>
+    <ul ref={containerElRef} className={cn(['flex items-center z-0 gap-[1.125rem]', className])}>
       {Pops}
 
       {(loading || toggleLoading) && <CircularLoading cirleClassName="!w-24 !h-24 !leading-[6rem]" />}

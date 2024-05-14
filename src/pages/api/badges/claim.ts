@@ -14,7 +14,8 @@ import User from '@/lib/models/User';
 import UserInvite from '@/lib/models/UserInvite';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { getInviteRelationshipFromDirectInviteUser, inviteRelationship } from '@/lib/common/inviter';
-
+import Mint, { MintSourceType, MintStatus } from '@/lib/models/Mint';
+import { keccak256 } from 'js-sha3';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -66,7 +67,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         result: 'You are not eligible to claim this badge level.',
       });
     }
-    
+
     // 检查用户是否已经领取过该徽章
     if (series.claimed_time) {
       return response.success({
@@ -74,7 +75,11 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       });
     }
     const reward = await constructBadgeMoonbeamReward(userBadge, level);
-
+    // 添加mint
+    let mint: any = undefined;
+    if (badge.series.get(level).open_for_mint) {
+      mint = constructMint(userId, badge, level);
+    }
 
     const inviter = await checkNoviceNotchInviter(userId, badge);
 
@@ -102,6 +107,10 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         if (inviter.indirect) {
           await incrUserMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
         }
+      }
+      if (mint) {
+        // 徽章开启mint.
+        await mint.save(opts);
       }
     });
     // 尝试刷新对应用户的MB缓存
@@ -194,6 +203,25 @@ async function constructBadgeMoonbeamReward(userBadge: IUserBadges, level: strin
     series: claimSeries,
     audits: rewards,
   };
+}
+
+function constructMint(userId: string, badge: any, series: string): any {
+  const taint = `${badge.id}-${userId}-${series}`;
+  const mintId = `0x${keccak256(taint)}`;
+
+  const mint = new Mint({
+    id: mintId,
+    chain_id: badge.chain_id,
+    source_type: MintSourceType.Badges,
+    source_id: badge.id,
+    badge_level: series,
+    user_id: userId,
+    status: MintStatus.Qualified,
+    obtained_time: Date.now(),
+    taints: [taint]
+  })
+
+  return mint;
 }
 
 // this will run if none of the above matches
