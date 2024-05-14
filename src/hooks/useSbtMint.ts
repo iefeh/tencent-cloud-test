@@ -18,7 +18,19 @@ export default function useSbtMint() {
 
   function toastError(error: any, step = '') {
     console.log('nft error', step, error);
-    toast.error(error?.reason || error?.data?.message || error?.message || error);
+    let message: string = error?.reason || error?.data?.message || error?.message || error || '';
+
+    switch (step) {
+      case 'mint':
+        if (message.toLowerCase().indexOf('permit already used') > -1) {
+          message = 'You have minted, please wait our confirmation.';
+        } else {
+          message = 'Transaction failed.';
+        }
+        break;
+    }
+
+    toast.error(message);
   }
 
   async function initProvider() {
