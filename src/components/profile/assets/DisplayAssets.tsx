@@ -73,7 +73,8 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
             <NFT
               className="w-full h-auto aspect-square"
               name={item ? item.token_metadata?.name || '--' : '　'}
-              src={item?.token_metadata?.animation_url}
+              src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
+              isSrcImage={!item?.token_metadata?.animation_url}
               status={item?.transaction_status}
             />
 
