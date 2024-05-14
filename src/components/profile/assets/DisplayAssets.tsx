@@ -82,7 +82,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
           </div>
 
           <div className="text-xs text-[#999999] mt-4">
-            {item?.confirmed_time ? dayjs(item.confirmed_time).format('YYYY-MM-DD') + ' Obtained' : '　'}
+            {item ? (item.confirmed_time ? dayjs(item.confirmed_time).format('YYYY-MM-DD') + ' Obtained' : '　') : '--'}
           </div>
 
           <Button
