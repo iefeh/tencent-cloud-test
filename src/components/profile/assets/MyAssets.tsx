@@ -14,15 +14,15 @@ interface Props {
 const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
   const [tabs, setTabs] = useState([
     {
-      label: 'TETRA NFT',
-      key: NFTCategory.TETRA_NFT,
-    },
-    {
       label: 'SBT',
       key: NFTCategory.SBT,
     },
+    {
+      label: 'TETRA NFT',
+      key: NFTCategory.TETRA_NFT,
+    },
   ]);
-  const [selectedKey, setSelectedKey] = useState(NFTCategory.TETRA_NFT);
+  const [selectedKey, setSelectedKey] = useState(NFTCategory.SBT);
   const selectedKeyRef = useRef(selectedKey);
   const { loading, data, total, queryData, onPageChange } = usePageQuery<NFTItem, MyNFTQueryParams>({
     key: 'nfts',
