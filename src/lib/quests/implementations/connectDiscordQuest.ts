@@ -44,7 +44,7 @@ export class ConnectDiscordQuest extends QuestBase {
     async claimReward(userId: string): Promise<claimRewardResult> {
         const claimableResult = await this.checkClaimable(userId);
         if (!claimableResult.claimable) {
-            let tip: string | undefined = this.quest.type == QuestType.HoldDiscordRole ? "Your Discord role verification did not meet the requirements. Please claim your role in Discord first." : undefined;
+            let tip: string | undefined = claimableResult.tip;
             return {
                 verified: false,
                 require_authorization: claimableResult.require_authorization,
