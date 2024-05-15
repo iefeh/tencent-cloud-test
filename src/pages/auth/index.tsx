@@ -3,6 +3,7 @@ import { startTransition } from 'react';
 
 export default function Auth() {
   startTransition(() => {
+    const localStorage: Storage = window.opener?.localStorage || window.localStorage;
     const query = new URLSearchParams(location.search);
     const token = query.get('token') || '';
     const jwt = query.get('particle_jwt') || '';
