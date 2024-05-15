@@ -14,6 +14,7 @@ const MainScreen: FC = () => {
       <div className={cn(['flex mt-9 gap-9 w-full', isMobile && 'flex-col'])}>
         <MoonBeams />
 
+        {/* TODO 替换Store */}
         <Invite inProfie />
       </div>
     </div>
