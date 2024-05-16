@@ -16,7 +16,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   for (let pool of lotteryPools) {
     result.push(pool.lottery_pool_id);
   }
-  res.json(response.success({ lotteryPoolIds: result }));
+  res.json(response.success({ lottery_pool_ids: result }));
 });
 
 // this will run if none of the above matches
