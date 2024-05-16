@@ -7,6 +7,7 @@ import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
+import useWatchStorage from './useWatchStorage';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
   const store = useContext(MobxContext);
@@ -20,6 +21,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_AUTH) || {};
     if (!tokens[type]) return;
     const { code, msg, signup_cred } = tokens[type] || {};
+    console.log(232432, type, code, msg);
     if (+code !== 1) {
       toast.error(msg);
     }
@@ -38,6 +40,8 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     dialogWindowRef.current.close();
     dialogWindowRef.current = null;
   }, 500);
+
+  const { startWatch, stopWatch } = useWatchStorage({ key: KEY_AUTHORIZATION_AUTH, callback: authConnect });
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {
@@ -107,6 +111,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
         }
       } else {
         open();
+        startWatch();
       }
 
       return;
@@ -131,7 +136,10 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
   useEffect(() => {
     window.addEventListener('storage', authConnect);
-    return () => window.removeEventListener('storage', authConnect);
+    return () => {
+      window.removeEventListener('storage', authConnect);
+      stopWatch();
+    };
   }, []);
 
   return { onConnect, loading };
