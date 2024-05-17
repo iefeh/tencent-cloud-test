@@ -47,15 +47,24 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
 async function getUserNotifications(userId: string, pageNum: number, pageSize: number): Promise<any[]> {
   const skip = (pageNum - 1) * pageSize;
+  const now = Date.now();
   const pipeline: PipelineStage[] = [
     {
       $match: {
         user_id: userId,
+        created_time: { $lt: now }
       },
     },
     {
       $unionWith: {
         coll: 'global_notifications',
+        pipeline: [
+          {
+            $match: {
+              $expr: { $and: [{ $lt: ['$created_time', now] }] },
+            },
+          },
+        ],
       },
     },
     {
