@@ -38,6 +38,8 @@ export enum QuestType {
     SendDiscordMessage = "send_discord_message",
     // twitter的关注者数
     TwitterFollower = "twitter_follower",
+    // 领取2048游戏券
+    Claim2048Ticket = "claim_2048_ticket",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)

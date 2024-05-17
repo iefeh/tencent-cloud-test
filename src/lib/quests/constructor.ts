@@ -18,6 +18,7 @@ import { CommentTweetQuest } from "./implementations/commentTweetQuest";
 import { TwitterFollowerQuest } from "./implementations/twitterFollowerQuest";
 import { TwitterTopicQuest } from "./implementations/twitterTopicQuest";
 import { TweetInteractionQuest } from "./implementations/tweetInteraction";
+import { Claim2048TicketQuest } from "./implementations/claim2048Ticket";
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -56,6 +57,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new TwitterTopicQuest(quest);
         case QuestType.TweetInteraction:
             return new TweetInteractionQuest(quest);
+        case QuestType.Claim2048Ticket:
+            return new Claim2048TicketQuest(quest);
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }

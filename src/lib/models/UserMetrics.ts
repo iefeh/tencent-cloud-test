@@ -72,6 +72,9 @@ export enum Metric {
 
   //推特粉丝数
   TwitterFollowerCount = 'twitter_follower_count',
+
+  //2048游戏券
+  TicketFor2048 = 'ticket_for_2048',
 }
 
 // 用户内部指标，存放单独的集合
@@ -142,6 +145,8 @@ export interface IUserMetrics extends Document {
   twitter_follower_count: number;
   // 创建时间毫秒时间戳
   created_time: number;
+  // 2048游戏券
+  ticket_for_2048: number
 }
 
 const UserMetricsSchema = new Schema<IUserMetrics>({
@@ -179,6 +184,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   total_invitee_wallet_nft_usd_value: { Type: Number },
   total_invitee_wallet_asset_usd_value: { Type: Number },
   twitter_follower_count: { type: Number },
+  ticket_for_2048: { type: Number },
   created_time: { type: Number, required: true },
 });
 
