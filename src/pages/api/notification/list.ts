@@ -46,7 +46,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 });
 
 async function getUserNotifications(userId: string, pageNum: number, pageSize: number): Promise<any[]> {
-  const skip = (pageNum - 1) * pageSize;
+  const skip = (pageNum - 1) * pageSize; 
   const now = Date.now();
   const pipeline: PipelineStage[] = [
     {
