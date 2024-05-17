@@ -3,8 +3,12 @@ import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 import mbImg from 'img/loyalty/earn/mb.png';
+import { observer } from 'mobx-react-lite';
+import { useUserContext } from '@/store/User';
 
 const MBInfo: FC<ClassNameProps> = ({ className }) => {
+  const { userInfo } = useUserContext();
+
   return (
     <div
       className={cn([
@@ -24,7 +28,7 @@ const MBInfo: FC<ClassNameProps> = ({ className }) => {
       <Image className="w-16 h-16 object-contain relative z-0" src={mbImg} alt="" unoptimized />
 
       <div className="flex-1 font-semakin relative z-0 ml-6">
-        <div className="text-[2rem]">5678</div>
+        <div className="text-[2rem]">{userInfo?.moon_beam || '--'}</div>
         <div className="text-sm">moon beams</div>
       </div>
 
@@ -36,4 +40,4 @@ const MBInfo: FC<ClassNameProps> = ({ className }) => {
   );
 };
 
-export default MBInfo;
+export default observer(MBInfo);
