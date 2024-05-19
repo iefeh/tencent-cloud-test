@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import Image from 'next/image';
 import { FC, Fragment, useState } from 'react';
 
-const TimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
+const PrizePoolTimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
   const [times, setTimes] = useState(['00', '00', '00', '00']);
   useCountdown(item?.end_time || dayjs().valueOf(), dayjs().valueOf(), (leftTime) => {
     const duration = dayjs.duration(leftTime);
@@ -13,20 +13,20 @@ const TimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
   });
 
   return (
-    <div className={cn(['w-[26.375rem] h-[7.625rem] pl-[1.8125rem] pr-[1.625rem] pt-4 relative', className])}>
+    <div
+      className={cn(['w-[45.875rem] h-[4.875rem] px-[3.0625rem] py-[0.875rem] relative flex items-center', className])}
+    >
       <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_timeout_info.png"
+        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_prize_pool_timeout.png"
         alt=""
         fill
         sizes="100%"
         unoptimized
       />
 
-      <p className="font-semakin text-xl bg-gradient-to-b from-[#E7D4A9] to-[#DBAC74] bg-clip-text text-transparent relative z-0 w-min whitespace-nowrap ml-auto">
-        The lottery pool will close in:
-      </p>
+      <p className="text-xl font-bold relative z-0 w-min whitespace-nowrap uppercase">The lottery pool will close in</p>
 
-      <div className="flex items-center w-min font-semakin text-xl relative z-0 ml-auto mt-3">
+      <div className="flex items-center w-min font-semakin text-xl relative z-0 ml-auto">
         {times.map((item, index) => (
           <Fragment key={index}>
             {index > 0 && <div className="mx-ten">:</div>}
@@ -41,4 +41,4 @@ const TimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
   );
 };
 
-export default TimeoutInfo;
+export default PrizePoolTimeoutInfo;

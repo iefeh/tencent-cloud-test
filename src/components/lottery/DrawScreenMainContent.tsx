@@ -2,9 +2,14 @@ import PageDesc from '@/pages/components/common/PageDesc';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { FC } from 'react';
 
-const DrawScreenMainContent: FC = () => {
+interface Props {
+  onShowPrizePool?: () => void;
+}
+
+const DrawScreenMainContent: FC<Props> = ({ onShowPrizePool }) => {
   return (
     <PageDesc
+      className="-translate-y-12 items-center"
       title={
         <div className="font-semakin">
           <span className="stroke-text text-[4rem]" data-text="WIN">
@@ -30,7 +35,7 @@ const DrawScreenMainContent: FC = () => {
           </div>
         </div>
       }
-      button={<LGButton className="uppercase mt-8" label="Prize Pool" actived />}
+      button={<LGButton className="uppercase mt-8" label="Prize Pool" actived onClick={onShowPrizePool} />}
     />
   );
 };

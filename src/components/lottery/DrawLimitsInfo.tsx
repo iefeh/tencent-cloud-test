@@ -1,8 +1,9 @@
+import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 
-const DrawLimitsInfo: FC<ClassNameProps> = ({ className }) => {
+const DrawLimitsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
   return (
     <div
       className={cn([
@@ -20,7 +21,8 @@ const DrawLimitsInfo: FC<ClassNameProps> = ({ className }) => {
       />
 
       <div className="flex-1 font-semakin relative z-0 text-xl">
-        <span className="text-light-yellow mr-4">Draw Limits: </span>0/10
+        <span className="text-light-yellow mr-4">Draw Limits: </span>
+        {(item?.draw_limits || 0) - (item?.rest_draw_amount || 0) || 0}/{item?.draw_limits || 0}
       </div>
     </div>
   );

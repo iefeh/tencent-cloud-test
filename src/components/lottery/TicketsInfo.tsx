@@ -1,29 +1,24 @@
+import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 
-const TicketsInfo: FC<ClassNameProps> = ({ className }) => {
+const TicketsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
   const tickets = [
     {
       icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
       label: 'Free Tickets',
-      value: 5,
+      value: item?.user_free_lottery_ticket_amount || 0,
     },
     {
       icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png',
       label: 'S1 Tickets',
-      value: 10,
+      value: item?.user_s1_lottery_ticket_amount || 0,
     },
   ];
 
   return (
-    <div
-      className={cn([
-        'w-[23rem] h-[5.875rem] pl-2 pr-6',
-        'relative flex justify-between items-center',
-        className,
-      ])}
-    >
+    <div className={cn(['w-[23rem] h-[5.875rem] pl-2 pr-6', 'relative flex justify-between items-center', className])}>
       <Image
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_tickets_info.png"
         alt=""
@@ -39,8 +34,8 @@ const TicketsInfo: FC<ClassNameProps> = ({ className }) => {
           </div>
 
           <div className="font-semakin uppercase">
-            <div className='text-[2rem] leading-none'>{item.value.toString().padStart(2, '0')}</div>
-            <div className='w-max'>{item.label}</div>
+            <div className="text-[2rem] leading-none">{item.value.toString().padStart(2, '0')}</div>
+            <div className="w-max">{item.label}</div>
           </div>
         </div>
       ))}

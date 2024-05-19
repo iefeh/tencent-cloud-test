@@ -11,7 +11,7 @@ export const BadgeIcons = [
     icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/lucky_draw_master/2.png',
     width: 57,
     left: 174,
-    bottom: 41
+    bottom: 41,
   },
   {
     icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/lucky_draw_master/3.png',
@@ -62,3 +62,43 @@ export const BadgeIcons = [
     bottom: 112,
   },
 ];
+
+export const enum LotteryRewardType {
+  TICKET = 'lottery_ticket',
+}
+
+export const enum RewardQuality {
+  BLUE = 1,
+  PURPLE,
+  COPPERY,
+  SILVER,
+  GOLDEN,
+}
+
+export const LotteryBorders = {
+  [RewardQuality.BLUE]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/blue.png',
+    width: 154,
+    height: 154,
+  },
+  [RewardQuality.PURPLE]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/purple.png',
+    width: 154,
+    height: 154,
+  },
+  [RewardQuality.COPPERY]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/coppery.png',
+    width: 154,
+    height: 154,
+  },
+  [RewardQuality.SILVER]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/silver.png',
+    width: 205,
+    height: 194,
+  },
+  [RewardQuality.GOLDEN]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/golden.png',
+    width: 228,
+    height: 214,
+  },
+};

@@ -36,6 +36,9 @@ interface ClassNameProps {
   className?: string;
 }
 
+interface ItemProps<T = unknown> {
+  item?: T | null;
+}
 interface ModalProps {
   isOpen: boolean;
   onOpen?: () => void;

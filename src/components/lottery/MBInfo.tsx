@@ -33,7 +33,7 @@ const MBInfo: FC<ClassNameProps> = ({ className }) => {
       </div>
 
       <div className="flex flex-col relative z-0">
-        <LGButton className="uppercase font-bold" label="Season Pass" link="/LoyaltyProgram/season/foresight" />
+        <LGButton className="uppercase font-bold" label="Season Pass" link="/LoyaltyProgram/season" />
         <LGButton className="mt-4 uppercase font-bold" label="Draw History" actived />
       </div>
     </div>

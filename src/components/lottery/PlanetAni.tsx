@@ -82,6 +82,7 @@ const PlanetAni: FC = () => {
   useEffect(() => {
     initCanvas();
     initImages().then(() => {
+      stopAni();
       lastElRef.current = performance.now();
       aniLoop();
     });

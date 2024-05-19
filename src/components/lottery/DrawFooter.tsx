@@ -1,10 +1,17 @@
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import { throttle } from 'lodash';
+import { Lottery } from '@/types/lottery';
+import { LotteryRewardType, RewardQuality } from '@/constant/lottery';
 
-const DrawFooter: FC<ClassNameProps> = ({ className }) => {
+interface Props extends ClassNameProps {
+  onDrawed?: (item?: Lottery.RewardDTO) => void;
+}
+
+const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDrawed, item }) => {
   const buttons = [
     {
       icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
@@ -25,6 +32,27 @@ const DrawFooter: FC<ClassNameProps> = ({ className }) => {
       times: 5,
     },
   ];
+  const [loading, setLoading] = useState(false);
+
+  const onDraw = throttle(async () => {
+    setLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    setLoading(false);
+    onDrawed?.({
+      rewards: [
+        {
+          icon_url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/lucky_draw_master/3.png',
+          reward_type: LotteryRewardType.TICKET,
+          reward_name: 'Lottery Ticket',
+          reward_level: RewardQuality.GOLDEN,
+          reward_claim_type: 0,
+          amount: 2,
+        },
+      ],
+    });
+  }, 500);
 
   return (
     <div className={cn(['flex flex-col items-center', className])}>
@@ -50,7 +78,7 @@ const DrawFooter: FC<ClassNameProps> = ({ className }) => {
               <div className="font-semakin text-lg ml-3">{item.label}</div>
             </div>
 
-            <LGButton label={item.buttonLabel} actived />
+            <LGButton label={item.buttonLabel} loading={loading} actived onClick={onDraw} />
           </div>
         ))}
       </div>
