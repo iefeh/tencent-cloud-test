@@ -13,11 +13,13 @@ import { Lottery } from '@/types/lottery';
 import PrizePoolModal from '../PrizePoolModal';
 import usePrizePool from '../hooks/usePrizePool';
 import DrawModal from '../DrawModal';
+import DrawHistoryModal from '../DrawHistoryModal';
 
 const DrawScreen: FC & BasePage = () => {
   const [currentReward, setCurrentReward] = useState<Lottery.RewardDTO | null>(null);
   const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
+  const historyDisclosure = useDisclosure();
   const { disclosure: prizePoolDisclosure, poolInfo, onShowPrizePool } = usePrizePool();
   const [drawTimes, setDrawTimes] = useState(1);
 
@@ -33,6 +35,10 @@ const DrawScreen: FC & BasePage = () => {
     setTimeout(() => {
       rewardsDisclosure.onOpen();
     }, 0);
+  }
+
+  function onShowHistory() {
+    historyDisclosure.onOpen();
   }
 
   return (
@@ -57,7 +63,7 @@ const DrawScreen: FC & BasePage = () => {
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20 flex justify-center items-center">
-        <MBInfo className="!absolute left-16 top-32" />
+        <MBInfo className="!absolute left-16 top-32" onShowHistory={onShowHistory} />
 
         <TicketsInfo className="!absolute left-16 top-[16.5625rem]" item={poolInfo} />
 
@@ -75,6 +81,8 @@ const DrawScreen: FC & BasePage = () => {
       <RewardsModal item={currentReward} disclosure={rewardsDisclosure} />
 
       <PrizePoolModal disclosure={prizePoolDisclosure} item={poolInfo} />
+
+      <DrawHistoryModal disclosure={historyDisclosure} item={poolInfo} />
     </div>
   );
 };

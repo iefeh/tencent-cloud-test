@@ -6,7 +6,11 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import { observer } from 'mobx-react-lite';
 import { useUserContext } from '@/store/User';
 
-const MBInfo: FC<ClassNameProps> = ({ className }) => {
+interface Props {
+  onShowHistory?: () => void;
+}
+
+const MBInfo: FC<ClassNameProps & Props> = ({ className, onShowHistory }) => {
   const { userInfo } = useUserContext();
 
   return (
@@ -34,7 +38,7 @@ const MBInfo: FC<ClassNameProps> = ({ className }) => {
 
       <div className="flex flex-col relative z-0">
         <LGButton className="uppercase font-bold" label="Season Pass" link="/LoyaltyProgram/season" />
-        <LGButton className="mt-4 uppercase font-bold" label="Draw History" actived />
+        <LGButton className="mt-4 uppercase font-bold" label="Draw History" actived onClick={onShowHistory} />
       </div>
     </div>
   );
