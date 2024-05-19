@@ -32,7 +32,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId!;
     const pagination = await paginationUserMoonbeamHistory(userId, tab as string, seasonId, pageNum, pageSize);
     if (pagination.total == 0 || pagination.mbs.length == 0) {
-        // 当前没有匹配的数据
+        // 当前没有匹配的数据 
         res.json(response.success({
             tabs: tabs,
             current_tab: tab,

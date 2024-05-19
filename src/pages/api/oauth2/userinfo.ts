@@ -2,14 +2,14 @@ import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import OAuth2Server from '@/lib/oauth2/server'
-import {UserContextRequest} from "@/lib/middleware/auth";
+import {UserContextRequest, dynamicCors} from "@/lib/middleware/auth";
 import UserWallet from '@/lib/models/UserWallet';
 import {OAuth2Scopes} from '@/lib/models/OAuth2Scopes';
 import {responseOnOauthError} from "@/lib/oauth2/response";
 import {Request, Response} from '@node-oauth/oauth2-server';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
-router.get(async (req, res) => {
+router.use(dynamicCors).get(async (req, res) => {
     // 用于提供通过访问令牌获取用户信息的接口
     try {
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), {scope: OAuth2Scopes.UserInfo})
