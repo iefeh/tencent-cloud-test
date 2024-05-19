@@ -12,3 +12,7 @@ export function queryPrizePoolInfoAPI(params: { lottery_pool_id: string }): Prom
 export function drawAPI(data: Lottery.DrawDTO): Promise<Lottery.RewardDTO & InfoDTO> {
   return http.post('/api/lottery/draw', JSON.stringify(data));
 }
+
+export function queryDrawHistoryAPI(params: { lottery_pool_id: string }): Promise<Lottery.RewardDTO[]> {
+  return http.get('/api/lottery/history', { params });
+}
