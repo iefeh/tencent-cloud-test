@@ -19,3 +19,7 @@ export function loadImage(src: string) {
     if (img.complete) resolve(img);
   });
 }
+
+export function to2Digit(val?: number | string) {
+  return (val || 0).toString().padStart(2, '0');
+}

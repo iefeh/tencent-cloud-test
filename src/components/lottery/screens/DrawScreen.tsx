@@ -12,15 +12,27 @@ import RewardsModal from '../RewardsModal';
 import { Lottery } from '@/types/lottery';
 import PrizePoolModal from '../PrizePoolModal';
 import usePrizePool from '../hooks/usePrizePool';
+import DrawModal from '../DrawModal';
 
 const DrawScreen: FC & BasePage = () => {
   const [currentReward, setCurrentReward] = useState<Lottery.RewardDTO | null>(null);
+  const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
   const { disclosure: prizePoolDisclosure, poolInfo, onShowPrizePool } = usePrizePool();
+  const [drawTimes, setDrawTimes] = useState(1);
 
-  function onDrawed(item?: Lottery.RewardDTO) {
-    setCurrentReward(item || null);
-    rewardsDisclosure.onOpen();
+  function onDraw(times: number) {
+    setDrawTimes(times);
+    setTimeout(() => {
+      drawDisclosure.onOpen();
+    }, 0);
+  }
+
+  function onDrawed(item: Lottery.RewardDTO) {
+    setCurrentReward(item);
+    setTimeout(() => {
+      rewardsDisclosure.onOpen();
+    }, 0);
   }
 
   return (
@@ -53,14 +65,12 @@ const DrawScreen: FC & BasePage = () => {
 
         <DrawLimitsInfo className="!absolute right-16 top-[17.125rem]" item={poolInfo} />
 
-        <DrawFooter
-          className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2"
-          item={poolInfo}
-          onDrawed={onDrawed}
-        />
+        <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
 
         <DrawScreenMainContent onShowPrizePool={onShowPrizePool} />
       </div>
+
+      <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
 
       <RewardsModal item={currentReward} disclosure={rewardsDisclosure} />
 

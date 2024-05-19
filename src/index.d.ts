@@ -49,3 +49,8 @@ interface BasePage {
   noLoading?: boolean;
   hideLoginCloseButton?: boolean;
 }
+
+interface InfoDTO {
+  message: string;
+  verified: boolean;
+}

@@ -102,3 +102,5 @@ export const LotteryBorders = {
     height: 214,
   },
 };
+
+export const MBsPerDraw = 15

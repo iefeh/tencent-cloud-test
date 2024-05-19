@@ -6,7 +6,7 @@ const PlanetAni: FC = () => {
   const BASE_WIDTH = 1920;
   const BASE_HEIGHT = 1076;
   const BASE_RATIO = 1920 / 1076;
-  const IMG_COUNT = 150;
+  const IMG_COUNT = 288;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentIdxRef = useRef(0);
