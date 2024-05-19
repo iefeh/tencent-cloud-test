@@ -1,9 +1,9 @@
+import { LotteryMilestone } from '@/constant/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 
 const LotteryRules: FC = () => {
-  const MAX_LEVEL = 10;
   const rules = [
     {
       title: 'Lottery Tickets',
@@ -44,11 +44,11 @@ const LotteryRules: FC = () => {
   const drawCounts = [
     [
       'Level',
-      ...Array(MAX_LEVEL)
+      ...Array(LotteryMilestone.length)
         .fill(null)
         .map((_, index) => index + 1),
     ],
-    ['Cumulative Draw Counts', 30, 60, 80, 100, 120, 140, 155, 170, 185, 200],
+    ['Cumulative Draw Counts', ...LotteryMilestone],
   ];
 
   return (
