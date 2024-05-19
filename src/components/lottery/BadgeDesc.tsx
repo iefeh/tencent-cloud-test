@@ -2,6 +2,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
+import BattlePassButton from '../LoyaltyProgram/season/BattlePassButton';
 
 const BadgeDesc: FC = () => {
   return (
@@ -48,8 +49,8 @@ const BadgeDesc: FC = () => {
             </p>
           </div>
 
-          <div>
-            <LGButton label="upgrade to premium pass" />
+          <div className="flex">
+            <BattlePassButton />
 
             <LGButton className="ml-7" label="My Badges" link="/Profile/MyBadges" />
           </div>
