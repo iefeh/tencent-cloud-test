@@ -14,7 +14,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).post(async (req, res) => {
     // 用于提供通过访问令牌获取用户信息的接口
     try {
-        // 暂时取消授权
+        
         await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo })
         const wallets = req.body;
 
@@ -63,7 +63,7 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
     ];
     let user_infos = await User.aggregate(pipeline);
     let particle_user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.particle.evm_wallet, u]))
-    let user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.user_id, u])); console.log("userInfoMap", user_info_map);
+    let user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.user_id, u]));
 
 
     let result: any[] = [];
