@@ -2,8 +2,9 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Reward from './Reward';
+import { claimRewardAPI } from '@/http/services/lottery';
 
 interface Props {
   disclosure: {
@@ -17,7 +18,26 @@ interface Props {
   };
 }
 
-const InitContent: FC<ItemProps<Lottery.RewardDTO>> = ({ item }) => {
+const enum RewardsState {
+  NORMAL,
+  WAIT_SHARE,
+  WAIT_VERIFY,
+}
+
+interface InitContentProps {
+  onClaim?: () => boolean | Promise<boolean>;
+}
+
+const InitContent: FC<InitContentProps & ItemProps<Lottery.RewardDTO>> = ({ item, onClaim }) => {
+  const [state, setState] = useState<RewardsState>(RewardsState.NORMAL);
+
+  async function onClaimClick() {
+    let res = false;
+    if (onClaim) res = await onClaim();
+    if (!res) return;
+    setState(RewardsState.WAIT_SHARE);
+  }
+
   return (
     <>
       <div className="text-2xl">Congratulations on winning the following rewards!</div>
@@ -35,14 +55,35 @@ const InitContent: FC<ItemProps<Lottery.RewardDTO>> = ({ item }) => {
       </div>
 
       <div className="flex items-center gap-x-[5.5rem] mt-5">
-        <LGButton className="w-[18.5rem]" label="Claim" actived />
-        <LGButton className="w-[18.5rem]" label="Share for 20 MOON BEAMS" actived />
+        {state === RewardsState.NORMAL ? (
+          <>
+            <LGButton className="w-[18.5rem]" label="Claim" actived onClick={onClaimClick} />
+            <LGButton className="w-[18.5rem]" label="Share for 20 MOON BEAMS" actived />
+          </>
+        ) : state === RewardsState.WAIT_SHARE ? (
+          <>
+            <LGButton className="w-[18.5rem]" label="Verify" actived />
+          </>
+        ) : (
+          <>
+            <LGButton className="w-[18.5rem]" label="Confirm" actived />
+          </>
+        )}
       </div>
     </>
   );
 };
 
-const RewardsModal: FC<Props & ItemProps<Lottery.RewardDTO>> = ({ disclosure: { isOpen, onOpenChange }, item }) => {
+const RewardsModal: FC<Props & ItemProps<Lottery.RewardResDTO>> = ({ disclosure: { isOpen, onOpenChange }, item }) => {
+  async function onClaim() {
+    const data = {
+      draw_id: item?.draw_id!,
+      lottery_pool_id: item?.lottery_pool_id!,
+    };
+    const res = await claimRewardAPI(data);
+    return !res;
+  }
+
   return (
     <Modal
       backdrop="blur"
@@ -66,7 +107,7 @@ const RewardsModal: FC<Props & ItemProps<Lottery.RewardDTO>> = ({ disclosure: { 
             </ModalHeader>
 
             <ModalBody>
-              <InitContent item={item} />
+              <InitContent item={item} onClaim={onClaim} />
             </ModalBody>
           </>
         )}

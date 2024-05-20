@@ -27,10 +27,22 @@ declare namespace Lottery {
     rewards: RewardItem[];
   }
 
+  interface ClaimReqDTO {
+    draw_id: string;
+    lottery_pool_id: string;
+    reward_id?: string;
+  }
+
   interface DrawDTO {
     lottery_pool_id: string;
     draw_count: number;
     lottery_ticket_cost: number;
     mb_cost: number;
+  }
+
+  interface RewardResDTO {
+    draw_id: string;
+    lottery_pool_id: string;
+    rewards: RewardItem[];
   }
 }

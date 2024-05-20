@@ -136,7 +136,7 @@ interface Props {
     getDisclosureProps: (props?: any) => any;
   };
   times: number;
-  onDrawed?: (data: Lottery.RewardDTO) => void;
+  onDrawed?: (data: Lottery.RewardResDTO) => void;
 }
 
 const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
