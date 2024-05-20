@@ -13,7 +13,7 @@ import { Lottery } from '@/types/lottery';
 import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal from '../DrawHistoryModal';
-import DrawAni from './DrawAni';
+import DrawAni from '../DrawAni';
 
 interface Props {
   onUpdate?: () => void;
