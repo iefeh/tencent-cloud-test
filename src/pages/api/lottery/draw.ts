@@ -17,7 +17,7 @@ import {v4 as uuidv4} from "uuid";
 
 const defaultErrorResponse = response.success({
   verified: false,
-  tip: "Network busy, please try again later.",
+  message: "Network busy, please try again later.",
 })
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
