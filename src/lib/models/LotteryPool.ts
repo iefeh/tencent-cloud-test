@@ -28,7 +28,7 @@ export type LotteryRewardItem = {
     // 图标链接
     icon_url: string,
     // 保底中奖次数, 可以指定某几次抽奖会抽中保底
-    granted_draw_count: number[],
+    guaranteed_draw_count: number[],
     // 抽中前需要抽奖次数
     min_reward_draw_amount: number,
     // 前三抽中奖概率
