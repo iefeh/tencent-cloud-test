@@ -15,7 +15,7 @@ router.use(dynamicCors).post(async (req, res) => {
     // 用于提供通过访问令牌获取用户信息的接口
     try {
         // 暂时取消授权
-        // await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo })
+        await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo })
         const wallets = req.body;
 
         if (!Array.isArray(wallets)) {
