@@ -40,5 +40,5 @@ export default function usePrizePool() {
     queryPoolInfo();
   }, [poolIds]);
 
-  return { poolInfo };
+  return { poolInfo, queryPoolInfo };
 }

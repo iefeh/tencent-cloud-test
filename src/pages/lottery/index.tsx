@@ -10,7 +10,7 @@ import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 
 const LotteryPage: FC = () => {
-  const { poolInfo } = usePrizePool();
+  const { poolInfo, queryPoolInfo } = usePrizePool();
 
   return (
     <section
@@ -23,7 +23,7 @@ const LotteryPage: FC = () => {
 
       <CoverScreen />
 
-      <DrawScreen item={poolInfo} />
+      <DrawScreen item={poolInfo} onUpdate={queryPoolInfo} />
 
       <BadgeScreen item={poolInfo} />
 

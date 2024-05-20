@@ -15,7 +15,11 @@ import DrawModal from '../DrawModal';
 import DrawHistoryModal from '../DrawHistoryModal';
 import DrawAni from './DrawAni';
 
-const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) => {
+interface Props {
+  onUpdate?: () => void;
+}
+
+const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo, onUpdate }) => {
   const [currentReward, setCurrentReward] = useState<Lottery.RewardResDTO | null>(null);
   const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
@@ -39,6 +43,7 @@ const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) 
     setCurrentReward(data);
     drawDisclosure.onClose();
     setDrawAniVisible(true);
+    onUpdate?.();
   }
 
   function onDrawAniFinished() {
