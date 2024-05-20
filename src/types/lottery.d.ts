@@ -15,6 +15,7 @@ declare namespace Lottery {
   }
 
   interface RewardItem {
+    item_id?: string;
     icon_url: string;
     reward_type: LotteryRewardType;
     reward_name: string;
@@ -32,5 +33,20 @@ declare namespace Lottery {
     draw_count: number;
     lottery_ticket_cost: number;
     mb_cost: number;
+  }
+
+  interface DrawResDTO {
+    available_draw_time: number;
+    draw_id: string;
+    lottery_pool_id: string;
+    message: string;
+    rewards: RewardItem[];
+    success: boolean;
+  }
+
+  interface ClaimReqDTO {
+    draw_id: string;
+    lottery_pool_id: string;
+    reward_id: string;
   }
 }

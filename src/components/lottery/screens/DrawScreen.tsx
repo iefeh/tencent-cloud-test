@@ -15,7 +15,7 @@ import DrawModal from '../DrawModal';
 import DrawHistoryModal from '../DrawHistoryModal';
 
 const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) => {
-  const [currentReward, setCurrentReward] = useState<Lottery.RewardDTO | null>(null);
+  const [currentReward, setCurrentReward] = useState<Lottery.DrawResDTO | null>(null);
   const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
   const historyDisclosure = useDisclosure();
@@ -33,7 +33,7 @@ const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) 
     }, 0);
   }
 
-  function onDrawed(data: Lottery.RewardDTO) {
+  function onDrawed(data: Lottery.DrawResDTO) {
     setCurrentReward(data);
     setTimeout(() => {
       rewardsDisclosure.onOpen();

@@ -136,7 +136,7 @@ interface Props {
     getDisclosureProps: (props?: any) => any;
   };
   times: number;
-  onDrawed?: (data: Lottery.RewardDTO) => void;
+  onDrawed?: (data: Lottery.DrawResDTO) => void;
 }
 
 const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
@@ -173,12 +173,12 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
     const data = {
       lottery_pool_id: item?.lottery_pool_id!,
       draw_count: times,
-      lottery_ticket_cost: totalUsedTickets,
+      lottery_ticket_cost: s1TicketsCount,
       mb_cost: needMbs,
     };
 
     const res = await drawAPI(data);
-    if (!!res.verified) {
+    if (!!res.success && !res.verified) {
       onDrawed?.(res);
     }
 
