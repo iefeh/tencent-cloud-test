@@ -19,6 +19,11 @@ router.use(maybeAuthInterceptor).post(async (req, res) => {
 
 async function createTwitterTopicReward(req: any, res: any) {
   const { must_contains_text,hash_tags,mention_usernames,reply_to_tweet_id,start_time,end_time,delay_seconds,retweet_excluded,quote_excluded, lottery_pool_id } = req.body;
+  // 一个奖池只需要一个twitter topic, 如果已经存在则不再创建
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id });
+  if (userLotteryPool && userLotteryPool.twitter_topic_id) {
+      return;
+  }
   var postUrl = "https://twitter.com/intent/post?";
   let hasAndOperator = false;
   if (mention_usernames && mention_usernames.length > 0) {
