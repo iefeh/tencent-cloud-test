@@ -10,9 +10,6 @@ import { increaseUserMoonBeam } from "@/lib/models/User";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(maybeAuthInterceptor).post(async (req, res) => {
-  if (!req.body.reward_id) {
-      res.json(response.invalidParams());
-  }
   await createTwitterTopicReward(req, res);
   res.json(response.success());
 });
