@@ -5,8 +5,13 @@ import ScrollDownArrow from '../components/common/ScrollDownArrow';
 import DrawScreen from '@/components/lottery/screens/DrawScreen';
 import { createPortal } from 'react-dom';
 import BadgeScreen from '@/components/lottery/screens/BadgeScreen';
+import usePrizePool from '@/components/lottery/hooks/usePrizePool';
+import { useUserContext } from '@/store/User';
+import { observer } from 'mobx-react-lite';
 
 const LotteryPage: FC = () => {
+  const { poolInfo } = usePrizePool();
+
   return (
     <section
       className="w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg.png')] bg-[length:100%_auto] bg-no-repeat"
@@ -18,13 +23,13 @@ const LotteryPage: FC = () => {
 
       <CoverScreen />
 
-      <DrawScreen />
+      <DrawScreen item={poolInfo} />
 
-      <BadgeScreen />
+      <BadgeScreen item={poolInfo} />
 
       {createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
     </section>
   );
 };
 
-export default LotteryPage;
+export default observer(LotteryPage);

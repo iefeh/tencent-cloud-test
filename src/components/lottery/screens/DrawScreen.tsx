@@ -11,17 +11,20 @@ import { useDisclosure } from '@nextui-org/react';
 import RewardsModal from '../RewardsModal';
 import { Lottery } from '@/types/lottery';
 import PrizePoolModal from '../PrizePoolModal';
-import usePrizePool from '../hooks/usePrizePool';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal from '../DrawHistoryModal';
 
-const DrawScreen: FC & BasePage = () => {
+const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) => {
   const [currentReward, setCurrentReward] = useState<Lottery.RewardDTO | null>(null);
   const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
   const historyDisclosure = useDisclosure();
-  const { disclosure: prizePoolDisclosure, poolInfo, onShowPrizePool } = usePrizePool();
+  const prizePoolDisclosure = useDisclosure();
   const [drawTimes, setDrawTimes] = useState(1);
+
+  function onShowPrizePool() {
+    prizePoolDisclosure.onOpen();
+  }
 
   function onDraw(times: number) {
     setDrawTimes(times);
@@ -30,8 +33,8 @@ const DrawScreen: FC & BasePage = () => {
     }, 0);
   }
 
-  function onDrawed(item: Lottery.RewardDTO) {
-    setCurrentReward(item);
+  function onDrawed(data: Lottery.RewardDTO) {
+    setCurrentReward(data);
     setTimeout(() => {
       rewardsDisclosure.onOpen();
     }, 0);

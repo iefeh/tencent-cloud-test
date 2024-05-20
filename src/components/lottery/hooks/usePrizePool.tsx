@@ -1,10 +1,10 @@
 import { queryPrizePoolInfoAPI, queryPrizePoolListAPI } from '@/http/services/lottery';
+import { useUserContext } from '@/store/User';
 import { Lottery } from '@/types/lottery';
-import { useDisclosure } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 
 export default function usePrizePool() {
-  const disclosure = useDisclosure();
+  const { userInfo } = useUserContext();
   const [poolIds, setPoolIds] = useState<string[]>([]);
   const [poolInfo, setPoolInfo] = useState<Lottery.Pool | null>(null);
 
@@ -20,14 +20,9 @@ export default function usePrizePool() {
     const res = await queryPrizePoolInfoAPI({ lottery_pool_id: id });
     setPoolInfo(res || null);
   }
-
-  function onShowPrizePool() {
-    disclosure.onOpen();
-  }
-
   useEffect(() => {
     queryPools();
-  }, []);
+  }, [userInfo]);
 
   useEffect(() => {
     if (poolIds.length < 1) return;
@@ -35,5 +30,5 @@ export default function usePrizePool() {
     queryPoolInfo();
   }, [poolIds]);
 
-  return { disclosure, poolInfo, onShowPrizePool };
+  return { poolInfo };
 }

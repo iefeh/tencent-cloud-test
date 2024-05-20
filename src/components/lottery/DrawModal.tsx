@@ -57,7 +57,7 @@ const FreeTicketContent: FC<TicketContentProps> = ({ item, disabled }) => {
         </div>
       </div>
 
-      {disabled || <div className="absolute w-full h-full bg-black/70 z-10"></div>}
+      {disabled && <div className="absolute w-full h-full bg-black/70 z-10"></div>}
     </div>
   );
 };

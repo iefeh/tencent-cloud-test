@@ -1,10 +1,11 @@
 import { BadgeIcons, LotteryMilestone } from '@/constant/lottery';
+import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC, useState } from 'react';
 
-const BadgeMilestone: FC<ClassNameProps> = ({ className }) => {
-  const [currentDraws, setCurrentDraws] = useState(165);
+const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
+  const currentDraws = item?.total_draw_amount || 0;
   const levels = LotteryMilestone.map((val, index) => ({
     level: index + 1,
     draws: val,
@@ -20,7 +21,8 @@ const BadgeMilestone: FC<ClassNameProps> = ({ className }) => {
       let periodDraws = fullPeriodDraws;
 
       if (currentDraws < draws) {
-        periodDraws *= (draws - currentDraws) / (draws - (levels[i - 1]?.draws || 0));
+        const lastDraws = levels[i - 1]?.draws || 0;
+        periodDraws *= (currentDraws - lastDraws) / (draws - lastDraws);
       }
 
       progress += periodDraws;
