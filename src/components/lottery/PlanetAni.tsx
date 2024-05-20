@@ -99,6 +99,10 @@ const PlanetAni: FC = () => {
       </Head>
 
       <canvas ref={canvasRef} className="object-contain" width={BASE_WIDTH} height={BASE_HEIGHT}></canvas>
+
+      <div className="absolute inset-0">
+        <div></div>
+      </div>
     </div>
   );
 };

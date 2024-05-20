@@ -68,24 +68,14 @@ export const enum LotteryRewardType {
 }
 
 export const enum RewardQuality {
-  BLUE = 1,
-  PURPLE,
-  COPPERY,
+  COPPERY = 1,
   SILVER,
+  BLUE,
+  PURPLE,
   GOLDEN,
 }
 
 export const LotteryBorders = {
-  [RewardQuality.BLUE]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/blue.png',
-    width: 154,
-    height: 154,
-  },
-  [RewardQuality.PURPLE]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/purple.png',
-    width: 154,
-    height: 154,
-  },
   [RewardQuality.COPPERY]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/coppery.png',
     width: 154,
@@ -93,6 +83,16 @@ export const LotteryBorders = {
   },
   [RewardQuality.SILVER]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/silver.png',
+    width: 154,
+    height: 154,
+  },
+  [RewardQuality.BLUE]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/blue.png',
+    width: 154,
+    height: 154,
+  },
+  [RewardQuality.PURPLE]: {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/purple.png',
     width: 205,
     height: 194,
   },
@@ -103,4 +103,4 @@ export const LotteryBorders = {
   },
 };
 
-export const MBsPerDraw = 15
+export const MBsPerDraw = 25;
