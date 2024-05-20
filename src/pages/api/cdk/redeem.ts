@@ -144,6 +144,9 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
         case CDKRewardType.Badge:
           await redeemBadgeReward(userId, cdkInfo.cdk, session, reward);
           break;
+        case CDKRewardType.LotteryTicket:
+          await redeemLotteryTicketReward(userId, session, reward);
+          break;
       }
     }
 
@@ -212,6 +215,27 @@ async function redeemBadgeReward(userId: string, cdk: string, session: any, rewa
     { session: session },
   );
 
+  if (reward.alert) {
+    await new UserNotifications({
+      user_id: userId,
+      notification_id: generateUUID(),
+      content: reward.alert.content,
+      link: reward.alert.link,
+      //创建时间
+      created_time: Date.now(),
+    }).save();
+  }
+}
+
+async function redeemLotteryTicketReward(userId: string, session: any, reward: any) {
+  await User.updateOne({ user_id: userId },
+    {
+      $inc: { lottery_ticket_amount: reward.amount },
+      $setOnInsert: {
+        created_time: Date.now(),
+      },
+    },
+    { upsert: true, session: session });
   if (reward.alert) {
     await new UserNotifications({
       user_id: userId,
