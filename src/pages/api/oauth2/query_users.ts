@@ -28,7 +28,7 @@ router.use(dynamicCors).post(async (req, res) => {
             return;
         }
 
-        if (wallets.length > 50) {
+        if (wallets.length > 500) {
             res.json(response.invalidParams("Wallet address array is too long."));
             return;
         }
