@@ -44,6 +44,7 @@ declare namespace Lottery {
     draw_id: string;
     lottery_pool_id: string;
     rewards: RewardItem[];
+    success: boolean;
   }
 
   interface DrawHistoryDTO {
