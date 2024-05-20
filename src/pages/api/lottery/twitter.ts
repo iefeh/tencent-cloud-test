@@ -6,6 +6,7 @@ import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import doTransaction from "@/lib/mongodb/transaction";
 import TwitterTopic from "@/lib/models/TwitterTopic";
 import UserLotteryPool from "@/lib/models/UserLotteryPool";
+import { increaseUserMoonBeam } from "@/lib/models/User";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(maybeAuthInterceptor).post(async (req, res) => {
@@ -57,8 +58,9 @@ async function createTwitterTopicReward(req: any, res: any) {
   await doTransaction(async session => {
     const opts = {session};
     await topic.save(opts);
+    await increaseUserMoonBeam(req.userId, 20, session);
     await UserLotteryPool.updateOne(
-      { user_id: req.UserId, lottery_pool_id: lottery_pool_id}, 
+      { user_id: req.userId, lottery_pool_id: lottery_pool_id}, 
       { twitter_topic_id: topicId },
       { upsert: true, session: session });
   });

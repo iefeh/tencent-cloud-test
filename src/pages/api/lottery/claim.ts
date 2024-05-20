@@ -22,7 +22,7 @@ const defaultErrorResponse = response.success({
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { draw_id, reward_id, lottery_pool_id } = req.body;
-  if (!reward_id || !lottery_pool_id || !draw_id) {
+  if (!lottery_pool_id || !draw_id) {
     res.json(response.invalidParams());
     return;
   }
@@ -31,45 +31,43 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     if (!lotteryPool || lotteryPool.end_time < Date.now()) {
       res.json(response.invalidParams({ message: "Invalid lottery pool id or lottery pool is closed." }));
     }
-    const lockKey = `claim_claim_lock:${draw_id}:${reward_id}`;
+    const lockKey = `claim_claim_lock:${draw_id}`;
     // 锁定用户抽奖资源10秒
     let interval: number = 10;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
       res.json(response.success("You are already claiming this reward, please try again later."))
     }
-    const drawHistory = await UserLotteryDrawHistory.findOne({ draw_id: draw_id, "rewards.reward_id": reward_id });
+    const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: draw_id });
     if (!drawHistory) {
       res.json(response.notFound({ message: "Cannot find a draw record for this claim."}));
     }
-    let reward: IUserLotteryRewardItem;
-    for (let item of drawHistory.rewards) {
-      if (item.reward_id === reward_id) {
-        reward = item;
-        break;
+    if (drawHistory.need_verify_twitter) {
+      const verifyResult = await verify(drawHistory.user_id, draw_id, lottery_pool_id);
+      if (!verifyResult.verified) {
+        res.json(response.success(verifyResult));
       }
     }
-    if (reward!.claimed) {
-      res.json(response.invalidParams({ message: "This reward is already claimed." }));
+    let rewards: IUserLotteryRewardItem[] = [];
+    if (reward_id) {
+      for (let item of drawHistory.rewards) {
+        if (item.reward_id === reward_id) {
+          rewards.push(item);
+          break;
+        }
+      }
     }
     else {
-      if (reward!.reward_claim_type === 1) {
-        //发放奖品时使用抽奖记录里面的user_id避免冒领奖品
-        const claimResult = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward_id);
-        res.json(response.success(claimResult));
-      }
-      else {
-        const verifyResult = await verify(drawHistory.user_id, reward_id, lottery_pool_id);
-        if (verifyResult.verified) {
-          const claimResult = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward_id);
-          res.json(response.success(claimResult));
-        }
-        else {
-          res.json(response.success(verifyResult));
-        }
-      }
-      res.json(response.success());
+      rewards = drawHistory.rewards;
     }
+    let claimResults: any[] = [];
+    for (let reward of rewards) {
+      if (!reward.claimed) {
+        const claimResult = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
+        claimResults.push(claimResult);
+      }
+    }
+    res.json(response.success(claimResults));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
@@ -116,7 +114,7 @@ async function updateLotteryDrawHistory(drawId: string, rewardId: string, update
     { arrayFilters: [{ "elem.reward_id": rewardId}], session: session });
 }
 
-async function verify(userId: string, rewardId: string, lotteryPoolId: string): Promise<any> {
+async function verify(userId: string, drawId: string, lotteryPoolId: string): Promise<any> {
   const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
   if (!userTwitter) {
     return {
@@ -139,7 +137,7 @@ async function verify(userId: string, rewardId: string, lotteryPoolId: string): 
     };
   }
   else {
-    const lockKey = `claim_reward_lock:${rewardId}:${userId}`;
+    const lockKey = `claim_reward_lock:${userId}:${drawId}`;
     // TweetTopic为3分钟
     let interval: number = 3 * 60;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
