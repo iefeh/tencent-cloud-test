@@ -38,6 +38,8 @@ export enum QuestType {
     SendDiscordMessage = "send_discord_message",
     // twitter的关注者数
     TwitterFollower = "twitter_follower",
+    // 数数SQL类任务
+    ThinkingDataQuery = "thinking_data_query",
     // 领取2048游戏券
     Claim2048Ticket = "claim_2048_ticket",
 }
@@ -65,6 +67,13 @@ export enum QuestRewardType {
     Fixed = "fixed",
     // 范围奖励，奖励数量特定于任务进行动态分配
     Range = "range",
+}
+
+export type ThinkingDataQuery = {
+    // 查询的SQL模版，该模版只支持传递一个参数，即用户id
+    sql_template: string;
+     // 任务地址
+    url: string;
 }
 
 // 发送discord消息(文本频道或者论坛回帖都适用.)
