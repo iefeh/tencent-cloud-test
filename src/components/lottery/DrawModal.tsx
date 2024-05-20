@@ -178,7 +178,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
     };
 
     const res = await drawAPI(data);
-    if (!!res.verified) {
+    if (!!res.success && !res.verified) {
       onDrawed?.(res);
     }
 
