@@ -173,7 +173,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
     const data = {
       lottery_pool_id: item?.lottery_pool_id!,
       draw_count: times,
-      lottery_ticket_cost: totalUsedTickets,
+      lottery_ticket_cost: s1TicketsCount,
       mb_cost: needMbs,
     };
 
@@ -228,9 +228,11 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 Please confirm the tickets and Moon Beams you would like to use for the lottery draw:
               </div>
 
-              <FreeTicketContent item={item} disabled={!isFreeTicketsEnabled} />
+              {isOpen && <FreeTicketContent item={item} disabled={!isFreeTicketsEnabled} />}
 
-              <S1TicketContent item={item} disabled={!isS1TicketsEnabled} onMinus={onMinus} onPlus={onPlus} />
+              {isOpen && (
+                <S1TicketContent item={item} disabled={!isS1TicketsEnabled} onMinus={onMinus} onPlus={onPlus} />
+              )}
 
               <div className="flex items-center mt-10">
                 <Image className="w-[3.25rem] h-[3.25rem]" src={mbImg} alt="" />

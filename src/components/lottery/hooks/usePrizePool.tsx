@@ -10,7 +10,7 @@ export default function usePrizePool() {
 
   async function queryPools() {
     const res = await queryPrizePoolListAPI();
-    setPoolIds(res.lottery_pool_ids || []);
+    setPoolIds(res?.lottery_pool_ids || []);
   }
 
   async function queryPoolInfo() {
@@ -20,8 +20,18 @@ export default function usePrizePool() {
     const res = await queryPrizePoolInfoAPI({ lottery_pool_id: id });
     setPoolInfo(res || null);
   }
+
+  function initData() {
+    setPoolIds([]);
+    setPoolInfo(null);
+  }
+
   useEffect(() => {
-    queryPools();
+    if (userInfo) {
+      queryPools();
+    } else {
+      initData();
+    }
   }, [userInfo]);
 
   useEffect(() => {
