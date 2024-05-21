@@ -42,6 +42,7 @@ const InitContent: FC<InitContentProps & ItemProps<Lottery.RewardDTO>> = ({ item
   }
 
   function onShareClick() {
+    // TODO 跳转twitter分享
     setState(RewardsState.WAIT_VERIFY);
   }
 
