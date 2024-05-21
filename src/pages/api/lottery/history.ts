@@ -1,9 +1,10 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {errorInterceptor} from '@/lib/middleware/error';
-import UserLotteryDrawHistory from "@/lib/models/UserLotteryDrawHistory";
+import { createRouter } from 'next-connect';
+
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { errorInterceptor } from '@/lib/middleware/error';
+import UserLotteryDrawHistory from '@/lib/models/UserLotteryDrawHistory';
+import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
