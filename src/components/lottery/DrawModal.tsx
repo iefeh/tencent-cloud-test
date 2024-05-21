@@ -81,7 +81,7 @@ const S1TicketContent: FC<TicketContentProps> = ({ count, maxCount, item, disabl
 
         <Image
           className="w-16 h-[5.625rem] object-contain relative z-0"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png"
+          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png"
           alt=""
           width={3507}
           height={4960}
@@ -124,6 +124,8 @@ const S1TicketContent: FC<TicketContentProps> = ({ count, maxCount, item, disabl
           onClick={onPlus}
         />
       </div>
+
+      {disabled && <div className="absolute w-full h-full bg-black/70 z-10"></div>}
     </div>
   );
 };
@@ -154,9 +156,10 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   const [loading, setLoading] = useState(false);
 
   const freeTicketCount = item?.user_free_lottery_ticket_amount || 0;
-  const maxUseS1TicketsCount = Math.max(times - freeTicketCount, 0);
+  const maxUseS1TicketsCount = Math.max(Math.min(times - freeTicketCount, item?.user_s1_lottery_ticket_amount || 0), 0);
 
-  const needMbs = Math.max(s1TicketsCount - (item?.user_s1_lottery_ticket_amount || 0), 0) * MBsPerDraw;
+  const needMbs = Math.max(times - s1TicketsCount - freeTicketCount, 0) * MBsPerDraw;
+  const isMBNotEnough = needMbs > (userInfo?.moon_beam || 0);
 
   function onMinus() {
     setS1TicketCount(Math.max(s1TicketsCount - 1, 0));
@@ -235,6 +238,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                   count={s1TicketsCount}
                   maxCount={maxUseS1TicketsCount}
                   item={item}
+                  disabled={maxUseS1TicketsCount < 1}
                   onMinus={onMinus}
                   onPlus={onPlus}
                 />
@@ -244,7 +248,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 <Image className="w-[3.25rem] h-[3.25rem]" src={mbImg} alt="" />
 
                 <div className="font-semakin ml-[0.5625rem]">
-                  <div className="text-[2rem] text-left">{needMbs}</div>
+                  <div className={cn(['text-[2rem] text-left', isMBNotEnough && 'text-[#BD0000]'])}>{needMbs}</div>
                   <div className="text-sm leading-none">Moon Beams</div>
                 </div>
               </div>
@@ -254,7 +258,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                   className="uppercase w-[18.5rem] h-9 mt-2"
                   label="Confirm"
                   actived
-                  disabled={!item || (!isFreeTicketsEnabled && !s1TicketsCount && needMbs > (userInfo?.moon_beam || 0))}
+                  disabled={!item || isMBNotEnough}
                   loading={loading}
                   onClick={onDraw}
                 />
