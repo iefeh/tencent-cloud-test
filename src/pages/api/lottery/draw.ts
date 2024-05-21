@@ -17,7 +17,7 @@ import {v4 as uuidv4} from "uuid";
 
 const defaultErrorResponse = response.success({
   verified: false,
-  tip: "Network busy, please try again later.",
+  message: "Network busy, please try again later.",
 })
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -141,13 +141,13 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   let nextSixDrawCumulativeProbabilities = 0;
   let result: IUserLotteryRewardItem[] = [];
   let availableRewards: LotteryRewardItem[] = [];
-  let granteedRewards: LotteryRewardItem[] = [];
+  let guaranteedRewards: LotteryRewardItem[] = [];
   // 筛选抽奖奖励, 如果抽奖次数不满足奖励门槛则去掉对应奖励
   for (let reward of lotteryPool!.rewards) {
     // 检查本次抽取是否满足保底次数, 如果是则添加奖品
-    for (let granteedDrawCount of reward.granted_draw_count) {
+    for (let granteedDrawCount of reward.guaranteed_draw_count) {
       if (lotteryPool!.total_draw_amount < granteedDrawCount && (lotteryPool!.total_draw_amount + drawCount) >= granteedDrawCount) {
-        granteedRewards.push(reward);
+        guaranteedRewards.push(reward);
       }
     }
     if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool!.total_draw_amount >= reward.min_reward_draw_amount))
@@ -166,10 +166,10 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     // 根据用户已抽取次数计算当前是第几抽
     let currentDrawNo = totalUserDrawAmount + i;
     if (currentDrawNo <= 3) {
-      currentRewardNeedVerify = getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, granteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      currentRewardNeedVerify = getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
     else {
-      currentRewardNeedVerify = getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, granteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      currentRewardNeedVerify = getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
     rewardNeedVerify = rewardNeedVerify || currentRewardNeedVerify;
   }
@@ -224,12 +224,12 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
 }
 
 // 抽奖结果计算, 并返回抽到的奖品是否需要验证
-function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], granteedRewards: LotteryRewardItem[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]): boolean {
+function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], guaranteedRewards: LotteryRewardItem[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]): boolean {
   let reward: LotteryRewardItem;
   let rewardNeedVerify: boolean = false;
   // 优先抽取保底避免无人抽中
-  if (granteedRewards && granteedRewards.length > 0) {
-    reward = granteedRewards.pop()!;
+  if (guaranteedRewards && guaranteedRewards.length > 0) {
+    reward = guaranteedRewards.pop()!;
   }
   else {
   // 如无保底, 则抽取常规奖品

@@ -16,7 +16,7 @@ import UserTwitter from '@/lib/models/UserTwitter';
 
 const defaultErrorResponse = response.success({
   verified: false,
-  tip: "Network busy, please try again later.",
+  message: "Network busy, please try again later.",
 })
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
