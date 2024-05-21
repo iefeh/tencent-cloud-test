@@ -30,14 +30,21 @@ interface InitContentProps {
 
 const InitContent: FC<InitContentProps & ItemProps<Lottery.RewardDTO>> = ({ item, onClaim }) => {
   const [state, setState] = useState<RewardsState>(RewardsState.NORMAL);
+  const [claimLoading, setClaimLoading] = useState(false);
   const needShareTwitter = (item?.rewards || []).some(
     (reward) => reward.reward_claim_type === 2 || reward.reward_claim_type === 3,
   );
 
   async function onClaimClick() {
     let res = false;
-    if (onClaim) res = await onClaim();
-    if (!res) return;
+
+    if (onClaim) {
+      setClaimLoading(true);
+      res = await onClaim();
+      setClaimLoading(false);
+    }
+    if (!!res) return;
+
     setState(RewardsState.WAIT_SHARE);
   }
 
@@ -65,7 +72,7 @@ const InitContent: FC<InitContentProps & ItemProps<Lottery.RewardDTO>> = ({ item
       <div className="flex items-center gap-x-[5.5rem] mt-5">
         {state === RewardsState.NORMAL ? (
           <>
-            <LGButton className="w-[18.5rem]" label="Claim" actived onClick={onClaimClick} />
+            <LGButton className="w-[18.5rem]" label="Claim" actived loading={claimLoading} onClick={onClaimClick} />
             <LGButton
               className="w-[18.5rem]"
               label="Share for 20 MOON BEAMS"
