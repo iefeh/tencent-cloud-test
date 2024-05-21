@@ -6,11 +6,12 @@ import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import LotteryPool, { LotteryRewardType } from '@/lib/models/LotteryPool';
 import TwitterTopicTweet from '@/lib/models/TwitterTopicTweet';
-import { increaseUserMoonBeam } from '@/lib/models/User';
+import User, { increaseUserMoonBeam, IUser } from '@/lib/models/User';
 import UserLotteryDrawHistory, {
     IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import UserTwitter from '@/lib/models/UserTwitter';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
@@ -63,14 +64,12 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     else {
       rewards = drawHistory.rewards;
     }
-    let claimResults: any[] = [];
     for (let reward of rewards) {
       if (!reward.claimed) {
-        const claimResultMessage = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
-        claimResults.push(claimResultMessage);
+        await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
       }
     }
-    res.json(response.success({ message: claimResults}));
+    res.json(response.success({ message: "You have claimed all the reward successfully!"}));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
@@ -82,30 +81,25 @@ async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lot
   const now = Date.now()
   switch (userReward.reward_type) {
     case LotteryRewardType.MoonBeam: {
+      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, rewardId, userReward.amount);
       await doTransaction( async session => {
+        await moonBeamAudit.save(session);
         await increaseUserMoonBeam(userId, userReward.amount, session);
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       }); 
-      return `You have claimed reward and received ${userReward.amount} mb.`;
     }
     case LotteryRewardType.LotteryTicket: {
       await doTransaction( async session => {
-        await UserLotteryPool.updateOne(
-          { user_id: userId, lottery_pool_id: lotteryPoolId}, 
-          { $inc: { free_lottery_ticket_amount: userReward.amount }},
-          { upsert: true, session: session }
+        await User.updateOne(
+          { user_id: userId },
+          { $inc: { lottery_ticket_amount: userReward.amount }},
+          { session: session }
         );
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       });
-      return `You have claimed reward and received ${userReward.amount} free lottery tickets.`;
-    }
-    case LotteryRewardType.NoPrize: {
-      await updateLotteryDrawHistory(drawId, rewardId, now);
-      return `Lucky next time.`;
     }
     default: {
       await updateLotteryDrawHistory(drawId, rewardId, now);
-      return `Please keep in touch, we will send you the rewards later.`;
     }
   }
 }
@@ -115,6 +109,19 @@ async function updateLotteryDrawHistory(drawId: string, rewardId: string, update
     { draw_id: drawId, "rewards.reward_id": rewardId }, 
     { "rewards.$[elem].claimed": true, update_time: updateTime }, 
     { arrayFilters: [{ "elem.reward_id": rewardId}], session: session });
+}
+
+function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number) {
+  let audit = new UserMoonBeamAudit({
+    user_id: userId,
+    type: UserMoonBeamAuditType.LuckyDraw,
+    moon_beam_delta: moonBeamAmount,
+    reward_taint: `lottery_pool_id:${lotteryPoolId},reward_id:${rewardId},user:${userId}`,
+    corr_id: rewardId,
+    extra_info: lotteryPoolId,
+    created_time: Date.now(),
+  });
+  return audit;
 }
 
 async function verify(userId: string, drawId: string, lotteryPoolId: string): Promise<any> {
