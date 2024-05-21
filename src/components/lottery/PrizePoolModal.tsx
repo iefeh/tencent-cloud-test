@@ -44,7 +44,7 @@ const PrizePoolModal: FC<Props & ItemProps<Lottery.Pool>> = ({ disclosure: { isO
             <ModalBody>
               <PrizePoolTimeoutInfo item={item} />
 
-              <div className="flex justify-between flex-wrap gap-x-16 mt-6">
+              <div className="flex justify-between flex-wrap gap-x-16 gap-y-4 mt-6">
                 {(item?.rewards || []).map((item, index) => (
                   <Reward key={index} item={item} />
                 ))}
