@@ -63,11 +63,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     let claimResults: any[] = [];
     for (let reward of rewards) {
       if (!reward.claimed) {
-        const claimResult = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
-        claimResults.push(claimResult);
+        const claimResultMessage = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
+        claimResults.push(claimResultMessage);
       }
     }
-    res.json(response.success(claimResults));
+    res.json(response.success({ message: claimResults}));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
@@ -83,7 +83,7 @@ async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lot
         await increaseUserMoonBeam(userId, userReward.amount, session);
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       }); 
-      return { message: `You have claimed reward and received ${userReward.amount} mb.` };
+      return `You have claimed reward and received ${userReward.amount} mb.`;
     }
     case LotteryRewardType.LotteryTicket: {
       await doTransaction( async session => {
@@ -94,15 +94,15 @@ async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lot
         );
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       });
-      return { message: `You have claimed reward and received ${userReward.amount} free lottery tickets.` };
+      return `You have claimed reward and received ${userReward.amount} free lottery tickets.`;
     }
     case LotteryRewardType.NoPrize: {
       await updateLotteryDrawHistory(drawId, rewardId, now);
-      return { message: `Lucky next time.` };
+      return `Lucky next time.`;
     }
     default: {
       await updateLotteryDrawHistory(drawId, rewardId, now);
-      return { message: `Please keep in touch, we will send you the rewards later.`};
+      return `Please keep in touch, we will send you the rewards later.`;
     }
   }
 }
@@ -119,14 +119,14 @@ async function verify(userId: string, drawId: string, lotteryPoolId: string): Pr
   if (!userTwitter) {
     return {
         verified: false,
-        tip: "You should connect your Twitter Account first."
+        message: "You should connect your Twitter Account first."
     };
   }
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId });
   if (!userLotteryPool || !userLotteryPool.twitter_topic_id) {
     return {
       verified: false,
-      tip: "You should share twitter topic first."
+      message: "You should post twitter topic first."
     };
   }
   let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: userLotteryPool.twitter_topic_id }, { _id: 0, tweeted_at: 1 });
@@ -144,7 +144,7 @@ async function verify(userId: string, drawId: string, lotteryPoolId: string): Pr
     if (!locked) {
         return {
             verified: false,
-            tip: `Verification is under a ${interval}s waiting period, please try again later.`,
+            message: `Verification is under a ${interval}s waiting period, please try again later.`,
         };
     }
     tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: userLotteryPool.twitter_topic_id }, { _id: 0, tweeted_at: 1 });
