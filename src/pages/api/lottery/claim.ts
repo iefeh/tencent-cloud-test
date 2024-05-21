@@ -69,7 +69,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
         await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
       }
     }
-    res.json(response.success({ message: "You have claimed all the reward successfully!"}));
+    res.json(response.success({ message: "Congratulations on claiming your lottery rewards."}));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
