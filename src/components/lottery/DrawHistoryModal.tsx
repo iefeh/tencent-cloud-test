@@ -82,7 +82,7 @@ const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                           <>
                             {item.rewards.map((reward, ri) => (
                               <div key={ri} className="mt-3">
-                                {reward.reward_name} +{reward.amount || '--'}
+                                {reward.reward_name}
                               </div>
                             ))}
                           </>

@@ -64,7 +64,11 @@ export const BadgeIcons = [
 ];
 
 export const enum LotteryRewardType {
-  TICKET = 'lottery_ticket',
+  MoonBeam = 'moon_beam',
+  LotteryTicket = 'lottery_ticket',
+  USDT = 'usdt',
+  NFT = 'nft',
+  NoPrize = 'no_prize',
 }
 
 export const enum RewardQuality {
