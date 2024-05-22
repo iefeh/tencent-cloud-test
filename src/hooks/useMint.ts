@@ -10,7 +10,7 @@ import { CURRENT_CHAIN_ID, MintState, WALLECT_NETWORKS } from '@/constant/mint';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 
-export default function useMint() {
+export default function useMint(contractAddress = process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!) {
   const { userInfo } = useContext(MobxContext);
   const {
     setState,
@@ -44,7 +44,7 @@ export default function useMint() {
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
-    contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
+    contract.current = new Contract(contractAddress, contractABI, signer.current);
   }
 
   function toastError(error: any, step = '') {
@@ -53,7 +53,7 @@ export default function useMint() {
   }
 
   const init = throttle(async function () {
-    console.log('mint contract address:', process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS);
+    console.log('mint contract address:', contractAddress);
     reset();
     if (!isConnected) return;
     toggleIsConnected(true);
