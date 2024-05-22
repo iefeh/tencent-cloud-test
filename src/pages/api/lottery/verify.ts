@@ -4,10 +4,11 @@ import { createRouter } from 'next-connect';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import { timeoutInterceptor } from '@/lib/middleware/timeout';
-import LotteryPool from '@/lib/models/LotteryPool';
+import { ILotteryPool } from '@/lib/models/LotteryPool';
 import TwitterTopicTweet from '@/lib/models/TwitterTopicTweet';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import UserTwitter from '@/lib/models/UserTwitter';
+import { getLotteryPoolById } from '@/lib/lottery/lottery';
 import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
 
@@ -25,17 +26,13 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
       res.json(response.invalidParams());
       return;
     }
-    const userId = req.userId!;
-    const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lottery_pool_id, deleted_time: null });
+    const userId = String(req.userId);
+    const lotteryPoolId = String(lottery_pool_id);
+    const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
     if (!lotteryPool) {
-      res.json(response.notFound("Cannot find the specific lottery pool."));
-      return;
-    }
-    const now = Date.now();
-    if (lotteryPool.start_time > now || lotteryPool.end_time <= now) {
       res.json(response.success({
         verified: false,
-        message: "Lottery pool is not available.",
+        message: "The lottery pool is not opened or has been closed.",
       }));
       return;
     }
@@ -47,7 +44,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
       }));
       return;
     }
-    const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lottery_pool_id });
+    const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lottery_pool_id, deleted_time: null });
     if (!userLotteryPool || !userLotteryPool.twitter_topic_id) {
       res.json(response.success({
         verified: false,

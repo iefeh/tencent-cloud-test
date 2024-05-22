@@ -19,7 +19,7 @@ router.use(maybeAuthInterceptor).post(async (req, res) => {
 async function createTwitterTopicReward(req: any, res: any): Promise<string> {
   const { must_contains_text,hash_tags,mention_usernames,reply_to_tweet_id,start_time,end_time,delay_seconds,retweet_excluded,quote_excluded, lottery_pool_id } = req.body;
   // 一个奖池只需要一个twitter topic, 如果已经存在则不再创建
-  const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id });
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id, deleted_time: null });
   if (userLotteryPool && userLotteryPool.twitter_topic_id) {
       return "";
   }
@@ -64,8 +64,12 @@ async function createTwitterTopicReward(req: any, res: any): Promise<string> {
     await topic.save(opts);
     await increaseUserMoonBeam(req.userId, 20, session);
     await UserLotteryPool.updateOne(
-      { user_id: req.userId, lottery_pool_id: lottery_pool_id}, 
-      { twitter_topic_id: topicId },
+      { user_id: req.userId, 
+        lottery_pool_id: lottery_pool_id}, 
+      { 
+        $set: { twitter_topic_id: topicId },
+        $setOnInsert: { created_time: Date.now() }
+      },
       { upsert: true, session: session });
   });
   return postUrl;

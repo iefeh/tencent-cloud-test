@@ -4,7 +4,8 @@ import { createRouter } from 'next-connect';
 import logger from '@/lib/logger/winstonLogger';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import LotteryPool, { LotteryRewardType } from '@/lib/models/LotteryPool';
+import { ILotteryPool, LotteryRewardType } from '@/lib/models/LotteryPool';
+import { getLotteryPoolById } from '@/lib/lottery/lottery';
 import TwitterTopicTweet from '@/lib/models/TwitterTopicTweet';
 import User, { increaseUserMoonBeam, IUser } from '@/lib/models/User';
 import UserLotteryDrawHistory, {
@@ -31,23 +32,25 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     return;
   }
   try {
-    const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lottery_pool_id });
-    if (!lotteryPool || lotteryPool.end_time < Date.now()) {
-      res.json(response.invalidParams({ message: "Invalid lottery pool id or lottery pool is closed." }));
+    const lotteryPoolId = String(lottery_pool_id);
+    const drawId = String(draw_id);
+    const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+    if (!lotteryPool) {
+      res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
     }
-    const lockKey = `claim_claim_lock:${draw_id}`;
+    const lockKey = `claim_claim_lock:${drawId}`;
     // 锁定用户抽奖资源10秒
     let interval: number = 10;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
       res.json(response.success("You are already claiming this reward, please try again later."))
     }
-    const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: draw_id });
+    const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: drawId });
     if (!drawHistory) {
       res.json(response.notFound({ message: "Cannot find a draw record for this claim."}));
     }
     if (drawHistory.need_verify_twitter) {
-      const verifyResult = await verify(drawHistory.user_id, draw_id, lottery_pool_id);
+      const verifyResult = await verify(drawHistory.user_id, drawId, lotteryPoolId);
       if (!verifyResult.verified) {
         res.json(response.success(verifyResult));
       }
@@ -66,7 +69,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     }
     for (let reward of rewards) {
       if (!reward.claimed) {
-        await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
+        await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, reward.reward_id);
       }
     }
     res.json(response.success({ message: "Congratulations on claiming your lottery rewards."}));
@@ -132,7 +135,7 @@ async function verify(userId: string, drawId: string, lotteryPoolId: string): Pr
         message: "You should connect your Twitter Account first."
     };
   }
-  const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId });
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
   if (!userLotteryPool || !userLotteryPool.twitter_topic_id) {
     return {
       verified: false,

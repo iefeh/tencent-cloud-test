@@ -3,20 +3,27 @@ import { createRouter } from 'next-connect';
 
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import LotteryPool from '@/lib/models/LotteryPool';
+import { ILotteryPool } from '@/lib/models/LotteryPool';
 import User from '@/lib/models/User';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import * as response from '@/lib/response/response';
+import { canClaimPremiumBenifits, getLotteryPoolById } from '@/lib/lottery/lottery';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const { lottery_pool_id } = req.query;
-  const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lottery_pool_id, deleted_time: null });
-  if (!lotteryPool) {
-    res.json(response.invalidParams("Cannot find the specified lottery pool!"));
+  if (!lottery_pool_id) {
+    res.json(response.invalidParams());
   }
-  const user = await User.findOne({ user_id: req.userId });
-  const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id });
+  const userId = String(req.userId);
+  const lotteryPoolId = String(lottery_pool_id);
+  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  if (!lotteryPool) {
+    res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+  }
+  const user = await User.findOne({ user_id: userId });
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
+  const notifiyPremiumBenifitsClaim = await canClaimPremiumBenifits(userId, lotteryPoolId);
   let restDrawAmount: string | number = 0;
   if (lotteryPool.draw_limits === null) {
     restDrawAmount = "infinite";
@@ -46,6 +53,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     user_s1_lottery_ticket_amount: user.lottery_ticket_amount,
     user_free_lottery_ticket_amount: userFreeLotteryTicketAmount,
     user_mb_amount: user.moon_beam,
+    can_claim_premium_benifits: notifiyPremiumBenifitsClaim,
     rewards: rewards
   }));
 });
