@@ -15,8 +15,8 @@ import NFT2Slide from '../NFT2Slide';
 
 export default function SwiperScreen() {
   const slides = [
-    NFT2Slide,
     LoyaltyProgramSlide,
+    NFT2Slide,
     InviteNewSlide,
     BadgeSlide,
     RaceSlide,
