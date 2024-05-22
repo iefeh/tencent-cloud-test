@@ -13,7 +13,7 @@ import { MobxContext } from '@/pages/_app';
 export default function useMint({
   contractAddress = process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!,
   chainId = process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!,
-}) {
+} = {}) {
   const { userInfo } = useContext(MobxContext);
   const {
     setState,
