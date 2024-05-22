@@ -84,26 +84,31 @@ export const LotteryBorders = {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/coppery.png',
     width: 154,
     height: 154,
+    color: '#64523E',
   },
   [RewardQuality.SILVER]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/silver.png',
     width: 154,
     height: 154,
+    color: '#C2C2C2',
   },
   [RewardQuality.BLUE]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/blue.png',
     width: 154,
     height: 154,
+    color: '#7DC8C6',
   },
   [RewardQuality.PURPLE]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/purple.png',
     width: 205,
     height: 194,
+    color: '#835CBF',
   },
   [RewardQuality.GOLDEN]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/golden.png',
     width: 228,
     height: 214,
+    color: 'linear-gradient(to right, #D9A970, #EFEBC5)',
   },
 };
 
