@@ -1,11 +1,12 @@
 import { BadgeIcons, LotteryMilestone } from '@/constant/lottery';
+import { queryDrawMilestoneAPI } from '@/http/services/lottery';
 import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
-  const currentDraws = item?.total_draw_amount || 0;
+  const [currentDraws, setCurrentDraws] = useState(0);
   const levels = LotteryMilestone.map((val, index) => ({
     level: index + 1,
     draws: val,
@@ -33,6 +34,15 @@ const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ classNam
   }
 
   const currentDrawsProgress = calcCurrentProgress();
+
+  async function queryDrawMilestone() {
+    const res = await queryDrawMilestoneAPI();
+    setCurrentDraws(res || 0);
+  }
+
+  useEffect(() => {
+    queryDrawMilestone();
+  }, []);
 
   return (
     <div className={cn(['w-[63.5625rem] h-[6.8125rem] relative', className])}>
