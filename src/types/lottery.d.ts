@@ -11,7 +11,7 @@ declare namespace Lottery {
     user_s1_lottery_ticket_amount: number;
     user_free_lottery_ticket_amount: number;
     user_mb_amount: number;
-    notify_premium_free_tickets_cliam: boolean;
+    can_claim_premium_benifits: boolean;
     rewards: RewardItem[];
   }
 

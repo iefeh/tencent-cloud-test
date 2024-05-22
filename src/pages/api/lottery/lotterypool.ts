@@ -7,8 +7,7 @@ import { ILotteryPool } from '@/lib/models/LotteryPool';
 import User from '@/lib/models/User';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import * as response from '@/lib/response/response';
-import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
-import { getLotteryPoolById } from '@/lib/lottery/lottery';
+import { canClaimPremiumBenifits, getLotteryPoolById } from '@/lib/lottery/lottery';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
@@ -24,19 +23,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   const user = await User.findOne({ user_id: userId });
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
-  const isPremium = await isPremiumSatisfied(userId);
-  let notifiyPremiumFreeTicketClaim = false;
-  if (isPremium && (!userLotteryPool || !userLotteryPool.premium_lottery_ticket_claimed)) {
-    await UserLotteryPool.updateOne(
-      { user_id: userId, lottery_pool_id: lotteryPoolId }, 
-      { 
-        $inc: { free_lottery_ticket_amount: 3 }, 
-        $set: { premium_lottery_ticket_claimed: true},
-        $setOnInsert: { created_time: Date.now() }
-      }, 
-      { upsert: true });
-      notifiyPremiumFreeTicketClaim = true;
-  }
+  const notifiyPremiumBenifitsClaim = await canClaimPremiumBenifits(userId, lotteryPoolId);
   let restDrawAmount: string | number = 0;
   if (lotteryPool.draw_limits === null) {
     restDrawAmount = "infinite";
@@ -66,7 +53,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     user_s1_lottery_ticket_amount: user.lottery_ticket_amount,
     user_free_lottery_ticket_amount: userFreeLotteryTicketAmount,
     user_mb_amount: user.moon_beam,
-    notify_premium_free_tickets_cliam: notifiyPremiumFreeTicketClaim,
+    can_claim_premium_benifits: notifiyPremiumBenifitsClaim,
     rewards: rewards
   }));
 });
