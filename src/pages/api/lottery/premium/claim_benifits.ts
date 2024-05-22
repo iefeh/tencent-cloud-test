@@ -10,7 +10,7 @@ import { canClaimPremiumBenifits, getLotteryPoolById } from '@/lib/lottery/lotte
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
-  const { lottery_pool_id } = req.query;
+  const { lottery_pool_id } = req.body;
   if (!lottery_pool_id) {
     res.json(response.invalidParams());
   }
