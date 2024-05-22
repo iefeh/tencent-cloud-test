@@ -45,7 +45,7 @@ function NFTMergePage({
   const selectedNFTsRef = useRef<NFTItem[]>([]);
   const [mergedNFT, setMergedNFT] = useState<NFTItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const { verifyMerge, merge } = useMint(process.env.NEXT_PUBLIC_NFT_LEVEL_2_CONTRACT_ADDRESS);
+  const { verifyMerge, merge } = useMint(process.env.NEXT_PUBLIC_NFT_LV1_MERGE_CONTRACT_ADDRESS);
   const loopTimer = useRef(0);
 
   const queryLatestMergeNFT = async (isRefresh = false) => {
