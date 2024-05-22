@@ -10,8 +10,14 @@ export interface IUserLotteryPool extends Document {
   lottery_pool_id: string;
   // 用户twitter话题id
   twitter_topic_id: string;
+  // 高阶通行证用户是否已领取奖励
+  premium_lottery_ticket_claimed: boolean;
   // 用户拥有的奖池抽奖券数量
   free_lottery_ticket_amount: number;
+  // 创建时间毫秒时间戳
+  created_time: number;
+  // 删除时间毫秒时间戳
+  deleted_time: number | null;
 }
 
 const UserLotteryPoolSchema = new Schema<IUserLotteryPool>({
@@ -19,7 +25,10 @@ const UserLotteryPoolSchema = new Schema<IUserLotteryPool>({
   draw_amount: { type: Number, default: 0 },
   lottery_pool_id: { type: String },
   twitter_topic_id: { type: String },
-  free_lottery_ticket_amount: { type: Number, default: 0 }
+  premium_lottery_ticket_claimed: { type: Boolean, default: false },
+  free_lottery_ticket_amount: { type: Number, default: 0 },
+  created_time: {type: Number, required: true},
+  deleted_time: {type: Number, default: null},
 });
 
 // 用户奖池记录
