@@ -56,6 +56,10 @@ const routeText: RouteMenu[] = [
         name: 'Referral Program',
         route: '/Profile/invite',
       },
+      {
+        name: '“More and $MORE” Lottery',
+        route: '/lottery',
+      },
     ],
   },
   {
@@ -96,10 +100,10 @@ const routeText: RouteMenu[] = [
       //   name: 'Mint Now',
       //   route: '/NFT/Mint',
       // },
-      // {
-      //   name: 'TETRA NFT Merge',
-      //   route: '/NFT/Merge',
-      // },
+      {
+        name: 'TETRA NFT Merge',
+        route: '/NFT/Merge',
+      },
     ],
   },
 ];

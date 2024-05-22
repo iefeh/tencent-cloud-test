@@ -12,13 +12,11 @@ import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 import BadgeSlide from '../BadgeSlide';
 import NFT2Slide from '../NFT2Slide';
-import DiscordInviteSlide from '../DiscordInviteSlide';
 
 export default function SwiperScreen() {
   const slides = [
-    // NFT2Slide，
     LoyaltyProgramSlide,
-    DiscordInviteSlide,
+    NFT2Slide,
     InviteNewSlide,
     BadgeSlide,
     RaceSlide,
