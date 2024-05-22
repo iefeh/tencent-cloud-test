@@ -9,11 +9,13 @@ export function queryPrizePoolInfoAPI(params: { lottery_pool_id: string }): Prom
   return http.get('/api/lottery/lotterypool', { params });
 }
 
-export function drawAPI(data: Lottery.DrawDTO): Promise<Lottery.DrawResDTO & InfoDTO> {
+export function drawAPI(data: Lottery.DrawDTO): Promise<Lottery.RewardResDTO & InfoDTO> {
   return http.post('/api/lottery/draw', JSON.stringify(data));
 }
 
-export function queryDrawHistoryAPI(params: { lottery_pool_id: string }): Promise<Lottery.RewardDTO[]> {
+export function queryDrawHistoryAPI(params: {
+  lottery_pool_id: string;
+}): Promise<{ drawHistory: Lottery.DrawHistoryDTO[] }> {
   return http.get('/api/lottery/history', { params });
 }
 

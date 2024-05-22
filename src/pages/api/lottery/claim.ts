@@ -1,28 +1,32 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import * as Sentry from "@sentry/nextjs";
-import doTransaction from "@/lib/mongodb/transaction";
-import {errorInterceptor} from '@/lib/middleware/error';
-import logger from "@/lib/logger/winstonLogger";
-import LotteryPool, { LotteryRewardType } from "@/lib/models/LotteryPool";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import { redis } from "@/lib/redis/client";
-import TwitterTopicTweet from "@/lib/models/TwitterTopicTweet";
-import { increaseUserMoonBeam } from "@/lib/models/User";
-import UserLotteryPool from "@/lib/models/UserLotteryPool";
-import UserLotteryDrawHistory, { IUserLotteryRewardItem } from "@/lib/models/UserLotteryDrawHistory";
+import { createRouter } from 'next-connect';
+
+import logger from '@/lib/logger/winstonLogger';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { errorInterceptor } from '@/lib/middleware/error';
+import LotteryPool, { LotteryRewardType } from '@/lib/models/LotteryPool';
+import TwitterTopicTweet from '@/lib/models/TwitterTopicTweet';
+import User, { increaseUserMoonBeam, IUser } from '@/lib/models/User';
+import UserLotteryDrawHistory, {
+    IUserLotteryRewardItem
+} from '@/lib/models/UserLotteryDrawHistory';
+import UserLotteryPool from '@/lib/models/UserLotteryPool';
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import UserTwitter from '@/lib/models/UserTwitter';
+import doTransaction from '@/lib/mongodb/transaction';
+import { redis } from '@/lib/redis/client';
+import * as response from '@/lib/response/response';
+import * as Sentry from '@sentry/nextjs';
 
 const defaultErrorResponse = response.success({
   verified: false,
-  tip: "Network busy, please try again later.",
+  message: "Network busy, please try again later.",
 })
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { draw_id, reward_id, lottery_pool_id } = req.body;
-  if (!reward_id || !lottery_pool_id || !draw_id) {
+  if (!lottery_pool_id || !draw_id) {
     res.json(response.invalidParams());
     return;
   }
@@ -31,45 +35,41 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     if (!lotteryPool || lotteryPool.end_time < Date.now()) {
       res.json(response.invalidParams({ message: "Invalid lottery pool id or lottery pool is closed." }));
     }
-    const lockKey = `claim_claim_lock:${draw_id}:${reward_id}`;
+    const lockKey = `claim_claim_lock:${draw_id}`;
     // 锁定用户抽奖资源10秒
     let interval: number = 10;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
       res.json(response.success("You are already claiming this reward, please try again later."))
     }
-    const drawHistory = await UserLotteryDrawHistory.findOne({ draw_id: draw_id, "rewards.reward_id": reward_id });
+    const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: draw_id });
     if (!drawHistory) {
       res.json(response.notFound({ message: "Cannot find a draw record for this claim."}));
     }
-    let reward: IUserLotteryRewardItem;
-    for (let item of drawHistory.rewards) {
-      if (item.reward_id === reward_id) {
-        reward = item;
-        break;
+    if (drawHistory.need_verify_twitter) {
+      const verifyResult = await verify(drawHistory.user_id, draw_id, lottery_pool_id);
+      if (!verifyResult.verified) {
+        res.json(response.success(verifyResult));
       }
     }
-    if (reward!.claimed) {
-      res.json(response.invalidParams({ message: "This reward is already claimed." }));
+    let rewards: IUserLotteryRewardItem[] = [];
+    if (reward_id) {
+      for (let item of drawHistory.rewards) {
+        if (item.reward_id === reward_id) {
+          rewards.push(item);
+          break;
+        }
+      }
     }
     else {
-      if (reward!.reward_claim_type === 1) {
-        //发放奖品时使用抽奖记录里面的user_id避免冒领奖品
-        const claimResult = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward_id);
-        res.json(response.success(claimResult));
-      }
-      else {
-        const verifyResult = await verify(drawHistory.user_id, reward_id, lottery_pool_id);
-        if (verifyResult.verified) {
-          const claimResult = await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward_id);
-          res.json(response.success(claimResult));
-        }
-        else {
-          res.json(response.success(verifyResult));
-        }
-      }
-      res.json(response.success());
+      rewards = drawHistory.rewards;
     }
+    for (let reward of rewards) {
+      if (!reward.claimed) {
+        await performClaimLotteryReward(reward!, lottery_pool_id, draw_id, drawHistory.user_id, reward.reward_id);
+      }
+    }
+    res.json(response.success({ message: "Congratulations on claiming your lottery rewards."}));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
@@ -81,30 +81,25 @@ async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lot
   const now = Date.now()
   switch (userReward.reward_type) {
     case LotteryRewardType.MoonBeam: {
+      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, rewardId, userReward.amount);
       await doTransaction( async session => {
+        await moonBeamAudit.save(session);
         await increaseUserMoonBeam(userId, userReward.amount, session);
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       }); 
-      return { message: `You have claimed reward and received ${userReward.amount} mb.` };
     }
     case LotteryRewardType.LotteryTicket: {
       await doTransaction( async session => {
-        await UserLotteryPool.updateOne(
-          { user_id: userId, lottery_pool_id: lotteryPoolId}, 
-          { $inc: { free_lottery_ticket_amount: userReward.amount }},
-          { upsert: true, session: session }
+        await User.updateOne(
+          { user_id: userId },
+          { $inc: { lottery_ticket_amount: userReward.amount }},
+          { session: session }
         );
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       });
-      return { message: `You have claimed reward and received ${userReward.amount} free lottery tickets.` };
-    }
-    case LotteryRewardType.NoPrize: {
-      await updateLotteryDrawHistory(drawId, rewardId, now);
-      return { message: `Lucky next time.` };
     }
     default: {
       await updateLotteryDrawHistory(drawId, rewardId, now);
-      return { message: `Please keep in touch, we will send you the rewards later.`};
     }
   }
 }
@@ -116,19 +111,32 @@ async function updateLotteryDrawHistory(drawId: string, rewardId: string, update
     { arrayFilters: [{ "elem.reward_id": rewardId}], session: session });
 }
 
-async function verify(userId: string, rewardId: string, lotteryPoolId: string): Promise<any> {
+function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number) {
+  let audit = new UserMoonBeamAudit({
+    user_id: userId,
+    type: UserMoonBeamAuditType.LuckyDraw,
+    moon_beam_delta: moonBeamAmount,
+    reward_taint: `lottery_pool_id:${lotteryPoolId},reward_id:${rewardId},user:${userId}`,
+    corr_id: rewardId,
+    extra_info: lotteryPoolId,
+    created_time: Date.now(),
+  });
+  return audit;
+}
+
+async function verify(userId: string, drawId: string, lotteryPoolId: string): Promise<any> {
   const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
   if (!userTwitter) {
     return {
         verified: false,
-        tip: "You should connect your Twitter Account first."
+        message: "You should connect your Twitter Account first."
     };
   }
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId });
   if (!userLotteryPool || !userLotteryPool.twitter_topic_id) {
     return {
       verified: false,
-      tip: "You should share twitter topic first."
+      message: "You should post twitter topic first."
     };
   }
   let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: userLotteryPool.twitter_topic_id }, { _id: 0, tweeted_at: 1 });
@@ -139,14 +147,14 @@ async function verify(userId: string, rewardId: string, lotteryPoolId: string): 
     };
   }
   else {
-    const lockKey = `claim_reward_lock:${rewardId}:${userId}`;
+    const lockKey = `claim_reward_lock:${userId}:${drawId}`;
     // TweetTopic为3分钟
     let interval: number = 3 * 60;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
         return {
             verified: false,
-            tip: `Verification is under a ${interval}s waiting period, please try again later.`,
+            message: `Verification is under a ${interval}s waiting period, please try again later.`,
         };
     }
     tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: userLotteryPool.twitter_topic_id }, { _id: 0, tweeted_at: 1 });

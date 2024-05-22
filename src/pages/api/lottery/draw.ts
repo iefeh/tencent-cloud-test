@@ -1,23 +1,26 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import doTransaction from "@/lib/mongodb/transaction";
-import * as response from "@/lib/response/response";
-import * as Sentry from "@sentry/nextjs";
-import {errorInterceptor} from '@/lib/middleware/error';
-import logger from "@/lib/logger/winstonLogger";
-import LotteryPool, { ILotteryPool, LotteryRewardItem } from "@/lib/models/LotteryPool";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {promiseSleep} from "@/lib/common/sleep";
-import { redis } from "@/lib/redis/client";
-import User, { IUser } from "@/lib/models/User";
-import UserLotteryDrawHistory, { IUserLotteryRewardItem } from "@/lib/models/UserLotteryDrawHistory";
-import UserLotteryPool, { IUserLotteryPool } from "@/lib/models/UserLotteryPool";
-import { Metric, incrUserMetric } from "@/lib/models/UserMetrics";
-import {v4 as uuidv4} from "uuid";
+import { createRouter } from 'next-connect';
+import { v4 as uuidv4 } from 'uuid';
+
+import { promiseSleep } from '@/lib/common/sleep';
+import logger from '@/lib/logger/winstonLogger';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { errorInterceptor } from '@/lib/middleware/error';
+import LotteryPool, { ILotteryPool, LotteryRewardItem } from '@/lib/models/LotteryPool';
+import User, { IUser } from '@/lib/models/User';
+import UserLotteryDrawHistory, {
+    IUserLotteryRewardItem
+} from '@/lib/models/UserLotteryDrawHistory';
+import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
+import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
+import doTransaction from '@/lib/mongodb/transaction';
+import { redis } from '@/lib/redis/client';
+import * as response from '@/lib/response/response';
+import * as Sentry from '@sentry/nextjs';
 
 const defaultErrorResponse = response.success({
   verified: false,
-  tip: "Network busy, please try again later.",
+  message: "Network busy, please try again later.",
 })
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -141,13 +144,13 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   let nextSixDrawCumulativeProbabilities = 0;
   let result: IUserLotteryRewardItem[] = [];
   let availableRewards: LotteryRewardItem[] = [];
-  let granteedRewards: LotteryRewardItem[] = [];
+  let guaranteedRewards: LotteryRewardItem[] = [];
   // 筛选抽奖奖励, 如果抽奖次数不满足奖励门槛则去掉对应奖励
   for (let reward of lotteryPool!.rewards) {
     // 检查本次抽取是否满足保底次数, 如果是则添加奖品
-    for (let granteedDrawCount of reward.granted_draw_count) {
+    for (let granteedDrawCount of reward.guaranteed_draw_count) {
       if (lotteryPool!.total_draw_amount < granteedDrawCount && (lotteryPool!.total_draw_amount + drawCount) >= granteedDrawCount) {
-        granteedRewards.push(reward);
+        guaranteedRewards.push(reward);
       }
     }
     if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool!.total_draw_amount >= reward.min_reward_draw_amount))
@@ -159,16 +162,19 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   const nextSixThresholds = availableRewards.map(reward => (nextSixDrawCumulativeProbabilities += reward.next_six_draw_probability));
   const totalUserDrawAmount = userLotteryPool? userLotteryPool.draw_amount % 10 : 0;
   let itemInventoryDeltaMap: Map<string, number> = new Map<string, number>();
+  let rewardNeedVerify: boolean = false;
+  let currentRewardNeedVerify: boolean = false;
   // 执行抽奖, 每次抽奖单独判断概率
   for (let i = 1; i<= drawCount; i++) {
     // 根据用户已抽取次数计算当前是第几抽
     let currentDrawNo = totalUserDrawAmount + i;
     if (currentDrawNo <= 3) {
-      getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, granteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      currentRewardNeedVerify = getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
     else {
-      getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, granteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      currentRewardNeedVerify = getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
+    rewardNeedVerify = rewardNeedVerify || currentRewardNeedVerify;
   }
   // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
   const drawId = uuidv4();
@@ -205,6 +211,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       user_id: userId,
       lottery_pool_id: lotteryPoolId,
       rewards: result,
+      need_verify_twitter: rewardNeedVerify,
       update_time: now
     });
     await userDrawHistory.save();
@@ -219,11 +226,13 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   }
 }
 
-function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], granteedRewards: LotteryRewardItem[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]) {
+// 抽奖结果计算, 并返回抽到的奖品是否需要验证
+function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], guaranteedRewards: LotteryRewardItem[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]): boolean {
   let reward: LotteryRewardItem;
+  let rewardNeedVerify: boolean = false;
   // 优先抽取保底避免无人抽中
-  if (granteedRewards && granteedRewards.length > 0) {
-    reward = granteedRewards.pop()!;
+  if (guaranteedRewards && guaranteedRewards.length > 0) {
+    reward = guaranteedRewards.pop()!;
   }
   else {
   // 如无保底, 则抽取常规奖品
@@ -241,6 +250,10 @@ function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: numb
       }
     }
   }
+  // 如果存在需要验证的奖品则返回true
+  if (reward!.reward_claim_type === 2 || reward!.reward_claim_type === 3) {
+    rewardNeedVerify = true;
+  }
   result.push({
     item_id: reward!.item_id,
     reward_id: uuidv4(),
@@ -252,7 +265,7 @@ function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: numb
     reward_claim_type: reward!.reward_claim_type, 
     amount: reward!.amount
   });
-  return;
+  return rewardNeedVerify;
 }
 
 // this will run if none of the above matches

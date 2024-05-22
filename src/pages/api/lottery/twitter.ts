@@ -1,23 +1,28 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import {v4 as uuidv4} from "uuid";
-import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import doTransaction from "@/lib/mongodb/transaction";
-import TwitterTopic from "@/lib/models/TwitterTopic";
-import UserLotteryPool from "@/lib/models/UserLotteryPool";
+import { createRouter } from 'next-connect';
+import { v4 as uuidv4 } from 'uuid';
+
+import { maybeAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import TwitterTopic from '@/lib/models/TwitterTopic';
+import { increaseUserMoonBeam } from '@/lib/models/User';
+import UserLotteryPool from '@/lib/models/UserLotteryPool';
+import doTransaction from '@/lib/mongodb/transaction';
+import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(maybeAuthInterceptor).post(async (req, res) => {
-  if (!req.body.reward_id) {
-      res.json(response.invalidParams());
-  }
-  await createTwitterTopicReward(req, res);
-  res.json(response.success());
+  let postUrl = await createTwitterTopicReward(req, res);
+  // 如果用户在当前奖池已经创建过twitter topic则返回空url
+  res.json(response.success({ postUrl: postUrl }));
 });
 
-async function createTwitterTopicReward(req: any, res: any) {
+async function createTwitterTopicReward(req: any, res: any): Promise<string> {
   const { must_contains_text,hash_tags,mention_usernames,reply_to_tweet_id,start_time,end_time,delay_seconds,retweet_excluded,quote_excluded, lottery_pool_id } = req.body;
+  // 一个奖池只需要一个twitter topic, 如果已经存在则不再创建
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id });
+  if (userLotteryPool && userLotteryPool.twitter_topic_id) {
+      return "";
+  }
   var postUrl = "https://twitter.com/intent/post?";
   let hasAndOperator = false;
   if (mention_usernames && mention_usernames.length > 0) {
@@ -57,9 +62,11 @@ async function createTwitterTopicReward(req: any, res: any) {
   await doTransaction(async session => {
     const opts = {session};
     await topic.save(opts);
+    await increaseUserMoonBeam(req.userId, 20, session);
     await UserLotteryPool.updateOne(
-      { user_id: req.UserId, lottery_pool_id: lottery_pool_id}, 
+      { user_id: req.userId, lottery_pool_id: lottery_pool_id}, 
       { twitter_topic_id: topicId },
       { upsert: true, session: session });
   });
+  return postUrl;
 }

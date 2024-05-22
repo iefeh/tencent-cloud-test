@@ -34,6 +34,8 @@ export interface IUserLotteryDrawHistory extends Document {
     lottery_pool_id: string;
     // 抽中奖品
     rewards: IUserLotteryRewardItem[];
+    // 奖品是否需要验证twitter
+    need_verify_twitter: boolean;
     // 更新时间毫秒时间戳
     updated_time: number,
     // 删除时间毫秒时间戳
@@ -46,6 +48,7 @@ const UserLotteryDrawHistorySchema = new Schema<IUserLotteryDrawHistory>({
     user_id: { type: String},
     lottery_pool_id: { type: String },
     rewards: { type: Schema.Types.Mixed },
+    need_verify_twitter: { type: Boolean },
     updated_time: { type: Number },
     deleted_time: { type: Number }
 });

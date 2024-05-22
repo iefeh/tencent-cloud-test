@@ -4,7 +4,6 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC, useState } from 'react';
 import Reward from './Reward';
-import { throttle } from 'lodash';
 import { claimRewardAPI } from '@/http/services/lottery';
 
 interface Props {
@@ -25,23 +24,34 @@ const enum RewardsState {
   WAIT_VERIFY,
 }
 
-const InitContent: FC<ItemProps<Lottery.DrawResDTO>> = ({ item }) => {
+interface InitContentProps {
+  onClaim?: () => boolean | Promise<boolean>;
+}
+
+const InitContent: FC<InitContentProps & ItemProps<Lottery.RewardDTO>> = ({ item, onClaim }) => {
   const [state, setState] = useState<RewardsState>(RewardsState.NORMAL);
-  const [loading, setLoading] = useState(false);
+  const [claimLoading, setClaimLoading] = useState(false);
+  const needShareTwitter = (item?.rewards || []).some(
+    (reward) => reward.reward_claim_type === 2 || reward.reward_claim_type === 3,
+  );
 
-  const onClaim = throttle(async () => {
-    setLoading(true);
+  async function onClaimClick() {
+    let res = false;
 
-    const data = {
-      draw_id: item?.draw_id!,
-      lottery_pool_id: item?.lottery_pool_id!,
-      reward_id: item?.rewards[0].item_id!,
-    };
-    const res = await claimRewardAPI(data);
-    setLoading(false);
-
+    if (onClaim) {
+      setClaimLoading(true);
+      res = await onClaim();
+      setClaimLoading(false);
+    }
     if (!!res) return;
-  }, 500);
+
+    setState(RewardsState.WAIT_SHARE);
+  }
+
+  function onShareClick() {
+    // TODO 跳转twitter分享
+    setState(RewardsState.WAIT_VERIFY);
+  }
 
   return (
     <>
@@ -81,26 +91,22 @@ const InitContent: FC<ItemProps<Lottery.DrawResDTO>> = ({ item }) => {
       <div className="flex items-center gap-x-[5.5rem] mt-5">
         {state === RewardsState.NORMAL ? (
           <>
-            <LGButton className="w-[18.5rem] uppercase" label="Claim" actived loading={loading} onClick={onClaim} />
+            <LGButton className="w-[18.5rem]" label="Claim" actived loading={claimLoading} onClick={onClaimClick} />
             <LGButton
-              className="w-[18.5rem] uppercase"
+              className="w-[18.5rem]"
               label="Share for 20 MOON BEAMS"
               actived
-              onClick={() => setState(RewardsState.WAIT_SHARE)}
+              disabled={!needShareTwitter}
+              onClick={onShareClick}
             />
           </>
         ) : state === RewardsState.WAIT_SHARE ? (
           <>
-            <LGButton
-              className="w-[18.5rem] uppercase"
-              label="Share on Twitter"
-              actived
-              onClick={() => setState(RewardsState.WAIT_VERIFY)}
-            />
+            <LGButton className="w-[18.5rem]" label="Verify" actived />
           </>
         ) : (
           <>
-            <LGButton className="w-[18.5rem] uppercase" label="Verify" actived />
+            <LGButton className="w-[18.5rem]" label="Confirm" actived />
           </>
         )}
       </div>
@@ -108,7 +114,16 @@ const InitContent: FC<ItemProps<Lottery.DrawResDTO>> = ({ item }) => {
   );
 };
 
-const RewardsModal: FC<Props & ItemProps<Lottery.DrawResDTO>> = ({ disclosure: { isOpen, onOpenChange }, item }) => {
+const RewardsModal: FC<Props & ItemProps<Lottery.RewardResDTO>> = ({ disclosure: { isOpen, onOpenChange }, item }) => {
+  async function onClaim() {
+    const data = {
+      draw_id: item?.draw_id!,
+      lottery_pool_id: item?.lottery_pool_id!,
+    };
+    const res = await claimRewardAPI(data);
+    return !res;
+  }
+
   return (
     <Modal
       backdrop="blur"
@@ -132,7 +147,7 @@ const RewardsModal: FC<Props & ItemProps<Lottery.DrawResDTO>> = ({ disclosure: {
             </ModalHeader>
 
             <ModalBody>
-              <InitContent item={item} />
+              <InitContent item={item} onClaim={onClaim} />
             </ModalBody>
           </>
         )}

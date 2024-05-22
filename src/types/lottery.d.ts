@@ -28,6 +28,12 @@ declare namespace Lottery {
     rewards: RewardItem[];
   }
 
+  interface ClaimReqDTO {
+    draw_id: string;
+    lottery_pool_id: string;
+    reward_id?: string;
+  }
+
   interface DrawDTO {
     lottery_pool_id: string;
     draw_count: number;
@@ -35,18 +41,18 @@ declare namespace Lottery {
     mb_cost: number;
   }
 
-  interface DrawResDTO {
-    available_draw_time: number;
+  interface RewardResDTO {
     draw_id: string;
     lottery_pool_id: string;
-    message: string;
     rewards: RewardItem[];
     success: boolean;
   }
 
-  interface ClaimReqDTO {
+  interface DrawHistoryDTO {
     draw_id: string;
+    draw_time: number;
     lottery_pool_id: string;
-    reward_id: string;
+    rewards: RewardItem[];
+    user_id: string;
   }
 }

@@ -1,12 +1,10 @@
-import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
-import Image from 'next/image';
 import { FC, useEffect, useRef, useState } from 'react';
-import Reward from './Reward';
 import useBScroll from '@/hooks/useBScroll';
 import { throttle } from 'lodash';
 import { queryDrawHistoryAPI } from '@/http/services/lottery';
+import dayjs from 'dayjs';
 
 interface Props {
   disclosure: {
@@ -20,25 +18,28 @@ interface Props {
   };
 }
 
-const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({ disclosure: { isOpen, onOpenChange }, item }) => {
+const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({
+  disclosure: { isOpen, onOpenChange },
+  item: poolInfo,
+}) => {
   const { scrollRef, bsRef } = useBScroll({ scrollX: false, scrollY: true, pullUpLoad: true });
-  const [data, setData] = useState<Lottery.RewardDTO[]>(Array(20).fill(null));
+  const [data, setData] = useState<Lottery.DrawHistoryDTO[]>(Array(20).fill(null));
 
   const queryHistory = throttle(async () => {
-    const params = { lottery_pool_id: item?.lottery_pool_id! };
+    const params = { lottery_pool_id: poolInfo?.lottery_pool_id! };
     const res = await queryDrawHistoryAPI(params);
-    setData(res || []);
+    setData(res?.drawHistory || []);
   });
 
   useEffect(() => {
-    if (isOpen) {
-      // queryHistory();
+    if (isOpen && poolInfo) {
+      queryHistory();
     } else {
-      // setData([]);
+      setData([]);
     }
 
     setTimeout(() => bsRef.current?.refresh(), 0);
-  }, [isOpen]);
+  }, [isOpen, poolInfo]);
 
   return (
     <Modal
@@ -68,14 +69,24 @@ const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({ disclosure: { i
                   {data.map((item, index) => (
                     <li key={index} className="flex justify-between border-white [&+li]:border-t-1 py-3 pl-6 pr-5">
                       <div className="text-left">
-                        <div className="text-lg font-semibold">DRAW 3 TIMES</div>
-                        <div className="text-sm text-[#666666]">2024-04-04</div>
+                        <div className="text-lg font-semibold">DRAW 1 TIMES</div>
+                        <div className="text-sm text-[#666666]">
+                          {item.draw_time ? dayjs(item.draw_time).format('YYYY-MM-DD') : '--'}
+                        </div>
                       </div>
 
                       <div className="text-sm leading-none text-[#C2C2C2] text-right">
-                        <div className="text-[#64523E]">No Prize This Time,Give It Another Shot!</div>
-                        <div className="mt-3">Moon Beams +5</div>
-                        <div className="mt-3">Lottery Ticket x1</div>
+                        {item.rewards.length < 1 ? (
+                          <div className="text-[#64523E]">No Prize This Time,Give It Another Shot!</div>
+                        ) : (
+                          <>
+                            {item.rewards.map((reward, ri) => (
+                              <div key={ri} className="mt-3">
+                                {reward.reward_name}
+                              </div>
+                            ))}
+                          </>
+                        )}
                       </div>
                     </li>
                   ))}

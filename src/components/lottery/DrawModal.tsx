@@ -12,8 +12,11 @@ import minusIconImg from 'img/nft/mint/icon_minus.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
 import { drawAPI } from '@/http/services/lottery';
+import { toast } from 'react-toastify';
 
 interface TicketContentProps extends ItemProps<Lottery.Pool> {
+  count?: number;
+  maxCount?: number;
   disabled?: boolean;
   onMinus?: () => void;
   onPlus?: () => void;
@@ -62,7 +65,7 @@ const FreeTicketContent: FC<TicketContentProps> = ({ item, disabled }) => {
   );
 };
 
-const S1TicketContent: FC<TicketContentProps> = ({ item, disabled, onMinus, onPlus }) => {
+const S1TicketContent: FC<TicketContentProps> = ({ count, maxCount, item, disabled, onMinus, onPlus }) => {
   return (
     <div className="flex justify-between items-center w-full mt-7 font-semakin relative">
       <div className="text-2xl">Optional use</div>
@@ -78,7 +81,7 @@ const S1TicketContent: FC<TicketContentProps> = ({ item, disabled, onMinus, onPl
 
         <Image
           className="w-16 h-[5.625rem] object-contain relative z-0"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png"
+          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png"
           alt=""
           width={3507}
           height={4960}
@@ -107,7 +110,7 @@ const S1TicketContent: FC<TicketContentProps> = ({ item, disabled, onMinus, onPl
           />
 
           <div className="font-semakin text-2xl">
-            {to2Digit(item?.user_s1_lottery_ticket_amount)}/{to2Digit(item?.draw_limits)}
+            {to2Digit(count || 0)}/{to2Digit(maxCount || 0)}
           </div>
         </div>
 
@@ -121,6 +124,8 @@ const S1TicketContent: FC<TicketContentProps> = ({ item, disabled, onMinus, onPl
           onClick={onPlus}
         />
       </div>
+
+      {disabled && <div className="absolute w-full h-full bg-black/70 z-10"></div>}
     </div>
   );
 };
@@ -136,7 +141,7 @@ interface Props {
     getDisclosureProps: (props?: any) => any;
   };
   times: number;
-  onDrawed?: (data: Lottery.DrawResDTO) => void;
+  onDrawed?: (data: Lottery.RewardResDTO) => void;
 }
 
 const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
@@ -146,25 +151,22 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   onDrawed,
 }) => {
   const { userInfo } = useUserContext();
-  const isFreeTicketsEnabled = (item?.user_free_lottery_ticket_amount || 0) >= times;
-  const isS1TicketsEnabled = (item?.user_s1_lottery_ticket_amount || 0) > 0;
+  const isFreeTicketsEnabled = (item?.user_free_lottery_ticket_amount || 0) > 0;
   const [s1TicketsCount, setS1TicketCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  let needMbs = 0;
-  const totalUsedTickets = s1TicketsCount + (item?.user_free_lottery_ticket_amount || 0);
-  if (!isFreeTicketsEnabled) {
-    needMbs = Math.max(times - totalUsedTickets, 0) * MBsPerDraw;
-  }
+  const freeTicketCount = item?.user_free_lottery_ticket_amount || 0;
+  const maxUseS1TicketsCount = Math.max(Math.min(times - freeTicketCount, item?.user_s1_lottery_ticket_amount || 0), 0);
+
+  const needMbs = Math.max(times - s1TicketsCount - freeTicketCount, 0) * MBsPerDraw;
+  const isMBNotEnough = needMbs > (userInfo?.moon_beam || 0);
 
   function onMinus() {
-    if (!isS1TicketsEnabled) return;
     setS1TicketCount(Math.max(s1TicketsCount - 1, 0));
   }
 
   function onPlus() {
-    if (!isS1TicketsEnabled) return;
-    setS1TicketCount(Math.min(s1TicketsCount + 1, item?.draw_limits || 0));
+    setS1TicketCount(Math.min(s1TicketsCount + 1, maxUseS1TicketsCount || 0));
   }
 
   const onDraw = throttle(async () => {
@@ -179,6 +181,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
     const res = await drawAPI(data);
     if (!!res.success && !res.verified) {
+      toast.success(res.message);
       onDrawed?.(res);
     }
 
@@ -228,15 +231,24 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 Please confirm the tickets and Moon Beams you would like to use for the lottery draw:
               </div>
 
-              <FreeTicketContent item={item} disabled={!isFreeTicketsEnabled} />
+              {isOpen && <FreeTicketContent item={item} disabled={!isFreeTicketsEnabled} />}
 
-              <S1TicketContent item={item} disabled={!isS1TicketsEnabled} onMinus={onMinus} onPlus={onPlus} />
+              {isOpen && (
+                <S1TicketContent
+                  count={s1TicketsCount}
+                  maxCount={maxUseS1TicketsCount}
+                  item={item}
+                  disabled={maxUseS1TicketsCount < 1}
+                  onMinus={onMinus}
+                  onPlus={onPlus}
+                />
+              )}
 
               <div className="flex items-center mt-10">
                 <Image className="w-[3.25rem] h-[3.25rem]" src={mbImg} alt="" />
 
                 <div className="font-semakin ml-[0.5625rem]">
-                  <div className="text-[2rem] text-left">{needMbs}</div>
+                  <div className={cn(['text-[2rem] text-left', isMBNotEnough && 'text-[#BD0000]'])}>{needMbs}</div>
                   <div className="text-sm leading-none">Moon Beams</div>
                 </div>
               </div>
@@ -246,7 +258,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                   className="uppercase w-[18.5rem] h-9 mt-2"
                   label="Confirm"
                   actived
-                  disabled={!isFreeTicketsEnabled && !s1TicketsCount && needMbs > (userInfo?.moon_beam || 0)}
+                  disabled={!item || isMBNotEnough}
                   loading={loading}
                   onClick={onDraw}
                 />

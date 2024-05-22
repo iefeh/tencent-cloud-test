@@ -1,12 +1,18 @@
 import { loadImage } from '@/utils/common';
+import { cn } from '@nextui-org/react';
 import Head from 'next/head';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
 
-const PlanetAni: FC = () => {
-  const BASE_WIDTH = 1920;
-  const BASE_HEIGHT = 1076;
-  const BASE_RATIO = 1920 / 1076;
-  const IMG_COUNT = 288;
+interface Props {
+  visible?: boolean;
+  onFinished?: () => void;
+}
+
+const DrawAni: FC<Props> = ({ visible, onFinished }) => {
+  const BASE_WIDTH = 1280;
+  const BASE_HEIGHT = 1920;
+  const BASE_RATIO = BASE_WIDTH / BASE_HEIGHT;
+  const IMG_COUNT = 23;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const currentIdxRef = useRef(0);
@@ -16,9 +22,9 @@ const PlanetAni: FC = () => {
     .fill(0)
     .map(
       (_, i) =>
-        `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/planet_ani/planet_00${i
+        `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/draw_ani/reward_00${(i + 1)
           .toString()
-          .padStart(3, '0')}.png`,
+          .padStart(3, '0')}_1.png`,
     );
   const imgs = useRef<HTMLImageElement[]>([]);
 
@@ -31,9 +37,9 @@ const PlanetAni: FC = () => {
     let realHeight = clientHeight;
 
     if (clientWidth / clientHeight > BASE_RATIO) {
-      realWidth = clientHeight * BASE_RATIO;
-    } else {
       realHeight = clientWidth / BASE_RATIO;
+    } else {
+      realWidth = clientHeight * BASE_RATIO;
     }
 
     canvasRef.current.style.width = `${realWidth}px`;
@@ -53,13 +59,17 @@ const PlanetAni: FC = () => {
 
     const aniImgs = await Promise.all(imgURLs.slice(1).map((url) => loadImage(url)));
     imgs.current.push(...aniImgs);
-    aniLoop();
   }
 
   async function aniLoop(el = performance.now()) {
     if (!ctxRef.current || imgs.current.length < IMG_COUNT) return;
     if (el - lastElRef.current < 30) {
       rafId.current = requestAnimationFrame(aniLoop);
+      return;
+    }
+
+    if (currentIdxRef.current >= IMG_COUNT - 1) {
+      onFinished?.();
       return;
     }
 
@@ -81,17 +91,25 @@ const PlanetAni: FC = () => {
 
   useEffect(() => {
     initCanvas();
-    initImages().then(() => {
-      stopAni();
-      lastElRef.current = performance.now();
-      aniLoop();
-    });
-
-    return stopAni;
+    initImages();
   });
 
+  useEffect(() => {
+    if (visible) {
+      initImages().then(() => {
+        stopAni();
+        lastElRef.current = performance.now();
+        aniLoop();
+      });
+    } else {
+      stopAni();
+    }
+
+    return stopAni;
+  }, [visible]);
+
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className={cn(['justify-center items-center absolute inset-0 z-0', visible ? 'flex' : 'hidden'])}>
       <Head>
         {imgURLs.map((url, index) => (
           <link key={index} rel="preload" as="image" href={url} crossOrigin="anonymous"></link>
@@ -99,12 +117,8 @@ const PlanetAni: FC = () => {
       </Head>
 
       <canvas ref={canvasRef} className="object-contain" width={BASE_WIDTH} height={BASE_HEIGHT}></canvas>
-
-      <div className="absolute inset-0">
-        <div></div>
-      </div>
     </div>
   );
 };
 
-export default PlanetAni;
+export default DrawAni;

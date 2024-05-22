@@ -28,7 +28,7 @@ axios.interceptors.response.use(
       return data;
     }
 
-    if (data.code === 1) return data.data;
+    if (data.code === 1 && ~~(res.status / 100) === 2) return data.data;
 
     switch (data.code) {
       // token expired
@@ -39,7 +39,11 @@ axios.interceptors.response.use(
       }
     }
 
-    if (data.msg) {
+    let innerData = data.data;
+
+    if (innerData && (!innerData.verified || !innerData.success) && (innerData.message || innerData.tip)) {
+      toast.error(innerData.message || innerData.tip);
+    } else if (data.msg) {
       toast.error(data.msg);
     }
 

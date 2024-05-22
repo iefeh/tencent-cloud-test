@@ -1,16 +1,17 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import {errorInterceptor} from '@/lib/middleware/error';
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import LotteryPool from "@/lib/models/LotteryPool";
-import User from "@/lib/models/User";
-import UserLotteryPool from "@/lib/models/UserLotteryPool";
+import { createRouter } from 'next-connect';
+
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { errorInterceptor } from '@/lib/middleware/error';
+import LotteryPool from '@/lib/models/LotteryPool';
+import User from '@/lib/models/User';
+import UserLotteryPool from '@/lib/models/UserLotteryPool';
+import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const { lottery_pool_id } = req.query;
-  const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lottery_pool_id });
+  const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lottery_pool_id, deleted_time: null });
   if (!lotteryPool) {
     res.json(response.invalidParams("Cannot find the specified lottery pool!"));
   }

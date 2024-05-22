@@ -13,14 +13,20 @@ import { Lottery } from '@/types/lottery';
 import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal from '../DrawHistoryModal';
+import DrawAni from '../DrawAni';
 
-const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) => {
-  const [currentReward, setCurrentReward] = useState<Lottery.DrawResDTO | null>(null);
+interface Props {
+  onUpdate?: () => void;
+}
+
+const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo, onUpdate }) => {
+  const [currentReward, setCurrentReward] = useState<Lottery.RewardResDTO | null>(null);
   const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
   const historyDisclosure = useDisclosure();
   const prizePoolDisclosure = useDisclosure();
   const [drawTimes, setDrawTimes] = useState(1);
+  const [drawAniVisible, setDrawAniVisible] = useState(false);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
@@ -33,11 +39,16 @@ const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) 
     }, 0);
   }
 
-  function onDrawed(data: Lottery.DrawResDTO) {
+  function onDrawed(data: Lottery.RewardResDTO) {
     setCurrentReward(data);
-    setTimeout(() => {
-      rewardsDisclosure.onOpen();
-    }, 0);
+    drawDisclosure.onClose();
+    setDrawAniVisible(true);
+    onUpdate?.();
+  }
+
+  function onDrawAniFinished() {
+    setDrawAniVisible(false);
+    rewardsDisclosure.onOpen();
   }
 
   function onShowHistory() {
@@ -62,6 +73,8 @@ const DrawScreen: FC<BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo }) 
       {/* 动画层 */}
       <div className="absolute inset-0 z-10">
         <PlanetAni />
+
+        <DrawAni visible={drawAniVisible} onFinished={onDrawAniFinished} />
       </div>
 
       {/* 操作层 */}
