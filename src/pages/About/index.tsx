@@ -1,20 +1,20 @@
-"use client";
-import Image, { StaticImageData } from "next/image";
-import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
-import MJ from "img/about/1@2x.png";
-import JW from "img/about/2@2x.png";
-import MasonZ from "img/about/3@2x.png";
-import RobinZ from "img/about/4@2x.png";
-import PuffZ from "img/about/5@2x.png";
-import leftArrows from "img/about/arrow_1.png";
-import rightArrows from "img/about/arrow_2.png";
-import { useEffect, useRef, useState } from "react";
-import { FreeMode, Mousewheel } from "swiper/modules";
-import { IntersectionObserverHook } from "@/hooks/intersectionObserverHook";
-import PageDesc from "../components/common/PageDesc";
-import Head from "next/head";
-import EntertainmentSlide from "./EntertainmentSlide";
-import { scrollRef, scrollStart } from "../../hooks/scroll";
+'use client';
+import Image, { StaticImageData } from 'next/image';
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
+import MJ from 'img/about/1@2x.png';
+import JW from 'img/about/2@2x.png';
+import MasonZ from 'img/about/3@2x.png';
+import RobinZ from 'img/about/4@2x.png';
+import PuffZ from 'img/about/5@2x.png';
+import leftArrows from 'img/about/arrow_1.png';
+import rightArrows from 'img/about/arrow_2.png';
+import { useEffect, useRef, useState } from 'react';
+import { FreeMode, Mousewheel } from 'swiper/modules';
+import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
+import PageDesc from '../components/common/PageDesc';
+import Head from 'next/head';
+import EntertainmentSlide from './EntertainmentSlide';
+import { scrollRef, scrollStart } from '../../hooks/scroll';
 
 interface Figure {
   img: StaticImageData;
@@ -90,7 +90,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
 ];
-const sponsorArray = new Array(22).fill(1);
+const sponsorArray = new Array(23).fill(1);
 
 export default function About({
   params,
@@ -128,16 +128,14 @@ export default function About({
     }
   }
 
-
-
   useEffect(() => {
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       cancelAnimationFrame(transverseRef.current.cancelId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       cancelAnimationFrame(longitudinalRef.current.cancelId);
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <div className="about w-full h-screen flex flex-col items-center justify-between">
@@ -157,8 +155,9 @@ export default function About({
         <SwiperSlide>
           <div className="swiper-screen w-full h-screen relative">
             <div
-              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${open ? 'referralInAnim' : 'referralOutAnim'
-                } ${open === null ? 'hidden' : ''}`}
+              className={`absolute w-full h-screen z-[2] flex flex-col bg-black ${
+                open ? 'referralInAnim' : 'referralOutAnim'
+              } ${open === null ? 'hidden' : ''}`}
             >
               <div className="flex flex-1 shadow-[0px_0px_30px_10px_#514032]">
                 <div className="w-1/2 flex items-end justify-start pl-[14.375rem] pb-[4rem] max-md:pl-8 max-md:pr-4 max-md:w-full">
@@ -222,7 +221,9 @@ export default function About({
 
                 <div className="mask absolute left-[80vw] top-0 h-screen w-[40vw]"></div>
               </SwiperSlide>
-              <SwiperSlide style={{ width: 'auto' }}><div className="w-[36vw] h-full"></div></SwiperSlide>
+              <SwiperSlide style={{ width: 'auto' }}>
+                <div className="w-[36vw] h-full"></div>
+              </SwiperSlide>
               {figureArray.map((figureData, index) => {
                 return (
                   <SwiperSlide
@@ -266,8 +267,9 @@ export default function About({
             className="w-full friendLink_wrap bg-black flex flex-col justify-center items-center bg-aboutBg bg-center"
           >
             <div
-              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'
-                }`}
+              className={`friendLink_title uppercase max-sm:text-[2rem] text-[3.75rem] font-semakin leading-none mb-[4rem] translate-y-[16px] fill-mode-[both] ${
+                isVisiable && 'slideInAnim'
+              }`}
             >
               Investors & Partners
             </div>
@@ -278,7 +280,13 @@ export default function About({
 
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
-                      <Image className="object-cover" src={`/img/about/${index + 1}.png`} alt="" fill sizes="100%" />
+                      <Image
+                        className={index === 22 ? 'object-contain' : 'object-cover'}
+                        src={index === 22 ? '/svg/investors/ventures.svg' : `/img/about/${index + 1}.png`}
+                        alt=""
+                        fill
+                        sizes="100%"
+                      />
                     </li>
                   );
                 })}
