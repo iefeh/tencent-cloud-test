@@ -19,16 +19,13 @@ import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
 import * as Sentry from '@sentry/nextjs';
 
-const defaultErrorResponse = response.success({
-  verified: false,
-  message: "Network busy, please try again later.",
-})
+const defaultErrorResponse = response.success(constructResponse(false, "Network busy, please try again later."));
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { draw_id, reward_id, lottery_pool_id } = req.body;
   if (!lottery_pool_id || !draw_id) {
-    res.json(response.invalidParams());
+    res.json(response.invalidParams(constructResponse(false, "Invalid params.")));
     return;
   }
   try {
@@ -36,18 +33,18 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     const drawId = String(draw_id);
     const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
     if (!lotteryPool) {
-      res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+      res.json(response.invalidParams(constructResponse(false, "The lottery pool is not opened or has been closed.")));
     }
     const lockKey = `claim_claim_lock:${drawId}`;
     // 锁定用户抽奖资源10秒
     let interval: number = 10;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
-      res.json(response.success("You are already claiming this reward, please try again later."))
+      res.json(response.success(constructResponse(false, "You are already claiming this reward, please try again later.")))
     }
     const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: drawId });
     if (!drawHistory) {
-      res.json(response.notFound({ message: "Cannot find a draw record for this claim."}));
+      res.json(response.notFound(constructResponse(false, "Cannot find a draw record for this claim.")));
     }
     if (drawHistory.need_verify_twitter) {
       const verifyResult = await verify(drawHistory.user_id, drawId, lotteryPoolId);
@@ -72,7 +69,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
         await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, reward.reward_id);
       }
     }
-    res.json(response.success({ message: "Congratulations on claiming your lottery rewards."}));
+    res.json(response.success(constructResponse(true, "Congratulations on claiming your lottery rewards.")));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
@@ -114,6 +111,10 @@ async function updateLotteryDrawHistory(drawId: string, rewardId: string, update
     { arrayFilters: [{ "elem.reward_id": rewardId}], session: session });
 }
 
+function constructResponse(verified: boolean, message: string) {
+  return { verified: verified, message: message };
+}
+
 function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number) {
   let audit = new UserMoonBeamAudit({
     user_id: userId,
@@ -130,24 +131,16 @@ function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId:
 async function verify(userId: string, drawId: string, lotteryPoolId: string): Promise<any> {
   const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
   if (!userTwitter) {
-    return {
-        verified: false,
-        message: "You should connect your Twitter Account first."
-    };
+    return constructResponse(false, "You should connect your Twitter Account first.");
   }
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
   if (!userLotteryPool || !userLotteryPool.twitter_topic_id) {
-    return {
-      verified: false,
-      message: "You should post twitter topic first."
-    };
+    return constructResponse(false, "You should post twitter topic first.");
   }
   let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: userLotteryPool.twitter_topic_id }, { _id: 0, tweeted_at: 1 });
   // 一个奖池只需要发一次twitter话题, 不用重复检查
   if (tweet) {
-    return {
-      verified: true
-    };
+    return constructResponse(true, "");
   }
   else {
     const lockKey = `claim_reward_lock:${userId}:${drawId}`;
@@ -155,16 +148,11 @@ async function verify(userId: string, drawId: string, lotteryPoolId: string): Pr
     let interval: number = 3 * 60;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
-        return {
-            verified: false,
-            message: `Verification is under a ${interval}s waiting period, please try again later.`,
-        };
+        return constructResponse(false, `Verification is under a ${interval}s waiting period, please try again later.`);
     }
     tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: userLotteryPool.twitter_topic_id }, { _id: 0, tweeted_at: 1 });
     if (tweet) {
-        return {
-          verified: true
-        };
+        return constructResponse(true, "");
     }
   }
 }

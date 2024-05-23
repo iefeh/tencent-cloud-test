@@ -29,13 +29,13 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost } = req.body;
   const validDrawCount = [1, 3, 5]; 
   if (!lottery_pool_id || !draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
-    res.json(response.invalidParams());
+    res.json(response.invalidParams({verified: false, message: "Invalid params."}));
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
-    res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+    res.json(response.invalidParams({verified: false, message: "The lottery pool is not opened or has been closed."}));
   }
   try {
     const user = await User.findOne({ user_id: userId });
@@ -135,7 +135,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   }
   if (!locked) {
     return {
-      success: false,
+      verified: false,
       message: `Lottery pool is under a ${interval}s waiting period, please try again later.`,
     };
   }
@@ -223,7 +223,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     await userDrawHistory.save();
   });
   return {
-    success: true,
+    verified: true,
     message: "Congratulations on winning the following rewards!",
     lottery_pool_id: lotteryPoolId,
     available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - userLotteryPool.draw_amount,
