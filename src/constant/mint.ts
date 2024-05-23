@@ -33,8 +33,6 @@ interface NetworkInfo {
   blockExplorerUrls: string[];
 }
 
-export const CURRENT_CHAIN_ID = '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16);
-
 export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
   80001: {
     chainId: parseChainIdToHex('80001'),

@@ -36,6 +36,9 @@ interface ClassNameProps {
   className?: string;
 }
 
+interface ItemProps<T = unknown> {
+  item?: T | null;
+}
 interface ModalProps {
   isOpen: boolean;
   onOpen?: () => void;
@@ -45,4 +48,10 @@ interface ModalProps {
 interface BasePage {
   noLoading?: boolean;
   hideLoginCloseButton?: boolean;
+}
+
+interface InfoDTO {
+  message: string;
+  verified?: boolean;
+  success?: boolean;
 }
