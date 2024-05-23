@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import MBInfo from '../MBInfo';
 import TicketsInfo from '../TicketsInfo';
 import TimeoutInfo from '../TimeoutInfo';
@@ -12,7 +12,7 @@ import RewardsModal from '../RewardsModal';
 import { Lottery } from '@/types/lottery';
 import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
-import DrawHistoryModal from '../DrawHistoryModal';
+import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
 
 interface Props {
@@ -27,6 +27,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   const prizePoolDisclosure = useDisclosure();
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
+  const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
@@ -51,8 +52,19 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
     rewardsDisclosure.onOpen();
   }
 
+  function onClaimed() {
+    rewardsDisclosure.onClose();
+    onUpdate?.();
+    drawHistoryModalRef.current?.update();
+  }
+
   function onShowHistory() {
     historyDisclosure.onOpen();
+  }
+
+  function onRecordClick(data: Lottery.DrawHistoryDTO) {
+    setCurrentReward(data);
+    rewardsDisclosure.onOpen();
   }
 
   return (
@@ -92,13 +104,20 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
         <DrawScreenMainContent onShowPrizePool={onShowPrizePool} />
       </div>
 
-      <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
+      {drawDisclosure.isOpen && (
+        <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
+      )}
 
-      <RewardsModal item={currentReward} disclosure={rewardsDisclosure} />
+      <RewardsModal item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
 
       <PrizePoolModal disclosure={prizePoolDisclosure} item={poolInfo} />
 
-      <DrawHistoryModal disclosure={historyDisclosure} item={poolInfo} />
+      <DrawHistoryModal
+        ref={drawHistoryModalRef}
+        disclosure={historyDisclosure}
+        item={poolInfo}
+        onRecordClick={onRecordClick}
+      />
     </div>
   );
 };

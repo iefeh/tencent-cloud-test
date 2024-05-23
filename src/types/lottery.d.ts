@@ -1,3 +1,4 @@
+import { BadgeSerie } from './../http/services/badges';
 import { LotteryRewardType, RewardQuality } from '@/constant/lottery';
 
 declare namespace Lottery {
@@ -11,16 +12,19 @@ declare namespace Lottery {
     user_s1_lottery_ticket_amount: number;
     user_free_lottery_ticket_amount: number;
     user_mb_amount: number;
+    can_claim_premium_benifits: boolean;
     rewards: RewardItem[];
   }
 
   interface RewardItem {
+    item_id?: string;
     icon_url: string;
     reward_type: LotteryRewardType;
     reward_name: string;
     reward_level: RewardQuality;
     reward_claim_type: number;
     amount: number;
+    claimed: boolean;
   }
 
   interface RewardDTO {
@@ -41,10 +45,12 @@ declare namespace Lottery {
   }
 
   interface RewardResDTO {
+    available_draw_time?: number;
     draw_id: string;
     lottery_pool_id: string;
     rewards: RewardItem[];
-    success: boolean;
+    success?: boolean;
+    message?: string;
   }
 
   interface DrawHistoryDTO {
@@ -53,5 +59,15 @@ declare namespace Lottery {
     lottery_pool_id: string;
     rewards: RewardItem[];
     user_id: string;
+  }
+
+  interface MilestoneDTO {
+    total_draw_amount: number;
+    luckyDrawBadge: {
+      id: string;
+      name: string;
+      obtain_url: string;
+      series: (BadgeSerie & { requirements: number })[];
+    };
   }
 }

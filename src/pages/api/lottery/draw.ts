@@ -1,19 +1,23 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import doTransaction from "@/lib/mongodb/transaction";
-import * as response from "@/lib/response/response";
-import * as Sentry from "@sentry/nextjs";
-import {errorInterceptor} from '@/lib/middleware/error';
-import logger from "@/lib/logger/winstonLogger";
-import LotteryPool, { ILotteryPool, LotteryRewardItem } from "@/lib/models/LotteryPool";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {promiseSleep} from "@/lib/common/sleep";
-import { redis } from "@/lib/redis/client";
-import User, { IUser } from "@/lib/models/User";
-import UserLotteryDrawHistory, { IUserLotteryRewardItem } from "@/lib/models/UserLotteryDrawHistory";
-import UserLotteryPool, { IUserLotteryPool } from "@/lib/models/UserLotteryPool";
-import { Metric, incrUserMetric } from "@/lib/models/UserMetrics";
-import {v4 as uuidv4} from "uuid";
+import { createRouter } from 'next-connect';
+import { v4 as uuidv4 } from 'uuid';
+
+import { promiseSleep } from '@/lib/common/sleep';
+import logger from '@/lib/logger/winstonLogger';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { errorInterceptor } from '@/lib/middleware/error';
+import LotteryPool, { ILotteryPool, LotteryRewardItem } from '@/lib/models/LotteryPool';
+import { getLotteryPoolById } from '@/lib/lottery/lottery';
+import User, { IUser } from '@/lib/models/User';
+import UserLotteryDrawHistory, {
+    IUserLotteryRewardItem
+} from '@/lib/models/UserLotteryDrawHistory';
+import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
+import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
+import doTransaction from '@/lib/mongodb/transaction';
+import { redis } from '@/lib/redis/client';
+import * as response from '@/lib/response/response';
+import * as Sentry from '@sentry/nextjs';
 
 const defaultErrorResponse = response.success({
   verified: false,
@@ -24,23 +28,25 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost } = req.body;
   const validDrawCount = [1, 3, 5]; 
-  if (!draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
-    res.json(response.invalidParams());
+  if (!lottery_pool_id || !draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
+    res.json(response.invalidParams({verified: false, message: "Invalid params."}));
   }
-  const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lottery_pool_id });
-  if (!lotteryPool || lotteryPool.end_time < Date.now()) {
-    res.json(response.invalidParams({ message: "Invalid lottery pool id or lottery pool is closed." }));
+  const userId = String(req.userId);
+  const lotteryPoolId = String(lottery_pool_id);
+  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  if (!lotteryPool) {
+    res.json(response.invalidParams({verified: false, message: "The lottery pool is not opened or has been closed."}));
   }
   try {
-    const user = await User.findOne({ user_id: req.userId });
-    const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id });
-    const canDraw = await verify(lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost, user, userLotteryPool, lotteryPool);
+    const user = await User.findOne({ user_id: userId });
+    const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
+    const canDraw = await verify(lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, user, userLotteryPool, lotteryPool);
     if (!canDraw.verified) {
       res.json(response.invalidParams(canDraw));
     }
     else {
-      let drawResult = await draw(req.userId!, lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost, userLotteryPool);
-      if (drawResult.success) {
+      let drawResult = await draw(userId, lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userLotteryPool);
+      if (drawResult.verified) {
         res.json(response.success(drawResult));
       }
       else {
@@ -129,13 +135,13 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   }
   if (!locked) {
     return {
-      success: false,
+      verified: false,
       message: `Lottery pool is under a ${interval}s waiting period, please try again later.`,
     };
   }
   const freeLotteryTicketCost = drawCount - lotteryTicketCost - mbCost/25;
   // 重新查询保证查到的是最新的奖池状态
-  const lotteryPool: ILotteryPool | null = await LotteryPool.findOne({ lottery_pool_id: lotteryPoolId });
+  const lotteryPool: ILotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   // 1-3抽和4-10抽奖池和中奖几率不同所以要分别计算
   let firstThreeDrawCumulativeProbabilities = 0;
   let nextSixDrawCumulativeProbabilities = 0;
@@ -143,14 +149,14 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   let availableRewards: LotteryRewardItem[] = [];
   let guaranteedRewards: LotteryRewardItem[] = [];
   // 筛选抽奖奖励, 如果抽奖次数不满足奖励门槛则去掉对应奖励
-  for (let reward of lotteryPool!.rewards) {
+  for (let reward of lotteryPool.rewards) {
     // 检查本次抽取是否满足保底次数, 如果是则添加奖品
     for (let granteedDrawCount of reward.guaranteed_draw_count) {
-      if (lotteryPool!.total_draw_amount < granteedDrawCount && (lotteryPool!.total_draw_amount + drawCount) >= granteedDrawCount) {
+      if (lotteryPool.total_draw_amount < granteedDrawCount && (lotteryPool.total_draw_amount + drawCount) >= granteedDrawCount) {
         guaranteedRewards.push(reward);
       }
     }
-    if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool!.total_draw_amount >= reward.min_reward_draw_amount))
+    if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool.total_draw_amount >= reward.min_reward_draw_amount))
       && (reward.inventory_amount === null || reward.inventory_amount > 0)) {
       availableRewards.push(reward);
     }
@@ -182,7 +188,10 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     // 扣减用户奖池抽奖券
     await UserLotteryPool.updateOne(
       { user_id: userId, lottery_pool_id: lotteryPoolId }, 
-      { $inc: { free_lottery_ticket_amount: -freeLotteryTicketCost, draw_amount: drawCount }}, 
+      { 
+        $inc: { free_lottery_ticket_amount: -freeLotteryTicketCost, draw_amount: drawCount },
+        $setOnInsert: { created_time: now }
+      }, 
       { session: session, upsert: true });
     // 增加用户生涯总抽奖次数并检查徽章
     await incrUserMetric(userId, Metric.TotalLotteryDrawAmount, drawCount, session);
@@ -192,7 +201,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       { $inc: { total_draw_amount: drawCount }, updated_time: now }, 
       { session: session });
     // 扣减奖池总奖品数量
-    lotteryPool!.rewards.map(async reward => {
+    lotteryPool.rewards.map(async reward => {
       let inventoryDelta = itemInventoryDeltaMap.get(reward.item_id);
       if (reward.inventory_amount !== null && inventoryDelta && inventoryDelta < 0) {
         await LotteryPool.findOneAndUpdate(
@@ -214,7 +223,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     await userDrawHistory.save();
   });
   return {
-    success: true,
+    verified: true,
     message: "Congratulations on winning the following rewards!",
     lottery_pool_id: lotteryPoolId,
     available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - userLotteryPool.draw_amount,
