@@ -78,11 +78,14 @@ function NFTMergePage({
     setMergedNFT(nft);
   };
 
+  function stopQueryLoop() {
+    if (!loopTimer.current) return;
+    clearInterval(loopTimer.current);
+    loopTimer.current = 0;
+  }
+
   function startQueryLoop() {
-    if (loopTimer.current) {
-      clearInterval(loopTimer.current);
-      loopTimer.current = 0;
-    }
+    stopQueryLoop();
 
     queryLatestMergeNFT();
     loopTimer.current = window.setInterval(() => {
@@ -148,20 +151,18 @@ function NFTMergePage({
     setMerged(false);
     setMergeLoading(false);
     setMergedNFT(null);
+    stopQueryLoop();
 
     if (userInfo) queryLatestMergeNFT(true);
-
-    return () => {
-      if (loopTimer.current) {
-        window.clearInterval(loopTimer.current);
-        loopTimer.current = 0;
-      }
-    };
   }, [userInfo]);
 
   useEffect(() => {
     setSelectedNFTs([]);
   }, [merged, mergeLoading]);
+
+  useEffect(() => {
+    return () => stopQueryLoop();
+  }, []);
 
   return (
     <section id="luxy">
