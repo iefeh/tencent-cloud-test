@@ -13,14 +13,14 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
   const isFreeTicketsEnough = (poolInfo?.user_free_lottery_ticket_amount || 0) >= times;
   const isS1TicketsEnough = (poolInfo?.user_s1_lottery_ticket_amount || 0) >= times;
 
-  const freeDisabled = !isFreeTicketsEnough && isS1TicketsEnough;
   const freeInitCount = isFreeTicketsEnough ? times : 0;
-
-  const s1Disabled = isFreeTicketsEnough || (poolInfo?.user_s1_lottery_ticket_amount || 0) === 0;
   const s1InitCount = isS1TicketsEnough ? times : 0;
 
   const [freeCount, setFreeCount] = useState(freeInitCount);
   const [s1Count, setS1Count] = useState(s1InitCount);
+
+  const freeDisabled = s1Count >= times;
+  const s1Disabled = isFreeTicketsEnough || (poolInfo?.user_s1_lottery_ticket_amount || 0) === 0;
 
   const [freeMaxCount, setFreeMaxCount] = useState(0);
   const [s1MaxCount, setS1MaxCount] = useState(0);
@@ -32,10 +32,15 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
   }
 
   function onChangeS1(val: number) {
-    if (val === freeCount) return;
+    if (val === s1Count) return;
     setS1Count(val);
     onS1TicketChange?.(val);
   }
+
+  useEffect(() => {
+    onFreeTicketChange?.(freeCount);
+    onS1TicketChange?.(s1Count);
+  }, []);
 
   useEffect(() => {
     setFreeMaxCount(Math.max(times - s1Count, freeCount));

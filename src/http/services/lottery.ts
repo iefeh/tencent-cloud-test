@@ -21,10 +21,10 @@ export function queryDrawHistoryAPI(
   return http.get('/api/lottery/history', { params });
 }
 
-export function claimRewardAPI(data: Lottery.ClaimReqDTO): Promise<null> {
+export function claimRewardAPI(data: Lottery.ClaimReqDTO): Promise<InfoDTO> {
   return http.post('/api/lottery/claim', JSON.stringify(data));
 }
 
-export function queryDrawMilestoneAPI(): Promise<number> {
+export function queryDrawMilestoneAPI(): Promise<{ total_draw_amount: number }> {
   return http.get('/api/lottery/milestone');
 }

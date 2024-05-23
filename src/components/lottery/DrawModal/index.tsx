@@ -58,7 +58,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
     };
 
     const res = await drawAPI(data);
-    if (!!res.success && !res.verified) {
+    if (!!res?.verified) {
       toast.success(res.message);
       onDrawed?.(res);
     }
@@ -125,8 +125,9 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 </>
               ) : (
                 <>
-                  <div className="text-sm">
-                    Please confirm the tickets and Moon Beams you would like to use for the lottery draw:
+                  <div className="text-sm text-left">
+                    Please confirm the tickets you want to use for the lottery draw, each Silver Lottery Ticket costs 25
+                    Moon Beams.
                   </div>
 
                   <TicketContents

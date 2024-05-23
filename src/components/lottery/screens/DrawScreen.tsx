@@ -51,6 +51,11 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
     rewardsDisclosure.onOpen();
   }
 
+  function onClaimed() {
+    rewardsDisclosure.onClose();
+    onUpdate?.();
+  }
+
   function onShowHistory() {
     historyDisclosure.onOpen();
   }
@@ -96,7 +101,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
         <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
       )}
 
-      <RewardsModal item={currentReward} disclosure={rewardsDisclosure} />
+      <RewardsModal item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
 
       <PrizePoolModal disclosure={prizePoolDisclosure} item={poolInfo} />
 
