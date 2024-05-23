@@ -1,4 +1,5 @@
-import { LotteryMilestone } from '@/constant/lottery';
+import { BadgeIcons } from '@/constant/lottery';
+import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
@@ -13,7 +14,11 @@ interface SubRule {
   children: string[];
 }
 
-const LotteryRules: FC = () => {
+interface Props {
+  milestone: Lottery.MilestoneDTO | null;
+}
+
+const LotteryRules: FC<Props> = ({ milestone }) => {
   const rules: Rule[] = [
     {
       title: 'Lottery Tickets',
@@ -60,11 +65,11 @@ const LotteryRules: FC = () => {
   const drawCounts = [
     [
       'Level',
-      ...Array(LotteryMilestone.length)
+      ...Array(BadgeIcons.length)
         .fill(null)
         .map((_, index) => index + 1),
     ],
-    ['Cumulative Draw Counts', ...LotteryMilestone],
+    ['Cumulative Draw Counts', ...BadgeIcons.map((_, i) => milestone?.luckyDrawBadge?.series?.[i]?.requirements)],
   ];
 
   return (
@@ -122,7 +127,7 @@ const LotteryRules: FC = () => {
                                       (ri < 1 || di < 1) && 'text-white',
                                     ])}
                                   >
-                                    {cell}
+                                    {cell || '--'}
                                   </td>
                                 ))}
                               </tr>

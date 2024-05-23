@@ -25,6 +25,6 @@ export function claimRewardAPI(data: Lottery.ClaimReqDTO): Promise<InfoDTO> {
   return http.post('/api/lottery/claim', JSON.stringify(data));
 }
 
-export function queryDrawMilestoneAPI(): Promise<{ total_draw_amount: number }> {
+export function queryDrawMilestoneAPI(): Promise<Lottery.MilestoneDTO> {
   return http.get('/api/lottery/milestone');
 }

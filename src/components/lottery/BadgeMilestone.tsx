@@ -1,17 +1,24 @@
-import { BadgeIcons, LotteryMilestone } from '@/constant/lottery';
-import { queryDrawMilestoneAPI } from '@/http/services/lottery';
+import { BadgeIcons } from '@/constant/lottery';
 import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 
-const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
-  const [currentDraws, setCurrentDraws] = useState(0);
-  const levels = LotteryMilestone.map((val, index) => ({
-    level: index + 1,
-    draws: val,
-    ...BadgeIcons[index],
-  }));
+interface Props extends ClassNameProps {
+  milestone: Lottery.MilestoneDTO | null;
+}
+
+const BadgeMilestone: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, milestone }) => {
+  const currentDraws = milestone?.total_draw_amount || 0;
+  const levels = BadgeIcons.map((options, index) => {
+    const { requirements, image_url } = milestone?.luckyDrawBadge?.series?.[index] || {};
+    return {
+      level: index + 1,
+      icon: image_url,
+      draws: requirements || 0,
+      ...options,
+    };
+  });
 
   function calcCurrentProgress() {
     let progress = 0;
@@ -35,15 +42,6 @@ const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ classNam
 
   const currentDrawsProgress = calcCurrentProgress();
 
-  async function queryDrawMilestone() {
-    const res = await queryDrawMilestoneAPI();
-    setCurrentDraws(res || 0);
-  }
-
-  useEffect(() => {
-    queryDrawMilestone();
-  }, []);
-
   return (
     <div className={cn(['w-[63.5625rem] h-[6.8125rem] relative', className])}>
       <Image
@@ -65,7 +63,7 @@ const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ classNam
             <div>LV.{level}</div>
 
             <Image
-              src={icon}
+              src={icon || ''}
               alt=""
               style={{ width: `${width / 16}rem`, maxWidth: `${width / 16}rem` }}
               width={726}
@@ -73,7 +71,7 @@ const BadgeMilestone: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ classNam
               unoptimized
             />
 
-            <div>{draws}</div>
+            <div>{draws || '--'}</div>
           </div>
         ))}
       </div>
