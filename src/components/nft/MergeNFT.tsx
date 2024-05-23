@@ -64,8 +64,8 @@ export default function MergeNFT(props: NFTProps) {
           ) : (
             <Video
               options={{
-                preload: false,
-                autoplay: false,
+                preload: true,
+                autoplay: true,
                 controls: false,
                 sources: [
                   {
