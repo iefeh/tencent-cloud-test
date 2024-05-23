@@ -40,11 +40,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     let interval: number = 10;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
-      res.json(response.success(constructResponse(false, "You are already claiming this reward, please try again later.")))
+      res.json(response.serverError(constructResponse(false, "You are already claiming this reward, please try again later.")))
     }
     const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: drawId });
     if (!drawHistory) {
-      res.json(response.notFound(constructResponse(false, "Cannot find a draw record for this claim.")));
+      res.json(response.invalidParams(constructResponse(false, "Cannot find a draw record for this claim.")));
     }
     if (drawHistory.need_verify_twitter) {
       const verifyResult = await verify(drawHistory.user_id, drawId, lotteryPoolId);
