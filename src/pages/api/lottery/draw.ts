@@ -46,7 +46,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     }
     else {
       let drawResult = await draw(userId, lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userLotteryPool);
-      if (drawResult.success) {
+      if (drawResult.verified) {
         res.json(response.success(drawResult));
       }
       else {
