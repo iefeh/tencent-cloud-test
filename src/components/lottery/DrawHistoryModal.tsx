@@ -1,6 +1,14 @@
 import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/react';
-import { FC, useEffect, useRef, useState } from 'react';
+import {
+  ForwardRefRenderFunction,
+  RefObject,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import useBScroll from '@/hooks/useBScroll';
 import { throttle } from 'lodash';
 import { queryDrawHistoryAPI } from '@/http/services/lottery';
@@ -20,12 +28,18 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
+  ref?: RefObject<DrawHisoryModalRef>;
+  onRecordClick?: (item: Lottery.DrawHistoryDTO) => void;
 }
 
-const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({
-  disclosure: { isOpen, onOpenChange },
-  item: poolInfo,
-}) => {
+export interface DrawHisoryModalRef {
+  update: () => void;
+}
+
+const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & ItemProps<Lottery.Pool>> = (
+  { disclosure: { isOpen, onOpenChange }, item: poolInfo, onRecordClick },
+  ref,
+) => {
   const { scrollRef, bsRef } = useBScroll({ scrollX: false, scrollY: true, pullUpLoad: true, mouseWheel: true });
   const [data, setData] = useState<Lottery.DrawHistoryDTO[]>(Array(20).fill(null));
   const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 10 });
@@ -46,6 +60,8 @@ const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({
     pagi.current.page_num = index;
     queryHistory();
   }
+
+  useImperativeHandle(ref, () => ({ update: queryHistory }));
 
   useEffect(() => {
     if (isOpen && poolInfo) {
@@ -85,7 +101,11 @@ const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 {data.length > 0 && (
                   <ul>
                     {data.map((item, index) => (
-                      <li key={index} className="flex justify-between border-white [&+li]:border-t-1 py-3 pl-6 pr-5">
+                      <li
+                        key={index}
+                        className="flex justify-between border-white [&+li]:border-t-1 py-3 pl-6 pr-5 cursor-pointer"
+                        onClick={() => onRecordClick?.(item)}
+                      >
                         <div className="text-left">
                           <div className="text-lg font-semibold">DRAW {item?.rewards?.length || '--'} TIMES</div>
                           <div className="text-sm text-[#666666]">
@@ -132,4 +152,4 @@ const DrawHistoryModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   );
 };
 
-export default DrawHistoryModal;
+export default forwardRef(DrawHistoryModal);

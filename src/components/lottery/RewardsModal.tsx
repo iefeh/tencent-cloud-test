@@ -24,6 +24,7 @@ interface Props {
 const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange }, item, onClaimed }) => {
   const hasShareAndConfirmRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 3);
   const hasShareAndClaimRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 2);
+  const claimed = (item?.rewards || []).every((r) => !!r.claimed);
   const [loading, setLoading] = useState(false);
 
   function onShare() {
@@ -38,7 +39,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       lottery_pool_id: item?.lottery_pool_id!,
     };
     const res = await claimRewardAPI(data);
-    if (!!res) {
+    if (!!res && !res.verified) {
       toast.error(res.message);
       setLoading(false);
       return;
@@ -102,7 +103,14 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               </div>
 
               <div className="flex items-center gap-x-[5.5rem] mt-5">
-                <LGButton className="w-[18.5rem]" label="Claim" actived loading={loading} onClick={onClaim} />
+                <LGButton
+                  className="w-[18.5rem]"
+                  label="Claim"
+                  actived
+                  disabled={claimed}
+                  loading={loading}
+                  onClick={onClaim}
+                />
 
                 <LGButton
                   className="w-[18.5rem]"
