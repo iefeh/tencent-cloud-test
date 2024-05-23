@@ -34,9 +34,9 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string):
     return constructVerifyResponse(false, "The lottery pool is not opened or has been closed.");
   } 
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
-  // if (userLotteryPool && userLotteryPool.twitter_topic_verified) {
-  //   return constructVerifyResponse(true, "");
-  // }
+  if (userLotteryPool && userLotteryPool.twitter_topic_verified) {
+    return constructVerifyResponse(true, "");
+  }
   const twitterAuth = await queryUserTwitterAuthorization(userId);
   if (!twitterAuth) {
     return constructVerifyResponse(false, "You should connect your Twitter Account first.");
