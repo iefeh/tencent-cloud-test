@@ -101,7 +101,7 @@ const routeText: RouteMenu[] = [
       //   route: '/NFT/Mint',
       // },
       {
-        name: 'TETRA NFT Merge',
+        name: 'Lv2 TETRA Merge',
         route: '/NFT/Merge',
       },
     ],
