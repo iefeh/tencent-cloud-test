@@ -3,14 +3,30 @@ import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 
+interface Rule {
+  title: string;
+  items: (string | SubRule)[];
+}
+
+interface SubRule {
+  label: string;
+  children: string[];
+}
+
 const LotteryRules: FC = () => {
-  const rules = [
+  const rules: Rule[] = [
     {
       title: 'Lottery Tickets',
       items: [
-        'Each draw will cost you 1x lottery ticket.',
-        'You can use 25 Moon Beams to exchange for 1x lottery ticket.',
-        'As a Premium Pass Holder, you can claim 3 free tickets per pool as a bonus reward. These 3 tickets are limited to use in the specific pool only.',
+        {
+          label: 'There are 2 types of lottery tickets:',
+          children: [
+            'Silver Ticket: Exchange 25 Moon Beams for 1 Silver Ticket. It is valid only in the current pool.',
+            'Gold S1 Ticket: Earned through special rewards. Can be used in all pools during Season 1.',
+          ],
+        },
+        'Each draw costs 1 lottery ticket.',
+        'Premium Pass Holders receive 3 bonus Silver Tickets per lottery pool.',
       ],
     },
     {
@@ -76,7 +92,21 @@ const LotteryRules: FC = () => {
                   <li key={idx} className="flex">
                     <div className="w-1 h-1 bg-white rounded-full mt-3 mr-2"></div>
                     <div>
-                      {item}
+                      {typeof item === 'string' ? (
+                        item
+                      ) : (
+                        <>
+                          {(item as SubRule).label}
+
+                          <ul>
+                            {item.children.map((c, ci) => (
+                              <li key={ci} className="text-sm">
+                                - {c}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
 
                       {index === 4 && (
                         <table className="w-full border-1 border-white/60 my-4">
