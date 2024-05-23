@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import useMint from '@/hooks/useMint';
 import useScrollLoad from '@/hooks/useScrollLoad';
+import Image from 'next/image';
 
 function NFTMergePage({
   params,
@@ -177,8 +178,8 @@ function NFTMergePage({
               </div>
             ) : merged ? (
               <>
-                <div className="w-[35.8125rem] h-[35.8125rem]">
-                  {mergedNFT?.token_metadata?.animation_url && (
+                <div className="w-[35.8125rem] h-[35.8125rem] relative">
+                  {mergedNFT?.token_metadata?.animation_url ? (
                     <Video
                       key={mergedNFT.token_metadata.animation_url}
                       className="w-full h-full"
@@ -191,7 +192,16 @@ function NFTMergePage({
                         ],
                       }}
                     />
-                  )}
+                  ) : mergedNFT?.token_metadata?.image ? (
+                    <Image
+                      className="object-contain"
+                      src={mergedNFT.token_metadata.image}
+                      alt=""
+                      fill
+                      sizes="100%"
+                      unoptimized
+                    />
+                  ) : null}
                 </div>
 
                 <p className="text-base text-center w-[39rem] mt-2">
@@ -263,7 +273,8 @@ function NFTMergePage({
               {nfts.map((item, index) => (
                 <MergeNFT
                   key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
-                  src={item?.token_metadata?.animation_url}
+                  src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
+                  isImage={!item?.token_metadata?.animation_url}
                   name={item?.token_metadata?.name}
                   status={item?.status}
                   transactionStatus={item?.transaction_status}
