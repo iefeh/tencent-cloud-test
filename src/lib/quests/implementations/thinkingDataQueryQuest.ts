@@ -1,13 +1,14 @@
 import { PipelineStage } from 'mongoose';
 import UserTwitter from '@/lib/models/UserTwitter';
 import { IQuest } from '@/lib/models/Quest';
-import { ThinkingDataQuery, checkClaimableResult, claimRewardResult } from '@/lib/quests/types';
+import { QuestRewardType, ThinkingDataQuery, ThinkingDataQuestType, checkClaimableResult, claimRewardResult } from '@/lib/quests/types';
 import { QuestBase } from '@/lib/quests/implementations/base';
 import { AuthorizationType } from '@/lib/authorization/types';
-import UserMetrics, { Metric, IUserMetrics } from '@/lib/models/UserMetrics';
+import UserMetrics, { Metric, IUserMetrics, createUserMetric } from '@/lib/models/UserMetrics';
 import { sendBadgeCheckMessage } from '@/lib/kafka/client';
 import { IOAuthToken } from '@/lib/models/OAuthToken';
 import axios from 'axios';
+import { format } from 'date-fns';
 const { parse } = require('csv-parse/sync');
 
 export class ThinkingDataQueryQuest extends QuestBase {
@@ -19,20 +20,49 @@ export class ThinkingDataQueryQuest extends QuestBase {
 
   async checkClaimable(userId: string): Promise<checkClaimableResult> {
     const questProp = this.quest.properties as ThinkingDataQuery;
-    const result = await this.checkUserQuestFromThinkingData(questProp.sql_template, userId);
-    return {
-      claimable: result,
-    };
+    const result = await this.checkUserQuestFromThinkingData(questProp, userId);
+    if (!result) {// 若直接返回false,则直接返回
+      return {
+        claimable: result,
+      };
+    }
+
+    if (questProp.rewardType && questProp.rewardType === QuestRewardType.Range) {
+      // 检查是否有排名信息
+      if (!result[1]) {
+        return { claimable: false, tip: "Do not have yesterday's rank info." }
+      }
+      const s = result[1][0];
+      
+      // 此时s为排名信息，保存为用户指标
+      await createUserMetric(userId, Metric.PrevdayRankFor2048, Number(s));
+      // 检查 2048大王徽章
+      await sendBadgeCheckMessage(userId, Metric.PrevdayRankFor2048);
+
+      return { claimable: true, tip: `Your rank on yesterday is ${Number(s)}` };
+    } else {
+      const s = result[1][0];
+      
+      // 判断是否有其他信息
+      if (result[1].length === 3) {
+        let extra: any = {};
+        extra.current_progress = result[1][1] ? result[1][1] : "0";// 任务当前进度
+        extra.target_progress = result[1][2];// 任务目标进度
+        return { claimable: s === 'true', tip: `Quest progress ${extra.current_progress}/${extra.target_progress}`, extra: extra };
+      }
+
+      return { claimable: s === 'true', tip: "This account didn't reach the reward condition." };
+    }
   }
 
-  async checkUserQuestFromThinkingData(sqlTemplate: string, userId: string): Promise<boolean> {
+  async checkUserQuestFromThinkingData(questProp: ThinkingDataQuery, userId: string): Promise<any> {
     const serverURL = "http://13.212.32.231:8992/querySql";
     // 创建查询参数
     const params = new URLSearchParams({
       token: process.env.THINKINGDATA_API_TOKEN!,
       format: 'csv_header',
       timeoutSeconds: '15',
-      sql: sqlTemplate.replace('{userId}', userId)
+      sql: questProp.sql_template.replace('{userId}', userId)
     });
 
     try {
@@ -44,7 +74,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       });
 
       // 读取响应
-      const body = response.data;
+      const body = response.data; console.log("body", body);
       if (body && !body.includes("_col0")) {
         console.error('Error:', body);
         return false;
@@ -53,9 +83,9 @@ export class ThinkingDataQueryQuest extends QuestBase {
       const records = parse(body, {
         skip_empty_lines: true
       });
-      // 检查是否为 "true"
-      const s = records[1][0];
-      return s === 'true';
+
+      return records;
+
     } catch (error) {
       console.error('Error:', error);
       return false;
@@ -68,11 +98,28 @@ export class ThinkingDataQueryQuest extends QuestBase {
       return {
         verified: false,
         require_authorization: claimableResult.require_authorization,
-        tip: claimableResult.require_authorization ? "You should connect your Twitter Account first." : undefined,
+        tip: claimableResult.tip,
+        extra: claimableResult.extra
       }
     }
-    const taint = `${this.quest.id},user,${userId}`;
+    const questProp = this.quest.properties as ThinkingDataQuery;
+    let taint = `${this.quest.id},user,${userId}`;
+
+    if (questProp.type && questProp.type === ThinkingDataQuestType.Daily) {
+      // 若为每日任务，则修改taint和questid
+      const datestamp = format(Date.now(), 'yyyy-MM-dd');
+      taint = `${this.quest.id},user,${userId},${datestamp}`;
+      this.quest.id = `${this.quest.id},${datestamp}`;
+    }
+
     const rewardDelta = await this.checkUserRewardDelta(userId);
+    if (rewardDelta === 0) {
+      return {
+        verified: false,
+        tip: 'This account has no reward for this quest.',
+      };
+    }
+
     const result = await this.saveUserReward(userId, taint, rewardDelta, null);
     if (result.duplicated) {
       return {

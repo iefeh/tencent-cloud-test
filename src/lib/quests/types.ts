@@ -72,8 +72,12 @@ export enum QuestRewardType {
 export type ThinkingDataQuery = {
     // 查询的SQL模版，该模版只支持传递一个参数，即用户id
     sql_template: string;
-     // 任务地址
+    // 任务地址
     url: string;
+    // 任务类型，不填写则为一次性任务
+    type?: ThinkingDataQuestType
+    // 奖励类型，fixed为固定奖励，range则需要根据用户的数据进行确定，比如排名，不填写默认固定奖励
+    rewardType?: QuestRewardType;
 }
 
 // 发送discord消息(文本频道或者论坛回帖都适用.)
@@ -230,4 +234,11 @@ export type claimRewardResult = {
     tip?: string;
     // 传递自定义信息
     extra?: any;
+}
+
+export enum ThinkingDataQuestType {
+    // 固定奖励，奖励数量配置于当前任务中
+    Daily = "daily",
+    // 范围奖励，奖励数量特定于任务进行动态分配
+    Once = "once",
 }
