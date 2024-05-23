@@ -1,0 +1,159 @@
+import { Lottery } from '@/types/lottery';
+import { Modal, ModalBody, ModalContent, ModalHeader, cn } from '@nextui-org/react';
+import { FC, useState } from 'react';
+import Image from 'next/image';
+import mbImg from 'img/loyalty/earn/mb.png';
+import { useUserContext } from '@/store/User';
+import { observer } from 'mobx-react-lite';
+import { MBsPerDraw } from '@/constant/lottery';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import { throttle } from 'lodash';
+import { drawAPI } from '@/http/services/lottery';
+import { toast } from 'react-toastify';
+import { TicketContents } from './TicketContent';
+
+interface Props {
+  disclosure: {
+    isOpen: boolean;
+    onOpen: () => void;
+    onClose: () => void;
+    onOpenChange: () => void;
+    isControlled: boolean;
+    getButtonProps: (props?: any) => any;
+    getDisclosureProps: (props?: any) => any;
+  };
+  times: number;
+  onDrawed?: (data: Lottery.RewardResDTO) => void;
+}
+
+const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
+  disclosure: { isOpen, onOpenChange },
+  item,
+  times,
+  onDrawed,
+}) => {
+  const { userInfo } = useUserContext();
+  const [freeTicketsCount, setFreeTicketCount] = useState(0);
+  const [s1TicketsCount, setS1TicketCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const ticketsForBuying = Math.max(times - s1TicketsCount - (item?.user_free_lottery_ticket_amount || 0), 0);
+  const needMbs = ticketsForBuying * MBsPerDraw;
+  const isMBNotEnough = needMbs > (userInfo?.moon_beam || 0);
+
+  const onDraw = throttle(async () => {
+    if (needMbs > 0 && !isConfirming) {
+      setIsConfirming(true);
+      return;
+    }
+
+    setLoading(true);
+
+    const data = {
+      lottery_pool_id: item?.lottery_pool_id!,
+      draw_count: times,
+      lottery_ticket_cost: s1TicketsCount,
+      mb_cost: needMbs,
+    };
+
+    const res = await drawAPI(data);
+    if (!!res.success && !res.verified) {
+      toast.success(res.message);
+      onDrawed?.(res);
+    }
+
+    setLoading(false);
+  }, 500);
+
+  return (
+    <Modal
+      backdrop="blur"
+      placement="center"
+      isOpen={isOpen}
+      classNames={{
+        base: 'bg-black max-w-[52.6875rem]',
+        header: 'p-0',
+        closeButton: 'z-10',
+        body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-6 pb-[2.875rem] px-[4.625rem] max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
+      }}
+      onOpenChange={onOpenChange}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader>
+              <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex justify-between items-center gap-3 pl-8 pr-[5.625rem]">
+                <div className="font-semakin text-basic-yellow text-2xl">DRAW {times} TIMES</div>
+
+                <div className="text-[#C89E7A] font-semakin flex-1 text-right">You Own</div>
+
+                <div className="w-[9.625rem] h-14 relative flex items-center">
+                  <Image
+                    src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_draw_button.png"
+                    alt=""
+                    fill
+                    sizes="100%"
+                    unoptimized
+                  />
+
+                  <Image className="w-6 h-6 ml-6" src={mbImg} alt="" />
+
+                  <div className="font-semakin text-2xl ml-4">{userInfo?.moon_beam || '--'}</div>
+                </div>
+              </div>
+            </ModalHeader>
+
+            <ModalBody>
+              {isConfirming ? (
+                <>
+                  <div className="text-sm text-left">
+                    You don’t have enough Lottery Tickets, please confirm you would like to spend{' '}
+                    <span className="text-pure-red">{needMbs}</span> Moon Beams to buy{' '}
+                    <span className="text-pure-red">{ticketsForBuying} </span>
+                    ticket(s).
+                  </div>
+
+                  <div className="flex items-center mt-10">
+                    <Image className="w-[3.25rem] h-[3.25rem]" src={mbImg} alt="" />
+
+                    <div className="font-semakin ml-[0.5625rem]">
+                      <div className={cn(['text-[2rem] text-left', isMBNotEnough && 'text-pure-red'])}>{needMbs}</div>
+                      <div className="text-sm leading-none">Moon Beams</div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-sm">
+                    Please confirm the tickets and Moon Beams you would like to use for the lottery draw:
+                  </div>
+
+                  <TicketContents
+                    times={times}
+                    poolInfo={item}
+                    onFreeTicketChange={setFreeTicketCount}
+                    onS1TicketChange={setS1TicketCount}
+                  />
+                </>
+              )}
+
+              <div>
+                <LGButton
+                  className="uppercase w-[18.5rem] h-9 mt-4"
+                  label={isConfirming ? 'Confirm' : 'Draw Now'}
+                  actived
+                  disabled={!item || (isConfirming ? isMBNotEnough : freeTicketsCount + s1TicketsCount !== times)}
+                  loading={loading}
+                  onClick={onDraw}
+                />
+              </div>
+            </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export default observer(DrawModal);

@@ -92,7 +92,9 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
         <DrawScreenMainContent onShowPrizePool={onShowPrizePool} />
       </div>
 
-      <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
+      {drawDisclosure.isOpen && (
+        <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
+      )}
 
       <RewardsModal item={currentReward} disclosure={rewardsDisclosure} />
 
