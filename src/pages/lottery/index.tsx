@@ -8,9 +8,11 @@ import BadgeScreen from '@/components/lottery/screens/BadgeScreen';
 import usePrizePool from '@/components/lottery/hooks/usePrizePool';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
+import useTouchBottom from '@/hooks/useTouchBottom';
 
 const LotteryPage: FC = () => {
   const { poolInfo, queryPoolInfo } = usePrizePool();
+  const { isTouchedBottom } = useTouchBottom();
 
   return (
     <section
@@ -27,7 +29,7 @@ const LotteryPage: FC = () => {
 
       <BadgeScreen item={poolInfo} />
 
-      {createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
+      {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
     </section>
   );
 };
