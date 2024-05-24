@@ -4,7 +4,6 @@ import { FC } from 'react';
 import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
-import { observer } from 'mobx-react-lite';
 
 interface Props extends ClassNameProps {
   onDraw?: (times: number) => void;
@@ -56,7 +55,13 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
               <div className="font-semakin text-lg ml-3">{item.label}</div>
             </div>
 
-            <LGButton label={item.buttonLabel} actived needAuth onClick={() => onDraw?.(item.times)} />
+            <LGButton
+              label={item.buttonLabel}
+              actived
+              needAuth
+              disabled={!poolInfo}
+              onClick={() => onDraw?.(item.times)}
+            />
           </div>
         ))}
       </div>
@@ -64,4 +69,4 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
   );
 };
 
-export default observer(DrawFooter);
+export default DrawFooter;
