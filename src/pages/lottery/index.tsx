@@ -1,6 +1,6 @@
 import CoverScreen from '@/components/lottery/screens/CoverScreen';
 import Head from 'next/head';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import ScrollDownArrow from '../components/common/ScrollDownArrow';
 import DrawScreen from '@/components/lottery/screens/DrawScreen';
 import { createPortal } from 'react-dom';
@@ -13,6 +13,12 @@ import useTouchBottom from '@/hooks/useTouchBottom';
 const LotteryPage: FC = () => {
   const { poolInfo, queryPoolInfo } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
+  const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
+
+  function onUpdate() {
+    queryPoolInfo();
+    badgeScreenRef.current?.update();
+  }
 
   return (
     <section
@@ -25,9 +31,9 @@ const LotteryPage: FC = () => {
 
       <CoverScreen />
 
-      <DrawScreen item={poolInfo} onUpdate={queryPoolInfo} />
+      <DrawScreen item={poolInfo} onUpdate={onUpdate} />
 
-      <BadgeScreen item={poolInfo} />
+      <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
 
       {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
     </section>

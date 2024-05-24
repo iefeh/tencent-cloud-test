@@ -14,6 +14,7 @@ import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
+import useShare from '../hooks/useShare';
 
 interface Props {
   onUpdate?: () => void;
@@ -28,6 +29,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
   const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
+  const { url } = useShare(poolInfo);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
@@ -108,7 +110,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
         <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
       )}
 
-      <RewardsModal item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
+      <RewardsModal url={url} item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
 
       <PrizePoolModal disclosure={prizePoolDisclosure} item={poolInfo} />
 
