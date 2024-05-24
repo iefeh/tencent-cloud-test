@@ -7,7 +7,7 @@ const DrawLimitsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ classNam
   return (
     <div
       className={cn([
-        'w-[16.5rem] h-[3.5625rem] leading-[3.5625rem] text-center',
+        'w-[15.9375rem] h-[4.5625rem] leading-[3.5625rem] text-center',
         'relative flex justify-between items-center',
         className,
       ])}

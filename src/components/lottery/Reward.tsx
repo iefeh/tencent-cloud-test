@@ -1,4 +1,4 @@
-import { LotteryBorders, LotteryRewardType, RewardQuality } from '@/constant/lottery';
+import { LotteryBorders, LotteryRewardSizes, LotteryRewardType, RewardQuality } from '@/constant/lottery';
 import { Lottery } from '@/types/lottery';
 import { Tooltip, cn } from '@nextui-org/react';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ const Reward: FC<ClassNameProps & ItemProps<Lottery.RewardItem>> = ({ className,
     reward_type === LotteryRewardType.NoPrize
       ? 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/thx.gif'
       : icon_url;
+  const itemSize = reward_type ? LotteryRewardSizes[reward_type] || '90%' : '90%';
 
   return (
     <div className="flex flex-col items-center">
@@ -26,7 +27,7 @@ const Reward: FC<ClassNameProps & ItemProps<Lottery.RewardItem>> = ({ className,
           unoptimized
         />
 
-        <div className="w-[90%] h-[90%] relative z-0">
+        <div className="relative z-0" style={{ width: itemSize, height: itemSize }}>
           {iconURL && (
             <Image className="object-contain rounded-lg" src={iconURL} alt="" fill sizes="100%" unoptimized />
           )}

@@ -14,6 +14,8 @@ import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
+import useShare from '../hooks/useShare';
+import S1TicketModal from '../S1TicketModal';
 
 interface Props {
   onUpdate?: () => void;
@@ -25,15 +27,22 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   const rewardsDisclosure = useDisclosure();
   const historyDisclosure = useDisclosure();
   const prizePoolDisclosure = useDisclosure();
+  const s1TicketDisclosure = useDisclosure();
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
   const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
+  const { url } = useShare(poolInfo);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
   }
 
   function onDraw(times: number) {
+    if (poolInfo?.can_claim_premium_benifits) {
+      s1TicketDisclosure.onOpen();
+      return;
+    }
+
     setDrawTimes(times);
     setTimeout(() => {
       drawDisclosure.onOpen();
@@ -91,7 +100,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20 flex justify-center items-center">
-        <MBInfo className="!absolute left-16 top-32" onShowHistory={onShowHistory} />
+        <MBInfo className="!absolute left-16 top-32" onShowHistory={onShowHistory} item={poolInfo} />
 
         <TicketsInfo className="!absolute left-16 top-[16.5625rem]" item={poolInfo} />
 
@@ -101,14 +110,14 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
         <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
 
-        <DrawScreenMainContent onShowPrizePool={onShowPrizePool} />
+        <DrawScreenMainContent item={poolInfo} onShowPrizePool={onShowPrizePool} />
       </div>
 
       {drawDisclosure.isOpen && (
         <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
       )}
 
-      <RewardsModal item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
+      <RewardsModal url={url} item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
 
       <PrizePoolModal disclosure={prizePoolDisclosure} item={poolInfo} />
 
@@ -118,6 +127,8 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
         item={poolInfo}
         onRecordClick={onRecordClick}
       />
+
+      <S1TicketModal disclosure={s1TicketDisclosure} item={poolInfo} onUpdate={onUpdate} />
     </div>
   );
 };
