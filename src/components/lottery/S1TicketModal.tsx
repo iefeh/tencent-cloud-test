@@ -69,7 +69,7 @@ const S1TicketModal: FC<Props & ItemProps<Lottery.Pool>> = ({
               </div>
 
               <div className="flex items-center mt-10">
-                <div className="w-32 h-32 relative">
+                <div className="w-24 aspect-[3507/4960] relative">
                   <Image
                     className="object-contain"
                     src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png"
@@ -80,9 +80,9 @@ const S1TicketModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                   />
                 </div>
 
-                <div className="font-semakin ml-[0.5625rem]">
+                <div className="font-semakin">
                   <div className="text-[2rem] text-left">3</div>
-                  <div className="text-sm leading-none uppercase">Silver Tickets</div>
+                  <div className="text-sm leading-none uppercase mt-4">Silver Tickets</div>
                 </div>
               </div>
 
