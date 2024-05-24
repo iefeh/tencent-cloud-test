@@ -1,7 +1,8 @@
 import { IQuest } from "@/lib/models/Quest";
 import { checkClaimableResult, claimRewardResult } from "@/lib/quests/types";
 import { QuestBase } from "@/lib/quests/implementations/base";
-import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
+import { format } from "date-fns";
+import UserBackpackModel from "@/lib/models/UserBackpack";
 
 export class Claim2048TicketQuest extends QuestBase {
     constructor(quest: IQuest) {
@@ -9,6 +10,17 @@ export class Claim2048TicketQuest extends QuestBase {
     }
 
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
+        // 添加用户ticket.
+        await UserBackpackModel.updateOne({ uid: userId }, {
+            $inc: { num: this.quest.properties.tickets },
+            $setOnInsert: {
+                uid: userId,
+                propId: 1,
+                propName: "ticket",
+                creatTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+            },
+        });
+
         return {
             claimable: true,
             // require_authorization: likeResult.require_authorization ? AuthorizationType.Twitter : undefined,
@@ -20,25 +32,15 @@ export class Claim2048TicketQuest extends QuestBase {
     async claimReward(userId: string): Promise<claimRewardResult> {
         const taint = `2048,${this.quest.id},${userId}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
-            await UserMetrics.updateOne(
-                { user_id: userId },
-                {
-                    $inc: { [Metric.TicketFor2048]: this.quest.properties.tickets },
-                    $setOnInsert: {
-                        created_time: Date.now(),
-                    },
-                },
-                { upsert: true, session: session },
-            );
-        });
-        
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
+
         if (result.duplicated) {
             return {
                 verified: false,
                 tip: "The user has already claimed tickets.",
             }
         }
+        await this.checkClaimable(userId);
         // await sendBadgeCheckMessage(userId, Metric.TwitterConnected);
         return {
             verified: result.done,

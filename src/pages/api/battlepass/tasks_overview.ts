@@ -6,6 +6,7 @@ import { PipelineStage } from 'mongoose';
 import { errorInterceptor } from '@/lib/middleware/error';
 import QuestClassification, { ClassificationType } from "@/lib/models/QuestClassification";
 import { getCurrentBattleSeason, getUserBattlePass } from "@/lib/battlepass/battlepass";
+import { format } from "date-fns";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -74,7 +75,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
               let: { quest_id: '$id' },
               pipeline: [
                 {
-                  $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, ",2024-05-23"] }] }, { $eq: ['$quest_id', '$$quest_id'] }] }] } },
+                  $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(),'yyyy-MM-dd')}`] }] }, { $eq: ['$quest_id', '$$quest_id'] }] }] } },
                 },
                 {
                   $project: {

@@ -30,7 +30,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
     if (questProp.rewardType && questProp.rewardType === QuestRewardType.Range) {
       // 检查是否有排名信息
       if (!result[1]) {
-        return { claimable: false, tip: "Do not have yesterday's rank info." }
+        return { claimable: false, tip: "The rankings are still being updated. Please verify again after today's game has ended." }
       }
       const s = result[1][0];
       
