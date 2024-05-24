@@ -98,7 +98,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                   <>
                     Click to claim now.
                     <br />
-                    Bonus: Share to Twitter for an additional +20 Moon Beams! (first-time shares only)
+                    Bonus: Share to Twitter for an additional <span className="text-basic-yellow">+20 Moon Beams</span>!
+                    (first-time shares only)
                   </>
                 ) : (
                   <>Simply share on Twitter to claim your rewards.</>
