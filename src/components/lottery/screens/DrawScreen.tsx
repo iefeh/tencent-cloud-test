@@ -16,6 +16,7 @@ import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
 import useShare from '../hooks/useShare';
 import S1TicketModal from '../S1TicketModal';
+import { sleep } from '@/utils/common';
 
 interface Props {
   onUpdate?: () => void;
@@ -49,14 +50,19 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
     }, 0);
   }
 
-  function onDrawed(data: Lottery.RewardResDTO) {
+  async function onDrawed(data: Lottery.RewardResDTO) {
     setCurrentReward(data);
     drawDisclosure.onClose();
+
+    await sleep();
     setDrawAniVisible(true);
     onUpdate?.();
   }
 
-  function onDrawAniFinished() {
+  async function onDrawAniFinished() {
+    if (!drawAniVisible) return;
+
+    await sleep(200);
     setDrawAniVisible(false);
     rewardsDisclosure.onOpen();
   }

@@ -14,7 +14,7 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
   const isS1TicketsEnough = (poolInfo?.user_s1_lottery_ticket_amount || 0) >= times;
 
   const freeInitCount = isFreeTicketsEnough ? times : 0;
-  const s1InitCount = isS1TicketsEnough ? times : 0;
+  const s1InitCount = freeInitCount === 0 && isS1TicketsEnough ? times : 0;
 
   const [freeCount, setFreeCount] = useState(freeInitCount);
   const [s1Count, setS1Count] = useState(s1InitCount);
