@@ -22,6 +22,7 @@ import Link from 'next/link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
 import { isMobile } from 'react-device-detect';
+import Entry2048 from '@/components/pages/header/Entry2048';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -182,6 +183,8 @@ const Header = () => {
           <Image className="w-[135px] h-[80px]" src={logo} alt="Logo" />
         </Link>
       </div>
+
+      <Entry2048 />
 
       <div className="font-semakin flex items-center max-lg:hidden">
         {mobileRoute.map((value, index) => (
