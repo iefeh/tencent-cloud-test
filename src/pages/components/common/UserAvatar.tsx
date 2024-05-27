@@ -119,6 +119,7 @@ const UserAvatar = () => {
             usernameClassName="text-lg"
             walletClassName="text-[#666] mt-2"
             hideCopy
+            isAddressColumn
           />
         </MenuItem>
 
