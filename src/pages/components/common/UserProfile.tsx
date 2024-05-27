@@ -18,6 +18,7 @@ interface Props {
   copyText?: string;
   copyIcon?: string | StaticImageData;
   showRedeem?: boolean;
+  isAddressColumn?: boolean;
 }
 
 function UserProfile(props: Props) {
@@ -30,6 +31,7 @@ function UserProfile(props: Props) {
     desc,
     copyText,
     copyIcon,
+    isAddressColumn,
     showRedeem,
   } = props;
   const { userInfo, toggleRedeemModal } = useContext(MobxContext);
@@ -72,9 +74,9 @@ function UserProfile(props: Props) {
           {showRedeem && <LGButton className="ml-4" label="Redeem" actived onClick={toggleRedeemModal} />}
         </div>
 
-        <div className="flex items-center gap-x-8">
+        <div className={cn(['flex gap-x-8', isAddressColumn ? 'flex-col' : 'items-center'])}>
           <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
-            <span className="mr-4">Connected Wallet</span>
+            <span className="mr-4 w-36">Connected Wallet</span>
             <span className="px-2 py-1 rounded-sm bg-gradient-to-r from-basic-yellow/20 to-transparent">
               {desc || formatUserName(wallet) || '--'}
             </span>
@@ -89,7 +91,7 @@ function UserProfile(props: Props) {
           </div>
 
           <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
-            <span className="mr-4">Moonveil Wallet</span>
+            <span className="mr-4 w-36">Moonveil Wallet</span>
             <span className="px-2 py-1 rounded-sm bg-gradient-to-r from-basic-yellow/20 to-transparent">
               {desc || formatUserName(particle?.evm_wallet) || '--'}
             </span>
