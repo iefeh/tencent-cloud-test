@@ -3,10 +3,13 @@ import RegularTasks from './RegularTasks';
 import SeasonalCampaigns from './SeasonalCampaigns';
 import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
+import Game2048Content from './Game2048Content';
+import Image from 'next/image';
 
 export default function TaskTabs() {
   const regularTaskContent = useMemo(() => <RegularTasks />, []);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
+  const gameContent = useMemo(() => <Game2048Content />, []);
 
   const tabs = [
     {
@@ -16,6 +19,24 @@ export default function TaskTabs() {
     {
       key: 'Events',
       content: seasonalCampaignsContent,
+    },
+    {
+      key: '2048 Mini Game',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <Image
+            className="object-contain w-8 h-7 mr-1"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png"
+            alt=""
+            width={95}
+            height={83}
+            unoptimized
+          />
+
+          {label}
+        </div>
+      ),
+      content: gameContent,
     },
   ];
   const router = useRouter();
@@ -48,9 +69,13 @@ export default function TaskTabs() {
           <Tab
             key={tab.key}
             title={
-              <div className="flex items-center space-x-2">
-                <span>{tab.key}</span>
-              </div>
+              tab.render ? (
+                tab.render(tab.key)
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <span>{tab.key}</span>
+                </div>
+              )
             }
           >
             {tab.content}

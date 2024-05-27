@@ -43,11 +43,12 @@ interface TaskItem extends TaskListItem {
 }
 
 interface Props extends ClassNameProps {
+  hideHeader?: boolean;
   categoryItem?: TaskCategory | null;
   onBack?: () => void;
 }
 
-function RegularTasksList({ categoryItem, className, onBack }: Props) {
+function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props) {
   const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
@@ -515,15 +516,17 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
   return (
     <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', className])}>
-      <div className="self-start mb-8">
-        <div className="flex items-center cursor-pointer" onClick={onBack}>
-          <Image className="w-[1.625rem] h-[1.375rem]" src={arrowIcon} alt="" width={26} height={22} />
+      {hideHeader || (
+        <div className="self-start mb-8">
+          <div className="flex items-center cursor-pointer" onClick={onBack}>
+            <Image className="w-[1.625rem] h-[1.375rem]" src={arrowIcon} alt="" width={26} height={22} />
 
-          <span className="ml-3 text-2xl text-[#666666]">BACK</span>
+            <span className="ml-3 text-2xl text-[#666666]">BACK</span>
+          </div>
+
+          <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
         </div>
-
-        <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
-      </div>
+      )}
 
       <div
         className={cn([
