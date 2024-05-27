@@ -95,6 +95,7 @@ function RegularTasks() {
           break;
         case QuestType.JOIN_DISCORD_SERVER:
         case QuestType.HoldDiscordRole:
+        case QuestType.Claim2048Ticket:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',
@@ -140,6 +141,7 @@ function RegularTasks() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
+    const is2048 = task.type === QuestType.Claim2048Ticket;
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -267,7 +269,7 @@ function RegularTasks() {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
+          label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           hasCD={hasVerifyCD}

@@ -25,6 +25,7 @@ export const enum QuestType {
   ASTRARK_PRE_REGISTER = 'user_metric',
   SEND_DISCORD_MESSAGE = 'send_discord_message',
   TwitterFollower = 'twitter_follower',
+  Claim2048Ticket = 'claim_2048_ticket'
 }
 
 export const enum QuestRewardType {
