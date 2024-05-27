@@ -59,6 +59,14 @@ export const enum LotteryRewardType {
   NoPrize = 'no_prize',
 }
 
+export const LotteryRewardSizes = {
+  [LotteryRewardType.MoonBeam]: '50%',
+  [LotteryRewardType.LotteryTicket]: '80%',
+  [LotteryRewardType.USDT]: '80%',
+  [LotteryRewardType.NFT]: '70%',
+  [LotteryRewardType.NoPrize]: '90%',
+}
+
 export const enum RewardQuality {
   COPPERY = 1,
   SILVER,
@@ -88,14 +96,14 @@ export const LotteryBorders = {
   },
   [RewardQuality.PURPLE]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/purple.png',
-    width: 205,
-    height: 194,
+    width: 200,
+    height: 189,
     color: '#835CBF',
   },
   [RewardQuality.GOLDEN]: {
     img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/golden.png',
-    width: 228,
-    height: 214,
+    width: 222,
+    height: 208,
     color: 'linear-gradient(to right, #D9A970, #EFEBC5)',
   },
 };
