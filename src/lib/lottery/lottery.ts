@@ -4,13 +4,11 @@ import { twitterOAuthProvider } from '@/lib/authorization/provider/twitter';
 import { deleteAuthToken } from '@/lib/authorization/provider/util';
 import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
 import logger from '@/lib/logger/winstonLogger';
-import LotteryPool, { ILotteryPool } from '@/lib/models/LotteryPool';
+import LotteryPool, { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/LotteryPool';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
-import doTransaction from '@/lib/mongodb/transaction';
 import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
 import { redis } from '@/lib/redis/client';
-import { increaseUserMoonBeam } from '@/lib/models/User';
 
 export async function getLotteryPoolById(lotteryPoolId: string): Promise<ILotteryPool | null> {
   const now = Date.now()
@@ -24,18 +22,14 @@ export async function canClaimPremiumBenifits(userId: string, lotteryPoolId: str
   return isPremium && (!userLotteryPool || !userLotteryPool.premium_benifits_claimed);
 }
 
-function constructVerifyResponse(verified: boolean, message: string) {
+export function constructVerifyResponse(verified: boolean, message: string) {
   return { verified: verified, message: message };
 }
 
-export async function verifyTwitterTopic(userId: string, lotteryPoolId: string): Promise<any> {
+export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, maxRewardClaimType: number): Promise<any> {
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     return constructVerifyResponse(false, "The lottery pool is not opened or has been closed.");
-  } 
-  const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
-  if (userLotteryPool && userLotteryPool.twitter_topic_verified) {
-    return constructVerifyResponse(true, "");
   }
   const twitterAuth = await queryUserTwitterAuthorization(userId);
   if (!twitterAuth) {
@@ -54,16 +48,17 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string):
     let verified = false;
     if (data.meta.result_count > 0) {
       let urlText = "";
-      if (lotteryPool.twitter_topic_urls && lotteryPool.twitter_topic_urls.length > 0) {
-        urlText = lotteryPool.twitter_topic_urls.join(",");
+      const twitterTopic = lotteryPool.twitter_topics.find(topics => (topics.reward_claim_type === maxRewardClaimType)) as LotteryTwitterTopic;
+      if (twitterTopic.twitter_topic_urls && twitterTopic.twitter_topic_urls.length > 0) {
+        urlText = twitterTopic.twitter_topic_urls.join(",");
       }
       // 把奖池的hashtag转换成推文的格式
       let hashtagsText = "";
-      if (lotteryPool.twitter_topic_hashtags && lotteryPool.twitter_topic_hashtags.length > 0) {
-        hashtagsText = "#" + lotteryPool.twitter_topic_hashtags.join("#");
+      if (twitterTopic.twitter_topic_hashtags && twitterTopic.twitter_topic_hashtags.length > 0) {
+        hashtagsText = "#" + twitterTopic.twitter_topic_hashtags.join("#");
       }
       // 拼接整体推文, 格式是{text} + {url} + {hashtags}
-      const mustHaveText = `${lotteryPool.twitter_topic_text}${urlText}${hashtagsText}`.replace(/(\r\n|\n|\r|\s)/gm, "");
+      const mustHaveText = `${twitterTopic.twitter_topic_text}${urlText}${hashtagsText}`.replace(/(\r\n|\n|\r|\s)/gm, "");
       for(let twitter of data.data) {
         let twitterText = twitter.text.replace(/(\r\n|\n|\r|\s)/gm, "");
         if (twitter.entities && twitter.entities.urls) {
@@ -76,21 +71,6 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string):
           break;
         }
       }
-    }
-    if (verified) {
-      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, "", 20);
-      doTransaction( async session => {
-        await UserLotteryPool.updateOne(
-          { user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null },
-          { 
-            $set: { twitter_topic_verified: true },
-            $setOnInsert: { created_time: Date.now() }
-          },
-          { upsert: true, session: session }
-        );
-        await moonBeamAudit.save(session);
-        await increaseUserMoonBeam(userId, lotteryPool.twitter_verify_mb_reward_amount, session);
-      });
     }
     return constructVerifyResponse(verified, verified? "" : "Cannot find your twitter topic for this lottery pool, please check your tweets.");
   } catch (error) {
