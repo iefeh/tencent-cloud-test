@@ -9,6 +9,7 @@ import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
 import { Modal, ModalContent, ModalBody, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import useWatchStorage from './useWatchStorage';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
@@ -39,6 +40,8 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_CONNECT, tokens);
   }, 500);
+
+  const { startWatch, stopWatch } = useWatchStorage({ key: KEY_AUTHORIZATION_CONNECT, callback: authConnect });
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {
@@ -94,6 +97,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
         callback?.();
       } else {
         open();
+        startWatch();
       }
 
       return;
@@ -118,7 +122,10 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
   useEffect(() => {
     window.addEventListener('storage', authConnect);
-    return () => window.removeEventListener('storage', authConnect);
+    return () => {
+      window.removeEventListener('storage', authConnect);
+      stopWatch();
+    }
   }, []);
 
   const BindTipsModal = () => {

@@ -75,7 +75,7 @@ async function paginationUserMoonbeamHistory(userId: string, tab: string, season
             matchOpts.type = UserMoonBeamAuditType.Badges;
             break;
         case "Special Reward":
-            types = [UserMoonBeamAuditType.CDK];
+            types = [UserMoonBeamAuditType.CDK, UserMoonBeamAuditType.LuckyDraw];
             matchOpts.type = { $in: types };
             break;
         default:

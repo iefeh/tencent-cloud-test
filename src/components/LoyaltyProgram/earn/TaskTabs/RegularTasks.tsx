@@ -28,7 +28,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
-import { useCountdown } from '@/pages/LoyaltyProgram/event/components/Countdown';
+import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';

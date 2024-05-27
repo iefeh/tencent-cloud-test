@@ -3,7 +3,8 @@ import connectToMongoDbDev from '../mongodb/client'
 
 export enum CDKRewardType {
   MoonBeam = 'moon_beam',
-  Badge = 'badge'
+  Badge = 'badge',
+  LotteryTicket = 'lottery_ticket',
 }
 
 export interface ICDK extends Document {

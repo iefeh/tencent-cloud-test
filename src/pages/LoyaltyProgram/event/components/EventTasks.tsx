@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import useConnect from '@/hooks/useConnect';
-import { useCountdown } from './Countdown';
+import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 

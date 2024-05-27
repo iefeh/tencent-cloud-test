@@ -24,6 +24,8 @@ export enum UserMoonBeamAuditType {
     IndirectReferral = "indirect_referral",
     // CDK兑换所得MB
     CDK = "cdk",
+    // 抽奖所得MB
+    LuckyDraw = "lucky_draw"
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
@@ -41,12 +43,14 @@ export interface IUserMoonBeamAudit extends Document {
     // 如type=campaigns时是活动id
     // 如type=campaign_bonus时是活动id
     // 如type=badges时是徽章id
+    // 如type=lucky_draw时是抽奖奖品reward_id
     corr_id: String;
     // 额外信息，
     // 如 type=quests && quest_type=connect_wallet时，存放用户的钱包资产(WalletAsset)id
     // 如 type=quests && quest_type=connect_steam时，存放用户的游戏资产(SteamUserGame)id
     // 如 type=campaign_bonus 时，存放加速器(IRewardAccelerator)id
     // 如 type=badges 时，存放徽章的等级
+    // 如 type=lucky_draw时是奖池id
     extra_info: string;
     // 审计时间
     created_time: Number;
