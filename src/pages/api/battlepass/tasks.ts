@@ -72,8 +72,9 @@ function enrichQuestNewTag(quests: any[]) {
             q.is_new = true;
         }
         // 移除任务的创建时间
-        delete q.created_time;
-    } 
+        delete q.created_time; 
+    }
+
 }
 
 async function loadBadgeInfo(quests: any[]) {

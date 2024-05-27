@@ -64,8 +64,9 @@ declare namespace Lottery {
   interface MilestoneDTO {
     total_draw_amount: number;
     luckyDrawBadge: {
-      id: string;
+      badge_id: string;
       name: string;
+      max_level_obtained: number;
       obtain_url: string;
       series: (BadgeSerie & { requirements: number })[];
     };

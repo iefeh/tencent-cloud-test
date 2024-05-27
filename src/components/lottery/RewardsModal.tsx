@@ -5,6 +5,7 @@ import { FC, useState } from 'react';
 import Reward from './Reward';
 import { claimRewardAPI } from '@/http/services/lottery';
 import { toast } from 'react-toastify';
+import useShare from './hooks/useShare';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -19,16 +20,18 @@ interface Props {
     getDisclosureProps: (props?: any) => any;
   };
   onClaimed?: () => void;
+  url: string;
 }
 
-const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange }, item, onClaimed }) => {
+const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange }, url, item, onClaimed }) => {
   const hasShareAndConfirmRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 3);
   const hasShareAndClaimRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 2);
   const claimed = (item?.rewards || []).every((r) => !!r.claimed);
   const [loading, setLoading] = useState(false);
 
   function onShare() {
-    // TODO 跳转twitter链接
+    if (!url) return;
+    window.open(url);
   }
 
   async function onClaim() {
@@ -95,7 +98,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                   <>
                     Click to claim now.
                     <br />
-                    Bonus: Share to Twitter for an additional +20 Moon Beams! (first-time shares only)
+                    Bonus: Share to Twitter for an additional <span className="text-basic-yellow">+20 Moon Beams</span>!
+                    (first-time shares only)
                   </>
                 ) : (
                   <>Simply share on Twitter to claim your rewards.</>
