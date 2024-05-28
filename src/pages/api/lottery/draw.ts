@@ -6,7 +6,7 @@ import { promiseSleep } from '@/lib/common/sleep';
 import logger from '@/lib/logger/winstonLogger';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import LotteryPool, { ILotteryPool, LotteryRewardItem } from '@/lib/models/LotteryPool';
+import LotteryPool, { ILotteryPool, LotteryRewardItem, LotteryRewardType } from '@/lib/models/LotteryPool';
 import { getLotteryPoolById } from '@/lib/lottery/lottery';
 import User, { IUser } from '@/lib/models/User';
 import UserLotteryDrawHistory, {
@@ -267,7 +267,7 @@ function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: numb
     reward_name: reward!.reward_name, 
     icon_url: reward!.icon_url, 
     reward_level: reward!.reward_level,
-    claimed: false,
+    claimed: reward!.reward_type === LotteryRewardType.NoPrize,
     reward_claim_type: reward!.reward_claim_type, 
     amount: reward!.amount
   });

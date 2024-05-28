@@ -28,13 +28,16 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   if (!lotteryPool) {
     res.json(response.invalidParams(constructVerifyResponse(false, "The lottery pool is not opened or has been closed.")));
   }
-  const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: drawId }) as IUserLotteryDrawHistory;
+  const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, draw_id: drawId }) as IUserLotteryDrawHistory;
   if (!drawHistory) {
     res.json(response.invalidParams(constructVerifyResponse(false, "Cannot find a draw record for this claim.")));
   }
   const maxClaimType = Math.max(...drawHistory.rewards.map(reward => (reward.reward_claim_type)));
   var postUrl = "https://twitter.com/intent/post?";
   const twitterTopic = lotteryPool.twitter_topics.find(topics => (topics.reward_claim_type === maxClaimType)) as LotteryTwitterTopic; 
+  if (!twitterTopic) {
+    res.json(response.serverError(constructVerifyResponse(false, "Cannot find a matching reward type.")));
+  }
   if (twitterTopic.twitter_topic_text) {
       // 把文本的\n替换为%0a
       const text = twitterTopic.twitter_topic_text.replace(/\n/g, "%0a");
