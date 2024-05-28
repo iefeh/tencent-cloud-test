@@ -33,7 +33,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
         return { claimable: false, tip: "The rankings are still being updated. Please verify again after today's game has ended." }
       }
       const s = result[1][0];
-      
+
       // 此时s为排名信息，保存为用户指标
       await createUserMetric(userId, Metric.PrevdayRankFor2048, Number(s));
       // 检查 2048大王徽章
@@ -42,7 +42,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       return { claimable: true, tip: `Your rank on yesterday is ${Number(s)}` };
     } else {
       const s = result[1][0];
-      
+
       // 判断是否有其他信息
       if (result[1].length === 3) {
         let extra: any = {};
@@ -96,7 +96,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
     const claimableResult = await this.checkClaimable(userId);
     if (!claimableResult.claimable) {
       return {
-        verified: false,
+        verified: claimableResult.tip ? claimableResult.tip.indexOf("progress") > -1 : false,
         require_authorization: claimableResult.require_authorization,
         tip: claimableResult.tip,
         extra: claimableResult.extra
