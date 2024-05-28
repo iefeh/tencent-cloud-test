@@ -104,7 +104,7 @@ const MBHistoryPage: FC = () => {
   }, [userInfo]);
 
   const emptyContent = (
-    <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+    <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
       <p>No history found.</p>
       <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
     </div>

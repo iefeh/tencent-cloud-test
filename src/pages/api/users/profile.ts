@@ -1,14 +1,15 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {queryUser} from "@/lib/common/user";
+import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import { queryUser } from "@/lib/common/user";
 import User from "@/lib/models/User";
+import { redis } from "@/lib/redis/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
-    const {username, avatar_url} = req.body;
+    const { username, avatar_url } = req.body;
     if (!username || !avatar_url) {
         return res.json(response.invalidParams());
     }
@@ -18,7 +19,14 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     if (username.length > 16) {
         return res.json(response.usernameTooLong());
     }
-    await User.updateOne({user_id: req.userId!}, {username: username, avatar_url: avatar_url});
+
+    // 三天只允许更改一次名字
+    const locked = await redis.set(`rename,${req.userId}`, Date.now(), "EX", 60 * 60 * 24 * 3, "NX");
+    if (!locked) {
+        return res.json(response.tooManyRequests());
+    }
+ 
+    await User.updateOne({ user_id: req.userId! }, { username: username, avatar_url: avatar_url });
     return res.json(response.success());
 });
 
