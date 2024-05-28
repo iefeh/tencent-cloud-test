@@ -50,6 +50,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({
   }
 
   async function onClaim() {
+    // TODO 添加twitter绑定验证
     setLoading(true);
 
     const data = {
