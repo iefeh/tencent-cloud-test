@@ -29,7 +29,7 @@ export function queryDrawMilestoneAPI(): Promise<Lottery.MilestoneDTO> {
   return http.get('/api/lottery/milestone');
 }
 
-export function getTwitterURLAPI(params: { lottery_pool_id: string }): Promise<{ postUrl: string }> {
+export function getTwitterURLAPI(params: { lottery_pool_id: string; draw_id: string }): Promise<{ postUrl: string }> {
   return http.get('/api/lottery/twitter', { params });
 }
 

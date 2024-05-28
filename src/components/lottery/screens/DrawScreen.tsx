@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import MBInfo from '../MBInfo';
 import TicketsInfo from '../TicketsInfo';
 import TimeoutInfo from '../TimeoutInfo';
@@ -16,6 +16,7 @@ import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
 import useShare from '../hooks/useShare';
 import S1TicketModal from '../S1TicketModal';
+import { sleep } from '@/utils/common';
 
 interface Props {
   onUpdate?: () => void;
@@ -31,7 +32,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
   const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
-  const { url } = useShare(poolInfo);
+  const { url } = useShare(poolInfo, currentReward);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
@@ -49,20 +50,25 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
     }, 0);
   }
 
-  function onDrawed(data: Lottery.RewardResDTO) {
+  async function onDrawed(data: Lottery.RewardResDTO) {
     setCurrentReward(data);
     drawDisclosure.onClose();
+
+    await sleep();
     setDrawAniVisible(true);
     onUpdate?.();
   }
 
-  function onDrawAniFinished() {
+  async function onDrawAniFinished() {
+    if (!drawAniVisible) return;
+
+    await sleep(200);
     setDrawAniVisible(false);
     rewardsDisclosure.onOpen();
   }
 
-  function onClaimed() {
-    rewardsDisclosure.onClose();
+  function onClaimed(needClose?: boolean) {
+    if (needClose) rewardsDisclosure.onClose();
     onUpdate?.();
     drawHistoryModalRef.current?.update();
   }
@@ -117,7 +123,14 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
         <DrawModal item={poolInfo} times={drawTimes} disclosure={drawDisclosure} onDrawed={onDrawed} />
       )}
 
-      <RewardsModal url={url} item={currentReward} disclosure={rewardsDisclosure} onClaimed={onClaimed} />
+      <RewardsModal
+        key={currentReward?.draw_id}
+        url={url}
+        item={currentReward}
+        poolInfo={poolInfo}
+        disclosure={rewardsDisclosure}
+        onClaimed={onClaimed}
+      />
 
       <PrizePoolModal disclosure={prizePoolDisclosure} item={poolInfo} />
 

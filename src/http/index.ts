@@ -11,12 +11,15 @@ const axios = new Axios({
 });
 
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
+  if (config.responseType === 'json') {
+    config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
+  }
   return config;
 });
 
 axios.interceptors.response.use(
   (res) => {
+    if (res.config.responseType !== 'json') return res;
     if (!res.data) return null;
 
     let data: any;
