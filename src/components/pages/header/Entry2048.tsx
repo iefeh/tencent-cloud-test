@@ -1,9 +1,11 @@
 import { GAME_URL_2048 } from '@/constant/2048';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { FC } from 'react';
 
 const Entry2048: FC = () => {
+  const router = useRouter();
   const chars = [
     {
       url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/2.png',
@@ -31,12 +33,16 @@ const Entry2048: FC = () => {
     window.open(GAME_URL_2048);
   }
 
+  function onGetTicket() {
+    router.push(`/LoyaltyProgram/event?id=${process.env.NEXT_PUBLIC_EVENT_2048TICKETS_ID}`);
+  }
+
   return (
-    <div className="relative cursor-pointer hidden xl:block" onClick={onJump}>
-      <div className="relative w-[7.0625rem] h-[2.875rem]">
+    <>
+      <div className="relative w-[3.375rem] h-[3.6875rem] mr-6 cursor-pointer hidden xl:block" onClick={onGetTicket}>
         <Image
           className="object-contain"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/puffy.png"
+          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/ticket.png"
           alt=""
           fill
           sizes="100%"
@@ -44,20 +50,33 @@ const Entry2048: FC = () => {
         />
       </div>
 
-      <div className="ani-jog absolute bottom-0 left-1/2 -translate-x-[54%] translate-y-[68%] w-max">
-        <div className="word flex items-center">
-          {chars.map(({ url, width, height }, index) => (
-            <div
-              key={index}
-              className={cn(['char relative', index > 0 && '-ml-[0.375rem]'])}
-              style={{ width: `${width / 16 / 5}rem`, height: `${height / 16 / 5}rem` }}
-            >
-              <Image className="object-contain" src={url} alt="" fill sizes="100%" unoptimized />
-            </div>
-          ))}
+      <div className="relative cursor-pointer hidden xl:block" onClick={onJump}>
+        <div className="relative w-[7.0625rem] h-[2.875rem]">
+          <Image
+            className="object-contain"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/puffy.png"
+            alt=""
+            fill
+            sizes="100%"
+            unoptimized
+          />
+        </div>
+
+        <div className="ani-jog absolute bottom-0 left-1/2 -translate-x-[54%] translate-y-[68%] w-max">
+          <div className="word flex items-center">
+            {chars.map(({ url, width, height }, index) => (
+              <div
+                key={index}
+                className={cn(['char relative', index > 0 && '-ml-[0.375rem]'])}
+                style={{ width: `${width / 16 / 5}rem`, height: `${height / 16 / 5}rem` }}
+              >
+                <Image className="object-contain" src={url} alt="" fill sizes="100%" unoptimized />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
