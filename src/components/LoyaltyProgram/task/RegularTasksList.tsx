@@ -7,6 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
   Pagination,
+  Tooltip,
   cn,
   useDisclosure,
 } from '@nextui-org/react';
@@ -444,11 +445,14 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">
-            <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
+              <div className="text-[#999] line-clamp-2" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            </Tooltip>
+
             {task.tip && (
               <div className="flex items-center relative">
                 <div
-                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis"
+                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis  max-h-[1.25rem]"
                   dangerouslySetInnerHTML={{ __html: task.tip }}
                 ></div>
                 {needEllipsis && (
@@ -491,7 +495,7 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
               isContentVisible ? 'max-h-full' : 'max-h-0 pointer-events-none',
             ])}
           >
-            <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
+            <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414] overflow-y-auto has-scroll-bar">
               <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
               <div className="text-sm text-[#999] mt-[0.625rem]" dangerouslySetInnerHTML={{ __html: task.tip }}></div>
             </div>
