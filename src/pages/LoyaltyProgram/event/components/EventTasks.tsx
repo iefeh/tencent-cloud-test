@@ -67,6 +67,7 @@ function EventTasks(props: EventTaskProps) {
           break;
         case QuestType.JOIN_DISCORD_SERVER:
         case QuestType.HoldDiscordRole:
+        case QuestType.Claim2048Ticket:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',
@@ -107,6 +108,7 @@ function EventTasks(props: EventTaskProps) {
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
     const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
+    const is2048 = task.type === QuestType.Claim2048Ticket;
 
     const connectType = task.authorization || '';
     const {
@@ -221,7 +223,7 @@ function EventTasks(props: EventTaskProps) {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? 'Verified' : 'Verify'}
+          label={verified ? (is2048 ? 'Claimed' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           hasCD={hasVerifyCD}

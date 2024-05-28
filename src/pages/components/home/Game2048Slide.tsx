@@ -23,8 +23,6 @@ export default function Game2048Slide(props: Props) {
         sizes="100%"
         unoptimized
       />
-
-      <div className="absolute left-0 top-0 w-full h-full bg-black/40"></div>
     </div>
   );
 }
