@@ -9,7 +9,7 @@ export interface IUserLotteryPool extends Document {
   // 奖池id
   lottery_pool_id: string;
   // 用户twitter话题是否已经验证
-  twitter_topic_verified: boolean;
+  first_twitter_topic_verified: boolean;
   // 高阶通行证用户福利是否已领取
   premium_benifits_claimed: boolean;
   // 用户拥有的奖池抽奖券数量
@@ -24,7 +24,7 @@ const UserLotteryPoolSchema = new Schema<IUserLotteryPool>({
   user_id: { type: String },
   draw_amount: { type: Number, default: 0 },
   lottery_pool_id: { type: String },
-  twitter_topic_verified: { type: Boolean, default: false },
+  first_twitter_topic_verified: { type: Boolean, default: false },
   premium_benifits_claimed: { type: Boolean, default: false },
   free_lottery_ticket_amount: { type: Number, default: 0 },
   created_time: {type: Number, required: true},
