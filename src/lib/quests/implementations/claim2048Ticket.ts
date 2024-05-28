@@ -19,7 +19,7 @@ export class Claim2048TicketQuest extends QuestBase {
                 propName: "ticket",
                 creatTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
             },
-        });
+        }, { upsert: true });
 
         return {
             claimable: true,
