@@ -1,13 +1,17 @@
 import { GAME_URL_2048 } from '@/constant/2048';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 interface Props {
   needAni?: boolean;
 }
 
 export default function Game2048Slide(props: Props) {
+  const router = useRouter();
+
   function onExplore() {
-    window.open(GAME_URL_2048);
+    // window.open(GAME_URL_2048);
+    router.push(`/LoyaltyProgram/event?id=${process.env.NEXT_PUBLIC_EVENT_2048TICKETS_ID}`);
   }
 
   return (
