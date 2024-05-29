@@ -10,6 +10,7 @@ export class HoldBadgeSBTQuest extends QuestBase {
 
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
         const props = this.quest.properties as HoldBadgeSBT;
+        // 查询是否持有对应mint
         const mint = await Mint.findOne({ user_id: userId, source_id: props.badge_id, badge_level: props.badge_level, status: "confirmed" });
         return {
             claimable: !!mint,
