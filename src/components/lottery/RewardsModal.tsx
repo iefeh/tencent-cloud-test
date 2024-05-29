@@ -1,10 +1,12 @@
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
-import Image from 'next/image';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Reward from './Reward';
 import { claimRewardAPI } from '@/http/services/lottery';
+import { toast } from 'react-toastify';
+
+type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
 interface Props {
   disclosure: {
@@ -16,87 +18,84 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
+  onClaimed?: (needClose?: boolean) => void;
+  url: string;
+  poolInfo?: Lottery.Pool | null;
 }
 
-const enum RewardsState {
-  NORMAL,
-  WAIT_SHARE,
-  WAIT_VERIFY,
-}
+const RewardsModal: FC<Props & DrawDTO> = ({
+  disclosure: { isOpen, onOpenChange },
+  url,
+  item,
+  poolInfo,
+  onClaimed,
+}) => {
+  const hasShareAndConfirmRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 3);
+  const hasShareAndClaimRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 2);
+  const hasForceShareRewards = hasShareAndConfirmRewards || hasShareAndClaimRewards;
+  const claimed = (item?.rewards || []).every((r) => !!r.claimed);
+  const [loading, setLoading] = useState(false);
+  const [claimDisabled, setClaimDisabled] = useState(false);
+  const [shareDisabled, setShareDisabled] = useState(false);
+  const [shareLabel, setShareLabel] = useState(hasForceShareRewards ? 'Share To Twitter' : 'Share for 20 MOON BEAMS');
 
-interface InitContentProps {
-  onClaim?: () => boolean | Promise<boolean>;
-}
+  function onShare() {
+    if (!url) return;
+    window.open(url);
 
-const InitContent: FC<InitContentProps & ItemProps<Lottery.RewardDTO>> = ({ item, onClaim }) => {
-  const [state, setState] = useState<RewardsState>(RewardsState.NORMAL);
-  const needShareTwitter = (item?.rewards || []).some(
-    (reward) => reward.reward_claim_type === 2 || reward.reward_claim_type === 3,
-  );
-
-  async function onClaimClick() {
-    let res = false;
-    if (onClaim) res = await onClaim();
-    if (!res) return;
-    setState(RewardsState.WAIT_SHARE);
+    if (!claimed) {
+      setClaimDisabled(false);
+      if (!hasForceShareRewards) setShareLabel('Claim 20 MBs');
+    }
   }
 
-  function onShareClick() {
-    // TODO 跳转twitter分享
-    setState(RewardsState.WAIT_VERIFY);
-  }
-
-  return (
-    <>
-      <div className="text-2xl">Congratulations on winning the following rewards!</div>
-
-      <div className="flex items-center mt-[1.875rem] gap-x-16">
-        {(item?.rewards || []).map((reward, index) => (
-          <Reward key={index} item={reward} />
-        ))}
-      </div>
-
-      <div className="text-sm text-[#666666] mt-[2.125rem]">
-        Click to claim now.
-        <br />
-        Bonus: Share to Twitter for an additional +20 Moon Beams! (first-time shares only)
-      </div>
-
-      <div className="flex items-center gap-x-[5.5rem] mt-5">
-        {state === RewardsState.NORMAL ? (
-          <>
-            <LGButton className="w-[18.5rem]" label="Claim" actived onClick={onClaimClick} />
-            <LGButton
-              className="w-[18.5rem]"
-              label="Share for 20 MOON BEAMS"
-              actived
-              disabled={!needShareTwitter}
-              onClick={onShareClick}
-            />
-          </>
-        ) : state === RewardsState.WAIT_SHARE ? (
-          <>
-            <LGButton className="w-[18.5rem]" label="Verify" actived />
-          </>
-        ) : (
-          <>
-            <LGButton className="w-[18.5rem]" label="Confirm" actived />
-          </>
-        )}
-      </div>
-    </>
-  );
-};
-
-const RewardsModal: FC<Props & ItemProps<Lottery.RewardResDTO>> = ({ disclosure: { isOpen, onOpenChange }, item }) => {
   async function onClaim() {
+    // TODO 添加twitter绑定验证
+    setLoading(true);
+
     const data = {
       draw_id: item?.draw_id!,
       lottery_pool_id: item?.lottery_pool_id!,
     };
     const res = await claimRewardAPI(data);
-    return !res;
+    if (!!res && !res.verified) {
+      toast.error(res.message);
+      setLoading(false);
+      return;
+    }
+
+    toast.success('Reward Claimed');
+    setLoading(false);
+    setClaimDisabled(true);
+    setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    const needClose = hasForceShareRewards || !!poolInfo?.first_twitter_topic_verified;
+    onClaimed?.(needClose);
   }
+
+  function initStatus() {
+    if (!hasForceShareRewards) {
+      setClaimDisabled(claimed);
+      setShareDisabled(true);
+      if (claimed) setShareLabel('Claimed 20 MBs');
+    }
+  }
+
+  useEffect(() => {
+    initStatus();
+  }, []);
+
+  useEffect(() => {
+    if (!url) {
+      setShareDisabled(true);
+      return;
+    }
+
+    if (hasForceShareRewards) {
+      setShareDisabled(claimed);
+    } else {
+      setShareDisabled(!claimed || !!poolInfo?.first_twitter_topic_verified);
+    }
+  }, [url]);
 
   return (
     <Modal
@@ -121,7 +120,54 @@ const RewardsModal: FC<Props & ItemProps<Lottery.RewardResDTO>> = ({ disclosure:
             </ModalHeader>
 
             <ModalBody>
-              <InitContent item={item} onClaim={onClaim} />
+              <div className="text-2xl">Congratulations on winning the following rewards!</div>
+
+              <div className="flex items-center mt-[1.875rem] gap-x-16">
+                {(item?.rewards || []).map((reward, index) => (
+                  <Reward key={index} item={reward} />
+                ))}
+              </div>
+
+              <div className="text-sm mt-6">
+                {hasShareAndConfirmRewards ? (
+                  <>
+                    Please follow these steps to claim your prize:
+                    <br />
+                    1. Stept 1: Share your reward on Twitter, making sure to tag @Moonveil_Studio and include #$MORE.
+                    <br />
+                    2. We will contact you within 3 business days. If you do not receive a message, please contact us
+                    through our Discord community Ticket.
+                  </>
+                ) : hasShareAndClaimRewards ? (
+                  <>
+                    Click to claim now.
+                    <br />
+                    Bonus: Share to Twitter for an additional <span className="text-basic-yellow">+20 Moon Beams</span>!
+                    (first-time shares only)
+                  </>
+                ) : (
+                  <>Simply share on Twitter to claim your rewards.</>
+                )}
+              </div>
+
+              <div className="flex items-center gap-x-[5.5rem] mt-5">
+                <LGButton
+                  className="w-[18.5rem]"
+                  label={claimed ? 'Claimed Rewards' : 'Claim'}
+                  actived
+                  disabled={claimDisabled}
+                  loading={loading}
+                  onClick={onClaim}
+                />
+
+                <LGButton
+                  className="w-[18.5rem]"
+                  label={shareLabel}
+                  actived
+                  disabled={shareDisabled}
+                  onClick={onShare}
+                />
+              </div>
             </ModalBody>
           </>
         )}

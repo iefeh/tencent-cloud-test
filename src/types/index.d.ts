@@ -16,3 +16,7 @@ declare interface Disclosure {
   getButtonProps: (props?: any) => any;
   getDisclosureProps: (props?: any) => any;
 }
+
+declare interface UpdateForwardRenderFunction {
+  update: () => void;
+}

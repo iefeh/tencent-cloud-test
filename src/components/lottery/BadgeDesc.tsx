@@ -3,8 +3,13 @@ import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 import BattlePassButton from '../LoyaltyProgram/season/BattlePassButton';
+import { Lottery } from '@/types/lottery';
 
-const BadgeDesc: FC = () => {
+interface Props {
+  milestone: Lottery.MilestoneDTO | null;
+}
+
+const BadgeDesc: FC<Props> = ({ milestone }) => {
   return (
     <div className="flex items-center">
       <div className="w-[24.5rem] h-[22.125rem] relative">
@@ -30,7 +35,7 @@ const BadgeDesc: FC = () => {
         <div className="w-full h-full relative z-0 pt-7 pb-10 pl-[2.125rem] pr-[1.125rem] flex flex-col justify-between">
           <div className="font-semakin text-4xl leading-none">
             <span className="bg-gradient-to-b from-[#efebc5] to-[#d9a970] bg-clip-text text-transparent">
-              “Lucky Draw Master”
+              “{milestone?.luckyDrawBadge?.name || 'Lucky Draw Master'}”
             </span>{' '}
             Badge
           </div>

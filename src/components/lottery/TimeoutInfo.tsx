@@ -13,7 +13,7 @@ const TimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
   });
 
   return (
-    <div className={cn(['w-[26.375rem] h-[7.625rem] pl-[1.8125rem] pr-[1.625rem] pt-4 relative', className])}>
+    <div className={cn(['w-[25.6875rem] h-[7.625rem] pl-[1.8125rem] pr-[1.625rem] pt-4 relative', className])}>
       <Image
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_timeout_info.png"
         alt=""

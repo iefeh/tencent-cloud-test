@@ -27,7 +27,7 @@ export default function NFT2Slide(props: Props) {
         title="Combine your Destiny TETRAs<br />4-to-1, and Acquire Your Eternity TETRA"
         subtitle="Owning an Eternity TETRA NFT unlocks a broader range of exclusive benefits within the Moonveil ecosystem."
         buttonLabel="Explore Now"
-        buttonLink="https://testnets.opensea.io/collection/eternity-tetra"
+        buttonLink="https://opensea.io/collection/eternity-tetra"
       />
     </div>
   );

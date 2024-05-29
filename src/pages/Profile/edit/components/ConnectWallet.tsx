@@ -12,12 +12,14 @@ import { disconnectMediaAPI } from '@/http/services/login';
 import useConnect from '@/hooks/useConnect';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import errorIconImg from 'img/icon/icon_error.png';
+import { formatUserName } from '@/utils/common';
 
 interface MAItem {
   title: string;
   icon: string | StaticImageData;
   type: MediaType;
   connected?: boolean;
+  connectedAccount?: string;
   disconnectAPI?: () => Promise<boolean | null>;
 }
 
@@ -29,6 +31,7 @@ const ConnectWallet = function () {
       icon: metamaskIconImg,
       type: MediaType.METAMASK,
       connected: !!userInfo?.wallet,
+      connectedAccount: userInfo?.wallet,
     },
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
@@ -75,9 +78,11 @@ const ConnectWallet = function () {
 
         <div className="cursor-pointer">
           {item.connected ? (
-            <span className="relative" onClick={() => onDisconnectClick(item)}>
-              Connected
-              <span className="absolute right-0 z-0 text-transparent hover:bg-black hover:text-basic-yellow transition-all !duration-500">
+            <span className="relative group" onClick={() => onDisconnectClick(item)}>
+              <span className="group-hover:text-transparent transition-colors">
+                {formatUserName(item.connectedAccount) || 'Connected'}
+              </span>
+              <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-colors !duration-500">
                 Disconnect
               </span>
             </span>

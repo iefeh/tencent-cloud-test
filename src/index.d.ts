@@ -52,5 +52,6 @@ interface BasePage {
 
 interface InfoDTO {
   message: string;
-  verified: boolean;
+  verified?: boolean;
+  success?: boolean;
 }

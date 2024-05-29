@@ -23,3 +23,7 @@ export function loadImage(src: string) {
 export function to2Digit(val?: number | string) {
   return (val || 0).toString().padStart(2, '0');
 }
+
+export function sleep(time: number = 300) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}

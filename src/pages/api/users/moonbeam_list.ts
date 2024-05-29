@@ -75,7 +75,7 @@ async function paginationUserMoonbeamHistory(userId: string, tab: string, season
             matchOpts.type = UserMoonBeamAuditType.Badges;
             break;
         case "Special Reward":
-            types = [UserMoonBeamAuditType.CDK];
+            types = [UserMoonBeamAuditType.CDK, UserMoonBeamAuditType.LuckyDraw];
             matchOpts.type = { $in: types };
             break;
         default:
@@ -178,6 +178,10 @@ async function enrichMbsDetail(tab: string, seasonId: string, mbs: any[]): Promi
             mbs.forEach(mb => {
                 if (mb.type === UserMoonBeamAuditType.Quests) {
                     // 常规任务ID
+                    const stampIndex = mb.corr_id.indexOf(',');
+                    if (stampIndex > -1) {
+                        mb.corr_id = mb.corr_id.substring(0, stampIndex);
+                    }
                     questIds.push(mb.corr_id);
                 } else if (mb.type === UserMoonBeamAuditType.Campaigns) {
                     // 活动ID

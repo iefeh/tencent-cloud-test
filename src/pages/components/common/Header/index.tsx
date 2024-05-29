@@ -22,6 +22,7 @@ import Link from 'next/link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
 import { isMobile } from 'react-device-detect';
+import Entry2048 from '@/components/pages/header/Entry2048';
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -56,10 +57,10 @@ const routeText: RouteMenu[] = [
         name: 'Referral Program',
         route: '/Profile/invite',
       },
-      {
-        name: '“More and $MORE” Lottery',
-        route: '/lottery',
-      },
+      // {
+      //   name: '“More and $MORE” Lottery',
+      //   route: '/lottery',
+      // },
     ],
   },
   {
@@ -101,7 +102,7 @@ const routeText: RouteMenu[] = [
       //   route: '/NFT/Mint',
       // },
       {
-        name: 'TETRA NFT Merge',
+        name: 'Lv2 TETRA Merge',
         route: '/NFT/Merge',
       },
     ],
@@ -186,6 +187,8 @@ const Header = () => {
           <Image className="w-[135px] h-[80px]" src={logo} alt="Logo" />
         </Link>
       </div>
+
+      <Entry2048 />
 
       <div className="font-semakin flex items-center max-lg:hidden">
         {mobileRoute.map((value, index) => (
