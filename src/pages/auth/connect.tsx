@@ -3,6 +3,7 @@ import { startTransition } from 'react';
 
 export default function Auth() {
   startTransition(() => {
+    const localStorage: Storage = window.opener?.localStorage || window.localStorage;
     const query = new URLSearchParams(location.search);
     const type = query.get('type') || '';
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};

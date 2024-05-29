@@ -16,6 +16,7 @@ interface NFTProps {
   className?: string;
   name?: string;
   src?: string;
+  isImage?: boolean;
   status?: string;
   transactionStatus?: string;
   showSelection?: boolean;
@@ -25,7 +26,8 @@ interface NFTProps {
 }
 
 export default function MergeNFT(props: NFTProps) {
-  const { name, src, status, transactionStatus, showSelection, defaultSelected, onClick, onSelectChange } = props;
+  const { name, src, isImage, status, transactionStatus, showSelection, defaultSelected, onClick, onSelectChange } =
+    props;
   const [selected, setSelected] = useState(!!defaultSelected);
   const isPending = transactionStatus === 'pending';
   const isTransferring = transactionStatus === 'transferringImg';
@@ -57,19 +59,23 @@ export default function MergeNFT(props: NFTProps) {
     () =>
       src ? (
         <div className="relative z-0 w-[13.125rem] h-[13.125rem]">
-          <Video
-            options={{
-              preload: false,
-              autoplay: false,
-              controls: false,
-              sources: [
-                {
-                  src,
-                  type: 'video/webm',
-                },
-              ],
-            }}
-          />
+          {isImage ? (
+            <Image className="object-contain" src={src} alt="" fill sizes="100%" unoptimized />
+          ) : (
+            <Video
+              options={{
+                preload: true,
+                autoplay: true,
+                controls: false,
+                sources: [
+                  {
+                    src,
+                    type: 'video/webm',
+                  },
+                ],
+              }}
+            />
+          )}
 
           {statusImg && (
             <>

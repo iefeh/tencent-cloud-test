@@ -61,8 +61,8 @@ export default function Rewards(props: Props) {
   });
 
   const accelerators = Object.values(acceleratorsDict);
-  const totalMultipliers = motoAccelerators.reduce((p, c) => (p += (+c.properties.reward_bonus || 0) * 100), 0);
-  const totalMBs = motoAccelerators.reduce((p, c) => (p += +c.properties.reward_bonus_moon_beam || 0), 0);
+  const totalMultipliers = +(item?.claim_settings?.total_reward_bonus || 0) * 100;
+  const totalMBs = +(item?.claim_settings?.total_reward_bonus_moon_beam || 0);
 
   return (
     <div className="mt-[1.875rem]">
@@ -147,7 +147,7 @@ export default function Rewards(props: Props) {
                   <div className="flex justify-center items-center gap-6 text-basic-yellow mt-4 text-lg">
                     <div>
                       Total Multipliers: {totalMultipliers > 0 ? '+' : ''}
-                      {totalMultipliers}%
+                      {totalMultipliers.toFixed(0)}%
                     </div>
                     <div>
                       Total Moon Beams: {totalMBs > 0 ? '+' : ''}

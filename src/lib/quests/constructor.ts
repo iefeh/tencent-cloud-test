@@ -19,6 +19,9 @@ import { TwitterFollowerQuest } from "./implementations/twitterFollowerQuest";
 import { TwitterTopicQuest } from "./implementations/twitterTopicQuest";
 import { TweetInteractionQuest } from "./implementations/tweetInteraction";
 import { HoldBadgeSBTQuest } from "./implementations/holdBadgeSBTQuest";
+import { ThinkingDataQueryQuest } from "./implementations/thinkingDataQueryQuest";
+import { Claim2048TicketQuest } from "./implementations/claim2048Ticket";
+
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -59,6 +62,11 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new TweetInteractionQuest(quest);
         case QuestType.HoldBadgeSBT:
             return new HoldBadgeSBTQuest(quest);
+        case QuestType.ThinkingDataQuery:
+            return new ThinkingDataQueryQuest(quest);
+        case QuestType.Claim2048Ticket:
+            return new Claim2048TicketQuest(quest);
+
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }

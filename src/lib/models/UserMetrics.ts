@@ -65,6 +65,8 @@ export enum Metric {
   TotalInviteeWalletNftUsdValue = 'total_invitee_wallet_nft_usd_value',
   // 被邀请人总计钱包资产价值 = 钱包token价值+WalletNFTUSDValue
   TotalInviteeWalletAssetUsdValue = 'total_invitee_wallet_asset_usd_value',
+  // 总计抽奖次数
+  TotalLotteryDrawAmount = 'total_lottery_draw_amount',
 
   //第1赛季完成任务数记录字段
   BattlepassSeason1PremiumPass = 'battlepass_season_1_premium_pass',
@@ -72,6 +74,9 @@ export enum Metric {
 
   //推特粉丝数
   TwitterFollowerCount = 'twitter_follower_count',
+
+  //2048前日排名
+  PrevdayRankFor2048='prevday_rank_for_2048',
 }
 
 // 用户内部指标，存放单独的集合
@@ -138,10 +143,14 @@ export interface IUserMetrics extends Document {
   total_invitee_wallet_nft_usd_value: number;
   // 被邀请人总计钱包资产价值 = 钱包token价值+WalletNFTUSDValue
   total_invitee_wallet_asset_usd_value: number;
-  //推特粉丝数
+  // 总计抽奖次数
+  total_lottery_draw_amount: number;
+  // 推特粉丝数
   twitter_follower_count: number;
   // 创建时间毫秒时间戳
   created_time: number;
+  // 2048前日排行
+  prevday_rank_for_2048: number;
 }
 
 const UserMetricsSchema = new Schema<IUserMetrics>({
@@ -178,7 +187,9 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   total_invitee_wallet_token_usd_value: { Type: Number },
   total_invitee_wallet_nft_usd_value: { Type: Number },
   total_invitee_wallet_asset_usd_value: { Type: Number },
+  total_lottery_draw_amount: { type: Number },
   twitter_follower_count: { type: Number },
+  prevday_rank_for_2048: { type: Number },
   created_time: { type: Number, required: true },
 });
 
@@ -200,7 +211,7 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
     },
     { upsert: true },
   );
-
+  
   await sendBadgeCheckMessage(userId, metric);
   return result;
 }

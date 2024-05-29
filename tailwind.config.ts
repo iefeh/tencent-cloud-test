@@ -59,7 +59,9 @@ const config: Config = {
         'poppins-medium': ['poppins-medium'],
       },
       colors: {
+        'light-yellow': '#E7D4A9',
         notion: '#ff4848',
+        'pure-red': '#BD0000',
         'basic-red': '#FF0000',
         'basic-blue': '#4C95C7',
         'basic-yellow': '#f6c799',

@@ -67,13 +67,14 @@ function enrichQuestNewTag(quests: any[]) {
     const now = Date.now();
     for (let q of quests) {
         q.is_new = false;
-        // 检查任务的创建时间是否在最近7天内
-        if (now - q.created_time < 7 * 24 * 3600 * 1000) {
+        // 检查任务的创建时间是否在最近2天内 
+        if (now - q.created_time < 2 * 24 * 3600 * 1000) {
             q.is_new = true;
         }
         // 移除任务的创建时间
-        delete q.created_time;
+        delete q.created_time; 
     }
+
 }
 
 async function loadBadgeInfo(quests: any[]) {

@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import useConnect from '@/hooks/useConnect';
-import { useCountdown } from './Countdown';
+import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 
@@ -44,6 +44,10 @@ const EVENT_ICON_DICT: Dict<string> = {
   [QuestType.HoldDiscordRole]: 'discord_colored',
   [QuestType.SEND_DISCORD_MESSAGE]: 'discord_colored',
   [QuestType.HoldNFT]: 'nft_colored',
+  [QuestType.ThinkingDataQuery]:
+    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png',
+  [QuestType.Claim2048Ticket]:
+    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png',
 };
 
 function EventTasks(props: EventTaskProps) {
@@ -63,6 +67,7 @@ function EventTasks(props: EventTaskProps) {
           break;
         case QuestType.JOIN_DISCORD_SERVER:
         case QuestType.HoldDiscordRole:
+        case QuestType.Claim2048Ticket:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',
@@ -103,6 +108,7 @@ function EventTasks(props: EventTaskProps) {
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
     const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
+    const is2048 = task.type === QuestType.Claim2048Ticket;
 
     const connectType = task.authorization || '';
     const {
@@ -217,9 +223,9 @@ function EventTasks(props: EventTaskProps) {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? 'Verified' : 'Verify'}
+          label={verified ? (is2048 ? 'Claimed' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
-          disabled={!verifiable}
+          disabled={!userInfo || !verifiable}
           hasCD={hasVerifyCD}
           tooltip={
             isLongCD && (
@@ -355,16 +361,16 @@ function EventTasks(props: EventTaskProps) {
     const { task } = props;
     const { started, started_after } = task;
 
+    function getTaskIcon() {
+      const url = EVENT_ICON_DICT[task.type] || 'default_colored';
+      if (url.startsWith('http')) return url;
+      return `/img/loyalty/task/${url}.png`;
+    }
+
     return (
       <div className="flex justify-between py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300 flex-col lg:flex-row items-start lg:items-center">
         <div className="flex items-center">
-          <Image
-            className="w-9 h-9"
-            src={`/img/loyalty/task/${EVENT_ICON_DICT[task.type] || 'default_colored'}.png`}
-            alt=""
-            width={36}
-            height={36}
-          />
+          <Image className="w-9 h-9 object-contain" src={getTaskIcon()} alt="" width={36} height={36} unoptimized />
           <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
         </div>
 

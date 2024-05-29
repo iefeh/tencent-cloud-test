@@ -24,6 +24,7 @@ interface MAItem {
   icon: string | StaticImageData;
   type: MediaType;
   connected?: boolean;
+  connectedAccount?: string;
   disconnectAPI?: () => Promise<boolean | null>;
 }
 
@@ -35,18 +36,21 @@ const SocialMediaAccounts = function () {
       icon: emailIconImg,
       type: MediaType.EMAIL,
       connected: !!userInfo?.email,
+      connectedAccount: userInfo?.email,
     },
     {
       title: 'Twitter',
       icon: xIconImg,
       type: MediaType.TWITTER,
       connected: !!userInfo?.twitter,
+      connectedAccount: userInfo?.twitter?.username,
     },
     {
       title: 'Discord',
       icon: discordIconImg,
       type: MediaType.DISCORD,
       connected: !!userInfo?.discord,
+      connectedAccount: userInfo?.discord?.username,
     },
     // {
     //   title: 'Facebook',
@@ -65,12 +69,14 @@ const SocialMediaAccounts = function () {
       icon: steamIconImg,
       type: MediaType.STEAM,
       connected: !!userInfo?.steam,
+      connectedAccount: userInfo?.steam?.username,
     },
     {
       title: 'Google',
       icon: googleIconImg,
       type: MediaType.GOOGLE,
       connected: !!userInfo?.google,
+      connectedAccount: userInfo?.google?.username,
     },
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
@@ -112,9 +118,11 @@ const SocialMediaAccounts = function () {
 
         <div className="cursor-pointer">
           {item.connected ? (
-            <span className="relative" onClick={() => onDisconnectClick(item)}>
-              Connected
-              <span className="absolute right-0 z-0 text-transparent hover:bg-black hover:text-basic-yellow transition-all !duration-500">
+            <span className="relative group" onClick={() => onDisconnectClick(item)}>
+              <span className="group-hover:text-transparent transition-colors inline-block max-w-[16rem] overflow-hidden whitespace-nowrap text-ellipsis">
+                {item.connectedAccount || 'Connected'}
+              </span>
+              <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-all !duration-500">
                 Disconnect
               </span>
             </span>

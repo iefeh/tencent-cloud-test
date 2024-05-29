@@ -141,15 +141,20 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
                 continue;
             }
             //判断是否持有对应NFT
-            const nft = await ContractNFT.findOne({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
-            if (nft) {
+            const nft = await ContractNFT.find({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
+            if (nft && nft.length > 0) {
                 accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+                if(accelerator.properties.support_stacking){
+                    campaign.claim_settings.total_reward_bonus_moon_beam += nft.length * accelerator.properties.reward_bonus_moon_beam;
+                    campaign.claim_settings.total_reward_bonus += nft.length * accelerator.properties.reward_bonus;
+                }else{
+                    campaign.claim_settings.total_reward_bonus_moon_beam += accelerator.properties.reward_bonus_moon_beam;
+                    campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
+                }
             } else {
                 accelerator.properties.reward_bonus = 0;
             }
             // 求和加速效果
-            campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
-            campaign.claim_settings.total_reward_bonus_moon_beam += accelerator.properties.reward_bonus_moon_beam;
             delete accelerator.properties.contract_address;
         }
         if (accelerator.type == RewardAcceleratorType.BadgeHolder) {
@@ -186,6 +191,9 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
             delete accelerator.properties.series;
         }
     }
+
+    campaign.claim_settings.total_reward_bonus = campaign.claim_settings.total_reward_bonus.toFixed(4);
+    campaign.claim_settings.total_reward_bonus_moon_beam = campaign.claim_settings.total_reward_bonus_moon_beam.toFixed(4);
 }
 // this will run if none of the above matches
 router.all((req, res) => {
