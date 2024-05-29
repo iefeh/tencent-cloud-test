@@ -30,7 +30,8 @@ const Entry2048: FC = () => {
   ];
 
   function onJump() {
-    window.open(GAME_URL_2048);
+    // window.open(GAME_URL_2048);
+    router.push(`/LoyaltyProgram/event?id=${process.env.NEXT_PUBLIC_EVENT_2048TICKETS_ID}`);
   }
 
   function onGetTicket() {
