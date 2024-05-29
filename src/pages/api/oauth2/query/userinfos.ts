@@ -9,6 +9,7 @@ import { responseOnOauthError } from "@/lib/oauth2/response";
 import { Request, Response } from '@node-oauth/oauth2-server';
 import User from "@/lib/models/User";
 import { PipelineStage } from "mongoose";
+import {ethers} from "ethers";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).post(async (req, res) => {
@@ -41,8 +42,11 @@ router.use(dynamicCors).post(async (req, res) => {
 });
 
 async function queryUserInfo(wallets: any[]): Promise<any[]> {
+    // 格式化钱包
+    const lowercaseWallets = wallets.map(w => w.toLowerCase());
+    const evmWallets = wallets.map(w => ethers.getAddress(w));
     // 从user_wallet中查询出所有的user_id，和地址
-    let user_wallets = await UserWallet.find({ deleted_time: null, wallet_addr: { $in: wallets } }, { user_id: 1, wallet_addr: 1 });
+    let user_wallets = await UserWallet.find({ deleted_time: null, wallet_addr: { $in: lowercaseWallets } }, { user_id: 1, wallet_addr: 1 });
     let user_ids = user_wallets.map(u => u.user_id);
     let wallet_user_id_map: Map<string, string> = new Map<string, string>(user_wallets.map(u => [u.wallet_addr, u.user_id]));
     // let userInfos = await User.find({ $or: [{ user_id: { $in: userIds } }, { particle: { evm_wallet: { $in: wallets } } }] }, { user_id: 1, username: 1, particle: 1 }); console.log("userInfos", userInfos);
@@ -50,7 +54,7 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
     const pipeline: PipelineStage[] = [
         {
             $match: {
-                $or: [{ user_id: { $in: user_ids } }, { "particle.evm_wallet": { $in: wallets } }]
+                $or: [{ user_id: { $in: user_ids } }, { "particle.evm_wallet": { $in: evmWallets } }]
             }
         }, {
             $project: {
@@ -63,7 +67,7 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
     let user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.user_id, u]));
 
     let result: any[] = [];
-    for (let w of wallets) {
+    for (let w of lowercaseWallets) {
         if (wallet_user_id_map.has(w)) {
             let user_data: any = {};
             user_data.user_id = wallet_user_id_map.get(w);
@@ -72,6 +76,8 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
             user_data.avatar_url = user_info_map.get(user_data.user_id)?.avatar_url;
             result.push(user_data);
         }
+    }
+    for (let w of evmWallets) {
         if (particle_user_info_map.has(w)) {
             result.push({
                 user_id: particle_user_info_map.get(w).user_id,
