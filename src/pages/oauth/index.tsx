@@ -58,14 +58,20 @@ const OAuthPage: FC & BasePage = () => {
 
   function formatName(val: string) {
     val = val || '';
-    if (val.length <= 8) return val;
+    if (val.length <= 12) return val;
     return `${val.substring(0, 4)}...${val.substring(val.length - 4)}`;
   }
 
   const scopes = query.scope ? query.scope.split(' ') : [];
   const authList = scopes.map((scope) => OAuth2ScopeAuth[scope] || []).flat();
+  let host = '--';
+
+  try {
+    host = query.redirect_uri ? new URL(query.redirect_uri).host : '';
+  } catch (error) {}
+
   const tipsList = [
-    `After authorization, you will be redirected to ${query.redirect_uri}.`,
+    `After authorization, you will be redirected to ${host}.`,
     "Your authorization may expire. You'll need to reauthorize to continue using these features.",
     `By authorizing, you agree to ${query.client_name} Privacy Policy and Terms of Service.`,
   ];
@@ -84,11 +90,21 @@ const OAuthPage: FC & BasePage = () => {
       });
       if (authorization_code) {
         // 解构查询参数，保留除授权参数外的其他参数为透传参数
-        const {client_id, redirect_uri,response_type, scope, code_challenge,code_challenge_method,client_name, icon_url, ...restQuery} = router.query;
+        const {
+          client_id,
+          redirect_uri,
+          response_type,
+          scope,
+          code_challenge,
+          code_challenge_method,
+          client_name,
+          icon_url,
+          ...restQuery
+        } = router.query;
         const landingURL = appendQueryParamsToUrl(redirect_uri as string, {
           ...restQuery,
           authorization_code: authorization_code,
-          expires_at: expires_at
+          expires_at: expires_at,
         });
         window.location.href = landingURL;
       }

@@ -18,7 +18,7 @@ const TicketsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
   ];
 
   return (
-    <div className={cn(['w-[23rem] h-[5.875rem] pl-2 pr-6', 'relative flex justify-between items-center', className])}>
+    <div className={cn(['w-[22.125rem] h-[4.5625rem] pl-2 pr-6', 'relative flex justify-between items-center', className])}>
       <Image
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_tickets_info.png"
         alt=""

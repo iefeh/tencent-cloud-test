@@ -1,12 +1,13 @@
 import PageDesc from '@/pages/components/common/PageDesc';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import { Lottery } from '@/types/lottery';
 import { FC } from 'react';
 
 interface Props {
   onShowPrizePool?: () => void;
 }
 
-const DrawScreenMainContent: FC<Props> = ({ onShowPrizePool }) => {
+const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onShowPrizePool }) => {
   return (
     <PageDesc
       className="-translate-y-12 items-center"
@@ -35,7 +36,9 @@ const DrawScreenMainContent: FC<Props> = ({ onShowPrizePool }) => {
           </div>
         </div>
       }
-      button={<LGButton className="uppercase mt-8" label="Prize Pool" actived onClick={onShowPrizePool} />}
+      button={
+        <LGButton className="uppercase mt-8" label="Prize Pool" actived disabled={!item} onClick={onShowPrizePool} />
+      }
     />
   );
 };

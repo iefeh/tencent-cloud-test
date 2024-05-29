@@ -5,18 +5,19 @@ import { FC } from 'react';
 import mbImg from 'img/loyalty/earn/mb.png';
 import { observer } from 'mobx-react-lite';
 import { useUserContext } from '@/store/User';
+import { Lottery } from '@/types/lottery';
 
 interface Props {
   onShowHistory?: () => void;
 }
 
-const MBInfo: FC<ClassNameProps & Props> = ({ className, onShowHistory }) => {
+const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ className, item, onShowHistory }) => {
   const { userInfo } = useUserContext();
 
   return (
     <div
       className={cn([
-        'w-[29.5625rem] h-[7.0625rem] pl-[0.875rem] pr-[1.3125rem]',
+        'w-[29.5625rem] h-[7.625rem] pl-[0.875rem] pr-[1.3125rem]',
         'relative flex justify-between items-center',
         className,
       ])}
@@ -37,8 +38,14 @@ const MBInfo: FC<ClassNameProps & Props> = ({ className, onShowHistory }) => {
       </div>
 
       <div className="flex flex-col relative z-0">
-        <LGButton className="uppercase font-bold" label="Season Pass" link="/LoyaltyProgram/season" />
-        <LGButton className="mt-4 uppercase font-bold" label="Draw History" actived onClick={onShowHistory} />
+        <LGButton className="uppercase font-bold" label="Earn More MBs" link="/LoyaltyProgram/season" />
+        <LGButton
+          className="mt-4 uppercase font-bold"
+          label="Draw History"
+          actived
+          disabled={!userInfo || !item}
+          onClick={onShowHistory}
+        />
       </div>
     </div>
   );

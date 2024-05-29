@@ -9,7 +9,7 @@ export function queryPrizePoolInfoAPI(params: { lottery_pool_id: string }): Prom
   return http.get('/api/lottery/lotterypool', { params });
 }
 
-export function drawAPI(data: Lottery.DrawDTO): Promise<Lottery.RewardResDTO & InfoDTO> {
+export function drawAPI(data: Partial<Lottery.DrawDTO>): Promise<Lottery.RewardResDTO & InfoDTO> {
   return http.post('/api/lottery/draw', JSON.stringify(data));
 }
 
@@ -27,4 +27,12 @@ export function claimRewardAPI(data: Lottery.ClaimReqDTO): Promise<InfoDTO> {
 
 export function queryDrawMilestoneAPI(): Promise<Lottery.MilestoneDTO> {
   return http.get('/api/lottery/milestone');
+}
+
+export function getTwitterURLAPI(params: { lottery_pool_id: string; draw_id: string }): Promise<{ postUrl: string }> {
+  return http.get('/api/lottery/twitter', { params });
+}
+
+export function claimPremiumTicketsAPI(data: { lottery_pool_id: string }): Promise<null> {
+  return http.post('/api/lottery/premium/claim_benifits', JSON.stringify(data));
 }

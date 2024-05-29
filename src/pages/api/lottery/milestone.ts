@@ -18,37 +18,45 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   let series: any[] = [];
   luckyDrawBadge.series.forEach((value: BadgeSeries, level: string) => {
     series.push({
-      level: Number(level),
+      lv: Number(level),
       description: value.description,
       icon_url: value.icon_url,
       image_url: value.image_url,
       requirements: value.requirements.length > 0 ? value.requirements[0].properties.value : 0,
       obtained: false,
-      claimed: false
+      claimed: false,
+      claimed_time: null,
+      obtained_time: null,
     })
   });
-  series.sort((a, b) => a.level - b.level);
+  series.sort((a, b) => a.lv - b.lv);
+  let maxLevelObtained = 0;
   if (userBadge) {
-    const maxLevelObtained = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level)));
+    maxLevelObtained = Math.max(...Array.from(userBadge.series.keys()).map(level => Number(level)));
     series.map(series => {
-      if (series.level < maxLevelObtained) {
+      if (series.lv < maxLevelObtained) {
         series.obtained = true;
+        series.obtained_time = userBadge.series.get(String(series.lv))?.obtained_time
         series.claimed = true;
+        series.claimed_time = userBadge.series.get(String(series.lv))?.claimed_time
       }
-      if (series.level === maxLevelObtained) {
+      if (series.lv === maxLevelObtained) {
         series.obtained = true;
+        series.obtained_time = userBadge.series.get(String(maxLevelObtained))?.obtained_time
         series.claimed = !!userBadge.series.get(String(maxLevelObtained))?.claimed_time;
+        series.claimed_time = series.claimed ? userBadge.series.get(String(maxLevelObtained))?.claimed_time: null;
       }
     });
   }
   res.json(response.success({ 
     total_draw_amount: userMetric.total_lottery_draw_amount | 0,
     luckyDrawBadge: {
-      id: luckyDrawBadge.id,
+      badge_id: luckyDrawBadge.id,
       name: luckyDrawBadge.name,
-      obtain_url: luckyDrawBadge.obtain_url,
       decription: luckyDrawBadge.description,
+      obtain_url: luckyDrawBadge.obtain_url,
       active: luckyDrawBadge.active,
+      max_level_obtained: maxLevelObtained,
       update_time: luckyDrawBadge.updated_time,
       series: series
     }

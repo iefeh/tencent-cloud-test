@@ -1,7 +1,7 @@
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Reward from './Reward';
 import { claimRewardAPI } from '@/http/services/lottery';
 import { toast } from 'react-toastify';
@@ -18,20 +18,39 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
-  onClaimed?: () => void;
+  onClaimed?: (needClose?: boolean) => void;
+  url: string;
+  poolInfo?: Lottery.Pool | null;
 }
 
-const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange }, item, onClaimed }) => {
+const RewardsModal: FC<Props & DrawDTO> = ({
+  disclosure: { isOpen, onOpenChange },
+  url,
+  item,
+  poolInfo,
+  onClaimed,
+}) => {
   const hasShareAndConfirmRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 3);
   const hasShareAndClaimRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 2);
+  const hasForceShareRewards = hasShareAndConfirmRewards || hasShareAndClaimRewards;
   const claimed = (item?.rewards || []).every((r) => !!r.claimed);
   const [loading, setLoading] = useState(false);
+  const [claimDisabled, setClaimDisabled] = useState(false);
+  const [shareDisabled, setShareDisabled] = useState(false);
+  const [shareLabel, setShareLabel] = useState(hasForceShareRewards ? 'Share To Twitter' : 'Share for 20 MOON BEAMS');
 
   function onShare() {
-    // TODO 跳转twitter链接
+    if (!url) return;
+    window.open(url);
+
+    if (!claimed) {
+      setClaimDisabled(false);
+      if (!hasForceShareRewards) setShareLabel('Claim 20 MBs');
+    }
   }
 
   async function onClaim() {
+    // TODO 添加twitter绑定验证
     setLoading(true);
 
     const data = {
@@ -47,8 +66,36 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
 
     toast.success('Reward Claimed');
     setLoading(false);
-    onClaimed?.();
+    setClaimDisabled(true);
+    setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    const needClose = hasForceShareRewards || !!poolInfo?.first_twitter_topic_verified;
+    onClaimed?.(needClose);
   }
+
+  function initStatus() {
+    if (!hasForceShareRewards) {
+      setClaimDisabled(claimed);
+      setShareDisabled(true);
+      if (claimed) setShareLabel('Claimed 20 MBs');
+    }
+  }
+
+  useEffect(() => {
+    initStatus();
+  }, []);
+
+  useEffect(() => {
+    if (!url) {
+      setShareDisabled(true);
+      return;
+    }
+
+    if (hasForceShareRewards) {
+      setShareDisabled(claimed);
+    } else {
+      setShareDisabled(!claimed || !!poolInfo?.first_twitter_topic_verified);
+    }
+  }, [url]);
 
   return (
     <Modal
@@ -95,7 +142,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                   <>
                     Click to claim now.
                     <br />
-                    Bonus: Share to Twitter for an additional +20 Moon Beams! (first-time shares only)
+                    Bonus: Share to Twitter for an additional <span className="text-basic-yellow">+20 Moon Beams</span>!
+                    (first-time shares only)
                   </>
                 ) : (
                   <>Simply share on Twitter to claim your rewards.</>
@@ -105,21 +153,18 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               <div className="flex items-center gap-x-[5.5rem] mt-5">
                 <LGButton
                   className="w-[18.5rem]"
-                  label="Claim"
+                  label={claimed ? 'Claimed Rewards' : 'Claim'}
                   actived
-                  disabled={claimed}
+                  disabled={claimDisabled}
                   loading={loading}
                   onClick={onClaim}
                 />
 
                 <LGButton
                   className="w-[18.5rem]"
-                  label={
-                    hasShareAndConfirmRewards || hasShareAndClaimRewards
-                      ? 'Share to Twitter'
-                      : 'Share for 20 MOON BEAMS'
-                  }
+                  label={shareLabel}
                   actived
+                  disabled={shareDisabled}
                   onClick={onShare}
                 />
               </div>

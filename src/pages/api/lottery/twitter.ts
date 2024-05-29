@@ -1,76 +1,88 @@
 import type {NextApiResponse} from "next";
 import { createRouter } from 'next-connect';
-import { v4 as uuidv4 } from 'uuid';
 
-import { maybeAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import TwitterTopic from '@/lib/models/TwitterTopic';
+import {
+    constructMoonBeamAudit, constructVerifyResponse, getLotteryPoolById
+} from '@/lib/lottery/lottery';
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/LotteryPool';
 import { increaseUserMoonBeam } from '@/lib/models/User';
+import UserLotteryDrawHistory, {
+    IUserLotteryDrawHistory, IUserLotteryRewardItem
+} from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import doTransaction from '@/lib/mongodb/transaction';
 import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
-router.use(maybeAuthInterceptor).post(async (req, res) => {
-  let postUrl = await createTwitterTopicReward(req, res);
-  // 如果用户在当前奖池已经创建过twitter topic则返回空url
+router.use(mustAuthInterceptor).get(async (req, res) => {
+  const { lottery_pool_id, draw_id } = req.query;
+  if (!lottery_pool_id || !draw_id) {
+    res.json(response.invalidParams());
+    return;
+  }
+  const userId = String(req.userId);
+  const lotteryPoolId = String(lottery_pool_id);
+  const drawId = String(draw_id);
+  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  if (!lotteryPool) {
+    res.json(response.invalidParams(constructVerifyResponse(false, "The lottery pool is not opened or has been closed.")));
+  }
+  const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, draw_id: drawId }) as IUserLotteryDrawHistory;
+  if (!drawHistory) {
+    res.json(response.invalidParams(constructVerifyResponse(false, "Cannot find a draw record for this claim.")));
+  }
+  const maxClaimType = Math.max(...drawHistory.rewards.map(reward => (reward.reward_claim_type)));
+  var postUrl = "https://twitter.com/intent/post?";
+  const twitterTopic = lotteryPool.twitter_topics.find(topics => (topics.reward_claim_type === maxClaimType)) as LotteryTwitterTopic; 
+  if (!twitterTopic) {
+    res.json(response.serverError(constructVerifyResponse(false, "Cannot find a matching reward type.")));
+  }
+  if (twitterTopic.twitter_topic_text) {
+      // 把文本的\n替换为%0a
+      const text = twitterTopic.twitter_topic_text.replace(/\n/g, "%0a");
+      postUrl += `&text=${text}%20`;
+  }
+  if (twitterTopic.twitter_topic_urls && twitterTopic.twitter_topic_urls.length > 0) {
+    postUrl += `&url=${twitterTopic.twitter_topic_urls.join(",")}`;
+  }
+  if (twitterTopic.twitter_topic_hashtags && twitterTopic.twitter_topic_hashtags.length > 0) {
+      postUrl += `&hashtags=${twitterTopic.twitter_topic_hashtags.join(",")}`;
+  }
+  let canClaimFirstTwitterReward = true;
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
+  // 假验证, 只要用户点击了share按钮就直接发放首推奖励
+  if (userLotteryPool && userLotteryPool.first_twitter_topic_verified) {
+    canClaimFirstTwitterReward = false;
+  }
+  if (canClaimFirstTwitterReward) {
+    const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, "", 20);
+    doTransaction( async session => {
+      await UserLotteryPool.updateOne(
+        { user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null },
+        { 
+          $set: { first_twitter_topic_verified: true },
+          $setOnInsert: { created_time: Date.now() }
+        },
+        { upsert: true, session: session }
+      );
+      await moonBeamAudit.save(session);
+      await increaseUserMoonBeam(userId, lotteryPool.twitter_verify_mb_reward_amount, session);
+    });
+  }
   res.json(response.success({ postUrl: postUrl }));
 });
 
-async function createTwitterTopicReward(req: any, res: any): Promise<string> {
-  const { must_contains_text,hash_tags,mention_usernames,reply_to_tweet_id,start_time,end_time,delay_seconds,retweet_excluded,quote_excluded, lottery_pool_id } = req.body;
-  // 一个奖池只需要一个twitter topic, 如果已经存在则不再创建
-  const userLotteryPool = await UserLotteryPool.findOne({ user_id: req.userId, lottery_pool_id: lottery_pool_id, deleted_time: null });
-  if (userLotteryPool && userLotteryPool.twitter_topic_id) {
-      return "";
-  }
-  var postUrl = "https://twitter.com/intent/post?";
-  let hasAndOperator = false;
-  if (mention_usernames && mention_usernames.length > 0) {
-      let mentions = "";
-      for (let username of mention_usernames) {
-          mentions += `@${username}%20`;
-      }
-      hasAndOperator = true;
-      postUrl += `&text=${mentions}`;
-  }
-  if (must_contains_text) {
-      // 把文本的\n替换为%0a
-      const text = must_contains_text.replace(/\n/g, "%0a");
-      postUrl += hasAndOperator? `${text}%20` : `&text=${text}%20`;
-  }
-  if (hash_tags && hash_tags.length > 0) {
-      const tags = hash_tags.join(",");
-      postUrl += `&hashtags=${tags}`;
-  }
-  const topicId = uuidv4();
-  const topic = new TwitterTopic({
-      id: topicId,
-      hash_tags: hash_tags,
-      must_contains_text: must_contains_text,
-      mention_usernames: mention_usernames,
-      reply_to_tweet_id: reply_to_tweet_id,
-      start_time: start_time,
-      end_time: end_time,
-      delay_seconds: delay_seconds,
-      retweet_excluded: retweet_excluded,
-      // 不能设置为true，twitter默认把原始推文归类为reply类型.
-      reply_excluded: false, 
-      quote_excluded: quote_excluded,
-      synced: false,
-      active: false,
-  }); 
-  await doTransaction(async session => {
-    const opts = {session};
-    await topic.save(opts);
-    await increaseUserMoonBeam(req.userId, 20, session);
-    await UserLotteryPool.updateOne(
-      { user_id: req.userId, 
-        lottery_pool_id: lottery_pool_id}, 
-      { 
-        $set: { twitter_topic_id: topicId },
-        $setOnInsert: { created_time: Date.now() }
-      },
-      { upsert: true, session: session });
+// this will run if none of the above matches
+router.all((req, res) => {
+  res.status(405).json({
+    error: 'Method not allowed',
   });
-  return postUrl;
-}
+});
+
+export default router.handler({
+  onError(err, req, res) {
+    console.error(err);
+    res.status(500).json(response.serverError());
+  },
+});

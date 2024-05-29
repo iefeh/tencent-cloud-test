@@ -115,6 +115,7 @@ export default function BadgeModal(props: Props) {
                   alt=""
                   width={300}
                   height={300}
+                  unoptimized
                 />
 
                 <div className="font-semakin text-3xl mt-5 flex justify-center w-full">
@@ -149,6 +150,7 @@ export default function BadgeModal(props: Props) {
                               alt=""
                               width={28}
                               height={32}
+                              unoptimized
                             />
                           )}
 
@@ -162,6 +164,7 @@ export default function BadgeModal(props: Props) {
                               alt=""
                               width={70}
                               height={70}
+                              unoptimized
                             />
 
                             <p
@@ -222,7 +225,7 @@ export default function BadgeModal(props: Props) {
                     />
                   )}
 
-                  <LGButton className="flex-1 uppercase" label="Coming Soon" actived disabled />
+                  {/* <LGButton className="flex-1 uppercase" label="Coming Soon" actived disabled /> */}
                 </div>
               </ModalBody>
             </>
