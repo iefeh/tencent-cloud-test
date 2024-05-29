@@ -14,7 +14,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).post(async (req, res) => {
     // 用于提供通过访问令牌获取用户信息的接口
     try {
-        
         await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo })
         const wallets = req.body;
 
@@ -28,14 +27,12 @@ router.use(dynamicCors).post(async (req, res) => {
             return;
         }
 
-        if (wallets.length > 500) {
+        if (wallets.length > 100) {
             res.json(response.invalidParams("Wallet address array is too long."));
             return;
         }
 
-
         const result = await queryUserInfo(wallets);
-
         res.json(response.success(result));
 
     } catch (error: any) {
@@ -57,7 +54,7 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
             }
         }, {
             $project: {
-                user_id: 1, username: 1, particle: 1
+                _id:0, user_id: 1, username: 1, particle: 1,avatar_url:1
             }
         }
     ];
@@ -65,18 +62,23 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
     let particle_user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.particle.evm_wallet, u]))
     let user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.user_id, u]));
 
-
     let result: any[] = [];
     for (let w of wallets) {
         if (wallet_user_id_map.has(w)) {
             let user_data: any = {};
             user_data.user_id = wallet_user_id_map.get(w);
-            user_data.usernmae = user_info_map.get(user_data.user_id).username;
+            user_data.usernmae = user_info_map.get(user_data.user_id)?.username;
             user_data.address = w;
+            user_data.avatar_url = user_info_map.get(user_data.user_id)?.avatar_url;
             result.push(user_data);
         }
         if (particle_user_info_map.has(w)) {
-            result.push({ user_id: particle_user_info_map.get(w).user_id, username: particle_user_info_map.get(w).username, address: w });
+            result.push({
+                user_id: particle_user_info_map.get(w).user_id,
+                username: particle_user_info_map.get(w).username,
+                address: w,
+                avatar_url: particle_user_info_map.get(w).avatar_url,
+            });
         }
     }
 
