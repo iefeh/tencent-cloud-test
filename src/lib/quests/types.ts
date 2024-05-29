@@ -38,6 +38,8 @@ export enum QuestType {
     SendDiscordMessage = "send_discord_message",
     // twitter的关注者数
     TwitterFollower = "twitter_follower",
+    // 持有徽章SBT
+     HoldBadgeSBT = "hold_badge_sbt",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)

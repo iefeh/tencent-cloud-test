@@ -10,7 +10,7 @@ export class HoldBadgeSBTQuest extends QuestBase {
 
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
         const props = this.quest.properties as HoldBadgeSBT;
-        const mint = await Mint.find({ user_id: userId, source_id: props.badge_id, badge_level: props.badge_level, status: "confirmed" });
+        const mint = await Mint.findOne({ user_id: userId, source_id: props.badge_id, badge_level: props.badge_level, status: "confirmed" });
         return {
             claimable: !!mint,
             tip: !!mint ? undefined : 'This account is not in possession of a confirmed badge SBT.'
