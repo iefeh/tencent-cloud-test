@@ -225,7 +225,7 @@ function EventTasks(props: EventTaskProps) {
           className="ml-2 uppercase"
           label={verified ? (is2048 ? 'Claimed' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
-          disabled={!verifiable}
+          disabled={!userInfo || !verifiable}
           hasCD={hasVerifyCD}
           tooltip={
             isLongCD && (
