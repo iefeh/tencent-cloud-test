@@ -220,3 +220,8 @@ export type claimRewardResult = {
     // 传递自定义信息
     extra?: any;
 }
+
+export type HoldBadgeSBT = {
+    badge_id: string,
+    badge_level: string
+}
