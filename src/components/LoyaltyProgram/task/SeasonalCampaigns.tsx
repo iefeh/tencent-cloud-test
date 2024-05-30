@@ -30,15 +30,12 @@ export default function SeasonalCampaigns() {
     const params = Object.assign(pagi.current, pagiParams);
 
     try {
-      if (userInfo)
-      {
+      if (userInfo) {
         const res = await queryEventListAPI(params);
         const { campaigns, total } = res;
         setTasks(campaigns || []);
         setTotal(Math.ceil((total || 0) / (pagiParams.page_size || 9)));
-      }
-      else
-      {
+      } else {
         setTasks([]);
         setTotal(0);
       }
@@ -165,7 +162,7 @@ export default function SeasonalCampaigns() {
       </Select>
 
       {tasks.length < 1 && !loading && (
-        <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+        <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
           <p>Please log in and claim your season pass first to unlock tasks & events.</p>
           <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
         </div>

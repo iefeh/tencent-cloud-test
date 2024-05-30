@@ -7,6 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
   Pagination,
+  Tooltip,
   cn,
   useDisclosure,
 } from '@nextui-org/react';
@@ -43,11 +44,12 @@ interface TaskItem extends TaskListItem {
 }
 
 interface Props extends ClassNameProps {
+  hideHeader?: boolean;
   categoryItem?: TaskCategory | null;
   onBack?: () => void;
 }
 
-function RegularTasksList({ categoryItem, className, onBack }: Props) {
+function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props) {
   const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
@@ -105,6 +107,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
           break;
         case QuestType.JOIN_DISCORD_SERVER:
         case QuestType.HoldDiscordRole:
+        case QuestType.Claim2048Ticket:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',
@@ -149,6 +152,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
     const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
+    const is2048 = task.type === QuestType.Claim2048Ticket;
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -275,7 +279,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
+          label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           hasCD={hasVerifyCD}
@@ -441,11 +445,14 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">
-            <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
+              <div className="text-[#999] line-clamp-2" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            </Tooltip>
+
             {task.tip && (
               <div className="flex items-center relative">
                 <div
-                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis"
+                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis  max-h-[1.25rem]"
                   dangerouslySetInnerHTML={{ __html: task.tip }}
                 ></div>
                 {needEllipsis && (
@@ -488,7 +495,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
               isContentVisible ? 'max-h-full' : 'max-h-0 pointer-events-none',
             ])}
           >
-            <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
+            <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414] overflow-y-auto has-scroll-bar">
               <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
               <div className="text-sm text-[#999] mt-[0.625rem]" dangerouslySetInnerHTML={{ __html: task.tip }}></div>
             </div>
@@ -513,15 +520,17 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
   return (
     <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', className])}>
-      <div className="self-start mb-8">
-        <div className="flex items-center cursor-pointer" onClick={onBack}>
-          <Image className="w-[1.625rem] h-[1.375rem]" src={arrowIcon} alt="" width={26} height={22} />
+      {hideHeader || (
+        <div className="self-start mb-8">
+          <div className="flex items-center cursor-pointer" onClick={onBack}>
+            <Image className="w-[1.625rem] h-[1.375rem]" src={arrowIcon} alt="" width={26} height={22} />
 
-          <span className="ml-3 text-2xl text-[#666666]">BACK</span>
+            <span className="ml-3 text-2xl text-[#666666]">BACK</span>
+          </div>
+
+          <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
         </div>
-
-        <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
-      </div>
+      )}
 
       <div
         className={cn([

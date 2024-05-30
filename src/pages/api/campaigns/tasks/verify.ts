@@ -79,7 +79,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
     const result = await questImpl.checkClaimable(userId);
     if (!result.claimable) {
         return res.json(response.success({
-            verified: false,
+            verified: result.tip ? result.tip.indexOf("progress") > -1 : false,
             require_authorization: result.require_authorization,
             tip: result.tip,
         }));

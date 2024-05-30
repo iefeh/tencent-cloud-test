@@ -156,7 +156,7 @@ export default function SeasonalCampaigns() {
       </Select>
 
       {tasks.length < 1 && !loading && (
-        <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+        <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
           <p>More exciting events coming soon.</p>
           <p>Stay tuned!</p>
           <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />

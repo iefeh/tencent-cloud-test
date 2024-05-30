@@ -26,7 +26,8 @@ function MyNFT() {
           {nfts.map((nft, index) => (
             <NFT
               name={nft?.token_metadata?.name}
-              src={nft?.token_metadata?.animation_url}
+              src={nft?.token_metadata?.animation_url || nft?.token_metadata?.image}
+              isSrcImage={!nft?.token_metadata?.animation_url}
               status={nft?.transaction_status}
               key={index}
             />

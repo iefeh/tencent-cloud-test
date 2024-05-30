@@ -31,7 +31,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     // 检查用户绑定的钱包
     const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
     if (!userWallet) {
-        return res.json(response.invalidParams("User wallet not bound"));
+        return res.json(response.walletNotConnected());
     }
     // 获取SBT合约
     const sbtContract = await Contract.findOne({ chain_id: mint.chain_id, category: ContractCategory.SBT });

@@ -11,6 +11,7 @@ import { getUserFirstWhitelist, queryUserAuth } from "@/lib/common/user";
 import { constructQuest } from "@/lib/quests/constructor";
 import UserTwitter from "../models/UserTwitter";
 import TwitterTopicTweet from "../models/TwitterTopicTweet";
+import { format } from "date-fns";
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -74,7 +75,9 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         return;
     }
     // 获取用户已经校验的任务
-    const questIds = quests.map(quest => quest.id);
+    const dateStamp = format(Date.now(), 'yyyy-MM-dd');
+    let questIds = quests.map(quest => quest.id);
+    questIds = questIds.concat(quests.filter(q => q.type === QuestType.ThinkingDataQuery).map(quest => `${quest.id},${dateStamp}`));// 添加2048每日任务完成记录查询
     const verifiedQuests = await UserMoonBeamAudit.find({
         user_id: userId,
         corr_id: { $in: questIds },
@@ -84,14 +87,17 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         corr_id: 1,
     });
     const verified = new Map<string, boolean>(verifiedQuests.map(q => [q.corr_id, true]));
-    
+
     quests.forEach(async quest => {
         // 添加任务校验标识
         quest.verified = verified.has(quest.id);
+        if (!quest.verified && quest.type === QuestType.ThinkingDataQuery) {
+            quest.verified = verified.has(`${quest.id},${dateStamp}`);
+        }
         // 添加禁止verify标识
         quest.verify_disabled = false;
         // 若已校验，则不再需要判断是否需要启用禁用verify.
-        if(!quest.verified){
+        if (!quest.verified) {
             if (quest.type === QuestType.TweetInteraction || quest.type === QuestType.TwitterTopic) {
                 let userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
                 if (userTwitter) {
@@ -113,7 +119,9 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
         return;
     }
     // 检查任务完成标识
-    const questIds = quests.map(quest => quest.id);
+    const dateStamp = format(Date.now(), 'yyyy-MM-dd');
+    let questIds = quests.map(quest => quest.id);
+    questIds = questIds.concat(quests.filter(q => q.type === QuestType.ThinkingDataQuery).map(quest => `${quest.id},${dateStamp}`));// 添加2048每日任务完成记录查询
     const achievedQuests = await QuestAchievement.find({
         user_id: userId,
         quest_id: { $in: questIds }
@@ -124,6 +132,9 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
             return;
         }
         quest.achieved = userQuests.has(quest.id);
+        if (!quest.achieved && quest.type === QuestType.ThinkingDataQuery) {
+            quest.achieved = userQuests.has(`${quest.id},${dateStamp}`);
+        }
     })
     // 手动检查特殊任务类型完成标识.
     for (const quest of quests) {

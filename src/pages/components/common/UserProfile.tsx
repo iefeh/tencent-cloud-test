@@ -18,6 +18,7 @@ interface Props {
   copyText?: string;
   copyIcon?: string | StaticImageData;
   showRedeem?: boolean;
+  isAddressColumn?: boolean;
 }
 
 function UserProfile(props: Props) {
@@ -30,27 +31,22 @@ function UserProfile(props: Props) {
     desc,
     copyText,
     copyIcon,
+    isAddressColumn,
     showRedeem,
   } = props;
   const { userInfo, toggleRedeemModal } = useContext(MobxContext);
   if (!userInfo) return null;
 
-  const { avatar_url, username, wallet } = userInfo;
+  const { avatar_url, username, wallet, particle } = userInfo;
 
-  function getWallet() {
-    if (!wallet) return '--';
-
-    return wallet.substring(0, 10) + '...' + wallet.substring(wallet.length - 4);
-  }
-
-  async function onCopy() {
+  async function onCopy(text?: string) {
     try {
       if (copyText !== undefined) {
         await navigator.clipboard.writeText(copyText);
       } else if (desc && typeof desc === 'string') {
         await navigator.clipboard.writeText(desc);
       } else {
-        await navigator.clipboard.writeText(wallet || '');
+        await navigator.clipboard.writeText(text || '');
       }
       toast.success('Copied!');
     } catch (error: any) {
@@ -65,26 +61,49 @@ function UserProfile(props: Props) {
       </div>
 
       <div className="ml-4 font-poppins flex flex-col">
-        <div
-          className={cn([
-            'text-4xl leading-none w-48 text-ellipsis overflow-hidden whitespace-nowrap',
-            usernameClassName,
-          ])}
-        >
-          {formatUserName(username)}
-        </div>
-        <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
-          <span>{desc || getWallet()}</span>
-          {!hideCopy && (desc || wallet) && (
-            <Image
-              className="w-auto h-[calc(1em_+_2px)] ml-2 cursor-pointer"
-              src={copyIcon || copyImg}
-              alt=""
-              onClick={onCopy}
-            />
-          )}
+        <div className="flex items-center">
+          <div
+            className={cn([
+              'text-4xl leading-none max-w-[12rem] text-ellipsis overflow-hidden whitespace-nowrap',
+              usernameClassName,
+            ])}
+          >
+            {formatUserName(username)}
+          </div>
 
           {showRedeem && <LGButton className="ml-4" label="Redeem" actived onClick={toggleRedeemModal} />}
+        </div>
+
+        <div className={cn(['flex gap-x-8', isAddressColumn ? 'flex-col' : 'items-center'])}>
+          <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
+            <span className="mr-4 w-36">Connected Wallet</span>
+            <span className="px-2 py-1 rounded-sm bg-gradient-to-r from-basic-yellow/20 to-transparent">
+              {desc || formatUserName(wallet) || '--'}
+            </span>
+            {!hideCopy && (desc || wallet) && (
+              <Image
+                className="w-auto h-[calc(1em_+_2px)] ml-2 cursor-pointer"
+                src={copyIcon || copyImg}
+                alt=""
+                onClick={() => onCopy(wallet)}
+              />
+            )}
+          </div>
+
+          {/* <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
+            <span className="mr-4 w-36">Moonveil Wallet</span>
+            <span className="px-2 py-1 rounded-sm bg-gradient-to-r from-basic-yellow/20 to-transparent">
+              {desc || formatUserName(particle?.evm_wallet) || '--'}
+            </span>
+            {!hideCopy && particle?.evm_wallet && (
+              <Image
+                className="w-auto h-[calc(1em_+_2px)] ml-2 cursor-pointer"
+                src={copyIcon || copyImg}
+                alt=""
+                onClick={() => onCopy(particle?.evm_wallet)}
+              />
+            )}
+          </div> */}
         </div>
       </div>
     </div>
