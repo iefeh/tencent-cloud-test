@@ -74,6 +74,26 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
           );
         })}
       </div>
+
+      {/* <div className="absolute left-1/2 top-1/2 -translate-x-[calc(50%_+_21.5625rem)] -translate-y-[calc(50%_+_3.3125rem)] flex flex-col items-center">
+        <Image
+          className="object-contain w-[11.4375rem] h-[3.4375rem]"
+          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/still_in_prize_pool.png"
+          alt=""
+          width={183}
+          height={55}
+          unoptimized
+        />
+
+        <Image
+          className="object-contain w-[12.8125rem] h-[10.4375rem]"
+          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/special_prize.png"
+          alt=""
+          width={205}
+          height={167}
+          unoptimized
+        />
+      </div> */}
     </div>
   );
 };
