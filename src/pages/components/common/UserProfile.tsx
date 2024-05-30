@@ -90,7 +90,7 @@ function UserProfile(props: Props) {
             )}
           </div>
 
-          <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
+          {/* <div className={cn(['flex items-center text-base leading-none', walletClassName])}>
             <span className="mr-4 w-36">Moonveil Wallet</span>
             <span className="px-2 py-1 rounded-sm bg-gradient-to-r from-basic-yellow/20 to-transparent">
               {desc || formatUserName(particle?.evm_wallet) || '--'}
@@ -103,7 +103,7 @@ function UserProfile(props: Props) {
                 onClick={() => onCopy(particle?.evm_wallet)}
               />
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
