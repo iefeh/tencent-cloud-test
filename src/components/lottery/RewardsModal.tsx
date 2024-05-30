@@ -139,14 +139,14 @@ const RewardsModal: FC<Props & DrawDTO> = ({
                     through our Discord community Ticket.
                   </>
                 ) : hasShareAndClaimRewards ? (
+                  <>Simply share on Twitter to claim your rewards.</>
+                ) : (
                   <>
-                    Click to claim now.
+                    Click to claim rewards now.
                     <br />
                     Bonus: Share to Twitter for an additional <span className="text-basic-yellow">+20 Moon Beams</span>!
                     (first-time shares only)
                   </>
-                ) : (
-                  <>Simply share on Twitter to claim your rewards.</>
                 )}
               </div>
 

@@ -1,15 +1,20 @@
 import { queryPrizePoolInfoAPI, queryPrizePoolListAPI } from '@/http/services/lottery';
 import { useUserContext } from '@/store/User';
 import { Lottery } from '@/types/lottery';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function usePrizePool() {
   const { userInfo } = useUserContext();
   const [poolIds, setPoolIds] = useState<string[]>([]);
   const [poolInfo, setPoolInfo] = useState<Lottery.Pool | null>(null);
+  const queryPromise = useRef<Promise<{ lottery_pool_ids: string[] | null }> | null>(null);
 
   async function queryPools() {
-    const res = await queryPrizePoolListAPI();
+    if (queryPromise.current) return;
+    queryPromise.current = queryPrizePoolListAPI();
+
+    const res = await queryPromise.current;
+    queryPromise.current = null;
     setPoolIds(res?.lottery_pool_ids || []);
   }
 

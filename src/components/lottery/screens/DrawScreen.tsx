@@ -99,7 +99,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       {/* 动画层 */}
       <div className="absolute inset-0 z-10">
-        <PlanetAni />
+        <PlanetAni item={poolInfo} />
 
         <DrawAni visible={drawAniVisible} onFinished={onDrawAniFinished} />
       </div>
