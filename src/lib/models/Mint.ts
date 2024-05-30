@@ -28,7 +28,7 @@ export interface IMint extends Document {
     badge_level: string,
     // 用户id
     user_id: string,
-    // mint状态
+    // mint状态 
     status: MintStatus,
     // mint的接收者地址
     to_address: string,
