@@ -1,6 +1,6 @@
 import Astronaut from '@/components/LoyaltyProgram/season/Astronaut';
 import Planetoid from '@/components/LoyaltyProgram/season/Planetoid';
-import ShineBackground from '@/components/LoyaltyProgram/season/ShineBackground';
+import ShineBackground from '@/components/common/ShineBackground';
 import BGScreen from '@/components/LoyaltyProgram/season/noPass/BGScreen';
 import NoPassIndexScreen from '@/components/LoyaltyProgram/season/noPass/IndexScreen';
 import MainScreen from '@/components/LoyaltyProgram/season/noPass/MainScreen';

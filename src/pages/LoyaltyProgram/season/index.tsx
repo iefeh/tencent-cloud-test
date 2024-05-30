@@ -11,8 +11,8 @@ import FinalScreen from '@/components/LoyaltyProgram/season/hasPass/FinalScreen'
 import RuleModal from '@/components/LoyaltyProgram/season/RuleModal';
 import { cn, useDisclosure } from '@nextui-org/react';
 import { createBattlePassAPI } from '@/http/services/battlepass';
-import MeteorLayer from '@/components/LoyaltyProgram/season/MeteorLayer';
-import ShineBackground from '@/components/LoyaltyProgram/season/ShineBackground';
+import MeteorLayer from '@/components/common/MeteorLayer';
+import ShineBackground from '@/components/common/ShineBackground';
 import { useUserContext } from '@/store/User';
 
 function SeasonBattle() {
