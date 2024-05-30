@@ -1,18 +1,24 @@
+import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
 import PageDesc from '@/pages/components/common/PageDesc';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 
 interface Props {
   onShowPrizePool?: () => void;
 }
 
 const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onShowPrizePool }) => {
+  const titleRef = useRef<HTMLDivElement>(null);
+  const visible = IntersectionObserverHook({ currentRef: titleRef });
+
   return (
     <PageDesc
+      baseAniTY
+      needAni={visible}
       className="-translate-y-12 items-center"
       title={
-        <div className="font-semakin">
+        <div ref={titleRef} className="font-semakin">
           <span className="stroke-text text-[4rem]" data-text="WIN">
             WIN
           </span>
