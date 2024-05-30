@@ -18,13 +18,21 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
       needAni={visible}
       className="-translate-y-12 items-center"
       title={
-        <div ref={titleRef} className="font-semakin">
-          <span className="stroke-text text-[4rem]" data-text="WIN">
-            WIN
+        <div ref={titleRef} className="font-semakin ani-twirl">
+          <span className="text-[4rem]">
+            {'WIN'.split('').map((t, i) => (
+              <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
+                {t}
+              </span>
+            ))}
           </span>
 
-          <span className="stroke-text text-[6rem]" data-text="$500 USDT">
-            $500 USDT
+          <span className="text-[6rem]">
+            {'$500 USDT'.split('').map((t, i) => (
+              <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
+                {t}
+              </span>
+            ))}
           </span>
         </div>
       }

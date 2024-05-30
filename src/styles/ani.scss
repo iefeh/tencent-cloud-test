@@ -37,3 +37,34 @@
     transform: translate(0, 0) rotate(5deg);
   }
 }
+
+// Twirling
+
+.ani-twirl .char {
+  --name: twirl;
+  --dur: 6000ms;
+  --del: calc(var(--char-index) * 0.025s);
+  --tf: linear;
+}
+
+@keyframes twirl {
+  2.5% {
+    transform: rotateY(1turn);
+  }
+  5% {
+    transform: rotateY(2turn);
+  }
+  10% {
+    transform: rotateY(3turn);
+  }
+  20% {
+    transform: rotateY(4turn);
+  }
+  40% {
+    transform: rotateY(5turn);
+  }
+  70%,
+  100% {
+    transform: rotateY(6turn);
+  }
+}
