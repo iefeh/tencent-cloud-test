@@ -139,7 +139,7 @@ export default function useFrameAni({
   useEffect(() => {
     initCanvas();
     initImages();
-  });
+  }, []);
 
   useEffect(() => {
     const promise = initImages();
