@@ -124,7 +124,6 @@ export default function useFrameAni({
 
   function startAni() {
     stopAni();
-    currentIdxRef.current = 0;
     lastElRef.current = performance.now();
     aniLoop();
   }
@@ -134,6 +133,7 @@ export default function useFrameAni({
 
     cancelAnimationFrame(rafId.current);
     rafId.current = 0;
+    currentIdxRef.current = 0;
   }
 
   useEffect(() => {
