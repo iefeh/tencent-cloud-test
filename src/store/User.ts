@@ -1,4 +1,4 @@
-import { KEY_LOCALE } from '@/constant/locale';
+import { KEY_LOCALE, Locale } from '@/constant/locale';
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { getWorldTimeAPI } from '@/http/services/common';
 import {
@@ -14,7 +14,6 @@ import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
 import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
-import { Locale } from 'next/dist/compiled/@vercel/og/satori';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
@@ -74,9 +73,9 @@ class UserStore {
   //   }
   // };
 
-  setLocale = (val: Locale) => {
-    this.locale = val;
-    localStorage.setItem(KEY_LOCALE, val);
+  setLocale = (val?: Locale) => {
+    this.locale = val || Locale.EN;
+    localStorage.setItem(KEY_LOCALE, this.locale);
   };
 
   setUserInfo = (userInfo: UserInfo | null) => {
