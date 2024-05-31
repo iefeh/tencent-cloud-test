@@ -34,7 +34,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       }
       const s = result[1][0];
 
-      // 此时s为排名信息，保存为用户指标
+      // 此时s为排名信息，保存为用户指标 
       await createUserMetric(userId, Metric.PrevdayRankFor2048, Number(s));
       // 检查 2048大王徽章
       await sendBadgeCheckMessage(userId, Metric.PrevdayRankFor2048);
@@ -74,7 +74,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       });
 
       // 读取响应
-      const body = response.data; console.log("body", body);
+      const body = response.data;
       if (body && !body.includes("_col0")) {
         console.error('Error:', body);
         return false;
@@ -132,5 +132,26 @@ export class ThinkingDataQueryQuest extends QuestBase {
       claimed_amount: result.done ? rewardDelta : undefined,
       tip: result.done ? `You have claimed ${rewardDelta} MB.` : 'Server Internal Error',
     };
+  }
+
+  async progress(userId: string) {
+    if (!userId) {
+      return;
+    }
+    //查询进度
+    const questProp = this.quest.properties as ThinkingDataQuery;
+    const result = await this.checkUserQuestFromThinkingData(questProp, userId);
+    if (!result) {
+      return;
+    }
+    // 没有进度，直接返回
+    if (!result[1] || result[1].length !== 3) {
+      return;
+    }
+
+    let progress: any = {};
+    progress.current_progress = result[1][1] ? result[1][1] : "0";// 任务当前进度
+    progress.target_progress = result[1][2];// 任务目标进度
+    return progress;
   }
 }
