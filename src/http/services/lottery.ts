@@ -21,7 +21,7 @@ export function queryDrawHistoryAPI(
   return http.get('/api/lottery/history', { params });
 }
 
-export function claimRewardAPI(data: Lottery.ClaimReqDTO): Promise<InfoDTO> {
+export function claimRewardAPI(data: Lottery.ClaimReqDTO): Promise<InfoDTO & { require_authorization?: string }> {
   return http.post('/api/lottery/claim', JSON.stringify(data));
 }
 

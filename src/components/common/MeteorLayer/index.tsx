@@ -1,6 +1,7 @@
+import { cn } from '@nextui-org/react';
 import { FC, useEffect, useRef } from 'react';
 
-const MeteorLayer: FC = () => {
+const MeteorLayer: FC<ClassNameProps> = ({ className }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const meteorCountRef = useRef(0);
 
@@ -53,7 +54,9 @@ const MeteorLayer: FC = () => {
     pray();
   }, []);
 
-  return <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none"></div>;
+  return (
+    <div ref={containerRef} className={cn(['absolute inset-0 overflow-hidden pointer-events-none', className])}></div>
+  );
 };
 
 export default MeteorLayer;

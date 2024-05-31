@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import MBInfo from '../MBInfo';
 import TicketsInfo from '../TicketsInfo';
 import TimeoutInfo from '../TimeoutInfo';
@@ -14,7 +14,6 @@ import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
-import useShare from '../hooks/useShare';
 import S1TicketModal from '../S1TicketModal';
 import { sleep } from '@/utils/common';
 
@@ -32,7 +31,6 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
   const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
-  const { url } = useShare(poolInfo, currentReward);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
@@ -99,7 +97,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       {/* 动画层 */}
       <div className="absolute inset-0 z-10">
-        <PlanetAni />
+        <PlanetAni item={poolInfo} />
 
         <DrawAni visible={drawAniVisible} onFinished={onDrawAniFinished} />
       </div>
@@ -125,7 +123,6 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       <RewardsModal
         key={currentReward?.draw_id}
-        url={url}
         item={currentReward}
         poolInfo={poolInfo}
         disclosure={rewardsDisclosure}

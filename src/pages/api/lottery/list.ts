@@ -12,12 +12,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const lotteryPools = await LotteryPool.find({ start_time: {$lte: now}, end_time: {$gte: now} });
   if (!lotteryPools || lotteryPools.length === 0) {
     res.json(response.invalidParams("No live lottery pool found!"));
+    return;
   }
   let result: any[] = [];
   for (let pool of lotteryPools) {
     result.push(pool.lottery_pool_id);
   }
   res.json(response.success({ lottery_pool_ids: result }));
+  return;
 });
 
 // this will run if none of the above matches

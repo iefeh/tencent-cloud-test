@@ -12,7 +12,7 @@ interface Props {
 const BadgeDesc: FC<Props> = ({ milestone }) => {
   return (
     <div className="flex items-center">
-      <div className="w-[24.5rem] h-[22.125rem] relative">
+      <div className="w-[24.5rem] h-[22.125rem] relative origin-center animate-shaking">
         <Image
           className="object-contain"
           src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/badge_master.png"

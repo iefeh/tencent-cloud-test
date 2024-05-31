@@ -163,6 +163,7 @@ li::marker {
   color: transparent;
   text-align: center;
   padding: 0 1rem;
+  line-height: 1;
 
   &::before {
     content: attr(data-text);

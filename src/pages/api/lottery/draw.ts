@@ -2,12 +2,15 @@ import type {NextApiResponse} from "next";
 import { createRouter } from 'next-connect';
 import { v4 as uuidv4 } from 'uuid';
 
+import { AuthorizationType } from '@/lib/authorization/types';
 import { promiseSleep } from '@/lib/common/sleep';
 import logger from '@/lib/logger/winstonLogger';
+import { getLotteryPoolById } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import LotteryPool, { ILotteryPool, LotteryRewardItem, LotteryRewardType } from '@/lib/models/LotteryPool';
-import { getLotteryPoolById } from '@/lib/lottery/lottery';
+import LotteryPool, {
+    ILotteryPool, LotteryRewardItem, LotteryRewardType
+} from '@/lib/models/LotteryPool';
 import User, { IUser } from '@/lib/models/User';
 import UserLotteryDrawHistory, {
     IUserLotteryRewardItem
@@ -30,12 +33,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const validDrawCount = [1, 3, 5]; 
   if (!lottery_pool_id || !draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
     res.json(response.invalidParams({verified: false, message: "Invalid params."}));
+    return;
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     res.json(response.invalidParams({verified: false, message: "The lottery pool is not opened or has been closed."}));
+    return;
   }
   try {
     const user = await User.findOne({ user_id: userId });
@@ -43,14 +48,17 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     const canDraw = await verify(lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, user, userLotteryPool, lotteryPool);
     if (!canDraw.verified) {
       res.json(response.invalidParams(canDraw));
+      return;
     }
     else {
       let drawResult = await draw(userId, lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userLotteryPool);
       if (drawResult.verified) {
         res.json(response.success(drawResult));
+        return;
       }
       else {
         res.json(response.serverError(drawResult));
+        return;
       }
     }
   } catch (error) {
@@ -228,7 +236,8 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     lottery_pool_id: lotteryPoolId,
     available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - userLotteryPool.draw_amount,
     draw_id: drawId,
-    rewards: result
+    rewards: result,
+    require_authorization: rewardNeedVerify? AuthorizationType.Twitter : undefined
   }
 }
 

@@ -57,10 +57,10 @@ const routeText: RouteMenu[] = [
         name: 'Referral Program',
         route: '/Profile/invite',
       },
-      // {
-      //   name: '“More and $MORE” Lottery',
-      //   route: '/lottery',
-      // },
+      {
+        name: '“More and $MORE” Lottery',
+        route: '/lottery',
+      },
     ],
   },
   {

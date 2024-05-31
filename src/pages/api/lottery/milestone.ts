@@ -61,6 +61,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       series: series
     }
   }));
+  return;
 });
 
 // this will run if none of the above matches
