@@ -63,7 +63,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       format: 'csv_header',
       timeoutSeconds: '15',
       sql: questProp.sql_template.replace('{userId}', userId)
-    });
+    }); 
 
     try {
       // 发送POST请求
