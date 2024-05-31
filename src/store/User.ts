@@ -1,3 +1,4 @@
+import { KEY_LOCALE } from '@/constant/locale';
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { getWorldTimeAPI } from '@/http/services/common';
 import {
@@ -13,10 +14,12 @@ import { ParticleNetwork } from '@particle-network/auth';
 import dayjs, { Dayjs } from 'dayjs';
 import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
+import { Locale } from 'next/dist/compiled/@vercel/og/satori';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
 class UserStore {
+  locale = '';
   token = '';
   userInfo: UserInfo | null = null;
   jwtToken = '';
@@ -70,6 +73,11 @@ class UserStore {
   //     this.timerLoading = false;
   //   }
   // };
+
+  setLocale = (val: Locale) => {
+    this.locale = val;
+    localStorage.setItem(KEY_LOCALE, val);
+  };
 
   setUserInfo = (userInfo: UserInfo | null) => {
     this.userInfo = userInfo;
