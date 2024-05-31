@@ -1,6 +1,5 @@
-import { KEY_LOCALE } from '@/constant/locale';
+import { KEY_LOCALE, Locale } from '@/constant/locale';
 import UserStore from '@/store/User';
-import { Locale } from 'next/dist/compiled/@vercel/og/satori';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
