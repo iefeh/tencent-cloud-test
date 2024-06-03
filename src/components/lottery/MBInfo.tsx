@@ -3,8 +3,6 @@ import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 import mbImg from 'img/loyalty/earn/mb.png';
-import { observer } from 'mobx-react-lite';
-import { useUserContext } from '@/store/User';
 import { Lottery } from '@/types/lottery';
 
 interface Props {
@@ -12,8 +10,6 @@ interface Props {
 }
 
 const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ className, item, onShowHistory }) => {
-  const { userInfo } = useUserContext();
-
   return (
     <div
       className={cn([
@@ -33,7 +29,7 @@ const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ classNam
       <Image className="w-16 h-16 object-contain relative z-0" src={mbImg} alt="" unoptimized />
 
       <div className="flex-1 font-semakin relative z-0 ml-6">
-        <div className="text-[2rem]">{userInfo?.moon_beam || 0}</div>
+        <div className="text-[2rem]">{item?.user_mb_amount || 0}</div>
         <div className="text-sm">moon beams</div>
       </div>
 
@@ -43,7 +39,7 @@ const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ classNam
           className="mt-4 uppercase font-bold"
           label="Draw History"
           actived
-          disabled={!userInfo || !item}
+          disabled={!item}
           onClick={onShowHistory}
         />
       </div>
@@ -51,4 +47,4 @@ const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ classNam
   );
 };
 
-export default observer(MBInfo);
+export default MBInfo;

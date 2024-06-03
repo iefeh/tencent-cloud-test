@@ -13,12 +13,14 @@ import ShineBackground from '@/components/common/ShineBackground';
 import MeteorLayer from '@/components/common/MeteorLayer';
 
 const LotteryPage: FC = () => {
+  const { getUserInfo } = useUserContext();
   const { poolInfo, queryPoolInfo } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
 
   function onUpdate() {
     queryPoolInfo();
+    getUserInfo();
     badgeScreenRef.current?.update();
   }
 
