@@ -33,7 +33,7 @@ const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ classNam
       <Image className="w-16 h-16 object-contain relative z-0" src={mbImg} alt="" unoptimized />
 
       <div className="flex-1 font-semakin relative z-0 ml-6">
-        <div className="text-[2rem]">{userInfo?.moon_beam || '--'}</div>
+        <div className="text-[2rem]">{userInfo?.moon_beam || 0}</div>
         <div className="text-sm">moon beams</div>
       </div>
 

@@ -99,7 +99,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
                   <Image className="w-6 h-6 ml-6" src={mbImg} alt="" />
 
-                  <div className="font-semakin text-2xl ml-4">{userInfo?.moon_beam || '--'}</div>
+                  <div className="font-semakin text-2xl ml-4">{userInfo?.moon_beam || 0}</div>
                 </div>
               </div>
             </ModalHeader>
