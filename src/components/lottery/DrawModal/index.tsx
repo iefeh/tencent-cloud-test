@@ -109,8 +109,8 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 <>
                   <div className="text-sm text-left">
                     You don’t have enough Lottery Tickets, please confirm you would like to spend{' '}
-                    <span className="text-pure-red">{needMbs}</span> Moon Beams to buy{' '}
-                    <span className="text-pure-red">{ticketsForBuying} </span>
+                    <span className="text-basic-yellow">{needMbs}</span> Moon Beams to buy{' '}
+                    <span className="text-basic-yellow">{ticketsForBuying} </span>
                     ticket(s).
                   </div>
 
