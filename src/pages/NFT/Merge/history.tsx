@@ -1,5 +1,5 @@
 import { MergeListItem, queryMergeListAPI } from '@/http/services/mint';
-import PaginationRenderItem from '@/components/LoyaltyProgram/earn/TaskTabs/components/PaginationRenderItem';
+import PaginationRenderItem from '@/components/common/CirclePagination/PaginationRenderItem';
 import { MobxContext } from '@/pages/_app';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
@@ -10,7 +10,6 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useContext, useEffect, useRef, useState } from 'react';
 import teamsImg from 'img/loyalty/task/teams.png';
-import Video from '@/pages/components/common/Video';
 import NFT from '@/components/nft/NFT';
 import dayjs from 'dayjs';
 
