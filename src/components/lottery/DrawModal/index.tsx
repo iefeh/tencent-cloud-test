@@ -3,8 +3,6 @@ import { Modal, ModalBody, ModalContent, ModalHeader, cn } from '@nextui-org/rea
 import { FC, useState } from 'react';
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
-import { useUserContext } from '@/store/User';
-import { observer } from 'mobx-react-lite';
 import { MBsPerDraw } from '@/constant/lottery';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
@@ -32,7 +30,6 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   times,
   onDrawed,
 }) => {
-  const { userInfo } = useUserContext();
   const [freeTicketsCount, setFreeTicketCount] = useState(0);
   const [s1TicketsCount, setS1TicketCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,7 +37,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
   const ticketsForBuying = Math.max(times - s1TicketsCount - (item?.user_free_lottery_ticket_amount || 0), 0);
   const needMbs = ticketsForBuying * MBsPerDraw;
-  const isMBNotEnough = needMbs > (userInfo?.moon_beam || 0);
+  const isMBNotEnough = needMbs > (item?.user_mb_amount || 0);
 
   const onDraw = throttle(async () => {
     if (needMbs > 0 && !isConfirming) {
@@ -99,7 +96,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
                   <Image className="w-6 h-6 ml-6" src={mbImg} alt="" />
 
-                  <div className="font-semakin text-2xl ml-4">{userInfo?.moon_beam || '--'}</div>
+                  <div className="font-semakin text-2xl ml-4">{item?.user_mb_amount || 0}</div>
                 </div>
               </div>
             </ModalHeader>
@@ -157,4 +154,4 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   );
 };
 
-export default observer(DrawModal);
+export default DrawModal;
