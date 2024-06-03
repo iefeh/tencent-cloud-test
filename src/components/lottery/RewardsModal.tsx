@@ -40,8 +40,17 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const [hasClaimCD, setHasClaimCD] = useState(false);
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const disclosure = useDisclosure();
+  const shareClaimMBLabel = 'Claim 20 MBs';
 
   async function onShare() {
+    if (shareLabel === shareClaimMBLabel) {
+      toast.success('Reward Claimed');
+      setShareLabel('Claimed 20 MBs');
+      setShareDisabled(true);
+      onClaimed?.(true);
+      return;
+    }
+
     setShareLoading(true);
     const url = await getUrl(poolInfo, item);
     if (!url) {
@@ -55,8 +64,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       if (hasForceShareRewards) {
         setHasClaimCD(true);
       } else {
-        setClaimDisabled(false);
-        setShareLabel('Claim 20 MBs');
+        setShareLabel(shareClaimMBLabel);
       }
     }
 
@@ -113,7 +121,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       actived
       hasCD={hasClaimCD}
       cd={300}
-      disabled={claimDisabled}
+      disabled={claimed || claimDisabled}
       loading={loading || connectLoading}
       onClick={onClaim}
       onCDOver={() => {
