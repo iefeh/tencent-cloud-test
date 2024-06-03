@@ -34,7 +34,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       }
       const s = result[1][0];
 
-      // 此时s为排名信息，保存为用户指标
+      // 此时s为排名信息，保存为用户指标 
       await createUserMetric(userId, Metric.PrevdayRankFor2048, Number(s));
       // 检查 2048大王徽章
       await sendBadgeCheckMessage(userId, Metric.PrevdayRankFor2048);
