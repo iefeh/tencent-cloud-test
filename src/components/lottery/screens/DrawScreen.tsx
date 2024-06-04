@@ -110,11 +110,18 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
           item={poolInfo}
         />
 
-        <TicketsInfo className="!absolute left-4 lg:left-16 top-[16.5625rem]" item={poolInfo} />
+        <TicketsInfo className="!absolute left-4 lg:left-16 top-[16.375rem] lg:top-[16.5625rem]" item={poolInfo} />
 
-        <TimeoutInfo className="!absolute right-4 lg:right-16 top-32" key={poolInfo?.end_time} item={poolInfo} />
+        <TimeoutInfo
+          className="!absolute left-4 lg:left-[unset] lg:right-16 top-32"
+          key={poolInfo?.end_time}
+          item={poolInfo}
+        />
 
-        <DrawLimitsInfo className="!absolute top-[21.75rem] right-4 lg:right-16 lg:top-[17.125rem]" item={poolInfo} />
+        <DrawLimitsInfo
+          className="!absolute top-[21.75rem] left-4 lg:left-[unset] lg:right-16 lg:top-[17.125rem]"
+          item={poolInfo}
+        />
 
         <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
 
