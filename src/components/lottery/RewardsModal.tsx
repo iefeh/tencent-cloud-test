@@ -138,7 +138,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
         placement="center"
         isOpen={isOpen}
         classNames={{
-          base: 'bg-black max-w-[75.4375rem]',
+          base: 'bg-black max-w-[28rem] lg:max-w-[75.4375rem]',
           header: 'p-0',
           closeButton: 'z-10',
           body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-5 pb-8 px-10 max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
@@ -210,7 +210,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                       )}
                     </div>
 
-                    <div className="flex items-center gap-x-[5.5rem] mt-5">
+                    <div className="flex flex-col lg:flex-row items-center gap-x-[5.5rem] gap-y-4 mt-5">
                       {hasForceShareRewards ? (
                         <Tooltip
                           content={

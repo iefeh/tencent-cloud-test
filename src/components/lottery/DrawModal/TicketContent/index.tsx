@@ -19,7 +19,7 @@ export interface Props {
 const TicketContent: FC<Props> = ({ label, ticketLabel, iconURL, count, maxCount, disabled, onMinus, onPlus }) => {
   return (
     <div className="flex justify-between items-center w-full mt-7 font-semakin relative">
-      <div className="text-2xl">{label}</div>
+      <div className="text-base w-16 lg:w-auto mr-8 lg:mr-0 lg:text-2xl">{label}</div>
 
       <div className="w-[29.6875rem] h-[5.875rem] relative flex items-center justify-between pl-2 pr-4">
         <Image
@@ -54,7 +54,7 @@ const TicketContent: FC<Props> = ({ label, ticketLabel, iconURL, count, maxCount
           onClick={onMinus}
         />
 
-        <div className="w-[9.625rem] h-14 relative flex justify-center items-center z-0">
+        <div className="w-24 h-[2.1875rem] lg:w-[9.625rem] lg:h-14 relative flex justify-center items-center z-0">
           <Image
             src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_draw_button.png"
             alt=""
@@ -63,7 +63,7 @@ const TicketContent: FC<Props> = ({ label, ticketLabel, iconURL, count, maxCount
             unoptimized
           />
 
-          <div className="font-semakin text-2xl">
+          <div className="font-semakin text-lg lg:text-2xl">
             {to2Digit(count || 0)}/{to2Digit(maxCount || 0)}
           </div>
         </div>

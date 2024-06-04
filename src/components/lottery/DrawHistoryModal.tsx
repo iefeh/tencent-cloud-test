@@ -79,7 +79,7 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
       placement="center"
       isOpen={isOpen}
       classNames={{
-        base: 'bg-black max-w-[75.4375rem]',
+        base: 'bg-black max-w-[28rem] lg:max-w-[75.4375rem]',
         header: 'p-0',
         closeButton: 'z-10',
         body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-5 pb-8 px-10 max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
@@ -142,7 +142,11 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
 
             <ModalFooter>
               {data.length > 0 && (
-                <CirclePagination total={total} className="flex justify-center" onChange={onPagiChange} />
+                <CirclePagination
+                  total={total}
+                  className="flex justify-center has-scroll-bar"
+                  onChange={onPagiChange}
+                />
               )}
             </ModalFooter>
           </>
