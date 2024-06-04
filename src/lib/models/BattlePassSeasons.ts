@@ -8,7 +8,8 @@ export enum BattlepassRewardType {
 
 export enum BattlePassRewardItemType {
   Badge = 'badge',//奖励徽章
-  MoonBeam = 'moon_beam'//奖励mb
+  MoonBeam = 'moon_beam',//奖励mb
+  LotteryTicket = 'lottery_ticket'//抽奖券
 }
 
 type Reward = {
