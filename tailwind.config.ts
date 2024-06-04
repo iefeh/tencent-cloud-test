@@ -47,6 +47,17 @@ const config: Config = {
             transform: 'scale(1.03)',
           },
         },
+        shaking: {
+          '0%': {
+            transform: 'rotate(-6deg)'
+          },
+          '50%': {
+            transform: 'rotate(6deg)'
+          },
+          '100%': {
+            transform: 'rotate(-6deg)'
+          }
+        }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -59,7 +70,9 @@ const config: Config = {
         'poppins-medium': ['poppins-medium'],
       },
       colors: {
+        'light-yellow': '#E7D4A9',
         notion: '#ff4848',
+        'pure-red': '#BD0000',
         'basic-red': '#FF0000',
         'basic-blue': '#4C95C7',
         'basic-yellow': '#f6c799',
@@ -72,6 +85,7 @@ const config: Config = {
         float3: 'float 3s ease-in-out infinite',
         float5: 'float 5s ease-in-out infinite',
         breathShadow: 'breathShadow 3s ease-in-out infinite',
+        shaking: 'shaking 4s ease-in-out infinite',
       },
       fontSize: {
         'fz-12': '12px',

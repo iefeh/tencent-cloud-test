@@ -7,6 +7,7 @@ const ROUTE_DICT: Dict<string> = {
   '/Profile/MyBadges': 'My Badges',
   '/Profile/MyAssets': 'My Asset',
   '/Profile/invite': 'Invite New Users',
+  '/Profile/mbhistory': 'Moon Beams History',
   '/LoyaltyProgram/earn': 'Earn Moon Beams',
   '/LoyaltyProgram/event': 'Event Details',
   '/NFT/Merge/history': 'Merge History',

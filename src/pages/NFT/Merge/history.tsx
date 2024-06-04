@@ -1,5 +1,5 @@
 import { MergeListItem, queryMergeListAPI } from '@/http/services/mint';
-import PaginationRenderItem from '@/components/LoyaltyProgram/earn/TaskTabs/components/PaginationRenderItem';
+import PaginationRenderItem from '@/components/common/CirclePagination/PaginationRenderItem';
 import { MobxContext } from '@/pages/_app';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
@@ -10,8 +10,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useContext, useEffect, useRef, useState } from 'react';
 import teamsImg from 'img/loyalty/task/teams.png';
-import Video from '@/pages/components/common/Video';
-import NFT from '@/pages/components/common/nft/NFT';
+import NFT from '@/components/nft/NFT';
 import dayjs from 'dayjs';
 
 function NFTMergeHistoryPage({
@@ -79,7 +78,7 @@ function NFTMergeHistoryPage({
 
         <div className="flex-1 overflow-y-auto relative min-h-[25rem] pb-8">
           {list.length < 1 ? (
-            <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+            <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
               <p>More exciting events coming soon.</p>
               <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
             </div>

@@ -1,6 +1,8 @@
 import '@/styles/globals.css';
 import '@/styles/dialog.css';
 import '@/styles/transition.scss';
+import '@/styles/table.css';
+import '@/styles/ani.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
@@ -71,6 +73,7 @@ import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
+import useRouteLocale from '@/hooks/useRouteLocale';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -279,6 +282,8 @@ export default function App({ Component, pageProps }: AppProps) {
       this.setItem(key, JSON.stringify(val || ''));
     };
   }, []);
+
+  useRouteLocale(store);
 
   return (
     <>

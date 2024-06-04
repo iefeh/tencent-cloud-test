@@ -7,6 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
   Pagination,
+  Tooltip,
   cn,
   useDisclosure,
 } from '@nextui-org/react';
@@ -20,7 +21,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 import { observer } from 'mobx-react-lite';
-import { useCountdown } from '@/pages/LoyaltyProgram/event/components/Countdown';
+import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { debounce } from 'lodash';
@@ -43,11 +44,12 @@ interface TaskItem extends TaskListItem {
 }
 
 interface Props extends ClassNameProps {
+  hideHeader?: boolean;
   categoryItem?: TaskCategory | null;
   onBack?: () => void;
 }
 
-function RegularTasksList({ categoryItem, className, onBack }: Props) {
+function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props) {
   const { userInfo, toggleLoginModal, getUserInfo } = useContext(MobxContext);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskListLoading, setTaskListLoading] = useState(false);
@@ -105,6 +107,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
           break;
         case QuestType.JOIN_DISCORD_SERVER:
         case QuestType.HoldDiscordRole:
+        case QuestType.Claim2048Ticket:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',
@@ -137,15 +140,19 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectTexts, achieved, verified } = task;
+    const { connectTexts, achieved, verified, verify_disabled } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
-    const [verifiable, setVerifiable] = useState(verified ? canReverify : !task.properties.is_prepared || achieved);
+    const [verifiable, setVerifiable] = useState(
+      !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
+    );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
+    const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
+    const is2048 = task.type === QuestType.Claim2048Ticket;
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -218,9 +225,8 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
             onOpen();
           } else if (res.tip) {
             toast.error(res.tip);
+            setHasVerifyCD(true);
           }
-
-          setHasVerifyCD(true);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTask();
@@ -273,11 +279,20 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? (canReverify ? 'Reverify' : 'Verified') : 'Verify'}
+          label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
           disabled={!verifiable}
           hasCD={hasVerifyCD}
-          cd={30}
+          tooltip={
+            isLongCD && (
+              <div className="max-w-[25rem] px-4 py-3">
+                * Please note that data verification may take a moment. You will need to wait for about 5 minutes before
+                the &apos;Verify&apos; button becomes clickable. If you fail the verification process, you can try again
+                after 10 minutes.
+              </div>
+            )
+          }
+          cd={isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -425,16 +440,31 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
     }, []);
 
     return (
-      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[1.25rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
-        <div className="text-xl">{task.name}</div>
+      <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
+        <div className="text-xl flex justify-between items-center">
+          <div>{task.name}</div>
+
+          {task.current_progress !== undefined && task.target_progress !== undefined && (
+            <div className="text-base shrink-0">
+              (
+              <span className="text-basic-yellow">
+                {task.current_progress || 0}/{task.target_progress || '-'}
+              </span>
+              )
+            </div>
+          )}
+        </div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">
-            <div className="text-[#999]" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
+              <div className="text-[#999] line-clamp-2" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            </Tooltip>
+
             {task.tip && (
               <div className="flex items-center relative">
                 <div
-                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis"
+                  className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis  max-h-[1.25rem]"
                   dangerouslySetInnerHTML={{ __html: task.tip }}
                 ></div>
                 {needEllipsis && (
@@ -477,7 +507,7 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
               isContentVisible ? 'max-h-full' : 'max-h-0 pointer-events-none',
             ])}
           >
-            <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414]">
+            <div className="w-full h-full rounded-[0.625rem] pt-8 px-6 pb-4 bg-[#141414] overflow-y-auto has-scroll-bar">
               <div className="text-sm text-white" dangerouslySetInnerHTML={{ __html: task.description }}></div>
               <div className="text-sm text-[#999] mt-[0.625rem]" dangerouslySetInnerHTML={{ __html: task.tip }}></div>
             </div>
@@ -502,15 +532,17 @@ function RegularTasksList({ categoryItem, className, onBack }: Props) {
 
   return (
     <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', className])}>
-      <div className="self-start mb-8">
-        <div className="flex items-center cursor-pointer" onClick={onBack}>
-          <Image className="w-[1.625rem] h-[1.375rem]" src={arrowIcon} alt="" width={26} height={22} />
+      {hideHeader || (
+        <div className="self-start mb-8">
+          <div className="flex items-center cursor-pointer" onClick={onBack}>
+            <Image className="w-[1.625rem] h-[1.375rem]" src={arrowIcon} alt="" width={26} height={22} />
 
-          <span className="ml-3 text-2xl text-[#666666]">BACK</span>
+            <span className="ml-3 text-2xl text-[#666666]">BACK</span>
+          </div>
+
+          <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
         </div>
-
-        <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
-      </div>
+      )}
 
       <div
         className={cn([

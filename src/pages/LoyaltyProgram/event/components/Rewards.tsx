@@ -61,8 +61,8 @@ export default function Rewards(props: Props) {
   });
 
   const accelerators = Object.values(acceleratorsDict);
-  const totalMultipliers = motoAccelerators.reduce((p, c) => (p += (+c.properties.reward_bonus || 0) * 100), 0);
-  const totalMBs = motoAccelerators.reduce((p, c) => (p += +c.properties.reward_bonus_moon_beam || 0), 0);
+  const totalMultipliers = +(item?.claim_settings?.total_reward_bonus || 0) * 100;
+  const totalMBs = +(item?.claim_settings?.total_reward_bonus_moon_beam || 0);
 
   return (
     <div className="mt-[1.875rem]">
@@ -147,7 +147,7 @@ export default function Rewards(props: Props) {
                   <div className="flex justify-center items-center gap-6 text-basic-yellow mt-4 text-lg">
                     <div>
                       Total Multipliers: {totalMultipliers > 0 ? '+' : ''}
-                      {totalMultipliers}%
+                      {totalMultipliers.toFixed(0)}%
                     </div>
                     <div>
                       Total Moon Beams: {totalMBs > 0 ? '+' : ''}
@@ -248,7 +248,7 @@ export default function Rewards(props: Props) {
                   <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
                   <p className="text-base">
                     After completing this event, your Season Pass can level up, advancing you{' '}
-                    <span className="text-basic-red">{taskAmount}</span> tasks further in the season.
+                    <span className="text-basic-yellow">{taskAmount}</span> tasks further in the season.
                   </p>
                 </div>
               }
@@ -260,7 +260,7 @@ export default function Rewards(props: Props) {
                 <div>Season Pass Progress</div>
                 <div className="flex items-center gap-1">
                   <span>
-                    + <span className="text-basic-red">{taskAmount}</span> TASKS
+                    + <span className="text-basic-yellow">{taskAmount}</span> TASKS
                   </span>
                 </div>
               </div>

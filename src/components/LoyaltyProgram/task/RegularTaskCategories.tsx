@@ -80,7 +80,7 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
         })}
 
         {categories.length < 1 && !loading && (
-          <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl">
+          <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
             <p>
               <br />
               <br />

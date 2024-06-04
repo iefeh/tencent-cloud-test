@@ -8,7 +8,7 @@ export const Privileges = [
   // level i
   'Early access to future events',
   'Exclusive Benefits within the Community',
-  'Token airdrop privileges',
+  '$MORE token airdrop privileges',
   'Guaranteed game test privileges for future games produced by Moonveil',
   'Holders can claim free BattlePass',
   'Lifetime in-game discount',

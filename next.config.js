@@ -2,6 +2,19 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  headers() {
+    return [
+      {
+        source: '/oauth(.*)?', // Matches all pages
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOW-FROM *',
+          },
+        ],
+      },
+    ];
+  },
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -16,6 +29,9 @@ const nextConfig = {
       },
       {
         hostname: 'cdn.discordapp.com',
+      },
+      {
+        hostname: 'cloudflare-ipfs.com',
       },
     ],
   },

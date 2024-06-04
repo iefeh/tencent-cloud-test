@@ -1,12 +1,12 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
-enum MintSourceType {
+export enum MintSourceType {
     // 徽章
     Badges = 'badges',
 }
 
-enum MintStatus {
+export enum MintStatus {
     // 已获得，但是未上链
     Qualified = 'qualified',
     // Mint中
@@ -16,7 +16,7 @@ enum MintStatus {
 }
 
 export interface IMint extends Document {
-    // mint记录id，唯一标识
+    // mint记录id，唯一标识，注意，需要确保该id必须为byte32的hash值
     id: string,
     // mint的链id
     chain_id: string,
@@ -25,23 +25,25 @@ export interface IMint extends Document {
     // mint类型对应的原始记录id，比如徽章id
     source_id: string,
     // 徽章等级，当source_type为badges时有效
-    badge_level: number,
+    badge_level: string,
     // 用户id
     user_id: string,
-    // mint状态
+    // mint状态 
     status: MintStatus,
     // mint的接收者地址
-    receiver_addr: string,
+    to_address: string,
     // 获取时间，毫秒时间戳
     obtained_time: number,
-    // 开始mint时间(获取badge签名时设置该时间)，毫秒时间戳
-    start_mint_time: number,
-    // 交易id
-    transaction_id: string,
+    // 交易hash
+    transaction_hash: string,
+    // 交易时间，毫秒时间戳
+    transaction_time: number,
     // 链上交易确认时间，毫秒时间戳
     tx_confirmed_time: number,
     // mint污点，用于确保mint的唯一性，比如用户不能多次获取同一个徽章的同一个等级，同一个接收者地址不能多次获取同一个徽章
-    taint: string[],
+    taints: string[],
+    // mint的元数据ipfs哈希
+    metadata_ipfs_hash: string,
 }
 
 const MintSchema = new Schema<IMint>({
@@ -49,20 +51,21 @@ const MintSchema = new Schema<IMint>({
     chain_id: {type: String},
     source_type: {type: String},
     source_id: {type: String},
-    badge_level: {type: Number},
+    badge_level: {type: String},
     user_id: {type: String},
     status: {type: String},
-    receiver_addr: {type: String},
+    to_address: {type: String},
     obtained_time: {type: Number},
-    start_mint_time: {type: Number},
-    transaction_id: {type: String},
+    transaction_time: {type: Number},
+    transaction_hash: {type: String},
     tx_confirmed_time: {type: Number},
-    taint: {type: [String]},
+    taints: {type: [String]},
+    metadata_ipfs_hash: {type: String},
 });
 
 MintSchema.index({id: 1}, {unique: true});
-MintSchema.index({taint: 1}, {unique: true});
-MintSchema.index({source_type: 1,source_id:1});
+MintSchema.index({taints: 1}, {unique: true});
+MintSchema.index({source_type: 1, source_id: 1});
 MintSchema.index({user_id: 1});
 
 // 使用既有模型或者新建模型

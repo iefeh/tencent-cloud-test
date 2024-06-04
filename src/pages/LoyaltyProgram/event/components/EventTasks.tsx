@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import useConnect from '@/hooks/useConnect';
-import { useCountdown } from './Countdown';
+import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
 
@@ -44,6 +44,10 @@ const EVENT_ICON_DICT: Dict<string> = {
   [QuestType.HoldDiscordRole]: 'discord_colored',
   [QuestType.SEND_DISCORD_MESSAGE]: 'discord_colored',
   [QuestType.HoldNFT]: 'nft_colored',
+  [QuestType.ThinkingDataQuery]:
+    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png',
+  [QuestType.Claim2048Ticket]:
+    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png',
 };
 
 function EventTasks(props: EventTaskProps) {
@@ -63,6 +67,7 @@ function EventTasks(props: EventTaskProps) {
           break;
         case QuestType.JOIN_DISCORD_SERVER:
         case QuestType.HoldDiscordRole:
+        case QuestType.Claim2048Ticket:
           item.connectTexts = {
             label: 'Join',
             finishedLable: 'Joined',
@@ -92,14 +97,18 @@ function EventTasks(props: EventTaskProps) {
 
   const TaskButtons = (props: { task: TaskItem }) => {
     const { task } = props;
-    const { connectTexts, achieved, verified } = task;
+    const { connectTexts, achieved, verified, verify_disabled } = task;
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const isNeedConnect = !!task.properties.url;
-    const [verifiable, setVerifiable] = useState(!verified && (!task.properties.is_prepared || achieved));
+    const [verifiable, setVerifiable] = useState(
+      !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
+    );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
+    const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
+    const is2048 = task.type === QuestType.Claim2048Ticket;
 
     const connectType = task.authorization || '';
     const {
@@ -162,9 +171,8 @@ function EventTasks(props: EventTaskProps) {
             onOpen();
           } else if (res.tip) {
             toast.error(res.tip);
+            setHasVerifyCD(true);
           }
-
-          setHasVerifyCD(true);
         } else {
           if (res.tip) toast.success(res.tip);
           updateTasks?.();
@@ -215,11 +223,20 @@ function EventTasks(props: EventTaskProps) {
 
         <LGButton
           className="ml-2 uppercase"
-          label={verified ? 'Verified' : 'Verify'}
+          label={verified ? (is2048 ? 'Claimed' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
           loading={verifyLoading || mediaLoading}
-          disabled={!verifiable}
+          disabled={!userInfo || !verifiable}
           hasCD={hasVerifyCD}
-          cd={30}
+          tooltip={
+            isLongCD && (
+              <div className="max-w-[25rem] px-4 py-3">
+                * Please note that data verification may take a moment. You will need to wait for about 5 minutes before
+                the &apos;Verify&apos; button becomes clickable. If you fail the verification process, you can try again
+                after 10 minutes.
+              </div>
+            )
+          }
+          cd={isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -344,21 +361,33 @@ function EventTasks(props: EventTaskProps) {
     const { task } = props;
     const { started, started_after } = task;
 
+    function getTaskIcon() {
+      const url = EVENT_ICON_DICT[task.type] || 'default_colored';
+      if (url.startsWith('http')) return url;
+      return `/img/loyalty/task/${url}.png`;
+    }
+
     return (
       <div className="flex justify-between py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300 flex-col lg:flex-row items-start lg:items-center">
         <div className="flex items-center">
-          <Image
-            className="w-9 h-9"
-            src={`/img/loyalty/task/${EVENT_ICON_DICT[task.type] || 'default_colored'}.png`}
-            alt=""
-            width={36}
-            height={36}
-          />
-          <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
+          <Image className="w-9 h-9 object-contain" src={getTaskIcon()} alt="" width={36} height={36} unoptimized />
+          <div className="font-poppins-medium text-lg ml-[0.875rem] flex justify-between items-center">
+            <div dangerouslySetInnerHTML={{ __html: task.description }}></div>
+
+            {task.current_progress !== undefined && task.target_progress !== undefined && (
+              <div className="text-base shrink-0">
+                (
+                <span className="text-basic-yellow">
+                  {task.current_progress || 0}/{task.target_progress || '-'}
+                </span>
+                )
+              </div>
+            )}
+          </div>
         </div>
 
         {isInProcessing && (
-          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0">
+          <div className="w-full lg:w-auto flex justify-end mt-4 lg:mt-0 ml-4 shrink-0">
             {started ? <TaskButtons task={task} /> : <TaskCountDown durationTime={started_after || 0} />}
           </div>
         )}

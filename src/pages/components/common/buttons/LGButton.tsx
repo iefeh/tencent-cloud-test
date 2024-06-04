@@ -1,6 +1,8 @@
 'use client';
 
-import { Button, cn } from '@nextui-org/react';
+import { useUserContext } from '@/store/User';
+import { Button, Tooltip, cn } from '@nextui-org/react';
+import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
 import { HTMLAttributeAnchorTarget, useEffect, useRef } from 'react';
 
@@ -14,20 +16,24 @@ interface Props {
   linearDisabled?: boolean;
   squared?: boolean;
   target?: HTMLAttributeAnchorTarget;
+  tooltip?: string | boolean | JSX.Element;
   onClick?: () => void;
   hasCD?: boolean;
   cd?: number;
   onCDOver?: () => void;
   prefix?: string | JSX.Element;
   suffix?: string | JSX.Element;
+  needAuth?: boolean;
 }
 
-export default function LGButton(props: Props) {
+function LGButton(props: Props) {
+  const { userInfo, toggleLoginModal } = useUserContext();
   const {
     loading,
     actived,
     disabled,
     linearDisabled,
+    tooltip,
     onClick,
     link,
     target,
@@ -37,11 +43,18 @@ export default function LGButton(props: Props) {
     hasCD,
     cd = 10,
     onCDOver,
+    needAuth,
   } = props;
   const router = useRouter();
   const onLinkClick = () => {
-    if (!link) return;
+    if (needAuth && !userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
 
+    if (onClick) return onClick();
+
+    if (!link) return;
     if (/^http/.test(link) || target === '_blank') {
       window.open(link);
     } else {
@@ -86,7 +99,7 @@ export default function LGButton(props: Props) {
     };
   }, [hasCD]);
 
-  return (
+  const button = (
     <Button
       className={cn([
         'h-auto text-sm px-6 py-1 border-2 border-solid text-white transition-all duration-1000 font-poppins-medium bg-transparent cursor-pointer box-border',
@@ -104,7 +117,7 @@ export default function LGButton(props: Props) {
       ])}
       isLoading={loading}
       isDisabled={disabled}
-      onPress={onClick || (link && onLinkClick) || undefined}
+      onPress={onLinkClick}
     >
       <div className={cn(['relative inline-flex items-center z-10'])}>
         {prefix}
@@ -120,4 +133,14 @@ export default function LGButton(props: Props) {
       )}
     </Button>
   );
+
+  if (!tooltip || loading || (!disabled && !hasCD)) return button;
+
+  return (
+    <Tooltip content={tooltip}>
+      <div>{button}</div>
+    </Tooltip>
+  );
 }
+
+export default observer(LGButton);

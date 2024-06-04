@@ -30,7 +30,7 @@ interface UserInfo {
   avatar_url: string;
   email: string;
   created_time: number;
-  google?: GoogleUserInfo;
+  google?: BaseMediaInfo;
   particle?: ParticleUserInfo;
   moon_beam: number;
   steam?: BaseMediaInfo;

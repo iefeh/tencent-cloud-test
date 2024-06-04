@@ -20,6 +20,7 @@ export class CommentTweetQuest extends ConnectTwitterQuest {
                 require_authorization: AuthorizationType.Twitter,
             }
         }
+        this.twitter_id = userTwitter.twitter_id;
         return {
             claimable: await this.checkAchieved(userId),
         }

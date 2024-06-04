@@ -3,7 +3,7 @@ import { MobxContext } from '@/pages/_app';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import Video from '@/pages/components/common/Video';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import MergeNFT from '@/pages/components/common/nft/MergeNFT';
+import MergeNFT from '@/components/nft/MergeNFT';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import { throttle } from 'lodash';
 import { observer } from 'mobx-react-lite';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useContext, useEffect, useRef, useState } from 'react';
 import useMint from '@/hooks/useMint';
 import useScrollLoad from '@/hooks/useScrollLoad';
+import Image from 'next/image';
 
 function NFTMergePage({
   params,
@@ -45,7 +46,10 @@ function NFTMergePage({
   const selectedNFTsRef = useRef<NFTItem[]>([]);
   const [mergedNFT, setMergedNFT] = useState<NFTItem | null>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const { verifyMerge, merge } = useMint();
+  const { verifyMerge, merge } = useMint({
+    contractAddress: process.env.NEXT_PUBLIC_NFT_LV1_MERGE_CONTRACT_ADDRESS,
+    chainId: process.env.NEXT_PUBLIC_NFT_NETWORK_CHAIN_ID,
+  });
   const loopTimer = useRef(0);
 
   const queryLatestMergeNFT = async (isRefresh = false) => {
@@ -74,11 +78,14 @@ function NFTMergePage({
     setMergedNFT(nft);
   };
 
+  function stopQueryLoop() {
+    if (!loopTimer.current) return;
+    clearInterval(loopTimer.current);
+    loopTimer.current = 0;
+  }
+
   function startQueryLoop() {
-    if (loopTimer.current) {
-      clearInterval(loopTimer.current);
-      loopTimer.current = 0;
-    }
+    stopQueryLoop();
 
     queryLatestMergeNFT();
     loopTimer.current = window.setInterval(() => {
@@ -144,20 +151,18 @@ function NFTMergePage({
     setMerged(false);
     setMergeLoading(false);
     setMergedNFT(null);
+    stopQueryLoop();
 
     if (userInfo) queryLatestMergeNFT(true);
-
-    return () => {
-      if (loopTimer.current) {
-        window.clearInterval(loopTimer.current);
-        loopTimer.current = 0;
-      }
-    };
   }, [userInfo]);
 
   useEffect(() => {
     setSelectedNFTs([]);
   }, [merged, mergeLoading]);
+
+  useEffect(() => {
+    return () => stopQueryLoop();
+  }, []);
 
   return (
     <section id="luxy">
@@ -174,8 +179,8 @@ function NFTMergePage({
               </div>
             ) : merged ? (
               <>
-                <div className="w-[35.8125rem] h-[35.8125rem]">
-                  {mergedNFT?.token_metadata?.animation_url && (
+                <div className="w-[35.8125rem] h-[35.8125rem] relative">
+                  {mergedNFT?.token_metadata?.animation_url ? (
                     <Video
                       key={mergedNFT.token_metadata.animation_url}
                       className="w-full h-full"
@@ -188,7 +193,16 @@ function NFTMergePage({
                         ],
                       }}
                     />
-                  )}
+                  ) : mergedNFT?.token_metadata?.image ? (
+                    <Image
+                      className="object-contain"
+                      src={mergedNFT.token_metadata.image}
+                      alt=""
+                      fill
+                      sizes="100%"
+                      unoptimized
+                    />
+                  ) : null}
                 </div>
 
                 <p className="text-base text-center w-[39rem] mt-2">
@@ -260,7 +274,8 @@ function NFTMergePage({
               {nfts.map((item, index) => (
                 <MergeNFT
                   key={item ? `id_${item.token_id}_${item.transaction_id}` : `index_${index}`}
-                  src={item?.token_metadata?.animation_url}
+                  src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
+                  isImage={!item?.token_metadata?.animation_url}
                   name={item?.token_metadata?.name}
                   status={item?.status}
                   transactionStatus={item?.transaction_status}

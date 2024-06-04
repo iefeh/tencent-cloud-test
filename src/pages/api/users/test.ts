@@ -1,30 +1,32 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
-import {UserContextRequest} from "@/lib/middleware/auth";
+import { UserContextRequest } from "@/lib/middleware/auth";
 import connectToMongoDbDev from "@/lib/mongodb/client";
-import {queryUserAuth} from "@/lib/common/user";
-import {getClientIP, HttpsProxyGet} from "@/lib/common/request";
+import { queryUserAuth } from "@/lib/common/user";
+import { getClientIP, HttpsProxyGet } from "@/lib/common/request";
 import Quest from "@/lib/models/Quest";
-import {ConnectSteamQuest} from "@/lib/quests/implementations/connectSteamQuest";
-import {ConnectWalletQuest} from "@/lib/quests/implementations/connectWalletQuest";
-import WalletAsset, {IWalletAsset, WalletNFT} from "@/lib/models/WalletAsset";
+import { ConnectSteamQuest } from "@/lib/quests/implementations/connectSteamQuest";
+import { ConnectWalletQuest } from "@/lib/quests/implementations/connectWalletQuest";
+import WalletAsset, { IWalletAsset, WalletNFT } from "@/lib/models/WalletAsset";
 import doTransaction from "@/lib/mongodb/transaction";
-import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from "@/lib/models/UserMoonBeamAudit";
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 import User from "@/lib/models/User";
-import {try2AddUsers2MBLeaderboard} from "@/lib/redis/moonBeamLeaderboard";
-import {allowIP2VerifyWalletAsset, retryAllowToSendRequest2Reservoir} from "@/lib/redis/ratelimit";
+import { try2AddUsers2MBLeaderboard } from "@/lib/redis/moonBeamLeaderboard";
+import { allowIP2VerifyWalletAsset, retryAllowToSendRequest2Reservoir } from "@/lib/redis/ratelimit";
 import logger from "@/lib/logger/winstonLogger";
-import {redis} from "@/lib/redis/client";
+import { redis } from "@/lib/redis/client";
 
 import Moralis from 'moralis';
 
-import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/models/UserMetricReward";
-import {AuthorizationType} from "@/lib/authorization/types";
-import {promiseSleep} from "@/lib/common/sleep";
-
+import UserMetricReward, { checkMetricReward, IUserMetricReward } from "@/lib/models/UserMetricReward";
+import { AuthorizationType } from "@/lib/authorization/types";
+import { promiseSleep } from "@/lib/common/sleep";
+import { v4 as uuidv4 } from "uuid";
+import { randomBytes, createHash } from 'crypto';
+import { constructQuest } from "@/lib/quests/constructor";
 
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
 sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
@@ -32,8 +34,51 @@ sdk.server('https://api.reservoir.tools');
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
+function generateSecretKey(length: number = 32): string {
+    // 生成指定长度的随机字节
+    const secretKey = randomBytes(length);
+    // 将随机字节转换为 base64 编码以便于存储和使用
+    return secretKey.toString('base64');
+}
+
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
 router.get(async (req, res) => {
+
+    const quest = await Quest.findOne({ id: "shushu-test", deleted_time: null });
+    const questImpl = await constructQuest(quest);
+    const result = await questImpl.checkClaimable("1227052316134215680");
+    console.log(result);
+    return;
+
+    console.log("client id:", uuidv4());
+    console.log("client sec:", generateSecretKey());
+
+    const base64URLEncode = (str: any) => str.toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '')
+
+    // This is the code_verifier, which is INITIALLY KEPT SECRET on the client
+    // and which is later passed as request param to the token endpoint.
+    // DO NOT SEND this with the authorization request!
+    // const codeVerifier = base64URLEncode(randomBytes(32))
+    const codeVerifier = "408776";
+
+    // This is the hashed version of the verifier, which is sent to the authorization endpoint.
+    // This is named t(code_verifier) in the above workflow
+    // Send this with the authorization request!
+    // codeVerifier: 408776
+    // codeChallenge: 3Q88UPfYqbaaANEN_0bSj99m51Ju1pyUEKvfIc-JiNw
+    // codeChallengeMethod: S256
+    const codeChallenge = base64URLEncode("dd0f3c50f7d8a9b69a00d10dff46d28fdf66e7526ed69c9410abdf21cf8988dc")
+
+    // This is the name of the code challenge method
+    // This is named t_m in the above workflow
+    // Send this with the authorization request!
+    const codeChallengeMethod = 'S256'
+    console.log("codeVerifier:", codeVerifier);
+    console.log("codeChallenge:", codeChallenge);
+    console.log("codeChallengeMethod:", codeChallengeMethod);
     try {
         // const client = new CovalentClient("cqt_rQc36xBcjcB93vMVk846hdWyYJf7");
         // const resp = await client.BalanceService.getTokenBalancesForWalletAddress("eth-mainnet", "0x1260b33a7b1Ca6919c74d6212f2D17945222827f");
@@ -58,8 +103,8 @@ router.get(async (req, res) => {
 
 async function reVerifyUsersWalletQuest() {
     // 获取基本信息
-    const quest = await Quest.findOne({id: "331a0cfd-0393-4c07-a7f9-91c56d709748"});
-    const rewards = await UserMetricReward.find({id: {$in: quest.reward.range_reward_ids}});
+    const quest = await Quest.findOne({ id: "331a0cfd-0393-4c07-a7f9-91c56d709748" });
+    const rewards = await UserMetricReward.find({ id: { $in: quest.reward.range_reward_ids } });
 
     // 重新校验用户的资产信息
     let pageNum = 1;
@@ -81,9 +126,9 @@ async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
     // 获取用户的最新资产信息
     const asset = await WalletAsset.findOne({
         'user_id': userId,
-        'reservoir_value': {$exists: true},
+        'reservoir_value': { $exists: true },
         'reverified': null,
-    }).sort({created_time: -1})
+    }).sort({ created_time: -1 })
     const now = Date.now();
     // 重新计算用户的资产信息
     const userMetric: any = {
@@ -106,10 +151,10 @@ async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
         extra_info: asset.id,
         created_time: now,
     });
-    let historyReward = await UserMoonBeamAudit.findOne({user_id: userId, corr_id: quest.id, deleted_time: null});
+    let historyReward = await UserMoonBeamAudit.findOne({ user_id: userId, corr_id: quest.id, deleted_time: null });
     if (!historyReward) {
         logger.debug(`user ${userId} not verified`);
-        await WalletAsset.updateMany({user_id: userId}, {
+        await WalletAsset.updateMany({ user_id: userId }, {
             reverified: true
         });
         return;
@@ -119,9 +164,9 @@ async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
     const increasedReward = rewardDelta - historyReward.moon_beam_delta;
     logger.debug(`user ${userId} delta ${increasedReward}`);
     await doTransaction(async (session) => {
-        const opts = {session};
+        const opts = { session };
         // 更新用户的校验标识
-        await WalletAsset.updateMany({user_id: userId}, {
+        await WalletAsset.updateMany({ user_id: userId }, {
             reverified: true,
             total_usd_value: userMetric.wallet_asset_usd_value
         }, opts);
@@ -131,7 +176,7 @@ async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
         }
         // 保存用户最新的指标
         await UserMetrics.updateOne(
-            {user_id: userId},
+            { user_id: userId },
             {
                 $set: userMetric,
                 $setOnInsert: {
@@ -148,7 +193,7 @@ async function reVerifyWalletQuest(userId: string, quest: any, rewards: any) {
         // 添加新的校验记录
         await audit.save(opts);
         // 更新用户的MB
-        await User.updateOne({user_id: userId}, {$inc: {moon_beam: increasedReward}}, opts);
+        await User.updateOne({ user_id: userId }, { $inc: { moon_beam: increasedReward } }, opts);
     })
     // 刷新用户的缓存
     if (increasedReward != 0) {
@@ -186,7 +231,7 @@ async function findUsers2ReverifyWalletAsset(pageNumber, pageSize) {
     const result = await WalletAsset.aggregate([
         {
             '$match': {
-                'reservoir_value': {$exists: true},
+                'reservoir_value': { $exists: true },
                 'reverified': null,
             }
         },
@@ -196,7 +241,7 @@ async function findUsers2ReverifyWalletAsset(pageNumber, pageSize) {
             }
         },
         {
-            $sort: {_id: 1} // 根据 wallet_addr (_id) 排序
+            $sort: { _id: 1 } // 根据 wallet_addr (_id) 排序
         },
         {
             $skip: skip // 跳过前面的结果
@@ -205,7 +250,7 @@ async function findUsers2ReverifyWalletAsset(pageNumber, pageSize) {
             $limit: pageSize // 限制返回的结果数量
         },
         {
-            $project: {user_id: "$_id", _id: 0}
+            $project: { user_id: "$_id", _id: 0 }
         }
     ]).exec();
 
@@ -232,7 +277,7 @@ async function syncUserReservoirNftVal() {
                 }
                 syncedCol.set(wallet, true);
                 const totalVal = await syncUserCollections(wallet);
-                await WalletAsset.updateMany({wallet_addr: wallet}, {reservoir_value: totalVal});
+                await WalletAsset.updateMany({ wallet_addr: wallet }, { reservoir_value: totalVal });
             }
         }
 
@@ -267,7 +312,7 @@ async function findDistinctWalletAddresses(pageNumber, pageSize) {
                 $limit: pageSize // 限制返回的结果数量
             },
             {
-                $project: {wallet_addr: 1, _id: 0}
+                $project: { wallet_addr: 1, _id: 0 }
             }
         ]).exec();
 
@@ -380,7 +425,7 @@ async function refreshUserMoonbeamCache() {
     let hasMore = true;
 
     while (hasMore) {
-        const users = await User.find({moon_beam: {$gt: 0}}, {
+        const users = await User.find({ moon_beam: { $gt: 0 } }, {
             _id: 0,
             moon_beam: 1,
             user_id: 1
@@ -402,7 +447,7 @@ async function refreshUserMoonbeamCache() {
 }
 
 async function loadMoonbeamIntoCache() {
-    const users = await User.find({moon_beam: {$gte: 0}}, {_id: 0, user_id: 1});
+    const users = await User.find({ moon_beam: { $gte: 0 } }, { _id: 0, user_id: 1 });
     for (let user of users) {
         await try2AddUsers2MBLeaderboard(user.user_id);
     }

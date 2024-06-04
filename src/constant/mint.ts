@@ -33,8 +33,6 @@ interface NetworkInfo {
   blockExplorerUrls: string[];
 }
 
-export const CURRENT_CHAIN_ID = '0x' + parseInt(process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!).toString(16);
-
 export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
   80001: {
     chainId: parseChainIdToHex('80001'),
@@ -46,6 +44,17 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
     },
     rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
     blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+  },
+  80002: {
+    chainId: parseChainIdToHex('80002'),
+    chainName: 'Amoy',
+    nativeCurrency: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc-amoy.polygon.technology'],
+    blockExplorerUrls: ['https://amoy.polygonscan.com'],
   },
   137: {
     chainId: parseChainIdToHex('137'),

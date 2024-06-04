@@ -118,7 +118,7 @@ export default function PrivilegeScreen() {
 
             <div className="lg:pl-[6.25rem] lg:ml-[5.375rem] lg:border-l mt-8 lg:mt-0 border-[rgba(246,199,153,0.2)] h-full">
               <div className="title font-semakin text-3xl text-basic-yellow mb-[3.375rem]">
-                Privileges of Destiny TETRA
+                Privileges of {TrifleCards[currentIndex].rocketTitle}
               </div>
 
               <PrivilegeList step={currentIndex} />
