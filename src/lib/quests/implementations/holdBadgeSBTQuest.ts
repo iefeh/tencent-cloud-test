@@ -35,7 +35,7 @@ export class HoldBadgeSBTQuest extends QuestBase {
         if (result.duplicated) {
             return {
                 verified: false,
-                tip: "The user has already claimed tickets.",
+                tip: "The user has already claimed reward.",
             }
         }
 
