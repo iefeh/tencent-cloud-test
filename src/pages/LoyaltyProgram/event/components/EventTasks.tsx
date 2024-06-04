@@ -378,7 +378,7 @@ function EventTasks(props: EventTaskProps) {
               <div className="text-base shrink-0">
                 (
                 <span className="text-basic-yellow">
-                  {task.current_progress || 0} / {task.target_progress || '-'}
+                  {task.current_progress || 0}/{task.target_progress || '-'}
                 </span>
                 )
               </div>
