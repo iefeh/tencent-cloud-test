@@ -3,6 +3,8 @@ import { Lottery } from '@/types/lottery';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
+import styles from './index.module.css';
+import { isMobile } from 'react-device-detect';
 
 interface Rule {
   title: string;
@@ -62,28 +64,30 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
     },
   ];
 
-  const drawCounts = [
-    [
-      'Level',
-      ...Array(BadgeIcons.length)
-        .fill(null)
-        .map((_, index) => index + 1),
-    ],
-    ['Cumulative Draw Counts', ...BadgeIcons.map((_, i) => milestone?.luckyDrawBadge?.series?.[i]?.requirements)],
-  ];
+  const drawCounts = isMobile
+    ? [
+        ['Level', 'Cumulative Draw Counts'],
+        ...BadgeIcons.map((_, i) => [i + 1, milestone?.luckyDrawBadge?.series?.[i]?.requirements]),
+      ]
+    : [
+        [
+          'Level',
+          ...Array(BadgeIcons.length)
+            .fill(null)
+            .map((_, index) => index + 1),
+        ],
+        ['Cumulative Draw Counts', ...BadgeIcons.map((_, i) => milestone?.luckyDrawBadge?.series?.[i]?.requirements)],
+      ];
 
   return (
-    <div className="w-[74.125rem] h-[46.75rem] relative pt-9 pl-[3.75rem] pr-8 pb-6 mb-20">
-      <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_card_rules.png"
-        alt=""
-        fill
-        sizes="100%"
-        unoptimized
-      />
-
-      <div className="w-full h-full relative z-0 text-lg mt-10">
-        <div className="font-semakin text-4xl leading-none text-basic-yellow">More and $MORE Rules</div>
+    <div
+      className={cn([
+        'w-[24rem] h-auto lg:w-[74.125rem] lg:h-[46.75rem] relative py-2 px-6 lg:pt-9 lg:pl-[3.75rem] lg:pr-8 lg:pb-6 mb-20',
+        styles.badgeRules,
+      ])}
+    >
+      <div className="w-full h-full relative z-0 text-lg mt-0 lg:mt-10">
+        <div className="font-semakin text-2xl lg:text-4xl leading-none text-basic-yellow">More and $MORE Rules</div>
 
         <ul className="mt-6">
           {rules.map((rule, index) => (
@@ -123,7 +127,7 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
                                     key={di}
                                     className={cn([
                                       'border-1 border-white/80',
-                                      di > 0 ? 'text-center w-[4.25rem]' : 'text-right pr-4 w-72',
+                                      di > 0 ? 'text-center w-[4.25rem]' : 'text-right pr-4 w-8 lg:w-72',
                                       (ri < 1 || di < 1) && 'text-white',
                                     ])}
                                   >

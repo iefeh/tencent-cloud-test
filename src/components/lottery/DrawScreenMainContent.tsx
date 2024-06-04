@@ -19,7 +19,7 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
       className="-translate-y-12 items-center"
       title={
         <div ref={titleRef} className="font-semakin ani-twirl">
-          <span className="text-[4rem]">
+          <span className="text-4xl lg:text-[4rem]">
             {'WIN'.split('').map((t, i) => (
               <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
                 {t}
@@ -27,7 +27,7 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
             ))}
           </span>
 
-          <span className="text-[6rem]">
+          <span className="text-6xl lg:text-[6rem]">
             {'$500 USDT'.split('').map((t, i) => (
               <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
                 {t}
@@ -39,13 +39,13 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
       subtitle={
         <div className="flex items-center font-semakin">
           <div className="text-right">
-            <div className="text-2xl">guaranteed in</div>
-            <div className="text-[2rem] bg-gradient-to-b from-[#E7D4A9] to-[#DBAC74] bg-clip-text text-transparent">
+            <div className="text-xl lg:text-2xl">guaranteed in</div>
+            <div className="text-xl lg:text-3xl lg:text-[2rem] bg-gradient-to-b from-[#E7D4A9] to-[#DBAC74] bg-clip-text text-transparent">
               3000 Collective Draws
             </div>
           </div>
 
-          <div className="stroke-text text-[4rem]" data-text="Per Pool">
+          <div className="stroke-text text-3xl lg:text-[4rem]" data-text="Per Pool">
             Per Pool
           </div>
         </div>

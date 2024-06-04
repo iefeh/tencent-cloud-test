@@ -81,7 +81,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   }
 
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-screen h-[160vh] lg:h-screen">
       {/* 背景层 */}
       <div className="absolute inset-0 z-0">
         <div className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2">
@@ -104,13 +104,17 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20 flex justify-center items-center">
-        <MBInfo className="!absolute left-16 top-32" onShowHistory={onShowHistory} item={poolInfo} />
+        <MBInfo
+          className="!absolute left-4 -top-1 lg:left-16 lg:top-32"
+          onShowHistory={onShowHistory}
+          item={poolInfo}
+        />
 
-        <TicketsInfo className="!absolute left-16 top-[16.5625rem]" item={poolInfo} />
+        <TicketsInfo className="!absolute left-4 lg:left-16 top-[16.5625rem]" item={poolInfo} />
 
-        <TimeoutInfo className="!absolute right-16 top-32" key={poolInfo?.end_time} item={poolInfo} />
+        <TimeoutInfo className="!absolute right-4 lg:right-16 top-32" key={poolInfo?.end_time} item={poolInfo} />
 
-        <DrawLimitsInfo className="!absolute right-16 top-[17.125rem]" item={poolInfo} />
+        <DrawLimitsInfo className="!absolute top-[21.75rem] right-4 lg:right-16 lg:top-[17.125rem]" item={poolInfo} />
 
         <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
 

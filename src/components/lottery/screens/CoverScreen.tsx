@@ -1,11 +1,13 @@
 import PageDesc from '@/pages/components/common/PageDesc';
 import Image from 'next/image';
 import { FC } from 'react';
+import { isMobile } from 'react-device-detect';
 
 const CoverScreen: FC = () => {
   return (
     <div className="relative w-screen h-screen flex justify-center items-center">
       <Image
+        className="object-cover"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png"
         alt=""
         fill
@@ -17,9 +19,10 @@ const CoverScreen: FC = () => {
         needAni
         baseAniTY
         title={
-          <div className="text-6xl uppercase font-semakin">
+          <div className="text-4xl lg:text-6xl uppercase font-semakin text-center">
             <span>Welcome to</span>
-            <span className="bg-gradient-to-b to-[#D9A970] from-[#EFEBC5] bg-clip-text text-transparent">
+            {isMobile && <br />}
+            <span className="bg-gradient-to-b to-[#D9A970] from-[#EFEBC5] bg-clip-text text-transparent whitespace-nowrap">
               “More and $MORE”{' '}
             </span>
           </div>

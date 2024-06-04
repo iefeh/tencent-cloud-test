@@ -69,10 +69,10 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
       placement="center"
       isOpen={isOpen}
       classNames={{
-        base: 'bg-black max-w-[52.6875rem]',
+        base: 'bg-black max-w-[28rem] lg:max-w-[52.6875rem]',
         header: 'p-0',
         closeButton: 'z-10',
-        body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-6 pb-[2.875rem] px-[4.625rem] max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
+        body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] px-4 py-4 lg:pt-6 lg:pb-[2.875rem] lg:px-[4.625rem] max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
       }}
       onOpenChange={onOpenChange}
     >
@@ -80,10 +80,10 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
         {(onClose) => (
           <>
             <ModalHeader>
-              <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex justify-between items-center gap-3 pl-8 pr-[5.625rem]">
-                <div className="font-semakin text-basic-yellow text-2xl">DRAW {times} TIMES</div>
+              <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex justify-between items-center gap-3 px-4 lg:pl-8 lg:pr-[5.625rem]">
+                <div className="font-semakin text-basic-yellow text-lg lg:text-2xl">DRAW {times} TIMES</div>
 
-                <div className="text-[#C89E7A] font-semakin flex-1 text-right">You Own</div>
+                <div className="text-[#C89E7A] font-semakin flex-1 text-right text-sm">You Own</div>
 
                 <div className="w-[9.625rem] h-14 relative flex items-center">
                   <Image
