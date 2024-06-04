@@ -46,7 +46,7 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             <div
               key={i}
               id={`pool_prize_${i}`}
-              className={cn(['w-32 h-32 absolute left-1/2 right-1/2 -translate-x-1/2 -translate-y-1/2'])}
+              className={cn(['w-10 h-10 lg:w-32 lg:h-32 absolute left-1/2 right-1/2 -translate-x-1/2 -translate-y-1/2'])}
             >
               <div
                 className="w-full h-full flex justify-center items-center relative origin-center"

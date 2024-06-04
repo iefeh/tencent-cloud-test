@@ -128,7 +128,7 @@ export default function usePrizeAni({ item }: ItemProps<Lottery.Pool>) {
           const config = rewardConfigs[idx];
 
           gsap.to(`#pool_prize_${i}`, {
-            duration: 14 * config.speed,
+            duration: 32 * config.speed,
             repeat: -1,
             ease: Linear.easeNone,
             motionPath: {
