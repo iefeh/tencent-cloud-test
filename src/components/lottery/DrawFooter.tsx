@@ -59,7 +59,7 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
               label={item.buttonLabel}
               actived
               needAuth
-              disabled={!poolInfo}
+              disabled={!poolInfo || poolInfo.rest_draw_amount < item.times}
               onClick={() => onDraw?.(item.times)}
             />
           </div>
