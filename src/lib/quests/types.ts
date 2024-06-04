@@ -41,7 +41,9 @@ export enum QuestType {
     // 数数SQL类任务
     ThinkingDataQuery = "thinking_data_query",
     // 领取2048游戏券
-    Claim2048Ticket = "claim_2048_ticket",
+    Claim2048Ticket = "claim_2048_ticket",  
+    // 持有徽章SBT
+    HoldBadgeSBT = "hold_badge_sbt",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -234,6 +236,12 @@ export type claimRewardResult = {
     tip?: string;
     // 传递自定义信息
     extra?: any;
+}
+
+// 持有徽章SBT
+export type HoldBadgeSBT = {
+    badge_id: string,
+    badge_level: string
 }
 
 export enum ThinkingDataQuestType {

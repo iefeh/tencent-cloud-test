@@ -27,7 +27,7 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
           label: 'There are 2 types of lottery tickets:',
           children: [
             'Silver Ticket: Exchange 25 Moon Beams for 1 Silver Ticket. It is valid only in the current pool.',
-            'Gold S1 Ticket: Earned through special rewards. Can be used in all pools during Season 1.',
+            'Golden S1 Ticket: Earned through special rewards. Can be used in all pools during Season 1.',
           ],
         },
         'Each draw costs 1 lottery ticket.',

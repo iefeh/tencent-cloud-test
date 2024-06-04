@@ -41,6 +41,13 @@ export type LotteryRewardItem = {
     inventory_amount: number | null
 }
 
+export type LotteryTwitterTopic = {
+    reward_claim_type: number,
+    twitter_topic_text: string,
+    twitter_topic_hashtags: string[],
+    twitter_topic_urls: string[]
+}
+
 export interface ILotteryPool extends Document {
     // 奖池id
     lottery_pool_id: string;
@@ -48,12 +55,8 @@ export interface ILotteryPool extends Document {
     start_time: number;
     // 奖池结束时间，毫秒时间戳
     end_time: number;
-    // 奖池分享tweet内容
-    twitter_topic_text: string;
-    // 奖池分享tweet hash tag
-    twitter_topic_hashtags: string[];
-    // 奖池分享url
-    twitter_topic_urls: string[];
+    // 分享推文信息
+    twitter_topics: LotteryTwitterTopic[];
     // 奖池分享tweet mb奖励数量
     twitter_verify_mb_reward_amount: number;
     // 每个用户可抽次数, 如果为null则无限次
@@ -74,9 +77,7 @@ const LotteryPoolSchema = new Schema<ILotteryPool>({
     lottery_pool_id: { type: String },
     start_time: { type: Number},
     end_time: { type: Number},
-    twitter_topic_text: { type: String },
-    twitter_topic_hashtags: { type: [String] },
-    twitter_topic_urls: { type: [String] },
+    twitter_topics: { type: Schema.Types.Mixed },
     twitter_verify_mb_reward_amount: { type: Number, default: 20 },
     draw_limits: { type: Number, default: 10 },
     total_draw_amount: { type: Number },

@@ -13,6 +13,7 @@ declare namespace Lottery {
     user_free_lottery_ticket_amount: number;
     user_mb_amount: number;
     can_claim_premium_benifits: boolean;
+    first_twitter_topic_verified?: boolean;
     rewards: RewardItem[];
   }
 
@@ -38,6 +39,7 @@ declare namespace Lottery {
   }
 
   interface DrawDTO {
+    draw_id: string;
     lottery_pool_id: string;
     draw_count: number;
     lottery_ticket_cost: number;
