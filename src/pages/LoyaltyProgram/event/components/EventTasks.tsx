@@ -371,7 +371,19 @@ function EventTasks(props: EventTaskProps) {
       <div className="flex justify-between py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300 flex-col lg:flex-row items-start lg:items-center">
         <div className="flex items-center">
           <Image className="w-9 h-9 object-contain" src={getTaskIcon()} alt="" width={36} height={36} unoptimized />
-          <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
+          <div className="font-poppins-medium text-lg ml-[0.875rem] flex justify-between items-center">
+            <div dangerouslySetInnerHTML={{ __html: task.description }}></div>
+
+            {task.current_progress !== undefined && task.target_progress !== undefined && (
+              <div className="text-base shrink-0">
+                (
+                <span className="text-basic-yellow">
+                  {task.current_progress || 0}/{task.target_progress || '-'}
+                </span>
+                )
+              </div>
+            )}
+          </div>
         </div>
 
         {isInProcessing && (

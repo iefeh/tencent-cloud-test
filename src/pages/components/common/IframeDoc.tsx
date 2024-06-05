@@ -1,11 +1,20 @@
+import { Locale } from '@/constant/locale';
+import { useUserContext } from '@/store/User';
+import { observer } from 'mobx-react-lite';
 import { useRef, useState } from 'react';
 
 interface Props {
   src: string;
 }
 
-export default function IframeDoc(props: Props) {
-  const { src } = props;
+function IframeDoc(props: Props) {
+  const { locale } = useUserContext();
+  let { src } = props;
+
+  if (src.startsWith('/html/')) {
+    src = `/html${locale !== Locale.EN ? '/' + locale : ''}/${src.substring(6)}`;
+  }
+
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -63,3 +72,5 @@ export default function IframeDoc(props: Props) {
     ></iframe>
   );
 }
+
+export default observer(IframeDoc);

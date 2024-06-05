@@ -42,6 +42,8 @@ export enum QuestType {
     ThinkingDataQuery = "thinking_data_query",
     // 领取2048游戏券
     Claim2048Ticket = "claim_2048_ticket",
+    // 持有徽章SBT
+    HoldBadgeSBT = "hold_badge_sbt",
     // 领取抽奖券
     ClaimLotteryTicket = "claim_lottery_ticket",
 }
@@ -236,6 +238,12 @@ export type claimRewardResult = {
     tip?: string;
     // 传递自定义信息
     extra?: any;
+}
+
+// 持有徽章SBT
+export type HoldBadgeSBT = {
+    badge_id: string,
+    badge_level: string
 }
 
 export enum ThinkingDataQuestType {

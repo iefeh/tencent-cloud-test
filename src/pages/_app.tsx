@@ -73,6 +73,7 @@ import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
+import useRouteLocale from '@/hooks/useRouteLocale';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -281,6 +282,8 @@ export default function App({ Component, pageProps }: AppProps) {
       this.setItem(key, JSON.stringify(val || ''));
     };
   }, []);
+
+  useRouteLocale(store);
 
   return (
     <>

@@ -13,11 +13,11 @@ import Image from 'next/image';
 import BadgeSlide from '../BadgeSlide';
 import NFT2Slide from '../NFT2Slide';
 import Game2048Slide from '../Game2048Slide';
+import { isMobile } from 'react-device-detect';
 
 export default function SwiperScreen() {
   const slides = [
     LoyaltyProgramSlide,
-    Game2048Slide,
     NFT2Slide,
     InviteNewSlide,
     BadgeSlide,
@@ -26,6 +26,7 @@ export default function SwiperScreen() {
     // IndexSlide,
     // LimitedTestSlide,
   ];
+  // slides.splice(isMobile ? 0 : 1, 0, Game2048Slide);
   const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length - 1).fill(false)]);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
