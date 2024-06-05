@@ -69,7 +69,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     }
     for (let reward of rewards) {
       if (!reward.claimed) {
-        await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, reward.reward_id);
+        await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, reward.reward_id, drawHistory.rewards.length);
       }
     }
     res.json(response.success(constructVerifyResponse(true, "Congratulations on claiming your lottery rewards.")));
@@ -82,11 +82,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   }
 });
 
-async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lotteryPoolId: string, drawId: string, userId: string, rewardId: string): Promise<any> {
+async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lotteryPoolId: string, drawId: string, userId: string, rewardId: string, drawTimes: number): Promise<any> {
   const now = Date.now()
   switch (userReward.reward_type) {
     case LotteryRewardType.MoonBeam: 
-      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, rewardId, userReward.amount);
+      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, rewardId, userReward.amount, drawTimes);
       await doTransaction( async session => {
         await moonBeamAudit.save(session);
         await increaseUserMoonBeam(userId, userReward.amount, session);

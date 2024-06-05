@@ -59,7 +59,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     canClaimFirstTwitterReward = false;
   }
   if (canClaimFirstTwitterReward) {
-    const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, "", 20);
+    const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, lotteryPoolId, 20);
     doTransaction( async session => {
       await UserLotteryPool.updateOne(
         { user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null },
