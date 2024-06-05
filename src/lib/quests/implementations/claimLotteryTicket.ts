@@ -1,8 +1,7 @@
 import { IQuest } from "@/lib/models/Quest";
 import { checkClaimableResult, claimRewardResult } from "@/lib/quests/types";
 import { QuestBase } from "@/lib/quests/implementations/base";
-import { format } from "date-fns";
-import UserBackpackModel from "@/lib/models/UserBackpack";
+import User from "@/lib/models/User";
 
 export class ClaimLotteryTicketQuest extends QuestBase {
     constructor(quest: IQuest) {
@@ -10,16 +9,14 @@ export class ClaimLotteryTicketQuest extends QuestBase {
     }
 
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
-        // 添加用户ticket.
-        await UserBackpackModel.updateOne({ uid: userId }, {
-            $inc: { num: this.quest.properties.tickets },
-            $setOnInsert: {
-                uid: userId,
-                propId: 1,
-                propName: "ticket",
-                creatTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+        await User.updateOne({ user_id: userId },
+            {
+                $inc: { lottery_ticket_amount: this.quest.properties.tickets },
+                $setOnInsert: {
+                    created_time: Date.now(),
+                },
             },
-        }, { upsert: true });
+            { upsert: true });
 
         return {
             claimable: true,
@@ -27,7 +24,7 @@ export class ClaimLotteryTicketQuest extends QuestBase {
     }
 
     async claimReward(userId: string): Promise<claimRewardResult> {
-        const taint = `2048,${this.quest.id},${userId}`;
+        const taint = `lottery,${this.quest.id},${userId}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         const result = await this.saveUserReward(userId, taint, rewardDelta, null);
 
@@ -42,7 +39,7 @@ export class ClaimLotteryTicketQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `You have claimed ${rewardDelta} MB and ${this.quest.properties.tickets} tickets for 2048 Game.` : "Server Internal Error",
+            tip: result.done ? `You have claimed ${rewardDelta} MB and ${this.quest.properties.tickets} lottery tickets.` : "Server Internal Error",
         }
     }
 }
