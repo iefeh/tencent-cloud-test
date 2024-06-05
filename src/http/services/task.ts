@@ -128,6 +128,7 @@ export interface EventRewardAcceleratorProperty {
   min_hold_duration: number;
   nft_market_url: string;
   reward_bonus_moon_beam: number;
+  third_party_nft: boolean;
 }
 
 export interface EventRewardAccelerator {
