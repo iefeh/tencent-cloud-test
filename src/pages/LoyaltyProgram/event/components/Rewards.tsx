@@ -144,7 +144,7 @@ export default function Rewards(props: Props) {
                 <div className="px-8 py-4 max-w-lg">
                   <div className="font-semakin text-2xl text-basic-yellow text-center">Moonveil Multipliers</div>
 
-                  <div className="flex justify-center items-center gap-6 text-basic-yellow mt-4 text-lg">
+                  <div className="flex justify-center items-center gap-6 mt-4 text-lg">
                     <div>
                       Total Multipliers: {totalMultipliers > 0 ? '+' : ''}
                       {totalMultipliers.toFixed(0)}%
@@ -159,7 +159,7 @@ export default function Rewards(props: Props) {
                     <ul className="mt-4">
                       {accelerators.map((accs, accsIndex) => (
                         <li key={accsIndex} className="li [&+.li]:mt-4">
-                          <p>
+                          <p className="text-basic-yellow">
                             {accsIndex + 1}. {accs[0].description}
                           </p>
 
@@ -172,6 +172,8 @@ export default function Rewards(props: Props) {
                             </div>
                           ) : (
                             accs.map((acc, accIndex) => {
+                              if (acc.properties.third_party_nft && !acc.properties.reward_bonus) return null;
+
                               return (
                                 <div key={accIndex} className="flex pl-3 mt-2">
                                   <span className="w-3 h-3 rounded-full bg-white mr-2 mt-1"></span>
@@ -179,7 +181,9 @@ export default function Rewards(props: Props) {
                                   <span>
                                     <span>{acc.name}</span>, +{acc.properties.reward_bonus * 100}%,{' '}
                                     {acc.properties.reward_bonus_moon_beam} MBs
-                                    {acc.type === AcceleratorType.NFT && <> per item</>}
+                                    {acc.type === AcceleratorType.NFT && !acc.properties.third_party_nft && (
+                                      <> per item</>
+                                    )}
                                     {acc.properties.nft_market_url && (
                                       <>
                                         ,{' '}
@@ -188,11 +192,11 @@ export default function Rewards(props: Props) {
                                           href={acc.properties.nft_market_url}
                                           target="_blank"
                                         >
-                                          Go get
+                                          {acc.properties.third_party_nft ? 'View here' : 'Go get'}
                                         </a>
                                       </>
                                     )}
-                                    !
+                                    {acc.properties.third_party_nft ? '.' : '!'}
                                   </span>
                                 </div>
                               );
