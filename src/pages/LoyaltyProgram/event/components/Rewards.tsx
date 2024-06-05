@@ -8,7 +8,7 @@ import lockImg from 'img/loyalty/season/icon_locked.png';
 import claimedImg from 'img/loyalty/season/icon_claimed.png';
 import { useEffect, useState } from 'react';
 import { Tooltip, cn } from '@nextui-org/react';
-import { AcceleratorType, EVENT_REWARD_TYPE } from '@/constant/task';
+import { AcceleratorProps, AcceleratorType, EVENT_REWARD_TYPE } from '@/constant/task';
 import notifyIcon from 'img/icon/icon_notify.png';
 import Link from 'next/link';
 
@@ -160,7 +160,7 @@ export default function Rewards(props: Props) {
                       {accelerators.map((accs, accsIndex) => (
                         <li key={accsIndex} className="li [&+.li]:mt-4">
                           <p className="text-basic-yellow">
-                            {accsIndex + 1}. {accs[0].description}
+                            {accsIndex + 1}. {AcceleratorProps[accs[0].type].title || '--'}
                           </p>
 
                           {accs[0].type === AcceleratorType.BADGE &&
