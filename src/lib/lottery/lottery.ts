@@ -102,14 +102,14 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
   }
 }
 
-export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number) {
+export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number, drawTimes?: number) {
   let audit = new UserMoonBeamAudit({
     user_id: userId,
     type: UserMoonBeamAuditType.LuckyDraw,
     moon_beam_delta: moonBeamAmount,
     reward_taint: `lottery_pool_id:${lotteryPoolId},reward_id:${rewardId},user:${userId}`,
     corr_id: rewardId,
-    extra_info: lotteryPoolId,
+    extra_info: drawTimes? String(drawTimes) : null,
     created_time: Date.now(),
   });
   return audit;
