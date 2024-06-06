@@ -125,6 +125,12 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
             finishedLable: 'Commented',
           };
           break;
+        case QuestType.ViewWebsite:
+          item.connectTexts = {
+            label: 'Visit',
+            finishedLable: 'Visited',
+          };
+          break;
       }
     });
 
@@ -153,6 +159,7 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     const [hasVerifyCD, setHasVerifyCD] = useState(false);
     const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
     const is2048 = task.type === QuestType.Claim2048Ticket;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
 
     const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
     const {
@@ -175,6 +182,11 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     async function onConnectURL() {
       if (!task.properties?.url) return;
       window.open(task.properties.url, '_blank');
+
+      if (isViewWebsite) {
+        setVerifiable(false);
+        setHasVerifyCD(true);
+      }
     }
 
     async function onPrepare() {
@@ -292,7 +304,7 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
               </div>
             )
           }
-          cd={isLongCD ? 180 : 30}
+          cd={isViewWebsite ? 10 : isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
