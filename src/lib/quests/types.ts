@@ -44,6 +44,8 @@ export enum QuestType {
     Claim2048Ticket = "claim_2048_ticket",
     // 持有徽章SBT
     HoldBadgeSBT = "hold_badge_sbt",
+    // 浏览指定网站
+    ViewWebsite = "view_website",
     // 领取抽奖券
     ClaimLotteryTicket = "claim_lottery_ticket",
 }
