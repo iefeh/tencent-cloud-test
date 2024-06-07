@@ -120,7 +120,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       label={claimed ? 'Claimed Rewards' : 'Claim'}
       actived
       hasCD={hasClaimCD}
-      cd={10}
+      cd={30}
       disabled={claimed || claimDisabled}
       loading={loading || connectLoading}
       onClick={onClaim}
