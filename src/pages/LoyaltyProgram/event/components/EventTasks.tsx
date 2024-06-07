@@ -107,8 +107,9 @@ function EventTasks(props: EventTaskProps) {
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const isNeedConnect = !!task.properties.url;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
     const [verifiable, setVerifiable] = useState(
-      !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
+      !isViewWebsite && !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
     );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();

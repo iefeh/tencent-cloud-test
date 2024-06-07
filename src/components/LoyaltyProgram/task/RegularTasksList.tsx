@@ -151,8 +151,9 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
     const [verifiable, setVerifiable] = useState(
-      !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
+      !isViewWebsite && !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
     );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
