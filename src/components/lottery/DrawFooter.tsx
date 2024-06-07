@@ -37,7 +37,7 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
         <Image
           className={cn([
             'object-contain rounded-xl shadow-[0_0_0.75rem_0.125rem_#f6c799]',
-            (poolInfo?.total_draw_amount || 0) >= 3 && 'hidden',
+            ((poolInfo?.draw_limits || 0) - (poolInfo?.rest_draw_amount || 0) || 0) >= 3 && 'hidden',
           ])}
           src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/card_discount.png"
           alt=""
