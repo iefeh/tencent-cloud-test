@@ -48,6 +48,8 @@ export enum QuestType {
     ViewWebsite = "view_website",
     // 领取抽奖券
     ClaimLotteryTicket = "claim_lottery_ticket",
+    // 浏览指定网站
+    ViewWebsite = "view_website",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
