@@ -125,6 +125,12 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
             finishedLable: 'Commented',
           };
           break;
+        case QuestType.ViewWebsite:
+          item.connectTexts = {
+            label: 'Visit',
+            finishedLable: 'Visited',
+          };
+          break;
       }
     });
 
@@ -145,8 +151,9 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
     const [verifiable, setVerifiable] = useState(
-      !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
+      !isViewWebsite && !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
     );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
@@ -175,6 +182,11 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     async function onConnectURL() {
       if (!task.properties?.url) return;
       window.open(task.properties.url, '_blank');
+
+      if (isViewWebsite) {
+        setVerifiable(false);
+        setHasVerifyCD(true);
+      }
     }
 
     async function onPrepare() {
@@ -292,7 +304,7 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
               </div>
             )
           }
-          cd={isLongCD ? 180 : 30}
+          cd={isViewWebsite ? 10 : isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
