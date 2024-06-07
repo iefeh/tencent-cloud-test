@@ -23,7 +23,6 @@ import { ThinkingDataQueryQuest } from "./implementations/thinkingDataQueryQuest
 import { Claim2048TicketQuest } from "./implementations/claim2048Ticket";
 import { ViewWebsiteQuest } from "./implementations/viewWebsite";
 import { ClaimLotteryTicketQuest } from "./implementations/claimLotteryTicket";
-import { ViewWebsiteQuest } from "./implementations/viewWebsite";
 
 
 // 根据quest的type构造对应的quest实例
