@@ -7,6 +7,7 @@ export default function useRouteLocale(store: UserStore) {
   const router = useRouter();
   const { asPath } = router;
 
+  // 识别路径末尾标识
   const localeKey = 'locale-';
   const sections = asPath.replace(/\/+$/g, '').split('/');
   const lastSection = sections[sections.length - 1];
@@ -22,6 +23,7 @@ export default function useRouteLocale(store: UserStore) {
   store.setLocale(locale as Locale);
 
   sections.pop();
+  // 自动跳转无标识正确路径
   const realPath = '/' + sections.join('/');
   router.replace(realPath);
 }

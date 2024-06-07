@@ -85,6 +85,12 @@ function EventTasks(props: EventTaskProps) {
             finishedLable: 'Commented',
           };
           break;
+        case QuestType.ViewWebsite:
+          item.connectTexts = {
+            label: 'Visit',
+            finishedLable: 'Visited',
+          };
+          break;
       }
     });
 
@@ -101,8 +107,9 @@ function EventTasks(props: EventTaskProps) {
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const isNeedConnect = !!task.properties.url;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
     const [verifiable, setVerifiable] = useState(
-      !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
+      !isViewWebsite && !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
     );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
@@ -122,6 +129,11 @@ function EventTasks(props: EventTaskProps) {
     async function onConnectURL() {
       if (!task.properties?.url) return;
       window.open(task.properties.url, '_blank');
+
+      if (isViewWebsite) {
+        setVerifiable(false);
+        setHasVerifyCD(true);
+      }
     }
 
     async function onPrepare() {
@@ -236,7 +248,7 @@ function EventTasks(props: EventTaskProps) {
               </div>
             )
           }
-          cd={isLongCD ? 180 : 30}
+          cd={isViewWebsite ? 10 : isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
