@@ -234,7 +234,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     verified: true,
     message: "Congratulations on winning the following rewards!",
     lottery_pool_id: lotteryPoolId,
-    available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - userLotteryPool.draw_amount,
+    available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - (userLotteryPool? userLotteryPool.draw_amount: 0),
     draw_id: drawId,
     rewards: result,
     require_authorization: rewardNeedVerify? AuthorizationType.Twitter : undefined
