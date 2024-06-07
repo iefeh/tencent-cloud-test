@@ -22,6 +22,7 @@ import { HoldBadgeSBTQuest } from "./implementations/holdBadgeSBTQuest";
 import { ThinkingDataQueryQuest } from "./implementations/thinkingDataQueryQuest";
 import { Claim2048TicketQuest } from "./implementations/claim2048Ticket";
 import { ViewWebsiteQuest } from "./implementations/viewWebsite";
+import { ClaimLotteryTicketQuest } from "./implementations/claimLotteryTicket";
 
 
 // 根据quest的type构造对应的quest实例
@@ -69,7 +70,10 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new Claim2048TicketQuest(quest);
         case QuestType.ViewWebsite:
             return new ViewWebsiteQuest(quest);
-
+        case QuestType.ClaimLotteryTicket:
+            return new ClaimLotteryTicketQuest(quest);
+        case QuestType.ViewWebsite:
+            return new ViewWebsiteQuest(quest);
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }

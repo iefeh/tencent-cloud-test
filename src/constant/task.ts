@@ -1,3 +1,4 @@
+import { Accelerator } from '@/lib/accelerator/implementations/base';
 export const enum EventsStatus {
   COMING_SOON,
   IN_PROGRESS,
@@ -102,3 +103,13 @@ export const enum AcceleratorType {
   NFT = 'nft_holder',
   BADGE = 'badge_holder',
 }
+
+export const AcceleratorProps = {
+  [AcceleratorType.NFT]: {
+    title:
+      'Moonveil ecosystem NFT (Lv1 TETRA +20% per item, Lv2 TETRA +100% per item) and selected partner NFT holder can receive:',
+  },
+  [AcceleratorType.BADGE]: {
+    title: 'Moonveil Badge holders can receive +5% to 100% based on your Badge level:',
+  },
+};

@@ -453,7 +453,19 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
 
     return (
       <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
-        <div className="text-xl">{task.name}</div>
+        <div className="text-xl flex justify-between items-center">
+          <div>{task.name}</div>
+
+          {task.current_progress !== undefined && task.target_progress !== undefined && (
+            <div className="text-base shrink-0">
+              (
+              <span className="text-basic-yellow">
+                {task.current_progress || 0}/{task.target_progress || '-'}
+              </span>
+              )
+            </div>
+          )}
+        </div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">

@@ -8,7 +8,7 @@ import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/LotteryPool';
 import { increaseUserMoonBeam } from '@/lib/models/User';
 import UserLotteryDrawHistory, {
-    IUserLotteryDrawHistory, IUserLotteryRewardItem
+    IUserLotteryDrawHistory
 } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import doTransaction from '@/lib/mongodb/transaction';
@@ -27,16 +27,19 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     res.json(response.invalidParams(constructVerifyResponse(false, "The lottery pool is not opened or has been closed.")));
+    return;
   }
   const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, draw_id: drawId }) as IUserLotteryDrawHistory;
   if (!drawHistory) {
     res.json(response.invalidParams(constructVerifyResponse(false, "Cannot find a draw record for this claim.")));
+    return;
   }
   const maxClaimType = Math.max(...drawHistory.rewards.map(reward => (reward.reward_claim_type)));
   var postUrl = "https://twitter.com/intent/post?";
   const twitterTopic = lotteryPool.twitter_topics.find(topics => (topics.reward_claim_type === maxClaimType)) as LotteryTwitterTopic; 
   if (!twitterTopic) {
     res.json(response.serverError(constructVerifyResponse(false, "Cannot find a matching reward type.")));
+    return;
   }
   if (twitterTopic.twitter_topic_text) {
       // 把文本的\n替换为%0a
@@ -56,7 +59,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     canClaimFirstTwitterReward = false;
   }
   if (canClaimFirstTwitterReward) {
-    const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, "", 20);
+    const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, lotteryPoolId, 20);
     doTransaction( async session => {
       await UserLotteryPool.updateOne(
         { user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null },
@@ -71,6 +74,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     });
   }
   res.json(response.success({ postUrl: postUrl }));
+  return;
 });
 
 // this will run if none of the above matches

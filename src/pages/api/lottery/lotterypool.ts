@@ -14,12 +14,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const { lottery_pool_id } = req.query;
   if (!lottery_pool_id) {
     res.json(response.invalidParams());
+    return;
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+    return;
   }
   const user = await User.findOne({ user_id: userId });
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
@@ -58,6 +60,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     first_twitter_topic_verified: firstTwitterTopicVerified,
     rewards: rewards
   }));
+  return;
 });
 
 // this will run if none of the above matches

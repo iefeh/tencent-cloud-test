@@ -1,6 +1,6 @@
 import { getZipFiles } from '@/http/services/zip';
 import { loadImage } from '@/utils/common';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   url: string;
@@ -36,6 +36,8 @@ export default function useFrameAni({
   const imgs = useRef<ImageBitmap[]>([]);
   const initImagesPromise = useRef<Promise<boolean> | null>(null);
   const frameEl = 1000 / frames;
+  const [realWidth, setRealWidth] = useState(width);
+  const [realHeight, setRealHeight] = useState(height);
 
   function initCanvas() {
     if (!canvasRef.current) return;
@@ -63,6 +65,8 @@ export default function useFrameAni({
 
     canvasRef.current.style.width = `${realWidth}px`;
     canvasRef.current.style.height = `${realHeight}px`;
+    setRealWidth(realWidth);
+    setRealHeight(realHeight);
 
     ctxRef.current = canvasRef.current.getContext('2d');
 
@@ -120,7 +124,6 @@ export default function useFrameAni({
 
   function startAni() {
     stopAni();
-    currentIdxRef.current = 0;
     lastElRef.current = performance.now();
     aniLoop();
   }
@@ -130,12 +133,13 @@ export default function useFrameAni({
 
     cancelAnimationFrame(rafId.current);
     rafId.current = 0;
+    currentIdxRef.current = 0;
   }
 
   useEffect(() => {
     initCanvas();
     initImages();
-  });
+  }, []);
 
   useEffect(() => {
     const promise = initImages();
@@ -145,5 +149,5 @@ export default function useFrameAni({
     return stopAni;
   }, []);
 
-  return { canvasRef, width, height, startAni };
+  return { canvasRef, width: realWidth, height: realHeight, startAni };
 }
