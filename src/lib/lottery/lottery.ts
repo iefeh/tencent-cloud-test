@@ -73,7 +73,7 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
         }
       }
     }
-    return constructVerifyResponse(verified, verified? "" : "Cannot find your twitter topic for this lottery pool, please check your tweets.");
+    return constructVerifyResponse(verified, verified? "" : "No Twitter content detected. Please check your post and verify again after 1 minute.");
   } catch (error) {
     if (!isAxiosError(error)) {
       throw error;
