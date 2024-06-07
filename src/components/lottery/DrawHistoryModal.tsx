@@ -92,7 +92,12 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
           <>
             <ModalHeader>
               <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
-                <div className="font-semakin text-basic-yellow text-2xl">DRAW HISTORY</div>
+                <div className="font-semakin text-basic-yellow text-2xl">
+                  DRAW HISTORY
+                  <span className="font-poppins text-base ml-4">
+                    You can click on the reward details to claim or view your rewards.
+                  </span>
+                </div>
               </div>
             </ModalHeader>
 
