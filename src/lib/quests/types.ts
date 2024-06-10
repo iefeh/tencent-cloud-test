@@ -41,7 +41,7 @@ export enum QuestType {
     // 数数SQL类任务
     ThinkingDataQuery = "thinking_data_query",
     // 领取2048游戏券
-    Claim2048Ticket = "claim_2048_ticket",  
+    Claim2048Ticket = "claim_2048_ticket",
     // 持有徽章SBT
     HoldBadgeSBT = "hold_badge_sbt",
 }
@@ -80,6 +80,8 @@ export type ThinkingDataQuery = {
     type?: ThinkingDataQuestType
     // 奖励类型，fixed为固定奖励，range则需要根据用户的数据进行确定，比如排名，不填写默认固定奖励
     rewardType?: QuestRewardType;
+    // 指标
+    metric?: Metric;
 }
 
 // 发送discord消息(文本频道或者论坛回帖都适用.)

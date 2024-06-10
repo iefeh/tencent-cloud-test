@@ -34,12 +34,15 @@ export class ThinkingDataQueryQuest extends QuestBase {
       }
       const s = result[1][0];
 
-      // 此时s为排名信息，保存为用户指标 
-      await createUserMetric(userId, Metric.PrevdayRankFor2048, Number(s));
-      // 检查 2048大王徽章
-      await sendBadgeCheckMessage(userId, Metric.PrevdayRankFor2048);
+      // 更新指标值
+      if (questProp.metric) {
+        // 此时s为排名信息，保存为用户指标 
+        await createUserMetric(userId, questProp.metric!, Number(s));
+        // 检查 2048大王徽章
+        await sendBadgeCheckMessage(userId, questProp.metric!);
+      }
 
-      return { claimable: true, tip: `Your rank on yesterday is ${Number(s)}` };
+      return { claimable: true };
     } else {
       const s = result[1][0];
 
@@ -63,7 +66,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
       format: 'csv_header',
       timeoutSeconds: '15',
       sql: questProp.sql_template.replace('{userId}', userId)
-    }); 
+    });
 
     try {
       // 发送POST请求
