@@ -84,6 +84,8 @@ export type ThinkingDataQuery = {
     type?: ThinkingDataQuestType
     // 奖励类型，fixed为固定奖励，range则需要根据用户的数据进行确定，比如排名，不填写默认固定奖励
     rewardType?: QuestRewardType;
+    // 指标
+    metric?: Metric;
 }
 
 // 发送discord消息(文本频道或者论坛回帖都适用.)

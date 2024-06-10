@@ -75,8 +75,12 @@ export enum Metric {
   //推特粉丝数
   TwitterFollowerCount = 'twitter_follower_count',
 
-  //2048前日排名
-  PrevdayRankFor2048='prevday_rank_for_2048',
+  // 合成2048次数
+  Block2048Amount = 'block_2048_amount',
+  // 2048总分数
+  Total2048Score = 'total_2048_score',
+  // 2048最高排名
+  HighestRankOf2048 = 'highest_rank_of_2048'
 }
 
 // 用户内部指标，存放单独的集合
@@ -147,10 +151,14 @@ export interface IUserMetrics extends Document {
   total_lottery_draw_amount: number;
   // 推特粉丝数
   twitter_follower_count: number;
+  // 2048合成次数
+  block_2048_block_amount: number;
+  // 2048最高得分
+  total_2048_score: number;
+  // 2048最高排名
+  highest_rank_of_2048: number;
   // 创建时间毫秒时间戳
   created_time: number;
-  // 2048前日排行
-  prevday_rank_for_2048: number;
 }
 
 const UserMetricsSchema = new Schema<IUserMetrics>({
@@ -189,7 +197,9 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   total_invitee_wallet_asset_usd_value: { Type: Number },
   total_lottery_draw_amount: { type: Number },
   twitter_follower_count: { type: Number },
-  prevday_rank_for_2048: { type: Number },
+  block_2048_block_amount: { type: Number },
+  total_2048_score: { type: Number },
+  highest_rank_of_2048: { type: Number },
   created_time: { type: Number, required: true },
 });
 
@@ -211,7 +221,7 @@ export async function createUserMetric(userId: string, metric: Metric, value: st
     },
     { upsert: true },
   );
-  
+
   await sendBadgeCheckMessage(userId, metric);
   return result;
 }
