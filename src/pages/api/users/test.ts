@@ -38,7 +38,7 @@ function generateSecretKey(length: number = 32): string {
     // 生成指定长度的随机字节
     const secretKey = randomBytes(length);
     // 将随机字节转换为 base64 编码以便于存储和使用
-    return secretKey.toString('base64');
+    return secretKey.toString('base64'); 
 }
 
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
