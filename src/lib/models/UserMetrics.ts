@@ -152,7 +152,7 @@ export interface IUserMetrics extends Document {
   // 推特粉丝数
   twitter_follower_count: number;
   // 2048合成次数
-  block_2048_block_amount: number;
+  block_2048_amount: number;
   // 2048最高得分
   total_2048_score: number;
   // 2048最高排名
@@ -197,7 +197,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   total_invitee_wallet_asset_usd_value: { Type: Number },
   total_lottery_draw_amount: { type: Number },
   twitter_follower_count: { type: Number },
-  block_2048_block_amount: { type: Number },
+  block_2048_amount: { type: Number },
   total_2048_score: { type: Number },
   highest_rank_of_2048: { type: Number },
   created_time: { type: Number, required: true },
