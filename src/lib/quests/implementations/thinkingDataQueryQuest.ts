@@ -160,7 +160,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
     }
 
     let progress: any = {};
-    progress.current_progress = result[1][1] ? (Number(result[1][1]) > result[1][2] ? result[1][2] : result[1][1]) : "0";// 任务当前进度
+    progress.current_progress = result[1][1] ? (Number(result[1][1]) > Number(result[1][2]) ? result[1][2] : result[1][1]) : "0";// 任务当前进度
     progress.target_progress = result[1][2];// 任务目标进度
     return progress;
   }
