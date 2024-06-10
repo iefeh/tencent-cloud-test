@@ -51,6 +51,13 @@ export class ThinkingDataQueryQuest extends QuestBase {
         let extra: any = {};
         extra.current_progress = result[1][1] ? result[1][1] : "0";// 任务当前进度
         extra.target_progress = result[1][2];// 任务目标进度
+        // 更新指标值
+        if (questProp.metric) {
+          // 此时s为排名信息，保存为用户指标 
+          await createUserMetric(userId, questProp.metric!, Number(extra.current_progress));
+          // 检查 2048大王徽章
+          await sendBadgeCheckMessage(userId, questProp.metric!);
+        }
         return { claimable: s === 'true', tip: `Quest progress ${extra.current_progress}/${extra.target_progress}`, extra: extra };
       }
 
@@ -153,7 +160,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
     }
 
     let progress: any = {};
-    progress.current_progress = result[1][1] ? result[1][1] : "0";// 任务当前进度
+    progress.current_progress = result[1][1] ? (Number(result[1][1]) > result[1][2] ? result[1][2] : result[1][1]) : "0";// 任务当前进度
     progress.target_progress = result[1][2];// 任务目标进度
     return progress;
   }

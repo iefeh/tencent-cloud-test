@@ -76,7 +76,7 @@ export enum Metric {
   TwitterFollowerCount = 'twitter_follower_count',
 
   // 合成2048次数
-  Block2048Amount = 'block_2048_block_amount',
+  Block2048Amount = 'block_2048_amount',
   // 2048总分数
   Total2048Score = 'total_2048_score',
   // 2048最高排名
