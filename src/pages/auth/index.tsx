@@ -1,8 +1,8 @@
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN } from '@/constant/storage';
-import { startTransition } from 'react';
+import { useEffect } from 'react';
 
 export default function Auth() {
-  startTransition(() => {
+  useEffect(() => {
     const localStorage: Storage = window.opener?.localStorage || window.localStorage;
     const query = new URLSearchParams(location.search);
     const token = query.get('token') || '';
@@ -22,7 +22,7 @@ export default function Auth() {
     localStorage.save(KEY_AUTHORIZATION_AUTH, tokens);
 
     window.close();
-  });
+  }, []);
 
   return null;
 }
