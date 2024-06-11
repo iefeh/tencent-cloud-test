@@ -271,16 +271,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     store.init();
-
-    window.Storage.prototype.read = function <T>(key: string) {
-      const val = this.getItem(key);
-      if (!val) return null;
-      return JSON.parse(val) as T;
-    };
-
-    window.Storage.prototype.save = function <T>(key: string, val: T) {
-      this.setItem(key, JSON.stringify(val || ''));
-    };
   }, []);
 
   useRouteLocale(store);
@@ -292,6 +282,20 @@ export default function App({ Component, pageProps }: AppProps) {
           name="viewport"
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
+
+        <script>
+          {`
+            window.Storage.prototype.read = function (key) {
+              const val = this.getItem(key);
+              if (!val) return null;
+              return JSON.parse(val);
+            };
+  
+            window.Storage.prototype.save = function(key, val) {
+              this.setItem(key, JSON.stringify(val || ''));
+            };
+          `}
+        </script>
       </Head>
 
       <Web3ModalProvider>
