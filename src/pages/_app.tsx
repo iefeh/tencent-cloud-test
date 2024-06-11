@@ -283,8 +283,9 @@ export default function App({ Component, pageProps }: AppProps) {
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
 
-        <script>
-          {`
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
             window.Storage.prototype.read = function (key) {
               const val = this.getItem(key);
               if (!val) return null;
@@ -294,8 +295,9 @@ export default function App({ Component, pageProps }: AppProps) {
             window.Storage.prototype.save = function(key, val) {
               this.setItem(key, JSON.stringify(val || ''));
             };
-          `}
-        </script>
+          `,
+          }}
+        ></script>
       </Head>
 
       <Web3ModalProvider>

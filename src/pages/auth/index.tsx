@@ -21,7 +21,9 @@ export default function Auth() {
     tokens[type] = obj;
     localStorage.save(KEY_AUTHORIZATION_AUTH, tokens);
 
-    window.close();
+    setTimeout(() => {
+      window.close();
+    }, 300);
   }, []);
 
   return null;
