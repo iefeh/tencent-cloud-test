@@ -26,7 +26,7 @@ export default function SwiperScreen() {
     // IndexSlide,
     // LimitedTestSlide,
   ];
-  // slides.splice(isMobile ? 0 : 1, 0, Game2048Slide);
+  slides.splice(isMobile ? 0 : 1, 0, Game2048Slide);
   const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length - 1).fill(false)]);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
