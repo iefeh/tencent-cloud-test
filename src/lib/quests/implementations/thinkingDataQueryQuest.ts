@@ -39,7 +39,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
         // 此时s为排名信息，保存为用户指标 
         await createUserMetric(userId, questProp.metric!, Number(s));
         // 检查 2048大王徽章
-        await sendBadgeCheckMessage(userId, questProp.metric!);
+        // await sendBadgeCheckMessage(userId, questProp.metric!);
       }
 
       return { claimable: true };
