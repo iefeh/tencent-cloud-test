@@ -1,0 +1,14 @@
+.text-bar {
+  transform: translateX(-1.125rem);
+
+  .text {
+    transition: transform 1s ease-in;
+    transform: translateX(-100%);
+  }
+
+  &.show {
+    .text {
+      transform: translateX(0);
+    }
+  }
+}
