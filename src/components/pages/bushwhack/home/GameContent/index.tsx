@@ -8,7 +8,7 @@ export default function GameContent() {
     <div className="w-full relative z-30 shadow-[0_0_2rem_2rem_#000]">
       <Image className="object-cover" src="/img/bushwhack/content/bg.jpg" alt="" fill />
 
-      <div className="max-w-[75rem] m-auto flex flex-col pt-[26.625rem] pb-[13.625rem] relative z-0">
+      <div className="max-w-full px-16 lg:px-0 lg:max-w-[75rem] m-auto flex flex-col pt-16 lg:pt-[26.625rem] pb-[13.625rem] relative z-0">
         <PageDesc
           hasBelt
           className="items-start text-left"

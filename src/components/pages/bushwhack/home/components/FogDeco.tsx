@@ -4,7 +4,7 @@ import rightFogImg from 'img/bushwhack/content/fog_right.png';
 
 export default function FogDeco() {
   return (
-    <>
+    <div className="hidden lg:block">
       <Image
         className="w-[57.875rem] h-[50rem] object-cover absolute left-0 top-[calc(100vh_-_17rem)] z-50 pointer-events-none"
         src={leftFogImg}
@@ -30,6 +30,6 @@ export default function FogDeco() {
           alt=""
         />
       </div>
-    </>
+    </div>
   );
 }

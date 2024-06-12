@@ -109,18 +109,21 @@ export default function IntroScreen() {
   }
 
   return (
-    <div className="w-screen min-h-screen relative flex flex-col items-center pt-[11.8125rem]">
+    <div className="w-screen min-h-screen relative flex flex-col items-center pt-[11.8125rem] px-16 lg:px-0">
       <Image
         className="absolute left-1/2 top-12 -translate-x-1/2 max-w-[80%] w-[43.75rem] h-auto"
         src={roleBgImg}
         alt=""
       />
 
-      <div className="font-semakin text-6xl relative z-0" style={{ textShadow: '0 0 2rem #836527' }}>
+      <div
+        className="font-semakin text-center text-5xl lg:text-6xl relative z-0"
+        style={{ textShadow: '0 0 2rem #836527' }}
+      >
         Role Introduction
       </div>
 
-      <div className="w-[100rem] pt-[6.25rem] pb-[13.1825rem] flex flex-col items-center">
+      <div className="w-[calc(100%_+_4rem)] lg:w-[100rem] pt-[6.25rem] pb-16 lg:pb-[13.1825rem] flex flex-col items-center">
         <div className="w-full h-[40.625rem] relative flex justify-center">
           <Swiper
             className="!absolute inset-0 z-0"
@@ -136,7 +139,9 @@ export default function IntroScreen() {
             {roles.map((role, index) => (
               <SwiperSlide key={index}>
                 <div className="relative flex items-center text-center w-full h-full">
-                  <div className="w-full font-semakin text-center text-[#736045] text-[18.75rem]">{role.name}</div>
+                  <div className="w-full font-semakin text-center text-[#736045] text-8xl lg:text-[18.75rem]">
+                    {role.name}
+                  </div>
                 </div>
               </SwiperSlide>
             ))}
@@ -144,10 +149,10 @@ export default function IntroScreen() {
             {activeIndex > 0 && (
               <div
                 ref={navigationPrevRef}
-                className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
+                className="absolute left-0 lg:left-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
                 onClick={() => swiperRef.current?.slidePrev()}
               >
-                <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
+                <div className="font-semakin text-2xl lg:text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
                   {roles[activeIndex - 1].name}
                 </div>
 
@@ -157,11 +162,11 @@ export default function IntroScreen() {
             {activeIndex < roles.length - 1 && (
               <div
                 ref={navigationNextRef}
-                className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
+                className="absolute right-0 lg:right-2 top-1/2 -translate-y-1/2 flex items-center flex-nowrap z-10 cursor-pointer"
                 onClick={() => swiperRef.current?.slideNext()}
               >
                 <Image className="w-[6.875rem] h-[3.75rem]" src={rightArrowImg} alt="" />
-                <div className="font-semakin text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
+                <div className="font-semakin text-2xl lg:text-3xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
                   {roles[activeIndex + 1].name}
                 </div>
               </div>
@@ -178,7 +183,7 @@ export default function IntroScreen() {
         </div>
 
         <Button
-          className="w-full bg-gradient-to-b from-black/80 via-[#1944FF] via-50% to-[#1944FF] h-[9.375rem] rounded-[1.875rem] font-poppins text-2xl mt-16 outline-none"
+          className="w-[calc(100%_-_2rem)] bg-gradient-to-b from-black/80 via-[#1944FF] via-50% to-[#1944FF] h-[9.375rem] rounded-[1.875rem] font-poppins text-2xl mt-16 outline-none whitespace-normal"
           startContent={<Image className="w-[4.6875rem] h-auto mr-[1.375rem]" src={discordImg} alt="" />}
           onClick={onJoinDC}
         >
