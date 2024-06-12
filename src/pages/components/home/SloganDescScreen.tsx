@@ -1,4 +1,4 @@
-import PageDesc from "../common/PageDesc";
+import PageDesc from '../common/PageDesc';
 
 export default function SloganDescScreen() {
   return (
@@ -7,7 +7,13 @@ export default function SloganDescScreen() {
         <PageDesc
           className="items-start text-left"
           hasBelt
-          subtitle="<div style='max-width: 30rem'>With the power of cutting-edge technologies, our mission is to craft top-notch gaming experiences that seamlessly <span style='color: #f6c799'>combine casual flexibility</span> with <span style='color: #f6c799'>authentic fun depth.</span></div>"
+          subtitle={
+            <div className="max-w-[30rem] text-lg font-decima mb-10 tracking-tighter">
+              With game excellence at our core, our vision is to craft the{' '}
+              <span className="text-basic-yellow">authentic web3 game-centric experience</span> tailored for
+              <span className="text-basic-yellow"> the next-gen gamers.</span>
+            </div>
+          }
           buttonLabel="about moonveil"
           buttonLink="/About"
         />

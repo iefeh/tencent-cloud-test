@@ -105,22 +105,29 @@ export abstract class QuestBase {
     }
 
     // 保存用户的任务达成记录
-    async addUserAchievement(userId: string, verified: boolean): Promise<void> {
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
         const now = Date.now();
         const inserts: any = {};
         if (verified) {
             inserts.verified_time = now;
         }
-        await QuestAchievement.updateOne(
-            {user_id: userId, quest_id: this.quest.id, verified_time: null},
-            {
-                $set: inserts,
-                $setOnInsert: {
-                    created_time: now,
+        await doTransaction(async (session) => {
+            if (extraTxOps) {
+                // 执行额外的事务操作
+                await extraTxOps(session);
+            }
+            await QuestAchievement.updateOne(
+                {user_id: userId, quest_id: this.quest.id, verified_time: null},
+                {
+                    $set: inserts,
+                    $setOnInsert: {
+                        created_time: now,
+                    },
                 },
-            },
-            {upsert: true},
-        );
+                {upsert: true, session: session},
+            );
+        });
+        
     }
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
@@ -160,6 +167,7 @@ export abstract class QuestBase {
             });
             return {done: true, duplicated: false}
         } catch (error) {
+            console.log(error);
             if (isDuplicateKeyError(error)) {
                 return {done: false, duplicated: true}
             }

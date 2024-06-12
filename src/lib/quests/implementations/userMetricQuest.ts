@@ -3,6 +3,7 @@ import {IQuest} from "@/lib/models/Quest";
 import {checkClaimableResult, claimRewardResult, UserMetric} from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
 import logger from "@/lib/logger/winstonLogger";
+import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 
 export class UserMetricQuest extends QuestBase {
@@ -38,6 +39,11 @@ export class UserMetricQuest extends QuestBase {
         }
     }
 
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        await super.addUserAchievement(userId, verified);
+        await sendBadgeCheckMessage(userId, this.properties.metric);
+    }
+
     async claimReward(userId: string): Promise<claimRewardResult> {
         const claimableResult = await this.checkClaimable(userId);
         if (!claimableResult.claimable) {
@@ -63,6 +69,7 @@ export class UserMetricQuest extends QuestBase {
                 tip: "You have already claimed reward.",
             }
         }
+        await sendBadgeCheckMessage(userId, this.properties.metric);
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,

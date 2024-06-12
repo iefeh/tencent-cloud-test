@@ -1,16 +1,16 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { connectMediaAPI, connectWalletAPI, loginByMediaAPI, loginByWalletAPI } from '@/http/services/login';
+import { loginByMediaAPI, loginByWalletAPI } from '@/http/services/login';
 import { toast } from 'react-toastify';
-import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN } from '@/constant/storage';
+import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
+import useWatchStorage from './useWatchStorage';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
   const store = useContext(MobxContext);
-  const { userInfo, getUserInfo, toggleLoginModal } = store;
   const dialogWindowRef = useRef<Window | null>(null);
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
@@ -20,30 +20,28 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
   const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_AUTH) || {};
     if (!tokens[type]) return;
-    const { code, msg } = tokens[type] || {};
+    const { code, msg, signup_cred } = tokens[type] || {};
+    console.log(232432, type, code, msg);
     if (+code !== 1) {
       toast.error(msg);
     }
     delete tokens[type];
     localStorage.save(KEY_AUTHORIZATION_AUTH, tokens);
 
-    const token = localStorage.getItem(KEY_AUTHORIZATION);
-    const jwt = localStorage.getItem(KEY_PARTICLE_TOKEN);
-    console.log('token at thirdparty-login callback url search params', token);
-    console.log('jwt-token at thirdparty-login callback url search params', jwt);
-    if (!token) return;
-
-    store.token = token;
-    store.jwtToken = jwt || '';
-    store.loginParticle();
-    store.getUserInfo()?.catch(() => void 0);
-
-    callback?.();
+    if (signup_cred) {
+      localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
+      store.toggleNewUserModal();
+    } else {
+      store.initLoginInfo();
+      callback?.();
+    }
 
     if (!dialogWindowRef.current) return;
     dialogWindowRef.current.close();
     dialogWindowRef.current = null;
   }, 500);
+
+  const { startWatch, stopWatch } = useWatchStorage({ key: KEY_AUTHORIZATION_AUTH, callback: authConnect });
 
   function openAuthWindow(authURL: string) {
     setTimeout(() => {
@@ -64,6 +62,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
     const provider = new BrowserProvider(walletProvider!);
 
+    let res: TokenDto | null = null;
     try {
       const signer = await provider.getSigner();
       const signature = await signer?.signMessage(message);
@@ -72,19 +71,29 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
         address: address as `0x${string}`,
         message,
         signature,
+        signup_mode: 'enabled',
       };
-      const res = await loginByWalletAPI(data);
-      if (!res) return;
-      const { token, particle_jwt, is_new_user } = res || {};
-      store.token = token;
-      store.jwtToken = particle_jwt;
-      localStorage.setItem(KEY_AUTHORIZATION, token);
-      localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
+      res = await loginByWalletAPI(data);
     } catch (error: any) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
+
+    if (!res) throw new Error('Login Failed');
+
+    const { token, particle_jwt, signup_cred } = res || {};
+    localStorage.setItem(KEY_AUTHORIZATION, token);
+    localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
+    if (signup_cred) {
+      store.toggleNewUserModal(true);
+      localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
+      throw new Error('Is New User');
+    } else {
+      try {
+        await store.initLoginInfo();
+      } catch (error) {}
+    }
+
+    setLoading(false);
   }
 
   async function onConnect() {
@@ -94,10 +103,15 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
     if (type === MediaType.METAMASK) {
       if (isConnected) {
-        await onConnectWallet();
-        callback?.();
+        try {
+          await onConnectWallet();
+          callback?.();
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         open();
+        startWatch();
       }
 
       return;
@@ -122,7 +136,10 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
   useEffect(() => {
     window.addEventListener('storage', authConnect);
-    return () => window.removeEventListener('storage', authConnect);
+    return () => {
+      window.removeEventListener('storage', authConnect);
+      stopWatch();
+    };
   }, []);
 
   return { onConnect, loading };

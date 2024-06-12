@@ -1,6 +1,6 @@
 import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
-import { KEY_INVITE_CODE } from '@/constant/storage';
+import { KEY_INVITE_CODE, KEY_SIGN_UP_CRED } from '@/constant/storage';
 
 function getAuthParams(path = '') {
   const { origin } = location;
@@ -56,7 +56,11 @@ export function connectMediaAPI(type: string): Promise<AuthDto> {
 
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/signin/${type}`, {
-    params: { ...getAuthParams(`?type=${type}`), invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined },
+    params: {
+      ...getAuthParams(`?type=${type}`),
+      invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
+      signup_mode: 'enabled',
+    },
   });
 }
 
@@ -65,6 +69,7 @@ interface WalletReqDto {
   signature: string;
   message: string;
   invite_code?: string;
+  signup_mode?: string;
 }
 
 export function loginByWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
@@ -78,4 +83,11 @@ export function connectWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
 
 export function disconnectMediaAPI(type: string): Promise<boolean | null> {
   return http.post(`/api/auth/disconnect/${type}`);
+}
+
+export function confirmSignUpAPI(): Promise<TokenDto | null> {
+  const signUpCred = localStorage.getItem(KEY_SIGN_UP_CRED);
+  if (!signUpCred) return Promise.resolve(null);
+  localStorage.removeItem(KEY_SIGN_UP_CRED);
+  return http.post('/api/auth/signup', JSON.stringify({ signup_cred: signUpCred }));
 }

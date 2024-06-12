@@ -6,6 +6,8 @@ import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import {PipelineStage} from 'mongoose';
 import Campaign, {CampaignStatus} from "@/lib/models/Campaign";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
+import { getMaxLevelBadge } from "@/pages/api/badges/display"
+import { ca } from 'date-fns/locale';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -32,6 +34,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     // 检查用户是否已经领取对应的任务
     const campaigns = pagination.data;
     await enrichUserCampaigns(userId!, campaigns);
+    await loadBadgeInfo(campaigns);
     res.json(response.success({
         total: pagination.total,
         page_num: pageNum,
@@ -71,6 +74,7 @@ async function paginationCampaigns(pageNum: number, pageSize: number, campaignSt
         'active': true,
         'deleted_time': null,
     };
+    campaignStatus = "ongoing" as CampaignStatus;//season switch.
     switch (campaignStatus) {
         case CampaignStatus.Upcoming:
             matchStage['start_time'] = {$gt: Date.now()};
@@ -118,6 +122,18 @@ async function paginationCampaigns(pageNum: number, pageSize: number, campaignSt
     return {total: results[0].metadata[0].total, data: results[0].data}
 }
 
+async function loadBadgeInfo( campaigns:any[] ) {
+    for( let a of campaigns ) {
+        for (let c of a.rewards) {
+            if (c.type == "badge") {
+                let targetBadge = await getMaxLevelBadge(c.badge_id);
+                c.name = targetBadge.name;
+                c.image_small = targetBadge.icon_url;
+                c.image_medium = targetBadge.image_url;
+            }
+        }
+    }
+}
 // this will run if none of the above matches
 router.all((req, res) => {
     res.status(405).json({

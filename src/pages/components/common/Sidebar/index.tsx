@@ -11,11 +11,13 @@ interface Props {
 
 const routeText = [
   { name: 'Home', route: '/' },
+  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
+  { name: 'SEASON SYSTEM', route: '/LoyaltyProgram/season/foresight' },
+  { name: 'REFERRAL Program', route: '/Profile/invite' },
   { name: 'AstrArk', route: '/AstrArk' },
   { name: 'Bushwhack', route: '/Bushwhack' },
   { name: 'About', route: '/About' },
   { name: 'NFT', route: '/NFT' },
-  { name: 'Loyalty Program', route: '/LoyaltyProgram/intro' },
 ];
 
 export default function Sidebar({ visible, onClose }: Props) {
@@ -47,7 +49,7 @@ export default function Sidebar({ visible, onClose }: Props) {
       <div className="content flex-1 flex flex-col font-semakin text-center items-center justify-center">
         {routeText.map((value, index) => (
           <div
-            className={`max-md:leading-[5.5rem] m-2 transition-all duration-300 hover:text-[#F6C799] text-4xl leading-[7.5rem] ${
+            className={`max-md:leading-[4rem] m-2 transition-all duration-300 hover:text-[#F6C799] text-4xl leading-[7.5rem] ${
               LoginSegments() === value.route && 'text-[#F6C799]'
             }`}
             key={index}

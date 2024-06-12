@@ -27,6 +27,9 @@ export enum ResponseCode {
     ERROR_TOO_MANY_REQUESTS = -17,
     ERROR_UNKNOWN_INVITE_CODE = -18,
     ERROR_USERNAME_TOO_LONG = -19,
+    ERROR_SIGNUP_CONFIRMATION = -20,
+    ERROR_SIGNUP_CONFIRMATION_EXPIRED = -21,
+    ERROR_WALLET_NOT_CONNECTED = -22,
     // 添加对应的响应码
 }
 
@@ -66,6 +69,12 @@ const ResponseMessages = {
     [ResponseCode.ERROR_UNKNOWN_INVITE_CODE]: "Unknown invite code.",
     // 昵称过长
     [ResponseCode.ERROR_USERNAME_TOO_LONG]: "Username too long.",
+    // 注册二次确认
+    [ResponseCode.ERROR_SIGNUP_CONFIRMATION]: "Signup confirmation required",
+    // 注册二次确认已过期
+    [ResponseCode.ERROR_SIGNUP_CONFIRMATION_EXPIRED]: "Signup confirmation expired",
+    // 必须连接钱包
+    [ResponseCode.ERROR_WALLET_NOT_CONNECTED]: "You must connect wallet first",
     // 添加响应码对应的msg
 }
 
@@ -100,3 +109,6 @@ export const emailAlreadyBoundToOthers = build(ResponseCode.ERROR_EMAIL_BOUND_TO
 export const tooManyRequests = build(ResponseCode.ERROR_TOO_MANY_REQUESTS);
 export const unknownInviteCode = build(ResponseCode.ERROR_UNKNOWN_INVITE_CODE);
 export const usernameTooLong = build(ResponseCode.ERROR_USERNAME_TOO_LONG);
+export const signupConfirmation = build(ResponseCode.ERROR_SIGNUP_CONFIRMATION);
+export const signupConfirmationExpired = build(ResponseCode.ERROR_SIGNUP_CONFIRMATION_EXPIRED);
+export const walletNotConnected = build(ResponseCode.ERROR_WALLET_NOT_CONNECTED);

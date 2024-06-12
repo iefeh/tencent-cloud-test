@@ -11,12 +11,15 @@ const axios = new Axios({
 });
 
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
+  if (config.responseType === 'json') {
+    config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
+  }
   return config;
 });
 
 axios.interceptors.response.use(
   (res) => {
+    if (res.config.responseType !== 'json') return res;
     if (!res.data) return null;
 
     let data: any;
@@ -28,7 +31,7 @@ axios.interceptors.response.use(
       return data;
     }
 
-    if (data.code === 1) return data.data;
+    if (data.code === 1 && ~~(res.status / 100) === 2) return data.data;
 
     switch (data.code) {
       // token expired
@@ -39,7 +42,11 @@ axios.interceptors.response.use(
       }
     }
 
-    if (data.msg) {
+    let innerData = data.data;
+
+    if (innerData && (!innerData.verified || !innerData.success) && (innerData.message || innerData.tip)) {
+      toast.error(innerData.message || innerData.tip);
+    } else if (data.msg) {
       toast.error(data.msg);
     }
 

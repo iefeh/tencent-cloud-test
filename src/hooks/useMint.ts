@@ -6,11 +6,14 @@ import { throttle } from 'lodash';
 import { BrowserProvider, Contract, JsonRpcSigner } from 'ethers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MintContext } from '@/pages/NFT/Mint';
-import { CURRENT_CHAIN_ID, MintState, WALLECT_NETWORKS } from '@/constant/mint';
+import { MintState, WALLECT_NETWORKS } from '@/constant/mint';
 import { toast } from 'react-toastify';
 import { MobxContext } from '@/pages/_app';
 
-export default function useMint() {
+export default function useMint({
+  contractAddress = process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!,
+  chainId = process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!,
+} = {}) {
   const { userInfo } = useContext(MobxContext);
   const {
     setState,
@@ -36,6 +39,7 @@ export default function useMint() {
   const { isConnected, address, onConnect } = useConnect(MediaType.METAMASK, () => {
     toggleIsConnected(true);
   });
+  const currentChainIdHex = '0x' + parseInt(chainId).toString(16);
 
   const provider = useRef(new BrowserProvider(walletProvider!));
   const signer = useRef<JsonRpcSigner | null>(null);
@@ -44,7 +48,7 @@ export default function useMint() {
   async function initProvider() {
     provider.current = new BrowserProvider(walletProvider!);
     signer.current = await provider.current.getSigner();
-    contract.current = new Contract(process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS!, contractABI, signer.current);
+    contract.current = new Contract(contractAddress, contractABI, signer.current);
   }
 
   function toastError(error: any, step = '') {
@@ -53,7 +57,7 @@ export default function useMint() {
   }
 
   const init = throttle(async function () {
-    console.log('mint contract address:', process.env.NEXT_PUBLIC_MINT_CONTRACT_ADDRESS);
+    console.log('mint contract address:', contractAddress);
     reset();
     if (!isConnected) return;
     toggleIsConnected(true);
@@ -96,8 +100,7 @@ export default function useMint() {
   async function checkNetwork() {
     try {
       const network = await provider.current.getNetwork();
-      const chainId = network.chainId;
-      const isNetCorrected = chainId.toString() === process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID;
+      const isNetCorrected = network.chainId.toString() === chainId;
       toggleIsNetCorrected(isNetCorrected);
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
@@ -127,7 +130,7 @@ export default function useMint() {
 
   async function addNetwork() {
     try {
-      const network = WALLECT_NETWORKS[process.env.NEXT_PUBLIC_MINT_NETWORK_CHAIN_ID!];
+      const network = WALLECT_NETWORKS[chainId];
       if (!network) throw Error('Please try switching network manually.');
 
       const res = await walletProvider?.request({
@@ -146,7 +149,7 @@ export default function useMint() {
     try {
       await walletProvider?.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: CURRENT_CHAIN_ID }],
+        params: [{ chainId: currentChainIdHex }],
       });
       await initProvider();
       await init();
@@ -213,6 +216,18 @@ export default function useMint() {
     }
   }, 500);
 
+  const merge = throttle(async (ids: number[]) => {
+    try {
+      const transaction = await contract.current!.mergeRequest(ids);
+      const result = await transaction.wait();
+      console.log('merge result:', result);
+      return true;
+    } catch (error: any) {
+      toastError(error, 'merge');
+      return false;
+    }
+  }, 500);
+
   async function onButtonClick() {
     if (!isWalletConnected || !userInfo?.wallet) {
       onConnect();
@@ -246,6 +261,26 @@ export default function useMint() {
     toggleLoading(false);
   }
 
+  async function verifyMerge() {
+    if (!isWalletConnected || !userInfo?.wallet) {
+      onConnect();
+      return false;
+    }
+
+    if (!isNetCorrected) {
+      const res = await checkNetwork();
+      if (!res) {
+        await switchNetwork();
+      }
+      return false;
+    }
+
+    const res1 = await checkWallet(true);
+    if (!res1) return false;
+
+    return true;
+  }
+
   useEffect(() => {
     if (!userInfo || !walletProvider) return;
     init();
@@ -268,5 +303,5 @@ export default function useMint() {
     };
   }, []);
 
-  return { mintCount, setMintCount, onButtonClick };
+  return { mintCount, setMintCount, onButtonClick, verifyMerge, merge };
 }

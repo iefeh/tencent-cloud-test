@@ -1,4 +1,4 @@
-import { Input, Modal, ModalBody, ModalContent, ModalHeader, cn } from '@nextui-org/react';
+import { Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, cn } from '@nextui-org/react';
 import Image, { StaticImageData } from 'next/image';
 import logoImg from 'img/header/login/logo.png';
 import BasicButton from './BasicButton';
@@ -19,6 +19,7 @@ import { KEY_EMAIL } from '@/constant/storage';
 import { sendEmailCodeAPI, sendEmailConnectCodeAPI } from '@/http/services/login';
 import { observer } from 'mobx-react-lite';
 import { toast } from 'react-toastify';
+import { throttle } from 'lodash';
 
 interface BtnGroup {
   title: string;
@@ -100,7 +101,7 @@ export function useEmail() {
 
     setIsLoading(true);
     try {
-      await loginByEmail?.({ email, captcha: code });
+      await loginByEmail?.({ email, captcha: code, signup_mode: 'enabled' });
       toggleLoginModal();
     } catch (error: any) {
       // toast.error(error?.message || error);
@@ -152,8 +153,16 @@ export function useEmail() {
   };
 }
 
-const LoginModal = function () {
-  const { isConnect, loginModalVisible, toggleLoginModal } = useContext(MobxContext);
+const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean }) {
+  const {
+    isConnect,
+    loginModalVisible,
+    toggleLoginModal,
+    newUserModalVisible,
+    toggleNewUserModal,
+    initLoginInfo,
+    switchAccount,
+  } = useContext(MobxContext);
   const [emailLoginVisible, setEmailLoginVisible] = useState(isConnect);
   const connectList: BtnGroup[] = [
     {
@@ -211,6 +220,20 @@ const LoginModal = function () {
     desc,
     reset,
   } = useEmail();
+  const [initLoading, setInitLoading] = useState(false);
+
+  const onContinueClick = throttle(async () => {
+    setInitLoading(true);
+
+    try {
+      await initLoginInfo();
+    } catch (error: any) {
+      toast.error(error?.message || error);
+      console.log('Continue Login Error:', error);
+    } finally {
+      setInitLoading(false);
+    }
+  }, 500);
 
   useEffect(() => {
     setEmailLoginVisible(isConnect);
@@ -246,7 +269,10 @@ const LoginModal = function () {
                   label={btn.label}
                   icon={btn.icon}
                   onClick={btn.onClick}
-                  callback={onClose}
+                  callback={() => {
+                    onClose();
+                    initLoginInfo();
+                  }}
                 />
               ))}
             </div>
@@ -318,20 +344,49 @@ const LoginModal = function () {
   );
 
   return (
-    <Modal
-      placement="center"
-      backdrop="blur"
-      classNames={{
-        base: 'max-w-[32.25rem] rounded-[0.625rem] bg-[#070707]',
-        header: 'pt-7 pl-10 pr-[2.6875rem]',
-        body: 'pl-10 pr-[2.6875rem] pb-[3.125rem]',
-      }}
-      isOpen={loginModalVisible}
-      onOpenChange={toggleLoginModal}
-      isDismissable={false}
-    >
-      <ModalContent>{emailLoginVisible ? emailLoginContent : baseLoginContent}</ModalContent>
-    </Modal>
+    <>
+      <Modal
+        placement="center"
+        backdrop="blur"
+        classNames={{
+          base: 'max-w-[32.25rem] rounded-[0.625rem] bg-[#070707]',
+          header: 'pt-7 pl-10 pr-[2.6875rem]',
+          body: 'pl-10 pr-[2.6875rem] pb-[3.125rem]',
+        }}
+        hideCloseButton={hideCloseButton}
+        isOpen={loginModalVisible}
+        onOpenChange={toggleLoginModal}
+        isDismissable={false}
+      >
+        <ModalContent>{emailLoginVisible ? emailLoginContent : baseLoginContent}</ModalContent>
+      </Modal>
+
+      <Modal placement="center" backdrop="blur" isOpen={newUserModalVisible} onOpenChange={toggleNewUserModal}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <Image className="w-[5.625rem] h-[3.3125rem]" src={logoImg} alt="" />
+              </ModalHeader>
+              <ModalBody>
+                <h5 className="font-poppins text-3xl">Welcome to Moonveil</h5>
+
+                <p className="font-poppins text-base">
+                  Please note that you are about to create a NEW ACCOUNT. If you wish to proceed, please click [
+                  <span className="text-basic-yellow">Continue</span>]. If you want to log in with an existing account,
+                  please click [<span className="text-basic-yellow">Switch Account</span>].
+                </p>
+              </ModalBody>
+
+              <ModalFooter>
+                <LGButton label="Continue" loading={initLoading} onClick={onContinueClick} />
+                <LGButton label="Switch Account" actived disabled={initLoading} onClick={switchAccount} />
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

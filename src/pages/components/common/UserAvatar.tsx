@@ -16,6 +16,7 @@ import settingsImg from 'img/header/icon_settings.png';
 import logoutImg from 'img/header/icon_logout.png';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from './buttons/LGButton';
+import { isMobile } from 'react-device-detect';
 
 interface HeaderMenuItem {
   title: string;
@@ -26,7 +27,7 @@ interface HeaderMenuItem {
 
 const UserAvatar = () => {
   const router = useRouter();
-  const { userInfo, logout } = useContext(MobxContext);
+  const { userInfo, logout, toggleRedeemModal } = useContext(MobxContext);
   const ref = useRef(null);
   const [menuState, toggle] = useMenuState({ transition: true });
   const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
@@ -40,22 +41,34 @@ const UserAvatar = () => {
       icon: profileImg,
       path: '/Profile',
     },
-    // {
-    //   title: 'My Badges',
-    //   icon: badgeImg,
-    // },
+    {
+      title: 'My Badges',
+      icon: badgeImg,
+      path: '/Profile/MyBadges',
+    },
+    {
+      title: 'My Assets',
+      icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/nft/img_4+revised.png',
+      path: '/Profile/MyAssets',
+    },
     // {
     //   title: 'Check-In',
     //   icon: checkinImg,
     // },
-    // {
-    //   title: 'Invite New Users',
-    //   icon: inviteImg,
-    // },
+    {
+      title: 'Invite New Users',
+      icon: inviteImg,
+      path: '/Profile/invite',
+    },
     // {
     //   title: 'Settings',
     //   icon: settingsImg,
     // },
+    {
+      title: 'Redeem Code',
+      icon: settingsImg,
+      onClick: () => toggleRedeemModal(true),
+    },
     {
       title: 'Log Out',
       icon: logoutImg,
@@ -79,11 +92,16 @@ const UserAvatar = () => {
     setLogoutLoading(false);
   }
 
+  let mobileMenus: HeaderMenuItem[] = menus;
+  if (isMobile) {
+    mobileMenus = menus.filter((item) => item.title !== 'Invite New Users');
+  }
+
   return (
     <>
       <div ref={ref} {...anchorProps} className="user-info relative cursor-pointer mr-8">
-        <div className="avatar rounded-full overflow-hidden w-7 h-7 relative">
-          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes='100%' />
+        <div className="avatar rounded-full overflow-hidden w-12 h-12 relative">
+          <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes="100%" />
         </div>
       </div>
 
@@ -101,14 +119,15 @@ const UserAvatar = () => {
             usernameClassName="text-lg"
             walletClassName="text-[#666] mt-2"
             hideCopy
+            isAddressColumn
           />
         </MenuItem>
 
         <MenuDivider className="!mx-[1.125rem] bg-[#1f1f1f]" />
 
-        {menus.map((menu, index) => (
+        {mobileMenus.map((menu, index) => (
           <MenuItem key={index} onClick={() => onMenuClick(menu)}>
-            {menu.icon && <Image width={24} height={24} src={menu.icon} alt="" />}
+            {menu.icon && <Image width={24} height={24} src={menu.icon} alt="" unoptimized />}
             <span className="ml-[0.875rem] font-poppins-medium uppercase text-[14px]">{menu.title}</span>
           </MenuItem>
         ))}
@@ -116,7 +135,7 @@ const UserAvatar = () => {
 
       <Modal
         placement="center"
-        backdrop='blur'
+        backdrop="blur"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         classNames={{ base: 'bg-[#141414] !rounded-base max-w-[30rem]', body: 'px-8 pt-[3.625rem]' }}

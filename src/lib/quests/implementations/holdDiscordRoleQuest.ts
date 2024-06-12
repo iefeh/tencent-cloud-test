@@ -1,5 +1,5 @@
 import {IQuest} from "@/lib/models/Quest";
-import {HoldDiscordRole, checkClaimableResult, claimRewardResult} from "@/lib/quests/types";
+import {HoldDiscordRole, checkClaimableResult} from "@/lib/quests/types";
 import {ConnectDiscordQuest, queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
 import {AuthorizationType} from "@/lib/authorization/types";
 import {discordOAuthProvider} from "@/lib/authorization/provider/discord";
@@ -30,7 +30,7 @@ export class HoldDiscordRoleQuest extends ConnectDiscordQuest {
             const roles = data.roles;
             if (!roles || roles.length == 0) {
                 logger.warn(`quest ${this.quest.id} discord roles not present`);
-                return {claimable: false};
+                return {claimable: false, tip:"Please get the correct role in Discord first, then verify again."};
             }
             const rolesMap = new Map(questProp.role_ids.map(id => [id, true]));
             // 目前暂时要求满足设置的全部角色
@@ -40,7 +40,8 @@ export class HoldDiscordRoleQuest extends ConnectDiscordQuest {
                     ownedRoles++;
                 }
             }
-            return {claimable: ownedRoles == questProp.role_ids.length};
+            const claimable = ownedRoles == questProp.role_ids.length;
+            return {claimable, tip: claimable ? undefined : "Please get the correct role in Discord first, then verify again."};
         } catch (error) {
             if (isDiscordAuthRevokedError(error)) {
                 logger.warn(`discord user ${discord.token.platform_id} auth token revoked`);

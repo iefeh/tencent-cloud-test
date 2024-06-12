@@ -31,3 +31,27 @@ interface PagiInfo {
   pageIndex: number;
   pageSize: number;
 }
+
+interface ClassNameProps {
+  className?: string;
+}
+
+interface ItemProps<T = unknown> {
+  item?: T | null;
+}
+interface ModalProps {
+  isOpen: boolean;
+  onOpen?: () => void;
+  onOpenChange?: (val: boolean) => void;
+}
+
+interface BasePage {
+  noLoading?: boolean;
+  hideLoginCloseButton?: boolean;
+}
+
+interface InfoDTO {
+  message: string;
+  verified?: boolean;
+  success?: boolean;
+}

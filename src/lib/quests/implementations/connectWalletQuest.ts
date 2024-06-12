@@ -7,12 +7,14 @@ import {retryAllowToSendRequest2Debank, retryAllowToSendRequest2Reservoir} from 
 import logger from "@/lib/logger/winstonLogger";
 import WalletAsset, {WalletNFT, WalletToken} from "@/lib/models/WalletAsset";
 import doTransaction from "@/lib/mongodb/transaction";
-import UserMetrics, {Metric} from "@/lib/models/UserMetrics";
+import UserMetrics, {Metric, incrUserMetrics} from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit, {IUserMoonBeamAudit, UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
 import User from "@/lib/models/User";
 import {isDuplicateKeyError} from "@/lib/mongodb/client";
 import {v4 as uuidv4} from "uuid";
 import * as Sentry from "@sentry/nextjs";
+import { sendBadgeCheckMessage, sendBadgeCheckMessages } from "@/lib/kafka/client";
+import UserInvite from "@/lib/models/UserInvite";
 
 
 const Debank = require('debank');
@@ -35,6 +37,22 @@ export class ConnectWalletQuest extends QuestBase {
             claimable: !!userWallet,
             require_authorization: userWallet ? undefined : AuthorizationType.Wallet,
         }
+    }
+
+    async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
+        await super.addUserAchievement(userId, verified, async (session) => {
+            await UserMetrics.updateOne(
+                { user_id: userId },
+                {
+                    $set: { [Metric.WalletConnected]: 1 },
+                    $setOnInsert: {
+                        created_time: Date.now(),
+                    },
+                },
+                { upsert: true, session: session },
+            );
+        });
+        await sendBadgeCheckMessage(userId, Metric.WalletConnected);
     }
 
     async reClaimReward(userId: string): Promise<claimRewardResult> {
@@ -161,6 +179,8 @@ export class ConnectWalletQuest extends QuestBase {
                 tip: claimableResult.require_authorization ? "You should connect your Wallet Address first." : undefined,
             }
         }
+        // 获取用户邀请者，以便于更新邀请者的指标
+        const inviter = await UserInvite.findOne({invitee_id: userId});
         const refreshResult = await this.refreshUserWalletMetric(userId, this.user_wallet_addr);
         if (refreshResult.interrupted) {
             return refreshResult.interrupted;
@@ -169,7 +189,29 @@ export class ConnectWalletQuest extends QuestBase {
         const taint = `${this.quest.id},${AuthorizationType.Wallet},${this.user_wallet_addr}`;
         const rewardDelta = await this.checkUserRewardDelta(userId);
         const assetId = refreshResult.userMetric[Metric.WalletAssetId];
-        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId);
+        const result = await this.saveUserReward(userId, taint, rewardDelta, assetId, async (session) => {
+            // 更新用户的指标 
+            await UserMetrics.updateOne(
+              { user_id: userId },
+              {
+                $set: { [Metric.WalletConnected]: 1 },
+                $setOnInsert: {
+                  created_time: Date.now(),
+                },
+              },
+              { upsert: true, session: session },
+            );
+            // 更新邀请者的指标
+            if (inviter) {
+                const inviterMetrics: any = {
+                    [Metric.TotalWalletVerifiedInvitee]: 1,
+                    [Metric.TotalInviteeWalletTokenUsdValue]: refreshResult.userMetric[Metric.WalletTokenUsdValue],
+                    [Metric.TotalInviteeWalletNftUsdValue]: refreshResult.userMetric[Metric.WalletNftUsdValue],
+                    [Metric.TotalInviteeWalletAssetUsdValue]: refreshResult.userMetric[Metric.WalletAssetUsdValue],
+                };
+                await incrUserMetrics(inviter.user_id, inviterMetrics, session);
+            }
+          });
         if (result.duplicated) {
             return {
                 verified: false,
@@ -249,6 +291,9 @@ export class ConnectWalletQuest extends QuestBase {
                 }
             );
         });
+
+        await sendBadgeCheckMessages(userId,userMetric);
+
         return {
             userMetric: userMetric,
         };

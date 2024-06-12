@@ -1,25 +1,30 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
-import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import Campaign, {CampaignClaimSettings, CampaignRewardType, CampaignStatus} from "@/lib/models/Campaign";
-import {enrichUserTasks} from "@/lib/quests/taskEnrichment";
+import { maybeAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import Campaign, { CampaignClaimSettings, CampaignRewardType, CampaignStatus } from "@/lib/models/Campaign";
+import { enrichUserTasks } from "@/lib/quests/taskEnrichment";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import RewardAccelerator from "@/lib/models/RewardAccelerator";
-import {RewardAcceleratorType} from "@/lib/accelerator/types";
+import { RewardAcceleratorType } from "@/lib/accelerator/types";
+import Badges from "@/lib/models/Badge";
+import { getMaxLevelBadge } from "@/pages/api/badges/display"
+import UserBadges from "@/lib/models/UserBadges";
+import UserWallet from "@/lib/models/UserWallet";
+import ContractNFT from "@/lib/models/ContractNFT";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).get(async (req, res) => {
-    const {campaign_id} = req.query;
+    const { campaign_id } = req.query;
     if (!campaign_id) {
         res.json(response.invalidParams());
         return
     }
     const userId = req.userId!;
     // 查询活动
-    const campaign: any = await Campaign.findOne({id: campaign_id, active: true, deleted_time: null}, {
+    const campaign: any = await Campaign.findOne({ id: campaign_id, active: true, deleted_time: null }, {
         _id: 0,
         active: 0,
         created_time: 0,
@@ -38,19 +43,30 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 async function enrichCampaign(userId: string, campaign: any) {
     setCampaignStatus(campaign);
+    await setCampaignBadgeImage(campaign);
     await enrichCampaignClaimed(userId, campaign);
     await enrichUserTasks(userId, campaign.tasks, campaign.claimed);
     await enrichCampaignClaimable(userId, campaign);
     await enrichCampaignClaimAccelerators(userId, campaign);
 }
 
+async function setCampaignBadgeImage(campaign: any) {
+    for (let c of campaign.rewards) {
+        if (c.type == "badge") {
+            let targetBadge = await getMaxLevelBadge(c.badge_id);
+            c.name = targetBadge.name;
+            c.image_small = targetBadge.icon_url;
+            c.image_medium = targetBadge.image_url;
+        }
+    }
+}
 async function enrichCampaignClaimed(userId: string, campaign: any) {
     campaign.claimed = false;
     if (!userId) {
         return;
     }
     // 检查当前是否已经领取活动任务奖励
-    const claim = await CampaignAchievement.findOne({user_id: userId, campaign_id: campaign.id}, {_id: 0});
+    const claim = await CampaignAchievement.findOne({ user_id: userId, campaign_id: campaign.id }, { _id: 0 });
     campaign.claimed = !!claim && !!claim.claimed_time;
 }
 
@@ -80,11 +96,11 @@ async function enrichCampaignClaimAccelerators(userId: string, campaign: any) {
     }
     campaign.claim_settings.reward_accelerators = [];
     // 查询活动加速器
-    const accelerators = await RewardAccelerator.find({id: {$in: rewardAcceleratorIds}}, {
+    const accelerators = await RewardAccelerator.find({ id: { $in: rewardAcceleratorIds } }, {
         _id: 0,
         created_time: 0,
         "properties.chain_id": 0,
-        "properties.contract_address": 0,
+        //"properties.contract_address": 0,
     }).lean();
     // 依据原始加速器的顺序进行排序
     campaign.claim_settings.reward_accelerators = rewardAcceleratorIds.map(id => accelerators.find(acc => acc.id === id));
@@ -95,12 +111,7 @@ async function enrichCampaignClaimAccelerators(userId: string, campaign: any) {
         }
         return acc;
     }, 0);
-    campaign.claim_settings.reward_accelerators.forEach((accelerator: any) => {
-        if (accelerator.type != RewardAcceleratorType.NFTHolder) {
-            return;
-        }
-        accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
-    });
+    await calculateAcceleratorResult(userId, baseMbAmount, campaign);
 }
 
 function setCampaignStatus(campaign: any) {
@@ -115,6 +126,75 @@ function setCampaignStatus(campaign: any) {
     campaign.status = CampaignStatus.Ongoing;
 }
 
+async function calculateAcceleratorResult(userId: string, baseMbAmount: number, campaign: any) {
+    //初始化总的加速效果
+    campaign.claim_settings.total_reward_bonus = 0;
+    campaign.claim_settings.total_reward_bonus_moon_beam = 0;
+    for (let accelerator of campaign.claim_settings.reward_accelerators) {
+        if (accelerator.type == RewardAcceleratorType.NFTHolder) {
+            //初始化该加速器加速效果
+            accelerator.properties.reward_bonus_moon_beam = 0;
+            //查询钱包地址
+            const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+            if (!wallet) {
+                accelerator.properties.reward_bonus = 0;
+                continue;
+            }
+            //判断是否持有对应NFT
+            const nft = await ContractNFT.find({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
+            if (nft && nft.length > 0) {
+                accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+                if(accelerator.properties.support_stacking){
+                    campaign.claim_settings.total_reward_bonus_moon_beam += nft.length * accelerator.properties.reward_bonus_moon_beam;
+                    campaign.claim_settings.total_reward_bonus += nft.length * accelerator.properties.reward_bonus;
+                }else{
+                    campaign.claim_settings.total_reward_bonus_moon_beam += accelerator.properties.reward_bonus_moon_beam;
+                    campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
+                }
+            } else {
+                accelerator.properties.reward_bonus = 0;
+            }
+            // 求和加速效果
+            delete accelerator.properties.contract_address;
+        }
+        if (accelerator.type == RewardAcceleratorType.BadgeHolder) {
+            const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: accelerator.properties.badge_id });
+            //初始化加速器加速效果
+            accelerator.properties.reward_bonus = 0;
+            accelerator.properties.reward_bonus_moon_beam = 0;
+            if (userBadge) {
+                let bonusLv: number = 0;
+                // 判断用户是否达成加速器条件
+                for (let s of accelerator.properties.series) {
+                    // 持有徽章且已领取，则认为有效
+                    if (userBadge.series.get(String(s.lv)) != undefined && userBadge.series.get(String(s.lv)).claimed_time != undefined) {
+                        if (accelerator.properties.support_stacking) {
+                            accelerator.properties.reward_bonus += s.reward_bonus;
+                            accelerator.properties.reward_bonus_moon_beam += Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+                        } else {
+                            if (s.lv > bonusLv) {
+                                // 计算奖励Mb
+                                bonusLv = s.lv;
+                                accelerator.properties.lv = bonusLv;
+                                accelerator.properties.reward_bonus = s.reward_bonus;
+                                accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
+                                accelerator.name = `Lv${bonusLv} ${accelerator.name}`
+                            }
+                        }
+                    }
+                };
+            }
+            // 求和加速效果
+            campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
+            campaign.claim_settings.total_reward_bonus_moon_beam += accelerator.properties.reward_bonus_moon_beam;
+            //移除徽章加速器具体配置
+            delete accelerator.properties.series;
+        }
+    }
+
+    campaign.claim_settings.total_reward_bonus = campaign.claim_settings.total_reward_bonus.toFixed(4);
+    campaign.claim_settings.total_reward_bonus_moon_beam = campaign.claim_settings.total_reward_bonus_moon_beam.toFixed(4);
+}
 // this will run if none of the above matches
 router.all((req, res) => {
     res.status(405).json({

@@ -3,14 +3,33 @@ import { Pagination, Autoplay, Navigation } from 'swiper/modules';
 import IndexSlide from '../IndexSlide';
 import RaceSlide from '../RaceSlide';
 import EntertainmentSlide from '../EntertainmentSlide';
+import LoyaltyProgramSlide from '../LoyaltyProgramSlide';
+import InviteNewSlide from '../InviteNewSlide';
 import LimitedTestSlide from '../LimitedTestSlide';
 import YellowCircle from '../../common/YellowCircle';
 import { useEffect, useState, useRef } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
+import BadgeSlide from '../BadgeSlide';
+import NFT2Slide from '../NFT2Slide';
+import Game2048Slide from '../Game2048Slide';
+import LotterySlide from '../LotterySlide';
+import { isMobile } from 'react-device-detect';
 
 export default function SwiperScreen() {
-  const [needAnis, setNeedAnis] = useState([true, false, false, false]);
+  const slides = [
+    LoyaltyProgramSlide,
+    LotterySlide,
+    NFT2Slide,
+    InviteNewSlide,
+    BadgeSlide,
+    RaceSlide,
+    EntertainmentSlide,
+    // IndexSlide,
+    // LimitedTestSlide,
+  ];
+  slides.splice(isMobile ? 0 : 1, 0, Game2048Slide);
+  const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length - 1).fill(false)]);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
 
@@ -22,7 +41,7 @@ export default function SwiperScreen() {
         loop
         // 视频10s自动切换，图片5s自动切换
         // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
-        autoplay={{ delay: 5000, disableOnInteraction: false }}
+        autoplay={{ delay: 15000, disableOnInteraction: false }}
         speed={2000}
         slidesPerView={1}
         onSlideChangeTransitionStart={(swiper) => {
@@ -51,21 +70,11 @@ export default function SwiperScreen() {
       >
         {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
 
-        <SwiperSlide>
-          <IndexSlide needAni={needAnis[0]} />
-        </SwiperSlide>
-
-        {/* <SwiperSlide>
-          <LimitedTestSlide needAni={needAnis[1]} />
-        </SwiperSlide> */}
-
-        <SwiperSlide>
-          <RaceSlide needAni={needAnis[2]} />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <EntertainmentSlide needAni={needAnis[3]} />
-        </SwiperSlide>
+        {slides.map((Slide, index) => (
+          <SwiperSlide key={index}>
+            <Slide needAni={needAnis[index]} />
+          </SwiperSlide>
+        ))}
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
         <div ref={navigationPrevRef} className="home-swiper-navi home-swiper-navi-prev">

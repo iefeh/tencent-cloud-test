@@ -3,6 +3,8 @@ import PageDesc from '@/pages/components/common/PageDesc';
 import Image from 'next/image';
 import inactiveTrifleImg from 'img/nft/trifle/trifle_inactive.jpg';
 import activeTrifleImg1 from 'img/nft/trifle/trifle_active_1.jpg';
+import activeTrifleImg2 from 'img/nft/trifle/trifle_active_2.jpg';
+import activeTrifleImg3 from 'img/nft/trifle/trifle_active_3.jpg';
 import arrowImg from 'img/nft/trifle/arrow.png';
 import trifleBgImg1 from 'img/nft/trifle/trifle_bg_1.png';
 import trifleBgImg2 from 'img/nft/trifle/trifle_bg_2.png';
@@ -25,17 +27,16 @@ export default function TrifleScren() {
     {
       title: 'Eternity TETRA',
       label: 'Level II',
-      // TODO 替换二阶激活图片
-      activeImg: activeTrifleImg1,
+      activeImg: activeTrifleImg2,
       bgImg: trifleBgImg2,
       bgStyle: { maxWidth: '103%', width: '103%', height: '103%' },
-      isActive: false,
+      videoSrc: '/video/ntf2.webm',
+      isActive: true,
     },
     {
       title: 'Infinity TETRA',
       label: 'Level III',
-      // TODO 替换三阶激活图片
-      activeImg: activeTrifleImg1,
+      activeImg: activeTrifleImg3,
       isActive: false,
     },
   ];

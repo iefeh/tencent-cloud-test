@@ -159,7 +159,7 @@ const InviteCardModal = function () {
         onOpenChange={toggleInviteModal}
         isDismissable={false}
         classNames={{
-          base: 'w-[26.25rem] bg-black border-1 border-basic-gray',
+          base: 'max-w-[36rem] bg-black border-1 border-basic-gray',
           body: 'p-0 gap-0 pb-[2.6875rem]',
           closeButton: 'z-10',
         }}
@@ -190,24 +190,36 @@ const InviteCardModal = function () {
                   </div>
                 )}
 
-                <div className="w-[23.125rem] h-[24.4375rem] mx-auto border-1 border-basic-gray rounded-[1.1875rem] mt-5 overflow-hidden relative">
-                  <Image className="object-cover" src={contentImg} alt="" fill />
+                <div className="w-[calc(100%_-_4rem)] h-auto mx-auto border-1 border-basic-gray rounded-[1.1875rem] mt-5 overflow-hidden relative pt-10">
+                  <Image className="object-cover" src={contentImg} alt="" />
 
-                  <div className="absolute left-1/2 -translate-x-1/2 top-[2.625rem] font-poppins text-base text-basic-yellow w-[18.5rem] text-center">
-                    Own Your Destiny——
-                    <br />
-                    Join Moonveil to claim your limited on-chain and in-game rewards now!
-                  </div>
+                  <ul className="absolute left-1/2 -translate-x-1/2 top-8 font-poppins text-base text-basic-yellow w-full px-4">
+                    <li>
+                      <span className="inline-block w-3 h-3 bg-basic-yellow rounded-full mr-3"></span>Step 1:{' '}
+                      <span className="text-white font-bold">Sign in</span> to the Moonveil Website using this referral
+                      link to earn +15 Moon Beams.
+                    </li>
+                    <li>
+                      <span className="inline-block w-3 h-3 bg-basic-yellow rounded-full mr-3"></span>Step 2: Complete
+                      the <span className="text-white font-bold">[Earn Your First Moonveil Badge] Event</span> to earn
+                      +50 Moon Beams.
+                    </li>
+                    <li>
+                      <span className="inline-block w-3 h-3 bg-basic-yellow rounded-full mr-3"></span>Step 3: Claim your{' '}
+                      <span className="text-white font-bold">[Novice Notch] Badge</span> from the Badge Center to help
+                      your invitee earn +30 Moon Beams.
+                    </li>
+                  </ul>
                 </div>
               </div>
 
               {userInfo ? (
                 <>
                   <LGButton
-                    className="uppercase w-[20.375rem] h-9 mx-auto"
+                    className="uppercase w-[calc(100%_-_4rem)] h-10 mx-auto"
                     label="Share My Link"
                     actived
-                    prefix={<Image className="w-4 h-4" src={linkIconImg} alt="" />}
+                    prefix={<Image className="w-4 h-4 mr-2" src={linkIconImg} alt="" />}
                     onClick={onShareLink}
                   />
                   {/* <div

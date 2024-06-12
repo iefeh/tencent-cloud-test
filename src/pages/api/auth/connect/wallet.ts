@@ -7,6 +7,8 @@ import UserWallet from "@/lib/models/UserWallet";
 import {genLoginJWT} from "@/lib/particle.network/auth";
 import {redis} from "@/lib/redis/client";
 import {AuthorizationType} from "@/lib/authorization/types";
+import doTransaction from "@/lib/mongodb/transaction";
+import UserMetrics, { Metric } from "@/lib/models/UserMetrics";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -34,13 +36,30 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.walletAlreadyBoundToOthers());
         return;
     }
-    // 绑定钱包
+    
     userWallet = new UserWallet({
         user_id: req.userId,
         wallet_addr: address,
         created_time: Date.now(),
     });
-    await userWallet.save();
+    await doTransaction(async (session) => {
+        const opts = {session};
+        // 绑定钱包
+        await userWallet.save(opts);
+        // 更新用户授权指标
+        await UserMetrics.updateOne(
+            {user_id: req.userId},
+            {
+                $set: {
+                    [Metric.WalletConnected]: 1,
+                },
+                $setOnInsert: {
+                    "created_time": Date.now(),
+                }
+            },
+            {upsert: true, session: session}
+        );
+    });
     res.json(response.success());
 });
 

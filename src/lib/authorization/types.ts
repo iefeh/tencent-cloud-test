@@ -65,3 +65,16 @@ export enum CaptchaType {
     LoginCaptcha = "login_captcha",
     ConnectCaptcha = "connect_captcha",
 }
+
+// 注册的负载信息，用于保存对应授权登录与用户的注册信息
+export interface SignupPayload {
+    authorization_type: AuthorizationType;
+    // 预构建的用户信息
+    user: any;
+    // 用户如果是通过第三方授权登录时，用户第三方授权的用户信息
+    third_party_user?: any;
+    // 邀请信息
+    invite?: any;
+    // 非直接邀请信息
+    indirect_inviter_id?: string;
+}

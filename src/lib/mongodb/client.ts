@@ -19,7 +19,7 @@ if (!cached) {
 function connectToDatabase(uri: string): Connection {
     let cached = global.mongooseConnections[uri];
     if (!cached) {
-        cached = global.mongooseConnections[uri] = {conn: mongoose.createConnection(uri, {})};
+        cached = global.mongooseConnections[uri] = {conn: mongoose.createConnection(uri, {autoIndex: false,})};
     }
     return cached.conn;
 }
@@ -49,3 +49,14 @@ function connectToMongoDbDev(): Connection {
 }
 
 export default connectToMongoDbDev
+
+// 连接至dev库
+export function connectToMongoDb2048(): Connection {
+    const mongoURI = process.env.MONGODB_2048_URI!
+    if (!mongoURI) {
+        throw new Error(
+            'Please define the MONGODB_2048_URI environment variable'
+        )
+    }
+    return connectToDatabase(mongoURI);
+}

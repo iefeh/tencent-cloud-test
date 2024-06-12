@@ -1,5 +1,8 @@
 import '@/styles/globals.css';
 import '@/styles/dialog.css';
+import '@/styles/transition.scss';
+import '@/styles/table.css';
+import '@/styles/ani.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
@@ -66,6 +69,14 @@ import '@/styles/toastify.css';
 import { Web3ModalProvider } from '@/store/Web3Modal';
 import { NextUIProvider } from '@nextui-org/react';
 import { KEY_INVITE_CODE } from '@/constant/storage';
+import BetterScroll from 'better-scroll';
+import Pullup from '@better-scroll/pull-up';
+import MouseWheel from '@better-scroll/mouse-wheel';
+import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
+import useRouteLocale from '@/hooks/useRouteLocale';
+
+BetterScroll.use(MouseWheel);
+BetterScroll.use(Pullup);
 
 async function initResources(path: string) {
   path = path.toLowerCase();
@@ -165,8 +176,8 @@ function loadVideo(path: string) {
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
-  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
+  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
@@ -174,6 +185,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
+  const bpStore = useBattlePassStore();
 
   if (router.query.invite_code) {
     localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
@@ -259,17 +271,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     store.init();
-
-    window.Storage.prototype.read = function <T>(key: string) {
-      const val = this.getItem(key);
-      if (!val) return null;
-      return JSON.parse(val) as T;
-    };
-
-    window.Storage.prototype.save = function <T>(key: string, val: T) {
-      this.setItem(key, JSON.stringify(val || ''));
-    };
   }, []);
+
+  useRouteLocale(store);
 
   return (
     <>
@@ -278,18 +282,40 @@ export default function App({ Component, pageProps }: AppProps) {
           name="viewport"
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.Storage.prototype.read = function (key) {
+              const val = this.getItem(key);
+              if (!val) return null;
+              return JSON.parse(val);
+            };
+  
+            window.Storage.prototype.save = function(key, val) {
+              this.setItem(key, JSON.stringify(val || ''));
+            };
+          `,
+          }}
+        ></script>
       </Head>
 
       <Web3ModalProvider>
-        <NextUIProvider>
+        <NextUIProvider navigate={router.push}>
           <MobxContext.Provider value={store}>
-            {!isInWhiteList && loading ? (
-              <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
-            ) : (
-              <RootLayout isInWhiteList={isInWhiteList} hasNoHeader={hasNoHeader}>
-                <Component {...pageProps} />
-              </RootLayout>
-            )}
+            <BattlePassContext.Provider value={bpStore}>
+              {!isInWhiteList && loading ? (
+                <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+              ) : (
+                <RootLayout
+                  isInWhiteList={isInWhiteList}
+                  hasNoHeader={hasNoHeader}
+                  hideLoginCloseButton={(Component as any).hideLoginCloseButton}
+                >
+                  <Component {...pageProps} />
+                </RootLayout>
+              )}
+            </BattlePassContext.Provider>
           </MobxContext.Provider>
         </NextUIProvider>
       </Web3ModalProvider>

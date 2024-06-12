@@ -9,11 +9,12 @@ import {redis} from "@/lib/redis/client";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
-    const result = await createUserMetric(req.userId!, Metric.PreRegisterAstrArk, true);
+    const result = await createUserMetric(req.userId!, Metric.PreRegisterAstrArk, 1);
     // 添加预约人数缓存
     if (result.modifiedCount > 0) {
         await redis.incr(`astrark_preregistration_count`);
     }
+    
     res.json(response.success());
 });
 

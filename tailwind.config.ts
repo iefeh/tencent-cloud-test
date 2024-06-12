@@ -27,6 +27,37 @@ const config: Config = {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-100%)' },
         },
+        float: {
+          '0%': {
+            transform: 'translateY(0) scale(1)',
+            opacity: '1',
+          },
+          '50%': {
+            transform: 'translateY(-1rem) scale(1.05)',
+            opacity: '0.8',
+          },
+          '100%': {
+            transform: 'translateY(0) scale(1)',
+            opacity: '1',
+          },
+        },
+        breathShadow: {
+          '50%': {
+            'box-shadow': '0 0 1rem 0.5rem #f6c799',
+            transform: 'scale(1.03)',
+          },
+        },
+        shaking: {
+          '0%': {
+            transform: 'rotate(-6deg)'
+          },
+          '50%': {
+            transform: 'rotate(6deg)'
+          },
+          '100%': {
+            transform: 'rotate(-6deg)'
+          }
+        }
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -39,13 +70,22 @@ const config: Config = {
         'poppins-medium': ['poppins-medium'],
       },
       colors: {
+        'light-yellow': '#E7D4A9',
         notion: '#ff4848',
+        'pure-red': '#BD0000',
+        'basic-red': '#FF0000',
+        'basic-blue': '#4C95C7',
         'basic-yellow': '#f6c799',
         'basic-gray': '#1D1D1D',
+        'light-gray': '#999999',
         'deep-yellow': '#96775A',
       },
       animation: {
         spin5: 'spin 5s linear infinite',
+        float3: 'float 3s ease-in-out infinite',
+        float5: 'float 5s ease-in-out infinite',
+        breathShadow: 'breathShadow 3s ease-in-out infinite',
+        shaking: 'shaking 4s ease-in-out infinite',
       },
       fontSize: {
         'fz-12': '12px',
@@ -62,6 +102,10 @@ const config: Config = {
       },
       borderRadius: {
         base: '0.625rem',
+      },
+      spacing: {
+        ten: '0.625rem',
+        '1px': '1px',
       },
     },
   },

@@ -1,14 +1,18 @@
 import QuestAchievement from "@/lib/models/QuestAchievement";
-import {queryUserWalletAuthorization} from "@/lib/quests/implementations/connectWalletQuest";
-import {queryUserTwitterAuthorization} from "@/lib/quests/implementations/connectTwitterQuest";
-import {queryUserDiscordAuthorization} from "@/lib/quests/implementations/connectDiscordQuest";
-import {queryUserSteamAuthorization} from "@/lib/quests/implementations/connectSteamQuest";
-import {AuthorizationType} from "@/lib/authorization/types";
-import {QuestType} from "@/lib/quests/types";
+import { queryUserWalletAuthorization } from "@/lib/quests/implementations/connectWalletQuest";
+import { queryUserTwitterAuthorization } from "@/lib/quests/implementations/connectTwitterQuest";
+import { queryUserDiscordAuthorization } from "@/lib/quests/implementations/connectDiscordQuest";
+import { queryUserSteamAuthorization } from "@/lib/quests/implementations/connectSteamQuest";
+import { AuthorizationType } from "@/lib/authorization/types";
+import { QuestType } from "@/lib/quests/types";
 import UserMetrics from "@/lib/models/UserMetrics";
 import UserMoonBeamAudit from "@/lib/models/UserMoonBeamAudit";
-import {getUserFirstWhitelist, queryUserAuth} from "@/lib/common/user";
-import {constructQuest} from "@/lib/quests/constructor";
+import { getUserFirstWhitelist, queryUserAuth } from "@/lib/common/user";
+import { constructQuest } from "@/lib/quests/constructor";
+import UserTwitter from "../models/UserTwitter";
+import TwitterTopicTweet from "../models/TwitterTopicTweet";
+import { format } from "date-fns";
+import { enrichTasksProgress } from "./taskEnrichment";
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -18,6 +22,8 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
     await enrichQuestAuthorization(userId, quests);
+    // 丰富任务进度
+    await enrichTasksProgress(userId, quests);
     // 丰富任务属性
     await enrichQuestCustomProperty(userId, quests);
 }
@@ -32,7 +38,7 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
             continue
         }
         // 用户已经完成钱包任务，获取钱包资产上次同步时间
-        const metrics = await UserMetrics.findOne({user_id: userId}, {_id: 0, wallet_asset_value_last_refresh_time: 1});
+        const metrics = await UserMetrics.findOne({ user_id: userId }, { _id: 0, wallet_asset_value_last_refresh_time: 1 });
         // 用服务器时间进行校验行为矫正
         const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
         let reverifyAfter = reverifyAt - Date.now();
@@ -58,7 +64,7 @@ function maskQuestProperty(quests: any[]) {
             quest.properties = {};
         }
         // 只保留url属性
-        quest.properties = {url: quest.properties.url};
+        quest.properties = { url: quest.properties.url };
         // 设置is_prepared标识
         const questImpl = constructQuest(quest)
         quest.properties.is_prepared = questImpl.isPrepared();
@@ -72,18 +78,41 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         return;
     }
     // 获取用户已经校验的任务
-    const questIds = quests.map(quest => quest.id);
+    const dateStamp = format(Date.now(), 'yyyy-MM-dd');
+    let questIds = quests.map(quest => quest.id);
+    questIds = questIds.concat(quests.filter(q => q.type === QuestType.ThinkingDataQuery).map(quest => `${quest.id},${dateStamp}`));// 添加2048每日任务完成记录查询
     const verifiedQuests = await UserMoonBeamAudit.find({
         user_id: userId,
-        corr_id: {$in: questIds},
+        corr_id: { $in: questIds },
         deleted_time: null
     }, {
         _id: 0,
         corr_id: 1,
     });
     const verified = new Map<string, boolean>(verifiedQuests.map(q => [q.corr_id, true]));
-    // 添加任务校验标识
-    quests.forEach(quest => quest.verified = verified.has(quest.id));
+
+    quests.forEach(async quest => {
+        // 添加任务校验标识
+        quest.verified = verified.has(quest.id);
+        if (!quest.verified && quest.type === QuestType.ThinkingDataQuery) {
+            quest.verified = verified.has(`${quest.id},${dateStamp}`);
+        }
+        // 添加禁止verify标识
+        quest.verify_disabled = false;
+        // 若已校验，则不再需要判断是否需要启用禁用verify.
+        if (!quest.verified) {
+            if (quest.type === QuestType.TweetInteraction || quest.type === QuestType.TwitterTopic) {
+                let userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
+                if (userTwitter) {
+                    let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: quest.properties.topic_id });
+                    if (!tweet) {
+                        quest.verify_disabled = true;
+                    }
+                }
+            }
+        }
+    });
+
 }
 
 // 为任务添加achieved字段，标识当前用户是否已经达成任务
@@ -93,17 +122,22 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
         return;
     }
     // 检查任务完成标识
-    const questIds = quests.map(quest => quest.id);
+    const dateStamp = format(Date.now(), 'yyyy-MM-dd');
+    let questIds = quests.map(quest => quest.id);
+    questIds = questIds.concat(quests.filter(q => q.type === QuestType.ThinkingDataQuery).map(quest => `${quest.id},${dateStamp}`));// 添加2048每日任务完成记录查询
     const achievedQuests = await QuestAchievement.find({
         user_id: userId,
-        quest_id: {$in: questIds}
-    }, {_id: 0, quest_id: 1});
+        quest_id: { $in: questIds }
+    }, { _id: 0, quest_id: 1 });
     const userQuests = new Map<string, boolean>(achievedQuests.map(quest => [quest.quest_id, true]));
     quests.forEach(quest => {
         if (quest.achieved) {
             return;
         }
         quest.achieved = userQuests.has(quest.id);
+        if (!quest.achieved && quest.type === QuestType.ThinkingDataQuery) {
+            quest.achieved = userQuests.has(`${quest.id},${dateStamp}`);
+        }
     })
     // 手动检查特殊任务类型完成标识.
     for (const quest of quests) {
@@ -182,6 +216,10 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
             case QuestType.FollowOnTwitter:
             case QuestType.RetweetTweet:
             case QuestType.LikeTweet:
+            case QuestType.CommentTweet:
+            case QuestType.TwitterTopic:
+            case QuestType.TweetInteraction:
+            case QuestType.TwitterFollower:
                 quest.authorization = AuthorizationType.Twitter;
                 quest.user_authorized = false;
                 break;

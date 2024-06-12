@@ -8,16 +8,19 @@ export const Privileges = [
   // level i
   'Early access to future events',
   'Exclusive Benefits within the Community',
-  'Token airdrop privileges',
+  '$MORE token airdrop privileges',
   'Guaranteed game test privileges for future games produced by Moonveil',
   'Holders can claim free BattlePass',
   'Lifetime in-game discount',
   'Special in-game props airdrop',
   // level ii
-  'Join the private VIP Discord channel',
-  'Early access to future events',
-  'A certain amount of free token airdrop',
-  'Offline event VIP hospitality rights',
+  // 'Join the private VIP Discord channel',
+  // 'Early access to future events',
+  // 'A certain amount of free token airdrop',
+  // 'Offline event VIP hospitality rights',
+  'Access to Moonveil ecosystem financialization tools',
+  'Moonveil Loyalty Program privileges',
+  'Future NFT privileges (discount, airdrop, and more)',
   // level iii
   'Guaranteed Beta test right of future games produced by Moonveil',
   'Holders can claim free BattlePass',
@@ -37,10 +40,10 @@ export const TrifleCards = [
   {
     activeImg: activeCardImg2,
     inactiveImg: inactiveCardImg2,
-    isActive: false,
+    isActive: true,
     rocketLevelText: 'Level II',
     rocketTitle: 'Eternity TETRA',
-    privilegeLimitRow: 10,
+    privilegeLimitRow: 9,
   },
   {
     activeImg: activeCardImg3,

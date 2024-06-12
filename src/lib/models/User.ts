@@ -13,6 +13,8 @@ export interface IUser extends Document {
     email?: string,
     // MB数量
     moon_beam: number,
+    // 通用抽奖券数量
+    lottery_ticket_amount: number,
     // particle网络的属性
     particle?: {
         user_id: string,
@@ -39,6 +41,7 @@ const UserSchema = new Schema<IUser>({
     avatar_url: {type: String},
     email: {type: String},
     moon_beam: {type: Number, default: 0},
+    lottery_ticket_amount: {type: Number, default: 0},
     particle: {
         user_id: {type: String},
         web_token: {type: String},
@@ -60,3 +63,8 @@ UserSchema.index({invite_code: 1}, {unique: true, partialFilterExpression: {emai
 const connection = connectToMongoDbDev();
 const User = models.User || connection.model<IUser>('User', UserSchema, 'users');
 export default User;
+
+// 增加用户MB
+export async function increaseUserMoonBeam(user_id: string, delta: number, session: any) {
+    return await User.updateOne({user_id}, {$inc: {moon_beam: delta}}, {session});
+}

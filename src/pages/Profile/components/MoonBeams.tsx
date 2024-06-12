@@ -2,7 +2,6 @@ import Image from 'next/image';
 import earnMBsBgImg from 'img/profile/bg_earn_mbs.png';
 import mbImg from 'img/loyalty/earn/mb.png';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import MBHistoryButton from './MBHistoryButton';
 import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
@@ -27,7 +26,8 @@ function MoonBeams() {
 
       <div className="flex flex-wrap gap-[0.8125rem] items-center relative z-0">
         <LGButton label="Earn more Moon Beams >>" link="/LoyaltyProgram/earn" />
-        <MBHistoryButton />
+
+        <LGButton label="Moon Beams History >>" actived link="/Profile/mbhistory" />
       </div>
     </div>
   );

@@ -56,6 +56,7 @@ async function paginationUserMoonbeams(userId: string, pageNum: number, pageSize
         {
             $match: {
                 user_id: userId,
+                type: "quests",
                 deleted_time: null,
             }
         },
