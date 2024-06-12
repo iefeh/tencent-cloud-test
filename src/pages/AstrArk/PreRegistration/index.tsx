@@ -7,7 +7,7 @@ import { useContext, useEffect, useState } from 'react';
 import { throttle } from 'lodash';
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
-import FloatDownloadButton from '../components/FloatDownloadButton';
+import FloatDownloadButton from '@/components/pages/astrark/home/FloatDownloadButton';
 
 function PreRegistrationPage() {
   const { userInfo } = useContext(MobxContext);

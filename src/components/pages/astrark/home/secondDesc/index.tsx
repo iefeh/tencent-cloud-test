@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import PageDesc from '../../../components/common/PageDesc';
+import PageDesc from '../../../../../pages/components/common/PageDesc';
 
 export default function WorldView() {
   const descRef = useRef<HTMLDivElement>(null);
