@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import roleImg from 'img/astrark/pre-register/index_role.png';
 import arrowLRImg from 'img/astrark/pre-register/arrow_lr.png';
-import RewardSwiper from '../components/RewardSwiper';
+import RewardSwiper from './components/RewardSwiper';
 import { Button, Modal, ModalBody, ModalContent, cn, useDisclosure } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import arrowIconImg from 'img/astrark/icon_arrow.png';
 import { PreRegisterInfoDTO } from '@/http/services/astrark';
-import ShareButton from '../components/ShareButton';
-import PreRegisterButton from '../components/PreRegisterButton';
+import ShareButton from './components/ShareButton';
+import PreRegisterButton from './components/PreRegisterButton';
 import shardImg from 'img/astrark/pre-register/shard.png';
 import { useContext } from 'react';
 import { MobxContext } from '@/pages/_app';

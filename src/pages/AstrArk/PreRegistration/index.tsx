@@ -1,7 +1,7 @@
-import IndexScreen from './subScreens/IndexScreen';
+import IndexScreen from '@/components/pages/astrark/preregistration/IndexScreen';
 import Head from 'next/head';
-import KVScreen from './subScreens/KVScreen';
-import FeatureScreen from './subScreens/FeatureScreen';
+import KVScreen from '@/components/pages/astrark/preregistration/KVScreen';
+import FeatureScreen from '@/components/pages/astrark/preregistration/FeatureScreen';
 import { PreRegisterInfoDTO, queryPreRegisterInfoAPI } from '@/http/services/astrark';
 import { useContext, useEffect, useState } from 'react';
 import { throttle } from 'lodash';
