@@ -1,11 +1,11 @@
 import Head from 'next/head';
-import KeyVisionScreen from '@/components/pages/bushwhack/KeyVision';
-import IntroScreen from '@/components/pages/bushwhack/Intro';
-import CountdownScreen from '@/components/pages/bushwhack/Countdown';
+import KeyVisionScreen from '@/components/pages/bushwhack/home/KeyVision';
+import IntroScreen from '@/components/pages/bushwhack/home/Intro';
+import CountdownScreen from '@/components/pages/bushwhack/home/Countdown';
 import { useEffect, useRef, useState } from 'react';
-import GameContent from '@/components/pages/bushwhack/GameContent';
-import FogScreen from '@/components/pages/bushwhack/Fog';
-import FogDeco from '@/components/pages/bushwhack/components/FogDeco';
+import GameContent from '@/components/pages/bushwhack/home/GameContent';
+import FogScreen from '@/components/pages/bushwhack/home/Fog';
+import FogDeco from '@/components/pages/bushwhack/home/components/FogDeco';
 import { throttle } from 'lodash';
 
 export default function BushwhackPage() {
