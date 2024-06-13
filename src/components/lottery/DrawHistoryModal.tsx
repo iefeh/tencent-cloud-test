@@ -40,7 +40,13 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
   { disclosure: { isOpen, onOpenChange }, item: poolInfo, onRecordClick },
   ref,
 ) => {
-  const { scrollRef, bsRef } = useBScroll({ scrollX: false, scrollY: true, pullUpLoad: true, mouseWheel: true });
+  const { scrollRef, bsRef } = useBScroll({
+    scrollX: false,
+    scrollY: true,
+    pullUpLoad: true,
+    mouseWheel: true,
+    click: true,
+  });
   const [data, setData] = useState<Lottery.DrawHistoryDTO[]>(Array(20).fill(null));
   const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 10 });
   const [total, setTotal] = useState(0);
