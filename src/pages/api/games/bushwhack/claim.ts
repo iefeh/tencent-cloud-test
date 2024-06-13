@@ -39,8 +39,9 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor).get(asyn
         const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
         if (!userTwitter) {
             return {
+                claimable: false,
                 require_authorization: AuthorizationType.Twitter,
-            };
+            }
         }
 
         // 查询是否已领取分享BushWhack奖励
