@@ -38,10 +38,11 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor).get(asyn
         // 查询用户是否绑定twitter.
         const userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
         if (!userTwitter) {
-            return {
+            res.json(response.success({
                 claimable: false,
                 require_authorization: AuthorizationType.Twitter,
-            }
+            }))
+            return;
         }
 
         // 查询是否已领取分享BushWhack奖励
