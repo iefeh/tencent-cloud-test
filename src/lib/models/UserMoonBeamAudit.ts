@@ -25,7 +25,9 @@ export enum UserMoonBeamAuditType {
     // CDK兑换所得MB
     CDK = "cdk",
     // 抽奖所得MB
-    LuckyDraw = "lucky_draw"
+    LuckyDraw = "lucky_draw",
+    // 分享BushWhack
+    BushWhackShare = "bush_whack_share"
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
