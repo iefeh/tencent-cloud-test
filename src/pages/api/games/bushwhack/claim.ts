@@ -45,12 +45,13 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor).get(asyn
 
         // 查询是否已领取分享BushWhack奖励
         const taint = `share_bushwhack:${userId},${userTwitter.twitter_id}`;
-        const mb = await UserMoonBeamAudit.findOne({ taint: taint });
+        const mb = await UserMoonBeamAudit.findOne({ reward_taint: taint });
         if (mb) {
-            return {
+            res.json(response.success({
                 verified: false,
                 tip: "The user has already claimed reward.",
-            }
+            }));
+            return;
         }
 
         // 保存奖励
@@ -70,11 +71,10 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor).get(asyn
         //更新用户moonbeam数据
         await try2AddUsers2MBLeaderboard(userId);
 
-        return {
+        res.json(response.success({
             verified: true,
-            claimed_amount: audit.moon_beam_delta,
             tip: `You have claimed ${audit.moon_beam_delta} MBs.`
-        }
+        }));
     } catch (error) {
         logger.error(error);
         Sentry.captureException(error);
