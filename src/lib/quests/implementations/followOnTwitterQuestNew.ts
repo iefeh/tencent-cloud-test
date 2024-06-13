@@ -1,10 +1,6 @@
 import { IQuest } from '@/lib/models/Quest';
-import { FollowOnTwitter, checkClaimableResult, claimRewardResult } from '@/lib/quests/types';
+import { FollowOnTwitter, checkClaimableResult } from '@/lib/quests/types';
 import { AuthorizationType } from '@/lib/authorization/types';
-import { QuestBase } from './base';
-import UserMetrics, { Metric } from '@/lib/models/UserMetrics';
-import { sendBadgeCheckMessages } from '@/lib/kafka/client';
-import { ClientSession } from 'mongoose';
 import { queryUserTwitterAuthorization } from "@/lib/quests/implementations/connectTwitterQuest";
 import { redis } from "@/lib/redis/client";
 import logger from "@/lib/logger/winstonLogger";
@@ -14,7 +10,7 @@ import { deleteAuthToken } from "@/lib/authorization/provider/util";
 import { FollowOnTwitterQuest } from './followOnTwitterQuest';
 
 export class FollowOnTwitterQuestNew extends FollowOnTwitterQuest {
-  
+
   constructor(quest: IQuest) {
     super(quest);
   }
