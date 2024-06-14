@@ -1,13 +1,13 @@
 'use client';
 
 import { useRef, useState, useEffect, useContext } from 'react';
-import SwiperScreen from './components/home/SwiperScreen';
+import SwiperScreen from '@/components/pages/home/SwiperScreen';
 import Character from './components/character/character';
-import Footer from './components/home/Footer';
-import StarScreen from './components/home/StarScreen';
+import Footer from '@/components/pages/home/Footer';
+import StarScreen from '@/components/pages/home/StarScreen';
 import Head from 'next/head';
-import SloganScreen from './components/home/SloganScreen';
-import SloganDescScreen from './components/home/SloganDescScreen';
+import SloganScreen from '@/components/pages/home/SloganScreen';
+import SloganDescScreen from '@/components/pages/home/SloganDescScreen';
 import { MobxContext } from './_app';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/router';

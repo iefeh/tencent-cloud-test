@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import MediaIconBar from '../MediaIconBar';
+import MediaIconBar from '../../../../components/common/MediaIconBar';
 import styles from './index.module.css';
 
 interface Props {
