@@ -10,7 +10,7 @@ import RootLayout from './layout';
 import Loading from './components/common/Loading';
 import './page.scss';
 import './components/home/Footer/index.scss';
-import './components/home/LineBorder/index.scss';
+import '@/components/common/LineBorder/index.scss';
 import './components/home/StarScreen/index.scss';
 import './components/home/SwiperScreen/index.scss';
 import './components/common/Belt/index.scss';
