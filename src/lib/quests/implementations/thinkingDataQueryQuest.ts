@@ -36,10 +36,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
 
       // 更新指标值
       if (questProp.metric) {
-        // 此时s为排名信息，保存为用户指标 
         await createUserMetric(userId, questProp.metric!, Number(s));
-        // 检查 2048大王徽章
-        await sendBadgeCheckMessage(userId, questProp.metric!);
       }
 
       return { claimable: true };
@@ -53,10 +50,7 @@ export class ThinkingDataQueryQuest extends QuestBase {
         extra.target_progress = result[1][2];// 任务目标进度
         // 更新指标值
         if (questProp.metric) {
-          // 此时s为排名信息，保存为用户指标 
           await createUserMetric(userId, questProp.metric!, Number(extra.current_progress));
-          // 检查 2048大王徽章
-          await sendBadgeCheckMessage(userId, questProp.metric!);
         }
         return { claimable: s === 'true', tip: `Quest progress ${extra.current_progress}/${extra.target_progress}`, extra: extra };
       }

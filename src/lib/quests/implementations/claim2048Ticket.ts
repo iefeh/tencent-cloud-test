@@ -23,7 +23,7 @@ export class Claim2048TicketQuest extends QuestBase {
 
         return {
             claimable: true,
-            // require_authorization: likeResult.require_authorization ? AuthorizationType.Twitter : undefined,
+            // require_authoriza tion: likeResult.require_authorization ? AuthorizationType.Twitter : undefined,
             // tip: tip,
             // extra: twitterAuth.twitter_id,
         }
