@@ -1,6 +1,7 @@
 import { getZipFiles } from '@/http/services/zip';
 import { loadImage } from '@/utils/common';
 import { useEffect, useRef, useState } from 'react';
+import { isIOS } from 'react-device-detect';
 
 interface Props {
   url: string;
@@ -11,6 +12,7 @@ interface Props {
   frames?: number;
   infinite?: boolean;
   fit?: 'cover' | 'contain';
+  disableOnIOS?: boolean;
   nameFn: (index: number) => string;
   onFinished?: () => void;
 }
@@ -24,6 +26,7 @@ export default function useFrameAni({
   fit = 'contain',
   frames = 30,
   infinite = true,
+  disableOnIOS = false,
   nameFn,
   onFinished,
 }: Props) {
@@ -38,6 +41,7 @@ export default function useFrameAni({
   const frameEl = 1000 / frames;
   const [realWidth, setRealWidth] = useState(width);
   const [realHeight, setRealHeight] = useState(height);
+  const aniEnabled = !disableOnIOS || !isIOS;
 
   function initCanvas() {
     if (!canvasRef.current) return;
@@ -138,13 +142,15 @@ export default function useFrameAni({
 
   useEffect(() => {
     initCanvas();
-    initImages();
+    if (aniEnabled) initImages();
   }, []);
 
   useEffect(() => {
-    const promise = initImages();
-    if (!promise) return;
-    promise.then(() => startAni());
+    if (aniEnabled) {
+      const promise = initImages();
+      if (!promise) return;
+      promise.then(() => startAni());
+    }
 
     return stopAni;
   }, []);
