@@ -11,7 +11,7 @@ import rightArrows from 'img/about/arrow_2.png';
 import { useEffect, useRef, useState } from 'react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
-import PageDesc from '../components/common/PageDesc';
+import PageDesc from '../../components/common/PageDesc';
 import Head from 'next/head';
 import EntertainmentSlide from './EntertainmentSlide';
 import { scrollRef, scrollStart } from '../../hooks/scroll';

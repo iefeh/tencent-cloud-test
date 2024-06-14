@@ -1,5 +1,5 @@
 import BasicButton from '@/pages/components/common/BasicButton';
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import { createRef, useState, useRef, useEffect, BaseSyntheticEvent } from 'react';
 import topBgImg from 'img/nft/trifle/bg_top.png';
 import topRightBgImg from 'img/nft/trifle/bg_top_right.png';

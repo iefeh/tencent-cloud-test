@@ -1,4 +1,4 @@
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import ScrollDownArrow from '@/pages/components/common/ScrollDownArrow';
 import Image from 'next/image';
 import bgImg from 'img/loyalty/intro/bg_home.jpg';

@@ -1,5 +1,5 @@
 import React from 'react';
-import PageDesc from '../../components/common/PageDesc';
+import PageDesc from '../../../components/common/PageDesc';
 import Image from 'next/image';
 
 import halo1 from 'img/nft/home/halo1.png';

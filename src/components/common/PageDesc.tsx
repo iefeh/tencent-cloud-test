@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import BasicButton from './BasicButton';
-import Belt from './Belt';
+import BasicButton from '../../pages/components/common/BasicButton';
+import Belt from '../../pages/components/common/Belt';
 import whiteLogo from 'img/logo_white.png';
 import goldenLogo from 'img/logo_golden.png';
 import { ReactNode, forwardRef } from 'react';

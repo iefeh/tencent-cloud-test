@@ -4,7 +4,7 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import intros from '../index.json';
 import BasicButton from '@/pages/components/common/BasicButton';
 import { Modal, ModalBody, ModalContent, useDisclosure } from '@nextui-org/react';
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import circelImg from 'img/astrark/school/circel.png';
 import arrowBackImg from 'img/astrark/school/arrow_back.png';
 import schools from '../schools.json';

@@ -1,18 +1,18 @@
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { Pagination, Autoplay, Navigation } from 'swiper/modules';
-import IndexSlide from '../IndexSlide';
-import RaceSlide from '../RaceSlide';
-import EntertainmentSlide from '../EntertainmentSlide';
-import LoyaltyProgramSlide from '../LoyaltyProgramSlide';
-import InviteNewSlide from '../InviteNewSlide';
-import LimitedTestSlide from '../LimitedTestSlide';
-import YellowCircle from '../../common/YellowCircle';
+import IndexSlide from '../slides/IndexSlide';
+import RaceSlide from '../slides/RaceSlide';
+import EntertainmentSlide from '../slides/EntertainmentSlide';
+import LoyaltyProgramSlide from '../slides/LoyaltyProgramSlide';
+import InviteNewSlide from '../slides/InviteNewSlide';
+import LimitedTestSlide from '../slides/LimitedTestSlide';
+import YellowCircle from '@/components/common/YellowCircle';
 import { useEffect, useState, useRef } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
-import BadgeSlide from '../BadgeSlide';
-import NFT2Slide from '../NFT2Slide';
-import Game2048Slide from '../Game2048Slide';
+import BadgeSlide from '../slides/BadgeSlide';
+import NFT2Slide from '../slides/NFT2Slide';
+import Game2048Slide from '../slides/Game2048Slide';
 import { isMobile } from 'react-device-detect';
 
 export default function SwiperScreen() {
