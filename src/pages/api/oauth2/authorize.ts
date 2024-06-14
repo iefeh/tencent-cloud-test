@@ -8,6 +8,7 @@ import {OAuthModel} from "@/lib/oauth2/model";
 import User from "@/lib/models/User";
 import {responseOnOauthError} from "@/lib/oauth2/response";
 import {Request, Response} from '@node-oauth/oauth2-server';
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -78,6 +79,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
                     }
                 }
             })
+        logger.debug(`user ${user?.user_id} authorized client ${code.client.client_id} to get code ${code.authorizationCode}`)
         return res.json(response.success({
             authorization_code: code.authorizationCode,
             expires_at: code.expiresAt,
