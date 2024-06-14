@@ -24,7 +24,7 @@ export class FollowOnTwitterQuestNew extends FollowOnTwitterQuest {
         require_authorization: AuthorizationType.Twitter,
       }
     }
-    console.log("checkClaimable");
+    
     // 检查是否限流
     const rateLimitedKey = `follow_twitter:${twitterAuth.twitter_id}`;
     const rateLimited = await redis.get(rateLimitedKey);
@@ -92,7 +92,8 @@ export class FollowOnTwitterQuestNew extends FollowOnTwitterQuest {
     if (!claim.claimable) {
       return {
         verified: false,
-        tip: 'Please click follow to complete task first.',
+        require_authorization: claim.require_authorization,
+        tip: claim.tip,
       };
     }
 
