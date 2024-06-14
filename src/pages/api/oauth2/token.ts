@@ -5,6 +5,7 @@ import {UserContextRequest, dynamicCors} from "@/lib/middleware/auth";
 import OAuth2Server from '@/lib/oauth2/server'
 import {responseOnOauthError} from "@/lib/oauth2/response";
 import { Request, Response } from '@node-oauth/oauth2-server';
+import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).post(async (req, res) => {
