@@ -1,5 +1,5 @@
 import React from 'react';
-import PageDesc from '../../../../../pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 
 const WorldView: React.FC = () => {
   const Content = (
