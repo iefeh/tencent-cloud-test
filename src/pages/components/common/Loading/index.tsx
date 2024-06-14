@@ -1,6 +1,6 @@
 import Image from "next/image";
 import moonBg from "img/loading/bg_moon.png";
-import MediaIconBar from "../MediaIconBar";
+import MediaIconBar from "../../../../components/common/MediaIconBar";
 import { useEffect, useRef, useState } from "react";
 import Belt from "../Belt";
 

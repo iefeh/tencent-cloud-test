@@ -1,35 +1,41 @@
-import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, Navigation } from 'swiper/modules';
-import IndexSlide from '../IndexSlide';
-import RaceSlide from '../RaceSlide';
-import EntertainmentSlide from '../EntertainmentSlide';
-import LoyaltyProgramSlide from '../LoyaltyProgramSlide';
-import InviteNewSlide from '../InviteNewSlide';
-import LimitedTestSlide from '../LimitedTestSlide';
-import YellowCircle from '../../common/YellowCircle';
-import { useEffect, useState, useRef } from 'react';
+import RaceSlide from '../slides/RaceSlide';
+import EntertainmentSlide from '../slides/EntertainmentSlide';
+import LoyaltyProgramSlide from '../slides/LoyaltyProgramSlide';
+import InviteNewSlide from '../slides/InviteNewSlide';
+import YellowCircle from '@/components/common/YellowCircle';
+import { useState, useRef, useMemo } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
-import BadgeSlide from '../BadgeSlide';
-import NFT2Slide from '../NFT2Slide';
-import Game2048Slide from '../Game2048Slide';
-import LotterySlide from '../LotterySlide';
+import BadgeSlide from '../slides/BadgeSlide';
+import NFT2Slide from '../slides/NFT2Slide';
+import Game2048Slide from '../slides/Game2048Slide';
+import LotterySlide from '../slides/LotterySlide';
 import { isMobile } from 'react-device-detect';
 
 export default function SwiperScreen() {
+  const [needAnis, setNeedAnis] = useState([true, ...Array(7).fill(false)]);
+
+  const LoyaltyProgramSlideMemo = useMemo(() => <LoyaltyProgramSlide needAni={needAnis[0]} />, [needAnis[0]]);
+  const LotterySlideMemo = useMemo(() => <LotterySlide needAni={needAnis[1]} />, [needAnis[1]]);
+  const NFT2SlideMemo = useMemo(() => <NFT2Slide needAni={needAnis[2]} />, [needAnis[2]]);
+  const InviteNewSlideMemo = useMemo(() => <InviteNewSlide needAni={needAnis[3]} />, [needAnis[3]]);
+  const BadgeSlideMemo = useMemo(() => <BadgeSlide needAni={needAnis[4]} />, [needAnis[4]]);
+  const RaceSlideMemo = useMemo(() => <RaceSlide needAni={needAnis[5]} />, [needAnis[5]]);
+  const EntertainmentSlideMemo = useMemo(() => <EntertainmentSlide needAni={needAnis[6]} />, [needAnis[6]]);
+  // const Game2048SlideMemo = useMemo(() => <Game2048Slide needAni={needAnis[7]} />, [needAnis[7]]);
+
   const slides = [
-    LoyaltyProgramSlide,
-    LotterySlide,
-    NFT2Slide,
-    InviteNewSlide,
-    BadgeSlide,
-    RaceSlide,
-    EntertainmentSlide,
-    // IndexSlide,
-    // LimitedTestSlide,
+    LoyaltyProgramSlideMemo,
+    LotterySlideMemo,
+    NFT2SlideMemo,
+    InviteNewSlideMemo,
+    BadgeSlideMemo,
+    RaceSlideMemo,
+    EntertainmentSlideMemo,
   ];
-  slides.splice(isMobile ? 0 : 1, 0, Game2048Slide);
-  const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length - 1).fill(false)]);
+  // slides.splice(isMobile ? 0 : 1, 0, Game2048SlideMemo);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
 
@@ -70,10 +76,8 @@ export default function SwiperScreen() {
       >
         {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
 
-        {slides.map((Slide, index) => (
-          <SwiperSlide key={index}>
-            <Slide needAni={needAnis[index]} />
-          </SwiperSlide>
+        {slides.map((slide, index) => (
+          <SwiperSlide key={index}>{slide}</SwiperSlide>
         ))}
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import MediaIconBar from '../../common/MediaIconBar';
+import MediaIconBar from '@/components/common/MediaIconBar';
 
 interface Props {
   onWheel?: (e: WheelEvent) => void;

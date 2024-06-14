@@ -1,4 +1,4 @@
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import Image from 'next/image';
 import videoImg from 'img/bushwhack/content/video.jpg';
 import Video from '@/pages/components/common/Video';
