@@ -1,4 +1,4 @@
-import PageDesc from '../common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 
 export default function SloganDescScreen() {
   return (

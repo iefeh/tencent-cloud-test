@@ -1,5 +1,5 @@
 import Image from "next/image";
-import PageDesc from "./PageDesc";
+import PageDesc from "../../../components/common/PageDesc";
 
 interface Props {
   needAni?: boolean;
