@@ -32,7 +32,7 @@ export class FollowOnTwitterQuest extends QuestBase {
     };
   }
 
-  private checkUserMetric(userId: string): undefined | ((session: ClientSession) => Promise<void>) {
+  checkUserMetric(userId: string): undefined | ((session: ClientSession) => Promise<void>) {
     const questProp = this.quest.properties as FollowOnTwitter;
     const followMetric = this.followMetrics.get(questProp.username);
     let updateMetric = undefined;
@@ -65,7 +65,7 @@ export class FollowOnTwitterQuest extends QuestBase {
     await this.sendBadgeCheckMessage(userId);
   }
 
-  private async sendBadgeCheckMessage(userId: string) {
+  async sendBadgeCheckMessage(userId: string) {
     const questProp = this.quest.properties as FollowOnTwitter;
     const followMetric = this.followMetrics.get(questProp.username);
     if (followMetric) {

@@ -1,5 +1,5 @@
 import { IQuest } from '@/lib/models/Quest';
-import { FollowOnTwitter, checkClaimableResult } from '@/lib/quests/types';
+import { FollowOnTwitter, checkClaimableResult, claimRewardResult } from '@/lib/quests/types';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { queryUserTwitterAuthorization } from "@/lib/quests/implementations/connectTwitterQuest";
 import { redis } from "@/lib/redis/client";
@@ -24,7 +24,7 @@ export class FollowOnTwitterQuestNew extends FollowOnTwitterQuest {
         require_authorization: AuthorizationType.Twitter,
       }
     }
-
+    console.log("checkClaimable");
     // 检查是否限流
     const rateLimitedKey = `follow_twitter:${twitterAuth.twitter_id}`;
     const rateLimited = await redis.get(rateLimitedKey);
@@ -42,9 +42,8 @@ export class FollowOnTwitterQuestNew extends FollowOnTwitterQuest {
 
     const questProp = this.quest.properties as FollowOnTwitter;
     try {
-
       // 直接发送关注用户的请求
-      const data: any = await twitterRequest.post(queryFollowerURL, { target_user_id: questProp.target_twitter_id }); console.log(data);
+      const data: any = await twitterRequest.post(queryFollowerURL, { target_user_id: String(questProp.target_twitter_id) });
 
       // 校验结果
       const claimable: boolean = data.data.following;
@@ -86,5 +85,39 @@ export class FollowOnTwitterQuestNew extends FollowOnTwitterQuest {
       }
       throw error;
     }
+  }
+
+  async claimReward(userId: string): Promise<claimRewardResult> {
+    const claim = await this.checkClaimable(userId);
+    if (!claim.claimable) {
+      return {
+        verified: false,
+        tip: 'Please click follow to complete task first.',
+      };
+    }
+
+    // 检查是否触发关注指标
+    const updateMetric = this.checkUserMetric(userId);
+    // 污染twitter，确保同一个twitter单任务只能获取一次奖励
+    const taint = `${this.quest.id},${AuthorizationType.Twitter},${claim.extra}`;
+    const rewardDelta = await this.checkUserRewardDelta(userId);
+    const result = await this.saveUserReward(userId, taint, rewardDelta, null, updateMetric);
+    if (result.duplicated) {
+      return {
+        verified: false,
+        tip: 'The Twitter Account has already claimed reward.',
+      };
+    }
+    // 检查当前满足的指标并发送消息
+    await this.sendBadgeCheckMessage(userId);
+    return {
+      verified: result.done,
+      claimed_amount: result.done ? rewardDelta : undefined,
+      tip: result.done ? `You have claimed ${rewardDelta} MB.` : 'Server Internal Error',
+    };
+  }
+
+  isPrepared(): boolean {
+    return false;
   }
 }
