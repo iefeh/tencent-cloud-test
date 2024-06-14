@@ -167,7 +167,13 @@ async function enrichMbsDetail(tab: string, seasonId: string, mbs: any[]): Promi
                     mb.item = `Redeem code ${mb.corr_id}`;
                 } else {
                     mb.type = "Lottery Prize";
-                    mb.item = `Win a lottery prize`;
+                    if (mb.extra_info) {
+                        let drawTimeStr = mb.extra_info === "1"? "One" : mb.extra_info === "3"? "Three" : "Five";
+                        mb.item = `${drawTimeStr} lottery draw${mb.extra_info === "1"? "" : "s"}`;
+                    }
+                    else {
+                        mb.item = `Share Twitter Bonus`;
+                    }
                 }
             })
             break;

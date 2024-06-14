@@ -89,8 +89,9 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     }
 
     // 构建奖励领取对象
-    const reward = await constructBattlepassMoonbeamReward(userId, currentBattleSeason, rewardType, level)
-    if (reward.mb === 0) {
+    const mbReward = await constructBattlepassMoonbeamReward(userId, currentBattleSeason, rewardType, level);
+    const ticketsAmount = await constructBattlepassLotteryTktReward(currentBattleSeason, rewardType, level);
+    if (mbReward.mb === 0) {
       return response.success({ result: "Do not reward moon beam." });
     }
     //创建用赛季通证奖励领取对象
@@ -103,29 +104,40 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
     const metricUpdate: any = {};
     if (rewardType === BattlepassRewardType.Premium) {
       metricUpdate[`battlepass_season_${currentBattleSeason.id}_premium_pass`] = userBattlepass.finished_tasks;
-    }else{
+    } else {
       metricUpdate[`battlepass_season_${currentBattleSeason.id}_standard_pass`] = userBattlepass.finished_tasks;
     }
     // 领取徽章、发放用户奖励
     await doTransaction(async (session) => {
       const opts = { session };
-      if (reward.mb > 0) {
-        await reward.audit.save(opts);
-        await User.updateOne({ user_id: userId }, { $inc: { moon_beam: reward.mb } }, opts);
+      if (mbReward.mb > 0) {
+        await mbReward.audit.save(opts);
+        await User.updateOne({ user_id: userId }, { $inc: { moon_beam: mbReward.mb } }, opts);
       }
       await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: currentBattleSeason.id }, {
         $set: claimReward,
-        $inc: { total_moon_beam: reward.mb }
+        $inc: { total_moon_beam: mbReward.mb }
       }, opts);
+      // 保存抽奖券
+      if (ticketsAmount > 0) {
+        await User.updateOne({ user_id: userId },
+          {
+            $inc: { lottery_ticket_amount: ticketsAmount },
+            $setOnInsert: {
+              created_time: Date.now(),
+            },
+          },
+          opts);
+      }
       await UserMetrics.updateOne({ user_id: userId }, metricUpdate, opts);
     });
     //发送消息给消息队列，检查一下，是否满足徽章下发条件
     await sendBadgeCheckMessages(userId, metricUpdate);
     // 当有MB下发时，刷新用户的MB缓存
-    if (reward.mb > 0) {
+    if (mbReward.mb > 0) {
       await try2AddUsers2MBLeaderboard(userId);
       return response.success({
-        result: `You have claimed reward and received ${reward.mb} MB.`,
+        result: `You have claimed reward and received ${mbReward.mb} MB.`,
       });
     }
     return response.success({
@@ -139,22 +151,8 @@ async function try2ClaimReward(userId: string, rewardType: string, level: string
 // 构建徽章下发的奖励，如MB
 async function constructBattlepassMoonbeamReward(userId: string, currentBattleSeason: any, rewardType: string, level: string): Promise<{ mb: number, audit: any }> {
   //判断是否为高阶通证下发奖励
-  let targetReward: any;
-  if (rewardType === BattlepassRewardType.Premium) {
-    for (let c of currentBattleSeason.premium_pass.keys()) {
-      if (c === level) {
-        targetReward = currentBattleSeason.premium_pass.get(c);
-        break;
-      }
-    }
-  } else {
-    for (let c of currentBattleSeason.standard_pass.keys()) {
-      if (c === level) {
-        targetReward = currentBattleSeason.standard_pass.get(c);
-        break;
-      }
-    }
-  }
+  let targetReward: any = getTargetReward(currentBattleSeason, rewardType, level);
+
   if (!targetReward) {
     return { mb: 0, audit: undefined }
   }
@@ -180,6 +178,45 @@ async function constructBattlepassMoonbeamReward(userId: string, currentBattleSe
     created_time: Date.now(),
   })
   return { mb: audit.moon_beam_delta, audit: audit }
+}
+
+// 构建徽章下发的奖励，如MB
+async function constructBattlepassLotteryTktReward(currentBattleSeason: any, rewardType: string, level: string): Promise<number> {
+  //判断是否为高阶通证下发奖励
+  let targetReward: any = getTargetReward(currentBattleSeason, rewardType, level);
+  let ticketAmount: number = 0;
+  if (!targetReward) {
+    return ticketAmount;
+  }
+  //获得奖励mb的奖励
+  for (let r of targetReward.rewards) {
+    if (r.type === BattlePassRewardItemType.LotteryTicket) {
+      ticketAmount = Number(r.properties.amount);
+    }
+  }
+
+  return ticketAmount;
+}
+
+function getTargetReward(currentBattleSeason: any, rewardType: string, level: any) {
+  //判断是否为高阶通证下发奖励
+  let targetReward: any;
+  if (rewardType === BattlepassRewardType.Premium) {
+    for (let c of currentBattleSeason.premium_pass.keys()) {
+      if (c === level) {
+        targetReward = currentBattleSeason.premium_pass.get(c);
+        break;
+      }
+    }
+  } else {
+    for (let c of currentBattleSeason.standard_pass.keys()) {
+      if (c === level) {
+        targetReward = currentBattleSeason.standard_pass.get(c);
+        break;
+      }
+    }
+  }
+  return targetReward;
 }
 
 // this will run if none of the above matches

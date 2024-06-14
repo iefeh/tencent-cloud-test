@@ -40,7 +40,13 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
   { disclosure: { isOpen, onOpenChange }, item: poolInfo, onRecordClick },
   ref,
 ) => {
-  const { scrollRef, bsRef } = useBScroll({ scrollX: false, scrollY: true, pullUpLoad: true, mouseWheel: true });
+  const { scrollRef, bsRef } = useBScroll({
+    scrollX: false,
+    scrollY: true,
+    pullUpLoad: true,
+    mouseWheel: true,
+    click: true,
+  });
   const [data, setData] = useState<Lottery.DrawHistoryDTO[]>(Array(20).fill(null));
   const pagi = useRef<PageQueryDto>({ page_num: 1, page_size: 10 });
   const [total, setTotal] = useState(0);
@@ -79,7 +85,7 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
       placement="center"
       isOpen={isOpen}
       classNames={{
-        base: 'bg-black max-w-[75.4375rem]',
+        base: 'bg-black max-w-[28rem] lg:max-w-[75.4375rem]',
         header: 'p-0',
         closeButton: 'z-10',
         body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-5 pb-8 px-10 max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
@@ -92,7 +98,12 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
           <>
             <ModalHeader>
               <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
-                <div className="font-semakin text-basic-yellow text-2xl">DRAW HISTORY</div>
+                <div className="font-semakin text-basic-yellow text-2xl">
+                  DRAW HISTORY
+                  <span className="font-poppins text-base ml-4">
+                    You can click on the reward details to claim or view your rewards.
+                  </span>
+                </div>
               </div>
             </ModalHeader>
 
@@ -142,7 +153,11 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
 
             <ModalFooter>
               {data.length > 0 && (
-                <CirclePagination total={total} className="flex justify-center" onChange={onPagiChange} />
+                <CirclePagination
+                  total={total}
+                  className="flex justify-center has-scroll-bar"
+                  onChange={onPagiChange}
+                />
               )}
             </ModalFooter>
           </>

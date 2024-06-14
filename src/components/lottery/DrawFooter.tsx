@@ -33,9 +33,12 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
 
   return (
     <div className={cn(['flex flex-col items-center', className])}>
-      <div className="w-[42.6875rem] h-[7.125rem] relative">
+      <div className="w-[28rem] h-[4.6875rem] lg:w-[42.6875rem] lg:h-[7.125rem] relative">
         <Image
-          className={cn(['object-contain', (poolInfo?.total_draw_amount || 0) >= 3 && 'hidden'])}
+          className={cn([
+            'object-contain rounded-xl shadow-[0_0_0.75rem_0.125rem_#f6c799]',
+            ((poolInfo?.draw_limits || 0) - (poolInfo?.rest_draw_amount || 0) || 0) >= 3 && 'hidden',
+          ])}
           src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/card_discount.png"
           alt=""
           fill
@@ -44,7 +47,7 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
         />
       </div>
 
-      <div className="flex justify-between gap-x-28 mt-ten">
+      <div className="flex justify-between gap-x-4 gap-y-4 flex-col lg:flex-row lg:gap-x-28 mt-ten">
         {buttons.map((item, index) => (
           <div key={index} className="flex flex-col items-center">
             <div className="flex justify-center items-center">
@@ -59,7 +62,7 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
               label={item.buttonLabel}
               actived
               needAuth
-              disabled={!poolInfo}
+              disabled={!poolInfo || poolInfo.rest_draw_amount < item.times}
               onClick={() => onDraw?.(item.times)}
             />
           </div>

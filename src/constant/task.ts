@@ -28,6 +28,7 @@ export const enum QuestType {
   TwitterFollower = 'twitter_follower',
   ThinkingDataQuery = 'thinking_data_query',
   Claim2048Ticket = 'claim_2048_ticket',
+  ViewWebsite = "view_website",
 }
 
 export const enum QuestRewardType {

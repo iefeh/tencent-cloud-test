@@ -13,12 +13,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id } = req.body;
   if (!lottery_pool_id) {
     res.json(response.invalidParams());
+    return;
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+    return;
   }
   const canClaimBenifits = await canClaimPremiumBenifits(userId, lotteryPoolId);
   if (canClaimBenifits) {
@@ -31,9 +33,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
       }, 
       { upsert: true });
     res.json(response.success({ message: "You have claimed all premium benifits for this lottery pool!" }));
+    return;
   }
   else {
     res.json(response.success({ message: "You have already claimed all premium benifits for this lottery pool!" }));
+    return;
   }
 });
 

@@ -3,8 +3,6 @@ import { Modal, ModalBody, ModalContent, ModalHeader, cn } from '@nextui-org/rea
 import { FC, useState } from 'react';
 import Image from 'next/image';
 import mbImg from 'img/loyalty/earn/mb.png';
-import { useUserContext } from '@/store/User';
-import { observer } from 'mobx-react-lite';
 import { MBsPerDraw } from '@/constant/lottery';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
@@ -32,7 +30,6 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   times,
   onDrawed,
 }) => {
-  const { userInfo } = useUserContext();
   const [freeTicketsCount, setFreeTicketCount] = useState(0);
   const [s1TicketsCount, setS1TicketCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -40,7 +37,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
   const ticketsForBuying = Math.max(times - s1TicketsCount - (item?.user_free_lottery_ticket_amount || 0), 0);
   const needMbs = ticketsForBuying * MBsPerDraw;
-  const isMBNotEnough = needMbs > (userInfo?.moon_beam || 0);
+  const isMBNotEnough = needMbs > (item?.user_mb_amount || 0);
 
   const onDraw = throttle(async () => {
     if (needMbs > 0 && !isConfirming) {
@@ -72,10 +69,10 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
       placement="center"
       isOpen={isOpen}
       classNames={{
-        base: 'bg-black max-w-[52.6875rem]',
+        base: 'bg-black max-w-[28rem] lg:max-w-[52.6875rem]',
         header: 'p-0',
         closeButton: 'z-10',
-        body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] pt-6 pb-[2.875rem] px-[4.625rem] max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
+        body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] px-4 py-4 lg:pt-6 lg:pb-[2.875rem] lg:px-[4.625rem] max-h-[37.5rem] overflow-y-auto flex flex-col items-center text-center',
       }}
       onOpenChange={onOpenChange}
     >
@@ -83,10 +80,10 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
         {(onClose) => (
           <>
             <ModalHeader>
-              <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex justify-between items-center gap-3 pl-8 pr-[5.625rem]">
-                <div className="font-semakin text-basic-yellow text-2xl">DRAW {times} TIMES</div>
+              <div className="relative w-full h-[6.25rem] bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex justify-between items-center gap-3 px-4 lg:pl-8 lg:pr-[5.625rem]">
+                <div className="font-semakin text-basic-yellow text-lg lg:text-2xl">DRAW {times} TIMES</div>
 
-                <div className="text-[#C89E7A] font-semakin flex-1 text-right">You Own</div>
+                <div className="text-[#C89E7A] font-semakin flex-1 text-right text-sm">You Own</div>
 
                 <div className="w-[9.625rem] h-14 relative flex items-center">
                   <Image
@@ -99,7 +96,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
                   <Image className="w-6 h-6 ml-6" src={mbImg} alt="" />
 
-                  <div className="font-semakin text-2xl ml-4">{userInfo?.moon_beam || '--'}</div>
+                  <div className="font-semakin text-2xl ml-4">{item?.user_mb_amount || 0}</div>
                 </div>
               </div>
             </ModalHeader>
@@ -109,8 +106,8 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 <>
                   <div className="text-sm text-left">
                     You don’t have enough Lottery Tickets, please confirm you would like to spend{' '}
-                    <span className="text-pure-red">{needMbs}</span> Moon Beams to buy{' '}
-                    <span className="text-pure-red">{ticketsForBuying} </span>
+                    <span className="text-basic-yellow">{needMbs}</span> Moon Beams to buy{' '}
+                    <span className="text-basic-yellow">{ticketsForBuying} </span>
                     ticket(s).
                   </div>
 
@@ -157,4 +154,4 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   );
 };
 
-export default observer(DrawModal);
+export default DrawModal;

@@ -1,27 +1,16 @@
 import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { useContext, useEffect, useState } from 'react';
-import metamaskIconImg from 'img/profile/edit/icon_metamask.png';
-import rightArrowIconImg from 'img/profile/edit/icon_arrow_right.png';
+import metamaskIconImg from 'img/profile/edit/icon_metamask.png'
 import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import { toast } from 'react-toastify';
 import { disconnectMediaAPI } from '@/http/services/login';
-import useConnect from '@/hooks/useConnect';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import errorIconImg from 'img/icon/icon_error.png';
 import { formatUserName } from '@/utils/common';
-
-interface MAItem {
-  title: string;
-  icon: string | StaticImageData;
-  type: MediaType;
-  connected?: boolean;
-  connectedAccount?: string;
-  disconnectAPI?: () => Promise<boolean | null>;
-}
+import MediaItem, { MAItem } from './MediaItem';
 
 const ConnectWallet = function () {
   const { userInfo, getUserInfo } = useContext(MobxContext);
@@ -32,6 +21,7 @@ const ConnectWallet = function () {
       type: MediaType.METAMASK,
       connected: !!userInfo?.wallet,
       connectedAccount: userInfo?.wallet,
+      format: formatUserName,
     },
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
@@ -53,7 +43,6 @@ const ConnectWallet = function () {
       onClose();
       getUserInfo();
     } catch (error: any) {
-      // toast.error(error?.message || error);
       console.log(error);
     } finally {
       setDisconnectLoading(false);
@@ -64,45 +53,13 @@ const ConnectWallet = function () {
     if (isConnected) getUserInfo();
   }, [isConnected]);
 
-  const MediaItem = function (props: { item: MAItem }) {
-    const { item } = props;
-    const { onConnect, BindTipsModal } = useConnect(item.type, () => {
-      getUserInfo();
-    });
-
-    return (
-      <div className="flex items-center py-[1.0625rem] pl-[1.6875rem] pr-[1.875rem] border-1 border-[#252525] rounded-base bg-black hover:border-basic-yellow transition-[border-color] !duration-500">
-        <Image className="w-[1.625rem] h-[1.625rem] object-contain" src={item.icon} alt="" width={26} height={26} />
-
-        <div className="ml-4 flex-1 font-poppins-medium text-base">{item.title}</div>
-
-        <div className="cursor-pointer">
-          {item.connected ? (
-            <span className="relative group" onClick={() => onDisconnectClick(item)}>
-              <span className="group-hover:text-transparent transition-colors">
-                {formatUserName(item.connectedAccount) || 'Connected'}
-              </span>
-              <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-colors !duration-500">
-                Disconnect
-              </span>
-            </span>
-          ) : (
-            <Image className="w-[1.375rem] h-4" src={rightArrowIconImg} alt="" onClick={onConnect} />
-          )}
-        </div>
-
-        <BindTipsModal />
-      </div>
-    );
-  };
-
   return (
     <div className="mt-[4.1875rem]">
       <div className="text-2xl">Connect Wallet</div>
 
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
         {accounts.map((item, index) => (
-          <MediaItem key={index} item={item} />
+          <MediaItem key={index} item={item} onDisconnectClick={onDisconnectClick} />
         ))}
       </div>
 

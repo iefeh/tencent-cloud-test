@@ -33,6 +33,8 @@ export interface TaskListItem {
   start_time?: number;
   started_after?: number;
   is_new?: boolean;
+  current_progress?: number;
+  target_progress?: number;
 }
 
 export interface TaskListResDto {
