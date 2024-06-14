@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './components/common/Header';
-import LineBorder from './components/home/LineBorder/index';
+import LineBorder from '@/components/common/LineBorder';
 import { Suspense } from 'react';
 import Loading from './components/common/Loading';
 import 'swiper/css';

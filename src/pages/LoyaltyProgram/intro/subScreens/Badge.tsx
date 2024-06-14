@@ -1,4 +1,4 @@
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import Image from 'next/image';
 import badgesImg from 'img/loyalty/intro/badges.png';
 import { useRef } from 'react';

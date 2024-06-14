@@ -1,4 +1,4 @@
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import JoinTaskList from './JoinTaskList';
 import IncreaseTaskList from './IncreaseTaskList';
 
