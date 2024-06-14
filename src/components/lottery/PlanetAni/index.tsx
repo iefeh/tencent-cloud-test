@@ -15,6 +15,7 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
     cover: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/planet_ani_cover.png',
     count: 288,
     nameFn: (i) => `planet_${i.toString().padStart(5, '0')}.png`,
+    disableOnIOS: true,
   });
 
   const { prizeList } = usePrizeAni({ item });
@@ -46,7 +47,9 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             <div
               key={i}
               id={`pool_prize_${i}`}
-              className={cn(['w-10 h-10 lg:w-32 lg:h-32 absolute left-1/2 right-1/2 -translate-x-1/2 -translate-y-1/2'])}
+              className={cn([
+                'w-10 h-10 lg:w-32 lg:h-32 absolute left-1/2 right-1/2 -translate-x-1/2 -translate-y-1/2',
+              ])}
             >
               <div
                 className="w-full h-full flex justify-center items-center relative origin-center"
