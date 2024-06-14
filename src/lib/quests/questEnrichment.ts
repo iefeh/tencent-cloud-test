@@ -12,6 +12,7 @@ import { constructQuest } from "@/lib/quests/constructor";
 import UserTwitter from "../models/UserTwitter";
 import TwitterTopicTweet from "../models/TwitterTopicTweet";
 import { format } from "date-fns";
+import { enrichTasksProgress } from "./taskEnrichment";
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -21,6 +22,8 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
     await enrichQuestAuthorization(userId, quests);
+    // 丰富任务进度
+    await enrichTasksProgress(userId, quests);
     // 丰富任务属性
     await enrichQuestCustomProperty(userId, quests);
 }
@@ -217,6 +220,7 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
             case QuestType.TwitterTopic:
             case QuestType.TweetInteraction:
             case QuestType.TwitterFollower:
+            case QuestType.FollowOnTwitterNew:
                 quest.authorization = AuthorizationType.Twitter;
                 quest.user_authorized = false;
                 break;

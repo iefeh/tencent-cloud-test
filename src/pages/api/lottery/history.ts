@@ -12,7 +12,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const { lottery_pool_id, page_num, page_size } = req.query;
   if (!page_num || !page_size || !lottery_pool_id) {
       res.json(response.invalidParams());
-      return
+      return;
   }
   const lotteryPoolId = String(lottery_pool_id);
   const userId = req.userId;
@@ -40,8 +40,8 @@ async function paginationLotteryHistory(lotteryPoolId:string, userId: string, pa
       },
       {
           $sort: {
-              // 按照'draw_time'升序排序
-              'draw_time': 1
+              // 按照'draw_time'降序排序
+              'draw_time': -1
           }
       },
       {

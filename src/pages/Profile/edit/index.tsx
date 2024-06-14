@@ -1,7 +1,7 @@
 import Head from 'next/head';
-import ProfileEdit from './components/ProfileEdit';
-import SocialMediaAccounts from './components/SocialMediaAccounts';
-import ConnectWallet from './components/ConnectWallet';
+import ProfileEdit from '@/components/pages/profile/edit/ProfileEdit';
+import SocialMediaAccounts from '@/components/pages/profile/edit/SocialMediaAccounts';
+import ConnectWallet from '@/components/pages/profile/edit/ConnectWallet';
 import AutoBreadcrumbs from '@/pages/components/common/AutoBreadcrumbs';
 
 export default function ProfileEditPage() {

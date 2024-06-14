@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './components/common/Header';
-import LineBorder from './components/home/LineBorder/index';
+import LineBorder from '@/components/common/LineBorder';
 import { Suspense } from 'react';
 import Loading from './components/common/Loading';
 import 'swiper/css';
@@ -20,6 +20,16 @@ export default function RootLayout({
   hasNoHeader: boolean;
   hideLoginCloseButton?: boolean;
 }) {
+  const content = (
+    <>
+      {hasNoHeader || <Header />}
+
+      <main className="dark page-container w-full h-full">{children}</main>
+
+      <LoginModal hideCloseButton={hideLoginCloseButton} />
+    </>
+  );
+
   return (
     <React.Fragment>
       <LineBorder />
@@ -28,13 +38,7 @@ export default function RootLayout({
         className="flex w-full h-screen flex-col items-center justify-between relative bg-black"
         id="main-layout"
       > */}
-      <Suspense fallback={<Loading />}>
-        {hasNoHeader || <Header />}
-
-        <main className="dark page-container w-full h-full">{children}</main>
-
-        <LoginModal hideCloseButton={hideLoginCloseButton} />
-      </Suspense>
+      {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
       {/* </main> */}
     </React.Fragment>
   );

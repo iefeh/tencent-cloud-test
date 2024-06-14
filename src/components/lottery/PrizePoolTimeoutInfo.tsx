@@ -14,7 +14,10 @@ const PrizePoolTimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ cl
 
   return (
     <div
-      className={cn(['w-[45.875rem] h-[4.875rem] px-[3.0625rem] py-[0.875rem] relative flex items-center', className])}
+      className={cn([
+        'w-full h-auto lg:w-[45.875rem] lg:h-[4.875rem] px-[3.0625rem] py-[0.875rem] relative flex items-center flex-col lg:flex-row',
+        className,
+      ])}
     >
       <Image
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_prize_pool_timeout.png"

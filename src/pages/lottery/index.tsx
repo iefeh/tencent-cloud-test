@@ -9,34 +9,44 @@ import usePrizePool from '@/components/lottery/hooks/usePrizePool';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import useTouchBottom from '@/hooks/useTouchBottom';
+import ShineBackground from '@/components/common/ShineBackground';
+import MeteorLayer from '@/components/common/MeteorLayer';
 
 const LotteryPage: FC = () => {
+  const { getUserInfo } = useUserContext();
   const { poolInfo, queryPoolInfo } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
 
   function onUpdate() {
     queryPoolInfo();
+    getUserInfo();
     badgeScreenRef.current?.update();
   }
 
   return (
-    <section
-      className="w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg.png')] bg-[length:100%_auto] bg-no-repeat"
-      id="luxy"
-    >
-      <Head>
-        <title>Lottery | Moonveil Entertainment</title>
-      </Head>
+    <>
+      <section
+        className="w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg.png')] bg-[length:100%_auto] bg-no-repeat relative"
+        id="luxy"
+      >
+        <Head>
+          <title>Lottery | Moonveil Entertainment</title>
+        </Head>
 
-      <CoverScreen />
+        <ShineBackground />
 
-      <DrawScreen item={poolInfo} onUpdate={onUpdate} />
+        <MeteorLayer className="z-10" />
 
-      <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
+        <CoverScreen />
 
-      {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
-    </section>
+        <DrawScreen item={poolInfo} onUpdate={onUpdate} />
+
+        <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
+
+        {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
+      </section>
+    </>
   );
 };
 

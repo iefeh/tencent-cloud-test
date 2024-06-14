@@ -9,19 +9,19 @@ import { createContext, useEffect, useState } from 'react';
 import RootLayout from './layout';
 import Loading from './components/common/Loading';
 import './page.scss';
-import './components/home/Footer/index.scss';
-import './components/home/LineBorder/index.scss';
-import './components/home/StarScreen/index.scss';
-import './components/home/SwiperScreen/index.scss';
+import '@/components/pages/home/Footer/index.scss';
+import '@/components/common/LineBorder/index.scss';
+import '@/components/pages/home/StarScreen/index.scss';
+import '@/components/pages/home/SwiperScreen/index.scss';
 import './components/common/Belt/index.scss';
 import './components/common/Loading/index.scss';
-import './components/common/MediaIconBar/index.scss';
+import '@/components/common/MediaIconBar/index.scss';
 import './components/character/character.scss';
 import './About/about.scss';
 import './NFT/components/home.scss';
-import './AstrArk/components/schoolDesc/index.scss';
-import './AstrArk/components/school/Mystery/index.scss';
-import './AstrArk/components/school/SchoolIcons/index.scss';
+import '@/components/pages/astrark/home/schoolDesc/index.scss';
+import '@/components/pages/astrark/home/school/Mystery/index.scss';
+import '@/components/pages/astrark/home/school/SchoolIcons/index.scss';
 import './TetraNFT/components/PrivilegeScreen/index.scss';
 import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
 import 'video.js/dist/video-js.css';
@@ -73,6 +73,7 @@ import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
+import useRouteLocale from '@/hooks/useRouteLocale';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -270,17 +271,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     store.init();
-
-    window.Storage.prototype.read = function <T>(key: string) {
-      const val = this.getItem(key);
-      if (!val) return null;
-      return JSON.parse(val) as T;
-    };
-
-    window.Storage.prototype.save = function <T>(key: string, val: T) {
-      this.setItem(key, JSON.stringify(val || ''));
-    };
   }, []);
+
+  useRouteLocale(store);
 
   return (
     <>
@@ -289,6 +282,22 @@ export default function App({ Component, pageProps }: AppProps) {
           name="viewport"
           content={`width=device-width,initial-scale=${scale},minimum-scale=${scale},maximum-scale=${scale},user-scalable=no`}
         />
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.Storage.prototype.read = function (key) {
+              const val = this.getItem(key);
+              if (!val) return null;
+              return JSON.parse(val);
+            };
+  
+            window.Storage.prototype.save = function(key, val) {
+              this.setItem(key, JSON.stringify(val || ''));
+            };
+          `,
+          }}
+        ></script>
       </Head>
 
       <Web3ModalProvider>

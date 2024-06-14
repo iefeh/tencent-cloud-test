@@ -42,6 +42,14 @@ export enum QuestType {
     ThinkingDataQuery = "thinking_data_query",
     // 领取2048游戏券
     Claim2048Ticket = "claim_2048_ticket",
+    // 持有徽章SBT
+    HoldBadgeSBT = "hold_badge_sbt",
+    // 浏览指定网站
+    ViewWebsite = "view_website",
+    // 领取抽奖券
+    ClaimLotteryTicket = "claim_lottery_ticket",
+    // twitter关注
+    FollowOnTwitterNew = "follow_on_twitter_new",
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -78,6 +86,8 @@ export type ThinkingDataQuery = {
     type?: ThinkingDataQuestType
     // 奖励类型，fixed为固定奖励，range则需要根据用户的数据进行确定，比如排名，不填写默认固定奖励
     rewardType?: QuestRewardType;
+    // 指标
+    metric?: Metric;
 }
 
 // 发送discord消息(文本频道或者论坛回帖都适用.)
@@ -234,6 +244,12 @@ export type claimRewardResult = {
     tip?: string;
     // 传递自定义信息
     extra?: any;
+}
+
+// 持有徽章SBT
+export type HoldBadgeSBT = {
+    badge_id: string,
+    badge_level: string
 }
 
 export enum ThinkingDataQuestType {

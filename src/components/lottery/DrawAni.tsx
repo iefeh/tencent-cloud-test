@@ -26,7 +26,7 @@ const DrawAni: FC<Props> = ({ visible, onFinished }) => {
   }, [visible]);
 
   return (
-    <div className={cn(['justify-center items-center absolute inset-0 z-0', visible ? 'flex' : 'hidden'])}>
+    <div className={cn(['flex justify-center items-center absolute inset-0 z-0', visible || 'invisible'])}>
       <canvas ref={canvasRef} className="object-contain"></canvas>
     </div>
   );

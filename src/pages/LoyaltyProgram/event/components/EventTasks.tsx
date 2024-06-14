@@ -85,6 +85,12 @@ function EventTasks(props: EventTaskProps) {
             finishedLable: 'Commented',
           };
           break;
+        case QuestType.ViewWebsite:
+          item.connectTexts = {
+            label: 'Visit',
+            finishedLable: 'Visited',
+          };
+          break;
       }
     });
 
@@ -101,8 +107,9 @@ function EventTasks(props: EventTaskProps) {
     const [connectLoading, setConnectLoading] = useState(false);
     const [verifyLoading, setVerifyLoading] = useState(false);
     const isNeedConnect = !!task.properties.url;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
     const [verifiable, setVerifiable] = useState(
-      !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
+      !isViewWebsite && !verify_disabled && !verified && (!task.properties.is_prepared || achieved),
     );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
@@ -122,6 +129,11 @@ function EventTasks(props: EventTaskProps) {
     async function onConnectURL() {
       if (!task.properties?.url) return;
       window.open(task.properties.url, '_blank');
+
+      if (isViewWebsite) {
+        setVerifiable(false);
+        setHasVerifyCD(true);
+      }
     }
 
     async function onPrepare() {
@@ -236,7 +248,7 @@ function EventTasks(props: EventTaskProps) {
               </div>
             )
           }
-          cd={isLongCD ? 180 : 30}
+          cd={isViewWebsite ? 10 : isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -371,7 +383,19 @@ function EventTasks(props: EventTaskProps) {
       <div className="flex justify-between py-[1.375rem] pl-[1.5625rem] pr-[1.75rem] rounded-[0.625rem] border-1 border-basic-gray hover:border-[#666] bg-basic-gray [&:not(:first-child)]:mt-[0.625rem] transition-colors duration-300 flex-col lg:flex-row items-start lg:items-center">
         <div className="flex items-center">
           <Image className="w-9 h-9 object-contain" src={getTaskIcon()} alt="" width={36} height={36} unoptimized />
-          <div className="font-poppins-medium text-lg ml-[0.875rem]">{task.description}</div>
+          <div className="font-poppins-medium text-lg ml-[0.875rem] flex justify-between items-center">
+            <div dangerouslySetInnerHTML={{ __html: task.description }}></div>
+
+            {task.current_progress !== undefined && task.target_progress !== undefined && (
+              <div className="text-base shrink-0">
+                (
+                <span className="text-basic-yellow">
+                  {task.current_progress || 0}/{task.target_progress || '-'}
+                </span>
+                )
+              </div>
+            )}
+          </div>
         </div>
 
         {isInProcessing && (

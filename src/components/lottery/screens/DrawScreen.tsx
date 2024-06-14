@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import MBInfo from '../MBInfo';
 import TicketsInfo from '../TicketsInfo';
 import TimeoutInfo from '../TimeoutInfo';
@@ -14,7 +14,6 @@ import PrizePoolModal from '../PrizePoolModal';
 import DrawModal from '../DrawModal';
 import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
-import useShare from '../hooks/useShare';
 import S1TicketModal from '../S1TicketModal';
 import { sleep } from '@/utils/common';
 
@@ -32,7 +31,6 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
   const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
-  const { url } = useShare(poolInfo, currentReward);
 
   function onShowPrizePool() {
     prizePoolDisclosure.onOpen();
@@ -83,7 +81,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
   }
 
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-screen h-[160vh] lg:h-screen">
       {/* 背景层 */}
       <div className="absolute inset-0 z-0">
         <div className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2">
@@ -99,20 +97,31 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       {/* 动画层 */}
       <div className="absolute inset-0 z-10">
-        <PlanetAni />
+        <PlanetAni item={poolInfo} />
 
         <DrawAni visible={drawAniVisible} onFinished={onDrawAniFinished} />
       </div>
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20 flex justify-center items-center">
-        <MBInfo className="!absolute left-16 top-32" onShowHistory={onShowHistory} item={poolInfo} />
+        <MBInfo
+          className="!absolute left-4 -top-1 lg:left-16 lg:top-32"
+          onShowHistory={onShowHistory}
+          item={poolInfo}
+        />
 
-        <TicketsInfo className="!absolute left-16 top-[16.5625rem]" item={poolInfo} />
+        <TicketsInfo className="!absolute left-4 lg:left-16 top-[16.375rem] lg:top-[16.5625rem]" item={poolInfo} />
 
-        <TimeoutInfo className="!absolute right-16 top-32" key={poolInfo?.end_time} item={poolInfo} />
+        <TimeoutInfo
+          className="!absolute left-4 lg:left-[unset] lg:right-16 top-32"
+          key={poolInfo?.end_time}
+          item={poolInfo}
+        />
 
-        <DrawLimitsInfo className="!absolute right-16 top-[17.125rem]" item={poolInfo} />
+        <DrawLimitsInfo
+          className="!absolute top-[21.75rem] left-4 lg:left-[unset] lg:right-16 lg:top-[17.125rem]"
+          item={poolInfo}
+        />
 
         <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
 
@@ -125,7 +134,6 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
 
       <RewardsModal
         key={currentReward?.draw_id}
-        url={url}
         item={currentReward}
         poolInfo={poolInfo}
         disclosure={rewardsDisclosure}

@@ -125,6 +125,12 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
             finishedLable: 'Commented',
           };
           break;
+        case QuestType.ViewWebsite:
+          item.connectTexts = {
+            label: 'Visit',
+            finishedLable: 'Visited',
+          };
+          break;
       }
     });
 
@@ -145,8 +151,9 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     const [verifyLoading, setVerifyLoading] = useState(false);
     const canReverify = task.type === QuestType.ConnectWallet && (task.properties?.can_reverify_after || 0) === 0;
     const isNeedConnect = !!task.properties.url;
+    const isViewWebsite = task.type === QuestType.ViewWebsite;
     const [verifiable, setVerifiable] = useState(
-      !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
+      !isViewWebsite && !verify_disabled && (verified ? canReverify : !task.properties.is_prepared || achieved),
     );
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const discordMsgData = useDisclosure();
@@ -175,6 +182,11 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
     async function onConnectURL() {
       if (!task.properties?.url) return;
       window.open(task.properties.url, '_blank');
+
+      if (isViewWebsite) {
+        setVerifiable(false);
+        setHasVerifyCD(true);
+      }
     }
 
     async function onPrepare() {
@@ -292,7 +304,7 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
               </div>
             )
           }
-          cd={isLongCD ? 180 : 30}
+          cd={isViewWebsite ? 10 : isLongCD ? 180 : 30}
           onClick={onVerify}
           onCDOver={() => {
             setVerifiable(true);
@@ -441,7 +453,19 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
 
     return (
       <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
-        <div className="text-xl">{task.name}</div>
+        <div className="text-xl flex justify-between items-center">
+          <div>{task.name}</div>
+
+          {task.current_progress !== undefined && task.target_progress !== undefined && (
+            <div className="text-base shrink-0">
+              (
+              <span className="text-basic-yellow">
+                {task.current_progress || 0}/{task.target_progress || '-'}
+              </span>
+              )
+            </div>
+          )}
+        </div>
 
         <div className="mt-3 flex-1 flex flex-col justify-between relative">
           <div className="text-sm">

@@ -1,7 +1,7 @@
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import { CSSTransition } from 'react-transition-group';
 import { useRef, useState, useEffect } from 'react';
-import YellowCircle from '@/pages/components/common/YellowCircle';
+import YellowCircle from '@/components/common/YellowCircle';
 import { throttle } from 'lodash';
 
 export default function MainTitle() {

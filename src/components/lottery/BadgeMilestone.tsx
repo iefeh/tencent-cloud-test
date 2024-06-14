@@ -92,7 +92,7 @@ const BadgeMilestone: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, 
   }
 
   return (
-    <div className={cn(['w-[63.5625rem] h-[6.8125rem] relative', className])}>
+    <div className={cn(['w-[63.5625rem] h-[6.8125rem] relative hidden lg:block', className])}>
       <Image
         className="object-contain"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_milestone.png"

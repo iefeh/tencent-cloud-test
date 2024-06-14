@@ -1,4 +1,4 @@
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import ScrollDownArrow from '@/pages/components/common/ScrollDownArrow';
 import Image from 'next/image';
 import bgImg from 'img/loyalty/intro/bg_home.jpg';
@@ -6,6 +6,7 @@ import smallTriangleImg from 'img/loyalty/intro/triangle_small.png';
 import bigTriangleImg from 'img/loyalty/intro/triangle_big.png';
 import { useRef } from 'react';
 import useShake from '@/hooks/useShake';
+import BasicButton from '@/pages/components/common/BasicButton';
 
 export default function IndexScreen() {
   const smallTriangleShakeRef = useRef<HTMLDivElement>(null);
@@ -42,8 +43,12 @@ export default function IndexScreen() {
             designed to reward community members who help in the growth of the Moonveil community.
           </div>
         }
-        buttonLabel="Earn Moon Beams"
-        buttonLink="/LoyaltyProgram/earn"
+        button={
+          <div className="flex items-center gap-2">
+            <BasicButton label="Earn Moon Beams" link="/LoyaltyProgram/earn" />
+            <BasicButton label="Join Lottery" link="/lottery" />
+          </div>
+        }
       />
 
       <ScrollDownArrow />

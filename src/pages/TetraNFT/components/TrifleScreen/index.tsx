@@ -1,5 +1,5 @@
 import BasicButton from '@/pages/components/common/BasicButton';
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import Image from 'next/image';
 import inactiveTrifleImg from 'img/nft/trifle/trifle_inactive.jpg';
 import activeTrifleImg1 from 'img/nft/trifle/trifle_active_1.jpg';
