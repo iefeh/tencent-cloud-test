@@ -12,9 +12,11 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     // 添加预约人数缓存
     if (result.modifiedCount > 0) {
         await redis.incr(`bushwhack_preregistration_count`);
+        res.json(response.success());
+        return;
     }
     
-    res.json(response.success());
+    res.json(response.tooManyRequests());
 });
 
 // this will run if none of the above matches
