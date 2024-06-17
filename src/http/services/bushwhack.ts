@@ -13,3 +13,10 @@ export interface PreRegisterInfoDTO {
 export function queryPreRegisterInfoAPI(): Promise<PreRegisterInfoDTO> {
   return http.get('/api/games/bushwhack/preregistration');
 }
+
+export function claimShareRewardsAPI(): Promise<{
+  verified: boolean;
+  tip: string;
+}> {
+  return http.get('/api/games/bushwhack/claim');
+}
