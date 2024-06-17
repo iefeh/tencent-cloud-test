@@ -33,7 +33,9 @@ export default function GameContent() {
         <Video
           className="w-full h-auto mt-20"
           options={{
-            autoplay: true,
+            autoplay: false,
+            muted: false,
+            controls: true,
             sources: [
               {
                 src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/teaser.mp4',

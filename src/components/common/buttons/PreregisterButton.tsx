@@ -2,14 +2,16 @@ import { MobxContext } from '@/pages/_app';
 import { Button, cn } from '@nextui-org/react';
 import { useContext, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 
 interface Props {
   className?: string;
+  hasPreregistered?: boolean;
   onClick?: () => void;
   onPreRegistered?: () => void;
 }
 
-function PreregisterButton({ className, onClick, onPreRegistered }: Props) {
+function PreregisterButton({ className, hasPreregistered, onClick, onPreRegistered }: Props) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const [preRegLoading, setPreRegLoading] = useState(false);
 
@@ -33,17 +35,14 @@ function PreregisterButton({ className, onClick, onPreRegistered }: Props) {
 
   return (
     <>
-      <Button
-        className={cn([
-          "w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl",
-          className,
-        ])}
-        disableRipple
-        isLoading={preRegLoading}
-        onPress={onPreRegisterClick}
-      >
-        Pre-Registration
-      </Button>
+      <LGButton
+        className={cn(['w-[19.6875rem] h-[4.375rem] rounded-[2.5rem] font-semakin text-2xl', className])}
+        label={hasPreregistered ? 'Pre-Registered' : 'Pre-Registration'}
+        loading={preRegLoading}
+        actived
+        disabled={hasPreregistered}
+        onClick={onPreRegisterClick}
+      />
     </>
   );
 }
