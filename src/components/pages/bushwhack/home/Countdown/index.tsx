@@ -9,6 +9,7 @@ import useTouchBottom from '@/hooks/useTouchBottom';
 import { cn } from '@nextui-org/react';
 import PreRegisterButton from '@/components/common/buttons/PreregisterButton';
 import BrPreInfo from './BrPreInfo';
+import Video from '@/pages/components/common/Video';
 
 export default function CountdownScreen() {
   const { isTouchedBottom } = useTouchBottom();
@@ -16,6 +17,25 @@ export default function CountdownScreen() {
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center relative z-30 shadow-[0_0_2rem_2rem_#000] px-16 lg:px-0">
       <Image className="object-cover z-[-1] opacity-25" src={fogImg} alt="" fill />
+
+      <Video
+        className="absolute inset-0 z-0 overflow-hidden [&_.video-js]:!pt-0"
+        options={{
+          autoplay: true,
+          muted: true,
+          controls: false,
+          fluid: true,
+          sources: [
+            {
+              src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/BUSHWHACK_TEASER.webm',
+              type: 'video/webm',
+            },
+          ],
+        }}
+      />
+
+      <div className="absolute inset-0 z-0 bg-black/30"></div>
+
       <PageDesc
         needAni
         baseAniTY
