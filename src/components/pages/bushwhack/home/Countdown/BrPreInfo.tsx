@@ -60,7 +60,7 @@ const BrPreInfo: FC = () => {
         return;
       }
 
-      const url = '';
+      const url = process.env.NEXT_PUBLIC_X_URL_BR_PREREGISTER;
       window.open(url);
       setHasCD(true);
       setDisabled(true);
