@@ -19,7 +19,7 @@ export default function CountdownScreen() {
       <Image className="object-cover z-[-1] opacity-25" src={fogImg} alt="" fill />
 
       <Video
-        className="absolute inset-0 z-0 overflow-hidden [&_.video-js]:!pt-0"
+        className="absolute inset-0 z-0 overflow-hidden [&_.video-js]:!pt-0 [&_video]:object-cover"
         options={{
           autoplay: true,
           muted: true,
