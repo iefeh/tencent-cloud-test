@@ -45,7 +45,7 @@ export default function GameContent() {
           }}
         />
 
-        <PageDesc
+        {/* <PageDesc
           className="items-start text-left mt-14"
           title={
             <div className="font-semakin text-6xl" style={{ textShadow: '0 0 2rem #3C6EFF' }}>
@@ -60,7 +60,7 @@ export default function GameContent() {
               circles tightening the battlefield.
             </div>
           }
-        />
+        /> */}
       </div>
     </div>
   );
