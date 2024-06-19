@@ -15,6 +15,7 @@ import { isMobile } from 'react-device-detect';
 import BScroll from 'better-scroll';
 import MintSuccessModal from '@/components/profile/assets/MintSuccessModal';
 import MintConnectModal from '@/components/profile/assets/MintConnectModal';
+import { toast } from 'react-toastify';
 
 function MyBadgesPage() {
   const {
@@ -47,7 +48,10 @@ function MyBadgesPage() {
 
   async function onMint(id: string) {
     const accounts = await getAccounts()
-    if (!accounts || accounts.length < 1) return;
+    if (!accounts || accounts.length < 1) {
+      toast.error('Wallet not detected. Please reload the page.');
+      return;
+    }
 
     const res = await mintBadge(id);
     if (!res) return;
