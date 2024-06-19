@@ -71,7 +71,7 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
         if (wallet_user_id_map.has(w)) {
             let user_data: any = {};
             user_data.user_id = wallet_user_id_map.get(w);
-            user_data.usernmae = user_info_map.get(user_data.user_id)?.username;
+            user_data.username = user_info_map.get(user_data.user_id)?.username;
             user_data.address = w;
             user_data.avatar_url = user_info_map.get(user_data.user_id)?.avatar_url;
             result.push(user_data);
