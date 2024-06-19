@@ -98,7 +98,8 @@ export default function useSbtMint() {
       console.log('mint result:', result);
       return result;
     } catch (error: any) {
-      toastError(error, 'mint');
+      // toastError(error, 'mint');
+      toast.error('Transaction failed, please try again later.');
     }
   }, 500);
 
