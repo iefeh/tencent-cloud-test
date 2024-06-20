@@ -134,9 +134,9 @@ export default function About({
     scrollStart(event, longitudinalRef, swiper);
 
     if (swiper.translate === 0) {
-      swiperFigure?.mousewheel.enable();
+      swiperFigure?.mousewheel?.enable();
     } else {
-      swiperFigure?.mousewheel.disable();
+      swiperFigure?.mousewheel?.disable();
     }
   }
 
@@ -144,9 +144,9 @@ export default function About({
     scrollStart(event, transverseRef, swiper);
 
     if (swiper.isEnd) {
-      swiperWrapper?.mousewheel.enable();
+      swiperWrapper?.mousewheel?.enable();
     } else {
-      swiperWrapper?.mousewheel.disable();
+      swiperWrapper?.mousewheel?.disable();
     }
   }
 
