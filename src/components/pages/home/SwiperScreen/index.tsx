@@ -15,7 +15,7 @@ import LotterySlide from '../slides/LotterySlide';
 import { isMobile } from 'react-device-detect';
 
 export default function SwiperScreen() {
-  const [needAnis, setNeedAnis] = useState([true, ...Array(8).fill(false)]);
+  const [needAnis, setNeedAnis] = useState([true, ...Array(7).fill(false)]);
 
   const LoyaltyProgramSlideMemo = useMemo(() => <LoyaltyProgramSlide needAni={needAnis[0]} />, [needAnis[0]]);
   const LotterySlideMemo = useMemo(() => <LotterySlide needAni={needAnis[1]} />, [needAnis[1]]);
@@ -24,7 +24,7 @@ export default function SwiperScreen() {
   const BadgeSlideMemo = useMemo(() => <BadgeSlide needAni={needAnis[4]} />, [needAnis[4]]);
   const RaceSlideMemo = useMemo(() => <RaceSlide needAni={needAnis[5]} />, [needAnis[5]]);
   const EntertainmentSlideMemo = useMemo(() => <EntertainmentSlide needAni={needAnis[6]} />, [needAnis[6]]);
-  const Game2048SlideMemo = useMemo(() => <Game2048Slide needAni={needAnis[7]} />, [needAnis[7]]);
+  // const Game2048SlideMemo = useMemo(() => <Game2048Slide needAni={needAnis[7]} />, [needAnis[7]]);
 
   const slides = [
     LoyaltyProgramSlideMemo,
@@ -35,7 +35,7 @@ export default function SwiperScreen() {
     RaceSlideMemo,
     EntertainmentSlideMemo,
   ];
-  slides.splice(isMobile ? 0 : 1, 0, Game2048SlideMemo);
+  // slides.splice(isMobile ? 0 : 1, 0, Game2048SlideMemo);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
 
