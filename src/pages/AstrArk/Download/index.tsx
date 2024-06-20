@@ -3,6 +3,7 @@ import maskBg from 'img/astrark/bg-mask.png';
 import styles from './index.module.css';
 import { Button, cn } from '@nextui-org/react';
 import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
+import Head from 'next/head';
 
 export default function DownloadPage() {
   function onDownloadClick() {
@@ -15,6 +16,10 @@ export default function DownloadPage() {
 
   return (
     <div className="w-full h-screen flex justify-center items-center overflow-hidden">
+      <Head>
+        <link rel="preload" as="image" href="/img/astrark/bg-mask.png" crossOrigin="anonymous"></link>
+      </Head>
+
       <div className="absolute left-0 top-0 w-full h-full z-0">
         <video
           className={cn(['object-cover w-full h-full', styles.maskVideo])}
@@ -28,7 +33,7 @@ export default function DownloadPage() {
           <source src="/video/astrark.webm" />
         </video>
 
-        <Image className="object-cover z-10 opacity-100" src={maskBg} alt="" fill />
+        <Image className="object-cover z-10 opacity-100" src={maskBg} alt="" fill unoptimized />
       </div>
 
       <div className=" absolute left-1/2 -translate-x-1/2 bottom-[12.6%] flex flex-col md:flex-row items-center gap-[0.625rem]">
