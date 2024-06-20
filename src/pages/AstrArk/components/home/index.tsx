@@ -4,6 +4,7 @@ import Image from 'next/image';
 import styles from './index.module.css';
 import maskBg from 'img/astrark/bg-mask.png';
 import whiteLogoImg from 'img/logo_white.png';
+import Head from 'next/head';
 
 interface Props {
   scrollY: number;
@@ -93,6 +94,10 @@ const AstrarkHome: React.FC<Props> = (props) => {
         'w-full h-screen flex justify-center items-center overflow-hidden fixed left-0 top-0 z-0 ' + styles.astrarkHome
       }
     >
+      <Head>
+        <link rel="preload" as="image" href="/img/astrark/bg-mask.png" crossOrigin="anonymous"></link>
+      </Head>
+
       <div className="absolute left-0 top-0 w-full h-full z-0 ">
         <video
           className={'object-cover w-full h-full ' + (currenScale.current < maxScale ? styles.maskVideo : '')}
@@ -111,12 +116,17 @@ const AstrarkHome: React.FC<Props> = (props) => {
           src={maskBg}
           alt=""
           fill
+          unoptimized
         />
 
         <div className={'absolute w-full h-1/2 left-0 bottom-0 z-20 ' + styles.videoShadow}></div>
       </div>
 
-      <div className={'absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 flex flex-col items-center ' + styles.arrowImg}>
+      <div
+        className={
+          'absolute left-1/2 -translate-x-1/2 bottom-[4.5625rem] z-20 flex flex-col items-center ' + styles.arrowImg
+        }
+      >
         <div className="font-decima text-basic-yellow mb-2">Scroll Down</div>
         <Image className="w-[3.1875rem] h-[1.75rem]" src={arrowImg} alt="" />
       </div>

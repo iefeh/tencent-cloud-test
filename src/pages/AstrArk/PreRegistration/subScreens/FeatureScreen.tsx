@@ -55,8 +55,8 @@ export default function FeatureScreen() {
         <div className="scroll_btn w-24 h-24 rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-base text-[#F6C799]">
           <div className="relative w-full h-full flex justify-center items-center">
             scroll
-            <Image className="absolute -left-[0.875rem] w-[0.4375rem] h-3" src={rightArrows} alt="left" />
-            <Image className="absolute -right-[0.875rem] w-[0.4375rem] h-3" src={leftArrows} alt="right" />
+            <Image className="absolute -left-[0.875rem] w-[0.4375rem] h-3" src={rightArrows} alt="left" unoptimized />
+            <Image className="absolute -right-[0.875rem] w-[0.4375rem] h-3" src={leftArrows} alt="right" unoptimized />
           </div>
         </div>
       </div>

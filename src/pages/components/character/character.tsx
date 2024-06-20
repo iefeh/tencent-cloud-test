@@ -8,7 +8,7 @@ import hero1 from "img/character/char_one.png";
 import hero2 from "img/character/char_two.png";
 import hero3 from "img/character/char_three.png";
 import hero4 from "img/character/char_four.png";
-import PageDesc from "../../../components/common/PageDesc";
+import PageDesc from "@/components/common/PageDesc";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from 'swiper/modules';
 
