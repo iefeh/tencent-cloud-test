@@ -1,42 +1,13 @@
-import { useState, createRef, useEffect, useRef, useLayoutEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import planetImg from 'img/home/planet.png';
 import Image from 'next/image';
-import { generateStarAni } from '@/hooks/star';
 import { createPortal } from 'react-dom';
 import Head from 'next/head';
+import ShineBackground from '@/components/common/ShineBackground';
 
 export default function StarScreen() {
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
-  const canvasRef = createRef<HTMLCanvasElement>();
   const planetRef = useRef<HTMLImageElement>(null);
   const rafId = useRef(0);
-
-  function setSize() {
-    setWidth(document.documentElement.clientWidth);
-    setHeight(document.documentElement.clientHeight);
-  }
-
-  useLayoutEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext('2d')!;
-
-    const { clientWidth, clientHeight } = document.documentElement;
-    const { init, stop } = generateStarAni(ctx, clientWidth, clientHeight);
-    init();
-
-    return () => {
-      stop();
-      ctx.clearRect(0, 0, width, height);
-    };
-  }, []);
-
-  useEffect(() => {
-    setSize();
-
-    window.addEventListener('resize', setSize);
-    return () => window.removeEventListener('resize', setSize);
-  }, []);
 
   function setLuxyTrans() {
     if (!planetRef.current || !window.luxy) return;
@@ -73,12 +44,7 @@ export default function StarScreen() {
         unoptimized
       />
 
-      <canvas
-        ref={canvasRef}
-        className="bg-star absolute left-0 top-0 w-full h-full z-0"
-        width={width}
-        height={height}
-      ></canvas>
+      <ShineBackground count={50} />
     </div>
   );
 
