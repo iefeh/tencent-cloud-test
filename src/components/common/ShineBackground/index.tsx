@@ -1,7 +1,11 @@
 import { FC, useEffect, useRef } from 'react';
 import styles from './index.module.css';
 
-const ShineBackground: FC = () => {
+interface Props {
+  count?: number;
+}
+
+const ShineBackground: FC<Props> = ({ count }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   function init() {
@@ -13,9 +17,9 @@ const ShineBackground: FC = () => {
     containerRef.current.style.width = `${scrollWidth}px`;
     containerRef.current.style.height = `${scrollHeight}px`;
 
-    const count = scrollHeight < window.innerHeight * 1.5 ? 20 : 200;
+    const starsCount = count || (scrollHeight < window.innerHeight * 1.5 ? 20 : 200);
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < starsCount; i++) {
       const star = document.createElement('div');
       star.className = styles.star;
       star.style.left = `${Math.random() * 100}%`;
