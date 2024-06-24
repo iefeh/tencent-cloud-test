@@ -8,7 +8,8 @@ import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
-  const lotteryPools = await LotteryPool.find({ active: true, type: LotteryPoolType.Public });
+  const now = Date.now();
+  const lotteryPools = await LotteryPool.find({ start_time: { $lte: now }, end_time: { $gte: now }, type: LotteryPoolType.Public });
   if (!lotteryPools || lotteryPools.length === 0) {
     res.json(response.invalidParams("No active lottery pool found!"));
     return;
