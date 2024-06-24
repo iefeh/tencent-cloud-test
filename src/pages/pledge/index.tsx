@@ -5,7 +5,7 @@ import Head from 'next/head';
 
 export default function PledgePage() {
   return (
-    <section>
+    <section className="max-w-[87.5rem] mx-auto">
       <Head>
         <title>Moonveil Entertainment</title>
       </Head>
