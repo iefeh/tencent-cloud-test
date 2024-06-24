@@ -5,6 +5,7 @@ export enum CDKRewardType {
   MoonBeam = 'moon_beam',
   Badge = 'badge',
   LotteryTicket = 'lottery_ticket',
+  PremiumPass = 'premium_pass',
 }
 
 export interface ICDK extends Document {
