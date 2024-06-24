@@ -3,6 +3,7 @@ import { Tab, Tabs } from '@nextui-org/react';
 import { FC, Key, useState } from 'react';
 import InfoCardItem from './InfoCardItem';
 import TotalStakedCard from './TotalStakedCard';
+import StakeTabs from './StakeTabs';
 
 const PoolTabs: FC = () => {
   const tabs = [
@@ -52,6 +53,10 @@ const PoolTabs: FC = () => {
           </div>
 
           <TotalStakedCard />
+
+          <div className="w-full h-1px bg-[#EBDDB6] my-14"></div>
+
+          <StakeTabs />
         </Tab>
       ))}
     </Tabs>
