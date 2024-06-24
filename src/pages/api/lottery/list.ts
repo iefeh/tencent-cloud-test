@@ -3,15 +3,14 @@ import { createRouter } from 'next-connect';
 
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import LotteryPool from '@/lib/models/LotteryPool';
+import LotteryPool, { LotteryPoolType } from '@/lib/models/LotteryPool';
 import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
-  const now: number = Date.now();
-  const lotteryPools = await LotteryPool.find({ start_time: {$lte: now}, end_time: {$gte: now} });
+  const lotteryPools = await LotteryPool.find({ active: true, type: LotteryPoolType.Public });
   if (!lotteryPools || lotteryPools.length === 0) {
-    res.json(response.invalidParams("No live lottery pool found!"));
+    res.json(response.invalidParams("No active lottery pool found!"));
     return;
   }
   let result: any[] = [];
