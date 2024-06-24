@@ -10,7 +10,7 @@ interface Props {
 
 const InfoCardItem: FC<Props> = ({ label, value, unit, append }) => {
   return (
-    <div className="flex justify-between items-center flex-nowrap gap-2 relative w-[42.1875rem] aspect-[694/131] pl-8">
+    <div className="flex justify-between items-center flex-nowrap gap-2 relative w-[42.8125rem] aspect-[694/131] pl-8">
       <Image
         className="object-contain"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_card_item.png"

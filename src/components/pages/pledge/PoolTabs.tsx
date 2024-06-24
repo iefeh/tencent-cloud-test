@@ -2,6 +2,7 @@ import { PoolType } from '@/constant/pledge';
 import { Tab, Tabs } from '@nextui-org/react';
 import { FC, Key, useState } from 'react';
 import InfoCardItem from './InfoCardItem';
+import TotalStakedCard from './TotalStakedCard';
 
 const PoolTabs: FC = () => {
   const tabs = [
@@ -43,12 +44,14 @@ const PoolTabs: FC = () => {
     >
       {tabs.map((tab, index) => (
         <Tab key={index} title={tab.label}>
-          <div className="flex flex-wrap gap-x-[1.875rem] gap-4">
+          <div className="flex flex-wrap justify-between gap-x-[1.875rem] gap-4">
             <InfoCardItem label="Total Stake:" value="1000" unit="ETH" />
             <InfoCardItem label="$Value:" value="$5000" />
             <InfoCardItem label="Output quantity:" value="1000" unit="Staking Points<span>/Block</span>" />
             <InfoCardItem label="Output Speed:" value="2" unit="Second<span>/Block</span>" />
           </div>
+
+          <TotalStakedCard />
         </Tab>
       ))}
     </Tabs>
