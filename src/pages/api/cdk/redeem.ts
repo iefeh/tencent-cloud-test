@@ -271,7 +271,7 @@ async function redeemPremiumPassReward(userId: string, session: any, reward: any
     return;
   }
 
-  await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: reward.season_id }, { premium_type: BattlePassRequirementType.WhiteList, premium_source: 'special event whitelist', is_premium: true, updated_time: Date.now() }, { session: session });
+  await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: reward.season_id }, { premium_type: BattlePassRequirementType.WhiteList, premium_source: 'Special Event Whitelist', is_premium: true, updated_time: Date.now() }, { session: session });
 }
 
 // this will run if none of the above matches
