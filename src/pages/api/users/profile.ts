@@ -21,10 +21,10 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     }
 
     // 三天只允许更改一次名字
-    const locked = await redis.set(`rename,${req.userId}`, Date.now(), "EX", 60 * 60 * 24 * 3, "NX");
-    if (!locked) {
-        return res.json(response.tooManyRequests());
-    }
+    // const locked = await redis.set(`rename,${req.userId}`, Date.now(), "EX", 60 * 60 * 24 * 3, "NX");
+    // if (!locked) {
+    //     return res.json(response.tooManyRequests());
+    // }
  
     await User.updateOne({ user_id: req.userId! }, { username: username, avatar_url: avatar_url });
     return res.json(response.success());
