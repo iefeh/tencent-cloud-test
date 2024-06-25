@@ -18,7 +18,17 @@ export interface BattlePassMBRewardDTO {
   };
 }
 
-export type BattlePassRewardDTO = BattlePassBadgeRewardDTO | BattlePassMBRewardDTO;
+export interface BattlePassTreasureBoxRewardDTO {
+  type: 'treasure_box';
+  properties: {
+    name: string;
+    description: string;
+    icon_url: string;
+    image_url: string;
+  };
+}
+
+export type BattlePassRewardDTO = BattlePassBadgeRewardDTO | BattlePassMBRewardDTO | BattlePassTreasureBoxRewardDTO;
 
 export interface BattlePassLevelDTO {
   lv: string;
