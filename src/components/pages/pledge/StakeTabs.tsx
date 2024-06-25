@@ -1,12 +1,14 @@
 import { Tab, Tabs } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC, Key, useState } from 'react';
+import StakeTabPanel from './tabPanels/StakeTabPanel';
 
 const StakeTabs: FC = () => {
   const tabs = [
     {
       key: 'stake',
       label: 'Stake',
+      panel: <StakeTabPanel />,
     },
     {
       key: 'history',
@@ -45,12 +47,14 @@ const StakeTabs: FC = () => {
           cursor: 'w-full bg-transparent border-1 border-[#F6C799]',
           tab: 'max-w-fit h-10 p-0 font-semakin border-1 border-white data-[selected=true]:border-transparent transition-colors',
           tabContent: 'px-9 py-2 text-white text-xl leading-10 group-data-[selected=true]:text-basic-yellow',
-          panel: 'p-0 mt-6',
+          panel: 'p-0 mt-6 relative z-0',
         }}
         onSelectionChange={onSelectionChange}
       >
         {tabs.map((tab, index) => (
-          <Tab key={index} title={tab.label}></Tab>
+          <Tab key={index} title={tab.label}>
+            {tab.panel}
+          </Tab>
         ))}
       </Tabs>
     </div>
