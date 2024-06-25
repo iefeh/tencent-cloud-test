@@ -9,7 +9,7 @@ import { responseOnOauthError } from "@/lib/oauth2/response";
 import { Request, Response } from '@node-oauth/oauth2-server';
 import User from "@/lib/models/User";
 import { PipelineStage } from "mongoose";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).post(async (req, res) => {
@@ -58,12 +58,12 @@ async function queryUserInfo(wallets: any[]): Promise<any[]> {
             }
         }, {
             $project: {
-                _id:0, user_id: 1, username: 1, particle: 1,avatar_url:1
+                _id: 0, user_id: 1, username: 1, particle: 1, avatar_url: 1
             }
         }
     ];
     let user_infos = await User.aggregate(pipeline);
-    let particle_user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.particle.evm_wallet, u]))
+    let particle_user_info_map: Map<string, any> = new Map<string, any>(user_infos.filter(u => u.particle).map(u => [u.particle.evm_wallet, u]));// 
     let user_info_map: Map<string, any> = new Map<string, any>(user_infos.map(u => [u.user_id, u]));
 
     let result: any[] = [];
