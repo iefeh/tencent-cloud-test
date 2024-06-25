@@ -15,6 +15,11 @@ import { redis } from '@/lib/redis/client';
 import UserNotifications from '@/lib/models/UserNotifications';
 import { generateUUID } from 'three/src/math/MathUtils';
 import UserBadges from '@/lib/models/UserBadges';
+import UserBattlePassSeasons from '@/lib/models/UserBattlePassSeasons';
+import { BattlePassRequirementType } from '@/lib/models/BattlepassPremiumRequirements';
+import { generateBattlepass } from '../battlepass/participate';
+import { getCurrentBattleSeason } from '@/lib/battlepass/battlepass';
+import { resolveRuntimeExtensions } from '@aws-sdk/client-ses/dist-types/runtimeExtensions';
 
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -147,6 +152,9 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
         case CDKRewardType.LotteryTicket:
           await redeemLotteryTicketReward(userId, session, reward);
           break;
+        case CDKRewardType.PremiumPass:
+          await redeemPremiumPassReward(userId, session, reward);
+          break;
       }
     }
 
@@ -246,6 +254,24 @@ async function redeemLotteryTicketReward(userId: string, session: any, reward: a
       created_time: Date.now(),
     }).save();
   }
+}
+
+async function redeemPremiumPassReward(userId: string, session: any, reward: any) {
+  // 查看用户是否已参加高阶通证
+  const battlepass = await UserBattlePassSeasons.findOne({ user_id: userId, battlepass_season_id: reward.season_id });
+  if (!battlepass) {
+    const season = await getCurrentBattleSeason();
+    const result = await generateBattlepass(userId, season);
+    if(result.is_premium){
+      return;
+    }
+  }
+  // 查看是否已是高阶通证
+  if (battlepass && battlepass.is_premium) {
+    return;
+  }
+
+  await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: reward.season_id }, { premium_type: BattlePassRequirementType.WhiteList, premium_source: 'Special Event Whitelist', is_premium: true, updated_time: Date.now() }, { session: session });
 }
 
 // this will run if none of the above matches
