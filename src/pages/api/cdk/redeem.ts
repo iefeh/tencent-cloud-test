@@ -25,7 +25,7 @@ import { resolveRuntimeExtensions } from '@aws-sdk/client-ses/dist-types/runtime
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
-  const { cdk } = req.query;
+  const { cdk } = req.query; 
 
   if (!cdk) {
     res.json(response.invalidParams());
