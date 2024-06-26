@@ -1,13 +1,13 @@
 'use client';
 
 import { createRef, useEffect, useState } from 'react';
-import AstrarkHome from './components/home';
-import AstrArkSchool from './components/school';
-import AstrArkSchoolDesc from './components/schoolDesc';
-import WorldView from './components/worldView';
-import SecondDesc from './components/secondDesc';
+import AstrarkHome from '@/components/pages/astrark/home/home';
+import AstrArkSchool from '@/components/pages/astrark/home/school';
+import AstrArkSchoolDesc from '@/components/pages/astrark/home/schoolDesc';
+import WorldView from '@/components/pages/astrark/home/worldView';
+import SecondDesc from '@/components/pages/astrark/home/secondDesc';
 import Head from 'next/head';
-import FloatRegisterButton from './components/FloatRegisterButton';
+import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
 
 export default function Home() {
   const scrollWrapper = createRef<HTMLDivElement>();
