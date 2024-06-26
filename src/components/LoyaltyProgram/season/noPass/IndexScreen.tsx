@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { FC } from 'react';
 import ScrollDownArrow from '@/pages/components/common/ScrollDownArrow';
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 
 const IndexScreen: FC = () => {
   return (

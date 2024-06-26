@@ -1,5 +1,6 @@
 import React from 'react';
-import PageDesc from '../../../../../pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
+import Head from 'next/head';
 
 const WorldView: React.FC = () => {
   const Content = (
@@ -21,7 +22,7 @@ const WorldView: React.FC = () => {
       <PageDesc
         hasBelt
         className="items-center text-center relative min-[2400px]:-top-[20vh]"
-        title={<div className='title text-[6.25rem] uppercase font-semakin mb-4 max-md:text-6xl'>What happened...</div>}
+        title={<div className="title text-[6.25rem] uppercase font-semakin mb-4 max-md:text-6xl">What happened...</div>}
         subtitle={
           <div className="title text-lg font-decima mb-10 tracking-tighter">
             <span className="max-md:inline-block hidden">
@@ -48,6 +49,10 @@ const WorldView: React.FC = () => {
 
   return (
     <div className="worldView w-full h-screen relative flex justify-center items-center overflow-hidden">
+      <Head>
+        <link rel="preload" as="image" href="/img/astrark/bg-world-view.jpg" crossOrigin="anonymous"></link>
+      </Head>
+
       <div
         className="luxy-el w-full h-[calc(100vh_+_600px)] justify-center items-center hidden p-8 min-[2400px]:flex"
         data-speed-y="8"

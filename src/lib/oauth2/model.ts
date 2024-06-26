@@ -3,6 +3,7 @@ import OAuth2Token, {IOAuth2Token} from "@/lib/models/OAuth2Token";
 import OAuth2AuthorizationCode from "@/lib/models/OAuth2AuthorizationCode";
 import User from "@/lib/models/User";
 import * as jwt from "jsonwebtoken";
+import logger from "@/lib/logger/winstonLogger";
 
 // 支持的授权模型：https://node-oauthoauth2-server.readthedocs.io/en/master/model/overview.html
 // 不同模型需要实现的方法不一样，目前已实现的授权模型有authorization_code grant、 implicit grant.
@@ -21,6 +22,7 @@ export const OAuthModel = {
 // 保存访问token
 // https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#savetoken-token-client-user
 async function saveAccessToken(token: any, client: any, user: any) {
+    logger.debug(`save user ${user.user_id} access token ${token.accessToken} for client ${client.id}`)
     await OAuth2Token.updateOne(
         {user_id: user.user_id, client_id: client.id},
         {
@@ -47,6 +49,7 @@ async function saveAccessToken(token: any, client: any, user: any) {
 // 保存授权码，只会在authorization_code模式时调用
 // https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#saveauthorizationcode-code-client-user
 async function saveAuthorizationCode(code: any, client: any, user: any) {
+    logger.debug(`save user ${user.user_id} authorization code ${code.authorizationCode} for client ${client.id}`)
     await OAuth2AuthorizationCode.updateOne(
         {user_id: user.user_id, client_id: client.id},
         {
@@ -126,6 +129,7 @@ async function getAuthorizationCode(authorizationCode: string) {
 // 删除授权码，使用后立即删除避免重复使用
 // https://node-oauthoauth2-server.readthedocs.io/en/master/model/spec.html#revokeauthorizationcode-code
 async function revokeAuthorizationCode(code: any) {
+    logger.debug(`revoke authorization code ${code.authorizationCode}`);
     await OAuth2AuthorizationCode.deleteOne({authorization_code: code.authorizationCode});
     return true;
 }

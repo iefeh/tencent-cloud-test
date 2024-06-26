@@ -6,12 +6,10 @@ import JW from 'img/about/2@2x.png';
 import MasonZ from 'img/about/3@2x.png';
 import RobinZ from 'img/about/4@2x.png';
 import PuffZ from 'img/about/5@2x.png';
-import leftArrows from 'img/about/arrow_1.png';
-import rightArrows from 'img/about/arrow_2.png';
 import { useEffect, useRef, useState } from 'react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
-import PageDesc from '../components/common/PageDesc';
+import PageDesc from '../../components/common/PageDesc';
 import Head from 'next/head';
 import EntertainmentSlide from './EntertainmentSlide';
 import { scrollRef, scrollStart } from '../../hooks/scroll';
@@ -90,7 +88,31 @@ const figureArray: Figure[] = [
 </div>`,
   },
 ];
-const sponsorArray = new Array(23).fill(1);
+const sponsorArray = [
+  '/img/about/1.png',
+  '/img/about/2.png',
+  '/img/about/3.png',
+  '/img/about/4.png',
+  '/img/about/5.png',
+  '/img/about/6.png',
+  '/img/about/7.png',
+  '/img/about/8.png',
+  '/img/about/9.png',
+  '/img/about/10.png',
+  '/img/about/11.png',
+  '/img/about/12.png',
+  '/img/about/13.png',
+  '/img/about/14.png',
+  '/img/about/15.png',
+  '/img/about/16.png',
+  '/img/about/17.png',
+  '/img/about/18.png',
+  '/img/about/19.png',
+  '/img/about/20.png',
+  '/img/about/21.png',
+  '/img/about/22.png',
+  '/svg/investors/ventures.svg',
+];
 
 export default function About({
   params,
@@ -112,9 +134,9 @@ export default function About({
     scrollStart(event, longitudinalRef, swiper);
 
     if (swiper.translate === 0) {
-      swiperFigure?.mousewheel.enable();
+      swiperFigure?.mousewheel?.enable();
     } else {
-      swiperFigure?.mousewheel.disable();
+      swiperFigure?.mousewheel?.disable();
     }
   }
 
@@ -122,9 +144,9 @@ export default function About({
     scrollStart(event, transverseRef, swiper);
 
     if (swiper.isEnd) {
-      swiperWrapper?.mousewheel.enable();
+      swiperWrapper?.mousewheel?.enable();
     } else {
-      swiperWrapper?.mousewheel.disable();
+      swiperWrapper?.mousewheel?.disable();
     }
   }
 
@@ -141,6 +163,21 @@ export default function About({
     <div className="about w-full h-screen flex flex-col items-center justify-between">
       <Head>
         <title>About | Moonveil Entertainment</title>
+
+        {figureArray.map((item, index) => (
+          <link key={index} rel="preload" as="image" href={item.img.src} crossOrigin="anonymous"></link>
+        ))}
+
+        {/* {sponsorArray.map((item, index) => (
+          <link
+            key={index}
+            rel="preload"
+            as="image"
+            href={item}
+            type={item.endsWith('svg') ? 'image/svg+xml' : undefined}
+            crossOrigin="anonymous"
+          ></link>
+        ))} */}
       </Head>
 
       <Swiper
@@ -173,7 +210,8 @@ export default function About({
                     className="object-cover w-[40rem] h-[40.75rem]"
                     src={curFigure?.img!}
                     alt={curFigure?.name!}
-                  ></Image>
+                    unoptimized
+                  />
                 </div>
               </div>
               <div className="blank w-full h-[11.875rem] relative">
@@ -252,11 +290,27 @@ export default function About({
                 );
               })}
             </Swiper>
-            <div className="scroll_btn max-sm:hidden w-[5vw] h-[5vw] rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[.8vw] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
+            <div className="scroll_btn max-sm:hidden w-24 h-24 rounded-full uppercase flex justify-center items-center border border-[#F6C799] text-[0.9375rem] text-[#F6C799] absolute top-1/2 -translate-y-1/2 right-[35vw] z-0">
               <div className="relative w-full h-full flex justify-center items-center">
                 scroll
-                <Image className="absolute -left-[.8vw] w-[.4vw] h-[.6vw]" src={rightArrows} alt="left" />
-                <Image className="absolute -right-[.8vw] w-[.4vw] h-[.6vw]" src={leftArrows} alt="right" />
+                <Image
+                  className="absolute -left-4 w-[0.4375rem] h-[0.75rem]"
+                  src="img/about/arrow_2.png"
+                  alt="left"
+                  width={7}
+                  height={12}
+                  priority
+                  unoptimized
+                />
+                <Image
+                  className="absolute -right-4 w-[0.4375rem] h-[0.75rem]"
+                  src="img/about/arrow_1.png"
+                  alt="right"
+                  width={7}
+                  height={12}
+                  priority
+                  unoptimized
+                />
               </div>
             </div>
           </div>
@@ -281,11 +335,13 @@ export default function About({
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
                       <Image
-                        className={index === 22 ? 'object-contain' : 'object-cover'}
-                        src={index === 22 ? '/svg/investors/ventures.svg' : `/img/about/${index + 1}.png`}
+                        className={value.endsWith('svg') ? 'object-contain' : 'object-cover'}
+                        src={value}
                         alt=""
                         fill
                         sizes="100%"
+                        priority
+                        unoptimized
                       />
                     </li>
                   );

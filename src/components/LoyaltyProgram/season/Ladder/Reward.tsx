@@ -17,6 +17,7 @@ import { toast } from 'react-toastify';
 import { useBattlePassContext } from '@/store/BattlePass';
 import RewardTooltip from './RewardTooltip';
 import { isMobile } from 'react-device-detect';
+import TreasureBoxTooltip from './TreasureBoxTooltip';
 
 interface Props {
   item?: BattlePassLevelDTO;
@@ -71,11 +72,18 @@ const Reward: FC<Props> = ({ item, onItemClick }) => {
       <RewardTooltip items={item?.rewards}>
         <div className="relative" onClick={() => onItemClick?.(item)}>
           <div className="w-[11.0625rem] h-[11.0625rem] relative flex justify-center items-center">
-            {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" />}
+            {bgImg && <Image className="object-contain" src={bgImg} alt="" fill sizes="100%" unoptimized />}
 
             {badgeReward && (
               <div className="relative z-0 w-[7.5rem] h-[7.5rem] overflow-hidden rounded-full flex items-end">
-                <Image className="object-cover" src={badgeReward.properties.image_url} alt="" fill sizes="100%" />
+                <Image
+                  className="object-cover"
+                  src={badgeReward.properties.image_url}
+                  alt=""
+                  fill
+                  sizes="100%"
+                  unoptimized
+                />
 
                 {acheived && !claimed && (
                   <LGButton
@@ -94,14 +102,18 @@ const Reward: FC<Props> = ({ item, onItemClick }) => {
                 className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
                 src={lockedIcon}
                 alt=""
+                unoptimized
               />
             )}
+
+            {item?.rewards.some((reward) => reward.type === 'treasure_box') && <TreasureBoxTooltip />}
 
             {claimed && (
               <Image
                 className="w-7 h-7 object-contain absolute top-[0.875rem] right-[0.875rem]"
                 src={claimedIcon}
                 alt=""
+                unoptimized
               />
             )}
           </div>

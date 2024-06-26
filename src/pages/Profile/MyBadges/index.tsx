@@ -14,7 +14,6 @@ import { MAX_DISPLAY_COUNT } from '@/constant/badge';
 import { isMobile } from 'react-device-detect';
 import BScroll from 'better-scroll';
 import MintSuccessModal from '@/components/profile/assets/MintSuccessModal';
-import MintConnectModal from '@/components/profile/assets/MintConnectModal';
 
 function MyBadgesPage() {
   const {
@@ -31,24 +30,8 @@ function MyBadgesPage() {
   const bsRef = useRef<BScroll | null>(null);
   const dbRef = useRef<DisplayBadgesRef>(null);
   const mintDisclosure = useDisclosure();
-  const connectDisclosure = useDisclosure();
-
-  async function getAccounts() {
-    try {
-      const accounts = (await window.ethereum.request({
-        method: 'eth_requestAccounts',
-        params: [],
-      })) as unknown as string[];
-      return accounts;
-    } catch (error) {
-      console.log('connect error:', error);
-    }
-  }
 
   async function onMint(id: string) {
-    const accounts = await getAccounts()
-    if (!accounts || accounts.length < 1) return;
-
     const res = await mintBadge(id);
     if (!res) return;
 
@@ -146,8 +129,6 @@ function MyBadgesPage() {
       />
 
       <MintSuccessModal disclosure={mintDisclosure} />
-
-      <MintConnectModal disclosure={connectDisclosure} onConnect={getAccounts} />
     </section>
   );
 }
