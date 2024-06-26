@@ -80,7 +80,10 @@ export enum Metric {
   // 2048总分数
   Total2048Score = 'total_2048_score',
   // 2048最高排名
-  HighestRankOf2048 = 'highest_rank_of_2048'
+  HighestRankOf2048 = 'highest_rank_of_2048',
+
+  // 预约BushWhack
+  PreRegisterBushWhack = 'pre_register_bushwhack',
 }
 
 // 用户内部指标，存放单独的集合
@@ -157,6 +160,8 @@ export interface IUserMetrics extends Document {
   total_2048_score: number;
   // 2048最高排名
   highest_rank_of_2048: number;
+  // 是否预约bushwhack游戏
+  pre_register_bushwhack: number;
   // 创建时间毫秒时间戳
   created_time: number;
 }
@@ -200,6 +205,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   block_2048_amount: { type: Number },
   total_2048_score: { type: Number },
   highest_rank_of_2048: { type: Number },
+  pre_register_bushwhack: { type: Number },
   created_time: { type: Number, required: true },
 });
 
