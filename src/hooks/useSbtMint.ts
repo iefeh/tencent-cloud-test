@@ -1,5 +1,5 @@
 import { throttle } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Contract, BrowserProvider, JsonRpcSigner } from 'ethers';
 import { MintPermitResDTO } from '@/http/services/badges';
 import { toast } from 'react-toastify';
@@ -10,7 +10,6 @@ import { parseChainIdToHex } from './utils';
 
 export default function useSbtMint() {
   const { walletProvider } = useWeb3ModalProvider();
-  const provider = useRef(new BrowserProvider(walletProvider!));
   const signer = useRef<JsonRpcSigner | null>(null);
   const { isConnected } = useWeb3ModalAccount();
   const { open } = useWeb3Modal();
@@ -33,14 +32,22 @@ export default function useSbtMint() {
     toast.error(message);
   }
 
-  async function initProvider() {
-    provider.current = new BrowserProvider(walletProvider!);
-    signer.current = await provider.current.getSigner();
+  async function getAccounts() {
+    try {
+      const accounts = (await walletProvider?.request({
+        method: 'eth_requestAccounts',
+        params: [],
+      })) as unknown as string[];
+      return accounts;
+    } catch (error) {
+      console.log('connect error:', error);
+    }
   }
 
   async function checkNetwork(targetChainId: string) {
     try {
-      const network = await provider.current.getNetwork();
+      const provider = new BrowserProvider(walletProvider!);
+      const network = await provider.getNetwork();
       const chainId = network.chainId;
       const isNetCorrected = chainId.toString() === targetChainId;
       console.log('current mint network chainId:', chainId);
@@ -74,7 +81,6 @@ export default function useSbtMint() {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: parseChainIdToHex(targetChainId) }],
       });
-      await initProvider();
       return true;
     } catch (error: any) {
       if (error?.code === 4902 || error?.code === 5000) {
@@ -92,6 +98,8 @@ export default function useSbtMint() {
 
   const mint = throttle(async (data: MintPermitResDTO): Promise<string | undefined> => {
     try {
+      const provider = new BrowserProvider(walletProvider!);
+      signer.current = await provider.getSigner();
       const contract = new Contract(data.contract_address, sbtContractABI, signer.current);
       const transaction = await contract.mint(data.permit);
       const result = await transaction.wait();
@@ -111,6 +119,9 @@ export default function useSbtMint() {
 
     setLoading(true);
 
+    const accounts = await getAccounts();
+    if (!accounts || accounts.length < 1) return false;
+
     const res = await checkNetwork(data.chain_id);
     if (!res) {
       const switchRes = await switchNetwork(data.chain_id);
@@ -125,10 +136,6 @@ export default function useSbtMint() {
 
     return !!result;
   }
-
-  useEffect(() => {
-    initProvider();
-  }, []);
 
   return { loading, onButtonClick };
 }
