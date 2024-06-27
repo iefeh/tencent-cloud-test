@@ -6,47 +6,49 @@ import Head from 'next/head';
 
 export default function PledgePage() {
   return (
-    <section className="max-w-[87.5rem] mx-auto pb-24">
+    <section className="pb-24 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_page.png')] bg-contain bg-top bg-no-repeat">
       <Head>
         <title>Moonveil Entertainment</title>
       </Head>
 
-      <PageDesc
-        title={
-          <div className="mt-[10.75rem] font-semakin from-[#DBAC74] to-[#E7D4A9] bg-clip-text text-transparent text-6xl bg-gradient-to-r">
-            Stake & Earn $MORE NOW!
-          </div>
-        }
-        subtitle={
-          <div className="max-w-[52.5rem] font-decima text-lg mt-6">
-            Stake your assets and enjoy abundant rewards,
-            <br />
-            including a free $MORE token airdrop and exclusive in-game privileges.
-            <br />
-            Now supporting three separate staking pools: ETH, USDT, and USDC.
-          </div>
-        }
-      />
-
-      <div className="flex justify-center items-center mt-5">
-        <ConnectContent />
-      </div>
-
-      <div className="flex justify-center items-center mt-5 gap-[6.5rem]">
-        <ValueItem
-          icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_staking_points.png"
-          label="My Staking Points"
-          value="5678"
+      <div className="max-w-[87.5rem] mx-auto">
+        <PageDesc
+          title={
+            <div className="mt-[10.75rem] font-semakin from-[#DBAC74] to-[#E7D4A9] bg-clip-text text-transparent text-6xl bg-gradient-to-r">
+              Stake & Earn $MORE NOW!
+            </div>
+          }
+          subtitle={
+            <div className="max-w-[52.5rem] font-decima text-lg mt-6">
+              Stake your assets and enjoy abundant rewards,
+              <br />
+              including a free $MORE token airdrop and exclusive in-game privileges.
+              <br />
+              Now supporting three separate staking pools: ETH, USDT, and USDC.
+            </div>
+          }
         />
 
-        <ValueItem
-          icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_locked_value.png"
-          label="Total Locked Value"
-          value="5678"
-        />
-      </div>
+        <div className="flex justify-center items-center mt-5">
+          <ConnectContent />
+        </div>
 
-      <PoolTabs />
+        <div className="flex justify-center items-center mt-5 gap-[6.5rem]">
+          <ValueItem
+            icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_staking_points.png"
+            label="My Staking Points"
+            value="5678"
+          />
+
+          <ValueItem
+            icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_locked_value.png"
+            label="Total Locked Value"
+            value="5678"
+          />
+        </div>
+
+        <PoolTabs />
+      </div>
     </section>
   );
 }
