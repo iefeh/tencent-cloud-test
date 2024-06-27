@@ -1,4 +1,5 @@
 import PageDesc from '@/components/common/PageDesc';
+import ConnectContent from '@/components/pages/pledge/ConnectContent';
 import PoolTabs from '@/components/pages/pledge/PoolTabs';
 import ValueItem from '@/components/pages/pledge/ValueItem';
 import Head from 'next/head';
@@ -27,7 +28,11 @@ export default function PledgePage() {
         }
       />
 
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center mt-5">
+        <ConnectContent />
+      </div>
+
+      <div className="flex justify-center items-center mt-5 gap-[6.5rem]">
         <ValueItem
           icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_staking_points.png"
           label="My Staking Points"
