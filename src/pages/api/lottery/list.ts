@@ -10,10 +10,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const now = Date.now();
   const lotteryPools = await LotteryPool.find({ start_time: { $lte: now }, end_time: { $gte: now }, type: LotteryPoolType.Public });
-  if (!lotteryPools || lotteryPools.length === 0) {
-    res.json(response.invalidParams("No active lottery pool found!"));
-    return;
-  }
   let result: any[] = [];
   for (let pool of lotteryPools) {
     result.push(pool.lottery_pool_id);
