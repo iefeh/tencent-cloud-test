@@ -2,6 +2,8 @@ import { Tab, Tabs } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC, Key, useState } from 'react';
 import StakeTabPanel from './tabPanels/StakeTabPanel';
+import HistoryTabPanel from './tabPanels/HistoryTabPanel';
+import WithdrawTabPanel from './tabPanels/WithdrawTabPanel';
 
 const StakeTabs: FC = () => {
   const tabs = [
@@ -13,10 +15,12 @@ const StakeTabs: FC = () => {
     {
       key: 'history',
       label: 'Locked History',
+      panel: <HistoryTabPanel />,
     },
     {
       key: 'withdraw',
       label: 'Withdraw',
+      panel: <WithdrawTabPanel />,
     },
   ];
   const [selectedKey, setSelectedKey] = useState('stake');
