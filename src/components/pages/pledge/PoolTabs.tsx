@@ -6,8 +6,10 @@ import TotalStakedCard from './TotalStakedCard';
 import StakeTabs from './StakeTabs';
 import Image from 'next/image';
 import QAModal from './QAModal';
+import useWallet from '@/hooks/useWallet';
 
 const PoolTabs: FC = () => {
+  const { connected } = useWallet();
   const tabs = [
     {
       key: PoolType.USDT,
@@ -56,11 +58,15 @@ const PoolTabs: FC = () => {
               <InfoCardItem label="Output Speed:" value="2" unit="Second<span>/Block</span>" />
             </div>
 
-            <TotalStakedCard />
+            {connected && (
+              <>
+                <TotalStakedCard />
 
-            <div className="w-full h-1px bg-[#EBDDB6] my-14"></div>
+                <div className="w-full h-1px bg-[#EBDDB6] my-14"></div>
 
-            <StakeTabs />
+                <StakeTabs />
+              </>
+            )}
           </Tab>
         ))}
       </Tabs>
