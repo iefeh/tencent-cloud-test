@@ -52,7 +52,7 @@ const PoolTabs: FC = () => {
         {tabs.map((tab, index) => (
           <Tab key={index} title={tab.label}>
             <div className="flex flex-wrap justify-between gap-x-[1.875rem] gap-4">
-              <InfoCardItem label="Total Stake:" value="1000" unit="ETH" />
+              <InfoCardItem label="Total Stake:" value="1000" unit={tab.key} />
               <InfoCardItem label="$Value:" value="$5000" />
               <InfoCardItem label="Output quantity:" value="1000" unit="Staking Points<span>/Block</span>" />
               <InfoCardItem label="Output Speed:" value="2" unit="Second<span>/Block</span>" />
@@ -60,11 +60,11 @@ const PoolTabs: FC = () => {
 
             {connected && (
               <>
-                <TotalStakedCard />
+                <TotalStakedCard poolKey={tab.key} />
 
                 <div className="w-full h-1px bg-[#EBDDB6] my-14"></div>
 
-                <StakeTabs />
+                <StakeTabs poolKey={tab.key} />
               </>
             )}
           </Tab>

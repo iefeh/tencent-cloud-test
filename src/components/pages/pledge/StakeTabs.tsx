@@ -5,12 +5,16 @@ import StakeTabPanel from './tabPanels/StakeTabPanel';
 import HistoryTabPanel from './tabPanels/HistoryTabPanel';
 import WithdrawTabPanel from './tabPanels/WithdrawTabPanel';
 
-const StakeTabs: FC = () => {
+interface Props {
+  poolKey: string;
+}
+
+const StakeTabs: FC<Props> = ({ poolKey }) => {
   const tabs = [
     {
       key: 'stake',
       label: 'Stake',
-      panel: <StakeTabPanel />,
+      panel: <StakeTabPanel poolKey={poolKey} />,
     },
     {
       key: 'history',
@@ -20,7 +24,7 @@ const StakeTabs: FC = () => {
     {
       key: 'withdraw',
       label: 'Withdraw',
-      panel: <WithdrawTabPanel />,
+      panel: <WithdrawTabPanel poolKey={poolKey} />,
     },
   ];
   const [selectedKey, setSelectedKey] = useState('stake');

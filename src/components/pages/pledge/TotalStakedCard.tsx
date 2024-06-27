@@ -40,7 +40,11 @@ const StakeItem: FC<StakeItemProps & ClassNameProps> = ({ className, locked, val
   );
 };
 
-const TotalStakedCard: FC = () => {
+interface Props {
+  poolKey: string;
+}
+
+const TotalStakedCard: FC<Props> = ({ poolKey }) => {
   return (
     <div className="w-full aspect-[1408/121] relative mt-6 flex items-center py-ten pl-[2.375rem] pr-[1.125rem]">
       <Image
@@ -66,13 +70,13 @@ const TotalStakedCard: FC = () => {
 
         <div className="flex items-end font-semakin text-black leading-none">
           <div className="text-[4rem]">2000</div>
-          <div className="text-2xl leading-10 ml-4">ETH</div>
+          <div className="text-2xl leading-10 ml-4">{poolKey}</div>
         </div>
       </div>
 
-      <StakeItem locked={false} value="1000" unit="ETH" />
+      <StakeItem locked={false} value="1000" unit={poolKey} />
 
-      <StakeItem className="ml-3" locked value="1000" unit="ETH" />
+      <StakeItem className="ml-3" locked value="1000" unit={poolKey} />
     </div>
   );
 };
