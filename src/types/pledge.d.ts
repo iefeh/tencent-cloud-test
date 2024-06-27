@@ -5,6 +5,5 @@ namespace Pledge {
     time: string;
     description: string;
     dueDate: string;
-    details: string;
   }
 }
