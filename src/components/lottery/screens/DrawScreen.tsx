@@ -85,6 +85,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
   }
 
   useEffect(() => {
+    if (!ended) return;
     endedDisclosure.onOpen();
   }, [ended]);
 

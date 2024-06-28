@@ -9,6 +9,7 @@ import useShare from './hooks/useShare';
 import useConnect from '@/hooks/useConnect';
 import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '../common/modal/ConnectNoticeModal';
+import { LotteryRewardType } from '@/constant/lottery';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -41,6 +42,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const disclosure = useDisclosure();
   const shareClaimMBLabel = 'Claim 20 MBs';
+  const hasGiftCard = (poolInfo?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.GIFT_CARD);
 
   async function onShare() {
     if (shareLabel === shareClaimMBLabel) {
@@ -180,7 +182,12 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasShareAndConfirmRewards ? (
+                      {hasGiftCard ? (
+                        <>
+                          Please contact Moonveil staff and claim your Gift Card.<br />Kindly note this is an IVS limited
+                          reward that can only be picked off in person during July 4 to July 6 on Moonveil&apos;s booth.
+                        </>
+                      ) : hasShareAndConfirmRewards ? (
                         <>
                           Please follow these steps to claim your prize:
                           <br />

@@ -115,7 +115,8 @@ export default function useFrameAni({
 
     const index = (currentIdxRef.current + 1) % count;
     ctxRef.current.clearRect(0, 0, width, height);
-    ctxRef.current.drawImage(imgs.current[index], 0, 0, width, height);
+    const img = imgs.current[index];
+    if (img) ctxRef.current.drawImage(img, 0, 0, width, height);
     currentIdxRef.current = index;
     lastElRef.current = el;
 

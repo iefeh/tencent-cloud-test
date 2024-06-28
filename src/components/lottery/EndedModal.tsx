@@ -1,10 +1,8 @@
 import { Modal, ModalBody, ModalContent } from '@nextui-org/react';
-import { FC, RefObject } from 'react';
+import { FC } from 'react';
 import EmptyContent from '../common/EmptyContent';
 
 const EndedModal: FC<{ container?: HTMLElement; disclosure: Disclosure }> = ({ container, disclosure }) => {
-  console.log(234324, container);
-
   return (
     <Modal
       isOpen={disclosure.isOpen}
