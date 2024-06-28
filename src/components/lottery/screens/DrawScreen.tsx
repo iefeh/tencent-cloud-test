@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import MBInfo from '../MBInfo';
 import TicketsInfo from '../TicketsInfo';
 import TimeoutInfo from '../TimeoutInfo';
@@ -16,18 +16,22 @@ import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
 import DrawAni from '../DrawAni';
 import S1TicketModal from '../S1TicketModal';
 import { sleep } from '@/utils/common';
+import EndedModal from '../EndedModal';
 
 interface Props {
+  ended: boolean;
   onUpdate?: () => void;
 }
 
-const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: poolInfo, onUpdate }) => {
+const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, item: poolInfo, onUpdate }) => {
   const [currentReward, setCurrentReward] = useState<Lottery.RewardResDTO | null>(null);
   const drawDisclosure = useDisclosure();
   const rewardsDisclosure = useDisclosure();
   const historyDisclosure = useDisclosure();
   const prizePoolDisclosure = useDisclosure();
   const s1TicketDisclosure = useDisclosure();
+  const endedDisclosure = useDisclosure();
+  const [endedModalContainer, setEndedModalContainer] = useState<HTMLElement>();
   const [drawTimes, setDrawTimes] = useState(1);
   const [drawAniVisible, setDrawAniVisible] = useState(false);
   const drawHistoryModalRef = useRef<DrawHisoryModalRef>(null);
@@ -80,8 +84,16 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
     rewardsDisclosure.onOpen();
   }
 
+  useEffect(() => {
+    endedDisclosure.onOpen();
+  }, [ended]);
+
+  useEffect(() => {
+    setEndedModalContainer(document.getElementById('lottery-draw-screen') || undefined);
+  }, [])
+
   return (
-    <div className="relative w-screen h-[160vh] lg:h-screen">
+    <div id="lottery-draw-screen" className="relative w-screen h-[160vh] lg:h-screen">
       {/* 背景层 */}
       <div className="absolute inset-0 z-0">
         <div className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2">
@@ -150,6 +162,8 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ item: pool
       />
 
       <S1TicketModal disclosure={s1TicketDisclosure} item={poolInfo} onUpdate={onUpdate} />
+
+      <EndedModal container={endedModalContainer} disclosure={endedDisclosure} />
     </div>
   );
 };
