@@ -10,6 +10,8 @@ export enum LotteryRewardType {
     USDT = 'usdt',
     // Destiny TETRA NFT
     NFT = 'nft',
+    // gift card
+    GiftCard = 'gift_card',
     // No prize
     NoPrize = 'no_prize'
 }

@@ -57,6 +57,7 @@ export const enum LotteryRewardType {
   USDT = 'usdt',
   NFT = 'nft',
   NoPrize = 'no_prize',
+  GIFT_CARD = 'gift_card',
 }
 
 export const LotteryRewardSizes = {
@@ -65,7 +66,7 @@ export const LotteryRewardSizes = {
   [LotteryRewardType.USDT]: '80%',
   [LotteryRewardType.NFT]: '70%',
   [LotteryRewardType.NoPrize]: '90%',
-}
+};
 
 export const enum RewardQuality {
   COPPERY = 1,

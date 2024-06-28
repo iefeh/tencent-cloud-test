@@ -11,11 +11,10 @@ import { observer } from 'mobx-react-lite';
 import useTouchBottom from '@/hooks/useTouchBottom';
 import ShineBackground from '@/components/common/ShineBackground';
 import MeteorLayer from '@/components/common/MeteorLayer';
-import EndedModal from '@/components/lottery/EndedModal';
 
 const LotteryPage: FC = () => {
   const { getUserInfo } = useUserContext();
-  const { poolInfo, queryPoolInfo, endedDisclosure } = usePrizePool();
+  const { poolInfo, queryPoolInfo, ended } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
 
@@ -41,13 +40,11 @@ const LotteryPage: FC = () => {
 
         <CoverScreen />
 
-        <DrawScreen item={poolInfo} onUpdate={onUpdate} />
+        <DrawScreen ended={ended} item={poolInfo} onUpdate={onUpdate} />
 
         <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
 
         {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
-
-        <EndedModal disclosure={endedDisclosure} />
       </section>
     </>
   );
