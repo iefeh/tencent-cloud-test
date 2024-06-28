@@ -6,10 +6,11 @@ import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import ShineBackground from '@/components/common/ShineBackground';
 import MeteorLayer from '@/components/common/MeteorLayer';
+import EndedModal from '@/components/lottery/EndedModal';
 
 const LotteryPage: FC = () => {
   const { getUserInfo } = useUserContext();
-  const { poolInfo, queryPoolInfo } = usePrizePool();
+  const { poolInfo, queryPoolInfo, endedDisclosure } = usePrizePool();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
 
   function onUpdate() {
@@ -33,6 +34,8 @@ const LotteryPage: FC = () => {
         <MeteorLayer className="z-10" />
 
         <DrawScreen item={poolInfo} onUpdate={onUpdate} />
+
+        <EndedModal disclosure={endedDisclosure} />
       </section>
     </>
   );

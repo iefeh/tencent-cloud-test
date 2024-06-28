@@ -14,6 +14,11 @@ export enum LotteryRewardType {
     NoPrize = 'no_prize'
 }
 
+export enum LotteryPoolType {
+    Public = 'public',
+    Private = 'private'
+}
+
 export type LotteryRewardItem = {
     // 奖励物品id
     item_id: string,
@@ -65,23 +70,29 @@ export interface ILotteryPool extends Document {
     total_draw_amount: number;
     // 奖池抽奖奖励
     rewards: LotteryRewardItem[];
+    // 是否为活动奖池
+    active: boolean;
+    // 奖池类型
+    type: LotteryPoolType;
     // 创建时间毫秒时间戳
-    created_time: number,
+    created_time: number;
     // 更新时间毫秒时间戳
-    updated_time: number,
+    updated_time: number;
     // 删除时间毫秒时间戳
-    deleted_time: number | null,
+    deleted_time: number | null;
 }
 
 const LotteryPoolSchema = new Schema<ILotteryPool>({
-    lottery_pool_id: { type: String },
-    start_time: { type: Number},
-    end_time: { type: Number},
+    lottery_pool_id: { type: String, required: true },
+    start_time: { type: Number, required: true },
+    end_time: { type: Number, required: true },
     twitter_topics: { type: Schema.Types.Mixed },
     twitter_verify_mb_reward_amount: { type: Number, default: 20 },
     draw_limits: { type: Number, default: 10 },
-    total_draw_amount: { type: Number },
-    rewards: { type: Schema.Types.Mixed },
+    total_draw_amount: { type: Number, required: true, default: 0 },
+    rewards: { type: Schema.Types.Mixed, required: true },
+    active: { type: Boolean, required: true },
+    type: { type: String, required: true },
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number, default: null }
