@@ -12,7 +12,7 @@ const Reward: FC<ClassNameProps & ItemProps<Lottery.RewardItem>> = ({ className,
     reward_type === LotteryRewardType.NoPrize
       ? 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/thx.gif'
       : icon_url;
-  const itemSize = reward_type ? LotteryRewardSizes[reward_type] || '90%' : '90%';
+  const itemSize = reward_type ? LotteryRewardSizes[reward_type as keyof typeof LotteryRewardSizes] || '90%' : '90%';
 
   return (
     <div className="flex flex-col items-center">
