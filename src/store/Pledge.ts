@@ -2,6 +2,7 @@ import { BrowserProvider, Eip1193Provider, Contract } from 'ethers';
 import { makeAutoObservable } from 'mobx';
 import { createContext, useContext } from 'react';
 import pledgeABI from '@/http/abi/pledge.json';
+import erc20ABI from '@/http/abi/erc20.json';
 import { PoolProps, PoolType } from '@/constant/pledge';
 
 class PledgeStore {
@@ -11,6 +12,7 @@ class PledgeStore {
     [PoolType.USDC]: [],
     [PoolType.ETH]: [],
   };
+  stakeInfo: Partial<Pledge.UserStakeInfo> = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -25,11 +27,13 @@ class PledgeStore {
     };
   };
 
+  setStakeInfo = (val: Partial<Pledge.UserStakeInfo>) => (this.stakeInfo = val || []);
+
   get currentPoolInfo() {
     return this.poolInfos[this.currentType] || [];
   }
 
-  queryPoolInfo = async (provider: Eip1193Provider, type: PoolType) => {
+  queryPoolInfo = async (provider: Eip1193Provider, type: PoolType = this.currentType) => {
     const bp = new BrowserProvider(provider);
     const signer = await bp.getSigner();
     try {
@@ -49,6 +53,61 @@ class PledgeStore {
     this.queryPoolInfo(provider, PoolType.USDT);
     this.queryPoolInfo(provider, PoolType.USDC);
     this.queryPoolInfo(provider, PoolType.ETH);
+  };
+
+  queryUserStakeInfo = async (provider: Eip1193Provider, user: string) => {
+    const bp = new BrowserProvider(provider);
+    const signer = await bp.getSigner();
+
+    try {
+      const contract = new Contract(process.env.NEXT_PUBLIC_PLEDGE_CONTRACT_STAKE!, pledgeABI, signer);
+      const { id } = PoolProps[this.currentType];
+      const res = await contract.getUserPoolStake(user, id);
+      console.log('queryUserStakeInfo res', id, res);
+      this.setStakeInfo(res);
+    } catch (error) {
+      console.log('queryUserStakeInfo error:', error);
+      console.dir(error);
+      return null;
+    }
+  };
+
+  approve = async (provider: Eip1193Provider) => {
+    const bp = new BrowserProvider(provider);
+    const signer = await bp.getSigner();
+
+    try {
+      const contract = new Contract(process.env.NEXT_PUBLIC_PLEDGE_CONTRACT_USDC!, erc20ABI, signer);
+      const { id } = PoolProps[this.currentType];
+      await contract.approve(id);
+      return true;
+    } catch (error) {
+      console.log('approve error:', error);
+      console.dir(error);
+    }
+
+    return false;
+  };
+
+  stake = async (provider: Eip1193Provider, amount: number, lockWeeks: number) => {
+    const approveRes = await this.approve(provider);
+    if (!approveRes) return null;
+
+    const bp = new BrowserProvider(provider);
+    const signer = await bp.getSigner();
+    const amountVal = amount;
+
+    try {
+      const contract = new Contract(process.env.NEXT_PUBLIC_PLEDGE_CONTRACT_STAKE!, pledgeABI, signer);
+      const { id } = PoolProps[this.currentType];
+      const res = await contract.stake(id, amountVal, lockWeeks, { value: amountVal });
+      console.log('stake res', id, res);
+      return res;
+    } catch (error) {
+      console.log('stake error:', error);
+      console.dir(error);
+      return null;
+    }
   };
 }
 

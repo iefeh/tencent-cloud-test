@@ -1,14 +1,15 @@
 import { cn } from '@nextui-org/react';
-import { FC, FormEvent, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useRef, useState } from 'react';
 import styles from './index.module.scss';
 
 interface Props {
   nodes: number | number[];
+  value: number;
+  onInput?: (val: number) => void;
 }
 
-const StepProgress: FC<Props> = ({ nodes }) => {
+const StepProgress: FC<Props> = ({ value, nodes, onInput }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState(0);
 
   const realNodes =
     typeof nodes === 'number'
@@ -17,23 +18,25 @@ const StepProgress: FC<Props> = ({ nodes }) => {
           .map((_, i) => i && (100 / (nodes - 1)) * i)
       : nodes;
 
-  // const period = realNodes[1];
+  const period = 100 / (realNodes.length - 1);
 
-  function onInput(e: FormEvent<HTMLInputElement>) {
+  function onProgressInput(e: FormEvent<HTMLInputElement>) {
     const value = +e.currentTarget.value;
-    setValue(value);
-    // let minDiff = 100;
-    // let node = 0;
+    let minDiff = 100;
+    let node = 0;
 
-    // realNodes.forEach((rn) => {
-    //   const diff = Math.abs(value - rn);
-    //   if (diff > period) return;
+    realNodes.forEach((rn) => {
+      const diff = Math.abs(value - rn);
+      if (diff > period) return;
 
-    //   if (minDiff > diff) {
-    //     minDiff = diff;
-    //     node = rn;
-    //   }
-    // });
+      if (minDiff > diff) {
+        minDiff = diff;
+        node = rn;
+      }
+    });
+
+    if (value === node) return;
+    onInput?.(node);
   }
 
   if (typeof nodes === 'number' && (nodes < 2 || nodes % 1 !== 0)) return 'Invalids nodes';
@@ -49,12 +52,18 @@ const StepProgress: FC<Props> = ({ nodes }) => {
             key={index}
             style={{ left: `${node}%` }}
             data-value={node.toFixed(0) + '%'}
-            onClick={() => setValue(node)}
+            onClick={() => onInput?.(node)}
           ></div>
         ))}
       </div>
 
-      <input ref={inputRef} value={value} className={cn([styles.progressInput])} type="range" onInput={onInput} />
+      <input
+        ref={inputRef}
+        value={value}
+        className={cn([styles.progressInput])}
+        type="range"
+        onInput={onProgressInput}
+      />
     </div>
   );
 };

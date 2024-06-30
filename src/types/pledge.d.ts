@@ -25,4 +25,36 @@ namespace Pledge {
     /** 质押池是否被屏蔽，只能提取不能继续质押 */
     blocked: boolean,
   ];
+
+  type UserStakeInfo = [
+    /** 用户总共质押的数量 */
+    totalStaked: number,
+    /** 用户已提取的数量 */
+    totalWithdrawn: number,
+    /** 用户已获得的奖励 */
+    totalRewards: number,
+    /** 当前质押中数量(包含锁仓中+未锁仓中) */
+    currentStaked: number,
+    /** 用户的质押记录列表 */
+    stakes: UserStake[],
+  ];
+
+  type UserStake = [
+    /** 质押金额 */
+    amount: number,
+    /** 锁仓结束时间，秒级时间戳 */
+    lockEnd,
+    /** 锁仓因子（放大100倍） */
+    lockFactor,
+    /** 奖励债务 */
+    rewardDebt,
+    /** 质押时间戳 */
+    timestamp,
+    /** 这次质押已收获的奖励数值 */
+    reward,
+    /** 提款时间(全部提取完毕才会设置) */
+    withdrawTime,
+    /** 已提取的金额 */
+    withdrawAmount,
+  ];
 }

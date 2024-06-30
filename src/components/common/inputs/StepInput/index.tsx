@@ -1,16 +1,17 @@
 import { Input, InputProps } from '@nextui-org/react';
-import { FC } from 'react';
-import StepProgress from '../../process/StepProgress';
+import { FC, useState } from 'react';
+import StepProgress from '../../progress/StepProgress';
 
 interface BaseProps extends InputProps {
   title: string;
   appendLabel?: string;
+  value?: string;
+  total?: number;
 }
 
 interface ProcessTypeProps {
-  nodeType: 'process';
+  nodeType: 'progress';
   nodes: number;
-  total: number;
 }
 
 interface ButtonTypeNode {
@@ -25,7 +26,22 @@ interface ButtonTypeProps {
 
 type Props = BaseProps & (ProcessTypeProps | ButtonTypeProps);
 
-const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, ...inputProps }) => {
+const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, total, value, onValueChange, ...inputProps }) => {
+  const [percent, setPercent] = useState(0);
+
+  function onInputValueChange(val: string) {
+    if (nodeType === 'progress') {
+      val = val.replace(/[^0-9\.]/g, '').match(/^[0-9]+(\.[0-9]*)?/)?.[0] || '';
+    }
+
+    onValueChange?.(val);
+  }
+
+  function onPercentChange(val: number) {
+    onValueChange?.(((val / 100) * (total || 0)).toFixed(2).replace(/\.00$/, ''));
+    setPercent(val);
+  }
+
   return (
     <div className="flex-1 font-semakin">
       <div className="flex justify-between items-center">
@@ -41,10 +57,12 @@ const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, ...inputPro
             'bg-transparent hover:bg-transparent group-data-[focus=true]:bg-transparent dark:bg-transparent dark:hover:bg-transparent dark:group-data-[focus=true]:bg-transparent h-[4.625rem]',
         }}
         endContent={appendLabel && <div className="pointer-events-none text-2xl leading-7 pr-5">{appendLabel}</div>}
+        value={value}
+        onValueChange={onInputValueChange}
         {...inputProps}
       />
 
-      {nodeType === 'process' && <StepProgress nodes={nodes} />}
+      {nodeType === 'progress' && <StepProgress value={percent} nodes={nodes} onInput={onPercentChange} />}
     </div>
   );
 };

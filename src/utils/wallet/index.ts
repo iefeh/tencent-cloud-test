@@ -2,6 +2,20 @@ import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from '@/hooks/utils';
 import { Eip1193Provider } from 'ethers';
 
+export async function getCurrentAccount(provider: Eip1193Provider) {
+  try {
+    const accounts = await provider.request({
+      method: 'eth_requestAccounts',
+      params: [],
+    });
+    return accounts[0];
+  } catch (error) {
+    console.log('getCurrentAccount', error);
+    console.dir(error);
+    return false;
+  }
+}
+
 async function addNetwork(provider: Eip1193Provider, targetChainId: number | string) {
   try {
     const network = WALLECT_NETWORKS[targetChainId!];
