@@ -25,6 +25,7 @@
   border-radius: 50%;
   background-color: #9f9f9f;
   cursor: pointer;
+  color: #9f9f9f;
 
   &::after {
     content: attr(data-value);

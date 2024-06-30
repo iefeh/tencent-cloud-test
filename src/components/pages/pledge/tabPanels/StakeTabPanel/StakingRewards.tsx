@@ -2,24 +2,32 @@ import { Tooltip, cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 
-const StakingRewards: FC = () => {
+interface Props {
+  stakeValue: string;
+  duration: string;
+}
+
+const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
   const rewards = [
     {
       label: 'Factor',
       value: '1.2x',
-      tips: '123',
+      tips: 'The Locking Factor is a multiplier that increases your rewards when earning Staking Points. The longer you lock your assets, the higher the multiplier you can achieve. The maximum multiplier is 5x for the longest locking duration.',
     },
     {
       label: 'Est. Reward staking points',
       value: '200 sp',
+      tips: 'This is the estimated maximum Staking Points you can earn in the current transaction. You can check your actual earnings from the History page.',
     },
     {
       label: 'Duration',
       value: '2 weeks',
+      tips: '',
     },
     {
       label: 'Unlock on',
       value: '2024-4-24 08:00',
+      tips: +duration > 0 ? '' : 'No locking duration allows you to withdraw your deposits at any time.',
     },
   ];
 
@@ -27,15 +35,6 @@ const StakingRewards: FC = () => {
     <>
       <div className="flex justify-center items-center mt-12">
         <div className="text-2xl leading-none text-basic-yellow font-semakin">Staking Rewards</div>
-
-        <Image
-          className="w-[1.0625rem] h-[1.0625rem] object-contain ml-4"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
-          alt=""
-          width={17}
-          height={17}
-          unoptimized
-        />
       </div>
 
       <div className="flex justify-center items-center flex-wrap gap-x-[3.875rem] gap-y-[1.875rem] mt-[1.875rem]">

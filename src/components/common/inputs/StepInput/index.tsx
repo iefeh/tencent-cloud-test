@@ -1,9 +1,11 @@
 import { Input, InputProps } from '@nextui-org/react';
 import { FC, useState } from 'react';
 import StepProgress from '../../progress/StepProgress';
+import BasicButton from '@/pages/components/common/BasicButton';
 
 interface BaseProps extends InputProps {
   title: string;
+  caption?: string | JSX.Element;
   appendLabel?: string;
   value?: string;
   total?: number;
@@ -26,7 +28,17 @@ interface ButtonTypeProps {
 
 type Props = BaseProps & (ProcessTypeProps | ButtonTypeProps);
 
-const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, total, value, onValueChange, ...inputProps }) => {
+const StepInput: FC<Props> = ({
+  title,
+  caption,
+  nodeType,
+  nodes,
+  appendLabel,
+  total,
+  value,
+  onValueChange,
+  ...inputProps
+}) => {
   const [percent, setPercent] = useState(0);
 
   function onInputValueChange(val: string) {
@@ -34,7 +46,7 @@ const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, total, valu
       val = val.replace(/[^0-9\.]/g, '').match(/^[0-9]+(\.[0-9]*)?/)?.[0] || '';
     }
 
-    onValueChange?.(val);
+    onValueChange?.(Math.min(+val, +(total || 0)).toString());
   }
 
   function onPercentChange(val: number) {
@@ -46,6 +58,7 @@ const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, total, valu
     <div className="flex-1 font-semakin">
       <div className="flex justify-between items-center">
         <div className="text-2xl leading-7 text-basic-yellow">{title}</div>
+        {caption}
       </div>
 
       <Input
@@ -63,6 +76,14 @@ const StepInput: FC<Props> = ({ title, nodeType, nodes, appendLabel, total, valu
       />
 
       {nodeType === 'progress' && <StepProgress value={percent} nodes={nodes} onInput={onPercentChange} />}
+
+      {nodeType === 'button' && (
+        <div className="flex justify-between items-center flex-nowrap mt-5 gap-4">
+          {nodes.map((node, index) => (
+            <BasicButton key={index} className="text-[#9F9F9F] flex-1" label={node.label} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

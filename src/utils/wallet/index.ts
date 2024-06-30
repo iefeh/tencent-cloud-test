@@ -1,6 +1,6 @@
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from '@/hooks/utils';
-import { Eip1193Provider } from 'ethers';
+import { BrowserProvider, Eip1193Provider } from 'ethers';
 
 export async function getCurrentAccount(provider: Eip1193Provider) {
   try {
@@ -14,6 +14,13 @@ export async function getCurrentAccount(provider: Eip1193Provider) {
     console.dir(error);
     return false;
   }
+}
+
+export async function getCurrentBalance(provider: Eip1193Provider) {
+  const currentAccount = await getCurrentAccount(provider);
+  const bp = new BrowserProvider(provider);
+  const balance = await bp.getBalance(currentAccount);
+  return balance.toString();
 }
 
 async function addNetwork(provider: Eip1193Provider, targetChainId: number | string) {
