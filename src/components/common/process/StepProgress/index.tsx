@@ -9,7 +9,6 @@ interface Props {
 const StepProgress: FC<Props> = ({ nodes }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(0);
-  console.log(111111111, nodes);
 
   const realNodes =
     typeof nodes === 'number'

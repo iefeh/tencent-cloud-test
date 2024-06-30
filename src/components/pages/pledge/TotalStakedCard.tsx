@@ -1,4 +1,7 @@
+import { PoolProps } from '@/constant/pledge';
+import { usePledgeContext } from '@/store/Pledge';
 import { cn } from '@nextui-org/react';
+import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { FC } from 'react';
 
@@ -45,6 +48,8 @@ interface Props {
 }
 
 const TotalStakedCard: FC<Props> = ({ poolKey }) => {
+  const { currentType } = usePledgeContext();
+
   return (
     <div className="w-full aspect-[1408/121] relative mt-6 flex items-center py-ten pl-[2.375rem] pr-[1.125rem]">
       <Image
@@ -58,7 +63,7 @@ const TotalStakedCard: FC<Props> = ({ poolKey }) => {
 
       <Image
         className="w-[3.1875rem] relative z-0"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_eth.png"
+        src={PoolProps[currentType].icon}
         alt=""
         width={51}
         height={83}
@@ -81,4 +86,4 @@ const TotalStakedCard: FC<Props> = ({ poolKey }) => {
   );
 };
 
-export default TotalStakedCard;
+export default observer(TotalStakedCard);

@@ -7,74 +7,55 @@ interface Props {
 
 const rules = [
   {
-    title:
-      'A relatively long question, can this sentence be very long?A relatively long question, can this sentence be very long?',
-    content: '',
-  },
-  {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
-  },
-  {
-    title: 'A relatively long question, can this sentence be very long?',
+    title: '1. Why should I stake my assets?',
     content:
-      'The answer can also be very, very long, and only those who know so long can see the style of this rendering. The answer can also be very, very long, and only those who know so long can see the style of this rendering.The answer can also be very, very long, and only those who know so long can see the style of this rendering.',
+      'By staking assets, you will earn Staking Points (SP) over time. Our upcoming airdrop will distribute $MORE Tokens based on these points. Staking assets also grants unique rewards in future games.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '2. How do I stake assets?',
+    content:
+      'Choose your preferred pool and set the staking duration. Longer durations yield higher multipliers, resulting in more SP.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '3. How do I earn Staking Points?',
+    content:
+      'Simply choose your preferred pool and stake the corresponding assets. SP are generated and distributed per block. The more assets you have in a pool, the more SP you earn per block.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '4. How do I know how many Staking Points I can earn?',
+    content:
+      "When staking, the interface will display an estimated SP reward based on the asset amount and duration. This estimate is subject to change due to other users' activities in the same block.",
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '5. Can I participate in multiple pools at the same time?',
+    content:
+      'Yes, SP are calculated separately for each pool. By staking in multiple pools, you can earn rewards from each. Note that the benefits of spreading vs. concentrating your investments may vary.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '6. Are Staking Points the same as Moon Beams in the loyalty program?',
+    content: 'No, Staking Points are different from Moon Beam. SP can only be earned by staking assets.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '7. If I have Moon Beam, do I still need to stake assets?',
+    content: 'SP and Moon Beam do not conflict. It’s beneficial to earn both when possible.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '8. How do I withdraw assets?',
+    content:
+      'Assets available for withdrawal are shown in "Unlocked Staking." Immediate withdrawals are possible if no duration was set. Otherwise, assets appear in "Locked Staking" until the lock period ends.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '9. Do I need to manually claim rewards?',
+    content: 'SP are automatically credited to your account, so manual claiming is unnecessary.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '10. How do I convert Staking Points into $MORE?',
+    content: 'Stay updated with our announcements for details.',
   },
   {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
-  },
-  {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
-  },
-  {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
-  },
-  {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
-  },
-  {
-    title: 'A relatively long question, can this sentence be very long?',
-    content: '',
+    title: '11. What are the risks of staking my assets?',
+    content:
+      'We prioritize the security of user assets. Our contracts are audited and tested, and we use AAVE’s mature protocol without leverage to avoid liquidation risks. However, potential risks exist if AAVE is attacked or if there are vulnerabilities in related contracts.',
   },
 ];
 
@@ -98,7 +79,7 @@ const QAModal: FC<Props> = ({ disclosure }) => {
 
             <ModalBody>
               <div className="max-h-[31.25rem] overflow-y-auto has-scroll-bar scrollbar-yellow">
-                <Accordion className="p-0 gap-1" variant="splitted">
+                <Accordion className="p-0 gap-1" variant="splitted" selectionMode="multiple">
                   {rules.map((rule, index) => (
                     <AccordionItem
                       key={index}

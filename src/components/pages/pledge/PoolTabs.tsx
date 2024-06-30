@@ -1,15 +1,17 @@
 import { PoolType } from '@/constant/pledge';
-import { Modal, ModalBody, ModalContent, ModalHeader, Tab, Tabs, useDisclosure } from '@nextui-org/react';
+import { Tab, Tabs, useDisclosure } from '@nextui-org/react';
 import { FC, Key, useState } from 'react';
 import InfoCardItem from './InfoCardItem';
 import TotalStakedCard from './TotalStakedCard';
 import StakeTabs from './StakeTabs';
 import Image from 'next/image';
 import QAModal from './QAModal';
-import useWallet from '@/hooks/useWallet';
+import usePledge from '@/hooks/pages/pledge/usePledge';
+import { usePledgeContext } from '@/store/Pledge';
+import { observer } from 'mobx-react-lite';
 
 const PoolTabs: FC = () => {
-  const { connected } = useWallet();
+  const { currentType, setCurrentType, currentPoolInfo } = usePledgeContext();
   const tabs = [
     {
       key: PoolType.USDT,
@@ -24,12 +26,12 @@ const PoolTabs: FC = () => {
       label: 'ETH Pool',
     },
   ];
-  const [selectedKey, setSelectedKey] = useState(PoolType.USDT);
   const qaDisclosure = useDisclosure();
+  const { connected } = usePledge();
 
   function onSelectionChange(key: Key) {
     const newKey = key.toString() as PoolType;
-    setSelectedKey(newKey);
+    setCurrentType(newKey);
   }
 
   return (
@@ -38,7 +40,7 @@ const PoolTabs: FC = () => {
         aria-label="Options"
         color="primary"
         variant="underlined"
-        selectedKey={selectedKey}
+        selectedKey={currentType}
         classNames={{
           base: 'w-full border-b-1 border-b-[#EBDDB6]',
           tabList: 'gap-6 w-full relative rounded-none p-0',
@@ -49,13 +51,21 @@ const PoolTabs: FC = () => {
         }}
         onSelectionChange={onSelectionChange}
       >
-        {tabs.map((tab, index) => (
-          <Tab key={index} title={tab.label}>
+        {tabs.map((tab) => (
+          <Tab key={tab.key} title={tab.label}>
             <div className="flex flex-wrap justify-between gap-x-[1.875rem] gap-4">
-              <InfoCardItem label="Total Stake:" value="1000" unit={tab.key} />
-              <InfoCardItem label="$Value:" value="$5000" />
-              <InfoCardItem label="Output quantity:" value="1000" unit="Staking Points<span>/Block</span>" />
-              <InfoCardItem label="Output Speed:" value="2" unit="Second<span>/Block</span>" />
+              <InfoCardItem label="Total Stake:" value={currentPoolInfo[0]?.toString() || '-'} unit={tab.key} />
+              <InfoCardItem label="$Value:" value={`$${currentPoolInfo[1]?.toString() || '-'}`} />
+              <InfoCardItem
+                label="Output quantity:"
+                value={currentPoolInfo[3]?.toString() || '-'}
+                unit="Staking Points<span>/Block</span>"
+              />
+              <InfoCardItem
+                label="Output Speed:"
+                value={currentPoolInfo[4]?.toString() || '-'}
+                unit="Second<span>/Block</span>"
+              />
             </div>
 
             {connected && (
@@ -86,4 +96,4 @@ const PoolTabs: FC = () => {
   );
 };
 
-export default PoolTabs;
+export default observer(PoolTabs);
