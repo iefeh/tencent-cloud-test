@@ -1,29 +1,48 @@
 import { queryPrizePoolInfoAPI, queryPrizePoolListAPI } from '@/http/services/lottery';
 import { useUserContext } from '@/store/User';
 import { Lottery } from '@/types/lottery';
+import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 
 export default function usePrizePool() {
+  const router = useRouter();
   const { userInfo } = useUserContext();
   const [poolIds, setPoolIds] = useState<string[]>([]);
   const [poolInfo, setPoolInfo] = useState<Lottery.Pool | null>(null);
   const queryPromise = useRef<Promise<{ lottery_pool_ids: string[] | null }> | null>(null);
+  const [ended, setEnded] = useState(false);
 
   async function queryPools() {
+    const { id } = router.query;
+    if (id) {
+      setPoolIds([id as string]);
+      return;
+    }
+
     if (queryPromise.current) return;
     queryPromise.current = queryPrizePoolListAPI();
 
     const res = await queryPromise.current;
     queryPromise.current = null;
-    setPoolIds(res?.lottery_pool_ids || []);
+    const ids = res?.lottery_pool_ids || [];
+    if (ids.length < 1) setEnded(true);
+    setPoolIds(ids);
   }
 
   async function queryPoolInfo() {
     const id = poolIds[0];
-    if (!id) return;
+    if (!id) {
+      setEnded(true);
+      return;
+    }
 
     const res = await queryPrizePoolInfoAPI({ lottery_pool_id: id });
-    setPoolInfo(res || null);
+    if (!res || typeof res === 'string') {
+      setEnded(true);
+      setPoolInfo(null);
+    } else {
+      setPoolInfo(res || null);
+    }
   }
 
   function initData() {
@@ -45,5 +64,5 @@ export default function usePrizePool() {
     queryPoolInfo();
   }, [poolIds]);
 
-  return { poolInfo, queryPoolInfo };
+  return { poolInfo, queryPoolInfo, ended };
 }
