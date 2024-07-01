@@ -1,0 +1,67 @@
+import EmptyContent from '@/components/common/EmptyContent';
+import { usePledgeContext } from '@/store/Pledge';
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, cn } from '@nextui-org/react';
+import { observer } from 'mobx-react-lite';
+import { FC } from 'react';
+
+const HistoryTabPanel: FC = () => {
+  const { stakeInfo } = usePledgeContext();
+
+  return (
+    <div className="mt-[3.75rem] px-[4.5rem]">
+      <Table
+        className="mt-[1.875rem]"
+        aria-label="Locked History"
+        classNames={{
+          wrapper: 'bg-black p-0 rounded-none font-poppins-medium',
+          thead:
+            "[&>tr:last-child]:hidden [&>tr]:border-non border-none bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_table_head.png')] bg-contain bg-no-repeat",
+          tbody: 'pl-[2.1875rem] pr-[1.1875rem] ',
+          tr: cn([
+            'relative h-[3.0625rem]',
+            '[&:nth-child(2n)]:h-[2.5625rem]',
+            '[&:nth-child(2n)>td]:bg-[#8383835c]',
+            '[&:nth-child(2n)>td:first-child]:rounded-l-[0.3125rem]',
+            '[&:nth-child(2n)>td:last-child]:rounded-r-[0.3125rem]',
+          ]),
+          th: 'bg-transparent text-white text-lg font-semakin font-normal !rounded-none [&:first-child]:pl-6 [&:last-child]:pr-6',
+          td: '[&:first-child]:pl-[2.1875rem] [&:last-child]:pr-[2.1875rem]',
+        }}
+      >
+        <TableHeader className="uppercase">
+          <TableColumn>Stake Time</TableColumn>
+          <TableColumn>Stake Value</TableColumn>
+          <TableColumn>Stake Duration</TableColumn>
+          <TableColumn>Staking Points</TableColumn>
+          <TableColumn>Locked Value</TableColumn>
+          <TableColumn>Unlock Value</TableColumn>
+          <TableColumn className="text-right">Unlocked Time</TableColumn>
+        </TableHeader>
+        <TableBody
+          emptyContent={
+            <div className="relative w-full h-[32.5rem]">
+              <EmptyContent className="py-8" />
+            </div>
+          }
+        >
+          {(stakeInfo[4] || []).map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{row[4]}</TableCell>
+              <TableCell>{row[0]}</TableCell>
+              <TableCell>{row[1]}</TableCell>
+              <TableCell>{row[5]}</TableCell>
+              <TableCell>{row[0] - row[7]}</TableCell>
+              <TableCell>{row[7]}</TableCell>
+              <TableCell>{row[6]}</TableCell>
+              <TableCell>
+                <a className="underline cursor-pointer">View</a>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+export default observer(HistoryTabPanel);
