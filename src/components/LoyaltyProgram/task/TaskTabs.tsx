@@ -5,11 +5,13 @@ import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Game2048Content from './Game2048Content';
 import Image from 'next/image';
+import BushWhackContent from './BushWhackContent';
 
 export default function TaskTabs() {
   const regularTaskContent = useMemo(() => <RegularTasks />, []);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
   const gameContent = useMemo(() => <Game2048Content />, []);
+  const brContent = useMemo(() => <BushWhackContent />, []);
 
   const tabs = [
     {
@@ -20,13 +22,31 @@ export default function TaskTabs() {
       key: 'Events',
       content: seasonalCampaignsContent,
     },
+    // {
+    //   key: '2048 Mini Game',
+    //   render: (label: string) => (
+    //     <div className="flex items-center">
+    //       <Image
+    //         className="object-contain w-8 h-7 mr-1"
+    //         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png"
+    //         alt=""
+    //         width={95}
+    //         height={83}
+    //         unoptimized
+    //       />
+
+    //       {label}
+    //     </div>
+    //   ),
+    //   content: gameContent,
+    // },
     {
-      key: '2048 Mini Game',
+      key: 'BushWhack',
       render: (label: string) => (
         <div className="flex items-center">
           <Image
             className="object-contain w-8 h-7 mr-1"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/bushwhack/br_icon.png"
             alt=""
             width={95}
             height={83}
@@ -36,7 +56,7 @@ export default function TaskTabs() {
           {label}
         </div>
       ),
-      content: gameContent,
+      content: brContent,
     },
   ];
   const router = useRouter();

@@ -69,7 +69,7 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
             </div>
           );
 
-          if (!is_premium && index !== 0) return passBody;
+          if (index !== 0 && !item.actived) return passBody;
 
           let tooltipContent: JSX.Element | null = null;
 
@@ -93,7 +93,8 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
           } else if (index === 2) {
             tooltipContent = (
               <div className="max-w-[31.25rem] py-4 px-7">
-                Your Premium Season Pass is unlocked because you are a holder of Moonveil Premium Pass whitelist.
+                Your Premium Season Pass is unlocked because you are a holder of{' '}
+                <span className="text-basic-yellow">{premium_source || '--'}</span>.
               </div>
             );
           }

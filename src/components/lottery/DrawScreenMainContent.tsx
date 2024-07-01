@@ -2,6 +2,7 @@ import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
 import PageDesc from '@/components/common/PageDesc';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
+import { useRouter } from 'next/router';
 import { FC, useRef } from 'react';
 
 interface Props {
@@ -9,16 +10,18 @@ interface Props {
 }
 
 const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onShowPrizePool }) => {
+  const router = useRouter();
+  const { id } = router.query;
   const titleRef = useRef<HTMLDivElement>(null);
   const visible = IntersectionObserverHook({ currentRef: titleRef });
 
   return (
     <PageDesc
       baseAniTY
-      needAni={visible}
+      needAni={visible || !!id}
       className="-translate-y-12 items-center"
       title={
-        <div ref={titleRef} className="font-semakin ani-twirl">
+        <div ref={id ? null : titleRef} className="font-semakin ani-twirl">
           <span className="text-4xl lg:text-[4rem]">
             {'WIN'.split('').map((t, i) => (
               <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>

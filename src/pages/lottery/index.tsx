@@ -14,7 +14,7 @@ import MeteorLayer from '@/components/common/MeteorLayer';
 
 const LotteryPage: FC = () => {
   const { getUserInfo } = useUserContext();
-  const { poolInfo, queryPoolInfo } = usePrizePool();
+  const { poolInfo, queryPoolInfo, ended } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
 
@@ -40,7 +40,7 @@ const LotteryPage: FC = () => {
 
         <CoverScreen />
 
-        <DrawScreen item={poolInfo} onUpdate={onUpdate} />
+        <DrawScreen ended={ended} item={poolInfo} onUpdate={onUpdate} />
 
         <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
 

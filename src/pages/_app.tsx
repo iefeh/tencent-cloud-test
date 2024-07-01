@@ -20,47 +20,15 @@ import '@/components/common/MediaIconBar/index.scss';
 import './components/character/character.scss';
 import './About/about.scss';
 import './NFT/components/home.scss';
-import './AstrArk/components/schoolDesc/index.scss';
-import './AstrArk/components/school/Mystery/index.scss';
-import './AstrArk/components/school/SchoolIcons/index.scss';
+import '@/components/pages/astrark/home/schoolDesc/index.scss';
+import '@/components/pages/astrark/home/school/Mystery/index.scss';
+import '@/components/pages/astrark/home/school/SchoolIcons/index.scss';
 import './TetraNFT/components/PrivilegeScreen/index.scss';
 import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
 import 'video.js/dist/video-js.css';
-import homePlanetBg from 'img/home/planet.png';
-import loadingImg from 'img/loading/bg_moon.png';
-import about_c1 from 'img/about/1@2x.png';
-import about_c2 from 'img/about/2@2x.png';
-import about_c3 from 'img/about/3@2x.png';
-import about_c4 from 'img/about/4@2x.png';
-import about_c5 from 'img/about/5@2x.png';
-import sponsor_1 from 'img/about/1.png';
-import sponsor_2 from 'img/about/2.png';
-import sponsor_3 from 'img/about/3.png';
-import sponsor_4 from 'img/about/4.png';
-import sponsor_5 from 'img/about/5.png';
-import sponsor_6 from 'img/about/6.png';
-import sponsor_7 from 'img/about/7.png';
-import sponsor_8 from 'img/about/8.png';
-import sponsor_9 from 'img/about/9.png';
-import sponsor_10 from 'img/about/10.png';
-import sponsor_11 from 'img/about/11.png';
-import sponsor_12 from 'img/about/12.png';
-import sponsor_13 from 'img/about/13.png';
-import sponsor_14 from 'img/about/14.png';
-import sponsor_15 from 'img/about/15.png';
-import sponsor_16 from 'img/about/16.png';
-import sponsor_17 from 'img/about/17.png';
-import sponsor_18 from 'img/about/18.png';
-import sponsor_19 from 'img/about/19.png';
-import sponsor_20 from 'img/about/20.png';
-import sponsor_21 from 'img/about/21.png';
-import sponsor_22 from 'img/about/22.png';
 import Head from 'next/head';
 import { LUXY_OPTIONS } from '@/constant/luxy';
 import Script from 'next/script';
-import astrark_bg_home from 'img/astrark/bg-home.jpg';
-import astrark_bg_mask from 'img/astrark/bg-mask.png';
-import astrark_bg_world_view from 'img/astrark/bg-world-view.jpg';
 import usePostMessage from '@/hooks/usePostMessage';
 import { useStore } from '@/store';
 import UserStore from '@/store/User';
@@ -79,101 +47,6 @@ import useRouteLocale from '@/hooks/useRouteLocale';
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
 
-async function initResources(path: string) {
-  path = path.toLowerCase();
-  const promises: Promise<any>[] = [];
-
-  switch (path) {
-    case '/':
-    case '/home':
-      promises.push(...[homePlanetBg.src].map((path) => loadImage(path)));
-      promises.push(loadVideo('/video/ntfbg.webm'));
-      break;
-    case '/ntf':
-      promises.push(...[].map((path) => loadImage(path)));
-      break;
-    case '/about':
-      promises.push(
-        ...[
-          about_c1.src,
-          about_c2.src,
-          about_c3.src,
-          about_c4.src,
-          about_c5.src,
-          sponsor_1.src,
-          sponsor_2.src,
-          sponsor_3.src,
-          sponsor_4.src,
-          sponsor_5.src,
-          sponsor_6.src,
-          sponsor_7.src,
-          sponsor_8.src,
-          sponsor_9.src,
-          sponsor_10.src,
-          sponsor_11.src,
-          sponsor_12.src,
-          sponsor_13.src,
-          sponsor_14.src,
-          sponsor_15.src,
-          sponsor_16.src,
-          sponsor_17.src,
-          sponsor_18.src,
-          sponsor_19.src,
-          sponsor_20.src,
-          sponsor_21.src,
-          sponsor_22.src,
-        ].map((path) => loadImage(path)),
-      );
-      break;
-    case '/astrark':
-      promises.push(
-        ...[astrark_bg_home.src, astrark_bg_mask.src, astrark_bg_world_view.src].map((path) => loadImage(path)),
-      );
-      break;
-  }
-
-  await Promise.all(promises);
-}
-
-function loadImage(path: string) {
-  const img = new Image();
-  img.src = path;
-  img.style.display = 'none';
-  document.body.appendChild(img);
-
-  return new Promise((resolve) => {
-    // 兼容safari图片资源加载逻辑
-    if (img.complete) return resolve(true);
-    img.onload = function () {
-      document.body.removeChild(img);
-      resolve(true);
-    };
-  });
-}
-
-function loadVideo(path: string) {
-  const video = document.createElement('video');
-  video.autoplay = true;
-  video.preload = 'auto';
-  video.muted = true;
-  video.src = path;
-  video.style.display = 'none';
-  document.body.appendChild(video);
-
-  return new Promise((resolve) => {
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.userAgent.indexOf('Mac') > -1) {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    } else {
-      video.addEventListener('canplay', () => {
-        document.body.removeChild(video);
-        resolve(true);
-      });
-    }
-  });
-}
-
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -183,7 +56,6 @@ export default function App({ Component, pageProps }: AppProps) {
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
-  const [resLoading, setResLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
   const bpStore = useBattlePassStore();
@@ -209,20 +81,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
     window.addEventListener(resizeEvt, resetRem);
     return () => window.removeEventListener(resizeEvt, resetRem);
-  }, []);
-
-  useEffect(() => {
-    if (!loading) return;
-
-    loadImage(loadingImg.src).then(async () => {
-      // 仅第一次进入页面可能展示Loading
-      await initResources(router.route);
-
-      setResLoading(false);
-      initResources('/');
-      initResources('/ntf');
-      initResources('/about');
-    });
   }, []);
 
   useEffect(() => {
@@ -299,6 +157,8 @@ export default function App({ Component, pageProps }: AppProps) {
           `,
           }}
         ></script>
+
+        <link rel="preload" as="image" href="/img/loading/bg_moon.png" crossOrigin="anonymous"></link>
       </Head>
 
       <Web3ModalProvider>
@@ -306,7 +166,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <MobxContext.Provider value={store}>
             <BattlePassContext.Provider value={bpStore}>
               {!isInWhiteList && loading ? (
-                <Loading resLoading={resLoading} onLoaded={() => setLoading(false)} />
+                <Loading onLoaded={() => setLoading(false)} />
               ) : (
                 <RootLayout
                   isInWhiteList={isInWhiteList}
