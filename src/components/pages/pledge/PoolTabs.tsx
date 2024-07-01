@@ -1,6 +1,6 @@
 import { PoolType } from '@/constant/pledge';
 import { Tab, Tabs, useDisclosure } from '@nextui-org/react';
-import { FC, Key, useState } from 'react';
+import { FC, Key } from 'react';
 import InfoCardItem from './InfoCardItem';
 import TotalStakedCard from './TotalStakedCard';
 import StakeTabs from './StakeTabs';
@@ -9,6 +9,7 @@ import QAModal from './QAModal';
 import usePledge from '@/hooks/pages/pledge/usePledge';
 import { usePledgeContext } from '@/store/Pledge';
 import { observer } from 'mobx-react-lite';
+import { formatUnits } from 'ethers';
 
 const PoolTabs: FC = () => {
   const { currentType, setCurrentType, currentPoolInfo } = usePledgeContext();
@@ -54,8 +55,15 @@ const PoolTabs: FC = () => {
         {tabs.map((tab) => (
           <Tab key={tab.key} title={tab.label}>
             <div className="flex flex-wrap justify-between gap-x-[1.875rem] gap-4">
-              <InfoCardItem label="Total Stake:" value={currentPoolInfo[0]?.toString() || '-'} unit={tab.key} />
-              <InfoCardItem label="$Value:" value={`$${currentPoolInfo[1]?.toString() || '-'}`} />
+              <InfoCardItem
+                label="Total Stake:"
+                value={`$${formatUnits(currentPoolInfo[2]?.toString() || '0', currentPoolInfo[1]) || '-'}`}
+                unit={tab.key}
+              />
+              <InfoCardItem
+                label="$Value:"
+                value={`$${formatUnits(currentPoolInfo[2]?.toString() || '0', currentPoolInfo[1]) || '-'}`}
+              />
               <InfoCardItem
                 label="Output quantity:"
                 value={currentPoolInfo[3]?.toString() || '-'}
@@ -63,7 +71,7 @@ const PoolTabs: FC = () => {
               />
               <InfoCardItem
                 label="Output Speed:"
-                value={currentPoolInfo[4]?.toString() || '-'}
+                value={currentPoolInfo[5]?.toString() || '-'}
                 unit="Second<span>/Block</span>"
               />
             </div>

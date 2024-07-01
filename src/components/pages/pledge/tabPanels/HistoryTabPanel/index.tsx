@@ -1,48 +1,11 @@
-import CirclePagination from '@/components/common/CirclePagination';
+import EmptyContent from '@/components/common/EmptyContent';
+import { usePledgeContext } from '@/store/Pledge';
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, cn } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { FC } from 'react';
 
 const HistoryTabPanel: FC = () => {
-  const [tableData, setTableData] = useState<Pledge.LockedHistoryItem[]>([
-    {
-      id: '1',
-      date: '2024/2/22',
-      time: '11:20am',
-      description: 'locked 5000 uSDT for 3 months',
-      dueDate: '2024/5/22  11:20am',
-    },
-    {
-      id: '1',
-      date: '2024/2/22',
-      time: '11:20am',
-      description: 'locked 5000 uSDT for 3 months',
-      dueDate: '2024/5/22  11:20am',
-    },
-    {
-      id: '1',
-      date: '2024/2/22',
-      time: '11:20am',
-      description: 'locked 5000 uSDT for 3 months',
-      dueDate: '2024/5/22  11:20am',
-    },
-    {
-      id: '1',
-      date: '2024/2/22',
-      time: '11:20am',
-      description: 'locked 5000 uSDT for 3 months',
-      dueDate: '2024/5/22  11:20am',
-    },
-    {
-      id: '1',
-      date: '2024/2/22',
-      time: '11:20am',
-      description: 'locked 5000 uSDT for 3 months',
-      dueDate: '2024/5/22  11:20am',
-    },
-  ]);
-  const [total, setTotal] = useState(1);
-
-  function onPagiChange() {}
+  const { stakeInfo } = usePledgeContext();
 
   return (
     <div className="mt-[3.75rem] px-[4.5rem]">
@@ -61,39 +24,44 @@ const HistoryTabPanel: FC = () => {
             '[&:nth-child(2n)>td:first-child]:rounded-l-[0.3125rem]',
             '[&:nth-child(2n)>td:last-child]:rounded-r-[0.3125rem]',
           ]),
-          th: 'bg-transparent text-white text-xl font-semakin font-normal !rounded-none [&:first-child]:pl-6 [&:last-child]:pr-6',
+          th: 'bg-transparent text-white text-lg font-semakin font-normal !rounded-none [&:first-child]:pl-6 [&:last-child]:pr-6',
           td: '[&:first-child]:pl-[2.1875rem] [&:last-child]:pr-[2.1875rem]',
         }}
       >
         <TableHeader className="uppercase">
-          <TableColumn>Date</TableColumn>
-          <TableColumn>Time</TableColumn>
-          <TableColumn>Description</TableColumn>
-          <TableColumn>Due Date</TableColumn>
-          <TableColumn className="text-right">Details</TableColumn>
+          <TableColumn>Stake Time</TableColumn>
+          <TableColumn>Stake Value</TableColumn>
+          <TableColumn>Stake Duration</TableColumn>
+          <TableColumn>Staking Points</TableColumn>
+          <TableColumn>Locked Value</TableColumn>
+          <TableColumn>Unlock Value</TableColumn>
+          <TableColumn className="text-right">Unlocked Time</TableColumn>
         </TableHeader>
-        <TableBody emptyContent={'Coming Soon.'}>
-          {tableData.map((row, index) => {
-            const isZebra = index % 2 === 1;
-
-            return (
-              <TableRow key={index}>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.time}</TableCell>
-                <TableCell>{row.description}</TableCell>
-                <TableCell>{row.dueDate}</TableCell>
-                <TableCell>
-                  <a className="underline cursor-pointer">View</a>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+        <TableBody
+          emptyContent={
+            <div className="relative w-full h-[32.5rem]">
+              <EmptyContent className="py-8" />
+            </div>
+          }
+        >
+          {(stakeInfo[4] || []).map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{row[4]}</TableCell>
+              <TableCell>{row[0]}</TableCell>
+              <TableCell>{row[1]}</TableCell>
+              <TableCell>{row[5]}</TableCell>
+              <TableCell>{row[0] - row[7]}</TableCell>
+              <TableCell>{row[7]}</TableCell>
+              <TableCell>{row[6]}</TableCell>
+              <TableCell>
+                <a className="underline cursor-pointer">View</a>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
-
-      <CirclePagination total={total} className="flex justify-center mt-6" onChange={onPagiChange} />
     </div>
   );
 };
 
-export default HistoryTabPanel;
+export default observer(HistoryTabPanel);

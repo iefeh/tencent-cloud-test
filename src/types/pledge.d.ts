@@ -43,18 +43,18 @@ namespace Pledge {
     /** 质押金额 */
     amount: number,
     /** 锁仓结束时间，秒级时间戳 */
-    lockEnd,
+    lockEnd: number,
     /** 锁仓因子（放大100倍） */
-    lockFactor,
+    lockFactor: number,
     /** 奖励债务 */
-    rewardDebt,
+    rewardDebt: number,
     /** 质押时间戳 */
-    timestamp,
+    timestamp: number,
     /** 这次质押已收获的奖励数值 */
-    reward,
+    reward: number,
     /** 提款时间(全部提取完毕才会设置) */
-    withdrawTime,
+    withdrawTime: number,
     /** 已提取的金额 */
-    withdrawAmount,
+    withdrawAmount: number,
   ];
 }

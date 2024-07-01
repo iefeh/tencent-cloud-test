@@ -1,7 +1,7 @@
 import { useUserContext } from '@/store/User';
 import { switchNetwork } from '@/utils/wallet';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 let lastTimestamp = 0;
@@ -52,7 +52,13 @@ export default function useWallet() {
   }, [isConnected]);
 
   return {
-    connectLabel: isConnected ? (isChainCorrected ? 'Wrong Wallet' : 'Switch Network') : 'Connect Wallet',
+    connectLabel: isConnected
+      ? isChainCorrected
+        ? isMyWallectConnected
+          ? 'Connected'
+          : 'Wrong Wallet'
+        : 'Switch Network'
+      : 'Connect Wallet',
     connected,
     address,
     onConnect,

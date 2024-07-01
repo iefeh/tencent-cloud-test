@@ -6,6 +6,7 @@ import { usePledgeContext } from '@/store/Pledge';
 import { observer } from 'mobx-react-lite';
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import useBalance from '@/hooks/wallet/useBalance';
+import { toast } from 'react-toastify';
 
 interface Props {
   poolKey: string;
@@ -22,7 +23,10 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
   async function onStake() {
     setLoading(true);
 
-    await stake(walletProvider!, +stakeValue, +duration);
+    const res = await stake(walletProvider!, +stakeValue, +duration);
+    if (res) {
+      toast.success(`You have successfully staked ${stakeValue} ${poolKey}.`);
+    }
 
     setLoading(false);
   }
