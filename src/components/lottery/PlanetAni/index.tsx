@@ -15,7 +15,6 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
     cover: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/planet_ani_cover.png',
     count: 288,
     nameFn: (i) => `planet_${i.toString().padStart(5, '0')}.png`,
-    disableOnIOS: true,
   });
 
   const { prizeList } = usePrizeAni({ item });
