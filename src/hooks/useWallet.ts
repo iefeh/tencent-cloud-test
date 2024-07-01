@@ -14,7 +14,7 @@ export default function useWallet() {
   const { walletProvider } = useWeb3ModalProvider();
   const pledgeChainId = process.env.NEXT_PUBLIC_PLEDGE_CHAIN_ID!;
   const isChainCorrected = chainId === +pledgeChainId;
-  const connected = isConnected && isMyWallectConnected && isChainCorrected;
+  const connected = isConnected && isChainCorrected && isMyWallectConnected;
 
   async function onConnect() {
     const now = performance.now();
@@ -51,5 +51,10 @@ export default function useWallet() {
     onConnect();
   }, [isConnected]);
 
-  return { connected, address, onConnect };
+  return {
+    connectLabel: isConnected ? (isChainCorrected ? 'Wrong Wallet' : 'Switch Network') : 'Connect Wallet',
+    connected,
+    address,
+    onConnect,
+  };
 }

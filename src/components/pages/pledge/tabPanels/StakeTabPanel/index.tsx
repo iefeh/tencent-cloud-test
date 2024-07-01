@@ -15,7 +15,7 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
   const [stakeValue, setStateValue] = useState('');
   const [duration, setDuration] = useState('');
   const [loading, setLoading] = useState(false);
-  const { stake } = usePledgeContext();
+  const { stake, currentPoolInfo } = usePledgeContext();
   const { walletProvider } = useWeb3ModalProvider();
   const { balance } = useBalance();
 
@@ -52,9 +52,10 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
           nodes={[
             { label: 'no lock', value: 0 },
             { label: '1 week', value: 1 },
-            { label: '4 weeks', value: 4 },
-            { label: '12 weeks', value: 12 },
+            { label: '1 month', value: 4 },
+            { label: '3 months', value: 12 },
           ]}
+          appendLabel="weeks"
           onValueChange={setDuration}
         />
       </div>
@@ -65,7 +66,10 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
         className="uppercase w-[14.375rem] h-[3.1875rem] text-xl font-semibold mt-24"
         label="Stake"
         actived
-        disabled={!stakeValue || !duration || !walletProvider}
+        disabled={
+          currentPoolInfo[6] || currentPoolInfo[7] || !stakeValue || +stakeValue <= 0 || !duration || !walletProvider
+        }
+        loading={loading}
         onClick={onStake}
       />
     </div>

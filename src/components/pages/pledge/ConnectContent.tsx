@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { FC } from 'react';
 
 const ConnectContent: FC = () => {
-  const { address, connected, onConnect } = useWallet();
+  const { connectLabel, address, connected, onConnect } = useWallet();
 
   return connected ? (
     <div className="relative w-[14.8125rem] h-9 flex justify-between items-center flex-nowrap pl-9 pr-2">
@@ -33,7 +33,7 @@ const ConnectContent: FC = () => {
       />
     </div>
   ) : (
-    <LGButton className="uppercase" label="Connect Wallet" actived onClick={onConnect} />
+    <LGButton className="uppercase" label={connectLabel} actived onClick={onConnect} />
   );
 };
 

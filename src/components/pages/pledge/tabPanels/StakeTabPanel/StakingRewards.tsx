@@ -49,7 +49,7 @@ const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
             ])}
           >
             {reward.tips && (
-              <Tooltip content={reward.tips}>
+              <Tooltip content={<div className="max-w-[25rem] py-1 px-2">{reward.tips}</div>}>
                 <Image
                   className="w-[1.0625rem] h-[1.0625rem] object-contain mr-3"
                   src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"

@@ -80,7 +80,12 @@ const StepInput: FC<Props> = ({
       {nodeType === 'button' && (
         <div className="flex justify-between items-center flex-nowrap mt-5 gap-4">
           {nodes.map((node, index) => (
-            <BasicButton key={index} className="text-[#9F9F9F] flex-1" label={node.label} />
+            <BasicButton
+              key={index}
+              className="text-[#9F9F9F] flex-1"
+              label={node.label}
+              onClick={() => onValueChange?.(node.value.toString())}
+            />
           ))}
         </div>
       )}
