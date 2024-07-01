@@ -2,8 +2,8 @@ import Image from 'next/image';
 import maskBg from 'img/astrark/bg-mask.png';
 import styles from './index.module.css';
 import { Button, cn } from '@nextui-org/react';
-import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
 import Head from 'next/head';
+import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
 
 export default function DownloadPage() {
   function onDownloadClick() {

@@ -67,4 +67,26 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
     rpcUrls: ['https://polygon-rpc.com'],
     blockExplorerUrls: ['https://polygonscan.com'],
   },
+  1: {
+    chainId: parseChainIdToHex('1'),
+    chainName: 'Ethereum Mainnet',
+    nativeCurrency: {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://ethereum-rpc.publicnode.com'],
+    blockExplorerUrls: ['https://etherscan.io'],
+  },
+  11155111: {
+    chainId: parseChainIdToHex('11155111'),
+    chainName: 'Ethereum Sepolia Testnet',
+    nativeCurrency: {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io/'],
+  },
 };
