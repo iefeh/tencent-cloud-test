@@ -18,7 +18,7 @@ const StakeTabs: FC<Props> = ({ poolKey }) => {
     },
     {
       key: 'history',
-      label: 'Locked History',
+      label: 'History',
       panel: <HistoryTabPanel />,
     },
     {

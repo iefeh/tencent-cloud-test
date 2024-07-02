@@ -69,11 +69,7 @@ const PoolTabs: FC = () => {
                 value={currentPoolInfo[3]?.toString() || '-'}
                 unit="Staking Points<span>/Block</span>"
               />
-              <InfoCardItem
-                label="Output Speed:"
-                value={currentPoolInfo[5]?.toString() || '-'}
-                unit="Second<span>/Block</span>"
-              />
+              <InfoCardItem label="Output Speed:" value="12" unit="Second<span>/Block</span>" />
             </div>
 
             {connected && (

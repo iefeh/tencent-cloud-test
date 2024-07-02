@@ -18,3 +18,5 @@ export const PoolProps = {
     icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_eth.png',
   },
 };
+
+export const StakeFactors = [100, 114, 130, 149, 171, 195, 223, 255, 292, 334, 382, 437, 500];

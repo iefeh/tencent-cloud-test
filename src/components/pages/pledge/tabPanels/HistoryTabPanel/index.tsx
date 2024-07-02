@@ -1,11 +1,18 @@
 import EmptyContent from '@/components/common/EmptyContent';
 import { usePledgeContext } from '@/store/Pledge';
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, cn } from '@nextui-org/react';
+import dayjs from 'dayjs';
+import Duration from 'dayjs/plugin/duration';
+import { formatUnits } from 'ethers';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 
+dayjs.extend(Duration);
+
+const FORMAT_TIME = 'YYYY/M/D H:MM A';
+
 const HistoryTabPanel: FC = () => {
-  const { stakeInfo } = usePledgeContext();
+  const { stakeInfo, currentType, currentPoolInfo } = usePledgeContext();
 
   return (
     <div className="mt-[3.75rem] px-[4.5rem]">
@@ -46,16 +53,16 @@ const HistoryTabPanel: FC = () => {
         >
           {(stakeInfo[4] || []).map((row, index) => (
             <TableRow key={index}>
-              <TableCell>{row[4]}</TableCell>
-              <TableCell>{row[0]}</TableCell>
-              <TableCell>{row[1]}</TableCell>
-              <TableCell>{row[5]}</TableCell>
-              <TableCell>{row[0] - row[7]}</TableCell>
-              <TableCell>{row[7]}</TableCell>
-              <TableCell>{row[6]}</TableCell>
+              <TableCell>{dayjs(parseInt(((row[4] || 0n) * 1000n).toString())).format(FORMAT_TIME)}</TableCell>
               <TableCell>
-                <a className="underline cursor-pointer">View</a>
+                {formatUnits(row[0]?.toString() || '0', currentPoolInfo[1])}
+                <span className="uppercase"> {currentType}</span>
               </TableCell>
+              <TableCell>{dayjs.duration(+((row[1] - row[4]) * 1000n).toString()).asWeeks()} Weeks</TableCell>
+              <TableCell>{row[5].toString()}</TableCell>
+              <TableCell>{formatUnits((row[0] - row[7]).toString(), currentPoolInfo[1])}</TableCell>
+              <TableCell>{row[7].toString()}</TableCell>
+              <TableCell>{row[6] ? dayjs(row[6].toString()).format(FORMAT_TIME) : '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>

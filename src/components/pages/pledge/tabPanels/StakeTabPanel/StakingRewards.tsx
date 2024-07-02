@@ -1,6 +1,11 @@
+import { StakeFactors } from '@/constant/pledge';
+import { usePledgeContext } from '@/store/Pledge';
 import { Tooltip, cn } from '@nextui-org/react';
+import { parseUnits } from 'ethers';
 import Image from 'next/image';
 import { FC } from 'react';
+import BN from 'bignumber.js';
+import dayjs from 'dayjs';
 
 interface Props {
   stakeValue: string;
@@ -8,25 +13,41 @@ interface Props {
 }
 
 const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
+  const { currentPoolInfo } = usePledgeContext();
+
+  function getEstimatedRewardPerBlock() {
+    if (!currentPoolInfo[1] || !currentPoolInfo[2] || !currentPoolInfo[3]) return '0';
+    // 计算用户资产占比
+    const userShare = BN(parseUnits(stakeValue || '0', currentPoolInfo[1]).toString()).div(
+      BN(currentPoolInfo[2].toString()),
+    );
+    const lockFactor = BN(StakeFactors[+duration]).div(100);
+
+    // 计算每个区块的预估奖励点数
+    const estimatedRewardPerBlock = userShare.times(BN(currentPoolInfo[3].toString())).times(lockFactor);
+
+    return estimatedRewardPerBlock.toString();
+  }
+
   const rewards = [
     {
       label: 'Factor',
-      value: '1.2x',
+      value: !duration || isNaN(+duration) ? '-' : `${(StakeFactors[+duration] / 100).toFixed(2)}x`,
       tips: 'The Locking Factor is a multiplier that increases your rewards when earning Staking Points. The longer you lock your assets, the higher the multiplier you can achieve. The maximum multiplier is 5x for the longest locking duration.',
     },
     {
       label: 'Est. Reward staking points',
-      value: '200 sp',
+      value: `${getEstimatedRewardPerBlock()} sp`,
       tips: 'This is the estimated maximum Staking Points you can earn in the current transaction. You can check your actual earnings from the History page.',
     },
     {
       label: 'Duration',
-      value: '2 weeks',
+      value: duration && !!+duration ? `${duration} weeks` : '-',
       tips: '',
     },
     {
       label: 'Unlock on',
-      value: '2024-4-24 08:00',
+      value: duration && !!+duration ? dayjs().add(+duration, 'weeks').format('YYYY-M-D HH:mm') : '-',
       tips: +duration > 0 ? '' : 'No locking duration allows you to withdraw your deposits at any time.',
     },
   ];

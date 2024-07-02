@@ -44,13 +44,15 @@ const StepInput: FC<Props> = ({
   function onInputValueChange(val: string) {
     if (nodeType === 'progress') {
       val = val.replace(/[^0-9\.]/g, '').match(/^[0-9]+(\.[0-9]*)?/)?.[0] || '';
+    } else {
+      val = val.replace(/[^0-9]/g, '');
     }
 
     onValueChange?.(Math.min(+val, +(total || 0)).toString());
   }
 
   function onPercentChange(val: number) {
-    onValueChange?.(((val / 100) * (total || 0)).toFixed(2).replace(/\.00$/, ''));
+    onValueChange?.(((val / 100) * (total || 0)).toFixed(5).replace(/(\.[0-9]*[1-9])0*$/, '$1'));
     setPercent(val);
   }
 
@@ -84,6 +86,7 @@ const StepInput: FC<Props> = ({
               key={index}
               className="text-[#9F9F9F] flex-1"
               label={node.label}
+              active={node.value + '' === value}
               onClick={() => onValueChange?.(node.value.toString())}
             />
           ))}

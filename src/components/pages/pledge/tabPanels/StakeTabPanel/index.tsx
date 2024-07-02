@@ -4,9 +4,10 @@ import StakingRewards from './StakingRewards';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { usePledgeContext } from '@/store/Pledge';
 import { observer } from 'mobx-react-lite';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import useBalance from '@/hooks/wallet/useBalance';
 import { toast } from 'react-toastify';
+import { formatUnits } from 'ethers';
 
 interface Props {
   poolKey: string;
@@ -16,16 +17,21 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
   const [stakeValue, setStateValue] = useState('');
   const [duration, setDuration] = useState('');
   const [loading, setLoading] = useState(false);
-  const { stake, currentPoolInfo } = usePledgeContext();
+  const { stake, currentPoolInfo, refresh } = usePledgeContext();
   const { walletProvider } = useWeb3ModalProvider();
   const { balance } = useBalance();
+  const balanceVal = formatUnits(balance, currentPoolInfo[1]);
+  const { address } = useWeb3ModalAccount();
 
   async function onStake() {
     setLoading(true);
 
-    const res = await stake(walletProvider!, +stakeValue, +duration);
+    const res = await stake(walletProvider!, stakeValue, +duration);
     if (res) {
       toast.success(`You have successfully staked ${stakeValue} ${poolKey}.`);
+      setStateValue('');
+      setDuration('');
+      refresh(walletProvider!, address!);
     }
 
     setLoading(false);
@@ -39,12 +45,13 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
           title={`Add ${poolKey}`}
           caption={
             <div className="font-poppins font-semibold">
-              Balance <span className="text-basic-yellow">{balance}</span> <span className="uppercase">{poolKey}</span>
+              Balance <span className="text-basic-yellow">{balanceVal}</span>{' '}
+              <span className="uppercase">{poolKey}</span>
             </div>
           }
           nodeType="progress"
           nodes={5}
-          total={+balance}
+          total={+(balanceVal || 0)}
           appendLabel={poolKey}
           onValueChange={setStateValue}
         />
@@ -59,6 +66,7 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
             { label: '1 month', value: 4 },
             { label: '3 months', value: 12 },
           ]}
+          total={12}
           appendLabel="weeks"
           onValueChange={setDuration}
         />

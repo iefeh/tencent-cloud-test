@@ -1,6 +1,8 @@
 import StepInput from '@/components/common/inputs/StepInput';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { usePledgeContext } from '@/store/Pledge';
+import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { formatUnits } from 'ethers';
 import { FC, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -10,7 +12,23 @@ interface Props {
 
 const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
   const [withdrawValue, setWithdrawValue] = useState('');
-  const { stakeInfo } = usePledgeContext();
+  const { stakeInfo, currentPoolInfo, withdraw, refresh } = usePledgeContext();
+  const [loading, setLoading] = useState(false);
+  const { walletProvider } = useWeb3ModalProvider();
+  const { address } = useWeb3ModalAccount();
+
+  async function onWithdraw() {
+    setLoading(true);
+
+    const res = await withdraw(walletProvider!, withdrawValue);
+    if (res) {
+      toast.success(`You have successfully withdrawed ${withdrawValue} ${poolKey}.`);
+      setWithdrawValue('');
+      refresh(walletProvider!, address!);
+    }
+
+    setLoading(false);
+  }
 
   return (
     <div className="mt-[4.375rem] px-[4.5rem]">
@@ -20,13 +38,13 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           title={`Withdraw ${poolKey}`}
           caption={
             <div className="font-poppins font-semibold">
-              Balance <span className="text-basic-yellow">{stakeInfo[3] || 0}</span>{' '}
+              Balance <span className="text-basic-yellow">{formatUnits(stakeInfo[3] || 0n, currentPoolInfo[1])}</span>{' '}
               <span className="uppercase">{poolKey}</span>
             </div>
           }
           nodeType="progress"
           nodes={5}
-          total={+(stakeInfo[3] || 0)}
+          total={+formatUnits(stakeInfo[3] || 0n, currentPoolInfo[1])}
           appendLabel={poolKey}
           onValueChange={setWithdrawValue}
         />
@@ -36,7 +54,8 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           label="Withdraw"
           actived
           disabled={+withdrawValue <= 0}
-          onClick={() => toast.info('Coming Soon.')}
+          loading={loading}
+          onClick={onWithdraw}
         />
       </div>
     </div>
