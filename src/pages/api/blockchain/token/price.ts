@@ -26,8 +26,8 @@ router.get(async (req, res) => {
         const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${token}USDT`);
         if (response.data && response.data.price) {
             logger.info(`Get token price ${token} from binance: ${response.data.price}`);
-            price = response.data.price;
-            await redis.set(`token_price:${token}`, price, "EX", 60 * 60);
+            price = response.data.price!;
+            await redis.set(`token_price:${token}`, response.data.price, "EX", 60 * 60);
         } else {
             throw new Error(JSON.stringify(response.data));
         }
