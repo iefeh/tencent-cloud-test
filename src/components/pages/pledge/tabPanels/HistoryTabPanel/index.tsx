@@ -60,7 +60,10 @@ const HistoryTabPanel: FC = () => {
               </TableCell>
               <TableCell>{dayjs.duration(+((row[1] - row[4]) * 1000n).toString()).asWeeks()} Weeks</TableCell>
               <TableCell>{row[5].toString()}</TableCell>
-              <TableCell>{formatUnits((row[0] - row[7]).toString(), currentPoolInfo[1])}</TableCell>
+              <TableCell>
+                {formatUnits((row[0] - row[7]).toString(), currentPoolInfo[1])}{' '}
+                <span className="uppercase"> {currentType}</span>
+              </TableCell>
               <TableCell>{row[7].toString()}</TableCell>
               <TableCell>{row[6] ? dayjs(row[6].toString()).format(FORMAT_TIME) : '-'}</TableCell>
             </TableRow>
