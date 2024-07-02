@@ -1,6 +1,7 @@
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from '@/hooks/utils';
 import { BrowserProvider, Eip1193Provider } from 'ethers';
+import { toast } from 'react-toastify';
 
 export async function getCurrentAccount(provider: Eip1193Provider) {
   try {
@@ -49,7 +50,7 @@ export async function switchNetwork(provider: Eip1193Provider, targetChainId: nu
     });
     return true;
   } catch (error: any) {
-    if (error?.code === 4902 || error?.code === 5000) {
+    if (error?.code === -32603 || error?.code === 4902 || error?.code === 5000) {
       // 未添加此网络，添加后自动唤起切换
       const res = await addNetwork(provider, targetChainId);
       if (!res) return false;
@@ -61,4 +62,15 @@ export async function switchNetwork(provider: Eip1193Provider, targetChainId: nu
   }
 
   return false;
+}
+
+export async function handleWalletExecutionError(error?: InformableError) {
+  const msg = error?.message || '';
+  let tips = '';
+
+  if (msg.toLowerCase().indexOf('execution reverted:') > -1) {
+    tips = msg.match(/execution reverted\:(.*)$/)?.groups?.[1] || '';
+  }
+
+  toast.error(tips || 'Transaction failed, please try again later.');
 }

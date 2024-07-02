@@ -11,7 +11,7 @@ export default function PledgePage() {
         <title>Moonveil Entertainment</title>
       </Head>
 
-      <div className="max-w-[87.5rem] mx-auto">
+      <div className="w-[87.5rem] mx-auto">
         <PageDesc
           title={
             <div className="mt-[10.75rem] font-semakin from-[#DBAC74] to-[#E7D4A9] bg-clip-text text-transparent text-6xl bg-gradient-to-r">

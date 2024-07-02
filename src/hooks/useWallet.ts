@@ -16,29 +16,33 @@ export default function useWallet() {
   const isChainCorrected = chainId === +pledgeChainId;
   const connected = isConnected && isChainCorrected && isMyWallectConnected;
 
-  async function onConnect() {
+  async function onConnect(isClick = true) {
     const now = performance.now();
     if (now - lastTimestamp < 500) return;
 
     lastTimestamp = now;
 
     if (!userInfo) {
+      if (!isClick) return;
       toggleLoginModal(true);
       return;
     }
 
     if (!isConnected) {
+      if (!isClick) return;
       open();
       return;
     }
 
     if (!isChainCorrected) {
+      if (!isClick) return;
       if (!walletProvider) return;
       const res = await switchNetwork(walletProvider, pledgeChainId);
       if (!res) return;
     }
 
     if (!isMyWallectConnected) {
+      if (!isClick) return;
       toast.error(
         'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
       );
@@ -48,17 +52,18 @@ export default function useWallet() {
 
   useEffect(() => {
     if (!isConnected) return;
-    onConnect();
+    onConnect(false);
   }, [isConnected]);
 
   return {
-    connectLabel: isConnected
-      ? isChainCorrected
-        ? isMyWallectConnected
-          ? 'Connected'
-          : 'Wrong Wallet'
-        : 'Switch Network'
-      : 'Connect Wallet',
+    connectLabel:
+      !!userInfo && isConnected
+        ? isChainCorrected
+          ? isMyWallectConnected
+            ? 'Connected'
+            : 'Wrong Wallet'
+          : 'Switch Network'
+        : 'Connect Wallet',
     connected,
     address,
     onConnect,

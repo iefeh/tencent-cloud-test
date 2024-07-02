@@ -13,9 +13,9 @@ namespace Pledge {
     /** 代币精度，用于计算用户调用方法时的实际数量 */
     tokenDecimal: number,
     /** 该池中质押的总金额 */
-    totalStaked: number,
+    totalStaked: bigint,
     /** 每个区块的奖励 */
-    rewardPerBlock: number,
+    rewardPerBlock: bigint,
     /** 每份质押的累积奖励 */
     accumulatedRewardPerShare: number,
     /** 上一次计算奖励的区块 */
@@ -28,33 +28,33 @@ namespace Pledge {
 
   type UserStakeInfo = [
     /** 用户总共质押的数量 */
-    totalStaked: number,
+    totalStaked: bigint,
     /** 用户已提取的数量 */
-    totalWithdrawn: number,
+    totalWithdrawn: bigint,
     /** 用户已获得的奖励 */
-    totalRewards: number,
+    totalRewards: bigint,
     /** 当前质押中数量(包含锁仓中+未锁仓中) */
-    currentStaked: number,
+    currentStaked: bigint,
     /** 用户的质押记录列表 */
     stakes: UserStake[],
   ];
 
   type UserStake = [
     /** 质押金额 */
-    amount: number,
+    amount: bigint,
     /** 锁仓结束时间，秒级时间戳 */
-    lockEnd: number,
+    lockEnd: bigint,
     /** 锁仓因子（放大100倍） */
-    lockFactor: number,
+    lockFactor: bigint,
     /** 奖励债务 */
-    rewardDebt: number,
+    rewardDebt: bigint,
     /** 质押时间戳 */
-    timestamp: number,
+    timestamp: bigint,
     /** 这次质押已收获的奖励数值 */
-    reward: number,
+    reward: bigint,
     /** 提款时间(全部提取完毕才会设置) */
-    withdrawTime: number,
+    withdrawTime: bigint,
     /** 已提取的金额 */
-    withdrawAmount: number,
+    withdrawAmount: bigint,
   ];
 }
