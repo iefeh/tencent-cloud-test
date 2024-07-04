@@ -69,7 +69,7 @@ async function queryUserNFT(nfts: any[]) {
 router.use(mustAuthInterceptor).post(async (req, res) => {
     // 检查传递的{ chain_id, contract_address, token_id }数组对象
     const nfts: NFTData[] = req.body;
-    if (!nfts || nfts.length == 0) {
+    if (!nfts) {
         return res.json(response.invalidParams());
     }
     // 检查NFT是否存在，此处暂未校验NFT是否属于用户
