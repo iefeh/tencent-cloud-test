@@ -1,5 +1,5 @@
 import { Tab, Tabs } from '@nextui-org/react';
-import { FC, Key, useEffect, useState } from 'react';
+import { FC, Key, useCallback, useEffect, useMemo, useState } from 'react';
 import Assets from './Assets';
 import type { NFTItem } from '@/http/services/mint';
 import { queryMyNFTListAPI } from '@/http/services/astrark';
@@ -42,17 +42,19 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
     pullupLoad: true,
     bsOptions: { scrollX: true, scrollY: false, pullUpLoad: true },
   });
-
   const items =
     data.length < AA_ASSETS_PAGE_SIZE ? [...data, ...Array(AA_ASSETS_PAGE_SIZE - data.length).fill(null)] : data;
+
+  const onUpdateCallback = useCallback(() => onUpdate?.(), []);
+
+  const memoAssets = useMemo(
+    () => <Assets items={items} scrollRef={scrollRef} displayItems={displayItems} onUpdate={onUpdateCallback} />,
+    [data, () => scrollRef.current, displayItems],
+  );
 
   function onSelectionChange(key: Key) {
     const newKey = key.toString() as NFTCategory;
     setSelectedKey(newKey);
-  }
-
-  function onAssetsUpdate() {
-    onUpdate?.();
   }
 
   useEffect(() => {
@@ -92,14 +94,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
           ))}
         </Tabs>
 
-        <Assets
-          total={total}
-          items={items}
-          scrollRef={scrollRef}
-          selectedKey={selectedKey}
-          displayItems={displayItems}
-          onUpdate={onAssetsUpdate}
-        />
+        {memoAssets}
 
         {loading && <CircularLoading />}
       </div>

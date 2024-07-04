@@ -75,9 +75,14 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
       list = list.concat(Array(options.minCount! - list.length).fill(null));
     }
 
+    if (loadFinishedRef.current) {
+      bsRef.current?.finishPullUp();
+    }
+
     realSetData(list);
     setTotal(totalCount);
     setLoading(false);
+    refreshScroll();
   }, 500);
 
   const onPullUp = throttle(async () => {
@@ -93,10 +98,7 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
   }, 500);
 
   function refreshScroll() {
-    if (!scrollRef.current) return;
-    try {
-      bsRef.current?.refresh();
-    } catch (error) {}
+    bsRef.current?.refresh();
   }
 
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
   useEffect(() => {
     if (!scrollRef.current) return;
     refreshScroll();
-  }, [data]);
+  }, [data, () => scrollRef.current]);
 
   useEffect(() => {
     if (!options.watchAuth) return;

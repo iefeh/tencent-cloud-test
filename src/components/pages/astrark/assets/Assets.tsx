@@ -1,4 +1,4 @@
-import type { MyNFTQueryParams, NFTItem } from '@/http/services/mint';
+import type { NFTItem } from '@/http/services/mint';
 import { updateDisplayNFTListAPI } from '@/http/services/astrark';
 import NFT from '@/components/nft/NFT';
 import { FC, RefObject, useEffect, useState } from 'react';
@@ -9,24 +9,12 @@ import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
 
 interface Props {
   scrollRef: RefObject<HTMLDivElement>;
-  selectedKey: string;
-  total: number;
   items: (NFTItem | null)[];
   displayItems: (Partial<NFTItem> | null)[];
   onUpdate?: () => void;
-  onPageChange?: (params: Partial<MyNFTQueryParams>) => void;
 }
 
-const Assets: FC<Props & ClassNameProps> = ({
-  scrollRef,
-  selectedKey,
-  total,
-  items,
-  displayItems,
-  className,
-  onUpdate,
-  onPageChange,
-}) => {
+const Assets: FC<Props & ClassNameProps> = ({ scrollRef, items, displayItems, className, onUpdate }) => {
   const [selectedNFT, setSelectedNFT] = useState<NFTItem | null>(null);
   const validDisplayItems = displayItems.filter((item) => !!item);
 
@@ -74,14 +62,14 @@ const Assets: FC<Props & ClassNameProps> = ({
       />
 
       <div ref={scrollRef} className="flex-1 relative overflow-hidden mt-4">
-        <div className={cn(['flex flex-nowrap flex-1 content-start w-max', isMobile && 'justify-center gap-6'])}>
+        <div className={cn(['flex flex-nowrap content-start w-max', isMobile && 'justify-center gap-6'])}>
           {items.map((item, index) => {
             const selected = !!item && selectedNFT === item;
             const displayed = displayItems.some((di) => di && di.token_id === item?.token_id);
 
             return (
               <div
-                key={index}
+                key={item?.token_id || index}
                 className={cn([
                   'w-[10.375rem] h-[10.375rem]',
                   'relative bg-contain bg-no-repeat',
@@ -99,6 +87,7 @@ const Assets: FC<Props & ClassNameProps> = ({
                   src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
                   isSrcImage={!item?.token_metadata?.animation_url}
                   status={item?.transaction_status}
+                  withControls={false}
                 />
 
                 {displayed && (
