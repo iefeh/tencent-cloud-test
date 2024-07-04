@@ -12,6 +12,7 @@ const FORMAT_TIME = 'YYYY/M/D H:MM A';
 
 const HistoryTabPanel: FC = () => {
   const { stakeInfo, currentType, formatUnits } = usePledgeContext();
+  const history = (stakeInfo[4] || []).slice().reverse();
 
   return (
     <div className="mt-[3.75rem] px-[4.5rem]">
@@ -50,7 +51,7 @@ const HistoryTabPanel: FC = () => {
             </div>
           }
         >
-          {(stakeInfo[4] || []).map((row, index) => (
+          {history.map((row, index) => (
             <TableRow key={index}>
               <TableCell>{dayjs(parseInt(((row[4] || 0n) * 1000n).toString())).format(FORMAT_TIME)}</TableCell>
               <TableCell>
@@ -62,7 +63,7 @@ const HistoryTabPanel: FC = () => {
               <TableCell>
                 {formatUnits(row[0] - row[7])} <span className="uppercase"> {currentType}</span>
               </TableCell>
-              <TableCell>{row[7].toString()}</TableCell>
+              <TableCell>{formatUnits(row[7])}</TableCell>
               <TableCell>{row[6] ? dayjs(row[6].toString()).format(FORMAT_TIME) : '-'}</TableCell>
             </TableRow>
           ))}

@@ -48,7 +48,7 @@ const StepInput: FC<Props> = ({
       val = val.replace(/[^0-9]/g, '');
     }
 
-    onValueChange?.(Math.min(+val, +(total || 0)).toString());
+    onValueChange?.(val);
   }
 
   function onPercentChange(val: number) {

@@ -11,7 +11,7 @@ import { usePledgeContext } from '@/store/Pledge';
 import { observer } from 'mobx-react-lite';
 
 const PoolTabs: FC = () => {
-  const { currentType, setCurrentType, currentPoolInfo, formatUnits } = usePledgeContext();
+  const { currentType, setCurrentType, currentPoolInfo, currentPoolData, formatUnits } = usePledgeContext();
   const tabs = [
     {
       key: PoolType.USDT,
@@ -54,8 +54,8 @@ const PoolTabs: FC = () => {
         {tabs.map((tab) => (
           <Tab key={tab.key} title={tab.label}>
             <div className="flex flex-wrap justify-between gap-x-[1.875rem] gap-4">
-              <InfoCardItem label="Total Stake:" value={`$${formatUnits(currentPoolInfo[2])}`} unit={tab.key} />
-              <InfoCardItem label="$Value:" value={`$${formatUnits(currentPoolInfo[2])}`} />
+              <InfoCardItem label="Total Stake:" value={currentPoolData.totalValue} unit={tab.key} />
+              <InfoCardItem label="$Value:" value={`$${currentPoolData.totalDollar || '-'}`} />
               <InfoCardItem
                 label="Output quantity:"
                 value={currentPoolInfo[3]?.toString() || '-'}

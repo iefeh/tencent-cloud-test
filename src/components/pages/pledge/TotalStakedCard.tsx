@@ -52,7 +52,7 @@ const TotalStakedCard: FC<Props> = ({ poolKey }) => {
   const now = Date.now();
 
   const totalLocked = (stakeInfo[4] || []).reduce((p, c) => {
-    if (c[6] !== 0n || (c[1] !== c[4] && c[1] * 1000n <= BigInt(now))) return p;
+    if (c[6] !== 0n || (c[1] * 1000n <= BigInt(now))) return p;
     return p + c[0];
   }, 0n);
 
@@ -80,12 +80,12 @@ const TotalStakedCard: FC<Props> = ({ poolKey }) => {
         <div className="text-[#3D3D3D]">Your total staked:</div>
 
         <div className="flex items-end font-semakin text-black leading-none">
-          <div className="text-[4rem]">{formatUnits(stakeInfo[0])}</div>
+          <div className="text-[4rem]">{formatUnits(stakeInfo[3])}</div>
           <div className="text-2xl leading-10 ml-4">{poolKey}</div>
         </div>
       </div>
 
-      <StakeItem locked={false} value={formatUnits((stakeInfo[0] || 0n) - totalLocked)} unit={poolKey} />
+      <StakeItem locked={false} value={formatUnits((stakeInfo[3] || 0n) - totalLocked)} unit={poolKey} />
 
       <StakeItem className="ml-3" locked value={formatUnits(totalLocked)} unit={poolKey} />
     </div>

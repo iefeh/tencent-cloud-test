@@ -23,7 +23,7 @@ const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
     // 计算每个区块的预估奖励点数
     const estimatedRewardPerBlock = userShare.times(BN(currentPoolInfo[3].toString())).times(lockFactor);
 
-    return estimatedRewardPerBlock.toString();
+    return estimatedRewardPerBlock.toFixed(0, BN.ROUND_DOWN);
   }
 
   const rewards = [

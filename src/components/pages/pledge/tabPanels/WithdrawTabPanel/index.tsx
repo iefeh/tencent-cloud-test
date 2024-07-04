@@ -15,6 +15,7 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
   const [loading, setLoading] = useState(false);
   const { walletProvider } = useWeb3ModalProvider();
   const { address } = useWeb3ModalAccount();
+  const balance = formatUnits(stakeInfo[3] || 0n);
 
   async function onWithdraw() {
     setLoading(true);
@@ -37,13 +38,12 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           title={`Withdraw ${poolKey}`}
           caption={
             <div className="font-poppins font-semibold">
-              Balance <span className="text-basic-yellow">{formatUnits(stakeInfo[3] || 0n)}</span>{' '}
-              <span className="uppercase">{poolKey}</span>
+              Balance <span className="text-basic-yellow">{balance}</span> <span className="uppercase">{poolKey}</span>
             </div>
           }
           nodeType="progress"
           nodes={5}
-          total={+formatUnits(stakeInfo[3] || 0n)}
+          total={+balance}
           appendLabel={poolKey}
           onValueChange={setWithdrawValue}
         />
@@ -52,7 +52,7 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           className="uppercase text-xl font-semibold mt-[4.8125rem]"
           label="Withdraw"
           actived
-          disabled={+withdrawValue <= 0}
+          disabled={+withdrawValue <= 0 || +withdrawValue > +balance}
           loading={loading}
           onClick={onWithdraw}
         />

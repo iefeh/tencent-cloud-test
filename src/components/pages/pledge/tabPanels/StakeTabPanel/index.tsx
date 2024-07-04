@@ -19,7 +19,7 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
   const { stake, currentPoolInfo, refresh, formatUnits } = usePledgeContext();
   const { walletProvider } = useWeb3ModalProvider();
   const { balance } = useBalance();
-  const balanceVal = formatUnits(balance);
+  const balanceVal = (+formatUnits(balance)).toFixed(5);
   const { address } = useWeb3ModalAccount();
 
   async function onStake() {
@@ -78,7 +78,13 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
         label="Stake"
         actived
         disabled={
-          currentPoolInfo[6] || currentPoolInfo[7] || !stakeValue || +stakeValue <= 0 || !duration || !walletProvider
+          currentPoolInfo[6] ||
+          currentPoolInfo[7] ||
+          !stakeValue ||
+          +stakeValue <= 0 ||
+          !duration ||
+          !walletProvider ||
+          +stakeValue > +balanceVal
         }
         loading={loading}
         onClick={onStake}

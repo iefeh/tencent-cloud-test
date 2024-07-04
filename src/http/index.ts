@@ -19,7 +19,8 @@ axios.interceptors.request.use((config) => {
 
 axios.interceptors.response.use(
   (res) => {
-    if (res.config.responseType !== 'json') return res;
+    const { responseType, hideErrorTips } = res.config;
+    if (responseType !== 'json') return res;
     if (!res.data) return null;
 
     let data: any;
@@ -42,12 +43,14 @@ axios.interceptors.response.use(
       }
     }
 
-    let innerData = data.data;
+    if (!hideErrorTips) {
+      let innerData = data.data;
 
-    if (innerData && (!innerData.verified || !innerData.success) && (innerData.message || innerData.tip)) {
-      toast.error(innerData.message || innerData.tip);
-    } else if (data.msg) {
-      toast.error(data.msg);
+      if (innerData && (!innerData.verified || !innerData.success) && (innerData.message || innerData.tip)) {
+        toast.error(innerData.message || innerData.tip);
+      } else if (data.msg) {
+        toast.error(data.msg);
+      }
     }
 
     return data.data;
