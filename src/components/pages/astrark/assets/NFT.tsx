@@ -70,7 +70,7 @@ export default function NFT(props: NFTProps) {
   }, 500);
 
   return (
-    <div className="relative" onClick={onNFTClick}>
+    <div className="relative font-fzdb" onClick={onNFTClick}>
       <div className={cn(['relative w-[16.5rem] h-[16.5rem] flex justify-center items-center', className])}>
         {hideBorder || (
           <Image
@@ -128,11 +128,7 @@ export default function NFT(props: NFTProps) {
         <Image className="absolute right-4 top-4 w-7 h-7" src={selectedIcon} alt="" width={56} height={56} />
       )}
 
-      {name && (
-        <div className="font-poppins text-base mt-3 max-w-full text-center overflow-hidden text-ellipsis whitespace-nowrap">
-          {name}
-        </div>
-      )}
+      {name && <div className="text-xl h-14 mt-3 max-w-full line-clamp-2">{name}</div>}
     </div>
   );
 }

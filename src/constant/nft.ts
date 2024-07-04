@@ -5,4 +5,4 @@ export const enum NFTCategory {
 
 export const MAX_DISPLAY_ASSETS = 5;
 export const ASSETS_PAGE_SIZE = 15;
-export const AA_ASSETS_PAGE_SIZE = 8;
+export const AA_ASSETS_PAGE_SIZE = 10;

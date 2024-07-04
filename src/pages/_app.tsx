@@ -41,6 +41,7 @@ import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
 import useRouteLocale from '@/hooks/useRouteLocale';
 import { NextUIProvider } from '@nextui-org/react';
+import '@/styles/aa.scss';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
