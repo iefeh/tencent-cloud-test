@@ -11,6 +11,7 @@ interface LoadOptions<T = unknown> {
   pullupLoad?: boolean;
   queryKey?: string;
   queryFn?: (params: PageQueryDto) => Promise<PageResDTO<T>>;
+  paramsFn?: () => unknown;
 }
 
 const BASE_OPTIONS: LoadOptions = {
@@ -59,7 +60,8 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
     }
 
     try {
-      const res = await options.queryFn(pageInfo.current);
+      const params = options.paramsFn ? Object.assign({}, pageInfo.current, options.paramsFn()) : pageInfo.current;
+      const res = await options.queryFn(params);
       list = pageInfo.current.page_num === 1 ? [] : currenDataRef.current.slice();
       if (res?.[options.queryKey!]) {
         list = list.concat(res[options.queryKey!]);
@@ -91,11 +93,18 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
   }, 500);
 
   function refreshScroll() {
-    bsRef.current?.refresh();
+    if (!scrollRef.current) return;
+    try {
+      bsRef.current?.refresh();
+    } catch (error) {}
   }
 
   useEffect(() => {
     if (!scrollRef.current) return;
+
+    if (bsRef.current) {
+      bsRef.current.destroy();
+    }
 
     const bsOptions = Object.assign(
       {
@@ -107,19 +116,21 @@ export default function useScrollLoad<T>(extraOptions?: LoadOptions<T>) {
       },
       options.bsOptions,
     );
-    bsRef.current = new BetterScroll(scrollRef.current, bsOptions);
+    const bs = new BetterScroll(scrollRef.current, bsOptions);
+    bsRef.current = bs;
 
     if (options.pullupLoad) {
-      bsRef.current.on('pullingUp', onPullUp);
+      bs.on('pullingUp', onPullUp);
     }
 
     return () => {
-      bsRef.current?.destroy();
+      bs.destroy();
       bsRef.current = null;
     };
-  }, []);
+  }, [data]);
 
   useEffect(() => {
+    if (!scrollRef.current) return;
     refreshScroll();
   }, [data]);
 
