@@ -2,7 +2,7 @@ import Image, { StaticImageData } from 'next/image';
 import bgImg from 'img/nft/common/bg_nft.png';
 import activeBgImg from 'img/nft/common/bg_nft_active.png';
 import emptyNFTImg from 'img/nft/common/nft_empty.jpg';
-import Video from '../../pages/components/common/Video';
+import Video from '@/pages/components/common/Video';
 import pendingImg from 'img/profile/pending.png';
 import transferringImg from 'img/profile/transferring.png';
 import burningImg from 'img/profile/burning.png';
@@ -12,6 +12,7 @@ import { throttle } from 'lodash';
 import { cn } from '@nextui-org/react';
 
 interface NFTProps {
+  nftClassName?: string;
   className?: string;
   name?: string;
   src?: string;
@@ -28,6 +29,7 @@ interface NFTProps {
 
 export default function NFT(props: NFTProps) {
   const {
+    nftClassName,
     className,
     withControls = true,
     name,
@@ -68,12 +70,19 @@ export default function NFT(props: NFTProps) {
   }, 500);
 
   return (
-    <div className="flex flex-col items-center shrink-0 relative" onClick={onNFTClick}>
-      <div className={cn(['relative w-[16.5rem] h-[16.5rem] flex justify-center items-center bg-black', className])}>
-        {hideBorder || <Image src={src ? activeBgImg : bgImg} alt="" fill />}
+    <div className="relative" onClick={onNFTClick}>
+      <div className={cn(['relative w-[16.5rem] h-[16.5rem] flex justify-center items-center', className])}>
+        {hideBorder || (
+          <Image
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_border_display.png"
+            alt=""
+            fill
+            unoptimized
+          />
+        )}
 
         {src ? (
-          <div className="relative z-0 w-4/5 h-4/5">
+          <div className={cn(['relative z-0 w-4/5 h-4/5', nftClassName])}>
             {isSrcImage ? (
               <Image className="object-contain" src={src} alt="" fill sizes="100%" unoptimized />
             ) : (
@@ -99,13 +108,19 @@ export default function NFT(props: NFTProps) {
                   className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9.625rem] h-24"
                   src={statusImg}
                   alt=""
-                  unoptimized
                 />
               </>
             )}
           </div>
         ) : (
-          <Image className="relative z-0 w-4/5 h-4/5" src={emptyNFTImg} alt="" />
+          <Image
+            className="relative z-0 w-full aspect-square"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_null.png"
+            alt=""
+            width={240}
+            height={240}
+            unoptimized
+          />
         )}
       </div>
 
