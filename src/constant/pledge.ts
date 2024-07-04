@@ -8,14 +8,17 @@ export const PoolProps = {
   [PoolType.USDT]: {
     id: -1,
     icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_usdt.png',
+    token: 'USDT',
   },
   [PoolType.USDC]: {
     id: 1,
     icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_usdc.png',
+    token: 'USDC',
   },
   [PoolType.ETH]: {
     id: 0,
     icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_eth.png',
+    token: 'ETH',
   },
 };
 

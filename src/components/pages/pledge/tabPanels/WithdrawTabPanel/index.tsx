@@ -2,7 +2,6 @@ import StepInput from '@/components/common/inputs/StepInput';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { usePledgeContext } from '@/store/Pledge';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { formatUnits } from 'ethers';
 import { FC, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -12,10 +11,11 @@ interface Props {
 
 const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
   const [withdrawValue, setWithdrawValue] = useState('');
-  const { stakeInfo, currentPoolInfo, withdraw, refresh } = usePledgeContext();
+  const { stakeInfo, withdraw, refresh, formatUnits } = usePledgeContext();
   const [loading, setLoading] = useState(false);
   const { walletProvider } = useWeb3ModalProvider();
   const { address } = useWeb3ModalAccount();
+  const balance = formatUnits(stakeInfo[3] || 0n);
 
   async function onWithdraw() {
     setLoading(true);
@@ -38,13 +38,12 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           title={`Withdraw ${poolKey}`}
           caption={
             <div className="font-poppins font-semibold">
-              Balance <span className="text-basic-yellow">{formatUnits(stakeInfo[3] || 0n, currentPoolInfo[1])}</span>{' '}
-              <span className="uppercase">{poolKey}</span>
+              Balance <span className="text-basic-yellow">{balance}</span> <span className="uppercase">{poolKey}</span>
             </div>
           }
           nodeType="progress"
           nodes={5}
-          total={+formatUnits(stakeInfo[3] || 0n, currentPoolInfo[1])}
+          total={+balance}
           appendLabel={poolKey}
           onValueChange={setWithdrawValue}
         />
@@ -53,7 +52,7 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           className="uppercase text-xl font-semibold mt-[4.8125rem]"
           label="Withdraw"
           actived
-          disabled={+withdrawValue <= 0}
+          disabled={+withdrawValue <= 0 || +withdrawValue > +balance}
           loading={loading}
           onClick={onWithdraw}
         />

@@ -3,7 +3,6 @@ import { usePledgeContext } from '@/store/Pledge';
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, cn } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import Duration from 'dayjs/plugin/duration';
-import { formatUnits } from 'ethers';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 
@@ -12,7 +11,8 @@ dayjs.extend(Duration);
 const FORMAT_TIME = 'YYYY/M/D H:MM A';
 
 const HistoryTabPanel: FC = () => {
-  const { stakeInfo, currentType, currentPoolInfo } = usePledgeContext();
+  const { stakeInfo, currentType, formatUnits } = usePledgeContext();
+  const history = (stakeInfo[4] || []).slice().reverse();
 
   return (
     <div className="mt-[3.75rem] px-[4.5rem]">
@@ -51,20 +51,19 @@ const HistoryTabPanel: FC = () => {
             </div>
           }
         >
-          {(stakeInfo[4] || []).map((row, index) => (
+          {history.map((row, index) => (
             <TableRow key={index}>
               <TableCell>{dayjs(parseInt(((row[4] || 0n) * 1000n).toString())).format(FORMAT_TIME)}</TableCell>
               <TableCell>
-                {formatUnits(row[0]?.toString() || '0', currentPoolInfo[1])}
+                {formatUnits(row[0])}
                 <span className="uppercase"> {currentType}</span>
               </TableCell>
               <TableCell>{dayjs.duration(+((row[1] - row[4]) * 1000n).toString()).asWeeks()} Weeks</TableCell>
               <TableCell>{row[5].toString()}</TableCell>
               <TableCell>
-                {formatUnits((row[0] - row[7]).toString(), currentPoolInfo[1])}{' '}
-                <span className="uppercase"> {currentType}</span>
+                {formatUnits(row[0] - row[7])} <span className="uppercase"> {currentType}</span>
               </TableCell>
-              <TableCell>{row[7].toString()}</TableCell>
+              <TableCell>{formatUnits(row[7])}</TableCell>
               <TableCell>{row[6] ? dayjs(row[6].toString()).format(FORMAT_TIME) : '-'}</TableCell>
             </TableRow>
           ))}

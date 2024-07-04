@@ -1,10 +1,13 @@
 import { BrowserProvider, Eip1193Provider, Contract, formatUnits, parseUnits, JsonRpcSigner } from 'ethers';
+import type { BigNumberish } from 'ethers';
 import { makeAutoObservable } from 'mobx';
 import { createContext, useContext } from 'react';
 import pledgeABI from '@/http/abi/pledge.json';
 import erc20ABI from '@/http/abi/erc20.json';
 import { PoolProps, PoolType } from '@/constant/pledge';
 import { handleWalletExecutionError } from '@/utils/wallet';
+import { queryTokenPriceAPI } from '@/http/services/pledge';
+import BN from 'bignumber.js';
 
 interface RpcOperator {
   provider: Eip1193Provider;
@@ -24,6 +27,11 @@ class PledgeStore {
 
   stakeOperator?: RpcOperator;
   erc20Operator?: RpcOperator;
+  prices: Dict<string> = {
+    [PoolType.USDT]: '0',
+    [PoolType.USDC]: '0',
+    [PoolType.ETH]: '0',
+  };
 
   constructor() {
     makeAutoObservable(this);
@@ -45,18 +53,27 @@ class PledgeStore {
   }
 
   get currentPoolData() {
-    const [decimal, totalStaked] = this.currentPoolInfo;
+    const totalValue = this.formatUnits(this.currentPoolInfo[2]?.toString());
 
     return {
-      totalValue: `$${formatUnits(totalStaked?.toString() || '0', decimal) || '-'}`,
+      totalValue,
+      totalDollar: this.calcPoolTotalDollar(this.currentType),
     };
   }
 
   get poolsTotalValue() {
-    const total = Object.values(this.poolInfos).reduce((p, c) => (p += +formatUnits(c[2] || 0n, c[1])), 0);
+    const total = Object.keys(this.poolInfos).reduce((p, c) => p.plus(this.calcPoolTotalDollar(c as PoolType)), BN(0));
 
-    return total.toFixed(5).replace(/(\.[0-9]*[1-9])0*$/, '$1');
+    return total.eq(0) ? '-' : total.toFixed(2);
   }
+
+  calcPoolTotalDollar = (type: PoolType) => {
+    const info = this.poolInfos[type];
+    const value = formatUnits(info[2]?.toString() || '0', info[1]);
+    const price = this.prices[type] || '0';
+
+    return BN(value).times(BN(price));
+  };
 
   satisfyStakeOperator = async (provider: Eip1193Provider) => {
     if (this.stakeOperator?.provider === provider) return;
@@ -100,10 +117,23 @@ class PledgeStore {
     }
   };
 
+  initPrice = async (type: PoolType) => {
+    const token = PoolProps[type]?.token;
+    if (!token) return;
+    const res = await queryTokenPriceAPI({ token });
+    this.prices = {
+      ...this.prices,
+      [type]: res?.price || '0',
+    };
+  };
+
   initPoolInfo = (provider: Eip1193Provider) => {
     this.queryPoolInfo(provider, PoolType.USDT);
     this.queryPoolInfo(provider, PoolType.USDC);
     this.queryPoolInfo(provider, PoolType.ETH);
+    this.initPrice(PoolType.USDT);
+    this.initPrice(PoolType.USDC);
+    this.initPrice(PoolType.ETH);
   };
 
   queryUserStakeInfo = async (provider: Eip1193Provider, user: string) => {
@@ -141,7 +171,7 @@ class PledgeStore {
       if (!approveRes) return null;
     }
 
-    const amountVal = parseUnits(amount, this.currentPoolInfo[1]);
+    const amountVal = this.parseUnits(amount);
 
     try {
       await this.satisfyStakeOperator(provider);
@@ -159,7 +189,7 @@ class PledgeStore {
   };
 
   withdraw = async (provider: Eip1193Provider, amount: string) => {
-    const amountVal = parseUnits(amount, this.currentPoolInfo[1]);
+    const amountVal = this.parseUnits(amount);
 
     try {
       await this.satisfyStakeOperator(provider);
@@ -179,6 +209,14 @@ class PledgeStore {
   refresh = (provider: Eip1193Provider, user: string) => {
     this.initPoolInfo(provider);
     this.queryUserStakeInfo(provider, user);
+  };
+
+  formatUnits = (val?: BigNumberish) => {
+    return formatUnits(val?.toString() || '0', this.currentPoolInfo[1]) || '-';
+  };
+
+  parseUnits = (val?: BigNumberish) => {
+    return parseUnits(val?.toString() || '0', this.currentPoolInfo[1]) || '-';
   };
 }
 
