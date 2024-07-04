@@ -1,7 +1,6 @@
 import { PoolProps } from '@/constant/pledge';
 import { usePledgeContext } from '@/store/Pledge';
 import { cn } from '@nextui-org/react';
-import { formatUnits } from 'ethers';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { FC } from 'react';
@@ -49,7 +48,7 @@ interface Props {
 }
 
 const TotalStakedCard: FC<Props> = ({ poolKey }) => {
-  const { currentType, stakeInfo, currentPoolInfo } = usePledgeContext();
+  const { currentType, stakeInfo, formatUnits } = usePledgeContext();
   const now = Date.now();
 
   const totalLocked = (stakeInfo[4] || []).reduce((p, c) => {
@@ -81,18 +80,14 @@ const TotalStakedCard: FC<Props> = ({ poolKey }) => {
         <div className="text-[#3D3D3D]">Your total staked:</div>
 
         <div className="flex items-end font-semakin text-black leading-none">
-          <div className="text-[4rem]">{formatUnits(stakeInfo[0] || 0, currentPoolInfo[1])}</div>
+          <div className="text-[4rem]">{formatUnits(stakeInfo[0])}</div>
           <div className="text-2xl leading-10 ml-4">{poolKey}</div>
         </div>
       </div>
 
-      <StakeItem
-        locked={false}
-        value={formatUnits((stakeInfo[0] || 0n) - totalLocked, currentPoolInfo[1])}
-        unit={poolKey}
-      />
+      <StakeItem locked={false} value={formatUnits((stakeInfo[0] || 0n) - totalLocked)} unit={poolKey} />
 
-      <StakeItem className="ml-3" locked value={formatUnits(totalLocked, currentPoolInfo[1])} unit={poolKey} />
+      <StakeItem className="ml-3" locked value={formatUnits(totalLocked)} unit={poolKey} />
     </div>
   );
 };

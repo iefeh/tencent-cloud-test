@@ -1,4 +1,5 @@
 import { BrowserProvider, Eip1193Provider, Contract, formatUnits, parseUnits, JsonRpcSigner } from 'ethers';
+import type { BigNumberish } from 'ethers';
 import { makeAutoObservable } from 'mobx';
 import { createContext, useContext } from 'react';
 import pledgeABI from '@/http/abi/pledge.json';
@@ -45,10 +46,10 @@ class PledgeStore {
   }
 
   get currentPoolData() {
-    const [decimal, totalStaked] = this.currentPoolInfo;
+    const [token, decimal, totalStaked] = this.currentPoolInfo;
 
     return {
-      totalValue: `$${formatUnits(totalStaked?.toString() || '0', decimal) || '-'}`,
+      totalValue: `$${this.formatUnits(totalStaked?.toString())}`,
     };
   }
 
@@ -179,6 +180,10 @@ class PledgeStore {
   refresh = (provider: Eip1193Provider, user: string) => {
     this.initPoolInfo(provider);
     this.queryUserStakeInfo(provider, user);
+  };
+
+  formatUnits = (val?: BigNumberish) => {
+    return formatUnits(val?.toString() || '0', this.currentPoolInfo[1]) || '-';
   };
 }
 
