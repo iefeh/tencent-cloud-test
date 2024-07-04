@@ -34,14 +34,12 @@ import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/toastify.css';
-import { Web3ModalProvider } from '@/store/Web3Modal';
-import { NextUIProvider } from '@nextui-org/react';
 import { KEY_INVITE_CODE } from '@/constant/storage';
 import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
-import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
 import useRouteLocale from '@/hooks/useRouteLocale';
+import { NextUIProvider } from '@nextui-org/react';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -49,15 +47,27 @@ BetterScroll.use(Pullup);
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
-  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
+  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
+  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
+  const noNeedInit = noInitList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
-  const bpStore = useBattlePassStore();
+  const getLayout =
+    (Component as BasePage).getLayout ||
+    ((page) => (
+      <RootLayout
+        isInWhiteList={isInWhiteList}
+        hasNoHeader={hasNoHeader}
+        hideLoginCloseButton={(Component as BasePage).hideLoginCloseButton}
+      >
+        {page}
+      </RootLayout>
+    ));
 
   if (router.query.invite_code) {
     localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
@@ -128,6 +138,7 @@ export default function App({ Component, pageProps }: AppProps) {
   usePostMessage();
 
   useEffect(() => {
+    if (noNeedInit) return;
     store.init();
   }, []);
 
@@ -160,25 +171,13 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="preload" as="image" href="/img/loading/bg_moon.png" crossOrigin="anonymous"></link>
       </Head>
 
-      <Web3ModalProvider>
-        <NextUIProvider navigate={router.push}>
-          <MobxContext.Provider value={store}>
-            <BattlePassContext.Provider value={bpStore}>
-              {!isInWhiteList && loading ? (
-                <Loading onLoaded={() => setLoading(false)} />
-              ) : (
-                <RootLayout
-                  isInWhiteList={isInWhiteList}
-                  hasNoHeader={hasNoHeader}
-                  hideLoginCloseButton={(Component as any).hideLoginCloseButton}
-                >
-                  <Component {...pageProps} />
-                </RootLayout>
-              )}
-            </BattlePassContext.Provider>
-          </MobxContext.Provider>
-        </NextUIProvider>
-      </Web3ModalProvider>
+      <NextUIProvider navigate={router.push}>
+        {!isInWhiteList && loading ? (
+          <Loading onLoaded={() => setLoading(false)} />
+        ) : (
+          getLayout(<Component {...pageProps} />)
+        )}
+      </NextUIProvider>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 
