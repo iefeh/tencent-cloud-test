@@ -14,7 +14,7 @@ export default function useDisplayAssets() {
   async function queryData() {
     setLoading(true);
     const res = await queryDisplayNFTListAPI();
-    const list = res || [];
+    const list = res instanceof Array ? res || [] : [];
     if (list.length < MAX_DISPLAY_ASSETS) {
       list.push(...Array(MAX_DISPLAY_ASSETS - list.length).fill(null));
     }

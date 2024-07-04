@@ -27,7 +27,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
     },
   ]);
   const [selectedKey, setSelectedKey] = useState(NFTCategory.SBT);
-  const { scrollRef, data, total, queryData, loading } = useScrollLoad({
+  const { scrollRef, data = [], total, queryData, loading } = useScrollLoad({
     minCount: AA_ASSETS_PAGE_SIZE,
     pageSize: AA_ASSETS_PAGE_SIZE,
     queryFn: queryMyNFTListAPI,

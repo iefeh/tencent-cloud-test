@@ -5,6 +5,7 @@ import { FC, RefObject, useEffect, useState } from 'react';
 import { cn } from '@nextui-org/react';
 import { isMobile } from 'react-device-detect';
 import AssetCard from './AssetCard';
+import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
 
 interface Props {
   scrollRef: RefObject<HTMLDivElement>;
@@ -27,6 +28,7 @@ const Assets: FC<Props & ClassNameProps> = ({
   onPageChange,
 }) => {
   const [selectedNFT, setSelectedNFT] = useState<NFTItem | null>(null);
+  const validDisplayItems = displayItems.filter((item) => !!item);
 
   async function onDisplayClick() {
     if (!selectedNFT) return;
@@ -61,55 +63,15 @@ const Assets: FC<Props & ClassNameProps> = ({
 
   return (
     <div className={cn(['flex flex-col flex-nowrap overflow-hidden', isMobile && 'mt-4', className])}>
-      {/* <div className="shrink-0 w-[28rem] flex">
-        <NFT
-          className="w-[23.625rem] h-[23.625rem]"
-          src={
-            selectedNFT?.token_metadata?.animation_url ||
-            selectedNFT?.token_metadata?.image ||
-            'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_null.png'
-          }
-          isSrcImage={!selectedNFT?.token_metadata?.animation_url}
-          status={selectedNFT?.transaction_status}
-          hideBorder
-        />
-
-        <div className="mt-4 pl-[1.375rem] pr-10">
-          <p className="text-2xl font-semakin pl-4">{selectedNFT?.token_metadata?.name || '--'}</p>
-
-          <p className="text-sm text-[#999999] mt-6 pl-4">{selectedNFT?.token_metadata?.description || '--'}</p>
-
-          <div className="text-sm mt-7 flex justify-between items-center pl-4">
-            <div>
-              {selectedNFT?.confirmed_time ? dayjs(selectedNFT?.confirmed_time).format('YYYY-MM-DD HH:mm:ss') : '--'}{' '}
-              Obtained
-            </div>
-          </div>
-
-          <div className="mt-12 flex justify-between items-center gap-x-4">
-            <LGButton
-              className="!p-0 leading-none bg-transparent !bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_btn_display.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 !text-[#5D3C13] !border-none data-[disabled=true]:grayscale"
-              label="Display"
-              actived
-              disabled={
-                !selectedNFT ||
-                validDisplayItems.length >= MAX_DISPLAY_ASSETS ||
-                validDisplayItems.some((item) => item.token_id === selectedNFT?.token_id)
-              }
-              loading={displayLoading}
-              onClick={onDisplayClick}
-            />
-
-            <LGButton
-              className="!p-0 leading-none bg-transparent !bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_btn_use_now.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 border-none !text-white"
-              label="Use Now"
-              disabled={!selectedNFT?.expolorer_url}
-              link={selectedNFT?.expolorer_url}
-            />
-          </div>
-        </div>
-      </div> */}
-      <AssetCard item={selectedNFT} onSwitchDisplay={onDisplayClick} />
+      <AssetCard
+        item={selectedNFT}
+        isDisplayed={
+          selectedNFT && validDisplayItems.length < MAX_DISPLAY_ASSETS
+            ? validDisplayItems.some((item) => item?.token_id === selectedNFT.token_id)
+            : undefined
+        }
+        onSwitchDisplay={onDisplayClick}
+      />
 
       <div ref={scrollRef} className="flex-1 relative overflow-hidden mt-4">
         <div className={cn(['flex flex-nowrap flex-1 content-start w-max', isMobile && 'justify-center gap-6'])}>

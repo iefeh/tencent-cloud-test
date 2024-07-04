@@ -8,13 +8,15 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import AssetModal from './AssetModal';
 import { updateDisplayNFTListAPI } from '@/http/services/astrark';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 interface Props {
+  loading?: boolean;
   items: (Partial<NFTItem> | null)[];
   onUpdate?: () => void;
 }
 
-const DisplayAssets: FC<Props> = ({ items, onUpdate }) => {
+const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   const [currentItem, setCurrentItem] = useState<Partial<NFTItem> | null>(null);
   const disclosure = useDisclosure();
 
@@ -52,9 +54,9 @@ const DisplayAssets: FC<Props> = ({ items, onUpdate }) => {
   }
 
   return (
-    <>
+    <div className="relative mt-[4.375rem] overflow-hidden w-[78.25rem] aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat">
       <Image
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[81.625rem] aspect-[1306/170] z-10"
+        className="absolute top-[-4.375rem] left-1/2 -translate-x-1/2 w-[81.625rem] aspect-[1306/170] z-10"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/title_display.png"
         alt=""
         width={2612}
@@ -62,42 +64,42 @@ const DisplayAssets: FC<Props> = ({ items, onUpdate }) => {
         unoptimized
       />
 
-      <div className="w-[78.25rem] mt-[4.375rem] aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat">
-        <Swiper className="w-[calc(100%_-_16.75rem)] mt-[9.0625rem] !mx-[8.375rem]" slidesPerView="auto">
-          {items.map((item, index) => (
-            <SwiperSlide
-              key={index}
-              className="!w-auto px-8 [&:first-child]:pl-0 [&:last-child]:pr-0 [&:not(:first-child)]:border-l-1 border-[#101F2C]"
-            >
-              <div className="relative w-[12.5rem]">
-                <NFT
-                  className="w-full h-auto aspect-square"
-                  name={item ? item.token_metadata?.name || '--' : '　'}
-                  src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
-                  isSrcImage={!item?.token_metadata?.animation_url}
-                  status={item?.transaction_status}
-                  onClick={() => onItemClick(item)}
-                />
+      <Swiper className="w-[calc(100%_-_16.75rem)] mt-[9.0375rem] !mx-[8.375rem]" slidesPerView="auto">
+        {items.map((item, index) => (
+          <SwiperSlide
+            key={index}
+            className="!w-auto px-8 [&:first-child]:pl-0 [&:last-child]:pr-0 [&:not(:first-child)]:border-l-1 border-[#101F2C]"
+          >
+            <div className="relative w-[12.5rem]">
+              <NFT
+                className="w-full h-auto aspect-square"
+                name={item ? item.token_metadata?.name || '--' : '　'}
+                src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
+                isSrcImage={!item?.token_metadata?.animation_url}
+                status={item?.transaction_status}
+                onClick={() => onItemClick(item)}
+              />
 
-                <div className="font-semakin text-xs text-basic-yellow absolute -left-1 top-0">
-                  {item?.type || '　'}
-                </div>
+              <div className="font-semakin text-xs leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem]">
+                {item?.type || '　'}
               </div>
+            </div>
 
-              <div className="text-xs text-[#999999] mt-4">
-                {item
-                  ? item.confirmed_time
-                    ? dayjs(item.confirmed_time).format('YYYY-MM-DD') + ' Obtained'
-                    : '　'
-                  : '--'}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+            <div className="text-xs text-[#999999] mt-4">
+              {item
+                ? item.confirmed_time
+                  ? dayjs(item.confirmed_time).format('YYYY-MM-DD') + ' Obtained'
+                  : '　'
+                : '--'}
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {loading && <CircularLoading />}
 
       {currentItem && <AssetModal item={currentItem} disclosure={disclosure} onSwitchDisplay={onSwitchDisplay} />}
-    </>
+    </div>
   );
 };
 

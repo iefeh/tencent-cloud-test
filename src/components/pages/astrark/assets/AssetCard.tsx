@@ -3,7 +3,7 @@ import NFT from './NFT';
 import type { NFTItem } from '@/http/services/mint';
 import dayjs from 'dayjs';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import { cn } from '@nextui-org/react';
+import { Tooltip, cn } from '@nextui-org/react';
 
 interface Props {
   inModal?: boolean;
@@ -45,9 +45,13 @@ const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, onSwitchDisplay }) =
       />
 
       <div className={cn(['mt-4 pl-[1.375rem] pr-10', inModal ? '' : 'pb-8'])}>
-        <p className="text-2xl font-semakin pl-4 text-[#F5C98D]">{item?.token_metadata?.name || '--'}</p>
+        <p className="text-2xl leading-7 font-semakin pl-4 text-[#F5C98D]">{item?.token_metadata?.name || '--'}</p>
 
-        <p className="text-sm text-[#999999] mt-6 pl-4">{item?.token_metadata?.description || '--'}</p>
+        <Tooltip content={<div className="max-w-[25rem]">{item?.token_metadata?.description || '--'}</div>}>
+          <p className={cn(['text-sm text-[#999999] mt-6 pl-4', inModal ? 'line-clamp-3' : 'line-clamp-4'])}>
+            {item?.token_metadata?.description || '--'}
+          </p>
+        </Tooltip>
 
         <div className="text-sm mt-7 flex justify-between items-center pl-4">
           <div>{item?.confirmed_time ? dayjs(item?.confirmed_time).format('YYYY-MM-DD HH:mm:ss') : '--'} Obtained</div>

@@ -5,11 +5,11 @@ import { observer } from 'mobx-react-lite';
 import { NextPage } from 'next';
 
 const AssetsPage: NextPage & BasePage = () => {
-  const { data, queryData } = useDisplayAssets();
+  const { data, queryData, loading } = useDisplayAssets();
 
   return (
     <section className="relative w-screen bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg.png')] bg-top bg-contain bg-no-repeat h-[300vh] flex flex-col items-center">
-      <DisplayAssets items={data} onUpdate={queryData} />
+      <DisplayAssets items={data} loading={loading} onUpdate={queryData} />
 
       <MyAssets displayItems={data} onUpdate={queryData} />
     </section>
