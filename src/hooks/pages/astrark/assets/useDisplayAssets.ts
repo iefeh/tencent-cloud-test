@@ -24,7 +24,7 @@ export default function useDisplayAssets() {
 
   useEffect(() => {
     if (!router.query.token) return;
-    setToken((router.query.token as string) || '');
+    setToken('Bearer ' + router.query.token);
   }, [router.query.token]);
 
   useEffect(() => {
