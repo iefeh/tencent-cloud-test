@@ -1,5 +1,4 @@
 import type { NFTItem } from '@/http/services/mint';
-import { Disclosure } from '@/types';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { FC } from 'react';
 import AssetCard from './AssetCard';
