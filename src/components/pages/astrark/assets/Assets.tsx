@@ -102,7 +102,7 @@ const Assets: FC<Props & ClassNameProps> = ({
                 />
 
                 {displayed && (
-                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs text-basic-yellow font-semakin px-1 border-1 border-basic-yellow/10 rounded-md">
+                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs text-basic-yellow px-1 border-1 border-basic-yellow/10 rounded-md">
                     Displayed
                   </div>
                 )}

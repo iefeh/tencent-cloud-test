@@ -54,7 +54,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   }
 
   return (
-    <div className="relative mt-[4.375rem] overflow-hidden w-[78.25rem] aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat">
+    <div className="relative mt-[4.375rem] overflow-hidden w-[78.25rem] aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat font-fzdb">
       <Image
         className="absolute top-[-4.375rem] left-1/2 -translate-x-1/2 w-[81.625rem] aspect-[1306/170] z-10"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/title_display.png"
@@ -80,12 +80,12 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
                 onClick={() => onItemClick(item)}
               />
 
-              <div className="font-semakin text-lg leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem]">
+              <div className="text-lg leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem]">
                 {item?.type || '　'}
               </div>
             </div>
 
-            <div className="text-xs text-[#999999] mt-4">
+            <div className="text-base text-[#999999] mt-4">
               {item
                 ? item.confirmed_time
                   ? dayjs(item.confirmed_time).format('YYYY-MM-DD') + ' Obtained'

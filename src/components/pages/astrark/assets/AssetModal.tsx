@@ -15,7 +15,7 @@ const AssetModal: FC<Props> = ({ item, disclosure, onSwitchDisplay }) => {
       isOpen={disclosure.isOpen}
       onOpenChange={disclosure.onOpenChange}
       classNames={{
-        base: "bg-transparent shadow-none max-w-[51.6875rem] aspect-[827/416] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_modal.png')] bg-contain bg-no-repeat pl-[3.125rem] pr-16 pb-16 justify-between",
+        base: "bg-transparent shadow-none max-w-[51.6875rem] aspect-[827/416] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_modal.png')] bg-contain bg-no-repeat pl-[3.125rem] pr-16 pb-16 justify-between font-fzdb",
         header: 'pt-10 pl-0 leading-none',
         body: 'p-0 block !flex-0',
         closeButton:

@@ -27,7 +27,13 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
     },
   ]);
   const [selectedKey, setSelectedKey] = useState(NFTCategory.SBT);
-  const { scrollRef, data = [], total, queryData, loading } = useScrollLoad({
+  const {
+    scrollRef,
+    data = [],
+    total,
+    queryData,
+    loading,
+  } = useScrollLoad({
     minCount: AA_ASSETS_PAGE_SIZE,
     pageSize: AA_ASSETS_PAGE_SIZE,
     queryFn: queryMyNFTListAPI,
@@ -55,8 +61,10 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
   }, [selectedKey, token]);
 
   return (
-    <div className="w-[78.25rem] aspect-[1252/759] mt-5 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_assets_card.png')] bg-contain bg-no-repeat pl-5 pr-8 pt-16 flex flex-col">
-      <div className="font-semakin text-basic-yellow text-2xl pl-11">My Asset ( {total} )</div>
+    <div className="w-[78.25rem] aspect-[1252/759] mt-5 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_assets_card.png')] bg-contain bg-no-repeat pl-5 pr-8 pt-16 flex flex-col font-fzdb">
+      <div className="font-fzsb text-[2.5rem] leading-[1.875rem] pl-11 text-transparent bg-gradient-to-t from-[#E4BA80] to-[#FDEFBC] bg-clip-text">
+        My Asset<span className="text-3xl leading-none"> ( {total} )</span>
+      </div>
 
       <div className="min-h-[25rem] mt-12 relative flex flex-nowrap gap-8">
         <Tabs
@@ -67,7 +75,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
             base: 'w-[13.9375rem] shrink-0',
             tabList: 'gap-5 flex-col w-full relative rounded-none p-0 bg-transparent',
             cursor: 'w-full bg-transparent',
-            tab: "px-0 font-semakin w-full h-[5.125rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_tab_unselected.png')] bg-no-repeat bg-contain data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_tab_selected.png')]",
+            tab: "px-0 w-full h-[5.125rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_tab_unselected.png')] bg-no-repeat bg-contain data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_tab_selected.png')]",
             tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
           }}
           onSelectionChange={onSelectionChange}
