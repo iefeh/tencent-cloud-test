@@ -25,20 +25,18 @@ const ValueItem: FC<Props> = ({ icon, label, value, labelTips }) => {
         <div className="text-5xl text-[#EBDDB6]">{value}</div>
         <div className="text-transparent text-sm leading-none bg-clip-text bg-gradient-to-r from-[#8C7056] to-[#DAA96F] inline-flex items-center gap-2">
           {label}
-          <Tooltip
-            content={
-              <div className="max-w-[25rem]">This is the current total staked value of all staking pools.</div>
-            }
-          >
-            <Image
-              className="w-[1.0625rem] h-[1.0625rem] object-contain relative -top-1px"
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
-              alt=""
-              width={17}
-              height={17}
-              unoptimized
-            />
-          </Tooltip>
+          {labelTips && (
+            <Tooltip content={<div className="max-w-[25rem]">{labelTips}</div>}>
+              <Image
+                className="w-[1.0625rem] h-[1.0625rem] object-contain relative -top-1px"
+                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
+                alt=""
+                width={17}
+                height={17}
+                unoptimized
+              />
+            </Tooltip>
+          )}
         </div>
       </div>
     </div>
