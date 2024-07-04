@@ -80,7 +80,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
                 onClick={() => onItemClick(item)}
               />
 
-              <div className="font-semakin text-xs leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem]">
+              <div className="font-semakin text-lg leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem]">
                 {item?.type || '　'}
               </div>
             </div>
