@@ -1,7 +1,6 @@
 import { StakeFactors } from '@/constant/pledge';
 import { usePledgeContext } from '@/store/Pledge';
 import { Tooltip, cn } from '@nextui-org/react';
-import { parseUnits } from 'ethers';
 import Image from 'next/image';
 import { FC } from 'react';
 import BN from 'bignumber.js';
@@ -13,14 +12,12 @@ interface Props {
 }
 
 const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
-  const { currentPoolInfo } = usePledgeContext();
+  const { currentPoolInfo, parseUnits } = usePledgeContext();
 
   function getEstimatedRewardPerBlock() {
     if (!currentPoolInfo[1] || !currentPoolInfo[2] || !currentPoolInfo[3]) return '0';
     // 计算用户资产占比
-    const userShare = BN(parseUnits(stakeValue || '0', currentPoolInfo[1]).toString()).div(
-      BN(currentPoolInfo[2].toString()),
-    );
+    const userShare = BN(parseUnits(stakeValue || '0').toString()).div(BN(currentPoolInfo[2].toString()));
     const lockFactor = BN(StakeFactors[+duration]).div(100);
 
     // 计算每个区块的预估奖励点数

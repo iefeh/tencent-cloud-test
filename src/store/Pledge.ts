@@ -142,7 +142,7 @@ class PledgeStore {
       if (!approveRes) return null;
     }
 
-    const amountVal = parseUnits(amount, this.currentPoolInfo[1]);
+    const amountVal = this.parseUnits(amount);
 
     try {
       await this.satisfyStakeOperator(provider);
@@ -160,7 +160,7 @@ class PledgeStore {
   };
 
   withdraw = async (provider: Eip1193Provider, amount: string) => {
-    const amountVal = parseUnits(amount, this.currentPoolInfo[1]);
+    const amountVal = this.parseUnits(amount);
 
     try {
       await this.satisfyStakeOperator(provider);
@@ -184,6 +184,10 @@ class PledgeStore {
 
   formatUnits = (val?: BigNumberish) => {
     return formatUnits(val?.toString() || '0', this.currentPoolInfo[1]) || '-';
+  };
+
+  parseUnits = (val?: BigNumberish) => {
+    return parseUnits(val?.toString() || '0', this.currentPoolInfo[1]) || '-';
   };
 }
 
