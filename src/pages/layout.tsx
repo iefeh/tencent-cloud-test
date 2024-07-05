@@ -8,6 +8,10 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
 import LoginModal from './components/common/LoginModal';
+import { Web3ModalProvider } from '@/store/Web3Modal';
+import { useStore } from '@/store';
+import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
+import { MobxContext } from './_app';
 
 export default function RootLayout({
   children,
@@ -20,6 +24,8 @@ export default function RootLayout({
   hasNoHeader: boolean;
   hideLoginCloseButton?: boolean;
 }) {
+  const store = useStore();
+  const bpStore = useBattlePassStore();
   const content = (
     <>
       {hasNoHeader || <Header />}
@@ -31,15 +37,16 @@ export default function RootLayout({
   );
 
   return (
-    <React.Fragment>
-      <LineBorder />
+    <Web3ModalProvider>
+      <MobxContext.Provider value={store}>
+        <BattlePassContext.Provider value={bpStore}>
+          <React.Fragment>
+            <LineBorder />
 
-      {/* <main
-        className="flex w-full h-screen flex-col items-center justify-between relative bg-black"
-        id="main-layout"
-      > */}
-      {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
-      {/* </main> */}
-    </React.Fragment>
+            {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
+          </React.Fragment>
+        </BattlePassContext.Provider>
+      </MobxContext.Provider>
+    </Web3ModalProvider>
   );
 }

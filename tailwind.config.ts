@@ -49,15 +49,15 @@ const config: Config = {
         },
         shaking: {
           '0%': {
-            transform: 'rotate(-6deg)'
+            transform: 'rotate(-6deg)',
           },
           '50%': {
-            transform: 'rotate(6deg)'
+            transform: 'rotate(6deg)',
           },
           '100%': {
-            transform: 'rotate(-6deg)'
-          }
-        }
+            transform: 'rotate(-6deg)',
+          },
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -68,6 +68,15 @@ const config: Config = {
         decima: ['decima'],
         poppins: ['poppins'],
         'poppins-medium': ['poppins-medium'],
+        fzdb: ['fzdb'],
+        fzsb: ['fzsb'],
+        'shs-bold': ['shs-bold'],
+        'shs-ex-light': ['shs-ex-light'],
+        'shs-heavy': ['shs-heavy'],
+        'shs-light': ['shs-light'],
+        'shs-medium': ['shs-medium'],
+        shs: ['shs'],
+        'shs-regular': ['shs-regular'],
       },
       colors: {
         'light-yellow': '#E7D4A9',

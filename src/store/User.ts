@@ -42,6 +42,15 @@ class UserStore {
     });
   }
 
+  setToken = (val?: string) => {
+    this.token = val || '';
+    if (val) {
+      localStorage.setItem(KEY_AUTHORIZATION, val);
+    } else {
+      localStorage.removeItem(KEY_AUTHORIZATION);
+    }
+  };
+
   init = () => {
     this.token = localStorage.getItem(KEY_AUTHORIZATION) || '';
     if (this.token) this.getUserInfo();
