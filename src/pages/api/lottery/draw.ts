@@ -25,7 +25,22 @@ import * as Sentry from '@sentry/nextjs';
 const defaultErrorResponse = response.success({
   verified: false,
   message: "Network busy, please try again later.",
-})
+});
+
+const noPrizeReward = {
+  item_id: "no_prize",
+  reward_type: LotteryRewardType.NoPrize,
+  reward_name: "No Prize This Time, Give It Another Shot!",
+  reward_claim_type: 1,
+  reward_level: 1,
+  icon_url: "",
+  first_three_draw_probability: 0,
+  next_six_draw_probability: 0,
+  inventory_amount: null,
+  min_reward_draw_amount: 0,
+  guaranteed_draw_count: [],
+  amount: 0
+};
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
@@ -210,26 +225,28 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       { session: session });
     // 扣减奖池总奖品数量
     lotteryPool.rewards.map(async reward => {
-      let inventoryDelta = itemInventoryDeltaMap.get(reward.item_id);
-      if (reward.inventory_amount !== null && inventoryDelta && inventoryDelta < 0) {
+      let inventoryCost = itemInventoryDeltaMap.get(reward.item_id) as number;
+      if (reward.inventory_amount) {
         await LotteryPool.findOneAndUpdate(
           { lottery_pool_id: lotteryPoolId, "rewards.item_id": reward.item_id }, 
-          { $inc: { "rewards.$[elem].inventory_amount" : inventoryDelta } }, 
+          { $inc: { "rewards.$[elem].inventory_amount" : -inventoryCost } }, 
           { arrayFilters: [{ "elem.item_id": reward.item_id }], session: session });
       }
     });
     // 写入用户中奖历史
-    let userDrawHistory = new UserLotteryDrawHistory({
-      draw_id: drawId,
-      draw_time: now,
-      user_id: userId,
-      lottery_pool_id: lotteryPoolId,
-      rewards: result,
-      need_verify_twitter: rewardNeedVerify,
-      update_time: now
-    });
-    await userDrawHistory.save();
-  });
+    await UserLotteryDrawHistory.updateOne(
+      { draw_id: drawId },
+      {
+        user_id: userId,
+        draw_time: now,
+        lottery_pool_id: lotteryPoolId,
+        rewards: result,
+        need_verify_twitter: rewardNeedVerify,
+        update_time: now
+      }, 
+      { session: session, upsert: true }
+    );
+  }, 3);
   return {
     verified: true,
     message: "Congratulations on winning the following rewards!",
@@ -256,11 +273,15 @@ function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: numb
       if (random <= drawThresholds[j]) {
         reward = availableRewards[j];
         // 计算库存扣减数量, 注意: 保底奖品不考虑库存
-        let inventoryDelta = -1;
-        if (itemInventoryDeltaMap.has(reward.item_id)) {
-          inventoryDelta = itemInventoryDeltaMap.get(reward.item_id)! - 1;
+        if (reward.inventory_amount) {
+          const cost = itemInventoryDeltaMap.has(reward.item_id)? itemInventoryDeltaMap.get(reward.item_id) as number + 1 : 1;
+          if (cost > reward.inventory_amount) {
+            reward = noPrizeReward;
+          }
+          if (reward.reward_type !== LotteryRewardType.NoPrize) {
+            itemInventoryDeltaMap.set(reward.item_id, cost);
+          }
         }
-        itemInventoryDeltaMap.set(reward.item_id, inventoryDelta);
         break;
       }
     }
