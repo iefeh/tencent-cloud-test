@@ -87,8 +87,13 @@ export default function useFrameAni({
 
     initImagesPromise.current = new Promise(async (resolve) => {
       imgs.current = Array(count).fill(null);
+
       const files = await getZipFiles(url);
-      if (!files) return false;
+      if (!files) {
+        onFinished?.();
+        resolve(false);
+        return;
+      }
 
       await Promise.all(
         Array(count)
