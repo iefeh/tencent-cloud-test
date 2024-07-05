@@ -2,33 +2,37 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 
 async function doTransaction<T>(callback: (session: any) => Promise<T>, maxRetryTimes: number = 0): Promise<T> {
     let retry = 0;
-    const conn = connectToMongoDbDev();
+
     while (true) {
-        const session = await conn.startSession();
-        session.startTransaction();
         try {
-            const result = await callback(session);
-            await session.commitTransaction();
-            return result;
+            return await executeTransaction(callback);
         } catch (error) {
-            await session.abortTransaction();
-            // Can retry commit
-            if (isMongoDbTransactionError(error) && retry < maxRetryTimes) {
+            if (retry < maxRetryTimes) {
                 retry += 1;
-                console.log(error);
+                console.log(`Retrying transaction... attempt ${retry}`);
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 添加延迟
                 continue;
             } else {
                 throw error;
             }
-        } finally {
-            session.endSession();
         }
     }
 }
 
-function isMongoDbTransactionError(error: any): boolean {
-    return error.hasErrorLabel("TransientTransactionError") || error.hasErrorLabel("UnknownTransactionCommitResult");
+async function executeTransaction<T>(callback: (session: any) => Promise<T>): Promise<T> {
+    const conn = connectToMongoDbDev();
+    const session = await conn.startSession();
+    session.startTransaction();
+    try {
+        const result = await callback(session);
+        await session.commitTransaction();
+        return result;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        session.endSession();
+    }
 }
 
 export default doTransaction;
-
