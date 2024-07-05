@@ -43,7 +43,7 @@ export interface IUserLotteryDrawHistory extends Document {
 }
 
 const UserLotteryDrawHistorySchema = new Schema<IUserLotteryDrawHistory>({
-    draw_id: { type: String},
+    draw_id: { type: String },
     draw_time: { type: Number },
     user_id: { type: String},
     lottery_pool_id: { type: String },

@@ -219,17 +219,19 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       }
     });
     // 写入用户中奖历史
-    let userDrawHistory = new UserLotteryDrawHistory({
-      draw_id: drawId,
-      draw_time: now,
-      user_id: userId,
-      lottery_pool_id: lotteryPoolId,
-      rewards: result,
-      need_verify_twitter: rewardNeedVerify,
-      update_time: now
-    });
-    await userDrawHistory.save();
-  });
+    await UserLotteryDrawHistory.updateOne(
+      { draw_id: drawId },
+      {
+        user_id: userId,
+        draw_time: now,
+        lottery_pool_id: lotteryPoolId,
+        rewards: result,
+        need_verify_twitter: rewardNeedVerify,
+        update_time: now
+      }, 
+      { session: session, upsert: true }
+    );
+  }, 3);
   return {
     verified: true,
     message: "Congratulations on winning the following rewards!",
