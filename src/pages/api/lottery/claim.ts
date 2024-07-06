@@ -88,7 +88,7 @@ async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lot
     case LotteryRewardType.MoonBeam: 
       const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, rewardId, userReward.amount, drawTimes);
       await doTransaction( async session => {
-        await moonBeamAudit.save(session);
+        await moonBeamAudit.save({ session });
         await increaseUserMoonBeam(userId, userReward.amount, session);
         await updateLotteryDrawHistory(drawId, rewardId, now, session);
       }); 
