@@ -111,7 +111,7 @@ export default function useFrameAni({
   }
 
   async function aniLoop(el = performance.now()) {
-    if (!ctxRef.current || imgs.current.length < count) {
+    if (!ctxRef.current || imgs.current.length < count || !imgs.current[0]) {
       onFinished?.();
       return;
     }
