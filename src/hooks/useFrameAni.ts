@@ -111,7 +111,10 @@ export default function useFrameAni({
   }
 
   async function aniLoop(el = performance.now()) {
-    if (!ctxRef.current || imgs.current.length < count) return;
+    if (!ctxRef.current || imgs.current.length < count) {
+      onFinished?.();
+      return;
+    }
     if (el - lastElRef.current < frameEl) {
       rafId.current = requestAnimationFrame(aniLoop);
       return;
