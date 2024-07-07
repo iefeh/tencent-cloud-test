@@ -147,7 +147,7 @@ async function verify(lotteryPoolId: string, drawCount: number, lotteryTicketCos
 async function draw(userId: string, lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, userLotteryPool: IUserLotteryPool): Promise<any> {
   const lockKey = `claim_draw_lock:${lotteryPoolId}`;
   // 锁定奖池1秒
-  let interval: number = 1;
+  let interval: number = 2;
   let retry: number = 0;
   let locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
   // 如果奖池已被他人锁定, 重试10次
@@ -204,8 +204,8 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   }
   // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
   const drawId = uuidv4();
+  const now = Date.now();
   await doTransaction(async session => {
-    const now = Date.now();
     // 扣减用户mb和通用抽奖券
     await User.updateOne({ user_id: userId }, { $inc: { moon_beam: -mbCost, lottery_ticket_amount: -lotteryTicketCost }}, { session: session });
     // 扣减用户奖池抽奖券
@@ -218,21 +218,16 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       { session: session, upsert: true });
     // 增加用户生涯总抽奖次数并检查徽章
     await incrUserMetric(userId, Metric.TotalLotteryDrawAmount, drawCount, session);
-    // 增加总抽奖次数
-    await LotteryPool.findOneAndUpdate(
-      { lottery_pool_id: lotteryPoolId }, 
-      { $inc: { total_draw_amount: drawCount }, updated_time: now }, 
-      { session: session });
     // 扣减奖池总奖品数量
-    lotteryPool.rewards.map(async reward => {
+    for (let reward of lotteryPool.rewards) {
       let inventoryCost = itemInventoryDeltaMap.get(reward.item_id) as number;
-      if (reward.inventory_amount) {
+      if (reward.inventory_amount && inventoryCost) {
         await LotteryPool.findOneAndUpdate(
           { lottery_pool_id: lotteryPoolId, "rewards.item_id": reward.item_id }, 
           { $inc: { "rewards.$[elem].inventory_amount" : -inventoryCost } }, 
           { arrayFilters: [{ "elem.item_id": reward.item_id }], session: session });
       }
-    });
+    }
     // 写入用户中奖历史
     await UserLotteryDrawHistory.updateOne(
       { draw_id: drawId },
@@ -247,6 +242,10 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       { session: session, upsert: true }
     );
   }, 3);
+  // 增加总抽奖次数
+  await LotteryPool.findOneAndUpdate(
+    { lottery_pool_id: lotteryPoolId }, 
+    { $inc: { total_draw_amount: drawCount } });
   return {
     verified: true,
     message: "Congratulations on winning the following rewards!",
