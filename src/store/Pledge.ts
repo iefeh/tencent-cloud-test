@@ -92,9 +92,11 @@ class PledgeStore {
   satisfyErc20Operator = async (provider: Eip1193Provider) => {
     if (this.erc20Operator?.provider === provider) return;
 
+    const contractAddress = PoolProps[this.currentType]?.contract || '';
+    if (!contractAddress) return;
     const bp = new BrowserProvider(provider);
     const signer = await bp.getSigner();
-    const contract = new Contract(process.env.NEXT_PUBLIC_PLEDGE_CONTRACT_USDC!, erc20ABI, signer);
+    const contract = new Contract(contractAddress, erc20ABI, signer);
     this.erc20Operator = {
       provider,
       bp,
