@@ -11,11 +11,11 @@ interface Props {
 
 const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
   const [withdrawValue, setWithdrawValue] = useState('');
-  const { withdraw, refresh, formatUnits, totalLocked } = usePledgeContext();
+  const { withdraw, refresh, formatUnits, stakeInfo, totalLocked } = usePledgeContext();
   const [loading, setLoading] = useState(false);
   const { walletProvider } = useWeb3ModalProvider();
   const { address } = useWeb3ModalAccount();
-  const balance = formatUnits(totalLocked);
+  const balance = formatUnits((stakeInfo[3] || 0n) - totalLocked);
 
   async function onWithdraw() {
     setLoading(true);
