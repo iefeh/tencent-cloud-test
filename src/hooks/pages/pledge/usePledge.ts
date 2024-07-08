@@ -6,7 +6,7 @@ import { usePledgeContext } from '@/store/Pledge';
 export default function usePledge() {
   const { connected, address } = useWallet();
   const { walletProvider } = useWeb3ModalProvider();
-  const { currentType, initPoolInfo, queryUserStakeInfo } = usePledgeContext();
+  const { currentType, initPoolInfo, initUserStakeInfos, queryCurrentBalance } = usePledgeContext();
 
   useEffect(() => {
     if (!walletProvider) return;
@@ -15,7 +15,8 @@ export default function usePledge() {
 
   useEffect(() => {
     if (!connected || !walletProvider || !address) return;
-    queryUserStakeInfo(walletProvider, address);
+    initUserStakeInfos(walletProvider, address, false);
+    queryCurrentBalance(walletProvider, address);
   }, [connected, currentType]);
 
   return { connected };

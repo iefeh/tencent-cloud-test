@@ -2,10 +2,9 @@ import { FC } from 'react';
 import ValueItem from './ValueItem';
 import { usePledgeContext } from '@/store/Pledge';
 import { observer } from 'mobx-react-lite';
-import usePledge from '@/hooks/pages/pledge/usePledge';
 
 const ValueItems: FC = () => {
-  const { poolsTotalValue, stakeInfo } = usePledgeContext();
+  const { poolsTotalValue, stakeInfo, totalStakingPoints } = usePledgeContext();
 
   return (
     <div className="flex justify-center items-center mt-5 gap-[6.5rem]">
@@ -13,7 +12,7 @@ const ValueItems: FC = () => {
         <ValueItem
           icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_locked_value.png"
           label="My Staking Points"
-          value={stakeInfo[2]?.toLocaleString('en') || '-'}
+          value={Number(totalStakingPoints).toLocaleString('en') || '-'}
         />
       )}
 

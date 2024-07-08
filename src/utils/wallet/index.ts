@@ -69,7 +69,7 @@ export async function handleWalletExecutionError(error?: InformableError) {
   let tips = '';
 
   if (msg.toLowerCase().indexOf('execution reverted:') > -1) {
-    tips = msg.match(/execution reverted\:(.*)$/)?.groups?.[1] || '';
+    tips = msg.match(/execution reverted\:\s*"([^"]+)"/)?.[1] || '';
   }
 
   toast.error(tips || 'Transaction failed, please try again later.');

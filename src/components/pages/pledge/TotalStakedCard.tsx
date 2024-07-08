@@ -48,13 +48,7 @@ interface Props {
 }
 
 const TotalStakedCard: FC<Props> = ({ poolKey }) => {
-  const { currentType, stakeInfo, formatUnits } = usePledgeContext();
-  const now = Date.now();
-
-  const totalLocked = (stakeInfo[4] || []).reduce((p, c) => {
-    if (c[6] !== 0n || (c[1] * 1000n <= BigInt(now))) return p;
-    return p + c[0];
-  }, 0n);
+  const { currentType, stakeInfo, formatUnits, totalLocked } = usePledgeContext();
 
   return (
     <div className="w-full aspect-[1408/121] relative mt-6 flex items-center py-ten pl-[2.375rem] pr-[1.125rem]">
