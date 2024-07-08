@@ -5,6 +5,7 @@ import {UserContextRequest} from "@/lib/middleware/auth";
 import {redis} from "@/lib/redis/client";
 import axios from "axios";
 import logger from "@/lib/logger/winstonLogger";
+import {HttpsProxyGet} from "@/lib/common/request";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -23,7 +24,7 @@ router.get(async (req, res) => {
     // https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT
     let price = await redis.get(`token_price:${token}`);
     if (!price) {
-        const response = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${token}USDT`);
+        const response = await HttpsProxyGet(`https://api.binance.com/api/v3/ticker/price?symbol=${token}USDT`);
         if (response.data && response.data.price) {
             logger.info(`Get token price ${token} from binance: ${response.data.price}`);
             price = response.data.price!;
