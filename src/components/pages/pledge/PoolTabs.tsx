@@ -11,7 +11,7 @@ import { usePledgeContext } from '@/store/Pledge';
 import { observer } from 'mobx-react-lite';
 
 const PoolTabs: FC = () => {
-  const { currentType, setCurrentType, currentPoolInfo, currentPoolData, formatUnits } = usePledgeContext();
+  const { currentType, setCurrentType, currentPoolInfo, currentPoolData } = usePledgeContext();
   const tabs = [
     {
       key: PoolType.USDT,

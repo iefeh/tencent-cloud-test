@@ -11,11 +11,11 @@ interface Props {
 
 const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
   const [withdrawValue, setWithdrawValue] = useState('');
-  const { stakeInfo, withdraw, refresh, formatUnits } = usePledgeContext();
+  const { withdraw, refresh, formatUnits, stakeInfo, totalLocked } = usePledgeContext();
   const [loading, setLoading] = useState(false);
   const { walletProvider } = useWeb3ModalProvider();
   const { address } = useWeb3ModalAccount();
-  const balance = formatUnits(stakeInfo[3] || 0n);
+  const balance = formatUnits((stakeInfo[3] || 0n) - totalLocked);
 
   async function onWithdraw() {
     setLoading(true);
@@ -38,12 +38,13 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           title={`Withdraw ${poolKey}`}
           caption={
             <div className="font-poppins font-semibold">
-              Balance <span className="text-basic-yellow">{balance}</span> <span className="uppercase">{poolKey}</span>
+              Balance <span className="text-basic-yellow">{balance.toString()}</span>{' '}
+              <span className="uppercase">{poolKey}</span>
             </div>
           }
           nodeType="progress"
           nodes={5}
-          total={+balance}
+          total={Number(balance)}
           appendLabel={poolKey}
           onValueChange={setWithdrawValue}
         />
@@ -52,7 +53,7 @@ const WithdrawTabPanel: FC<Props> = ({ poolKey }) => {
           className="uppercase text-xl font-semibold mt-[4.8125rem]"
           label="Withdraw"
           actived
-          disabled={+withdrawValue <= 0 || +withdrawValue > +balance}
+          disabled={+withdrawValue <= 0 || +withdrawValue > Number(balance)}
           loading={loading}
           onClick={onWithdraw}
         />

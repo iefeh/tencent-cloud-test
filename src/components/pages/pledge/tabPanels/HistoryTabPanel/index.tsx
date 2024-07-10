@@ -51,22 +51,30 @@ const HistoryTabPanel: FC = () => {
             </div>
           }
         >
-          {history.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell>{dayjs(parseInt(((row[4] || 0n) * 1000n).toString())).format(FORMAT_TIME)}</TableCell>
-              <TableCell>
-                {formatUnits(row[0])}
-                <span className="uppercase"> {currentType}</span>
-              </TableCell>
-              <TableCell>{dayjs.duration(+((row[1] - row[4]) * 1000n).toString()).asWeeks()} Weeks</TableCell>
-              <TableCell>{row[5].toString()}</TableCell>
-              <TableCell>
-                {formatUnits(row[0] - row[7])} <span className="uppercase"> {currentType}</span>
-              </TableCell>
-              <TableCell>{formatUnits(row[7])}</TableCell>
-              <TableCell>{row[6] ? dayjs(row[6].toString()).format(FORMAT_TIME) : '-'}</TableCell>
-            </TableRow>
-          ))}
+          {history.map((row, index) => {
+            const duration = (row[1] - row[4]) * 1000n;
+
+            return (
+              <TableRow key={index}>
+                <TableCell>{dayjs(parseInt(((row[4] || 0n) * 1000n).toString())).format(FORMAT_TIME)}</TableCell>
+                <TableCell>
+                  {formatUnits(row[0])}
+                  <span className="uppercase"> {currentType}</span>
+                </TableCell>
+                <TableCell>{dayjs.duration(+duration.toString()).asWeeks()} Weeks</TableCell>
+                <TableCell>{row[5].toString()}</TableCell>
+                <TableCell>
+                  {formatUnits(row[0] - row[7])} <span className="uppercase"> {currentType}</span>
+                </TableCell>
+                <TableCell>{formatUnits(row[7])}</TableCell>
+                <TableCell>
+                  {duration !== 0n && row[1]
+                    ? dayjs(parseInt(((row[1] || 0n) * 1000n).toString())).format(FORMAT_TIME)
+                    : '-'}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

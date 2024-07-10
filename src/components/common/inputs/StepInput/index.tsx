@@ -9,6 +9,7 @@ interface BaseProps extends InputProps {
   appendLabel?: string;
   value?: string;
   total?: number;
+  limitMax?: boolean;
 }
 
 interface ProcessTypeProps {
@@ -35,6 +36,7 @@ const StepInput: FC<Props> = ({
   nodes,
   appendLabel,
   total,
+  limitMax,
   value,
   onValueChange,
   ...inputProps
@@ -46,6 +48,10 @@ const StepInput: FC<Props> = ({
       val = val.replace(/[^0-9\.]/g, '').match(/^[0-9]+(\.[0-9]*)?/)?.[0] || '';
     } else {
       val = val.replace(/[^0-9]/g, '');
+    }
+
+    if (limitMax) {
+      val = Math.min(+val, total || 0).toString();
     }
 
     onValueChange?.(val);

@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import useBalance from '@/hooks/wallet/useBalance';
 import { toast } from 'react-toastify';
+import { PoolType } from '@/constant/pledge';
 
 interface Props {
   poolKey: string;
@@ -16,10 +17,10 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
   const [stakeValue, setStateValue] = useState('');
   const [duration, setDuration] = useState('');
   const [loading, setLoading] = useState(false);
-  const { stake, currentPoolInfo, refresh, formatUnits } = usePledgeContext();
+  const { currentBalance, currentType, stake, currentPoolInfo, refresh, formatUnits } = usePledgeContext();
   const { walletProvider } = useWeb3ModalProvider();
   const { balance } = useBalance();
-  const balanceVal = (+formatUnits(balance)).toFixed(5);
+  const balanceVal = (+formatUnits(currentType === PoolType.ETH ? balance : currentBalance)).toFixed(5);
   const { address } = useWeb3ModalAccount();
 
   async function onStake() {
@@ -65,6 +66,7 @@ const StakeTabPanel: FC<Props> = ({ poolKey }) => {
             { label: '1 month', value: 4 },
             { label: '3 months', value: 12 },
           ]}
+          limitMax
           total={12}
           appendLabel="weeks"
           onValueChange={setDuration}

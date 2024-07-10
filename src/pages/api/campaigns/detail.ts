@@ -6,13 +6,13 @@ import { maybeAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth"
 import Campaign, { CampaignClaimSettings, CampaignRewardType, CampaignStatus } from "@/lib/models/Campaign";
 import { enrichUserTasks } from "@/lib/quests/taskEnrichment";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
-import RewardAccelerator from "@/lib/models/RewardAccelerator";
+import RewardAccelerator, { IRewardAccelerator } from "@/lib/models/RewardAccelerator";
 import { RewardAcceleratorType } from "@/lib/accelerator/types";
 import Badges from "@/lib/models/Badge";
 import { getMaxLevelBadge } from "@/pages/api/badges/display"
 import UserBadges from "@/lib/models/UserBadges";
 import UserWallet from "@/lib/models/UserWallet";
-import ContractNFT from "@/lib/models/ContractNFT";
+import ContractNFT, { IContractNFT } from "@/lib/models/ContractNFT";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -130,24 +130,32 @@ async function calculateAcceleratorResult(userId: string, baseMbAmount: number, 
     //初始化总的加速效果
     campaign.claim_settings.total_reward_bonus = 0;
     campaign.claim_settings.total_reward_bonus_moon_beam = 0;
+    const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+    let walletNftsMap: Map<string, any[]> = new Map<string, any[]>;
+    if (wallet) {
+        const nftAccelerators = (campaign.claim_settings.reward_accelerators as IRewardAccelerator[]).filter(a => a.type == RewardAcceleratorType.NFTHolder);
+        const contractAddresses = nftAccelerators.map(a => a.properties.contract_address);
+        const nfts: IContractNFT[] = await ContractNFT.find({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: { $in: contractAddresses }, transaction_status: "confirmed" });
+        walletNftsMap = new Map<string, any[]>(nfts.map(n => [n.contract_address, nfts.filter(m => m.contract_address === n.contract_address)]));
+    }
+
     for (let accelerator of campaign.claim_settings.reward_accelerators) {
         if (accelerator.type == RewardAcceleratorType.NFTHolder) {
             //初始化该加速器加速效果
             accelerator.properties.reward_bonus_moon_beam = 0;
             //查询钱包地址
-            const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
             if (!wallet) {
                 accelerator.properties.reward_bonus = 0;
                 continue;
             }
             //判断是否持有对应NFT
-            const nft = await ContractNFT.find({ wallet_addr: wallet.wallet_addr, deleted_time: null, contract_address: accelerator.properties.contract_address, transaction_status: "confirmed" });
+            const nft = walletNftsMap.get(accelerator.properties.contract_address);
             if (nft && nft.length > 0) {
                 accelerator.properties.reward_bonus_moon_beam = Math.ceil(baseMbAmount * accelerator.properties.reward_bonus);
-                if(accelerator.properties.support_stacking){
+                if (accelerator.properties.support_stacking) {
                     campaign.claim_settings.total_reward_bonus_moon_beam += nft.length * accelerator.properties.reward_bonus_moon_beam;
                     campaign.claim_settings.total_reward_bonus += nft.length * accelerator.properties.reward_bonus;
-                }else{
+                } else {
                     campaign.claim_settings.total_reward_bonus_moon_beam += accelerator.properties.reward_bonus_moon_beam;
                     campaign.claim_settings.total_reward_bonus += accelerator.properties.reward_bonus;
                 }
