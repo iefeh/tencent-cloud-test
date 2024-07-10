@@ -32,21 +32,17 @@ export default function useSbtMint() {
     toast.error(message);
   }
 
-  async function getAccounts() {
+  async function getAccounts(provider: BrowserProvider) {
     try {
-      const accounts = (await walletProvider?.request({
-        method: 'eth_requestAccounts',
-        params: [],
-      })) as unknown as string[];
+      const accounts = (await provider.send('eth_requestAccounts', [])) as unknown as string[];
       return accounts;
     } catch (error) {
       console.log('connect error:', error);
     }
   }
 
-  async function checkNetwork(targetChainId: string) {
+  async function checkNetwork(provider: BrowserProvider, targetChainId: string) {
     try {
-      const provider = new BrowserProvider(walletProvider!);
       const network = await provider.getNetwork();
       const chainId = network.chainId;
       const isNetCorrected = chainId.toString() === targetChainId;
@@ -58,15 +54,12 @@ export default function useSbtMint() {
     }
   }
 
-  async function addNetwork(targetChainId: string) {
+  async function addNetwork(provider: BrowserProvider, targetChainId: string) {
     try {
       const network = WALLECT_NETWORKS[targetChainId!];
       if (!network) throw Error('Please try switching network manually.');
 
-      const res = await walletProvider?.request({
-        method: 'wallet_addEthereumChain',
-        params: [network],
-      });
+      const res = await provider.send('wallet_addEthereumChain', [network]);
       console.log('connected network', res);
       return true;
     } catch (error: any) {
@@ -75,19 +68,16 @@ export default function useSbtMint() {
     }
   }
 
-  async function switchNetwork(targetChainId: string): Promise<boolean> {
+  async function switchNetwork(provider: BrowserProvider, targetChainId: string): Promise<boolean> {
     try {
-      await walletProvider?.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: parseChainIdToHex(targetChainId) }],
-      });
+      await provider.send('wallet_switchEthereumChain', [{ chainId: parseChainIdToHex(targetChainId) }]);
       return true;
     } catch (error: any) {
       if (error?.code === 4902 || error?.code === 5000) {
         // 未添加此网络，添加后自动唤起切换
-        const res = await addNetwork(targetChainId);
+        const res = await addNetwork(provider, targetChainId);
         if (!res) return false;
-        return await switchNetwork(targetChainId);
+        return await switchNetwork(provider, targetChainId);
       } else {
         toastError(error, 'switchNetwork');
       }
@@ -96,9 +86,8 @@ export default function useSbtMint() {
     return false;
   }
 
-  const mint = throttle(async (data: MintPermitResDTO): Promise<string | undefined> => {
+  const mint = throttle(async (provider: BrowserProvider, data: MintPermitResDTO): Promise<string | undefined> => {
     try {
-      const provider = new BrowserProvider(walletProvider!);
       signer.current = await provider.getSigner();
       const contract = new Contract(data.contract_address, sbtContractABI, signer.current);
       const transaction = await contract.mint(data.permit);
@@ -119,19 +108,20 @@ export default function useSbtMint() {
 
     setLoading(true);
 
-    const accounts = await getAccounts();
+    const provider = new BrowserProvider(walletProvider!);
+    const accounts = await getAccounts(provider);
     if (!accounts || accounts.length < 1) return false;
 
-    const res = await checkNetwork(data.chain_id);
+    const res = await checkNetwork(provider, data.chain_id);
     if (!res) {
-      const switchRes = await switchNetwork(data.chain_id);
+      const switchRes = await switchNetwork(provider, data.chain_id);
       if (!switchRes) {
         setLoading(false);
         return;
       }
     }
 
-    const result = await mint(data);
+    const result = await mint(provider, data);
     setLoading(false);
 
     return !!result;
