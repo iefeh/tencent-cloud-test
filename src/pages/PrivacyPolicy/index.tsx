@@ -1,4 +1,4 @@
-import IframeDoc from "../components/common/IframeDoc";
+import IframeDoc from '../components/common/IframeDoc';
 
 export default function PrivacyPolicy() {
   return (

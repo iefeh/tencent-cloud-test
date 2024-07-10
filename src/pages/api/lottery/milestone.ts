@@ -49,7 +49,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     });
   }
   res.json(response.success({ 
-    total_draw_amount: userMetric.total_lottery_draw_amount | 0,
+    total_draw_amount: userMetric? userMetric.total_lottery_draw_amount : 0,
     luckyDrawBadge: {
       badge_id: luckyDrawBadge.id,
       name: luckyDrawBadge.name,
@@ -61,6 +61,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       series: series
     }
   }));
+  return;
 });
 
 // this will run if none of the above matches

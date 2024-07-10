@@ -57,10 +57,10 @@ const routeText: RouteMenu[] = [
         name: 'Referral Program',
         route: '/Profile/invite',
       },
-      // {
-      //   name: '“More and $MORE” Lottery',
-      //   route: '/lottery',
-      // },
+      {
+        name: '“More and $MORE” Lottery',
+        route: '/lottery',
+      },
     ],
   },
   {
@@ -188,7 +188,7 @@ const Header = () => {
         </Link>
       </div>
 
-      <Entry2048 />
+      {/* <Entry2048 /> */}
 
       <div className="font-semakin flex items-center max-lg:hidden">
         {mobileRoute.map((value, index) => (

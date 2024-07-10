@@ -22,6 +22,8 @@ export async function enrichUserTasks(userId: string, tasks: any[], claimed: boo
     await enrichTaskVerification(userId, tasks, claimed);
     // 为任务添加authorization、user_authorized字段
     await enrichTaskAuthorization(userId, tasks, claimed);
+    // 丰富任务进度
+    await enrichTasksProgress(userId, tasks);
     // 过滤任务属性
     maskQuestProperty(tasks);
 }
@@ -135,4 +137,25 @@ async function enrichTaskAuthorization(userId: string, quests: any[], claimed: b
     }
     return enrichQuestAuthorization(userId, quests);
 }
+
+// 为任务添加进度信息
+export async function enrichTasksProgress(userId: string, tasks: any[]) {
+    if (!tasks || tasks.length == 0 || !userId) {
+        return;
+    }
+
+    for (let task of tasks) {
+        const questImpl: any = constructQuest(task);
+        // 获取任务进度
+        if (questImpl.progress) {
+            const progress = await questImpl.progress(userId);
+            if (!progress) {
+                continue;
+            }
+            task.current_progress = Number(progress.current_progress);
+            task.target_progress = Number(progress.target_progress);
+        }
+    }
+}
+
 

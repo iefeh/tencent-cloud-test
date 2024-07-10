@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios';
 
 import { twitterOAuthProvider } from '@/lib/authorization/provider/twitter';
 import { deleteAuthToken } from '@/lib/authorization/provider/util';
+import { AuthorizationType } from '@/lib/authorization/types';
 import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
 import logger from '@/lib/logger/winstonLogger';
 import LotteryPool, { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/LotteryPool';
@@ -22,8 +23,8 @@ export async function canClaimPremiumBenifits(userId: string, lotteryPoolId: str
   return isPremium && (!userLotteryPool || !userLotteryPool.premium_benifits_claimed);
 }
 
-export function constructVerifyResponse(verified: boolean, message: string) {
-  return { verified: verified, message: message };
+export function constructVerifyResponse(verified: boolean, message: string, requireAuthorization?: boolean) {
+  return { verified: verified, message: message, require_authorization: requireAuthorization? AuthorizationType.Twitter : undefined };
 }
 
 export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, maxRewardClaimType: number): Promise<any> {
@@ -33,7 +34,7 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
   }
   const twitterAuth = await queryUserTwitterAuthorization(userId);
   if (!twitterAuth) {
-    return constructVerifyResponse(false, "You should connect your Twitter Account first.");
+    return constructVerifyResponse(false, "You should connect your Twitter Account first.", true);
   }
   const rateLimitedKey = `twitter_tweets:${twitterAuth.twitter_id}`;
   const rateLimited = await redis.get(rateLimitedKey);
@@ -72,7 +73,7 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
         }
       }
     }
-    return constructVerifyResponse(verified, verified? "" : "Cannot find your twitter topic for this lottery pool, please check your tweets.");
+    return constructVerifyResponse(verified, verified? "" : "No Twitter content detected. Please check your post and verify again after 1 minute.");
   } catch (error) {
     if (!isAxiosError(error)) {
       throw error;
@@ -83,7 +84,7 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
     if (response.status === 403 || response.data.error_description == "Value passed for the token was invalid.") {
       logger.warn(`user ${userId} twitter ${twitterAuth.twitter_id} tweets invalidated: ${JSON.stringify(response.data)}`);
       await deleteAuthToken(twitterAuth.token);
-      return constructVerifyResponse(false, "You should connect your Twitter Account first.");
+      return constructVerifyResponse(false, "You should connect your Twitter Account first.", true);
     }
     // 当前是否已经被限流，需要添加限流处理
     if (response.status === 429) {
@@ -101,14 +102,14 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
   }
 }
 
-export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number) {
+export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, rewardId: string, moonBeamAmount: number, drawTimes?: number) {
   let audit = new UserMoonBeamAudit({
     user_id: userId,
     type: UserMoonBeamAuditType.LuckyDraw,
     moon_beam_delta: moonBeamAmount,
     reward_taint: `lottery_pool_id:${lotteryPoolId},reward_id:${rewardId},user:${userId}`,
     corr_id: rewardId,
-    extra_info: lotteryPoolId,
+    extra_info: drawTimes? String(drawTimes) : null,
     created_time: Date.now(),
   });
   return audit;

@@ -4,7 +4,7 @@ import triangleLightImg from 'img/loyalty/intro/triangle_light.png';
 import journeyDefaultImg from 'img/loyalty/intro/journey_default.png';
 import journeyHLImg from 'img/loyalty/intro/journey_highlight_left.png';
 import journeyHRImg from 'img/loyalty/intro/journey_highlight_right.png';
-import PageDesc from '@/pages/components/common/PageDesc';
+import PageDesc from '@/components/common/PageDesc';
 import { MouseEventHandler, useRef, useState } from 'react';
 
 export default function JourneyScreen() {

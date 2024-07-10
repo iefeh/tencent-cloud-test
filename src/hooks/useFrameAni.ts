@@ -1,6 +1,7 @@
 import { getZipFiles } from '@/http/services/zip';
 import { loadImage } from '@/utils/common';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 
 interface Props {
   url: string;
@@ -11,6 +12,7 @@ interface Props {
   frames?: number;
   infinite?: boolean;
   fit?: 'cover' | 'contain';
+  disabled?: boolean;
   nameFn: (index: number) => string;
   onFinished?: () => void;
 }
@@ -24,6 +26,7 @@ export default function useFrameAni({
   fit = 'contain',
   frames = 30,
   infinite = true,
+  disabled = false,
   nameFn,
   onFinished,
 }: Props) {
@@ -36,6 +39,9 @@ export default function useFrameAni({
   const imgs = useRef<ImageBitmap[]>([]);
   const initImagesPromise = useRef<Promise<boolean> | null>(null);
   const frameEl = 1000 / frames;
+  const [realWidth, setRealWidth] = useState(width);
+  const [realHeight, setRealHeight] = useState(height);
+  const aniEnabled = !disabled && !isMobile;
 
   function initCanvas() {
     if (!canvasRef.current) return;
@@ -63,6 +69,8 @@ export default function useFrameAni({
 
     canvasRef.current.style.width = `${realWidth}px`;
     canvasRef.current.style.height = `${realHeight}px`;
+    setRealWidth(realWidth);
+    setRealHeight(realHeight);
 
     ctxRef.current = canvasRef.current.getContext('2d');
 
@@ -79,8 +87,13 @@ export default function useFrameAni({
 
     initImagesPromise.current = new Promise(async (resolve) => {
       imgs.current = Array(count).fill(null);
+
       const files = await getZipFiles(url);
-      if (!files) return false;
+      if (!files) {
+        onFinished?.();
+        resolve(false);
+        return;
+      }
 
       await Promise.all(
         Array(count)
@@ -98,7 +111,10 @@ export default function useFrameAni({
   }
 
   async function aniLoop(el = performance.now()) {
-    if (!ctxRef.current || imgs.current.length < count) return;
+    if (!ctxRef.current || imgs.current.length < count || !imgs.current[0]) {
+      onFinished?.();
+      return;
+    }
     if (el - lastElRef.current < frameEl) {
       rafId.current = requestAnimationFrame(aniLoop);
       return;
@@ -111,7 +127,8 @@ export default function useFrameAni({
 
     const index = (currentIdxRef.current + 1) % count;
     ctxRef.current.clearRect(0, 0, width, height);
-    ctxRef.current.drawImage(imgs.current[index], 0, 0, width, height);
+    const img = imgs.current[index];
+    if (img) ctxRef.current.drawImage(img, 0, 0, width, height);
     currentIdxRef.current = index;
     lastElRef.current = el;
 
@@ -120,7 +137,6 @@ export default function useFrameAni({
 
   function startAni() {
     stopAni();
-    currentIdxRef.current = 0;
     lastElRef.current = performance.now();
     aniLoop();
   }
@@ -130,20 +146,23 @@ export default function useFrameAni({
 
     cancelAnimationFrame(rafId.current);
     rafId.current = 0;
+    currentIdxRef.current = 0;
   }
 
   useEffect(() => {
     initCanvas();
-    initImages();
-  });
+    if (aniEnabled) initImages();
+  }, []);
 
   useEffect(() => {
-    const promise = initImages();
-    if (!promise) return;
-    promise.then(() => startAni());
+    if (aniEnabled) {
+      const promise = initImages();
+      if (!promise) return;
+      promise.then(() => startAni());
+    }
 
     return stopAni;
   }, []);
 
-  return { canvasRef, width, height, startAni };
+  return { canvasRef, width: realWidth, height: realHeight, startAni };
 }

@@ -99,6 +99,7 @@ export default function NFT(props: NFTProps) {
                   className="absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[9.625rem] h-24"
                   src={statusImg}
                   alt=""
+                  unoptimized
                 />
               </>
             )}

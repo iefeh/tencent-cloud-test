@@ -1,3 +1,4 @@
+import { KEY_LOCALE, Locale } from '@/constant/locale';
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { getWorldTimeAPI } from '@/http/services/common';
 import {
@@ -17,6 +18,7 @@ import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
 class UserStore {
+  locale = '';
   token = '';
   userInfo: UserInfo | null = null;
   jwtToken = '';
@@ -39,6 +41,15 @@ class UserStore {
       appId: 'f9d66501-274a-4a88-9848-5749641693d6',
     });
   }
+
+  setToken = (val?: string) => {
+    this.token = val || '';
+    if (val) {
+      localStorage.setItem(KEY_AUTHORIZATION, val);
+    } else {
+      localStorage.removeItem(KEY_AUTHORIZATION);
+    }
+  };
 
   init = () => {
     this.token = localStorage.getItem(KEY_AUTHORIZATION) || '';
@@ -70,6 +81,11 @@ class UserStore {
   //     this.timerLoading = false;
   //   }
   // };
+
+  setLocale = (val?: Locale) => {
+    this.locale = val || Locale.EN;
+    localStorage.setItem(KEY_LOCALE, this.locale);
+  };
 
   setUserInfo = (userInfo: UserInfo | null) => {
     this.userInfo = userInfo;

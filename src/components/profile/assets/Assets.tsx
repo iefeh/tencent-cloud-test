@@ -51,7 +51,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
   }, [items]);
 
   return (
-    <div className={cn(['flex flex-nowrap', className])}>
+    <div className={cn(['flex flex-nowrap', isMobile && 'mt-4', className])}>
       <div className="flex-1">
         <div className={cn(['flex flex-wrap flex-1 content-start min-h-[35rem]', isMobile && 'justify-center gap-6'])}>
           {items.map((item, index) => {
@@ -62,7 +62,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
               <div
                 key={index}
                 className={cn([
-                  isMobile ? 'w-24 h-24' : 'w-[11.5625rem] h-[11.5625rem]',
+                  isMobile ? 'w-28 h-28' : 'w-[11.5625rem] h-[11.5625rem]',
                   'relative',
                   'shrink-0 flex justify-center items-center',
                   'border-1 border-[#1D1D1D] transition-colors',
@@ -73,7 +73,7 @@ const Assets: FC<Props & ClassNameProps> = ({ total, items, displayItems, classN
                 onClick={() => item && setSelectedNFT(item)}
               >
                 <NFT
-                  className={isMobile ? 'w-20 h-20' : 'w-[8.3125rem] h-[8.3125rem]'}
+                  className={isMobile ? '!w-24 !h-24' : '!w-[8.3125rem] !h-[8.3125rem]'}
                   src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
                   isSrcImage={!item?.token_metadata?.animation_url}
                   status={item?.transaction_status}

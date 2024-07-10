@@ -1,11 +1,9 @@
 import { GAME_URL_2048 } from '@/constant/2048';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { FC } from 'react';
 
 const Entry2048: FC = () => {
-  const router = useRouter();
   const chars = [
     {
       url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/2.png',
@@ -30,12 +28,12 @@ const Entry2048: FC = () => {
   ];
 
   function onJump() {
-    // window.open(GAME_URL_2048);
-    router.push(`/LoyaltyProgram/event?id=${process.env.NEXT_PUBLIC_EVENT_2048TICKETS_ID}`);
+    window.open(GAME_URL_2048);
   }
 
   function onGetTicket() {
-    router.push(`/LoyaltyProgram/event?id=${process.env.NEXT_PUBLIC_EVENT_2048TICKETS_ID}`);
+    const url = `${location.origin}/LoyaltyProgram/event?id=${process.env.NEXT_PUBLIC_EVENT_2048TICKETS_ID}`;
+    location.href = url;
   }
 
   return (
