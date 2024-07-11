@@ -19,9 +19,9 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
     <PageDesc
       baseAniTY
       needAni={visible || !!id}
-      className="-translate-y-12 items-center"
+      className="-translate-y-12 items-center text-center"
       title={
-        <div ref={id ? null : titleRef} className="font-semakin ani-twirl">
+        <div ref={id ? null : titleRef} key={item?.title || '--'} className="font-semakin ani-twirl">
           <span className="text-4xl lg:text-[4rem]">
             {'WIN'.split('').map((t, i) => (
               <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
@@ -31,9 +31,9 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
           </span>
 
           <span className="text-6xl lg:text-[6rem]">
-            {'$500 USDT'.split('').map((t, i) => (
+            {(item?.title || '--').split('').map((t, i) => (
               <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
-                {t}
+                {t === ' ' ? <>&nbsp;</> : t}
               </span>
             ))}
           </span>
