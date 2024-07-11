@@ -12,6 +12,8 @@ export enum LotteryRewardType {
     NFT = 'nft',
     // gift card
     GiftCard = 'gift_card',
+    // badge
+    Badge = 'badge',
     // No prize
     NoPrize = 'no_prize'
 }
@@ -44,6 +46,8 @@ export type LotteryRewardItem = {
     next_six_draw_probability: number,
     // 奖励数量
     amount: number,
+    // 徽章id，抽奖可能会奖励的徽章，这里只是为了展示用.
+    badge_id: string,
     // 奖池中该库存个数, 不写则表示无限
     inventory_amount: number | null
 }
@@ -58,6 +62,8 @@ export type LotteryTwitterTopic = {
 export interface ILotteryPool extends Document {
     // 奖池id
     lottery_pool_id: string;
+    // 奖池标题
+    title: string;
     // 奖池开始时间，毫秒时间戳
     start_time: number;
     // 奖池结束时间，毫秒时间戳
@@ -86,6 +92,7 @@ export interface ILotteryPool extends Document {
 
 const LotteryPoolSchema = new Schema<ILotteryPool>({
     lottery_pool_id: { type: String, required: true },
+    title: { type: String, required: true },
     start_time: { type: Number, required: true },
     end_time: { type: Number, required: true },
     twitter_topics: { type: Schema.Types.Mixed },

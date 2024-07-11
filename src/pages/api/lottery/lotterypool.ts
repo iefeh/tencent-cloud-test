@@ -48,11 +48,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   res.json(response.success({ 
     lottery_pool_id: lotteryPool.lottery_pool_id,
+    title: lotteryPool.title,
     start_time: lotteryPool.start_time,
     end_time: lotteryPool.end_time,
     draw_limits: lotteryPool.draw_limits,
     rest_draw_amount: restDrawAmount,
-    total_draw_amount: lotteryPool.total_draw_amount,
     user_s1_lottery_ticket_amount: user.lottery_ticket_amount,
     user_free_lottery_ticket_amount: userFreeLotteryTicketAmount,
     user_mb_amount: user.moon_beam,

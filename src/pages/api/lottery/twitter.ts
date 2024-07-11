@@ -69,7 +69,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         },
         { upsert: true, session: session }
       );
-      await moonBeamAudit.save(session);
+      await moonBeamAudit.save({ session });
       await increaseUserMoonBeam(userId, lotteryPool.twitter_verify_mb_reward_amount, session);
     });
   }

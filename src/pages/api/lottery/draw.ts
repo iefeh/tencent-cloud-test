@@ -12,6 +12,7 @@ import LotteryPool, {
     ILotteryPool, LotteryRewardItem, LotteryRewardType
 } from '@/lib/models/LotteryPool';
 import User, { IUser } from '@/lib/models/User';
+import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryDrawHistory, {
     IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
@@ -34,6 +35,7 @@ const noPrizeReward = {
   reward_claim_type: 1,
   reward_level: 1,
   icon_url: "",
+  badge_id: "",
   first_three_draw_probability: 0,
   next_six_draw_probability: 0,
   inventory_amount: null,
@@ -189,18 +191,19 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   const totalUserDrawAmount = userLotteryPool? userLotteryPool.draw_amount % 10 : 0;
   let itemInventoryDeltaMap: Map<string, number> = new Map<string, number>();
   let rewardNeedVerify: boolean = false;
-  let currentRewardNeedVerify: boolean = false;
   // 执行抽奖, 每次抽奖单独判断概率
   for (let i = 1; i<= drawCount; i++) {
     // 根据用户已抽取次数计算当前是第几抽
     let currentDrawNo = totalUserDrawAmount + i;
+    let drawResult: { drawResult: IUserLotteryRewardItem, verifyNeeded: boolean};
     if (currentDrawNo <= 3) {
-      currentRewardNeedVerify = getDrawResult(firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap);
     }
     else {
-      currentRewardNeedVerify = getDrawResult(nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      drawResult = await getDrawResult(userId, nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap);
     }
-    rewardNeedVerify = rewardNeedVerify || currentRewardNeedVerify;
+    result.push(drawResult.drawResult);
+    rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
   }
   // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
   const drawId = uuidv4();
@@ -258,12 +261,15 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
 }
 
 // 抽奖结果计算, 并返回抽到的奖品是否需要验证
-function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: number[], guaranteedRewards: LotteryRewardItem[], availableRewards: LotteryRewardItem[], itemInventoryDeltaMap: Map<string, number>, result: IUserLotteryRewardItem[]): boolean {
-  let reward: LotteryRewardItem;
-  let rewardNeedVerify: boolean = false;
+async function getDrawResult(userId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
+  guaranteedRewards: LotteryRewardItem[], 
+  availableRewards: LotteryRewardItem[], 
+  itemInventoryDeltaMap: Map<string, number>): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
+  let reward: LotteryRewardItem = noPrizeReward;
+  let verifyNeeded: boolean = false;
   // 优先抽取保底避免无人抽中
   if (guaranteedRewards && guaranteedRewards.length > 0) {
-    reward = guaranteedRewards.pop()!;
+    reward = guaranteedRewards.pop() as LotteryRewardItem;
   }
   else {
   // 如无保底, 则抽取常规奖品
@@ -271,7 +277,14 @@ function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: numb
     for (let j = 0; j < drawThresholds.length; j++) {
       if (random <= drawThresholds[j]) {
         reward = availableRewards[j];
-        // 计算库存扣减数量, 注意: 保底奖品不考虑库存
+        // 如果奖品是徽章, 则检查用户徽章获取情况, 如果徽章已经领取, 则奖品替换为没中奖
+        if (reward.reward_type === LotteryRewardType.Badge) {
+          const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
+          if (userBadge) {
+            reward = noPrizeReward;
+          }
+        }
+        // 计算库存扣减数量, 如果奖品库存为0则替换奖品为没中奖。 注意: 保底奖品不考虑库存
         if (reward.inventory_amount) {
           const cost = itemInventoryDeltaMap.has(reward.item_id)? itemInventoryDeltaMap.get(reward.item_id) as number + 1 : 1;
           if (cost > reward.inventory_amount) {
@@ -281,26 +294,26 @@ function getDrawResult(drawCumulativeProbabilities: number, drawThresholds: numb
             itemInventoryDeltaMap.set(reward.item_id, cost);
           }
         }
-        break;
       }
     }
   }
   // 如果存在需要验证的奖品则返回true
-  if (reward!.reward_claim_type === 2 || reward!.reward_claim_type === 3) {
-    rewardNeedVerify = true;
+  if (reward.reward_claim_type === 2 || reward.reward_claim_type === 3) {
+    verifyNeeded = true;
   }
-  result.push({
-    item_id: reward!.item_id,
+  const result = {
+    item_id: reward.item_id,
     reward_id: uuidv4(),
-    reward_type: reward!.reward_type,
-    reward_name: reward!.reward_name, 
-    icon_url: reward!.icon_url, 
-    reward_level: reward!.reward_level,
-    claimed: reward!.reward_type === LotteryRewardType.NoPrize,
-    reward_claim_type: reward!.reward_claim_type, 
-    amount: reward!.amount
-  });
-  return rewardNeedVerify;
+    badge_id: reward.badge_id,
+    reward_type: reward.reward_type,
+    reward_name: reward.reward_name, 
+    icon_url: reward.icon_url, 
+    reward_level: reward.reward_level,
+    claimed: reward.reward_type === LotteryRewardType.NoPrize,
+    reward_claim_type: reward.reward_claim_type, 
+    amount: reward.amount
+  };
+  return { drawResult: result, verifyNeeded: verifyNeeded};
 }
 
 // this will run if none of the above matches
