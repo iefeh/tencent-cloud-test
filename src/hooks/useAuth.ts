@@ -131,13 +131,12 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     }
 
     openAuthWindow(res.authorization_url);
+    startWatch();
     setLoading(false);
   }
 
   useEffect(() => {
-    window.addEventListener('storage', authConnect);
     return () => {
-      window.removeEventListener('storage', authConnect);
       stopWatch();
     };
   }, []);
