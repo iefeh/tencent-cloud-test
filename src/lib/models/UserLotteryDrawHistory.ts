@@ -11,6 +11,8 @@ export type IUserLotteryRewardItem = {
     reward_type: LotteryRewardType,
     // 奖励名称
     reward_name: string, 
+    // 徽章id，抽奖可能会奖励的徽章
+    badge_id: string,
     // 图标链接
     icon_url: string, 
     // 奖励等级

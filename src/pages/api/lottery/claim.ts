@@ -7,11 +7,13 @@ import {
 } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
+import Badges from '@/lib/models/Badge';
 import { ILotteryPool, LotteryRewardType } from '@/lib/models/LotteryPool';
 import User, { increaseUserMoonBeam } from '@/lib/models/User';
 import UserLotteryDrawHistory, {
     IUserLotteryDrawHistory, IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
+import UserBadges from '@/lib/models/UserBadges';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
@@ -69,7 +71,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     }
     for (let reward of rewards) {
       if (!reward.claimed) {
-        await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, reward.reward_id, drawHistory.rewards.length);
+        await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, drawHistory.rewards.length);
       }
     }
     res.json(response.success(constructVerifyResponse(true, "Congratulations on claiming your lottery rewards.")));
@@ -82,31 +84,74 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   }
 });
 
-async function performClaimLotteryReward(userReward: IUserLotteryRewardItem, lotteryPoolId: string, drawId: string, userId: string, rewardId: string, drawTimes: number): Promise<any> {
+async function performClaimLotteryReward(reward: IUserLotteryRewardItem, lotteryPoolId: string, drawId: string, userId: string, drawTimes: number) {
   const now = Date.now()
-  switch (userReward.reward_type) {
+  switch (reward.reward_type) {
     case LotteryRewardType.MoonBeam: 
-      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, rewardId, userReward.amount, drawTimes);
-      await doTransaction( async session => {
+      const moonBeamAudit = constructMoonBeamAudit(userId, lotteryPoolId, reward.reward_id, reward.amount, drawTimes);
+      await doTransaction( async (session) => {
         await moonBeamAudit.save({ session });
-        await increaseUserMoonBeam(userId, userReward.amount, session);
-        await updateLotteryDrawHistory(drawId, rewardId, now, session);
+        await increaseUserMoonBeam(userId, reward.amount, session);
+        await updateLotteryDrawHistory(drawId, reward.reward_id, now, session);
       }); 
       break;
     case LotteryRewardType.LotteryTicket: 
-      await doTransaction( async session => {
+      await doTransaction( async (session) => {
         await User.updateOne(
           { user_id: userId },
-          { $inc: { lottery_ticket_amount: userReward.amount }},
+          { $inc: { lottery_ticket_amount: reward.amount }},
           { session: session }
         );
-        await updateLotteryDrawHistory(drawId, rewardId, now, session);
+        await updateLotteryDrawHistory(drawId, reward.reward_id, now, session);
       });
       break;
+    case LotteryRewardType.Badge:
+      await claimBadgeReward(userId, drawId, reward);
+      break;
     default:
-      await updateLotteryDrawHistory(drawId, rewardId, now);
+      await updateLotteryDrawHistory(drawId, reward.reward_id, now);
       break;
   }
+}
+
+async function claimBadgeReward(userId: string, drawId: string, reward: IUserLotteryRewardItem) {
+  const now = Date.now();
+  const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
+  if (userBadge) {
+    await updateLotteryDrawHistory(drawId, reward.reward_id, now);
+    return;
+  }
+  const badge = await Badges.findOne({ id: reward.badge_id });
+  if (!badge) {
+    throw new Error('Badge not exists.');
+  }
+  let series: number = 0;
+  for (let s of badge.series.keys()) {
+    series = s;
+    break;
+  }
+  if (series == 0) {
+    throw new Error('Badge series not exists.');
+  }
+  await doTransaction( async (session) => {
+    await UserBadges.insertMany(
+      [
+        {
+          user_id: userId,
+          badge_id: reward.badge_id,
+          badge_taints: [`user_id: ${userId},badge_id:${reward.badge_id}`],
+          series: { [series]: { obtained_time: now } },
+          display: false,
+          created_time: now,
+          updated_time: now,
+          order: 1,
+          display_order: 1,
+        },
+      ],
+      { session: session },
+    );
+    await updateLotteryDrawHistory(drawId, reward.reward_id, now, session);
+  });
 }
 
 async function updateLotteryDrawHistory(drawId: string, rewardId: string, updateTime: number, session?: any) {
