@@ -4,6 +4,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import { useRouter } from 'next/router';
 import { FC, useRef } from 'react';
+import { cn } from '@nextui-org/react';
 
 interface Props {
   onShowPrizePool?: () => void;
@@ -21,23 +22,22 @@ const DrawScreenMainContent: FC<Props & ItemProps<Lottery.Pool>> = ({ item, onSh
       needAni={visible || !!id}
       className="-translate-y-12 items-center text-center"
       title={
-        <div ref={id ? null : titleRef} key={item?.title || '--'} className="font-semakin ani-twirl">
-          <span className="text-4xl lg:text-[4rem]">
-            {'WIN'.split('').map((t, i) => (
-              <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
-                {t}
-              </span>
-            ))}
-          </span>
-
-          <span className="text-6xl lg:text-[6rem]">
-            {(item?.title || '--').split('').map((t, i) => (
-              <span key={i} className="char stroke-text [&+.char]:-ml-8" data-text={t}>
+        item?.title && (
+          <div ref={id ? null : titleRef} className="font-semakin ani-twirl">
+            {item.title.split('').map((t, i) => (
+              <span
+                key={i}
+                className={cn([
+                  'char stroke-text [&+.char]:-ml-8',
+                  t.charCodeAt(0) > 96 ? 'text-4xl lg:text-[4rem]' : 'text-6xl lg:text-[6rem]',
+                ])}
+                data-text={t}
+              >
                 {t === ' ' ? <>&nbsp;</> : t}
               </span>
             ))}
-          </span>
-        </div>
+          </div>
+        )
       }
       subtitle={
         <div className="flex items-center font-semakin">
