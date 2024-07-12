@@ -27,6 +27,4 @@ Sentry.init({
       blockAllMedia: true,
     }),
   ],
-
-  enabled: false,
 });
