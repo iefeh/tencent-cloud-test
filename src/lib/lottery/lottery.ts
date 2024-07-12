@@ -61,13 +61,13 @@ export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, 
       // 拼接整体推文, 格式是{text} + {url} + {hashtags}
       const mustHaveText = `${twitterTopic.twitter_topic_text}${urlText}${hashtagsText}`.replace(/(\r\n|\n|\r|\s)/gm, "");
       for(let twitter of data.data) {
-        let twitterText = twitter.text.replace(/(\r\n|\n|\r|\s)/gm, "");
+        let twitterText: string = twitter.text.replace(/(\r\n|\n|\r|\s)/gm, "");
         if (twitter.entities && twitter.entities.urls) {
           for (let url of twitter.entities.urls) {
             twitterText = twitterText.replace(url.url, url.unwound_url);
           }
         }
-        if (twitterText === mustHaveText) {
+        if (twitterText.includes(mustHaveText)) {
           verified = true;
           break;
         }

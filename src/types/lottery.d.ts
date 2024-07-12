@@ -16,6 +16,7 @@ declare namespace Lottery {
     first_twitter_topic_verified?: boolean;
     rewards: RewardItem[];
     need_verify_twitter?: boolean;
+    title: string;
   }
 
   interface RewardItem {
