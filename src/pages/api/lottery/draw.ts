@@ -197,10 +197,10 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     let currentDrawNo = totalUserDrawAmount + i;
     let drawResult: { drawResult: IUserLotteryRewardItem, verifyNeeded: boolean};
     if (currentDrawNo <= 3) {
-      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap);
+      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
     else {
-      drawResult = await getDrawResult(userId, nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap);
+      drawResult = await getDrawResult(userId, nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
     }
     result.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
@@ -208,7 +208,7 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
   const drawId = uuidv4();
   const now = Date.now();
-  await doTransaction(async session => {
+  await doTransaction(async (session) => {
     // 扣减用户mb和通用抽奖券
     await User.updateOne({ user_id: userId }, { $inc: { moon_beam: -mbCost, lottery_ticket_amount: -lotteryTicketCost }}, { session: session });
     // 扣减用户奖池抽奖券
@@ -264,7 +264,8 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
 async function getDrawResult(userId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
   guaranteedRewards: LotteryRewardItem[], 
   availableRewards: LotteryRewardItem[], 
-  itemInventoryDeltaMap: Map<string, number>): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
+  itemInventoryDeltaMap: Map<string, number>,
+  allDrawResults: IUserLotteryRewardItem[]): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
   let reward: LotteryRewardItem = noPrizeReward;
   let verifyNeeded: boolean = false;
   // 优先抽取保底避免无人抽中
@@ -280,8 +281,15 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
         // 如果奖品是徽章, 则检查用户徽章获取情况, 如果徽章已经领取, 则奖品替换为没中奖
         if (reward.reward_type === LotteryRewardType.Badge) {
           const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
-          if (userBadge) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.badge_id": reward.badge_id });
+          if (userBadge || userDrawHistory) {
             reward = noPrizeReward;
+          }
+          for (let drawResult of allDrawResults) {
+            if (drawResult.reward_type === LotteryRewardType.Badge && drawResult.badge_id === reward.badge_id) {
+              reward = noPrizeReward;
+              break;
+            }
           }
         }
         // 计算库存扣减数量, 如果奖品库存为0则替换奖品为没中奖。 注意: 保底奖品不考虑库存
@@ -294,6 +302,7 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
             itemInventoryDeltaMap.set(reward.item_id, cost);
           }
         }
+        break;
       }
     }
   }
