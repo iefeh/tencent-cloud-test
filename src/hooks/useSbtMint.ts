@@ -7,6 +7,7 @@ import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3mo
 import sbtContractABI from '@/http/sbt_abi.json';
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from './utils';
+import { captureEvent, captureException } from '@sentry/nextjs';
 
 export default function useSbtMint() {
   const { walletProvider } = useWeb3ModalProvider();
@@ -37,18 +38,22 @@ export default function useSbtMint() {
       const accounts = (await provider.send('eth_requestAccounts', [])) as unknown as string[];
       return accounts;
     } catch (error) {
+      captureException(error, { data: 'eth_requestAccounts' });
       console.log('connect error:', error);
     }
   }
 
   async function checkNetwork(provider: BrowserProvider, targetChainId: string) {
+    let chainId: any;
+
     try {
       const network = await provider.getNetwork();
-      const chainId = network.chainId;
+      chainId = network.chainId;
       const isNetCorrected = chainId.toString() === targetChainId;
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
+      captureException(error, { data: { message: 'checkNetwork', chainId, targetChainId } });
       toastError(error, 'checkNetwork');
       return false;
     }
@@ -63,6 +68,7 @@ export default function useSbtMint() {
       console.log('connected network', res);
       return true;
     } catch (error: any) {
+      captureException(error, { data: { message: 'addNetwork', chainId: targetChainId } });
       toastError(error, 'addNetwork');
       return false;
     }
@@ -73,6 +79,7 @@ export default function useSbtMint() {
       await provider.send('wallet_switchEthereumChain', [{ chainId: parseChainIdToHex(targetChainId) }]);
       return true;
     } catch (error: any) {
+      captureException(error, { data: { message: 'switchNetwork', chainId: targetChainId } });
       if (error?.code === 4902 || error?.code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await addNetwork(provider, targetChainId);
@@ -95,34 +102,62 @@ export default function useSbtMint() {
       console.log('mint result:', result);
       return result;
     } catch (error: any) {
+      captureException(error, { data: { message: 'mint' } });
       // toastError(error, 'mint');
       toast.error('Transaction failed, please try again later.');
     }
   }, 500);
 
   async function onButtonClick(data: MintPermitResDTO) {
+    const errorEvent = {
+      message: 'sbt_mint',
+      isConnected: false,
+      hasPermission: false,
+      networkOk: false,
+      switchedNetwork: false,
+      sendMint: false,
+      provider: '',
+    };
+
     if (!isConnected) {
       open();
+      captureEvent(errorEvent);
       return;
     }
 
+    errorEvent.isConnected = true;
+    errorEvent.provider = (walletProvider as any)?.name || '';
     setLoading(true);
 
     const provider = new BrowserProvider(walletProvider!);
     const accounts = await getAccounts(provider);
-    if (!accounts || accounts.length < 1) return false;
+    if (!accounts || accounts.length < 1) {
+      captureEvent(errorEvent);
+      return false;
+    }
+
+    errorEvent.hasPermission = true;
 
     const res = await checkNetwork(provider, data.chain_id);
     if (!res) {
       const switchRes = await switchNetwork(provider, data.chain_id);
       if (!switchRes) {
+        captureEvent(errorEvent);
         setLoading(false);
         return;
       }
+      errorEvent.switchedNetwork = true;
     }
 
+    errorEvent.networkOk = true;
+
     const result = await mint(provider, data);
+    errorEvent.sendMint = true;
     setLoading(false);
+
+    if (!result) {
+      captureEvent(errorEvent);
+    }
 
     return !!result;
   }
