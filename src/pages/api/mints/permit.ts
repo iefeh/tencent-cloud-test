@@ -5,7 +5,6 @@ import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import Mint, { IMint } from "@/lib/models/Mint";
 import Contract, { ContractCategory } from "@/lib/models/Contract";
 import { redis } from "@/lib/redis/client";
-import { NFTStorage } from 'nft.storage'
 
 import Badges from "@/lib/models/Badge";
 import doTransaction from "@/lib/mongodb/transaction";
@@ -13,8 +12,8 @@ import IpfsMetadata from "@/lib/models/IpfsMetadata";
 import UserWallet from "@/lib/models/UserWallet";
 import { ethers } from 'ethers';
 
-const nftStorage = new NFTStorage({ token: process.env.NFTSTORAGE_KEY! });
-
+const pinataSDK = require('@pinata/sdk');
+const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT!});
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -107,7 +106,16 @@ async function getBadgeSeriesMetadataHash(mint: IMint) {
         }],
     };
     // 上传metadata
-    const cid = await nftStorage.storeBlob(new Blob([JSON.stringify(metadata)]));
+    const options = {
+        pinataMetadata: {
+            name: `${badge.name}-${mint.badge_level}.meta`
+        },
+        pinataOptions: {
+            cidVersion: 0
+        }
+    };
+    const res = await pinata.pinJSONToIPFS(metadata, options);
+    const cid = res.IpfsHash;
     await doTransaction(async (session) => {
         // 更新metadata_url
         await Badges.updateOne({ id: mint.source_id }, { 
@@ -120,7 +128,7 @@ async function getBadgeSeriesMetadataHash(mint: IMint) {
             { ipfs_hash: `ipfs://${cid}` },
             {
               $set: { 
-                ipfs_access_url: `https://cloudflare-ipfs.com/ipfs/${cid}`,
+                ipfs_access_url: `https://ipfs.io/ipfs/${cid}`,
                 metadata: metadata,
                },
               $setOnInsert: {
