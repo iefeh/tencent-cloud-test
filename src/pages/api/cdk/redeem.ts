@@ -49,7 +49,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   const ok = await redis.set(timeoutKey, Date.now(), "EX", 60, "NX");
   if (ok) {
     // 超时则重新开始计数
-    await redis.set(redeemingCountKey, 59);
+    await redis.set(redeemingCountKey, 0);
   }
   const current = await redis.incr(redeemingCountKey);
   if (current > 40) {
