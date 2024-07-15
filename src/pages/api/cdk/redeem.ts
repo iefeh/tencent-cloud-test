@@ -25,7 +25,7 @@ import { resolveRuntimeExtensions } from '@aws-sdk/client-ses/dist-types/runtime
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
-  const { cdk } = req.query; 
+  const { cdk } = req.query;
 
   if (!cdk) {
     res.json(response.invalidParams());
@@ -33,12 +33,35 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }
   const userId = req.userId!;
   const redeemLock = `redeem_cdk_lock:${cdk}:${userId}`;
-  const locked = await redis.set(redeemLock, Date.now(), 'EX', 60, 'NX');
+  const locked = await redis.set(redeemLock, Date.now(), 'EX', 30, 'NX');
   if (!locked) {
-    return response.success({
-      result: 'Redeem is under a waiting period, please try again later.',
-    });
+    res.json(
+      response.success({
+        result: 'Redeem is under a 30s waiting period, please try again later.'
+      }),
+    );
+    return;
   }
+
+  // 防止太多人同时兑换，添加的限流操作
+  const redeemingCountKey = `redeeming-counter`;
+  const timeoutKey = `redeeming-counter-timeout-key`;
+  const ok = await redis.set(timeoutKey, Date.now(), "EX", 60, "NX");
+  if (ok) {
+    // 超时则重新开始计数
+    await redis.set(redeemingCountKey, 59);
+  }
+  const current = await redis.incr(redeemingCountKey);
+  if (current > 40) {
+    await redis.decr(redeemingCountKey);
+    res.json(
+      response.success({
+        result: 'Too many people are redeeming at the moment, please try again later.',
+      }),
+    );
+    return;
+  }
+
   try {
     let success: boolean = false;
     //查询CDK信息
@@ -119,6 +142,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     }
   } finally {
     await redis.del(redeemLock);
+    await redis.decr(redeemingCountKey);
   }
 });
 
@@ -262,7 +286,7 @@ async function redeemPremiumPassReward(userId: string, session: any, reward: any
   if (!battlepass) {
     const season = await getCurrentBattleSeason();
     const result = await generateBattlepass(userId, season);
-    if(result.is_premium){
+    if (result.is_premium) {
       return;
     }
   }
