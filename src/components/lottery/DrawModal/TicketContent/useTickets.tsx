@@ -12,9 +12,10 @@ export interface UseTicketsProps {
 export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChange }: UseTicketsProps) {
   const isFreeTicketsEnough = (poolInfo?.user_free_lottery_ticket_amount || 0) >= times;
   const isS1TicketsEnough = (poolInfo?.user_s1_lottery_ticket_amount || 0) >= times;
+  const freeTicketAmount = poolInfo?.user_free_lottery_ticket_amount || 0;
 
-  const freeInitCount = isFreeTicketsEnough ? times : 0;
-  const s1InitCount = freeInitCount === 0 && isS1TicketsEnough ? times : 0;
+  const freeInitCount = Math.min(freeTicketAmount, times);
+  const s1InitCount = times - freeInitCount;
 
   const [freeCount, setFreeCount] = useState(freeInitCount);
   const [s1Count, setS1Count] = useState(s1InitCount);
@@ -54,8 +55,10 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
       iconURL: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
       count: freeCount,
       maxCount: freeMaxCount,
+      minusDisabled: freeCount <= freeInitCount,
+      plusDisabled: freeCount >= freeMaxCount,
       disabled: freeDisabled,
-      onMinus: () => onChangeFree(Math.max(freeCount - 1, 0)),
+      onMinus: () => onChangeFree(Math.max(Math.max(freeCount - 1, 0), freeInitCount)),
       onPlus: () => onChangeFree(Math.min(freeCount + 1, freeMaxCount)),
     },
     {
@@ -64,6 +67,8 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
       iconURL: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png',
       count: s1Count,
       maxCount: s1MaxCount,
+      minusDisabled: s1Count <= 0,
+      plusDisabled: s1Count >= s1MaxCount,
       disabled: s1Disabled,
       onMinus: () => onChangeS1(Math.max(s1Count - 1, 0)),
       onPlus: () => onChangeS1(Math.min(s1Count + 1, s1MaxCount)),
