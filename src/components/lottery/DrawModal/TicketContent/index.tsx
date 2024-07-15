@@ -1,4 +1,3 @@
-import { Lottery } from '@/types/lottery';
 import { to2Digit } from '@/utils/common';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
@@ -11,12 +10,25 @@ export interface Props {
   iconURL: string;
   count?: number;
   maxCount?: number;
+  minusDisabled?: boolean;
+  plusDisabled?: boolean;
   disabled?: boolean;
   onMinus?: () => void;
   onPlus?: () => void;
 }
 
-const TicketContent: FC<Props> = ({ label, ticketLabel, iconURL, count, maxCount, disabled, onMinus, onPlus }) => {
+const TicketContent: FC<Props> = ({
+  label,
+  ticketLabel,
+  iconURL,
+  count,
+  maxCount,
+  minusDisabled,
+  plusDisabled,
+  disabled,
+  onMinus,
+  onPlus,
+}) => {
   return (
     <div className="flex justify-between items-center w-full mt-7 font-semakin relative">
       <div className="text-base w-16 lg:w-auto mr-8 lg:mr-0 lg:text-2xl">{label}</div>
@@ -44,7 +56,7 @@ const TicketContent: FC<Props> = ({ label, ticketLabel, iconURL, count, maxCount
         <Image
           className={cn([
             'w-[1.125rem] h-[1.125rem] object-contain mr-3 relative z-0',
-            disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+            disabled || minusDisabled ? 'cursor-not-allowed grayscale' : 'cursor-pointer',
           ])}
           src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_minus_basic_yellow.png"
           alt=""
@@ -71,7 +83,7 @@ const TicketContent: FC<Props> = ({ label, ticketLabel, iconURL, count, maxCount
         <Image
           className={cn([
             'w-[1.125rem] h-[1.125rem] object-contain ml-3 relative z-0',
-            disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+            disabled || plusDisabled ? 'cursor-not-allowed grayscale' : 'cursor-pointer',
           ])}
           src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_plus_basic_yellow.png"
           alt=""
