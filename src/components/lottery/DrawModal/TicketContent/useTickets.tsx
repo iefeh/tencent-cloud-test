@@ -11,11 +11,11 @@ export interface UseTicketsProps {
 
 export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChange }: UseTicketsProps) {
   const isFreeTicketsEnough = (poolInfo?.user_free_lottery_ticket_amount || 0) >= times;
-  const isS1TicketsEnough = (poolInfo?.user_s1_lottery_ticket_amount || 0) >= times;
   const freeTicketAmount = poolInfo?.user_free_lottery_ticket_amount || 0;
+  const s1TicketAmount = poolInfo?.user_s1_lottery_ticket_amount || 0;
 
   const freeInitCount = Math.min(freeTicketAmount, times);
-  const s1InitCount = times - freeInitCount;
+  const s1InitCount = Math.min(times - freeInitCount, s1TicketAmount);
 
   const [freeCount, setFreeCount] = useState(freeInitCount);
   const [s1Count, setS1Count] = useState(s1InitCount);
