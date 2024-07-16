@@ -10,6 +10,8 @@ export interface IGlobalNotification extends Document {
   link: string;
   //创建时间
   created_time: number;
+  //是否为包含CDK的通知
+  cdk_notification: boolean;
 }
 
 const GlobalNotificationSchema = new Schema<IGlobalNotification>({
@@ -17,6 +19,7 @@ const GlobalNotificationSchema = new Schema<IGlobalNotification>({
   content: { type: String, required: true },
   link: { type: String },
   created_time: { type: Number },
+  cdk_notification: { type: Boolean, default: false },
 });
 
 GlobalNotificationSchema.index({ notification_id: 1 }, { unique: true });

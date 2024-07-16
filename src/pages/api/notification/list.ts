@@ -4,6 +4,7 @@ import * as response from '@/lib/response/response';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { PipelineStage } from 'mongoose';
 import UserNotification from '@/lib/models/UserNotifications';
+import GlobalNotification from '@/lib/models/GlobalNotification';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -61,7 +62,8 @@ async function getUserNotifications(userId: string, pageNum: number, pageSize: n
         pipeline: [
           {
             $match: {
-              $expr: { $and: [{ $lt: ['$created_time', now] }] },
+              cdk_notification: false,
+              created_time: { $lt: now }
             },
           },
         ],
