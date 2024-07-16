@@ -20,6 +20,8 @@ export enum QuestType {
     LikeTweet = "like_tweet",
     // 评论
     CommentTweet = "comment_tweet",
+    // 第三方回调任务
+    ThirdPartyCallback = "third_party_callback",
     // twitter话题(发推参与话题)
     TwitterTopic = "twitter_topic",
     // 推文互动(点赞、评论、转推)
@@ -250,6 +252,16 @@ export type claimRewardResult = {
 export type HoldBadgeSBT = {
     badge_id: string,
     badge_level: string
+}
+
+export type ThirdPartyCallback = {
+    endpoint: string,
+    custom_headers: ThirdPartyCallbackRequestHeaders[]
+}
+
+export type ThirdPartyCallbackRequestHeaders = {
+    name: string,
+    value: any
 }
 
 export enum ThinkingDataQuestType {
