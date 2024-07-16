@@ -1,30 +1,31 @@
-import { IQuest } from "@/lib/models/Quest";
-import { QuestType } from "@/lib/quests/types";
-import { QuestBase } from "@/lib/quests/implementations/base";
-import { ConnectTwitterQuest } from "@/lib/quests/implementations/connectTwitterQuest";
-import { ConnectDiscordQuest } from "@/lib/quests/implementations/connectDiscordQuest";
-import { HoldDiscordRoleQuest } from "@/lib/quests/implementations/holdDiscordRoleQuest";
-import { UserMetricQuest } from "@/lib/quests/implementations/userMetricQuest";
-import { FollowOnTwitterQuest } from "@/lib/quests/implementations/followOnTwitterQuest";
-import { RetweetTweetQuest } from "@/lib/quests/implementations/retweetTweetQuest";
-import { ConnectSteamQuest } from "@/lib/quests/implementations/connectSteamQuest";
-import { ConnectWalletQuest } from "@/lib/quests/implementations/connectWalletQuest";
-import { WhitelistQuest } from "@/lib/quests/implementations/whitelistQuest";
-import { JoinDiscordServerQuest } from "@/lib/quests/implementations/joinDiscordServerQuest";
-import { HoldNFTQuest } from "@/lib/quests/implementations/holdNFTQuest";
-import { LikeTweetQuest } from "@/lib/quests/implementations/likeTweetQuest";
-import { SendDiscordMessageQuest } from "@/lib/quests/implementations/sendDiscordMessageQuest";
-import { CommentTweetQuest } from "./implementations/commentTweetQuest";
-import { TwitterFollowerQuest } from "./implementations/twitterFollowerQuest";
-import { TwitterTopicQuest } from "./implementations/twitterTopicQuest";
-import { TweetInteractionQuest } from "./implementations/tweetInteraction";
-import { HoldBadgeSBTQuest } from "./implementations/holdBadgeSBTQuest";
-import { ThinkingDataQueryQuest } from "./implementations/thinkingDataQueryQuest";
-import { Claim2048TicketQuest } from "./implementations/claim2048Ticket";
-import { ViewWebsiteQuest } from "./implementations/viewWebsite";
-import { ClaimLotteryTicketQuest } from "./implementations/claimLotteryTicket";
-import { FollowOnTwitterQuestNew } from "./implementations/followOnTwitterQuestNew";
+import { IQuest } from '@/lib/models/Quest';
+import { QuestBase } from '@/lib/quests/implementations/base';
+import { ConnectDiscordQuest } from '@/lib/quests/implementations/connectDiscordQuest';
+import { ConnectSteamQuest } from '@/lib/quests/implementations/connectSteamQuest';
+import { ConnectTwitterQuest } from '@/lib/quests/implementations/connectTwitterQuest';
+import { ConnectWalletQuest } from '@/lib/quests/implementations/connectWalletQuest';
+import { FollowOnTwitterQuest } from '@/lib/quests/implementations/followOnTwitterQuest';
+import { HoldDiscordRoleQuest } from '@/lib/quests/implementations/holdDiscordRoleQuest';
+import { HoldNFTQuest } from '@/lib/quests/implementations/holdNFTQuest';
+import { JoinDiscordServerQuest } from '@/lib/quests/implementations/joinDiscordServerQuest';
+import { LikeTweetQuest } from '@/lib/quests/implementations/likeTweetQuest';
+import { RetweetTweetQuest } from '@/lib/quests/implementations/retweetTweetQuest';
+import { SendDiscordMessageQuest } from '@/lib/quests/implementations/sendDiscordMessageQuest';
+import { UserMetricQuest } from '@/lib/quests/implementations/userMetricQuest';
+import { WhitelistQuest } from '@/lib/quests/implementations/whitelistQuest';
+import { QuestType } from '@/lib/quests/types';
 
+import { Claim2048TicketQuest } from './implementations/claim2048Ticket';
+import { ClaimLotteryTicketQuest } from './implementations/claimLotteryTicket';
+import { CommentTweetQuest } from './implementations/commentTweetQuest';
+import { FollowOnTwitterQuestNew } from './implementations/followOnTwitterQuestNew';
+import { HoldBadgeSBTQuest } from './implementations/holdBadgeSBTQuest';
+import { ThinkingDataQueryQuest } from './implementations/thinkingDataQueryQuest';
+import { ThirdPartyCallbackQuest } from './implementations/ThirdPartyCallbackQuest';
+import { TweetInteractionQuest } from './implementations/tweetInteraction';
+import { TwitterFollowerQuest } from './implementations/twitterFollowerQuest';
+import { TwitterTopicQuest } from './implementations/twitterTopicQuest';
+import { ViewWebsiteQuest } from './implementations/viewWebsite';
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -77,6 +78,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new ViewWebsiteQuest(quest);
         case QuestType.FollowOnTwitterNew:
             return new FollowOnTwitterQuestNew(quest);
+        case QuestType.ThirdPartyCallback:
+            return new ThirdPartyCallbackQuest(quest);
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }
