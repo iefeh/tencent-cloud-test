@@ -25,6 +25,9 @@ import { sendBadgeCheckMessages, sendBattlepassCheckMessage } from '@/lib/kafka/
 import { try2AddUsers2MBLeaderboard } from "@/lib/redis/moonBeamLeaderboard";
 import { BadgeHolderAccelerator } from "@/lib/accelerator/implementations/badgeHolder";
 import UserBadges from "@/lib/models/UserBadges";
+import UserNotifications, { IUserNotification } from "@/lib/models/UserNotifications";
+import GlobalNotification, { IGlobalNotification } from "@/lib/models/GlobalNotification";
+import { generateUUID } from "three/src/math/MathUtils";
 
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -137,6 +140,9 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
         }
         return tasks;
     }, 1);
+
+    const notifications: IUserNotification[] | undefined = await constructCDKNotificatoin(userId, campaign);
+
     // 添加用户的活动奖励领取记录
     const now = Date.now();
     await doTransaction(async (session) => {
@@ -172,6 +178,9 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
         }
         // 更新用户的MB余额
         await User.updateOne({ user_id: userId }, { $inc: { moon_beam: totalMbDelta } }, opts);
+        if (notifications && notifications.length > 0) {
+            await UserNotifications.insertMany(notifications, { session: session },);
+        }
     });
     if (userBattlepass) {
         //检查赛季进度
@@ -314,6 +323,23 @@ function constructUserBaseMbReward(userId: string, campaign: ICampaign): any[] {
         created_time: Date.now(),
     })
     return [baseAudit];
+}
+
+async function constructCDKNotificatoin(userId: string, campaign: ICampaign) {
+    // 查询奖励中的CDK通知
+    const cdkNotificationIds: string[] = campaign.rewards.filter(r => r.type === CampaignRewardType.CDK).map(r => r.cdk_notification_id);
+    if (cdkNotificationIds.length === 0) {
+        return;
+    }
+
+    // 根据配置的全局通知生成个人通知
+    let notificationes: IUserNotification[] = [];
+    const notis: IGlobalNotification[] = await GlobalNotification.find({ notification_id: { $in: cdkNotificationIds } });
+    for (let n of notis) {
+        notificationes.push({ user_id: userId, notification_id: generateUUID(), content: n.content, link: n.link, created_time: Date.now() } as IUserNotification);
+    }
+
+    return notificationes;
 }
 
 //获得用户赛季

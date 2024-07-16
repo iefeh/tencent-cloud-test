@@ -11,6 +11,8 @@ export enum CampaignRewardType {
     LuckyDraw = 'lucky_draw',
     //任务数
     Task = 'task',
+    //通过发送通知
+    CDK = 'cdk',
 }
 
 // 活动奖励
@@ -27,7 +29,9 @@ type CampaignReward = {
     //徽章ID
     badge_id: string,
     //任务权重
-    season_pass_progress: number
+    season_pass_progress: number,
+    //包含CDK的全局通知ID
+    cdk_notification_id: string,
 }
 
 export enum CampaignStatus {
