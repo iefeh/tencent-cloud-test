@@ -3,18 +3,21 @@ import { useRef, useState } from 'react';
 import { Contract, BrowserProvider, JsonRpcSigner } from 'ethers';
 import { MintPermitResDTO } from '@/http/services/badges';
 import { toast } from 'react-toastify';
-import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useWalletInfo, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import sbtContractABI from '@/http/sbt_abi.json';
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from './utils';
-import { captureEvent, captureException } from '@sentry/nextjs';
+import { captureEvent, captureException, type Event } from '@sentry/nextjs';
+import { useUserContext } from '@/store/User';
 
 export default function useSbtMint() {
+  const { userInfo } = useUserContext();
   const { walletProvider } = useWeb3ModalProvider();
   const signer = useRef<JsonRpcSigner | null>(null);
   const { isConnected } = useWeb3ModalAccount();
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
+  const { walletInfo } = useWalletInfo();
 
   function toastError(error: any, step = '') {
     console.log('nft error', step, error);
@@ -108,31 +111,37 @@ export default function useSbtMint() {
     }
   }, 500);
 
+  function captureMintEvent(e: Event) {
+    const { message, ...rest } = e;
+    e.message = `sbt_mint ${JSON.stringify(rest)}`;
+    captureEvent(e);
+  }
+
   async function onButtonClick(data: MintPermitResDTO) {
     const errorEvent = {
       message: 'sbt_mint',
+      userId: userInfo?.user_id,
       isConnected: false,
       hasPermission: false,
       networkOk: false,
       switchedNetwork: false,
       sendMint: false,
-      provider: '',
+      walletType: walletInfo?.name || '',
     };
 
     if (!isConnected) {
       open();
-      captureEvent(errorEvent);
+      captureMintEvent(errorEvent);
       return;
     }
 
     errorEvent.isConnected = true;
-    errorEvent.provider = (walletProvider as any)?.name || '';
     setLoading(true);
 
     const provider = new BrowserProvider(walletProvider!);
     const accounts = await getAccounts(provider);
     if (!accounts || accounts.length < 1) {
-      captureEvent(errorEvent);
+      captureMintEvent(errorEvent);
       return false;
     }
 
@@ -142,7 +151,7 @@ export default function useSbtMint() {
     if (!res) {
       const switchRes = await switchNetwork(provider, data.chain_id);
       if (!switchRes) {
-        captureEvent(errorEvent);
+        captureMintEvent(errorEvent);
         setLoading(false);
         return;
       }
@@ -156,7 +165,7 @@ export default function useSbtMint() {
     setLoading(false);
 
     if (!result) {
-      captureEvent(errorEvent);
+      captureMintEvent(errorEvent);
     }
 
     return !!result;
