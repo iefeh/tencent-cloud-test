@@ -47,9 +47,6 @@ export default function Rewards(props: Props) {
     setRewards(list);
   }, [item]);
 
-  let task = rewards.filter((item) => item.type === EVENT_REWARD_TYPE.TASK);
-  let taskAmount = task && task.length > 0 ? task[0].amount : 0;
-
   const acceleratorsDict: { [key: string]: Accelerator[] } = {};
   motoAccelerators.forEach((item) => {
     const { type } = item;
@@ -82,61 +79,6 @@ export default function Rewards(props: Props) {
 
           {rewards.map((reward, index) => {
             const isMultiplier = reward.type === EVENT_REWARD_TYPE.Multiplier;
-
-            const row = (
-              <div
-                key={index}
-                className="flex justify-between items-center font-semakin text-lg leading-none text-basic-yellow relative z-0"
-              >
-                <div className={isMultiplier && totalMultipliers <= 0 ? 'grayscale' : ''}>{reward.name}</div>
-
-                {isMultiplier ? (
-                  <div className="flex items-center">
-                    {accelerators.map((accs, accsIndex) => {
-                      const icon = AcceleratorIcons[accs[0].type];
-                      if (!icon) return null;
-                      const total = accs.reduce((p, c) => (p += (+c.properties.reward_bonus || 0) * 100), 0);
-
-                      return (
-                        <div
-                          className={cn([
-                            'w-8 h-8 relative border-1 [&+div]:ml-2 rounded-md',
-                            total > 0 ? 'border-basic-yellow' : 'border-[#2C2C2C]',
-                          ])}
-                          key={accsIndex}
-                        >
-                          <Image
-                            className="object-contain rounded-md"
-                            src={AcceleratorIcons[accs[0].type]}
-                            alt=""
-                            fill
-                            sizes="100%"
-                          />
-
-                          <Image
-                            className="absolute -top-1 -right-1 w-3 h-3"
-                            src={total > 0 ? claimedImg : lockImg}
-                            alt=""
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1">
-                    {reward.image_small && (
-                      <div className="w-6 h-6 relative">
-                        <Image className="object-contain" src={reward.image_small} alt="" fill sizes="100%" />
-                      </div>
-                    )}
-                    <span>
-                      {reward.type === EVENT_REWARD_TYPE.MOON_BEAM ? `${reward.amount || 0} MBS` : reward.amount}
-                    </span>
-                  </div>
-                )}
-              </div>
-            );
-
             let tooltipContent = null;
 
             if (reward.type === EVENT_REWARD_TYPE.Multiplier) {
@@ -202,6 +144,13 @@ export default function Rewards(props: Props) {
                               );
                             })
                           )}
+
+                          {accs[0].type === AcceleratorType.NFT && (
+                            <p className="text-sm mt-2">
+                              * Please note that your wallet must hold this NFT to receive the multiplier. Staked or
+                              transferred NFTs will not be recognized by the system.
+                            </p>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -236,40 +185,74 @@ export default function Rewards(props: Props) {
               );
             }
 
-            if (!tooltipContent) return row;
-
             return (
-              <Tooltip key={index} content={tooltipContent}>
-                {row}
-              </Tooltip>
-            );
-          })}
-          {taskAmount && taskAmount > 0 ? (
-            <Tooltip
-              key="taskNote"
-              content={
-                <div className="px-8 py-4 max-w-lg flex">
-                  <Image className="shrink-0 w-5 h-5 mt-1 mr-2" src={notifyIcon} alt="" sizes="100%" />
-                  <p className="text-base">
-                    After completing this event, your Season Pass can level up, advancing you{' '}
-                    <span className="text-basic-yellow">{taskAmount}</span> tasks further in the season.
-                  </p>
-                </div>
-              }
-            >
               <div
-                key="taskNote"
+                key={index}
                 className="flex justify-between items-center font-semakin text-lg leading-none text-basic-yellow relative z-0"
               >
-                <div>Season Pass Progress</div>
-                <div className="flex items-center gap-1">
-                  <span>
-                    + <span className="text-basic-yellow">{taskAmount}</span> TASKS
-                  </span>
+                <div className={cn([isMultiplier && totalMultipliers <= 0 ? 'grayscale' : '', 'flex items-center'])}>
+                  {reward.name}
+                  {tooltipContent && (
+                    <Tooltip key={index} content={tooltipContent}>
+                      <Image
+                        className="object-contain -mt-1 ml-2"
+                        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
+                        alt=""
+                        width={17}
+                        height={17}
+                        unoptimized
+                      />
+                    </Tooltip>
+                  )}
                 </div>
+
+                {isMultiplier ? (
+                  <div className="flex items-center">
+                    {accelerators.map((accs, accsIndex) => {
+                      const icon = AcceleratorIcons[accs[0].type];
+                      if (!icon) return null;
+                      const total = accs.reduce((p, c) => (p += (+c.properties.reward_bonus || 0) * 100), 0);
+
+                      return (
+                        <div
+                          className={cn([
+                            'w-8 h-8 relative border-1 [&+div]:ml-2 rounded-md',
+                            total > 0 ? 'border-basic-yellow' : 'border-[#2C2C2C]',
+                          ])}
+                          key={accsIndex}
+                        >
+                          <Image
+                            className="object-contain rounded-md"
+                            src={AcceleratorIcons[accs[0].type]}
+                            alt=""
+                            fill
+                            sizes="100%"
+                          />
+
+                          <Image
+                            className="absolute -top-1 -right-1 w-3 h-3"
+                            src={total > 0 ? claimedImg : lockImg}
+                            alt=""
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    {reward.image_small && (
+                      <div className="w-6 h-6 relative">
+                        <Image className="object-contain" src={reward.image_small} alt="" fill sizes="100%" />
+                      </div>
+                    )}
+                    <span>
+                      {reward.type === EVENT_REWARD_TYPE.MOON_BEAM ? `${reward.amount || 0} MBS` : reward.amount}
+                    </span>
+                  </div>
+                )}
               </div>
-            </Tooltip>
-          ) : null}
+            );
+          })}
         </div>
       </div>
     </div>
