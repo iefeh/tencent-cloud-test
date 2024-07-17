@@ -40,6 +40,8 @@ export interface IUserMoonBeamAudit extends Document {
     moon_beam_delta: Number;
     // MB奖励的污点，确保对应类型的奖励不会重复生成，如邀请任务中对单个用户进行反复邀请
     reward_taint: String;
+    // MB奖励的污点，确保在用户有多个校验方式的情况下不会重复领取奖励
+    reward_taints: String[];
     // 关联的记录id，
     // 如type=quests时是任务id
     // 如type=campaigns时是活动id
@@ -65,6 +67,7 @@ const UserMoonBeamAuditSchema = new Schema<IUserMoonBeamAudit>({
     type: { type: String, required: true },
     moon_beam_delta: { type: Number, required: true },
     reward_taint: { type: String, default: null },
+    reward_taints: { type: [String], default: null },
     corr_id: { type: String },
     extra_info: { type: String },
     created_time: { type: Number },
