@@ -14,7 +14,7 @@ export default function useSbtMint() {
   const { userInfo } = useUserContext();
   const { walletProvider } = useWeb3ModalProvider();
   const signer = useRef<JsonRpcSigner | null>(null);
-  const { isConnected } = useWeb3ModalAccount();
+  const { isConnected, chainId } = useWeb3ModalAccount();
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
   const { walletInfo } = useWalletInfo();
@@ -46,13 +46,9 @@ export default function useSbtMint() {
     }
   }
 
-  async function checkNetwork(provider: BrowserProvider, targetChainId: string) {
-    let chainId: any;
-
+  async function checkNetwork(targetChainId: string) {
     try {
-      const network = await provider.getNetwork();
-      chainId = network.chainId;
-      const isNetCorrected = chainId.toString() === targetChainId;
+      const isNetCorrected = chainId?.toString() === targetChainId;
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
@@ -82,8 +78,9 @@ export default function useSbtMint() {
       await provider.send('wallet_switchEthereumChain', [{ chainId: parseChainIdToHex(targetChainId) }]);
       return true;
     } catch (error: any) {
+      const code = error?.error?.code || error?.code;
       captureException(error, { data: { message: 'switchNetwork', chainId: targetChainId } });
-      if (error?.code === 4902 || error?.code === 5000) {
+      if (code === 4902 || code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await addNetwork(provider, targetChainId);
         if (!res) return false;
@@ -147,7 +144,7 @@ export default function useSbtMint() {
 
     errorEvent.hasPermission = true;
 
-    const res = await checkNetwork(provider, data.chain_id);
+    const res = await checkNetwork(data.chain_id);
     if (!res) {
       const switchRes = await switchNetwork(provider, data.chain_id);
       if (!switchRes) {
