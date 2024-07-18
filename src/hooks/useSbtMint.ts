@@ -114,6 +114,14 @@ export default function useSbtMint() {
     captureEvent(e);
   }
 
+  async function testNetwork(provider: BrowserProvider) {
+    try {
+      await provider._detectNetwork()
+    } catch (error) {
+      console.log('detect network:', error);
+    }
+  }
+
   async function onButtonClick(data: MintPermitResDTO) {
     const errorEvent = {
       message: 'sbt_mint',
@@ -137,6 +145,7 @@ export default function useSbtMint() {
 
     const provider = new BrowserProvider(walletProvider!);
     const accounts = await getAccounts(provider);
+    await testNetwork(provider);
     if (!accounts || accounts.length < 1) {
       captureMintEvent(errorEvent);
       return false;
@@ -154,6 +163,7 @@ export default function useSbtMint() {
       }
       errorEvent.switchedNetwork = true;
     }
+    await testNetwork(provider);
 
     errorEvent.networkOk = true;
 
