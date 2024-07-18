@@ -1,9 +1,16 @@
 import axios, { isAxiosError } from 'axios';
 
+import { AuthorizationType } from '@/lib/authorization/types';
 import { queryUserAuth } from '@/lib/common/user';
 import { IQuest } from '@/lib/models/Quest';
+import QuestAchievement from '@/lib/models/QuestAchievement';
+import User from '@/lib/models/User';
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import { isDuplicateKeyError } from '@/lib/mongodb/client';
+import doTransaction from '@/lib/mongodb/transaction';
 import { QuestBase } from '@/lib/quests/implementations/base';
 import { checkClaimableResult, claimRewardResult, ThirdPartyCallback } from '@/lib/quests/types';
+import * as Sentry from '@sentry/nextjs';
 
 export class ThirdPartyCallbackQuest extends QuestBase {
   // 用户的授权email, twitter_id, discord_id, 钱包地址, 在checkClaimable()时设置
@@ -88,8 +95,21 @@ export class ThirdPartyCallbackQuest extends QuestBase {
       };
     } 
     const taint = `${this.quest.id},${userId}`;
+    let taints = [];
+    if (this.email) {
+      taints.push(`${this.quest.id},${AuthorizationType.Email},${this.email}`);
+    }
+    if (this.twitter) {
+      taints.push(`${this.quest.id},${AuthorizationType.Twitter},${this.twitter}`);
+    }
+    if (this.discord) {
+      taints.push(`${this.quest.id},${AuthorizationType.Discord},${this.discord}`);
+    }
+    if (this.address) {
+      taints.push(`${this.quest.id},${AuthorizationType.Wallet},${this.address}`);
+    }
     const rewardDelta = await this.checkUserRewardDelta(userId);
-    const result = await this.saveUserReward(userId, taint, rewardDelta, null);
+    const result = await this.saveUserRewardWithTaints(userId, taint, taints, rewardDelta);
     if (result.duplicated) {
       return {
         verified: false,
@@ -102,4 +122,47 @@ export class ThirdPartyCallbackQuest extends QuestBase {
       tip: result.done ? `You have claimed ${rewardDelta} MB.` : 'Server Internal Error',
     };
   }
+
+  // 保存用户的奖励
+  async saveUserRewardWithTaints(userId: string, taint: string, taints: string[], moonBeamDelta: number): Promise<{ done: boolean, duplicated: boolean }> {
+    const now = Date.now();
+    const audit = new UserMoonBeamAudit({
+        user_id: userId,
+        type: UserMoonBeamAuditType.Quests,
+        moon_beam_delta: moonBeamDelta,
+        reward_taint: taint,
+        reward_taints: taints,
+        corr_id: this.quest.id,
+        created_time: now,
+    });
+    try {
+        // 保存用户任务达成记录、任务奖励记录、用户MB奖励
+        await doTransaction(async (session) => {
+            const opts = {session};
+            await QuestAchievement.updateOne(
+                {user_id: userId, quest_id: this.quest.id, verified_time: null},
+                {
+                    $set: {
+                        verified_time: now,
+                    },
+                    $setOnInsert: {
+                        created_time: now,
+                    },
+                },
+                {upsert: true, session: session},
+            );
+            await audit.save(opts);
+            await User.updateOne({user_id: userId}, {$inc: {moon_beam: audit.moon_beam_delta}}, opts);
+        });
+        return {done: true, duplicated: false}
+    } catch (error) {
+        console.log(error);
+        if (isDuplicateKeyError(error)) {
+            return {done: false, duplicated: true}
+        }
+        console.error(error);
+        Sentry.captureException(error);
+        return {done: false, duplicated: false}
+    }
+}
 }
