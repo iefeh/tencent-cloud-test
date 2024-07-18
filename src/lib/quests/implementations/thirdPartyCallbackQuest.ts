@@ -41,7 +41,7 @@ export class ThirdPartyCallbackQuest extends QuestBase {
     if (!this.email && !this.twitter && !this.discord && !this.address) {
       return {
         claimable: false,
-        tip: "No available auth for this user."
+        tip: "No available auth identity for this user."
       };
     }
     const headers: any = {};
@@ -65,6 +65,10 @@ export class ThirdPartyCallbackQuest extends QuestBase {
       const error = response.data.data.error;
       if (result) {
         claimable = !!result.achieved;
+        if (!claimable) {
+          tip = error? error.message: "Something wrong, please try again later.";
+          extra = error? { errorCode: error.code }: undefined;
+        }
       } else {
         claimable = false;
         tip = error? error.message: undefined;
@@ -74,6 +78,7 @@ export class ThirdPartyCallbackQuest extends QuestBase {
     catch (error) {
       //校验超时或者校验api出错则返回校验失败
       claimable = false;
+      tip = "Something wrong, please try again later.";
       if (!isAxiosError(error)) {
         throw error;
       }
