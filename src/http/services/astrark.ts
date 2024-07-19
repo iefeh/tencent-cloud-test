@@ -30,3 +30,26 @@ export function queryDisplayNFTListAPI(): Promise<NFTItem[]> {
 export function updateDisplayNFTListAPI(data: Partial<NFTItem>[]): Promise<null> {
   return http.post('/api/oauth2/nft/favourite', JSON.stringify(data));
 }
+
+export interface AccountStatusDTO {
+  destruct_request_submitted: boolean;
+  selfdestruct_request_time: number | null;
+  selfdestruct_finish_time: number | null;
+}
+
+export interface ResultDTO {
+  result: boolean;
+  message?: string;
+}
+
+export function checkDeleteStatusAPI(): Promise<AccountStatusDTO> {
+  return http.get('/api/oauth2/selfdestruct/check');
+}
+
+export function deleteAccountAPI(): Promise<ResultDTO> {
+  return http.post('/api/oauth2/selfdestruct/request');
+}
+
+export function cancelDeleteAccountAPI(): Promise<ResultDTO> {
+  return http.post('/api/oauth2/selfdestruct/cancel');
+}
