@@ -3,6 +3,7 @@ import '@/styles/dialog.css';
 import '@/styles/transition.scss';
 import '@/styles/table.css';
 import '@/styles/ani.scss';
+import '@/styles/scrollbar.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
