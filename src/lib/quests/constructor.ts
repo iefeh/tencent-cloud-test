@@ -21,7 +21,7 @@ import { CommentTweetQuest } from './implementations/commentTweetQuest';
 import { FollowOnTwitterQuestNew } from './implementations/followOnTwitterQuestNew';
 import { HoldBadgeSBTQuest } from './implementations/holdBadgeSBTQuest';
 import { ThinkingDataQueryQuest } from './implementations/thinkingDataQueryQuest';
-import { ThirdPartyCallbackQuest } from './implementations/ThirdPartyCallbackQuest';
+import { ThirdPartyCallbackQuest } from './implementations/thirdPartyCallbackQuest';
 import { TweetInteractionQuest } from './implementations/tweetInteraction';
 import { TwitterFollowerQuest } from './implementations/twitterFollowerQuest';
 import { TwitterTopicQuest } from './implementations/twitterTopicQuest';
