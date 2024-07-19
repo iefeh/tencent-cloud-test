@@ -27,13 +27,11 @@ export default function useDeleteAccount() {
         res = await deleteAccount();
         if (!res) break;
         setStatus(2);
-        queryStatus();
         break;
       case 2:
         res = await cancelDelete();
         if (!res) break;
-        setStatus(1);
-        queryStatus();
+        setStatus(0);
         break;
     }
   }
@@ -41,23 +39,31 @@ export default function useDeleteAccount() {
   async function deleteAccount() {
     setLoading(true);
     const res = await deleteAccountAPI();
-    setLoading(false);
     if (!res?.result && res?.message) {
       toast.error(res.message);
+      setLoading(false);
+      return false;
     }
 
-    return !!res?.result;
+    await queryStatus();
+    setLoading(false);
+
+    return true;
   }
 
   async function cancelDelete() {
     setLoading(true);
     const res = await cancelDeleteAccountAPI();
-    setLoading(false);
     if (!res?.result && res?.message) {
       toast.error(res.message);
+      setLoading(false);
+      return false;
     }
 
-    return !!res?.result;
+    await queryStatus();
+    setLoading(false);
+
+    return true;
   }
 
   async function queryStatus() {
