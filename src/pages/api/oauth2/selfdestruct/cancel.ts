@@ -15,11 +15,11 @@ router.use(dynamicCors).post(async (req, res) => {
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo })
         const userId = token.user.user_id;
         const user = await User.findOne({ user_id: userId });
-        if (!user || !user.selfdestruct_request_time) {
-          return res.json(response.invalidParams("Cannot find the user or the user doesn't have a self destruct request submitted."));
+        if (!user || !user.selfdestruct_request_time) { 
+          return res.json(response.invalidParams({ result: false, message: "Cannot find the user or the user doesn't have a self destruct request submitted." }));
         }
         await User.updateOne({ user_id: userId }, { selfdestruct_request_time: null })
-        return res.json(response.success("Operation success."));
+        return res.json(response.success({ result: true }));
 
     } catch (error: any) {
         return responseOnOauthError(res, error);
