@@ -20,7 +20,6 @@ router.use(dynamicCors).post(async (req, res) => {
         }
         await User.updateOne({ user_id: userId }, { selfdestruct_request_time: Date.now() })
         return res.json(response.success({ result: true }));
-
     } catch (error: any) {
         return responseOnOauthError(res, error);
     }
