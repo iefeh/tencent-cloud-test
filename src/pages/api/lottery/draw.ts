@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { promiseSleep } from '@/lib/common/sleep';
 import logger from '@/lib/logger/winstonLogger';
-import { getLotteryPoolById } from '@/lib/lottery/lottery';
+import { getLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import LotteryPool, {
@@ -44,6 +44,16 @@ const noPrizeReward = {
   amount: 0
 };
 
+interface DrawResult {
+  verified: boolean,
+  message: string,
+  lottery_pool_id?: string,
+  available_draw_time?: string | number,
+  draw_id?: string,
+  rewards?: IUserLotteryRewardItem[],
+  require_authorization?: string | undefined
+}
+
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost } = req.body;
@@ -60,14 +70,13 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     return;
   }
   try {
-    const user = await User.findOne({ user_id: userId });
-    const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
-    const canDraw = await verify(lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, user, userLotteryPool, lotteryPool);
+    const canDraw = await verifyLotteryQualification(lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userId);
     if (!canDraw.verified) {
       res.json(response.invalidParams(canDraw));
       return;
     }
     else {
+      const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
       let drawResult = await draw(userId, lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userLotteryPool);
       if (drawResult.verified) {
         res.json(response.success(drawResult));
@@ -85,68 +94,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   }
 });
 
-async function verify(lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, user: IUser, userLotteryPool: IUserLotteryPool, lotteryPool: ILotteryPool): Promise<any> {
-  const lockKey = `claim_draw_lock:${lotteryPoolId}:${user.user_id}`;
-  // 锁定用户抽奖资源10秒
-  let interval: number = 10;
-  const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
-  if (!locked) {
-    return {
-      verified: false,
-      message: `You may perform a lottery draw per ${interval}s, please try again later.`,
-    };
-  }
-  const userS1LotteryTicketAmount = user.lottery_ticket_amount;
-  const userMbAmount = user.moon_beam;
-  const userAvailableDrawCount = lotteryPool.draw_limits? lotteryPool.draw_limits - (userLotteryPool ? userLotteryPool.draw_amount : 0) : 1000;
-  // 验证用户是否还有可用的抽奖次数
-  if (userAvailableDrawCount < drawCount) {
-    return {
-      verified: false,
-      message: `In this pool you have ${userAvailableDrawCount} draw times left however you choose to draw ${drawCount} times.`
-    }
-  }
-  // 验证用户本次抽奖需要消耗的资源, 默认先消耗当前奖池的免费抽奖券, 然后是其他资源, 如果资源不足或者与当前抽奖次数不匹配则返回错误信息
-  if (mbCost%25 !== 0 || mbCost > userMbAmount) {
-    return {
-      verified: false,
-      message: "Invalid moon beam cost. The moon beam cost should be mutiples of 25 or you don't have enough moon beams."
-    };
-  }
-  if (userS1LotteryTicketAmount < lotteryTicketCost) {
-    return {
-      verified: false,
-      message: `Invalid resource cost, you choose to use ${lotteryTicketCost} S1 tickets, however you have only ${userS1LotteryTicketAmount} S1 tickets.`
-    };
-  }
-  let availableResourceDrawCount = 0;
-  if (userLotteryPool) {
-    if (userLotteryPool.free_lottery_ticket_amount >= drawCount) {
-      availableResourceDrawCount = drawCount;
-    }
-    else {
-      availableResourceDrawCount = userLotteryPool.free_lottery_ticket_amount;
-    }
-  }
-  availableResourceDrawCount += lotteryTicketCost + mbCost/25;
-  if (availableResourceDrawCount > drawCount) {
-    return {
-      verified: false,
-      message: `Invalid resource cost, you are going to draw ${drawCount} times, however the resource you choose can draw ${availableResourceDrawCount} times.`
-    };
-  }
-  else if (availableResourceDrawCount < drawCount) {
-    return {
-      verified: false,
-      message: `No enough resource, you are going to draw ${drawCount} times, however the resource you choose can draw ${availableResourceDrawCount} times.`
-    }
-  }
-  return {
-    verified: true
-  };
-}
-
-async function draw(userId: string, lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, userLotteryPool: IUserLotteryPool): Promise<any> {
+async function draw(userId: string, lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, userLotteryPool: IUserLotteryPool): Promise<DrawResult> {
   const lockKey = `claim_draw_lock:${lotteryPoolId}`;
   // 锁定奖池1秒
   let interval: number = 2;

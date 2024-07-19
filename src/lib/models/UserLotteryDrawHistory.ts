@@ -30,6 +30,8 @@ export interface IUserLotteryDrawHistory extends Document {
     draw_id: string;
     // 抽奖时间，毫秒时间戳
     draw_time: number;
+    // 链上请求id
+    chain_request_id: string;
     // 用户id
     user_id: string;
     // 奖池id
@@ -47,6 +49,7 @@ export interface IUserLotteryDrawHistory extends Document {
 const UserLotteryDrawHistorySchema = new Schema<IUserLotteryDrawHistory>({
     draw_id: { type: String },
     draw_time: { type: Number },
+    chain_request_id: { type: String },
     user_id: { type: String},
     lottery_pool_id: { type: String },
     rewards: { type: Schema.Types.Mixed },
