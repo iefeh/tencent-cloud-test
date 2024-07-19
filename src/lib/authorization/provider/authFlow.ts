@@ -1,20 +1,24 @@
-import {NextApiResponse} from "next";
-import {AuthorizationFlow, AuthorizationPayload} from "@/lib/models/authentication";
-import connectToMongoDbDev, {isDuplicateKeyError} from "@/lib/mongodb/client";
-import {appendQueryParamsToUrl, appendResponseToUrlQueryParams} from "@/lib/common/url";
-import * as response from "@/lib/response/response";
-import {generateUserSession, generateUserSignupSession} from "@/lib/middleware/session";
-import {genLoginJWT} from "@/lib/particle.network/auth";
-import logger from "@/lib/logger/winstonLogger";
-import doTransaction from "@/lib/mongodb/transaction";
-import {redis} from "@/lib/redis/client";
+import { tr } from 'date-fns/locale';
+import { NextApiResponse } from 'next';
+import { v4 as uuidv4 } from 'uuid';
+
+import { AuthorizationType, CaptchaType, SignupPayload } from '@/lib/authorization/types';
+import { appendQueryParamsToUrl, appendResponseToUrlQueryParams } from '@/lib/common/url';
+import logger from '@/lib/logger/winstonLogger';
+import { generateUserSession, generateUserSignupSession } from '@/lib/middleware/session';
+import { AuthorizationFlow, AuthorizationPayload } from '@/lib/models/authentication';
+import User from '@/lib/models/User';
+import UserInvite from '@/lib/models/UserInvite';
+import UserMetrics, { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
+import {
+    NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit
+} from '@/lib/models/UserMoonBeamAudit';
+import connectToMongoDbDev, { isDuplicateKeyError } from '@/lib/mongodb/client';
+import doTransaction from '@/lib/mongodb/transaction';
+import { genLoginJWT } from '@/lib/particle.network/auth';
+import { redis } from '@/lib/redis/client';
+import * as response from '@/lib/response/response';
 import * as Sentry from '@sentry/nextjs';
-import UserInvite from "@/lib/models/UserInvite";
-import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
-import {v4 as uuidv4} from "uuid";
-import UserMetrics, { Metric, incrUserMetric } from "@/lib/models/UserMetrics";
-import { tr } from "date-fns/locale";
-import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from "@/lib/models/UserMoonBeamAudit";
 
 export interface ValidationResult {
     passed: boolean,
@@ -176,6 +180,14 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
                 }
             }
         });
+    } else {
+        //检查用户是否已经被删除
+        const now = Date.now();
+        const user = await User.findOne({ user_id: userConnection.user_id });
+        // 用户申请删除已经过了90天, 禁止登录
+        if (user.selfdestruct_request_time && user.selfdestruct_request_time + 1000 * 60 * 60 * 24 * 90 < now) {
+            return res.status(500).json(response.userSelfDestructed());
+        }
     }
     // 执行用户登录
     const userId = userConnection.user_id;
