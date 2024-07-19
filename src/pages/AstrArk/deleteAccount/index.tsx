@@ -45,16 +45,9 @@ const DeleteAccountPage: NextPage & BasePage = () => {
           />
 
           <div className="flex justify-between items-center relative z-0">
-            <div className="font-fzsb font-semibold text-[2.5rem] text-transparent bg-clip-text bg-[linear-gradient(to_bottom,#FDEFBC_28%,#E4BA80_67.5%)] leading-none">
+            <div className="font-fzsb font-semibold text-[2.5rem] text-transparent bg-clip-text bg-[linear-gradient(to_bottom,#FDEFBC_28%,#E4BA80_67.5%)] leading-[3.125rem]">
               Delete My Account
             </div>
-
-            <Button
-              className="w-[14.125rem] h-[3.125rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/btn_gray_thin.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none"
-              onPress={onBackToGame}
-            >
-              Return to Game
-            </Button>
           </div>
 
           <p
@@ -93,23 +86,14 @@ const DeleteAccountPage: NextPage & BasePage = () => {
                 Cancel Deletion
               </Button>
             ) : (
-              <>
-                <Button
-                  className="w-[19.375rem] h-[7.375rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/btn_gray.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none"
-                  isLoading={loading}
-                  disabled={status < 0}
-                  onPress={onContinue}
-                >
-                  Confirm Deletion
-                </Button>
-
-                <Button
-                  className="w-[19.375rem] h-[7.375rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/btn_yellow.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none -ml-[1.375rem]"
-                  onPress={onBackToGame}
-                >
-                  Cancel
-                </Button>
-              </>
+              <Button
+                className="w-[19.375rem] h-[7.375rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/btn_gray.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none"
+                isLoading={loading}
+                disabled={status < 0}
+                onPress={onContinue}
+              >
+                Confirm Deletion
+              </Button>
             )}
           </div>
         </div>
