@@ -116,6 +116,13 @@ async function doUserLogin(res: any, inviter: inviteRelationship | null, user: I
             }
         })
 
+    } else {
+        //检查用户是否已经被删除
+        const now = Date.now();
+        // 用户申请删除已经过了90天, 禁止登录
+        if (user.selfdestruct_request_time && user.selfdestruct_request_time + 1000 * 60 * 60 * 24 * 90 < now) {
+            return res.status(500).json(response.userSelfDestructed());
+        }
     }
     // 删除验证码
     await redis.del(`${CaptchaType.LoginCaptcha}:${email}`);
