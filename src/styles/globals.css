@@ -31,42 +31,27 @@ body {
 
 @font-face {
   font-family: semakin;
-  src: url('/fonts/Semakin.woff2');
-}
-
-@font-face {
-  font-family: semakin;
-  src: url('/fonts/Semakin.ttf');
+  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Semakin.ttf');
 }
 
 @font-face {
   font-family: decima;
-  src: url('/fonts/Decima-Mono-W01-Regular.woff2');
-}
-
-@font-face {
-  font-family: decima;
-  src: url('/fonts/Decima-Mono-W01-Regular.ttf');
+  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Decima-Mono-W01-Regular.ttf');
 }
 
 @font-face {
   font-family: poppins;
-  src: url('/fonts/Poppins-Regular.woff2');
-}
-
-@font-face {
-  font-family: poppins;
-  src: url('/fonts/Poppins-Regular.ttf');
+  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Regular.ttf');
 }
 
 @font-face {
   font-family: poppins-medium;
-  src: url('/fonts/Poppins-Medium.woff2');
+  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Medium.ttf');
 }
 
 @font-face {
-  font-family: poppins-medium;
-  src: url('/fonts/Poppins-Medium.ttf');
+  font-family: jcyt;
+  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti600W.ttf');
 }
 
 .szh-menu-container--theme-dark .szh-menu.szh-menu {
