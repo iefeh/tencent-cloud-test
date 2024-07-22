@@ -1,0 +1,18 @@
+.strokeText {
+  position: relative;
+  color: transparent;
+  text-align: center;
+  line-height: 1;
+
+  &::before {
+    content: attr(data-text);
+    text-stroke: 1px #7a0a08;
+    -webkit-text-stroke: 1px #7a0a08;
+    background-color: transparent;
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+}
