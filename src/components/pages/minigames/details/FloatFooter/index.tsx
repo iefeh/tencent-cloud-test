@@ -42,7 +42,7 @@ const FloatFooter: FC = () => {
           {cdNumbers.map((no, index) => (
             <Fragment key={index}>
               {index > 0 && <span className="mx-1">:</span>}
-              <div className="w-[2.125rem] h-[2.125rem] bg-[#E0D1B1] rounded-five text-[#5C0F0F] leading-[2.125rem] text-center font-semibold">
+              <div className="w-[2.125rem] h-[2.125rem] bg-[#E0D1B1] rounded-five text-brown leading-[2.125rem] text-center font-semibold">
                 {no}
               </div>
             </Fragment>

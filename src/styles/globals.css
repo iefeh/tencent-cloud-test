@@ -179,3 +179,11 @@ li::marker {
     z-index: 0;
   }
 }
+
+.stroke-text-normal {
+  &:before {
+    content: attr(data-text);
+    text-stroke: 1px var(--stroke-color);
+    -webkit-text-stroke: 1px var(--stroke-color);
+  }
+}

@@ -5,7 +5,7 @@ const DetailsInfo: FC = () => {
   const [keywords, setKeywords] = useState(['Strategy', 'Adventure']);
 
   return (
-    <div className="flex-1 bg-[#F7E9CC] p-[2.375rem] rounded-[1.25rem] text-[#5C0F0F]">
+    <div className="flex-1 bg-[#F7E9CC] p-[2.375rem] rounded-[1.25rem] text-brown">
       <div className="flex items-center">
         <div className="relative w-[5.75rem] h-[5.75rem]">
           <Image
@@ -41,7 +41,7 @@ const DetailsInfo: FC = () => {
         </div>
       </div>
 
-      <div className="w-full h-0 border-t-1 border-[#5C0F0F] border-dashed my-7"></div>
+      <div className="w-full h-0 border-t-1 border-brown border-dashed my-7"></div>
 
       <p className="text-base leading-[1.875rem] font-jcyt4">
         A charming game series by Moonveil featuring Puffy the cat. With delightful cartoon graphics and simple,
@@ -49,14 +49,14 @@ const DetailsInfo: FC = () => {
         playful world of Moonveil Mini today!
       </p>
 
-      <div className="w-full h-0 border-t-1 border-[#5C0F0F] border-dashed my-8"></div>
+      <div className="w-full h-0 border-t-1 border-brown border-dashed my-8"></div>
 
       <div>
         <div className="text-xl leading-none">Details</div>
 
         <div className="flex items-center mt-5 font-jcyt4">
           {keywords.map((kw, index) => (
-            <div key={index} className="px-4 py-ten bg-[#5C0F0F]/20 rounded-five [&+div]:ml-ten">
+            <div key={index} className="px-4 py-ten bg-brown/20 rounded-five [&+div]:ml-ten">
               {kw}
             </div>
           ))}

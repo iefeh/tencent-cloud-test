@@ -81,6 +81,8 @@ const config: Config = {
         'shs-regular': ['shs-regular'],
       },
       colors: {
+        brown: '#5C0F0F',
+        'yellow-1': '#FDC511',
         'light-yellow': '#E7D4A9',
         notion: '#ff4848',
         'pure-red': '#BD0000',
