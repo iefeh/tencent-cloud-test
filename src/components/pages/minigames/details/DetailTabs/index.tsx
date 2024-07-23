@@ -10,6 +10,7 @@ const DetailTabs: FC = () => {
     {
       name: 'overview',
       label: 'Overview',
+      title: 'About',
       content: <OverviewTabPanel />,
     },
     {
@@ -31,7 +32,7 @@ const DetailTabs: FC = () => {
   const [selectedKey, setSelectedKey] = useState(tabs[0].name);
 
   return (
-    <div className="w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_short.png')] bg-cover bg-repeat-y">
+    <div className="w-full min-h-screen bg-[#472E24] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_detail_2048.png')] bg-cover bg-repeat-y">
       <div className="w-[87.5rem] mx-auto">
         <Tabs
           aria-label="Options"
@@ -55,6 +56,7 @@ const DetailTabs: FC = () => {
                 </div>
               }
             >
+              <div className="text-3xl leading-none mt-14 mb-8">{tab.title || tab.label}</div>
               {tab.content}
             </Tab>
           ))}

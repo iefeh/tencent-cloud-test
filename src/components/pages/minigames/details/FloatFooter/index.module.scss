@@ -1,6 +1,5 @@
 .strokeText {
   position: relative;
-  color: transparent;
   text-align: center;
   line-height: 1;
 
@@ -13,6 +12,24 @@
     width: 100%;
     left: 50%;
     top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+}
+
+.blueStroke {
+  &::before {
+    text-stroke: 1px #08507a;
+    -webkit-text-stroke: 1px #08507a;
+  }
+}
+
+.yellowText {
+  color: #fdc511;
+
+  &::before {
+    width: min-content;
+    left: 5.875rem;
+    top: 2rem;
     transform: translate3d(-50%, -50%, 0);
   }
 }

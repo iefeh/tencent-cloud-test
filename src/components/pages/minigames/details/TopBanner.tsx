@@ -20,7 +20,7 @@ const TopBanner: FC = () => {
 
         <div className="flex items-center gap-x-2 mt-[1.125rem]">
           {keywords.map((kw, index) => (
-            <div key={index} className="py-ten px-4 bg-white/20 rounded-5">
+            <div key={index} className="py-ten px-4 bg-white/20 rounded-five">
               {kw}
             </div>
           ))}
