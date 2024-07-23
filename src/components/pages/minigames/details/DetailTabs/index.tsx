@@ -4,6 +4,8 @@ import OverviewTabPanel from './OverviewTabPanel';
 import TasksTabPanel from './TasksTabPanel';
 import RankingTabPanel from './RankingTabPanel';
 import BadgesTabPanel from './BadgesTabPanel';
+import Link from 'next/link';
+import FollowUs from './FollowUs';
 
 const DetailTabs: FC = () => {
   const tabs = [
@@ -27,13 +29,14 @@ const DetailTabs: FC = () => {
       name: 'badges',
       label: 'Badges & SBTs',
       content: <BadgesTabPanel />,
+      right: <Link href="/Profile/MyBadges" target='_blank'>More &gt;&gt;</Link>,
     },
   ];
   const [selectedKey, setSelectedKey] = useState(tabs[0].name);
 
   return (
     <div className="w-full min-h-screen bg-[#472E24] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_detail_2048.png')] bg-cover bg-repeat-y">
-      <div className="w-[87.5rem] mx-auto">
+      <div className="w-[87.5rem] mx-auto pb-[9.875rem]">
         <Tabs
           aria-label="Options"
           color="primary"
@@ -56,11 +59,17 @@ const DetailTabs: FC = () => {
                 </div>
               }
             >
-              <div className="text-3xl leading-none mt-14 mb-8">{tab.title || tab.label}</div>
+              <div className="mt-14 mb-8 w-full flex justify-between items-center">
+                <span className="text-3xl leading-none">{tab.title || tab.label}</span>
+
+                {tab.right}
+              </div>
               {tab.content}
             </Tab>
           ))}
         </Tabs>
+
+        <FollowUs />
       </div>
     </div>
   );
