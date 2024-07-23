@@ -6,12 +6,18 @@ import { FC } from 'react';
 
 const MiniGameDetailsPage: FC & BasePage = () => {
   return (
-    <section className="relative flex flex-col">
+    <section className="relative flex flex-col font-jcyt6">
       <Head>
         <link
           rel="preload"
           as="font"
           href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti600W.ttf"
+          crossOrigin="anonymous"
+        ></link>
+        <link
+          rel="preload"
+          as="font"
+          href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti400W.ttf"
           crossOrigin="anonymous"
         ></link>
       </Head>

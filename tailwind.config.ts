@@ -64,7 +64,8 @@ const config: Config = {
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       fontFamily: {
-        jcyt: ['jcyt'],
+        jcyt4: ['jcyt4'],
+        jcyt6: ['jcyt6'],
         semakin: ['semakin'],
         decima: ['decima'],
         poppins: ['poppins'],
@@ -112,7 +113,7 @@ const config: Config = {
       },
       borderRadius: {
         base: '0.625rem',
-        5: '0.3125rem',
+        five: '0.3125rem',
       },
       spacing: {
         ten: '0.625rem',
