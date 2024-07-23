@@ -118,6 +118,7 @@ const config: Config = {
         five: '0.3125rem',
       },
       spacing: {
+        five: '0.3125rem',
         ten: '0.625rem',
         '1px': '1px',
       },

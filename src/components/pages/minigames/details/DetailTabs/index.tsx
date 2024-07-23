@@ -1,4 +1,4 @@
-import { Tab, Tabs } from '@nextui-org/react';
+import { Tab, Tabs, cn } from '@nextui-org/react';
 import { FC, useState } from 'react';
 import OverviewTabPanel from './OverviewTabPanel';
 import TasksTabPanel from './TasksTabPanel';
@@ -6,6 +6,7 @@ import RankingTabPanel from './RankingTabPanel';
 import BadgesTabPanel from './BadgesTabPanel';
 import Link from 'next/link';
 import FollowUs from './FollowUs';
+import styles from './index.module.scss';
 
 const DetailTabs: FC = () => {
   const tabs = [
@@ -29,24 +30,33 @@ const DetailTabs: FC = () => {
       name: 'badges',
       label: 'Badges & SBTs',
       content: <BadgesTabPanel />,
-      right: <Link href="/Profile/MyBadges" target='_blank'>More &gt;&gt;</Link>,
+      right: (
+        <Link href="/Profile/MyBadges" target="_blank">
+          More &gt;&gt;
+        </Link>
+      ),
     },
   ];
   const [selectedKey, setSelectedKey] = useState(tabs[0].name);
 
   return (
-    <div className="w-full min-h-screen bg-[#472E24] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_detail_2048.png')] bg-cover bg-repeat-y">
-      <div className="w-[87.5rem] mx-auto pb-[9.875rem]">
+    <div className="w-full min-h-screen bg-[#472E24] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_detail_2048.png')] bg-[length:100%_auto] bg-repeat-y">
+      <div className="w-[87.5rem] mx-auto mt-[3.75rem] pb-[9.875rem]">
         <Tabs
           aria-label="Options"
           color="primary"
           variant="underlined"
           selectedKey={selectedKey}
           classNames={{
-            tabList: 'gap-6 w-full relative rounded-none p-0 border-b border-divider',
-            cursor: 'w-full bg-basic-yellow',
-            tab: 'max-w-fit px-0 h-12 font-semakin',
-            tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
+            base: 'w-full',
+            tabList: cn([
+              'gap-16 w-full relative rounded-none p-0',
+              styles.tabList,
+            ]),
+            cursor: 'w-full h-five bg-yellow-1 rounded-[0.1563rem]',
+            tab: 'max-w-fit px-0 h-14 py-0 overflow-visible',
+            tabContent: 'text-white text-xl group-data-[selected=true]:text-yellow-1',
+            panel: 'p-0'
           }}
           onSelectionChange={(key) => setSelectedKey(key.toString())}
         >
@@ -54,8 +64,8 @@ const DetailTabs: FC = () => {
             <Tab
               key={tab.name}
               title={
-                <div className="flex items-center space-x-2">
-                  <span>{tab.name}</span>
+                <div className="flex items-center space-x-2 px-1">
+                  <span>{tab.label}</span>
                 </div>
               }
             >
