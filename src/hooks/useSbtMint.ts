@@ -7,7 +7,6 @@ import { useWalletInfo, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider 
 import sbtContractABI from '@/http/sbt_abi.json';
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from './utils';
-import { captureEvent, captureException, type Event } from '@sentry/nextjs';
 import { useUserContext } from '@/store/User';
 
 export default function useSbtMint() {
@@ -41,7 +40,6 @@ export default function useSbtMint() {
       const accounts = (await provider.send('eth_requestAccounts', [])) as unknown as string[];
       return accounts;
     } catch (error) {
-      captureException(error, { data: 'eth_requestAccounts' });
       console.log('connect error:', error);
     }
   }
@@ -52,7 +50,6 @@ export default function useSbtMint() {
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
     } catch (error: any) {
-      captureException(error, { data: { message: 'checkNetwork', chainId, targetChainId } });
       toastError(error, 'checkNetwork');
       return false;
     }
@@ -67,7 +64,6 @@ export default function useSbtMint() {
       console.log('connected network', res);
       return true;
     } catch (error: any) {
-      captureException(error, { data: { message: 'addNetwork', chainId: targetChainId } });
       toastError(error, 'addNetwork');
       return false;
     }
@@ -79,7 +75,6 @@ export default function useSbtMint() {
       return true;
     } catch (error: any) {
       const code = error?.error?.code || error?.code;
-      captureException(error, { data: { message: 'switchNetwork', chainId: targetChainId } });
       if (code === 4902 || code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await addNetwork(provider, targetChainId);
@@ -102,17 +97,10 @@ export default function useSbtMint() {
       console.log('mint result:', result);
       return result;
     } catch (error: any) {
-      captureException(error, { data: { message: 'mint' } });
       // toastError(error, 'mint');
       toast.error('Transaction failed, please try again later.');
     }
   }, 500);
-
-  function captureMintEvent(e: Event) {
-    const { message, ...rest } = e;
-    e.message = `sbt_mint ${JSON.stringify(rest)}`;
-    captureEvent(e);
-  }
 
   async function testNetwork(provider: BrowserProvider) {
     try {
@@ -136,7 +124,6 @@ export default function useSbtMint() {
 
     if (!isConnected) {
       open();
-      captureMintEvent(errorEvent);
       return;
     }
 
@@ -147,7 +134,6 @@ export default function useSbtMint() {
     const accounts = await getAccounts(provider);
     await testNetwork(provider);
     if (!accounts || accounts.length < 1) {
-      captureMintEvent(errorEvent);
       return false;
     }
 
@@ -157,7 +143,6 @@ export default function useSbtMint() {
     if (!res) {
       const switchRes = await switchNetwork(provider, data.chain_id);
       if (!switchRes) {
-        captureMintEvent(errorEvent);
         setLoading(false);
         return;
       }
@@ -170,10 +155,6 @@ export default function useSbtMint() {
     const result = await mint(provider, data);
     errorEvent.sendMint = true;
     setLoading(false);
-
-    if (!result) {
-      captureMintEvent(errorEvent);
-    }
 
     return !!result;
   }
