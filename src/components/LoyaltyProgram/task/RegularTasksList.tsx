@@ -7,7 +7,7 @@ import RegularTasksCollection from './RegularTasksCollection';
 
 interface Props extends ClassNameProps {
   hideHeader?: boolean;
-  categoryItem?: TaskCategory | null;
+  categoryItem?: Partial<TaskCategory> | null;
   onBack?: () => void;
 }
 
@@ -22,7 +22,7 @@ function RegularTasksList({ categoryItem, hideHeader, className, onBack }: Props
             <span className="ml-3 text-2xl text-[#666666]">BACK</span>
           </div>
 
-          <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>
+          {categoryItem?.name && <div className="text-2xl mt-6">{categoryItem?.name || '--'}</div>}
         </div>
       )}
 
