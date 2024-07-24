@@ -80,7 +80,7 @@ const BannerSwiper: FC = () => {
                 onClick={() => setActiveMedia(media)}
               >
                 <div className="relative w-40 h-[5.625rem] rounded-base overflow-hidden">
-                  <Image className="swiper-img" src={media.imageSrc} alt="" fill sizes="100%" unoptimized />
+                  <Image className="object-cover" src={media.imageSrc} alt="" fill sizes="100%" unoptimized />
 
                   {activeMedia === media && (
                     <>
