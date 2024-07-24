@@ -48,8 +48,14 @@ export class ThirdPartyCallbackQuest extends QuestBase {
     for (let header of questProp.custom_headers) {
       headers[header.name] = header.value;
     }
+    let emailParam = "";
+    if (this.email) {
+      emailParam = this.email;
+    } else if (userAuth.google && userAuth.google.email) {
+      emailParam = userAuth.google.email;
+    }
     const params = new URLSearchParams();
-    params.append('email', this.email);
+    params.append('email', emailParam);
     params.append('twitter', this.twitter);
     params.append('discord', this.discord);
     params.append('address', this.address);
