@@ -68,6 +68,7 @@ export async function queryUserAuth(userId: string): Promise<any> {
                     $project: {
                         _id: 0,
                         id: "$google_id",
+                        email: "$email"
                     }
                 }],
             }
