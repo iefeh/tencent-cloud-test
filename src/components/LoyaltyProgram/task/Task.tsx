@@ -47,11 +47,11 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         classNames?.task,
       ])}
     >
-      <div className="text-xl flex justify-between items-center">
+      <div className="task-name text-xl flex justify-between items-center">
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (
-          <div className="text-base shrink-0">
+          <div className="text-base shrink-0 task-progress">
             (
             <span className="text-basic-yellow">
               {task.current_progress || 0}/{task.target_progress || '-'}
@@ -64,18 +64,21 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
       <div className="mt-3 flex-1 flex flex-col justify-between relative">
         <div className="text-sm">
           <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
-            <div className="text-[#999] line-clamp-2" dangerouslySetInnerHTML={{ __html: task.description }}></div>
+            <div
+              className="text-[#999] line-clamp-2 task-description"
+              dangerouslySetInnerHTML={{ __html: task.description }}
+            ></div>
           </Tooltip>
 
           {task.tip && (
-            <div className="flex items-center relative">
+            <div className="flex items-center relative task-tips">
               <div
                 className="flex-1 text-[#999] overflow-hidden whitespace-nowrap text-ellipsis  max-h-[1.25rem]"
                 dangerouslySetInnerHTML={{ __html: task.tip }}
               ></div>
               {needEllipsis && (
                 <div
-                  className="text-basic-yellow shrink-0 cursor-pointer leading-6 border-b-1 border-basic-yellow"
+                  className="text-basic-yellow shrink-0 cursor-pointer leading-6 border-b-1 border-basic-yellow task-desc-view-more"
                   onClick={showContent}
                 >
                   View More
@@ -113,6 +116,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
 
         <div
           className={cn([
+            'task-desc-content',
             'absolute z-0 h-full top-0 left-1/2 -translate-x-1/2 w-[25.875rem] overflow-hidden bg-black transition-[max-height] ease-in-out !duration-500',
             isContentVisible ? 'max-h-full' : 'max-h-0 pointer-events-none',
           ])}
@@ -133,7 +137,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
       </div>
 
       {task.is_new && (
-        <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute right-4 top-2 p-2 z-10">
+        <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute right-4 top-2 p-2 z-10 task-new">
           NEW
         </div>
       )}
