@@ -15,7 +15,7 @@ const FloatFooter: FC = () => {
   });
 
   return (
-    <div className="fixed bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none">
+    <div className="fixed z-[999] bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none">
       <Image
         className="object-cover"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_float.png"
