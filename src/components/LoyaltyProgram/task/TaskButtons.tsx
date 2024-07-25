@@ -18,8 +18,10 @@ import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import DiscordMsgModal from '@/components/common/modal/DiscordMsgModal';
 
 interface Props {
-  connectClassName?: string;
-  verifyClassName?: string;
+  classNames?: {
+    connectBtn?: string;
+    verifyBtn?: string;
+  };
   task: TaskItem;
   onUpdate?: (task: TaskListItem) => void;
 }
@@ -46,7 +48,7 @@ function getConnectLabel(task: TaskItem) {
   return label;
 }
 
-const TaskButtons: FC<Props> = ({ task, onUpdate, connectClassName, verifyClassName }) => {
+const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
   const { userInfo, getUserInfo } = useUserContext();
   const { achieved, verified, verify_disabled } = task;
   const [connectLoading, setConnectLoading] = useState(false);
@@ -161,7 +163,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, connectClassName, verifyClassN
     <div className="mt-5 flex items-center">
       {isNeedConnect && (
         <LGButton
-          className={cn(['uppercase', connectClassName])}
+          className={cn(['uppercase', classNames?.connectBtn])}
           label={getConnectLabel(task)}
           actived
           loading={connectLoading}
@@ -171,7 +173,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, connectClassName, verifyClassN
       )}
 
       <LGButton
-        className={cn(['ml-2 uppercase', verifyClassName])}
+        className={cn(['ml-2 uppercase', classNames?.verifyBtn])}
         label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
         loading={verifyLoading || mediaLoading}
         disabled={!verifiable}

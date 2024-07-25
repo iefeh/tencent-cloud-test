@@ -10,11 +10,16 @@ import ReverifyCountdown from './ReverifyCountdown';
 
 interface Props {
   task: TaskItem;
+  classNames?: {
+    task?: string;
+    connectBtn?: string;
+    verifyBtn?: string;
+  };
   onTaskUpdate?: (task: TaskItem) => void;
   onReverifyCDFinished?: () => void;
 }
 
-const Task: FC<Props> = ({ task, onTaskUpdate, onReverifyCDFinished }) => {
+const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished }) => {
   const [isContentVisible, setIsContentVisibble] = useState(false);
   const [needEllipsis, setNeedEllipsis] = useState(false);
   const shadowTextRef = useRef<HTMLDivElement>(null);
@@ -36,7 +41,12 @@ const Task: FC<Props> = ({ task, onTaskUpdate, onReverifyCDFinished }) => {
   }, []);
 
   return (
-    <div className="task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative">
+    <div
+      className={cn([
+        'task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative',
+        classNames?.task,
+      ])}
+    >
       <div className="text-xl flex justify-between items-center">
         <div>{task.name}</div>
 
@@ -90,7 +100,11 @@ const Task: FC<Props> = ({ task, onTaskUpdate, onReverifyCDFinished }) => {
             </span>
           </div>
 
-          <TaskButtons task={task} onUpdate={onTaskUpdate} />
+          <TaskButtons
+            classNames={{ connectBtn: classNames?.connectBtn, verifyBtn: classNames?.verifyBtn }}
+            task={task}
+            onUpdate={onTaskUpdate}
+          />
 
           {task.type === QuestType.ConnectWallet && task.verified && (task.properties?.can_reverify_after || 0) > 0 && (
             <ReverifyCountdown task={task} onFinished={onReverifyCDFinished} />
