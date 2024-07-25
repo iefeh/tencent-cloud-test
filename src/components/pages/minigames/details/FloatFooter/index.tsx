@@ -52,7 +52,7 @@ const FloatFooter: FC = () => {
         <div className="flex pr-1 mt-5">
           <Button
             className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_brown.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg",
+              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_brown.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg rounded-[1.625rem]",
               styles.strokeText,
             ])}
             data-text="Share"
@@ -60,7 +60,7 @@ const FloatFooter: FC = () => {
 
           <Button
             className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 font-semibold",
+              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem] font-semibold",
               styles.strokeText,
             ])}
             data-text="Play Now"
@@ -68,7 +68,7 @@ const FloatFooter: FC = () => {
 
           <Button
             className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3",
+              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem]",
               styles.strokeText,
               styles.blueStroke,
             ])}
