@@ -11,10 +11,15 @@ interface Props extends ClassNameProps {
   hideHeader?: boolean;
   hidePagi?: boolean;
   categoryItem?: Partial<TaskCategory> | null;
+  classNames?: {
+    task?: string;
+    connectBtn?: string;
+    verifyBtn?: string;
+  };
   onBack?: () => void;
 }
 
-function RegularTasksList({ categoryItem, hideHeader, hidePagi, className, onBack }: Props) {
+function RegularTasksList({ categoryItem, hideHeader, hidePagi, className, classNames, onBack }: Props) {
   const {
     tasks,
     pagiInfo,
@@ -55,6 +60,11 @@ function RegularTasksList({ categoryItem, hideHeader, hidePagi, className, onBac
         {tasks.map((task) => (
           <Task
             key={`${task.id}_${task.achieved}`}
+            classNames={{
+              task: classNames?.task,
+              connectBtn: classNames?.connectBtn,
+              verifyBtn: classNames?.verifyBtn,
+            }}
             task={task}
             onTaskUpdate={updateTaskById}
             onReverifyCDFinished={queryTasks}
