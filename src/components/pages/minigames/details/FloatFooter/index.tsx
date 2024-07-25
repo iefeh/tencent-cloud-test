@@ -1,9 +1,10 @@
 import useCountdown from '@/hooks/useCountdown';
-import { Button, cn } from '@nextui-org/react';
+import { Button, cn, useDisclosure } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import Image from 'next/image';
 import { FC, Fragment, useState } from 'react';
 import styles from './index.module.scss';
+import ShareModal from './ShareModal';
 
 const FloatFooter: FC = () => {
   const [cdNumbers, setCDNumbers] = useState(Array(4).fill('00'));
@@ -13,6 +14,7 @@ const FloatFooter: FC = () => {
     const nos = [du.days(), du.hours(), du.minutes(), du.seconds()].map((n) => n.toString().padStart(2, '0'));
     setCDNumbers(nos);
   });
+  const shareDisclosure = useDisclosure();
 
   return (
     <div className="fixed z-[999] bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none">
@@ -52,15 +54,16 @@ const FloatFooter: FC = () => {
         <div className="flex pr-1 mt-5">
           <Button
             className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_brown.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg rounded-[1.625rem]",
+              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_brown.png')] bg-[length:100%_100%] bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg rounded-[1.625rem]",
               styles.strokeText,
             ])}
             data-text="Share"
+            onPress={shareDisclosure.onOpen}
           />
 
           <Button
             className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem] font-semibold",
+              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow.png')] bg-[length:100%_100%] bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem] font-semibold",
               styles.strokeText,
             ])}
             data-text="Play Now"
@@ -68,7 +71,7 @@ const FloatFooter: FC = () => {
 
           <Button
             className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')] bg-contain bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem]",
+              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')] bg-[length:100%_100%] bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem]",
               styles.strokeText,
               styles.blueStroke,
             ])}
@@ -87,6 +90,8 @@ const FloatFooter: FC = () => {
           </Button>
         </div>
       </div>
+
+      <ShareModal disclosure={shareDisclosure} />
     </div>
   );
 };
