@@ -94,6 +94,7 @@ export default function useTasks(id?: string) {
     setPagiTotal(0);
     setTasks([]);
 
+    console.log(2334234, id);
     if (!id) return;
 
     queryTasks();
