@@ -1,3 +1,4 @@
+import type { NextPage } from 'next';
 import TaskTabs from '@/components/LoyaltyProgram/task/TaskTabs';
 import TaskPassCard from '@/components/card/TaskPassCard';
 import { Button, cn } from '@nextui-org/react';
@@ -5,8 +6,9 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { createPortal } from 'react-dom';
 
-export default function ProfilePage() {
+const TaskGroupPage: NextPage & BasePage = () => {
   const router = useRouter();
+  const { id } = router.query;
 
   return (
     <section
@@ -27,7 +29,7 @@ export default function ProfilePage() {
 
         <TaskPassCard />
 
-        <TaskTabs />
+        <TaskTabs defaultCategory={id ? { id: id.toString() } : null} />
       </div>
 
       {createPortal(
@@ -43,4 +45,6 @@ export default function ProfilePage() {
       )}
     </section>
   );
-}
+};
+
+export default TaskGroupPage;
