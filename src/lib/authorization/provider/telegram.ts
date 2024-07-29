@@ -46,9 +46,6 @@ export class TelegramAuthFlow extends AuthFlowBase {
   }
 
   async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
-    req.query.landing_url = req.body.landing_url;
-    req.query.invite_code = req.body.invite_code;
-    req.query.signup_mode = req.body.signup_mode;
     // 检查用户的授权落地页
     const checkResult = await checkGetAuthorizationURLPrerequisite(req, res);
     if (!checkResult.passed) {
@@ -65,10 +62,6 @@ export class TelegramAuthFlow extends AuthFlowBase {
     let data: any = {};
     Object.assign(data, req.body);
     delete data.hash; // Remove hash from object to build the verification string
-    delete data.landing_url;
-    delete data.invite_code;
-    delete data.signup_mode;
-    delete data.authorization_user_id;
     delete data.flow;
     delete data.inviter_id;
     delete data.indirect_inviter_id;
@@ -85,6 +78,8 @@ export class TelegramAuthFlow extends AuthFlowBase {
   }
 
   async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
+    authPayload.landing_url = req.query.landing_url;
+    authPayload.signup_mode = req.query.signup_mode;
     authPayload.authorization_user_id = req.userId;
     return authPayload;
   }

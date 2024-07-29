@@ -33,6 +33,9 @@ const nextConfig = {
       {
         hostname: 'cloudflare-ipfs.com',
       },
+      {
+        hostname: 't.me',
+      },
     ],
   },
   webpack(config) {
