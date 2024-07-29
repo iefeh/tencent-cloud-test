@@ -187,3 +187,8 @@ li::marker {
     -webkit-text-stroke: 1px var(--stroke-color);
   }
 }
+
+.stroke-content {
+  text-stroke: 1px var(--stroke-color);
+  -webkit-text-stroke: 1px var(--stroke-color);
+}

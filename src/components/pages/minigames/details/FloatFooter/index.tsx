@@ -1,23 +1,19 @@
-import useCountdown from '@/hooks/useCountdown';
 import { Button, cn, useDisclosure } from '@nextui-org/react';
-import dayjs from 'dayjs';
 import Image from 'next/image';
-import { FC, Fragment, useState } from 'react';
+import type { FC } from 'react';
 import styles from './index.module.scss';
 import ShareModal from './ShareModal';
+import StrokeButton from '@/components/common/buttons/StrokeButton';
+import TicketModal from './TicketModal';
+import TicketCountdown from '../TicketCountdown';
+import { createPortal } from 'react-dom';
 
 const FloatFooter: FC = () => {
-  const [cdNumbers, setCDNumbers] = useState(Array(4).fill('00'));
-  // 注意du.days()会返回对30的模
-  useCountdown(dayjs().add(20, 'days').valueOf(), dayjs().valueOf(), (time) => {
-    const du = dayjs.duration(time);
-    const nos = [du.days(), du.hours(), du.minutes(), du.seconds()].map((n) => n.toString().padStart(2, '0'));
-    setCDNumbers(nos);
-  });
   const shareDisclosure = useDisclosure();
+  const ticketDisclosure = useDisclosure();
 
-  return (
-    <div className="fixed z-[999] bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none">
+  const content = (
+    <div className="fixed z-50 bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none font-jcyt6">
       <Image
         className="object-cover"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_float.png"
@@ -29,54 +25,28 @@ const FloatFooter: FC = () => {
       />
 
       <div className="relative z-0 right-[20.5rem] flex flex-col items-end mt-[0.8125rem] pointer-events-auto w-min ml-auto">
-        <div className="h-[2.125rem] flex items-center">
-          <Image
-            className="object-contain w-[0.875rem] h-4 mr-2"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_date.png"
-            alt=""
-            width={28}
-            height={32}
-            unoptimized
-          />
-
-          <span className="text-sm mr-[0.875rem]">Current tickets will expire in</span>
-
-          {cdNumbers.map((no, index) => (
-            <Fragment key={index}>
-              {index > 0 && <span className="mx-1">:</span>}
-              <div className="w-[2.125rem] h-[2.125rem] bg-[#E0D1B1] rounded-five text-brown leading-[2.125rem] text-center font-semibold">
-                {no}
-              </div>
-            </Fragment>
-          ))}
-        </div>
+        <TicketCountdown />
 
         <div className="flex pr-1 mt-5">
-          <Button
-            className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_brown.png')] bg-[length:100%_100%] bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg rounded-[1.625rem]",
-              styles.strokeText,
-            ])}
-            data-text="Share"
+          <StrokeButton
+            strokeType="brown"
+            strokeText="Share"
+            startContent={
+              <Image
+                className="w-[1.125rem] h-[1.125rem]"
+                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/share_stroke.png"
+                alt=""
+                width={22}
+                height={22}
+                unoptimized
+              />
+            }
             onPress={shareDisclosure.onOpen}
           />
 
-          <Button
-            className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow.png')] bg-[length:100%_100%] bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem] font-semibold",
-              styles.strokeText,
-            ])}
-            data-text="Play Now"
-          />
+          <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" />
 
-          <Button
-            className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')] bg-[length:100%_100%] bg-no-repeat w-[10.875rem] h-[3.25rem] text-lg ml-3 rounded-[1.625rem]",
-              styles.strokeText,
-              styles.blueStroke,
-            ])}
-            data-text="Buy Tickets"
-          />
+          <StrokeButton className="ml-3" strokeType="blue" strokeText="Buy Tickets" onPress={ticketDisclosure.onOpen} />
 
           <Button
             className={cn([
@@ -92,8 +62,11 @@ const FloatFooter: FC = () => {
       </div>
 
       <ShareModal disclosure={shareDisclosure} />
+      <TicketModal disclosure={ticketDisclosure} />
     </div>
   );
+
+  return createPortal(content, document.body);
 };
 
 export default FloatFooter;

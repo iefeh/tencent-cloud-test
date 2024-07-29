@@ -1,3 +1,4 @@
+import StrokeButton from '@/components/common/buttons/StrokeButton';
 import { MediaLinks } from '@/constant/common';
 import { Button, cn } from '@nextui-org/react';
 import Image from 'next/image';
@@ -54,14 +55,7 @@ const FollowUs: FC = () => {
             <p>{media.label}</p>
 
             <Link href={media.link} target="_blank">
-              <Button
-                className={cn([
-                  'w-[10.875rem] h-[3.25rem] !bg-transparent bg-contain bg-no-repeat',
-                  `bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_${media.btnBg}.png')]`,
-                ])}
-              >
-                {media.btn}
-              </Button>
+              <StrokeButton strokeText={media.btn} strokeType={media.btnBg as any} />
             </Link>
           </div>
         ))}

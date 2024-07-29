@@ -1,5 +1,6 @@
 import { Button, Modal, ModalBody, ModalContent } from '@nextui-org/react';
-import type { CSSProperties, FC } from 'react';
+import type { FC } from 'react';
+import StrokeButton from '@/components/common/buttons/StrokeButton';
 
 const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   return (
@@ -24,17 +25,8 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                 </p>
 
                 <div className="flex justify-center gap-x-[0.375rem] mt-12">
-                  <Button
-                    className="bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_brown.png')] bg-[length:100%_100%] bg-no-repeat w-56 h-[3.25rem] text-lg rounded-[1.625rem] stroke-text-normal"
-                    data-text="Share to Twitter"
-                    style={{ '--stroke-color': '#7A0A08' } as CSSProperties}
-                  />
-
-                  <Button
-                    className="bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')] bg-[length:100%_100%] bg-no-repeat w-56 h-[3.25rem] text-lg ml-3 rounded-[1.625rem] stroke-text-normal"
-                    data-text="Claim Tickets"
-                    style={{ '--stroke-color': '#08507A' } as CSSProperties}
-                  />
+                  <StrokeButton className="w-56" strokeType="brown" strokeText="Share to Twitter" />
+                  <StrokeButton className="w-56" strokeType="blue" strokeText="Claim Tickets" />
                 </div>
               </div>
 
