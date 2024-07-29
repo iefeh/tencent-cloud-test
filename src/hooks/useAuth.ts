@@ -1,7 +1,8 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { loginByMediaAPI, loginByWalletAPI } from '@/http/services/login';
+import { loginByMediaAPI, loginByWalletAPI, loginByTelegramAPI } from '@/http/services/login';
+import { TelegramLoginData } from '@/lib/authorization/provider/telegram';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
@@ -96,6 +97,21 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     setLoading(false);
   }
 
+  function onTelegramMessage(event: MessageEvent) {
+    let data: { event: string; result: TelegramLoginData };
+
+    try {
+      data = JSON.parse(event.data);
+    } catch (error) {
+      return;
+    }
+
+    if (data.event === 'auth_result') {
+      loginByTelegramAPI(data.result);
+      window.removeEventListener('message', onTelegramMessage);
+    }
+  }
+
   async function onConnect() {
     if (type === MediaType.EMAIL) {
       return;
@@ -131,6 +147,10 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     }
 
     openAuthWindow(res.authorization_url);
+    if (type === MediaType.TELEGRAM) {
+      window.addEventListener('message', onTelegramMessage);
+    }
+
     startWatch();
     setLoading(false);
   }
