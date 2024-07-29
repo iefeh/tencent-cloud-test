@@ -2,7 +2,7 @@ import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
 import { loginByMediaAPI, loginByWalletAPI, loginByTelegramAPI } from '@/http/services/login';
-import { TelegramLoginData } from '@/lib/authorization/provider/telegram';
+import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
@@ -97,18 +97,31 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     setLoading(false);
   }
 
-  function onTelegramMessage(event: MessageEvent) {
+  async function onTelegramMessage(event: MessageEvent) {
     let data: { event: string; result: TelegramLoginData };
 
     try {
       data = JSON.parse(event.data);
-    } catch (error) {
-      return;
-    }
+      if (data.event === 'auth_result') {
+        window.removeEventListener('message', onTelegramMessage);
+        const res = await loginByTelegramAPI(data.result);
+        if (!res) throw new Error('Login Failed');
 
-    if (data.event === 'auth_result') {
-      loginByTelegramAPI(data.result);
-      window.removeEventListener('message', onTelegramMessage);
+        const { token, particle_jwt, signup_cred } = res || {};
+        localStorage.setItem(KEY_AUTHORIZATION, token);
+        localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
+        if (signup_cred) {
+          store.toggleNewUserModal(true);
+          localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
+          throw new Error('Is New User');
+        } else {
+          await store.initLoginInfo();
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -147,11 +160,12 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     }
 
     openAuthWindow(res.authorization_url);
+    startWatch();
     if (type === MediaType.TELEGRAM) {
       window.addEventListener('message', onTelegramMessage);
+      return;
     }
 
-    startWatch();
     setLoading(false);
   }
 
