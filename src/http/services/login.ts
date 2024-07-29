@@ -1,7 +1,7 @@
 import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
 import { KEY_INVITE_CODE, KEY_SIGN_UP_CRED } from '@/constant/storage';
-import { TelegramLoginData } from '@/lib/authorization/provider/telegram';
+import { AuthorizationFlow } from '@/lib/models/authentication';
 
 function getAuthParams(path = '') {
   const { origin } = location;
@@ -87,6 +87,20 @@ interface WalletReqDto {
   signup_mode?: string;
 }
 
+export interface TelegramLoginData {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+  hash: string;
+  invite_code?: string;
+  signup_mode?: string;
+  landing_url: string;
+  flow: AuthorizationFlow;
+}
+
 export function loginByWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
   data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
   return http.post('/api/auth/signin/wallet', JSON.stringify(data));
@@ -96,17 +110,19 @@ export function connectWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/wallet', JSON.stringify(data));
 }
 
-export function loginByTelegramAPI(data: TelegramLoginData): Promise<boolean | null> {
+export function loginByTelegramAPI(data: TelegramLoginData): Promise<TokenDto | null> {
+  data.landing_url = getAuthParams(`?type=telegram`).landing_url;
   data.signup_mode = 'enabled';
   data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
-  data.landing_url = `${location.origin}/Profile/edit`;
+  data.flow = AuthorizationFlow.LOGIN;
   return http.post('/api/auth/signin/telegram', JSON.stringify(data));
 }
 
-export function connectTelegramAPI(data: TelegramLoginData): Promise<boolean | null> {
-  data.signup_mode = 'enabled';
+export function connectTelegramAPI(data: TelegramLoginData): Promise<TokenDto | null> {
+  data.landing_url = getAuthParams(`/connect?type=telegram`).landing_url;
+  data.signup_mode = '';
   data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
-  data.landing_url = `${location.origin}/Profile/edit`;
+  data.flow = AuthorizationFlow.CONNECT;
   return http.post('/api/auth/connect/telegram', JSON.stringify(data));
 }
 

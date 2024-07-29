@@ -8,6 +8,7 @@ import appleIconImg from 'img/login/btn_apple.png';
 import discordIconImg from 'img/login/btn_discord.png';
 import xIconImg from 'img/login/btn_x.png';
 import facebookIconImg from 'img/login/btn_facebook.png';
+import telegramIconImg from 'img/login/btn_telegram.png';
 import metamaskIconImg from 'img/login/btn_metamask.png';
 import LoginButton from './buttons/LoginButton';
 import { MediaType } from '@/constant/task';
@@ -187,6 +188,11 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
           label: 'Twitter',
           type: MediaType.TWITTER,
           icon: xIconImg,
+        },
+        {
+          label: 'Telegram',
+          type: MediaType.TELEGRAM,
+          icon: telegramIconImg,
         },
         // {
         //   label: 'Facebook',
