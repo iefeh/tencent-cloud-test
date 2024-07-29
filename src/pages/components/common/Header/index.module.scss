@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  background: linear-gradient(-90deg, #342D27 0%, #141310 100%);
+  .itemWarpper {
+    padding: px2rem(40);
+    font-size: px2rem(16);
+    font-weight: 500;
+    color: #fff;
+    &:hover {
+      background: linear-gradient(-90deg, #342D27 0%, #141310 100%);
+    }
+    .secondLevelItem {
+      margin-bottom: px2rem(10);
+    }
+
+    .threeLevelItem {
+      color: #999;
+      font-size: px2rem(14);
+      min-width: px2rem(320);
+      font-weight: 400;
+    }
+  }
+
+  .itemIcon {
+    width: px2rem(24);
+    height: px2rem(24);
+    display: inline-block;
+    margin-right: px2rem(12);
+  }
+}

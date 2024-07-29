@@ -1,8 +1,10 @@
-import { cn } from '@nextui-org/react';
-import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
+import { cn, menu } from '@nextui-org/react';
+import { ControlledMenu, MenuItem, useClick, useMenuState, MenuState} from '@szhsin/react-menu';
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import styles from './index.module.scss'
+import Image from 'next/image';
 
 interface Props {
   item: RouteMenu;
@@ -13,7 +15,7 @@ export default function HeaderDropdownMenu(props: Props) {
   const { item, isActive } = props;
   const menuRef = useRef(null);
   const [menuState, toggle] = useMenuState({ transition: true });
-  const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
+  const anchorProps= useClick(menuState.state, toggle);
 
   function onTextClick(item: RouteMenu) {
     if (!item.disabled) return;
@@ -22,6 +24,7 @@ export default function HeaderDropdownMenu(props: Props) {
 
   const mainContent = (
     <Link
+      prefetch
       ref={menuRef}
       {...anchorProps}
       href={item.route || ''}
@@ -36,32 +39,64 @@ export default function HeaderDropdownMenu(props: Props) {
 
   if (!item.children) return mainContent;
 
+
+  const renderFlexibleIcon = () => {
+
+  }
+
+  const menuItemComp = (child: RouteMenu, ci: number, level: number) => (
+    <MenuItem key={level + '-' + ci} disabled={child.disabled}>
+      <Link
+        prefetch
+        className={cn([
+          'font-poppins uppercase',
+          child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
+        ])}
+        href={(!child.disabled && child.route) || ''}
+        onClick={() => onTextClick(child)}
+      >
+        { child.icon &&
+          <Image
+            className={cn([
+              'object-contain',
+              styles.itemIcon
+            ])}
+            src={child.icon}
+            alt=""
+          />
+        }
+        {child.name}
+      </Link>
+    </MenuItem>
+  )
+
   return (
     <>
       {mainContent}
 
       <ControlledMenu
         className="pt-[1.4375rem] px-[2.625rem] pb-7"
-        {...hoverProps}
         {...menuState}
         anchorRef={menuRef}
         theming="dark"
         onClose={() => toggle(false)}
+        align="center"
       >
-        {item.children!.map((child, ci) => (
-          <MenuItem key={ci} disabled={child.disabled}>
-            <Link
-              className={cn([
-                'font-semakin uppercase text-lg',
-                child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
-              ])}
-              href={(!child.disabled && child.route) || ''}
-              onClick={() => onTextClick(child)}
-            >
-              {child.name}
-            </Link>
-          </MenuItem>
-        ))}
+        <div className={styles.container}>
+          {item.children!.map((child, ci) => (
+            <div className={styles.itemWarpper} key={ci}>
+              <div className={styles.secondLevelItem}>
+                {menuItemComp(child, ci, 2)}
+              </div>
+
+              <div className={styles.threeLevelItem}>
+                {(child.children || [])!.map(item => (
+                  menuItemComp(item, ci, 3)
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </ControlledMenu>
     </>
   );

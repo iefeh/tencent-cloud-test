@@ -23,89 +23,170 @@ import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
 import { isMobile } from 'react-device-detect';
 import Entry2048 from '@/components/pages/header/Entry2048';
+import Game2048Icon from "img/header/2048.png";
+import AstrarkIcon from "img/header/astrark.png";
+import BushwhackIcon from "img/header/bushwhack.png";
+import FlamingPetsIcon from "img/header/flaming_pets.png";
 
 const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   {
-    name: 'Rock’it to the Moon',
-    route: '/LoyaltyProgram/season',
+    name: 'Loyalty Program',
     children: [
       {
-        name: 'Season Task & Event',
-        route: '/LoyaltyProgram/earn?from=lp',
-      },
-      {
-        name: 'Loyalty Program',
+        name: 'Introduction',
         route: '/LoyaltyProgram/intro',
       },
       {
-        name: 'Season System',
-        route: '/LoyaltyProgram/season/foresight',
-        // disabled: true,
+        name: 'My Season Pass',
+        route: '/LoyaltyProgram/season',
+        children: [
+          {
+            name: 'Introduction',
+            route: '/LoyaltyProgram/season/foresight',
+          },
+          {
+            name: 'Season Events',
+            route: '',
+          },
+          {
+            name: 'Task-Join Our Community',
+            route: '',
+          },
+          {
+            name: 'Task-Community Engagement',
+            route: '',
+          },
+          {
+            name: 'Task-The Referral Program',
+            route: '',
+          },
+          {
+            name: 'Task-Digital Assets Verification',
+            route: '',
+          },
+          {
+            name: 'More Tasks',
+            route: '',
+          },
+        ]
       },
-
-      // {
-      //   name: "Rock'it to the Moon",
-      //   route: '/LoyaltyProgram/season',
-      // },
-
-      // {
-      //   name: 'MB=MVP',
-      //   route: '/LoyaltyProgram/Exchange',
-      // },
       {
         name: 'Referral Program',
         route: '/Profile/invite',
       },
       {
-        name: '“More and $MORE” Lottery',
+        name: 'More & $MORE Lottery',
         route: '/lottery',
       },
-    ],
+    ]
   },
   {
-    name: 'AstrArk',
+    name: 'Games',
     children: [
-      // {
-      //   name: 'Game Download',
-      //   route: '/AstrArk/Download',
-      // },
       {
-        name: 'Pre-Registration',
-        route: '/AstrArk/PreRegistration',
+        name: 'AstrArk',
+        icon: AstrarkIcon,
+        children: [
+          {
+            name: 'Game Download',
+            route: '/AstrArk/Download',
+          },
+          {
+            name: 'Pre-Registration',
+            route: '/AstrArk/PreRegistration',
+          },
+          {
+            name: 'Game Lore',
+            route: '/AstrArk',
+          },
+        ],
       },
       {
-        name: 'Game Lore',
-        route: '/AstrArk',
+        name: 'Bushwhack',
+        route: '/Bushwhack',
+        icon: BushwhackIcon,
       },
-    ],
+      {
+        name: 'Gyoza',
+        route: '',
+        icon: FlamingPetsIcon,
+      },
+      {
+        name: 'Mini Games',
+        route: '',
+        children: [
+          {
+            name: '2048',
+            icon: Game2048Icon,
+            route: '',
+          },
+          {
+            name: '黄金矿工',
+            route: '',
+          },
+          {
+            name: 'TG小火箭',
+            route: '',
+          }
+        ]
+      }
+    ]
   },
-  { name: 'Bushwhack', route: '/Bushwhack' },
-  { name: 'About', route: '/About' },
   {
-    name: 'NFT',
+    name: 'About',
     children: [
       {
-        name: 'Overview',
-        route: '/NFT',
+        name: 'Moonveil Ecosystem- 3 layers',
+        route: '',
       },
       {
-        name: 'TETRA NFT Series',
-        route: '/TetraNFT',
+        name: 'Our Team',
+        route: '',
       },
-      // {
-      //   name: 'Get Involved',
-      //   route: '/LoyaltyProgram/earn?from=nft',
-      // },
-      // {
-      //   name: 'Mint Now',
-      //   route: '/NFT/Mint',
-      // },
       {
-        name: 'Lv2 TETRA Merge',
-        route: '/NFT/Merge',
+        name: 'Investors',
+        route: '',
       },
-    ],
+      {
+        name: 'News',
+        route: '',
+      },
+      {
+        name: 'Whitepaper',
+        route: '',
+      }
+    ]
+  },
+  {
+    name: 'My Assets',
+    children: [
+      {
+        name: 'TETRA NFTs',
+        children: [
+          {
+            name: 'Overview',
+            route: '/NFT',
+          },
+          {
+            name: 'TETRA Series Intro',
+            route: '/TetraNFT',
+          },
+          {
+            name: 'Lv2 TETRA Merge',
+            route: '/NFT/Merge',
+          },
+        ]
+      },
+      {
+        name: 'Node Sales',
+        route: '',
+      },
+      {
+        name: 'Staking',
+        route: '',
+      },
+    ]
   },
 ];
 
