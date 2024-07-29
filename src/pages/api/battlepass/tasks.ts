@@ -89,7 +89,7 @@ async function loadBadgeInfo(quests: any[]) {
     }
 }
 
-async function paginationQuests(pageNum: number, pageSize: number, category: string, tag: string | undefined, userId: string): Promise<{ tags: any[], total: number, quests: any[] }> {
+export async function paginationQuests(pageNum: number, pageSize: number, category: string, tag: string | undefined, userId: string): Promise<{ tags: any[], total: number, quests: any[] }> {
     const skip = (pageNum - 1) * pageSize;
     const currentSeason = await getCurrentBattleSeason();
     let aggregateQuery: PipelineStage[] = [];
