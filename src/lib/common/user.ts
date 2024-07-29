@@ -67,17 +67,14 @@ export async function queryUserAuth(userId: string): Promise<any> {
                 localField: 'user_id',
                 foreignField: 'user_id',
                 as: 'google',
-                pipeline: [
-                    { $match: { deleted_time: null } },
-                    {
-                        $project: {
-                            _id: 0,
-                            id: '$google_id',
-                            email: '$email',
-                        },
-                    },
-                ],
-            },
+                pipeline: [{$match: {'deleted_time': null}}, {
+                    $project: {
+                        _id: 0,
+                        id: "$google_id",
+                        email: "$email"
+                    }
+                }],
+            }
         },
         {
             $lookup: {
