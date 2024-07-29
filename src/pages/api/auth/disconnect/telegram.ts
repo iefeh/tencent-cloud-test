@@ -24,12 +24,12 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     await UserMetrics.updateOne({ user_id: req.userId }, { [Metric.TelegramConnected]: 0 }, opts);
   });
   // 添加cd
-  // await redis.set(
-  //   `reconnect_cd:${AuthorizationType.Telegram}:${telegram.telegram_id}`,
-  //   Date.now() + 12 * 60 * 60 * 1000,
-  //   'EX',
-  //   12 * 60 * 60,
-  // );
+  await redis.set(
+    `reconnect_cd:${AuthorizationType.Telegram}:${telegram.telegram_id}`,
+    Date.now() + 12 * 60 * 60 * 1000,
+    'EX',
+    12 * 60 * 60,
+  );
   res.json(response.success());
 });
 
