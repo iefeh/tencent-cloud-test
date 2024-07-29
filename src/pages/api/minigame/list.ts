@@ -127,14 +127,14 @@ function enrichStatus(games: any[]) {
 }
 
 // 添加游戏状态
-async function enrichTicket(userId: string | undefined, games: any[]) {
+export async function enrichTicket(userId: string | undefined, games: any[]) {
   const now = Date.now();
   for (let q of games) {
     if (q.ticket) {
-      delete q.ticket.game;
       // 未登录则票数为0
       if (!userId) {
         q.ticket.remain = 0;
+        delete q.ticket.game;
         continue;
       }
       // 是否可查询票数
@@ -144,6 +144,7 @@ async function enrichTicket(userId: string | undefined, games: any[]) {
           q.ticket.remain = pack ? pack.num : 0;
           break;
       }
+      delete q.ticket.game;
     }
   }
 }
