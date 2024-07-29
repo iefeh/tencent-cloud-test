@@ -183,12 +183,12 @@ li::marker {
 .stroke-text-normal {
   &:before {
     content: attr(data-text);
-    text-stroke: 1px var(--stroke-color);
-    -webkit-text-stroke: 1px var(--stroke-color);
+    text-stroke: var(--stroke-width, 1px) var(--stroke-color);
+    -webkit-text-stroke: var(--stroke-width, 1px) var(--stroke-color);
   }
 }
 
 .stroke-content {
-  text-stroke: 1px var(--stroke-color);
-  -webkit-text-stroke: 1px var(--stroke-color);
+  text-stroke: var(--stroke-width, 1px) var(--stroke-color);
+  -webkit-text-stroke: var(--stroke-width, 1px) var(--stroke-color);
 }

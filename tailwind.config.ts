@@ -84,6 +84,7 @@ const config: Config = {
         brown: '#5C0F0F',
         'yellow-1': '#FDC511',
         'light-yellow': '#E7D4A9',
+        'light-yellow-1': '#F7E9CC',
         notion: '#ff4848',
         'pure-red': '#BD0000',
         'basic-red': '#FF0000',
