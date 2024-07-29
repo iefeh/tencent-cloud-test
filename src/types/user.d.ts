@@ -38,4 +38,5 @@ interface UserInfo {
   discord?: BaseMediaInfo;
   wallet?: string;
   invite_code: string;
+  telegram?: BaseMediaInfo;
 }

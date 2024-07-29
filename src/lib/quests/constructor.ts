@@ -3,6 +3,7 @@ import { QuestBase } from '@/lib/quests/implementations/base';
 import { ConnectDiscordQuest } from '@/lib/quests/implementations/connectDiscordQuest';
 import { ConnectSteamQuest } from '@/lib/quests/implementations/connectSteamQuest';
 import { ConnectTwitterQuest } from '@/lib/quests/implementations/connectTwitterQuest';
+import { ConnectTelegramQuest } from '@/lib/quests/implementations/connectTelegramQuest';
 import { ConnectWalletQuest } from '@/lib/quests/implementations/connectWalletQuest';
 import { FollowOnTwitterQuest } from '@/lib/quests/implementations/followOnTwitterQuest';
 import { HoldDiscordRoleQuest } from '@/lib/quests/implementations/holdDiscordRoleQuest';
@@ -46,6 +47,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new ConnectTwitterQuest(quest);
         case QuestType.ConnectSteam:
             return new ConnectSteamQuest(quest);
+        case QuestType.ConnectTelegram:
+            return new ConnectTelegramQuest(quest);
         case QuestType.JoinDiscordServer:
             return new JoinDiscordServerQuest(quest);
         case QuestType.HoldDiscordRole:

@@ -27,6 +27,9 @@ const ConnectNoticeModal: FC<Props> = ({ disclosure: { isOpen, onOpenChange }, m
       case MediaType.STEAM:
         text = 'Steam account';
         break;
+      case MediaType.TELEGRAM:
+        text = 'Telegram account';
+        break;
     }
 
     return text;
