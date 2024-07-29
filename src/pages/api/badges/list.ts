@@ -35,7 +35,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     return;
   }
 
-  let [badges, claimed_count] = await loadAllBadges(userId, pageNum, pageSize);
+  let [badges, claimed_count] = await loadAllBadges(userId, pageNum, pageSize, undefined);
   //返回用户徽章
   res.json(
     response.success({
@@ -46,14 +46,20 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   );
 });
 
-export async function loadAllBadges(userId: string, pageNum: number, pageSize: number): Promise<[any[], number]> {
+export async function loadAllBadges(userId: string, pageNum: number, pageSize: number, badgeIds: string[] | undefined): Promise<[any[], number]> {
   const skip = (pageNum - 1) * pageSize;
-  const aggregateQuery: PipelineStage[] = [
-    {
-      $match: {
-        active: true,
-      },
+  let badgeFilter: any = {
+    $match: {
+      active: true,
     },
+  }
+
+  if (badgeIds && badgeIds.length > 0) {
+    badgeFilter.$match.id = { $in: badgeIds }
+  }
+
+  const aggregateQuery: PipelineStage[] = [
+    badgeFilter,
     {
       $lookup: {
         from: 'user_badges',

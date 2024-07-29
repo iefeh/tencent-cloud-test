@@ -4,7 +4,7 @@ import * as response from "@/lib/response/response";
 import { maybeAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import MiniGame, { MiniGames, MiniGameStatus } from "@/lib/models/MiniGame";
 import { PipelineStage } from "mongoose";
-import UserBackpackModel from "@/lib/models/UserBackpack";
+import UserBackpackModel from "@/lib/models/2048UserBackpack";
 import OAuth2Client from "@/lib/models/OAuth2Client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
