@@ -73,7 +73,10 @@ export class ThirdPartyCallbackQuest extends QuestBase {
       if (result) {
         claimable = !!result.achieved;
         if (!claimable) {
-          tip = error? error.message: "Something wrong, please try again later.";
+          if (error) {
+            logger.debug(`Third party callback error: ${error.message}`);
+          }
+          tip = "The task is not completed.";
           extra = error? { errorCode: error.code }: undefined;
         }
       } else {
