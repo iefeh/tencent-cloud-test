@@ -35,18 +35,18 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     return;
   }
 
-  let [badges, claimed_count] = await loadAllBadges(userId, pageNum, pageSize, undefined);
+  let [badges, claimed_count, total] = await loadAllBadges(userId, pageNum, pageSize, undefined);
   //返回用户徽章
   res.json(
     response.success({
-      total: badges.length,
+      total: total,
       claimed_count: claimed_count,
       badges: badges,
     }),
   );
 });
 
-export async function loadAllBadges(userId: string, pageNum: number, pageSize: number, badgeIds: string[] | undefined): Promise<[any[], number]> {
+export async function loadAllBadges(userId: string, pageNum: number, pageSize: number, badgeIds: string[] | undefined): Promise<[any[], number, number]> {
   const skip = (pageNum - 1) * pageSize;
   let badgeFilter: any = {
     $match: {
@@ -95,17 +95,20 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
     },
     {
       $facet: {
+        metadata: [{ $count: "total" }],
         data: [{ $skip: skip }, { $limit: pageSize }],
       },
     },
   ];
   const results = await Badges.aggregate(aggregateQuery);
   let data: any[] = [];
+  let total: number = 0;
   let claimed_count: number = 0;
   let claimed: boolean;
   let maxLv: number;
   let claimedLv: string;
   if (results.length > 0) {
+    total = results[0].metadata[0].total;
     for (let c of results[0].data) {
       let series: any = [];
       if (c.user_badges.length > 0) {// 用户已获得该徽章
@@ -169,7 +172,7 @@ export async function loadAllBadges(userId: string, pageNum: number, pageSize: n
     }
   }
 
-  return [data, claimed_count];
+  return [data, claimed_count, total];
 }
 
 export async function getClaimedCount(userId: string): Promise<number> {
