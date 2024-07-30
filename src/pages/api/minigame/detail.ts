@@ -76,7 +76,7 @@ async function enrichTasks(userId: string | undefined, detail: any) {
     detail.tasks = result.quests;
     return;
   }
-  
+
   detail.tasks = [];
 }
 
@@ -143,7 +143,7 @@ async function enrichBadge(userId: string | undefined, detail: any) {
       badgeIds.push(b.badge_id)
     }
 
-    const [badges, count] = await loadAllBadges(userId as string, 1, 5, badgeIds);
+    const [badges, count, total] = await loadAllBadges(userId as string, 1, 5, badgeIds);
     delete detail.badge;
     detail.badge = badges;
   }
