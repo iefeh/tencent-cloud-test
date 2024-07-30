@@ -2,6 +2,7 @@ import axios, { isAxiosError } from 'axios';
 
 import { AuthorizationType } from '@/lib/authorization/types';
 import { queryUserAuth } from '@/lib/common/user';
+import logger from '@/lib/logger/winstonLogger';
 import { IQuest } from '@/lib/models/Quest';
 import QuestAchievement from '@/lib/models/QuestAchievement';
 import User from '@/lib/models/User';
@@ -76,8 +77,11 @@ export class ThirdPartyCallbackQuest extends QuestBase {
           extra = error? { errorCode: error.code }: undefined;
         }
       } else {
+        if (error) {
+          logger.debug(`Third party callback error: ${error.message}`);
+        }
         claimable = false;
-        tip = error? error.message: undefined;
+        tip = "The task is not completed.";
         extra = error? { errorCode: error.code }: undefined;
       }
     }
@@ -175,5 +179,5 @@ export class ThirdPartyCallbackQuest extends QuestBase {
         Sentry.captureException(error);
         return {done: false, duplicated: false}
     }
-}
+  }
 }
