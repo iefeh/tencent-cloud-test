@@ -52,6 +52,8 @@ export enum QuestType {
     ClaimLotteryTicket = 'claim_lottery_ticket',
     // twitter关注
     FollowOnTwitterNew = 'follow_on_twitter_new',
+    // 发放token
+    TokenDispatch = 'token_dispatch',
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -272,6 +274,12 @@ export type ThirdPartyCallbackRequestHeaders = {
     name: string;
     value: any;
 };
+
+export type TokenDispatch = {
+    chain_id: string;
+    token_address: string;
+    whitelist_id: string;
+}
 
 export enum ThinkingDataQuestType {
     // 固定奖励，奖励数量配置于当前任务中

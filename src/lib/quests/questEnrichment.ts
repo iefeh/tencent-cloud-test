@@ -1,18 +1,22 @@
+import { format } from 'date-fns';
+import { ethers } from 'ethers';
+
+import { AuthorizationType } from '@/lib/authorization/types';
+import { getUserFirstWhitelist, queryUserAuth } from '@/lib/common/user';
 import QuestAchievement from '@/lib/models/QuestAchievement';
-import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
-import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import UserMetrics from '@/lib/models/UserMetrics';
+import UserMoonBeamAudit from '@/lib/models/UserMoonBeamAudit';
+import UserTokenReward from '@/lib/models/UserTokenReward';
+import { constructQuest } from '@/lib/quests/constructor';
 import { queryUserDiscordAuthorization } from '@/lib/quests/implementations/connectDiscordQuest';
 import { queryUserSteamAuthorization } from '@/lib/quests/implementations/connectSteamQuest';
 import { queryUserTelegramAuthorization } from '@/lib/quests/implementations/connectTelegramQuest';
-import { AuthorizationType } from '@/lib/authorization/types';
+import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
 import { QuestType } from '@/lib/quests/types';
-import UserMetrics from '@/lib/models/UserMetrics';
-import UserMoonBeamAudit from '@/lib/models/UserMoonBeamAudit';
-import { getUserFirstWhitelist, queryUserAuth } from '@/lib/common/user';
-import { constructQuest } from '@/lib/quests/constructor';
-import UserTwitter from '../models/UserTwitter';
+
 import TwitterTopicTweet from '../models/TwitterTopicTweet';
-import { format } from 'date-fns';
+import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
 
 // 增强用户的quests，场景：用户任务列表
@@ -35,26 +39,32 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
     maskQuestProperty(quests);
 
     for (let quest of quests) {
-        if (quest.type != QuestType.ConnectWallet || !quest.verified) {
+        if (quest.type != QuestType.ConnectWallet || quest.type != QuestType.TokenDispatch || !quest.verified) {
             continue;
         }
-        // 用户已经完成钱包任务，获取钱包资产上次同步时间
-        const metrics = await UserMetrics.findOne(
-            { user_id: userId },
-            { _id: 0, wallet_asset_value_last_refresh_time: 1 },
-        );
-        // 用服务器时间进行校验行为矫正
-        const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
-        let reverifyAfter = reverifyAt - Date.now();
-        reverifyAfter = reverifyAfter > 0 ? reverifyAfter : 0;
-        if (quest.properties) {
-            quest.properties.last_verified_time = metrics.wallet_asset_value_last_refresh_time;
-            quest.properties.can_reverify_after = reverifyAfter;
-        } else {
-            quest.properties = {
-                last_verified_time: metrics.wallet_asset_value_last_refresh_time,
-                can_reverify_after: reverifyAfter,
-            };
+        if (quest.type === QuestType.ConnectWallet) {
+            // 用户已经完成钱包任务，获取钱包资产上次同步时间
+            const metrics = await UserMetrics.findOne(
+                { user_id: userId },
+                { _id: 0, wallet_asset_value_last_refresh_time: 1 },
+            );
+            // 用服务器时间进行校验行为矫正
+            const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
+            let reverifyAfter = reverifyAt - Date.now();
+            reverifyAfter = reverifyAfter > 0 ? reverifyAfter : 0;
+            if (quest.properties) {
+                quest.properties.last_verified_time = metrics.wallet_asset_value_last_refresh_time;
+                quest.properties.can_reverify_after = reverifyAfter;
+            } else {
+                quest.properties = {
+                    last_verified_time: metrics.wallet_asset_value_last_refresh_time,
+                    can_reverify_after: reverifyAfter,
+                };
+            }
+        } else if (quest.type === QuestType.TokenDispatch) {
+            // 根据用户UserTokenReward的状态返回当前任务进度
+            const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`) });
+            quest.properties.token_dispatch_status = userTokenReward.status;
         }
     }
 }
@@ -103,8 +113,14 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
     quests.forEach(async (quest) => {
         // 添加任务校验标识
         quest.verified = verified.has(quest.id);
-        if (!quest.verified && quest.type === QuestType.ThinkingDataQuery) {
-            quest.verified = verified.has(`${quest.id},${dateStamp}`);
+        if (!quest.verified) {
+            if (quest.type === QuestType.ThinkingDataQuery) {
+                quest.verified = verified.has(`${quest.id},${dateStamp}`);
+            }
+            else if (quest.type === QuestType.TokenDispatch) {
+                const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`) });
+                quest.verified = !!userTokenReward;
+            }
         }
         // 添加禁止verify标识
         quest.verify_disabled = false;
@@ -253,6 +269,7 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
                 break;
             case QuestType.ConnectWallet:
             case QuestType.HoldNFT:
+            case QuestType.TokenDispatch:
                 quest.authorization = AuthorizationType.Wallet;
                 quest.user_authorized = false;
                 break;

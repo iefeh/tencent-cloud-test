@@ -9,6 +9,7 @@ export enum ContractCategory {
     TETRA_SERIES = 'TETRA_SERIES',
     // 通用抽奖合约
     LOTTERY = 'LOTTERY',
+    GAME_PAYMENT = 'GAME_PAYMENT',
 }
 
 // 子类型
