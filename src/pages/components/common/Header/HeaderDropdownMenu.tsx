@@ -13,21 +13,26 @@ interface Props {
 
 /** 渲染基础菜单基础 item 样式  */
 export const menuItemComp = (child: RouteMenu, ci: number, level: number) => {
-  
+  const isHttpUrl = child.route?.startsWith('http');
+
+  const url = isHttpUrl ? '' : child.route;
   function onTextClick(item: RouteMenu) {
+    if (isHttpUrl) {
+      window.open(item.route);
+      return
+    }
     if (!item.disabled) return;
     toast.info('Coming Soon');
   }
-  
+
   return (
-    <MenuItem key={level + '-' + ci} disabled={child.disabled}>
+    <MenuItem key={child.name} disabled={child.disabled}>
       <Link
-        prefetch
         className={cn([
           'font-poppins uppercase',
           child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
         ])}
-        href={(!child.disabled && child.route) || ''}
+        href={(!child.disabled && url) || ''}
         onClick={() => onTextClick(child)}
       >
         { child.icon &&
@@ -54,7 +59,6 @@ export default function HeaderDropdownMenu(props: Props) {
 
   const mainContent = (
     <Link
-      prefetch
       ref={menuRef}
       {...anchorProps}
       href={item.route || ''}

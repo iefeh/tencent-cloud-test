@@ -39,6 +39,12 @@ export default function Sidebar({ visible, onClose }: Props) {
 
     if (!route) return;
 
+    if ( route?.startsWith('http')) {
+      window.open(route);
+      onClose && onClose();
+      return
+    }
+
     try {
       window.luxy.disable();
       router.push(route);
@@ -93,7 +99,10 @@ export default function Sidebar({ visible, onClose }: Props) {
             hideIndicator={!(value.children && value.children.length > 0)}
             key={index}
             classNames={{
-              base: '!p-0 !bg-transparent',
+              base: cn([
+                '!bg-transparent px-[4.5rem]',
+                curMenu === value.name && 'bg-gradient-to-r from-[#342D27] to-[#141310]'
+              ]),
               heading: cn([
                 curMenu === value.name && 'border-b-2 border-[#EBDDB6]'
               ]),
@@ -124,7 +133,7 @@ export default function Sidebar({ visible, onClose }: Props) {
                               return (
                                 <div 
                                   key={i} 
-                                  onClick={() => onLinkClick(child, 3)}
+                                  onClick={() => onLinkClick(item, 3)}
                                 >
                                   {renderIcon(item.icon)}
                                   {item.name}

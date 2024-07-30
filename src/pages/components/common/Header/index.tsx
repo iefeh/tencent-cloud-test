@@ -47,27 +47,27 @@ export const routeText: RouteMenu[] = [
           },
           {
             name: 'Season Events',
-            route: '',
+            route: 'LoyaltyProgram/earn?tabKey=Events',
           },
           {
             name: 'Task-Join Our Community',
-            route: '',
+            route: '/LoyaltyProgram/earn/group/41434473-a1e9-42ac-a570-8114ec78c96b',
           },
           {
             name: 'Task-Community Engagement',
-            route: '',
+            route: '/LoyaltyProgram/earn/group/8a320647-85a5-4c84-863a-8904bb98fe2f',
           },
           {
             name: 'Task-The Referral Program',
-            route: '',
+            route: '/LoyaltyProgram/earn/group/517d8ea3-0997-48ca-8e6e-4efa3bc17644',
           },
           {
             name: 'Task-Digital Assets Verification',
-            route: '',
+            route: '/LoyaltyProgram/earn/group/85d11267-5502-41d1-bfff-9a88d20547a4',
           },
           {
             name: 'More Tasks',
-            route: '',
+            route: '/LoyaltyProgram/earn/group/c8af9477-fd48-4265-90d7-20bc4a200ff3',
           },
         ]
       },

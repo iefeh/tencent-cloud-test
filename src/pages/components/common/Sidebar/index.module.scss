@@ -5,12 +5,16 @@
 
 .sidebarWrapper {
   margin: px2rem(32) px2rem(20);
-  padding: px2rem(22) px2rem(80) 0 px2rem(60);
+  padding: px2rem(22) 0;
   background: #1A1917;
   border-radius: px2rem(20);
-  background: linear-gradient(-90deg, #141310 0%, #342D27 100%);
+  background: linear-gradient(to bottom, #141310 0%, #342D27 100%);
   .sidebarIcon {
     width: px2rem(16);
+  }
+
+  > hr {
+    height: 0px;
   }
 
   .sidebarHeader {
