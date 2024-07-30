@@ -54,21 +54,21 @@ export class ThirdPartyCallbackQuest extends QuestBase {
     } else if (userAuth.google && userAuth.google.email) {
       emailParam = userAuth.google.email;
     }
-    const params = new URLSearchParams();
-    params.append('email', emailParam);
-    params.append('twitter', this.twitter);
-    params.append('discord', this.discord);
-    params.append('address', this.address);
-    params.append('start_time', this.quest.start_time.toString());
-    params.append('end_time', this.quest.end_time.toString());
+    const params: any = {};
+    params.email = emailParam;
+    params.twitter = this.twitter;
+    params.discord = this.discord;
+    params.address = this.address;
+    params.start_time = this.quest.start_time;
+    params.end_time = this.quest.end_time;
     let claimable = false;
     let tip = undefined;
     let extra = undefined;
     // 以post方式调用第三方接口并设置5s的超时时间, 如果超时则认为验证失败
     try {
       const response = await axios.post(questProp.endpoint, params, { headers: headers, timeout: 5 * 1000 });
-      const result = response.data.data.result;
-      const error = response.data.data.error;
+      const result = response.data.result;
+      const error = response.data.error;
       if (result) {
         claimable = !!result.achieved;
         if (!claimable) {
