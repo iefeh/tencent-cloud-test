@@ -10,24 +10,31 @@ interface Props {
   type: string;
 }
 
+const PAGE_SIZE = 9;
+
 const GameCollection: FC<Props> = ({ type }) => {
   const { data, total, loading, queryData, setData, onPageChange } = usePageQuery({
     key: 'quests',
     fn: queryMiniGamesAPI,
+    pageSize: PAGE_SIZE,
     notFill: true,
     paramsFn: ({ page_num, page_size }) => {
-      return {
+      const data: any = {
         page_num: page_num,
         page_size: page_size,
         status: type,
-        ticket_available: 1,
       };
+
+      if (type === 'all') delete data.status;
+      if (type === 'tickets_available') data.ticket_available = 1;
+
+      return data;
     },
   });
 
   useEffect(() => {
     if (type) {
-      queryData();
+      queryData(true);
     } else {
       setData([]);
     }
@@ -45,12 +52,12 @@ const GameCollection: FC<Props> = ({ type }) => {
 
           <MiniCirclePagination
             className="mt-[4.875rem]"
-            total={total}
+            total={Math.ceil(total / PAGE_SIZE)}
             onChange={(index) => onPageChange({ page_num: index })}
           />
         </>
       ) : (
-        <EmptyContent className="!relative backdrop-blur-none backdrop-saturate-100 bg-transparent" />
+        <EmptyContent className="!relative backdrop-blur-none !backdrop-saturate-100 bg-transparent text-white" />
       )}
 
       {loading && <CircularLoading />}

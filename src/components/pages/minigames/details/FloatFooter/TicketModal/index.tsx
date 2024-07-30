@@ -159,7 +159,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <div className="flex items-center mt-6">
                       <StrokeButton
-                        className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] cursor-default"
+                        className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem]"
                         strokeType="ticket"
                         strokeText="10"
                         startContent={

@@ -1,3 +1,4 @@
+import FloatTips from '@/components/pages/minigames/home/FloatTips';
 import GameTabs from '@/components/pages/minigames/home/GameTabs';
 import GameCollection from '@/components/pages/minigames/home/GameTabs/GameCollection';
 import Head from 'next/head';
@@ -39,6 +40,8 @@ const MiniGamesPage: FC & BasePage = () => {
       <div className="bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg.png')] bg-[length:100%_auto] w-full flex flex-col items-center -mt-12 pt-[4.875rem] pb-[10.25rem]">
         <GameCollection type={selectedKey} />
       </div>
+
+      <FloatTips />
     </section>
   );
 };

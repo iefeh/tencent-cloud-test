@@ -48,16 +48,14 @@ const FloatFooter: FC = () => {
 
           <StrokeButton className="ml-3" strokeType="blue" strokeText="Buy Tickets" onPress={ticketDisclosure.onOpen} />
 
-          <Button
-            className={cn([
-              "bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_ticket.png')] bg-contain bg-no-repeat w-[9.0625rem] h-[3.25rem] text-lg leading-none ml-5",
-              styles.strokeText,
-              styles.yellowText,
-            ])}
-            data-text="10"
-          >
-            <span className="absolute top-0 right-2 text-sm leading-none text-white">Your Tickets</span>
-          </Button>
+          <StrokeButton
+            className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] ml-5"
+            strokeType="ticket"
+            strokeText="10"
+            startContent={
+              <span className="absolute top-0 right-[0.375rem] text-sm leading-none text-white">Your Tickets</span>
+            }
+          />
         </div>
       </div>
 

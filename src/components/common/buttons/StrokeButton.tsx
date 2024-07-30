@@ -31,8 +31,8 @@ const StrokeButton: FC<Props> = ({
       className={cn([
         'bg-transparent bg-[length:100%_100%] bg-no-repeat',
         'w-[10.875rem] h-[3.25rem] text-lg rounded-[1.625rem]',
-        'opacity-100',
-        strokeType === 'ticket' && '!rounded-xl',
+        '!opacity-100',
+        strokeType === 'ticket' && '!rounded-xl cursor-default',
         className,
       ])}
       isDisabled={isDisabled}

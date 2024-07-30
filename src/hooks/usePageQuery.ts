@@ -4,24 +4,35 @@ import { useEffect, useRef, useState } from 'react';
 interface Props<T, P> {
   key: string;
   notFill?: boolean;
+  pageSize?: number;
   fn: (params: P) => Promise<PageResDTO<T>>;
   paramsFn?: (pagi: P) => unknown;
 }
 
-export default function usePageQuery<T, P = PageQueryDto>({ key, notFill, fn, paramsFn }: Props<T, P>) {
+export default function usePageQuery<T, P = PageQueryDto>({
+  key,
+  notFill,
+  pageSize = ASSETS_PAGE_SIZE,
+  fn,
+  paramsFn,
+}: Props<T, P>) {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState<T[]>([]);
-  const pagi = useRef<P>({ page_num: 1, page_size: ASSETS_PAGE_SIZE } as P);
+  const pagi = useRef<P>({ page_num: 1, page_size: pageSize } as P);
 
-  async function queryData() {
+  async function queryData(isRefresh = false) {
     setLoading(true);
 
     const params = paramsFn ? Object.assign({}, pagi.current, paramsFn(pagi.current)) : pagi.current;
+    if (isRefresh) {
+      (params as any).page_num = 1;
+    }
+
     const res = await fn(params);
     let list = res?.[key] || [];
-    if (!notFill && list.length < ASSETS_PAGE_SIZE) {
-      list.push(...Array(ASSETS_PAGE_SIZE - list.length).fill(null));
+    if (!notFill && list.length < pageSize) {
+      list.push(...Array(pageSize - list.length).fill(null));
     }
     setData(list);
     setTotal(res?.total || 0);
