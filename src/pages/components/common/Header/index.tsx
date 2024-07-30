@@ -28,7 +28,7 @@ import AstrarkIcon from "img/header/astrark.png";
 import BushwhackIcon from "img/header/bushwhack.png";
 import FlamingPetsIcon from "img/header/flaming_pets.png";
 
-const routeText: RouteMenu[] = [
+export const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   {
     name: 'Loyalty Program',

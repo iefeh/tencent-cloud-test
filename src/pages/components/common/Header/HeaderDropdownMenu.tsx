@@ -11,40 +11,15 @@ interface Props {
   isActive: boolean;
 }
 
-export default function HeaderDropdownMenu(props: Props) {
-  const { item, isActive } = props;
-  const menuRef = useRef(null);
-  const [menuState, toggle] = useMenuState({ transition: true });
-  const anchorProps= useClick(menuState.state, toggle);
-
+/** 渲染基础菜单基础 item 样式  */
+export const menuItemComp = (child: RouteMenu, ci: number, level: number) => {
+  
   function onTextClick(item: RouteMenu) {
     if (!item.disabled) return;
     toast.info('Coming Soon');
   }
-
-  const mainContent = (
-    <Link
-      prefetch
-      ref={menuRef}
-      {...anchorProps}
-      href={item.route || ''}
-      className={cn([
-        'cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] text-[22px] ml-8 relative z-10',
-        isActive && 'text-[#F6C799] border-[#F6C799]',
-      ])}
-    >
-      {item.name}
-    </Link>
-  );
-
-  if (!item.children) return mainContent;
-
-
-  const renderFlexibleIcon = () => {
-
-  }
-
-  const menuItemComp = (child: RouteMenu, ci: number, level: number) => (
+  
+  return (
     <MenuItem key={level + '-' + ci} disabled={child.disabled}>
       <Link
         prefetch
@@ -69,6 +44,36 @@ export default function HeaderDropdownMenu(props: Props) {
       </Link>
     </MenuItem>
   )
+}
+
+export default function HeaderDropdownMenu(props: Props) {
+  const { item, isActive } = props;
+  const menuRef = useRef(null);
+  const [menuState, toggle] = useMenuState({ transition: true });
+  const anchorProps= useClick(menuState.state, toggle);
+
+  const mainContent = (
+    <Link
+      prefetch
+      ref={menuRef}
+      {...anchorProps}
+      href={item.route || ''}
+      className={cn([
+        'cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] text-[22px] ml-8 relative z-10',
+        isActive && 'text-[#F6C799] border-[#F6C799]',
+      ])}
+    >
+      {item.name}
+    </Link>
+  );
+
+  if (!item.children) return mainContent;
+
+
+  const renderFlexibleIcon = () => {
+
+  }
+
 
   return (
     <>

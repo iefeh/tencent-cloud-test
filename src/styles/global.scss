@@ -1,3 +1,5 @@
+$rem-base: 16;
+
 @function px2rem($px) {
-  @return ($px / 16) * 1rem;
+  @return ($px / $rem-base) * 1rem;
 }
