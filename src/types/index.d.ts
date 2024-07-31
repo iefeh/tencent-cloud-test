@@ -17,6 +17,10 @@ declare interface Disclosure {
   getDisclosureProps: (props?: any) => any;
 }
 
+interface DisclosureProps {
+  disclosure: Disclosure;
+}
+
 declare interface UpdateForwardRenderFunction {
   update: () => void;
 }
