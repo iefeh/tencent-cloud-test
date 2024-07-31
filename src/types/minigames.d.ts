@@ -47,7 +47,10 @@ declare namespace MiniGames {
       url: string;
     }[];
     url: string;
-    img_url: string;
+    poster: {
+      img_url: string;
+      bg_img_url: string;
+    };
     ticket: {
       remain: number;
     };

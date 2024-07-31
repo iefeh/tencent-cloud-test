@@ -71,7 +71,10 @@ const DetailTabs: FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#472E24] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_detail_2048.png')] bg-[length:100%_auto] bg-repeat-y">
+    <div
+      className="w-full min-h-screen bg-[#472E24] bg-[length:100%_auto] bg-repeat-y"
+      style={{ backgroundImage: `url('${data?.poster?.bg_img_url}')` }}
+    >
       <div className="w-[87.5rem] mx-auto mt-[3.75rem] pb-[9.875rem]">
         <Tabs
           aria-label="Options"
