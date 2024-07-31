@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { FC, useState } from 'react';
 
@@ -66,4 +67,4 @@ const DetailsInfo: FC = () => {
   );
 };
 
-export default DetailsInfo;
+export default observer(DetailsInfo);

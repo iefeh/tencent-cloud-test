@@ -1,8 +1,16 @@
+import { useMGDContext } from '@/store/MiniGameDetails';
+import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
-import { FC } from 'react';
+import { useRouter } from 'next/router';
+import { FC, useEffect } from 'react';
 
 const TopBanner: FC = () => {
-  const keywords = Array(4).fill('keyword');
+  const { data, queryDetails } = useMGDContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    queryDetails(router.query.id as string);
+  }, [router.query.id]);
 
   return (
     <div className="w-screen h-screen relative flex flex-col justify-end">
@@ -16,10 +24,10 @@ const TopBanner: FC = () => {
       />
 
       <div className="relative z-0 pl-[16.25rem] mb-9">
-        <div className="text-5xl">Puffy 2048</div>
+        <div className="text-5xl">{data?.client_name || '--'}</div>
 
         <div className="flex items-center gap-x-2 mt-[1.125rem]">
-          {keywords.map((kw, index) => (
+          {(data?.keywords || ['-']).map((kw, index) => (
             <div key={index} className="py-ten px-4 bg-white/20 rounded-five">
               {kw}
             </div>
@@ -30,4 +38,4 @@ const TopBanner: FC = () => {
   );
 };
 
-export default TopBanner;
+export default observer(TopBanner);

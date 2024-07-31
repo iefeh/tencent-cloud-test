@@ -1,5 +1,6 @@
 import StrokeButton from '@/components/common/buttons/StrokeButton';
 import { GameStatus } from '@/constant/minigames';
+import type { MiniGames } from '@/types/minigames';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';

@@ -7,26 +7,51 @@ import BadgesTabPanel from './BadgesTabPanel';
 import Link from 'next/link';
 import FollowUs from './FollowUs';
 import styles from './index.module.scss';
+import { useMGDContext } from '@/store/MiniGameDetails';
+import { observer } from 'mobx-react-lite';
+
+interface TabItem {
+  name: string;
+  label: string;
+  title?: string;
+  content: JSX.Element;
+  right?: JSX.Element;
+}
 
 const DetailTabs: FC = () => {
-  const tabs = [
-    {
-      name: 'overview',
-      label: 'Overview',
-      title: 'About',
-      content: <OverviewTabPanel />,
-    },
-    {
-      name: 'tasks',
-      label: 'Tasks',
-      content: <TasksTabPanel />,
-    },
-    {
-      name: 'ranking',
-      label: 'Ranking',
-      content: <RankingTabPanel />,
-    },
-    {
+  const { data } = useMGDContext();
+  const { tasks, ranking } = data || {};
+  const tabs = getTabs();
+
+  const [selectedKey, setSelectedKey] = useState(tabs[0].name);
+
+  function getTabs() {
+    const list: TabItem[] = [
+      {
+        name: 'overview',
+        label: 'Overview',
+        title: 'About',
+        content: <OverviewTabPanel />,
+      },
+    ];
+
+    if ((tasks?.length || 0) > 0) {
+      list.push({
+        name: 'tasks',
+        label: 'Tasks',
+        content: <TasksTabPanel />,
+      });
+    }
+
+    if (ranking) {
+      list.push({
+        name: 'ranking',
+        label: 'Ranking',
+        content: <RankingTabPanel />,
+      });
+    }
+
+    list.push({
       name: 'badges',
       label: 'Badges & SBTs',
       content: <BadgesTabPanel />,
@@ -35,9 +60,10 @@ const DetailTabs: FC = () => {
           More &gt;&gt;
         </Link>
       ),
-    },
-  ];
-  const [selectedKey, setSelectedKey] = useState(tabs[0].name);
+    });
+
+    return list;
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#472E24] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_detail_2048.png')] bg-[length:100%_auto] bg-repeat-y">
@@ -49,14 +75,11 @@ const DetailTabs: FC = () => {
           selectedKey={selectedKey}
           classNames={{
             base: 'w-full',
-            tabList: cn([
-              'gap-16 w-full relative rounded-none p-0',
-              styles.tabList,
-            ]),
+            tabList: cn(['gap-16 w-full relative rounded-none p-0', styles.tabList]),
             cursor: 'w-full h-five bg-yellow-1 rounded-[0.1563rem]',
             tab: 'max-w-fit px-0 h-14 py-0 overflow-visible',
             tabContent: 'text-white text-xl group-data-[selected=true]:text-yellow-1',
-            panel: 'p-0'
+            panel: 'p-0',
           }}
           onSelectionChange={(key) => setSelectedKey(key.toString())}
         >
@@ -85,4 +108,4 @@ const DetailTabs: FC = () => {
   );
 };
 
-export default DetailTabs;
+export default observer(DetailTabs);

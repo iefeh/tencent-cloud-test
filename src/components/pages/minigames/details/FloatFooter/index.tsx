@@ -1,14 +1,16 @@
-import { Button, cn, useDisclosure } from '@nextui-org/react';
+import { useDisclosure } from '@nextui-org/react';
 import Image from 'next/image';
 import type { FC } from 'react';
-import styles from './index.module.scss';
 import ShareModal from './ShareModal';
 import StrokeButton from '@/components/common/buttons/StrokeButton';
 import TicketModal from './TicketModal';
 import TicketCountdown from '../TicketCountdown';
 import { createPortal } from 'react-dom';
+import { useMGDContext } from '@/store/MiniGameDetails';
+import { observer } from 'mobx-react-lite';
 
 const FloatFooter: FC = () => {
+  const { data } = useMGDContext();
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
 
@@ -51,7 +53,7 @@ const FloatFooter: FC = () => {
           <StrokeButton
             className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] ml-5"
             strokeType="ticket"
-            strokeText="10"
+            strokeText={(data?.ticket.remain || 0).toString()}
             startContent={
               <span className="absolute top-0 right-[0.375rem] text-sm leading-none text-white">Your Tickets</span>
             }
@@ -67,4 +69,4 @@ const FloatFooter: FC = () => {
   return createPortal(content, document.body);
 };
 
-export default FloatFooter;
+export default observer(FloatFooter);
