@@ -3,9 +3,13 @@ import RegularTaskCategories from './RegularTaskCategories';
 import { TaskCategory } from '@/http/services/battlepass';
 import RegularTasksList from './RegularTasksList';
 
-const RegularTasks: FC = () => {
-  const [tasksVisible, setTasksVisible] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState<TaskCategory | null>(null);
+interface Props {
+  defaultCategory?: Partial<TaskCategory> | null;
+}
+
+const RegularTasks: FC<Props> = ({ defaultCategory = null }) => {
+  const [tasksVisible, setTasksVisible] = useState(!!defaultCategory);
+  const [currentCategory, setCurrentCategory] = useState<Partial<TaskCategory> | null>(defaultCategory);
 
   function onCategoryClick(item: TaskCategory) {
     if (item.quest_count < 1) return;

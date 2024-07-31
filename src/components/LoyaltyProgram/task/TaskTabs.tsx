@@ -6,9 +6,14 @@ import { useRouter } from 'next/router';
 import Game2048Content from './Game2048Content';
 import Image from 'next/image';
 import BushWhackContent from './BushWhackContent';
+import { TaskCategory } from '@/http/services/battlepass';
 
-export default function TaskTabs() {
-  const regularTaskContent = useMemo(() => <RegularTasks />, []);
+interface Props {
+  defaultCategory?: Partial<TaskCategory> | null;
+}
+
+export default function TaskTabs({ defaultCategory }: Props) {
+  const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, []);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
   const gameContent = useMemo(() => <Game2048Content />, []);
   const brContent = useMemo(() => <BushWhackContent />, []);
