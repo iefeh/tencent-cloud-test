@@ -115,12 +115,13 @@ async function enrichRanking(userId: string | undefined, detail: any) {
           let userIds = lbInfos.map(r => r.uid);
 
           // 查询用户昵称信息
-          const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, _id: 0 });
-          const userIdNameMap: Map<string, string> = new Map<string, string>(infos.map(info => [info.user_id, info.username]));
+          const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, avatar_url: 1, _id: 0 });
+          const userIdInfoMap: Map<string, any> = new Map<string, any>(infos.map(info => [info.user_id, info]));
           let rank: number = 0;
           for (let lb of lbInfos) {
             lb.rank = ++rank;
-            lb.player = userIdNameMap.get(lb.uid);
+            lb.player = userIdInfoMap.get(lb.uid).username;
+            lb.avatar = userIdInfoMap.get(lb.uid).avatar_url;
             lb.score = lb.sum_score;
             delete lb.sum_score;
             delete lb.uid;
