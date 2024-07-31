@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { CSSProperties, FC, useState } from 'react';
 import type { TaskItem } from '@/types/quest';
 import { MediaType, QuestType } from '@/constant/task';
 import { cn, useDisclosure } from '@nextui-org/react';
@@ -163,8 +163,16 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
     <div className="mt-5 flex items-center">
       {isNeedConnect && (
         <LGButton
-          className={cn(['uppercase', classNames?.connectBtn])}
-          label={getConnectLabel(task)}
+          className={cn([
+            'uppercase !border-solid border-2 border-[#BB683D] !bg-gradient-to-t from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 !text-white group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
+            classNames?.connectBtn,
+          ])}
+          prefix={
+            <div className="stroke-content" style={{ '--stroke-color': '#7A0A08' } as CSSProperties}>
+              {getConnectLabel(task)}
+            </div>
+          }
+          label=""
           actived
           loading={connectLoading}
           disabled={achieved || verified}
@@ -173,11 +181,16 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
       )}
 
       <LGButton
-        className={cn(['ml-2 uppercase', classNames?.verifyBtn])}
+        className={cn([
+          'ml-2 uppercase !border-solid border-2 border-brown !bg-none bg-transparent !text-brown h-9',
+          !verifiable && 'grayscale opacity-50',
+          classNames?.verifyBtn,
+        ])}
         label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
         loading={verifyLoading || mediaLoading}
         disabled={!verifiable}
         hasCD={hasVerifyCD}
+        actived
         tooltip={
           isLongCD && (
             <div className="max-w-[25rem] px-4 py-3">
