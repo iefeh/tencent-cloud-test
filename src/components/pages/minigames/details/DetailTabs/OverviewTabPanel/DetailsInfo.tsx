@@ -1,9 +1,12 @@
+import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
-import { FC, useState } from 'react';
+import Link from 'next/link';
+import type { FC } from 'react';
 
 const DetailsInfo: FC = () => {
-  const [keywords, setKeywords] = useState(['Strategy', 'Adventure']);
+  const { data } = useMGDContext();
+  const { name, keywords, platform, description } = data || {};
 
   return (
     <div className="flex-1 bg-[#F7E9CC] p-[2.375rem] rounded-[1.25rem] text-brown">
@@ -21,22 +24,23 @@ const DetailsInfo: FC = () => {
         </div>
 
         <div className="ml-[1.375rem] font-semibold">
-          <div className="text-xl leading-none">Puffy 2048</div>
+          <div className="text-xl leading-none">{name || '--'}</div>
 
           <div className="flex items-center mt-[0.6875rem]">
             <span className="uppercase text-sm leading-none mr-6">platform</span>
 
-            {['mac', 'android', 'windows'].map((p, i) => (
-              <Image
-                key={i}
-                className="w-6 h-6 object-contain mr-2"
-                src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${p}.png`}
-                alt=""
-                width={48}
-                height={48}
-                unoptimized
-                priority
-              />
+            {(platform || []).map((p, i) => (
+              <Link key={i} href={p.url || 'javascript:;'} target={p.url ? '_blank' : '_self'}>
+                <Image
+                  className="w-6 h-6 object-contain mr-2"
+                  src={p.icon}
+                  alt=""
+                  width={48}
+                  height={48}
+                  unoptimized
+                  priority
+                />
+              </Link>
             ))}
           </div>
         </div>
@@ -44,11 +48,7 @@ const DetailsInfo: FC = () => {
 
       <div className="w-full h-0 border-t-1 border-brown border-dashed my-7"></div>
 
-      <p className="text-base leading-[1.875rem] font-jcyt4">
-        A charming game series by Moonveil featuring Puffy the cat. With delightful cartoon graphics and simple,
-        intuitive gameplay, it&apos;s perfect for players of all ages. Join our vibrant community and dive into the
-        playful world of Moonveil Mini today!
-      </p>
+      <p className="text-base leading-[1.875rem] font-jcyt4">{description}</p>
 
       <div className="w-full h-0 border-t-1 border-brown border-dashed my-8"></div>
 
@@ -56,7 +56,7 @@ const DetailsInfo: FC = () => {
         <div className="text-xl leading-none">Details</div>
 
         <div className="flex items-center mt-5 font-jcyt4">
-          {keywords.map((kw, index) => (
+          {(keywords || []).map((kw, index) => (
             <div key={index} className="px-4 py-ten bg-brown/20 rounded-five [&+div]:ml-ten">
               {kw}
             </div>

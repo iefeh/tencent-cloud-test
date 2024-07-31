@@ -5,6 +5,28 @@ import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 
+export async function reqClaimBadge(item: BadgeItem) {
+  let lv = 1;
+
+  if (item.has_series) {
+    item.series?.forEach((serie) => {
+      if (!serie.obtained_time || serie.lv <= lv) return;
+      lv = serie.lv;
+    });
+  } else {
+    lv = item.lv || 1;
+  }
+
+  const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv });
+  if (res) {
+    if (res.result) {
+      toast.success(res.result);
+    }
+  }
+
+  return res;
+}
+
 export default function useMyBadges() {
   const MIN_TOTAL = 36;
   const { userInfo } = useContext(MobxContext);
@@ -36,22 +58,9 @@ export default function useMyBadges() {
 
   const claimBadge = throttle(async (item: BadgeItem) => {
     setClaimLoaing(true);
-    let lv = 1;
 
-    if (item.has_series) {
-      item.series?.forEach((serie) => {
-        if (!serie.obtained_time || serie.lv <= lv) return;
-        lv = serie.lv;
-      });
-    } else {
-      lv = item.lv || 1;
-    }
-
-    const res = await claimBadgeAPI({ badge_id: item.badge_id, badge_lv: lv });
+    const res = await reqClaimBadge(item);
     if (res) {
-      if (res.result) {
-        toast.success(res.result);
-      }
       await queryMyBadges();
     }
     setClaimLoaing(false);

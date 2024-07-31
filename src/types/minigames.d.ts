@@ -23,7 +23,7 @@ declare namespace MiniGames {
 
   interface GameDetailDTO {
     client_id: string;
-    client_name: string;
+    name: string;
     share: string;
     keywords: string[];
     ticket_expired_at: number | null;
@@ -37,6 +37,7 @@ declare namespace MiniGames {
         rank: number;
         player: string;
         score: number;
+        avatar: string;
       }[];
       user_rank: string;
     };

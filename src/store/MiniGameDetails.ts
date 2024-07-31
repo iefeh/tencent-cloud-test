@@ -33,7 +33,7 @@ class MiniGameDetailsStore {
     this.data = val;
   };
 
-  queryDetails = async (id?: string) => {
+  queryDetails = async (id: string = this.id) => {
     if (!id) {
       this.setId('');
       this.setData(null);
@@ -42,8 +42,9 @@ class MiniGameDetailsStore {
 
     this.setLoading(true);
 
-    const res = await queryMiniGameDetailsAPI({ client_id: id || this.id });
+    const res = await queryMiniGameDetailsAPI({ client_id: id });
     this.setData(res || null);
+    this.setId(res.client_id || '');
 
     this.setLoading(false);
   };

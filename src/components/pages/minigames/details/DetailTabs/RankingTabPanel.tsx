@@ -1,48 +1,13 @@
+import { useMGDContext } from '@/store/MiniGameDetails';
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { CSSProperties, FC, useState } from 'react';
-
-interface RankingItem {
-  rank: number;
-  player: string;
-  score: number;
-  avatar: string;
-}
+import type { CSSProperties, FC } from 'react';
 
 const RankingTabPanel: FC = () => {
+  const { data } = useMGDContext();
+  const { ranking } = data || {};
+  const { leaderboard, user_rank } = ranking || {};
   const columns = ['Rank', 'Player', 'Score'];
-  const [data, setData] = useState<RankingItem[]>([
-    {
-      rank: 1,
-      player: 'Will',
-      score: 8962551,
-      avatar: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png',
-    },
-    {
-      rank: 2,
-      player: 'Will',
-      score: 6548652,
-      avatar: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png',
-    },
-    {
-      rank: 3,
-      player: 'Will',
-      score: 5133541,
-      avatar: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png',
-    },
-    {
-      rank: 4,
-      player: 'Will',
-      score: 2541354,
-      avatar: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png',
-    },
-    {
-      rank: 5,
-      player: 'Will',
-      score: 985642,
-      avatar: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png',
-    },
-  ]);
   const varStyles = { '--stroke-color': '#7A0A08' } as CSSProperties;
 
   return (
@@ -75,12 +40,15 @@ const RankingTabPanel: FC = () => {
           ))}
         </TableHeader>
         <TableBody emptyContent={'Coming Soon.'}>
-          {data.map((row, index) => (
+          {(leaderboard || []).map((row, index) => (
             <TableRow key={index} className="[&:nth-child(2n+1)]:bg-[#E4D4B2] h-[4.125rem]">
               <TableCell className="rounded-l-base pl-5">
                 <Image
                   className="object-contain w-[2.0625rem] h-[2.0625rem]"
-                  src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${row.rank}.png`}
+                  src={
+                    row.avatar ||
+                    `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${row.rank}.png`
+                  }
                   alt=""
                   width={66}
                   height={66}
@@ -91,15 +59,23 @@ const RankingTabPanel: FC = () => {
 
               <TableCell className="pl-5 flex items-center">
                 <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown">
-                  <Image className="object-contain" src={row.avatar} alt="" fill sizes="100%" unoptimized priority />
+                  <Image
+                    className="object-contain"
+                    src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png"
+                    alt=""
+                    fill
+                    sizes="100%"
+                    unoptimized
+                    priority
+                  />
                 </div>
                 <span className="text-lg leading-none ml-[1.125rem] text-brown max-w-[15.5rem] overflow-hidden text-ellipsis whitespace-nowrap">
-                  {row.player}
+                  {row.player || '-'}
                 </span>
               </TableCell>
 
               <TableCell className="rounded-r-base pl-5 text-yellow-1 text-2xl">
-                <div className="stroke-text-normal" data-text={row.score}></div>
+                <div className="stroke-text-normal" data-text={row.score || '-'}></div>
               </TableCell>
             </TableRow>
           ))}
@@ -119,7 +95,7 @@ const RankingTabPanel: FC = () => {
           priority
         />
 
-        <span className="ml-[0.875rem] stroke-text-normal text-3xl text-[#FDC511]" data-text={1000}></span>
+        <span className="ml-[0.875rem] stroke-text-normal text-3xl text-[#FDC511]" data-text={user_rank || '-'}></span>
       </div>
     </div>
   );

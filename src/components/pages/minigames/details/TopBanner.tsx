@@ -24,7 +24,7 @@ const TopBanner: FC = () => {
       />
 
       <div className="relative z-0 pl-[16.25rem] mb-9">
-        <div className="text-5xl">{data?.client_name || '--'}</div>
+        <div className="text-5xl">{data?.name || '--'}</div>
 
         <div className="flex items-center gap-x-2 mt-[1.125rem]">
           {(data?.keywords || ['-']).map((kw, index) => (

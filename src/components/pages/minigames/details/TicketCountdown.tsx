@@ -1,18 +1,19 @@
 import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
+import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { FC, Fragment, useState } from 'react';
 
 interface Props {
-  endTime?: number;
+  endTime?: number | null;
 }
 
-const TicketCountdown: FC<Props> = ({ endTime = dayjs().add(20, 'days').valueOf() }) => {
+const TicketCountdown: FC<Props> = ({ endTime }) => {
   const [cdNumbers, setCDNumbers] = useState(Array(4).fill('00'));
   // 注意du.days()会返回对30的模
-  useCountdown(endTime, dayjs().valueOf(), (time) => {
+  useCountdown(endTime || dayjs().valueOf(), dayjs().valueOf(), (time) => {
     const du = dayjs.duration(time);
-    const nos = [du.days(), du.hours(), du.minutes(), du.seconds()].map((n) => n.toString().padStart(2, '0'));
+    const nos = [~~du.asDays(), du.hours(), du.minutes(), du.seconds()].map((n) => n.toString().padStart(2, '0'));
     setCDNumbers(nos);
   });
 
@@ -41,4 +42,4 @@ const TicketCountdown: FC<Props> = ({ endTime = dayjs().add(20, 'days').valueOf(
   );
 };
 
-export default TicketCountdown;
+export default observer(TicketCountdown);

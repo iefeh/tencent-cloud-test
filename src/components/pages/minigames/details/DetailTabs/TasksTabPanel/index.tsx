@@ -2,11 +2,16 @@ import RegularTasksList from '@/components/LoyaltyProgram/task/RegularTasksList'
 import { cn } from '@nextui-org/react';
 import { FC } from 'react';
 import styles from './index.module.scss';
+import { useMGDContext } from '@/store/MiniGameDetails';
+import MiniGamesTaskCollection from './MiniGamesTaskCollection';
 
 const TasksTabPanel: FC = () => {
+  const { data } = useMGDContext();
+  const { tasks } = data || {};
+
   return (
     <div>
-      <RegularTasksList
+      {/* <RegularTasksList
         categoryItem={{ id: process.env.NEXT_PUBLIC_TASK_CATEGORY_ID_2048 }}
         hidePagi
         hideHeader
@@ -20,7 +25,8 @@ const TasksTabPanel: FC = () => {
           connectBtn: styles.puffyConnectBtn,
           verifyBtn: styles.puffyVerifyBtn,
         }}
-      />
+      /> */}
+      <MiniGamesTaskCollection items={tasks || []} />
     </div>
   );
 };

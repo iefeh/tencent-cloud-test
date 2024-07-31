@@ -20,7 +20,7 @@ interface TabItem {
 
 const DetailTabs: FC = () => {
   const { data } = useMGDContext();
-  const { tasks, ranking } = data || {};
+  const { tasks, ranking, task_category } = data || {};
   const tabs = getTabs();
 
   const [selectedKey, setSelectedKey] = useState(tabs[0].name);
@@ -40,6 +40,11 @@ const DetailTabs: FC = () => {
         name: 'tasks',
         label: 'Tasks',
         content: <TasksTabPanel />,
+        right: (
+          <Link href={`/LoyaltyProgram/earn/group/${task_category}`} target="_blank">
+            More &gt;&gt;
+          </Link>
+        ),
       });
     }
 

@@ -11,6 +11,7 @@ import { observer } from 'mobx-react-lite';
 
 const FloatFooter: FC = () => {
   const { data } = useMGDContext();
+  const { ticket, ticket_expired_at } = data || {};
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
 
@@ -27,7 +28,7 @@ const FloatFooter: FC = () => {
       />
 
       <div className="relative z-0 right-[20.5rem] flex flex-col items-end mt-[0.8125rem] pointer-events-auto w-min ml-auto">
-        <TicketCountdown />
+        <TicketCountdown endTime={ticket_expired_at} />
 
         <div className="flex pr-1 mt-5">
           <StrokeButton
@@ -53,7 +54,7 @@ const FloatFooter: FC = () => {
           <StrokeButton
             className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] ml-5"
             strokeType="ticket"
-            strokeText={(data?.ticket.remain || 0).toString()}
+            strokeText={(ticket?.remain || 0).toString()}
             startContent={
               <span className="absolute top-0 right-[0.375rem] text-sm leading-none text-white">Your Tickets</span>
             }
