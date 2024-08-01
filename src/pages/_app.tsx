@@ -18,7 +18,6 @@ import './components/common/Belt/index.scss';
 import './components/common/Loading/index.scss';
 import '@/components/common/MediaIconBar/index.scss';
 import './components/character/character.scss';
-import './About/about.scss';
 import './NFT/components/home.scss';
 import '@/components/pages/astrark/home/schoolDesc/index.scss';
 import '@/components/pages/astrark/home/school/Mystery/index.scss';
