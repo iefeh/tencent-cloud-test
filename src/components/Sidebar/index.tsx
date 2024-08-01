@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/router';
-import MediaIconBar from '../../../../components/common/MediaIconBar';
+import MediaIconBar from '@/components/common/MediaIconBar';
 import styles from './index.module.scss';
 import { routeText } from '../Header'
 import { cn } from '@nextui-org/react';
@@ -39,7 +39,7 @@ export default function Sidebar({ visible, onClose }: Props) {
 
     if (!route) return;
 
-    if ( route?.startsWith('http')) {
+    if (route?.startsWith('http')) {
       window.open(route);
       onClose && onClose();
       return

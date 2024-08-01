@@ -17,7 +17,7 @@ import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
-import UserInfo from '../UserInfo';
+import UserInfo from '@/pages/components/common/UserInfo';
 import Link from 'next/link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
@@ -114,7 +114,7 @@ export const routeText: RouteMenu[] = [
       },
       {
         name: 'Mini Games',
-        route: '',
+        route: '/minigames',
         children: [
           {
             name: '2048',
