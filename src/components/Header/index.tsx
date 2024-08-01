@@ -17,95 +17,176 @@ import moreIconImg from 'img/header/more.png';
 import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
-import UserInfo from '../UserInfo';
+import UserInfo from '@/pages/components/common/UserInfo';
 import Link from 'next/link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
 import { isMobile } from 'react-device-detect';
 import Entry2048 from '@/components/pages/header/Entry2048';
+import Game2048Icon from "img/header/2048.png";
+import AstrarkIcon from "img/header/astrark.png";
+import BushwhackIcon from "img/header/bushwhack.png";
+import FlamingPetsIcon from "img/header/flaming_pets.png";
 
-const routeText: RouteMenu[] = [
+export const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   {
-    name: 'Rock’it to the Moon',
-    route: '/LoyaltyProgram/season',
+    name: 'Loyalty Program',
     children: [
       {
-        name: 'Season Task & Event',
-        route: '/LoyaltyProgram/earn?from=lp',
-      },
-      {
-        name: 'Loyalty Program',
+        name: 'Introduction',
         route: '/LoyaltyProgram/intro',
       },
       {
-        name: 'Season System',
-        route: '/LoyaltyProgram/season/foresight',
-        // disabled: true,
+        name: 'My Season Pass',
+        route: '/LoyaltyProgram/season',
+        children: [
+          {
+            name: 'Introduction',
+            route: '/LoyaltyProgram/season/foresight',
+          },
+          {
+            name: 'Season Events',
+            route: 'LoyaltyProgram/earn?tabKey=Events',
+          },
+          {
+            name: 'Task-Join Our Community',
+            route: '/LoyaltyProgram/earn/group/41434473-a1e9-42ac-a570-8114ec78c96b',
+          },
+          {
+            name: 'Task-Community Engagement',
+            route: '/LoyaltyProgram/earn/group/8a320647-85a5-4c84-863a-8904bb98fe2f',
+          },
+          {
+            name: 'Task-The Referral Program',
+            route: '/LoyaltyProgram/earn/group/517d8ea3-0997-48ca-8e6e-4efa3bc17644',
+          },
+          {
+            name: 'Task-Digital Assets Verification',
+            route: '/LoyaltyProgram/earn/group/85d11267-5502-41d1-bfff-9a88d20547a4',
+          },
+          {
+            name: 'More Tasks',
+            route: '/LoyaltyProgram/earn/group/c8af9477-fd48-4265-90d7-20bc4a200ff3',
+          },
+        ]
       },
-
-      // {
-      //   name: "Rock'it to the Moon",
-      //   route: '/LoyaltyProgram/season',
-      // },
-
-      // {
-      //   name: 'MB=MVP',
-      //   route: '/LoyaltyProgram/Exchange',
-      // },
       {
         name: 'Referral Program',
         route: '/Profile/invite',
       },
       {
-        name: '“More and $MORE” Lottery',
+        name: 'More & $MORE Lottery',
         route: '/lottery',
       },
-    ],
+    ]
   },
   {
-    name: 'AstrArk',
+    name: 'Games',
     children: [
-      // {
-      //   name: 'Game Download',
-      //   route: '/AstrArk/Download',
-      // },
       {
-        name: 'Pre-Registration',
-        route: '/AstrArk/PreRegistration',
+        name: 'AstrArk',
+        icon: AstrarkIcon,
+        children: [
+          {
+            name: 'Game Download',
+            route: '/AstrArk/Download',
+          },
+          {
+            name: 'Pre-Registration',
+            route: '/AstrArk/PreRegistration',
+          },
+          {
+            name: 'Game Lore',
+            route: '/AstrArk',
+          },
+        ],
       },
       {
-        name: 'Game Lore',
-        route: '/AstrArk',
+        name: 'Bushwhack',
+        route: '/Bushwhack',
+        icon: BushwhackIcon,
       },
-    ],
+      {
+        name: 'Gyoza',
+        route: '',
+        icon: FlamingPetsIcon,
+      },
+      {
+        name: 'Mini Games',
+        route: '/minigames',
+        children: [
+          {
+            name: '2048',
+            icon: Game2048Icon,
+            route: '',
+          },
+          {
+            name: '黄金矿工',
+            route: '',
+          },
+          // {
+          //   name: 'TG小火箭',
+          //   route: '',
+          // }
+        ]
+      }
+    ]
   },
-  { name: 'Bushwhack', route: '/Bushwhack' },
-  { name: 'About', route: '/About' },
   {
-    name: 'NFT',
+    name: 'About',
     children: [
       {
-        name: 'Overview',
-        route: '/NFT',
+        name: 'Moonveil Ecosystem- 3 layers',
+        route: '',
       },
       {
-        name: 'TETRA NFT Series',
-        route: '/TetraNFT',
+        name: 'Our Team',
+        route: '',
       },
-      // {
-      //   name: 'Get Involved',
-      //   route: '/LoyaltyProgram/earn?from=nft',
-      // },
-      // {
-      //   name: 'Mint Now',
-      //   route: '/NFT/Mint',
-      // },
       {
-        name: 'Lv2 TETRA Merge',
-        route: '/NFT/Merge',
+        name: 'Investors',
+        route: '',
       },
-    ],
+      {
+        name: 'News',
+        route: '',
+      },
+      // {
+      //   name: 'Whitepaper',
+      //   route: '',
+      // }
+    ]
+  },
+  {
+    name: 'My Assets',
+    children: [
+      {
+        name: 'TETRA NFTs',
+        children: [
+          {
+            name: 'Overview',
+            route: '/NFT',
+          },
+          {
+            name: 'TETRA Series Intro',
+            route: '/TetraNFT',
+          },
+          {
+            name: 'Lv2 TETRA Merge',
+            route: '/NFT/Merge',
+          },
+        ]
+      },
+      // {
+      //   name: 'Node Sales',
+      //   route: '',
+      // },
+      // {
+      //   name: 'Staking',
+      //   route: '',
+      // },
+    ]
   },
 ];
 
@@ -172,14 +253,6 @@ const Header = () => {
     return menu.route === route || menu.children?.some((item) => item.route === route);
   }
 
-  let mobileRoute: RouteMenu[] = routeText;
-  if (isMobile) {
-    for (let item of mobileRoute) {
-      if (item.name === 'Rock’it to the Moon') {
-        item.children = item.children?.filter((item) => item.name !== 'Loyalty Program');
-      }
-    }
-  }
   return (
     <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
       <div className="flex-[1]">
@@ -191,7 +264,7 @@ const Header = () => {
       {/* <Entry2048 /> */}
 
       <div className="font-semakin flex items-center max-lg:hidden">
-        {mobileRoute.map((value, index) => (
+        {routeText.map((value, index) => (
           <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
         ))}
       </div>

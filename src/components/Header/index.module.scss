@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  background: #1a1917;
+  border-radius: px2rem(10);
+  .itemWarpper {
+    padding: px2rem(42);
+    font-size: px2rem(20);
+    font-weight: 500;
+    color: #fff;
+
+    &:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    &:hover {
+      background: linear-gradient(-90deg, #141310 0%, #342d27 100%);
+      border-radius: px2rem(10);
+    }
+    .secondLevelItem {
+      margin-bottom: px2rem(10);
+    }
+
+    .threeLevelItem {
+      color: #999;
+      font-size: px2rem(14);
+      min-width: px2rem(320);
+      font-weight: 400;
+    }
+  }
+
+  .itemIcon {
+    width: px2rem(26);
+    height: px2rem(26);
+    display: inline-block;
+    margin-right: px2rem(16);
+  }
+}
+
+.dropdownMenu {
+  > ul {
+    padding: 0;
+  }
+}

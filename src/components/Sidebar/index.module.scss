@@ -1,0 +1,66 @@
+.sidebarMediaIcons > svg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.sidebarWrapper {
+  margin: px2rem(32) px2rem(20);
+  padding: px2rem(22) 0;
+  background: #1A1917;
+  border-radius: px2rem(20);
+  background: linear-gradient(to bottom, #141310 0%, #342D27 100%);
+  .sidebarIcon {
+    width: px2rem(16);
+  }
+
+  > hr {
+    height: 0px;
+  }
+
+  .sidebarHeader {
+    display: flex;
+    align-items: center;
+    font-size: px2rem(26);
+    justify-content: space-between;
+    > svg {
+      height: 3.5rem;
+      width: 3.5rem;
+    }
+  }
+
+  .sidebarSubMenu {
+    font-family: Poppins, sans-serif;
+    font-size: px2rem(24);
+    padding-top: px2rem(32);
+    
+    .sidebarThreeLevel {
+      display: flex;
+      flex-direction: column;
+      gap: px2rem(4);
+      margin: px2rem(24) 0;
+      font-size: px2rem(22);
+      color: #999999;
+    }
+  }
+  .menuIcon {
+    width: px2rem(40);
+    height: px2rem(40);
+    display: inline-block;
+    margin-right: px2rem(12);
+  }
+  .spaceBar {
+    margin-top: px2rem(22);
+    background: #36302b;
+    height: 2px;
+  }
+}
+
+.arrow {
+  width: px2rem(22);
+  height: px2rem(22);
+}
+
+.activeArrow {
+  transform: rotate(180deg);
+  fill: #EBDDB6;
+}
