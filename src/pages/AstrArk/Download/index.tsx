@@ -1,17 +1,21 @@
 import Image from 'next/image';
 import maskBg from 'img/astrark/bg-mask.png';
 import styles from './index.module.css';
-import { Button, cn } from '@nextui-org/react';
+import { Button, cn, useDisclosure } from '@nextui-org/react';
 import Head from 'next/head';
 import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
+import Link from 'next/link';
+import AppStoreTipsModal from '@/components/pages/astrark/download/AppStoreTipsModal';
 
 export default function DownloadPage() {
-  function onDownloadClick() {
-    window.open(process.env.NEXT_PUBLIC_ASTRARK_DOWNLOAD_URL!, '_blank');
-  }
+  const disclosure = useDisclosure();
 
-  function onGooglePlayClick() {
-    window.open(process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL, '_blank');
+  // function onDownloadClick() {
+  //   window.open(process.env.NEXT_PUBLIC_ASTRARK_DOWNLOAD_URL!, '_blank');
+  // }
+
+  function onAppStore() {
+    disclosure.onOpen();
   }
 
   return (
@@ -37,22 +41,31 @@ export default function DownloadPage() {
       </div>
 
       <div className=" absolute left-1/2 -translate-x-1/2 bottom-[12.6%] flex flex-col md:flex-row items-center gap-[0.625rem]">
-        <Button
+        {/* <Button
           className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
           disableRipple
           onPress={onDownloadClick}
         >
           Download Now
-        </Button>
+        </Button> */}
 
         <Button
-          className="w-[13.25rem] h-[4.375rem] bg-[url('/img/astrark/btn_google_play.png')] bg-cover bg-no-repeat !bg-transparent"
+          className="w-[13.25rem] h-[4.375rem] bg-[url('/img/astrark/btn_app_store.png')] bg-cover bg-no-repeat !bg-transparent"
           disableRipple
-          onPress={onGooglePlayClick}
+          onPress={onAppStore}
         />
+
+        <Link href={process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!} target="_blank">
+          <Button
+            className="w-[13.25rem] h-[4.375rem] bg-[url('/img/astrark/btn_google_play.png')] bg-cover bg-no-repeat !bg-transparent"
+            disableRipple
+          />
+        </Link>
       </div>
 
       <FloatRegisterButton />
+
+      <AppStoreTipsModal disclosure={disclosure} />
     </div>
   );
 }
