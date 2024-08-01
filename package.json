@@ -35,7 +35,7 @@
     "date-fns": "^3.0.1",
     "dayjs": "^1.11.10",
     "debank": "^1.0.1",
-    "ethers": "^6.9.1",
+    "ethers": "^6.13.0",
     "formidable": "^3.5.1",
     "framer-motion": "^10.16.5",
     "gsap": "^3.12.5",
@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "@auth/mongodb-adapter": "^2.0.2",
+    "@types/crypto-js": "^4.2.2",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/lodash": "^4.14.199",
     "@types/mongoose": "^5.11.97",

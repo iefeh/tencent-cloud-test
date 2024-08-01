@@ -2,11 +2,11 @@
 import type { NextApiResponse } from "next";
 import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
-import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(maybeAuthInterceptor).get(async (req, res) => {
 
   res.json(response.success());
   return;

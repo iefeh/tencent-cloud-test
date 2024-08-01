@@ -14,6 +14,8 @@ export interface IMiniGameDetail extends Document {
     share: string,
     // 分享任务ID
     share_task?: string,
+    // 海报相关
+    poster?: any,
     // 游戏关键词
     keywords: string[],
     // 门票过期时间
@@ -38,6 +40,7 @@ const MiniGameDetailSchema = new Schema<IMiniGameDetail>({
     client_id: { type: String, required: true, unique: true },
     share: { type: String },
     share_task: { type: String },
+    poster: { type: Schema.Types.Mixed },
     keywords: { type: [String] },
     ticket_expired_at: { type: Number },
     description: { type: String },
