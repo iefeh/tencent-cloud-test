@@ -13,6 +13,7 @@ import logger from "@/lib/logger/winstonLogger";
 import GameTicket from "@/lib/models/GameTicket";
 import { redis } from "@/lib/redis/client";
 import MiniGameDetail from "@/lib/models/MiniGameDetail";
+import { ticketRemain } from "./query";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -92,13 +93,13 @@ export async function buyTicket(userId: string, clientId: string, txHash: string
             }
         }
     }
-    const ticketsCount = await GameTicket.count({ user_id: userId, game_id: clientId, consumed_time: null });
+    const ticketsCount = await ticketRemain(userId, clientId);
     return { available_tickets: ticketsCount };
 }
 
 
 async function getPurchaseTicketEvnet(txHash: string) {
-    let receipt = await getTokenTransactionReceiptByHash(txHash, 300, 1000);
+    let receipt = await getTokenTransactionReceiptByHash(txHash, 30, 1000);
     if (!receipt || receipt.status !== 1) {
         return null;
     }
@@ -140,6 +141,7 @@ async function getTokenTransactionReceiptByHash(txHash: string, maxWaitTimeSecon
         }
         attempts++;
         await new Promise(resolve => setTimeout(resolve, checkIntervalMillis)); // 等待5秒再检查
+        console.log(attempts);
     }
 
     return null; // 超出最大等待时间后返回null
