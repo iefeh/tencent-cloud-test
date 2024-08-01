@@ -137,21 +137,21 @@ export const routeText: RouteMenu[] = [
     name: 'About',
     children: [
       {
-        name: 'Moonveil Ecosystem- 3 layers',
-        route: '',
+        name: 'Moonveil Ecosystem',
+        route: '/About',
       },
       {
         name: 'Our Team',
-        route: '',
+        route: '/About/OurTeam',
       },
       {
         name: 'Investors',
-        route: '',
+        route: '/About/Investors',
       },
-      {
-        name: 'News',
-        route: '',
-      },
+      // {
+      //   name: 'News',
+      //   route: '',
+      // },
       // {
       //   name: 'Whitepaper',
       //   route: '',

@@ -71,7 +71,6 @@ export default function HeaderDropdownMenu(props: Props) {
       <ControlledMenu
         className={cn(['pt-[1.4375rem] px-[2.625rem] pb-7', styles.dropdownMenu])}
         {...menuState}
-        state={item.name === 'Games' ? 'open' : 'closed'}
         anchorRef={menuRef}
         theming="dark"
         onClose={() => toggle(false)}
