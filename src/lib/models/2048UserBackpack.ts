@@ -2,7 +2,7 @@ import {Document, Model, model, models, Schema} from 'mongoose';
 import { connectToMongoDb2048 } from '../mongodb/client';
 
 // 2048，用户背包信息(如入场券)
-export interface userBackpack extends Document {
+export interface IUserBackpack extends Document {
     uid: string;
     propId: string;
     propName: string;
@@ -10,7 +10,7 @@ export interface userBackpack extends Document {
     num: number;
 }
 
-const userBackpackSchema = new Schema<userBackpack>({
+const userBackpackSchema = new Schema<IUserBackpack>({
     creatTime: {type: String, required: true},
     propName: {type: String, required: true},
     propId: {type: String, required: true},
@@ -18,8 +18,8 @@ const userBackpackSchema = new Schema<userBackpack>({
     num: {type: Number, required: true},
 });
 
-userBackpackSchema.index({uid: 1});
+
 const connection = connectToMongoDb2048();
-const UserBackpackModel: Model<userBackpack> = models.userBackpack || connection.model<userBackpack>("userBackpack", userBackpackSchema, 'userBackpack');
+const UserBackpackModel: Model<IUserBackpack> = models.userBackpack || connection.model<IUserBackpack>("userBackpack", userBackpackSchema, 'userBackpack');
 export default UserBackpackModel;
 

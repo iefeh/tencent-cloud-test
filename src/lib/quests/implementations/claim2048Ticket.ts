@@ -2,7 +2,7 @@ import { IQuest } from "@/lib/models/Quest";
 import { checkClaimableResult, claimRewardResult } from "@/lib/quests/types";
 import { QuestBase } from "@/lib/quests/implementations/base";
 import { format } from "date-fns";
-import UserBackpackModel from "@/lib/models/UserBackpack";
+import UserBackpackModel from "@/lib/models/2048UserBackpack";
 
 export class Claim2048TicketQuest extends QuestBase {
     constructor(quest: IQuest) {
