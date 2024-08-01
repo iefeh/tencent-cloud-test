@@ -125,10 +125,10 @@ export const routeText: RouteMenu[] = [
             name: '黄金矿工',
             route: '',
           },
-          {
-            name: 'TG小火箭',
-            route: '',
-          }
+          // {
+          //   name: 'TG小火箭',
+          //   route: '',
+          // }
         ]
       }
     ]
@@ -152,10 +152,10 @@ export const routeText: RouteMenu[] = [
         name: 'News',
         route: '',
       },
-      {
-        name: 'Whitepaper',
-        route: '',
-      }
+      // {
+      //   name: 'Whitepaper',
+      //   route: '',
+      // }
     ]
   },
   {
@@ -178,14 +178,14 @@ export const routeText: RouteMenu[] = [
           },
         ]
       },
-      {
-        name: 'Node Sales',
-        route: '',
-      },
-      {
-        name: 'Staking',
-        route: '',
-      },
+      // {
+      //   name: 'Node Sales',
+      //   route: '',
+      // },
+      // {
+      //   name: 'Staking',
+      //   route: '',
+      // },
     ]
   },
 ];
