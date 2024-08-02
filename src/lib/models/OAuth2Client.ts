@@ -4,6 +4,8 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 export interface IOAuth2Client extends Document {
     // 客户id
     client_id: string,
+    // 客户端id哈希
+    client_id_hash: string,
     // 客户名称
     client_name: string,
     // 客户secret
@@ -22,6 +24,7 @@ export interface IOAuth2Client extends Document {
 
 const OAuth2ClientSchema = new Schema<IOAuth2Client>({
     client_id: { type: String, required: true },
+    client_id_hash: { type: String },
     client_name: { type: String },
     client_secret: {type: String, required: true},
     icon_url: { type: String },
