@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import Image from 'next/image';
 import logo from 'img/header/logo.png';
 import Discord from 'img/header/discord.svg';
@@ -249,6 +249,14 @@ const Header = () => {
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
 
+  const DropMenu = useMemo(() => {
+    return <>
+      {routeText.map((value, index) => (
+        <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
+      ))}
+    </>
+  }, [])
+
   function isActiveRoute(menu: RouteMenu) {
     const route = router.asPath || '/';
     return menu.route === route || menu.children?.some((item) => item.route === route);
@@ -265,9 +273,7 @@ const Header = () => {
       {/* <Entry2048 /> */}
 
       <div className="font-semakin flex items-center max-lg:hidden">
-        {routeText.map((value, index) => (
-          <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
-        ))}
+        {DropMenu}
       </div>
 
       <div className="flex items-center flex-[1] justify-end">
