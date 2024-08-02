@@ -18,6 +18,7 @@ import { useContext } from 'react';
 import { toast } from 'react-toastify';
 
 class UserStore {
+  inited = false;
   locale = '';
   token = '';
   userInfo: UserInfo | null = null;
@@ -53,6 +54,7 @@ class UserStore {
 
   init = () => {
     this.token = localStorage.getItem(KEY_AUTHORIZATION) || '';
+    this.inited = true;
     if (this.token) this.getUserInfo();
 
     // this.getCurrentTime();
