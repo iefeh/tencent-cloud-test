@@ -32,7 +32,7 @@ interface RouteQuery {
 const OAuthPage: FC & BasePage = () => {
   const router = useRouter();
   const query = router.query as unknown as RouteQuery;
-  const { userInfo, token, toggleLoginModal, logout } = useUserContext();
+  const { inited, userInfo, token, toggleLoginModal, logout } = useUserContext();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
@@ -139,10 +139,10 @@ const OAuthPage: FC & BasePage = () => {
   }, [userInfo]);
 
   useEffect(() => {
-    if (token) return;
+    if (!inited || token) return;
 
     toggleLoginModal(true);
-  }, [token]);
+  }, [token, inited]);
 
   return (
     <div className="w-screen h-screen relative">
