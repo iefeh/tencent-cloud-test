@@ -3,4 +3,5 @@ declare interface RouteMenu {
   route?: string;
   children?: RouteMenu[];
   disabled?: boolean;
+  icon?: StaticImageData;
 }
