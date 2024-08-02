@@ -53,6 +53,7 @@ export default function HeaderDropdownMenu(props: Props) {
       ref={menuRef}
       {...anchorProps}
       href={item.route || ''}
+      scroll={!!item.route}
       className={cn([
         'cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] text-[22px] ml-8 relative z-10',
         isActive && 'text-[#F6C799] border-[#F6C799]',
