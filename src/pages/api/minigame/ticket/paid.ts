@@ -3,13 +3,12 @@ import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
 import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import { responseOnOauthError } from "@/lib/oauth2/response";
-import { buyTicket } from "../../oauth2/minigame/ticket/buy";
+import { buyTicket } from "../../oauth2/minigame/ticket/paid";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     try {
-        const userId = req.userId!;
 
         const { gameId, txHash } = req.body;
         if (!txHash) {
@@ -17,7 +16,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
             return;
         }
 
-        const result = await buyTicket(userId, gameId, txHash)
+        const result = await buyTicket(gameId, txHash)
         res.json(response.success(result));
 
     } catch (error: any) {

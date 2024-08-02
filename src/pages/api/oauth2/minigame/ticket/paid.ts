@@ -13,7 +13,7 @@ import logger from "@/lib/logger/winstonLogger";
 import GameTicket from "@/lib/models/GameTicket";
 import { redis } from "@/lib/redis/client";
 import MiniGameDetail from "@/lib/models/MiniGameDetail";
-import { ticketRemain } from "./query";
+import { ticketRemain } from "./mine";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -21,7 +21,6 @@ router.use(dynamicCors).post(async (req, res) => {
     try {
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo });
         const gameId = token.client.id;
-        const userId = token.user.user_id;
 
         const { txHash } = req.body;
         if (!txHash) {
@@ -29,7 +28,7 @@ router.use(dynamicCors).post(async (req, res) => {
             return;
         }
 
-        const result = await buyTicket(userId, gameId, txHash)
+        const result = await buyTicket(gameId, txHash)
         res.json(response.success(result));
 
     } catch (error: any) {
@@ -37,23 +36,23 @@ router.use(dynamicCors).post(async (req, res) => {
     }
 });
 
-export async function buyTicket(userId: string, clientId: string, txHash: string) {
-    const client = await OAuth2Client.findOne({ cliend_id: clientId });
+export async function buyTicket(clientId: string, txHash: string) {
+    const game = await MiniGameDetail.findOne({ client_id: clientId }, { client_id_hash: 1, _id: 0 }); console.log({ cliend_id: clientId }); console.log(game);
     const voucher = await getPurchaseTicketEvnet(txHash);
 
     if (!voucher) {
-        console.log(`Transaction ${txHash} cannot be recognized as pass payment.`);
+        logger.warn(`Transaction ${txHash} cannot be recognized as pass payment.`);
         throw new Error("Transaction cannot be recognized.");
     }
     // 检查购票的游戏是否匹配
-    // if (voucher.gameIdHash != client.gameIdHash) {
-    //     throw new Error("Game mismatch.");
-    // }
+    if (voucher.gameIdHash != game.client_id_hash) {
+        throw new Error("Game mismatch.");
+    }
 
     // 校验钱包
-    const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
-    if (!userWallet || userWallet.wallet_addr.toLowerCase() !== voucher.to.toLowerCase()) {
-        logger.warn(userWallet ? `User ${userId} wallet address ${userWallet.wallet_addr} does not match the transaction address ${voucher.to}` : `User ${userId} has no wallet address`);
+    const userWallet = await UserWallet.findOne({ wallet_addr: voucher.to.toLowerCase(), deleted_time: null });
+    if (!userWallet) {
+        logger.warn(`Wallet ${voucher.to.toLowerCase()} has no account.`);
         throw new Error("Transaction cannot be recognized.");
     }
 
@@ -77,7 +76,7 @@ export async function buyTicket(userId: string, clientId: string, txHash: string
     for (let i = 0; i < voucher.tickets; i++) {
         const ticket = new GameTicket();
         ticket.pass_id = ethers.id(`${txHash}-${i}`);
-        ticket.user_id = userId;
+        ticket.user_id = userWallet.user_id;
         ticket.game_id = clientId;
         ticket.created_at = Date.now();
         ticket.expired_at = expiredAt;
@@ -93,7 +92,7 @@ export async function buyTicket(userId: string, clientId: string, txHash: string
             }
         }
     }
-    const ticketsCount = await ticketRemain(userId, clientId);
+    const ticketsCount = await ticketRemain(userWallet.user_id, clientId);
     return { available_tickets: ticketsCount };
 }
 

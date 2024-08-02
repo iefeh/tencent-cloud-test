@@ -3,7 +3,7 @@ import type { NextApiResponse } from "next";
 import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
 import { maybeAuthInterceptor, mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
-import { ticketRemain } from "../../oauth2/minigame/ticket/query";
+import { ticketRemain } from "../../oauth2/minigame/ticket/mine";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 

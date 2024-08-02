@@ -10,7 +10,7 @@ import OAuth2Client from "@/lib/models/OAuth2Client";
 import { ethers, keccak256, TransactionReceipt } from "ethers";
 import { redis } from "@/lib/redis/client";
 import GameTicket from "@/lib/models/GameTicket";
-import { ticketRemain } from "./ticket/query";
+import { ticketRemain } from "./ticket/mine";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -47,7 +47,7 @@ router.use(dynamicCors).get(async (req, res) => {
 });
 
 export async function consumeTicket(userId: string, gameId: string) {
-    return await GameTicket.updateOne({ user_id: userId, game_id: gameId, expired_at: { $gt: Date.now() }, consumed_time: null }, { $set: { consumed_time: Date.now() } });
+    return await GameTicket.updateOne({ user_id: userId, game_id: gameId, expired_at: { $gt: Date.now() }, consumed_at: null }, { $set: { consumed_at: Date.now() } });
 }
 
 // this will run if none of the above matches

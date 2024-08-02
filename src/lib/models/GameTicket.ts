@@ -9,7 +9,7 @@ export interface IGameTicket extends Document {
     paid_tx_hash: string,
     paid_token_address: string,
     paid_amount: number,
-    consumed_time: number,
+    consumed_at: number,
     created_at: number,
     expired_at: number,
 }
@@ -22,7 +22,7 @@ const GameTicketSchema = new Schema<IGameTicket>({
     paid_tx_hash: { type: String },
     paid_token_address: { type: String },
     paid_amount: { type: Number },
-    consumed_time: { type: Number, default: null },
+    consumed_at: { type: Number, default: null },
     created_at: { type: Number, required: true },
     expired_at: { type: Number, required: true },
 });
