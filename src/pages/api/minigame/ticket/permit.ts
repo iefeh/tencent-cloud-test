@@ -48,14 +48,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
             message: "Verification is under a 15s waiting period, please try again later.",
         }));
     }
-    const ticketPermit: any = {
-        player: userWallet.wallet_addr,
-        token: miniGame.token_address,
-        tokenAmount: miniGame.ticket_price_raw,
-        game: miniGame.client_id_hash,
-        tickets: amount,
-        expiration: Math.floor(Date.now() / 1000) + 1800,
-    };
     const permit = await constructTicketPermit(userWallet, miniGame, paymentContract, amount as string);
     await redis.del(lockKey);
     return res.json(response.success({
@@ -82,10 +74,11 @@ async function constructTicketPermit(userWallet: IUserWallet, miniGame: IMiniGam
             {name: "expiration", type: "uint128"},
         ],
     };
+    const totalCost = BigInt(miniGame.ticket_price_raw) * BigInt(amount as string);
     const ticketPermit: any = {
-        player: userWallet.wallet_addr,
+        player: ethers.getAddress(userWallet.wallet_addr),
         token: miniGame.token_address,
-        tokenAmount: miniGame.ticket_price_raw,
+        tokenAmount: totalCost.toString(),
         game: miniGame.client_id_hash,
         tickets: amount,
         expiration: Math.floor(Date.now() / 1000) + 1800,
@@ -94,3 +87,17 @@ async function constructTicketPermit(userWallet: IUserWallet, miniGame: IMiniGam
     ticketPermit.signature = await signer.signTypedData(domain, types, ticketPermit);
     return ticketPermit;
 }
+
+// this will run if none of the above matches
+router.all((req, res) => {
+    res.status(405).json({
+        error: "Method not allowed",
+    });
+});
+
+export default router.handler({
+    onError(err, req, res) {
+        console.error(err);
+        res.status(500).json(response.serverError());
+    },
+});
