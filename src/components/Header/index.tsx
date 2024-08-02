@@ -87,6 +87,7 @@ export const routeText: RouteMenu[] = [
       {
         name: 'AstrArk',
         icon: AstrarkIcon,
+        route: '/AstrArk',
         children: [
           {
             name: 'Game Download',
@@ -107,11 +108,11 @@ export const routeText: RouteMenu[] = [
         route: '/Bushwhack',
         icon: BushwhackIcon,
       },
-      {
-        name: 'Gyoza',
-        route: '',
-        icon: FlamingPetsIcon,
-      },
+      // {
+      //   name: 'Gyoza',
+      //   route: '',
+      //   icon: FlamingPetsIcon,
+      // },
       {
         name: 'Mini Games',
         route: '/minigames',
@@ -119,7 +120,7 @@ export const routeText: RouteMenu[] = [
           {
             name: '2048',
             icon: Game2048Icon,
-            route: '',
+            route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
           },
           {
             name: '黄金矿工',
