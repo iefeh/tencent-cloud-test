@@ -33,22 +33,12 @@ function IframeDoc(props: Props) {
     style.innerHTML = `
       @font-face {
         font-family: 'DecimaMonoW01-Regular';
-        src: url("/fonts/Decima-Mono-W01-Regular.woff2");
-      }
-      
-      @font-face {
-        font-family: 'DecimaMonoW01-Regular';
-        src: url("/fonts/Decima-Mono-W01-Regular.ttf");
+        src: url("https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Decima-Mono-W01-Regular.ttf");
       }
 
       @font-face {
         font-family: Semakin;
-        src: url("/fonts/Semakin.woff2");
-      }
-      
-      @font-face {
-        font-family: Semakin;
-        src: url("/fonts/Semakin.ttf");
+        src: url("https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Semakin.ttf");
       }
       :root {
         background-color: currentColor;

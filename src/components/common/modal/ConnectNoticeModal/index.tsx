@@ -27,6 +27,9 @@ function getAccountText(mediaType?: MediaType) {
     case MediaType.STEAM:
       text = 'Steam account';
       break;
+    case MediaType.TELEGRAM:
+      text = 'Telegram account';
+      break;
   }
 
   return text;

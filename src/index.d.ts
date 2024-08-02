@@ -48,6 +48,7 @@ interface ModalProps {
 interface BasePage {
   noLoading?: boolean;
   hideLoginCloseButton?: boolean;
+  hasNavMask?: boolean;
   getLayout?: (page: ReactNode) => JSX.Element;
 }
 
