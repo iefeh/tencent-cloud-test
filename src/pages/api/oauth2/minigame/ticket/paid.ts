@@ -37,7 +37,7 @@ router.use(dynamicCors).post(async (req, res) => {
 });
 
 export async function buyTicket(clientId: string, txHash: string) {
-    const game = await MiniGameDetail.findOne({ client_id: clientId }, { client_id_hash: 1, _id: 0 }); console.log({ cliend_id: clientId }); console.log(game);
+    const game = await MiniGameDetail.findOne({ client_id: clientId }, { client_id_hash: 1, _id: 0 }); 
     const voucher = await getPurchaseTicketEvnet(txHash);
 
     if (!voucher) {
