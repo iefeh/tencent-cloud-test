@@ -2,15 +2,8 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import type { FC } from 'react';
 
-const AppStoreTipsModal: FC<{ disclosure: Disclosure; url?: string }> = ({
-  url,
-  disclosure: { isOpen, onOpenChange },
-}) => {
-  function onDownload() {
-    if (!url) return;
-    window.open(url);
-  }
-
+const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: { isOpen, onOpenChange } }) => {
+  // TODO 替换弹窗文案
   return (
     <Modal
       isOpen={isOpen}
@@ -22,9 +15,7 @@ const AppStoreTipsModal: FC<{ disclosure: Disclosure; url?: string }> = ({
           <>
             <ModalHeader>
               <div className="relative w-full h-16 bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
-                <div className="font-semakin text-basic-yellow text-2xl">
-                  How to Install custom enterprise apps on iOS
-                </div>
+                <div className="font-semakin text-basic-yellow text-2xl">Alpha Test Guidelines</div>
               </div>
             </ModalHeader>
 
@@ -42,10 +33,6 @@ const AppStoreTipsModal: FC<{ disclosure: Disclosure; url?: string }> = ({
                 open them immediately. This developer remains trusted until you use the Delete App button to remove all
                 apps from the developer.
               </p>
-
-              <div className="flex justify-center">
-                <LGButton label="Download" actived onClick={onDownload} />
-              </div>
             </ModalBody>
           </>
         )}
@@ -54,4 +41,4 @@ const AppStoreTipsModal: FC<{ disclosure: Disclosure; url?: string }> = ({
   );
 };
 
-export default AppStoreTipsModal;
+export default AlphaTestGuidelinesModal;
