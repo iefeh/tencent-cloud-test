@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useMemo } from 'react';
+import React, { CSSProperties, useRef, useState, useMemo } from 'react';
 import Image from 'next/image';
 import logo from 'img/header/logo.png';
 import Discord from 'img/header/discord.svg';
@@ -23,10 +23,11 @@ import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
 import { isMobile } from 'react-device-detect';
 import Entry2048 from '@/components/pages/header/Entry2048';
-import Game2048Icon from "img/header/2048.png";
-import AstrarkIcon from "img/header/astrark.png";
-import BushwhackIcon from "img/header/bushwhack.png";
-import FlamingPetsIcon from "img/header/flaming_pets.png";
+import Game2048Icon from 'img/header/2048.png';
+import AstrarkIcon from 'img/header/astrark.png';
+import BushwhackIcon from 'img/header/bushwhack.png';
+import FlamingPetsIcon from 'img/header/flaming_pets.png';
+import styles from './index.module.scss';
 
 export const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -69,7 +70,7 @@ export const routeText: RouteMenu[] = [
             name: 'More Tasks',
             route: '/LoyaltyProgram/earn/group/c8af9477-fd48-4265-90d7-20bc4a200ff3',
           },
-        ]
+        ],
       },
       {
         name: 'Referral Program',
@@ -79,13 +80,13 @@ export const routeText: RouteMenu[] = [
         name: 'More & $MORE Lottery',
         route: '/lottery',
       },
-    ]
+    ],
   },
   {
     name: 'Games',
     children: [
       {
-        name: 'AstrArk',
+        name: '/AstrArk',
         icon: AstrarkIcon,
         route: '/AstrArk',
         children: [
@@ -130,9 +131,9 @@ export const routeText: RouteMenu[] = [
           //   name: 'TG小火箭',
           //   route: '',
           // }
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
   {
     name: 'About',
@@ -157,7 +158,7 @@ export const routeText: RouteMenu[] = [
       //   name: 'Whitepaper',
       //   route: '',
       // }
-    ]
+    ],
   },
   {
     name: 'My Assets',
@@ -177,7 +178,7 @@ export const routeText: RouteMenu[] = [
             name: 'Lv2 TETRA Merge',
             route: '/NFT/Merge',
           },
-        ]
+        ],
       },
       // {
       //   name: 'Node Sales',
@@ -187,7 +188,40 @@ export const routeText: RouteMenu[] = [
       //   name: 'Staking',
       //   route: '',
       // },
-    ]
+    ],
+  },
+  {
+    name: 'Play AstrArk Now',
+    route: '/AstrArk',
+    render: (name) => (
+      <div
+        className={cn(['relative w-60 h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
+      >
+        <Image
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 z-10 rounded-md"
+          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/icon_astrark_ultra.png"
+          alt=""
+          width={1024}
+          height={1024}
+          unoptimized
+          priority
+        />
+
+        {Array(4)
+          .fill(null)
+          .map((_, index) => (
+            <div key={index} className="absolute inset-0 corner z-0"></div>
+          ))}
+
+        <div className="absolute inset-0 pl-8 z-10 text-center ani-fall">
+          {name.split('').map((t, i) => (
+            <span key={i} className="char" data-text={t} style={{ '--char-index': i } as CSSProperties}>
+              {t === ' ' ? <>&nbsp;</> : t}
+            </span>
+          ))}
+        </div>
+      </div>
+    ),
   },
 ];
 
