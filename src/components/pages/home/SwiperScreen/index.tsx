@@ -30,6 +30,7 @@ const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAn
 });
 
 export default function SwiperScreen() {
+  const [activeIndex, setActiveIndex] = useState(0);
   const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length).fill(false)]);
 
   const navigationPrevRef = useRef(null);
@@ -42,8 +43,7 @@ export default function SwiperScreen() {
         className="w-full h-full"
         loop
         // 视频10s自动切换，图片5s自动切换
-        // autoplay={{ delay: activeIndex === 0 ? 10000 : 5000, disableOnInteraction: false }}
-        autoplay={{ delay: 15000, disableOnInteraction: false }}
+        autoplay={{ delay: [1, 3].includes(activeIndex) ? 10000 : 5000, disableOnInteraction: false }}
         speed={2000}
         slidesPerView={1}
         onSlideChangeTransitionStart={(swiper) => {
@@ -54,6 +54,7 @@ export default function SwiperScreen() {
         onSlideChangeTransitionEnd={(swiper) => {
           const list = needAnis.map((_, i) => i === swiper.realIndex);
           setNeedAnis(list);
+          setActiveIndex(swiper.realIndex);
         }}
         navigation={{
           prevEl: navigationPrevRef.current,
