@@ -11,6 +11,7 @@ import { incrementUserNonce } from '@/lib/models/UserLotteryNonce';
 import UserLotteryRequest, { IUserLotteryRequest } from '@/lib/models/UserLotteryRequest';
 import doTransaction from '@/lib/mongodb/transaction';
 import * as response from '@/lib/response/response';
+import { draw } from '@/pages/api/lottery/draw';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -39,12 +40,18 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
       const history = await UserLotteryDrawHistory.findOne({ chain_request_id: reqId });
       return res.json(response.success(history));
     }
-    // Todo
     // - 执行抽奖(可以考虑抽奖那边也基于请求id添加唯一索引，避免发生对相同请求进行二次抽奖的情况)
-    doTransaction(async (session) => {
-      await incrementUserNonce(userId, session);
-      await UserLotteryRequest.updateOne({ request_id: reqId }, { tx_hash: tx_hash }, { session });
-    });
+    let drawResult = await draw(userId, lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost. reqId);
+    if (drawResult.verified) {
+      doTransaction(async (session) => {
+        await incrementUserNonce(userId, session);
+        await UserLotteryRequest.updateOne({ request_id: reqId }, { tx_hash: tx_hash }, { session });
+      });
+      return res.json(response.success(drawResult));
+    }
+    else {
+      return res.json(response.serverError(drawResult));
+    }
   } 
 });
 

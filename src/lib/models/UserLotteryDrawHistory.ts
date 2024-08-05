@@ -1,8 +1,12 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
-import { LotteryRewardType } from "@/lib/models/LotteryPool";
+import { LotteryRewardType } from "@/lib/lottery/types";
 
-export type IUserLotteryRewardItem = {
+export type CDKReward = {
+    cdk: string
+}
+
+export interface IUserLotteryRewardItem {
     // 奖励id
     item_id: string,
     // 中奖id
@@ -12,7 +16,9 @@ export type IUserLotteryRewardItem = {
     // 奖励名称
     reward_name: string, 
     // 徽章id，抽奖可能会奖励的徽章
-    badge_id: string,
+    badge_id?: string,
+    // 奖励cdk
+    cdk?: string,
     // 图标链接
     icon_url: string, 
     // 奖励等级

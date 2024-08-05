@@ -6,16 +6,13 @@ import { AuthorizationType } from '@/lib/authorization/types';
 import { promiseSleep } from '@/lib/common/sleep';
 import logger from '@/lib/logger/winstonLogger';
 import { getLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
+import { LotteryRewardType } from '@/lib/lottery/types';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import LotteryPool, {
-    ILotteryPool, LotteryRewardItem, LotteryRewardType
-} from '@/lib/models/LotteryPool';
-import User, { IUser } from '@/lib/models/User';
+import LotteryPool, { ILotteryPool, ILotteryRewardItem } from '@/lib/models/LotteryPool';
+import User from '@/lib/models/User';
 import UserBadges from '@/lib/models/UserBadges';
-import UserLotteryDrawHistory, {
-    IUserLotteryRewardItem
-} from '@/lib/models/UserLotteryDrawHistory';
+import UserLotteryDrawHistory, { IUserLotteryRewardItem } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import doTransaction from '@/lib/mongodb/transaction';
@@ -35,7 +32,6 @@ const noPrizeReward = {
   reward_claim_type: 1,
   reward_level: 1,
   icon_url: "",
-  badge_id: "",
   first_three_draw_probability: 0,
   next_six_draw_probability: 0,
   inventory_amount: null,
@@ -59,42 +55,36 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost } = req.body;
   const validDrawCount = [1, 3, 5]; 
   if (!lottery_pool_id || !draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
-    res.json(response.invalidParams({verified: false, message: "Invalid params."}));
-    return;
+    return res.json(response.invalidParams({verified: false, message: "Invalid params."}));
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
   const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
-    res.json(response.invalidParams({verified: false, message: "The lottery pool is not opened or has been closed."}));
-    return;
+    return res.json(response.invalidParams({verified: false, message: "The lottery pool is not opened or has been closed."}));
   }
   try {
     const canDraw = await verifyLotteryQualification(lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userId);
     if (!canDraw.verified) {
-      res.json(response.invalidParams(canDraw));
-      return;
+      return res.json(response.invalidParams(canDraw));
     }
     else {
-      const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
-      let drawResult = await draw(userId, lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost, userLotteryPool);
+      let drawResult = await draw(userId, lotteryPoolId, draw_count, lottery_ticket_cost, mb_cost);
       if (drawResult.verified) {
-        res.json(response.success(drawResult));
-        return;
+        return res.json(response.success(drawResult));
       }
       else {
-        res.json(response.serverError(drawResult));
-        return;
+        return res.json(response.serverError(drawResult));
       }
     }
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
-    res.status(500).json(defaultErrorResponse);
+    return res.status(500).json(defaultErrorResponse);
   }
 });
 
-async function draw(userId: string, lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, userLotteryPool: IUserLotteryPool): Promise<DrawResult> {
+export async function draw(userId: string, lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, chainRequestId?: string): Promise<DrawResult> {
   const lockKey = `claim_draw_lock:${lotteryPoolId}`;
   // 锁定奖池1秒
   let interval: number = 2;
@@ -112,25 +102,28 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
       message: `Lottery pool is under a ${interval}s waiting period, please try again later.`,
     };
   }
+  const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
   const freeLotteryTicketCost = drawCount - lotteryTicketCost - mbCost/25;
   // 重新查询保证查到的是最新的奖池状态
   const lotteryPool: ILotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
   // 1-3抽和4-10抽奖池和中奖几率不同所以要分别计算
   let firstThreeDrawCumulativeProbabilities = 0;
   let nextSixDrawCumulativeProbabilities = 0;
-  let result: IUserLotteryRewardItem[] = [];
-  let availableRewards: LotteryRewardItem[] = [];
-  let guaranteedRewards: LotteryRewardItem[] = [];
+  let userRewards: IUserLotteryRewardItem[] = [];
+  let availableRewards: ILotteryRewardItem[] = [];
+  let guaranteedRewards: ILotteryRewardItem[] = [];
   // 筛选抽奖奖励, 如果抽奖次数不满足奖励门槛则去掉对应奖励
   for (let reward of lotteryPool.rewards) {
     // 检查本次抽取是否满足保底次数, 如果是则添加奖品
-    for (let granteedDrawCount of reward.guaranteed_draw_count) {
-      if (lotteryPool.total_draw_amount < granteedDrawCount && (lotteryPool.total_draw_amount + drawCount) >= granteedDrawCount) {
-        guaranteedRewards.push(reward);
+    if (reward.guaranteed_draw_count) {
+      for (let guaranteedDrawCount of reward.guaranteed_draw_count) {
+        if (lotteryPool.total_draw_amount < guaranteedDrawCount && (lotteryPool.total_draw_amount + drawCount) >= guaranteedDrawCount) {
+          guaranteedRewards.push(reward);
+        }
       }
     }
     if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool.total_draw_amount >= reward.min_reward_draw_amount))
-      && (reward.inventory_amount === null || reward.inventory_amount > 0)) {
+      && (!reward.inventory_amount || reward.inventory_amount > 0)) {
       availableRewards.push(reward);
     }
   }
@@ -145,12 +138,12 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
     let currentDrawNo = totalUserDrawAmount + i;
     let drawResult: { drawResult: IUserLotteryRewardItem, verifyNeeded: boolean};
     if (currentDrawNo <= 3) {
-      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     else {
-      drawResult = await getDrawResult(userId, nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, result);
+      drawResult = await getDrawResult(userId, nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
-    result.push(drawResult.drawResult);
+    userRewards.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
   }
   // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
@@ -186,8 +179,9 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
         user_id: userId,
         draw_time: now,
         lottery_pool_id: lotteryPoolId,
-        rewards: result,
+        rewards: userRewards,
         need_verify_twitter: rewardNeedVerify,
+        chain_request_id: chainRequestId,
         update_time: now
       }, 
       { session: session, upsert: true }
@@ -197,28 +191,33 @@ async function draw(userId: string, lotteryPoolId: string, drawCount: number, lo
   await LotteryPool.findOneAndUpdate(
     { lottery_pool_id: lotteryPoolId }, 
     { $inc: { total_draw_amount: drawCount } });
+  for (let reward of userRewards) {
+    if (reward.reward_type === LotteryRewardType.CDK) {
+      delete reward.cdk;
+    }
+  }
   return {
     verified: true,
     message: "Congratulations on winning the following rewards!",
     lottery_pool_id: lotteryPoolId,
     available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - (userLotteryPool? userLotteryPool.draw_amount: 0),
     draw_id: drawId,
-    rewards: result,
+    rewards: userRewards,
     require_authorization: rewardNeedVerify? AuthorizationType.Twitter : undefined
   }
 }
 
 // 抽奖结果计算, 并返回抽到的奖品是否需要验证
 async function getDrawResult(userId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
-  guaranteedRewards: LotteryRewardItem[], 
-  availableRewards: LotteryRewardItem[], 
+  guaranteedRewards: ILotteryRewardItem[], 
+  availableRewards: ILotteryRewardItem[], 
   itemInventoryDeltaMap: Map<string, number>,
-  allDrawResults: IUserLotteryRewardItem[]): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
-  let reward: LotteryRewardItem = noPrizeReward;
+  userRewards: IUserLotteryRewardItem[]): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
+  let reward: ILotteryRewardItem = noPrizeReward;
   let verifyNeeded: boolean = false;
   // 优先抽取保底避免无人抽中
   if (guaranteedRewards && guaranteedRewards.length > 0) {
-    reward = guaranteedRewards.pop() as LotteryRewardItem;
+    reward = guaranteedRewards.pop() as ILotteryRewardItem;
   }
   else {
   // 如无保底, 则抽取常规奖品
@@ -233,8 +232,19 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
           if (userBadge || userDrawHistory) {
             reward = noPrizeReward;
           }
-          for (let drawResult of allDrawResults) {
+          for (let drawResult of userRewards) {
             if (drawResult.reward_type === LotteryRewardType.Badge && drawResult.badge_id === reward.badge_id) {
+              reward = noPrizeReward;
+              break;
+            }
+          }
+        } else if (reward.reward_type === LotteryRewardType.CDK) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.cdk": reward.cdk });
+          if (userDrawHistory) {
+            reward = noPrizeReward;
+          }
+          for (let drawResult of userRewards) {
+            if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.cdk === reward.cdk) {
               reward = noPrizeReward;
               break;
             }
@@ -258,10 +268,11 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
   if (reward.reward_claim_type === 2 || reward.reward_claim_type === 3) {
     verifyNeeded = true;
   }
-  const result = {
+  const result: IUserLotteryRewardItem = {
     item_id: reward.item_id,
     reward_id: uuidv4(),
     badge_id: reward.badge_id,
+    cdk: reward.cdk,
     reward_type: reward.reward_type,
     reward_name: reward.reward_name, 
     icon_url: reward.icon_url, 

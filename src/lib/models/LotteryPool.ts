@@ -1,29 +1,13 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
-
-export enum LotteryRewardType {
-    // Moon beam
-    MoonBeam = 'moon_beam',
-    // 抽奖券
-    LotteryTicket = 'lottery_ticket',
-    // USDT
-    USDT = 'usdt',
-    // Destiny TETRA NFT
-    NFT = 'nft',
-    // gift card
-    GiftCard = 'gift_card',
-    // badge
-    Badge = 'badge',
-    // No prize
-    NoPrize = 'no_prize'
-}
+import { LotteryRewardType } from "@/lib/lottery/types";
 
 export enum LotteryPoolType {
     Public = 'public',
     Private = 'private'
 }
 
-export type LotteryRewardItem = {
+export interface ILotteryRewardItem {
     // 奖励物品id
     item_id: string,
     // 奖励类型
@@ -47,9 +31,11 @@ export type LotteryRewardItem = {
     // 奖励数量
     amount: number,
     // 徽章id，抽奖可能会奖励的徽章，这里只是为了展示用.
-    badge_id: string,
+    badge_id?: string,
+    // 奖励cdk
+    cdk?: string,
     // 奖池中该库存个数, 不写则表示无限
-    inventory_amount: number | null
+    inventory_amount?: number | null
 }
 
 export type LotteryTwitterTopic = {
@@ -77,7 +63,7 @@ export interface ILotteryPool extends Document {
     // 当前奖池总抽奖次数
     total_draw_amount: number;
     // 奖池抽奖奖励
-    rewards: LotteryRewardItem[];
+    rewards: ILotteryRewardItem[];
     // 是否为活动奖池
     active: boolean;
     // 奖池类型
