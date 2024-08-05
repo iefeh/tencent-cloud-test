@@ -191,11 +191,12 @@ export const routeText: RouteMenu[] = [
     ],
   },
   {
-    name: 'Play AstrArk Now',
+    // name: 'Play AstrArk Now',
+    name: 'AstrArk Coming Soon!',
     route: '/AstrArk',
     render: (name) => (
       <div
-        className={cn(['relative w-60 h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
+        className={cn(['relative w-[17rem] h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
       >
         <Image
           className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 z-10 rounded-md"
@@ -213,7 +214,7 @@ export const routeText: RouteMenu[] = [
             <div key={index} className="absolute inset-0 corner z-0"></div>
           ))}
 
-        <div className="absolute inset-0 pl-6 z-10 text-center ani-jog">
+        <div className="absolute inset-0 pl-8 z-10 text-center ani-jog">
           {name.split('').map((t, i) => (
             <span key={i} className="char" data-text={t} style={{ '--char-index': i } as CSSProperties}>
               {t === ' ' ? <>&nbsp;</> : t}
