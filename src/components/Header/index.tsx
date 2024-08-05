@@ -48,7 +48,7 @@ export const routeText: RouteMenu[] = [
           },
           {
             name: 'Season Events',
-            route: 'LoyaltyProgram/earn?tabKey=Events',
+            route: '/LoyaltyProgram/earn?tabKey=Events',
           },
           {
             name: 'Task-Join Our Community',
@@ -198,7 +198,7 @@ export const routeText: RouteMenu[] = [
         className={cn(['relative w-60 h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
       >
         <Image
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-9 h-9 z-10 rounded-md"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 z-10 rounded-md"
           src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/icon_astrark_ultra.png"
           alt=""
           width={1024}
