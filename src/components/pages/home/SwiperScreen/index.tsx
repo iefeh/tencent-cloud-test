@@ -13,20 +13,23 @@ import NFT2Slide from '../slides/NFT2Slide';
 import Game2048Slide from '../slides/Game2048Slide';
 import LotterySlide from '../slides/LotterySlide';
 import { isMobile } from 'react-device-detect';
+import AstrArkAlphaTestSlide from '../slides/AstrArkAlphaTestSlide';
 
 export default function SwiperScreen() {
   const [needAnis, setNeedAnis] = useState([true, ...Array(7).fill(false)]);
 
-  const LoyaltyProgramSlideMemo = useMemo(() => <LoyaltyProgramSlide needAni={needAnis[0]} />, [needAnis[0]]);
-  const LotterySlideMemo = useMemo(() => <LotterySlide needAni={needAnis[1]} />, [needAnis[1]]);
-  const NFT2SlideMemo = useMemo(() => <NFT2Slide needAni={needAnis[2]} />, [needAnis[2]]);
-  const InviteNewSlideMemo = useMemo(() => <InviteNewSlide needAni={needAnis[3]} />, [needAnis[3]]);
-  const BadgeSlideMemo = useMemo(() => <BadgeSlide needAni={needAnis[4]} />, [needAnis[4]]);
-  const RaceSlideMemo = useMemo(() => <RaceSlide needAni={needAnis[5]} />, [needAnis[5]]);
-  const EntertainmentSlideMemo = useMemo(() => <EntertainmentSlide needAni={needAnis[6]} />, [needAnis[6]]);
+  const AstrArkAlphaTestSlideMemo = useMemo(() => <AstrArkAlphaTestSlide needAni={needAnis[0]} />, [needAnis[0]]);
+  const LoyaltyProgramSlideMemo = useMemo(() => <LoyaltyProgramSlide needAni={needAnis[1]} />, [needAnis[1]]);
+  const LotterySlideMemo = useMemo(() => <LotterySlide needAni={needAnis[2]} />, [needAnis[2]]);
+  const NFT2SlideMemo = useMemo(() => <NFT2Slide needAni={needAnis[3]} />, [needAnis[3]]);
+  const InviteNewSlideMemo = useMemo(() => <InviteNewSlide needAni={needAnis[4]} />, [needAnis[4]]);
+  const BadgeSlideMemo = useMemo(() => <BadgeSlide needAni={needAnis[5]} />, [needAnis[5]]);
+  const RaceSlideMemo = useMemo(() => <RaceSlide needAni={needAnis[6]} />, [needAnis[6]]);
+  const EntertainmentSlideMemo = useMemo(() => <EntertainmentSlide needAni={needAnis[7]} />, [needAnis[7]]);
   // const Game2048SlideMemo = useMemo(() => <Game2048Slide needAni={needAnis[7]} />, [needAnis[7]]);
 
   const slides = [
+    AstrArkAlphaTestSlideMemo,
     LoyaltyProgramSlideMemo,
     LotterySlideMemo,
     NFT2SlideMemo,
