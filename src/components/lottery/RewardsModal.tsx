@@ -10,6 +10,7 @@ import useConnect from '@/hooks/useConnect';
 import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '../common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
+import CDKClaimedModal from './modals/CDKClaimedModal';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -41,8 +42,14 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const [hasClaimCD, setHasClaimCD] = useState(false);
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const disclosure = useDisclosure();
+  const cdkClaimedDisclosure = useDisclosure();
   const shareClaimMBLabel = 'Claim 20 MBs';
   const hasGiftCard = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.GIFT_CARD);
+  const hasCDK = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.CDK);
+  const cdks = (item?.rewards || []).reduce((p, c) => {
+    if (c.cdk) p.push(c.cdk);
+    return p;
+  }, [] as string[]);
 
   async function onShare() {
     if (shareLabel === shareClaimMBLabel) {
@@ -74,6 +81,13 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   }
 
   async function onClaim() {
+    if (claimed) {
+      if (hasCDK) {
+        cdkClaimedDisclosure.onOpen();
+        return;
+      }
+    }
+
     setLoading(true);
 
     const data = {
@@ -97,8 +111,22 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     setLoading(false);
     setClaimDisabled(true);
     setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    if (hasCDK) {
+      cdkClaimedDisclosure.onOpen();
+      await onClaimed?.(true);
+      return;
+    }
     const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     onClaimed?.(needClose);
+  }
+
+  async function onCopyCode(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast.success('Copied!');
+    } catch (error: any) {
+      toast.error(error?.message || error);
+    }
   }
 
   function initStatus() {
@@ -123,7 +151,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       actived
       hasCD={hasClaimCD}
       cd={30}
-      disabled={claimed || claimDisabled}
+      disabled={!hasCDK ? claimed || claimDisabled : false}
       loading={loading || connectLoading}
       onClick={onClaim}
       onCDOver={() => {
@@ -182,7 +210,28 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasGiftCard ? (
+                      {hasCDK ? (
+                        <>
+                          Contragulations on winning your AstrArk in game reward. Here is your in-game code:&nbsp;
+                          {cdks.length > 0 ? (
+                            cdks.map((cdk, index) => (
+                              <>
+                                {index > 0 && ', '}
+
+                                <span
+                                  className="text-basic-yellow cursor-pointer hover:underline"
+                                  onClick={() => onCopyCode(cdk)}
+                                >
+                                  {cdk}
+                                </span>
+                              </>
+                            ))
+                          ) : (
+                            <span className="text-basic-yellow">-</span>
+                          )}
+                          . You can copy and redeem your reward in the AstrArk game app. Have fun!
+                        </>
+                      ) : hasGiftCard ? (
                         <>
                           Please contact Moonveil staff and claim your Gift Card.
                           <br />
@@ -254,6 +303,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       </Modal>
 
       <ConnectNoticeModal disclosure={disclosure} mediaType={MediaType.TWITTER} onConnect={onConnect} />
+
+      <CDKClaimedModal cdks={cdks} disclosure={cdkClaimedDisclosure} />
     </>
   );
 };
