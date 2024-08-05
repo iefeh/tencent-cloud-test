@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default function TaskTabs({ defaultCategory }: Props) {
-  const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, []);
+  const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, [defaultCategory]);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
   // const gameContent = useMemo(() => <Game2048Content />, []);
   const brContent = useMemo(() => <BushWhackContent />, []);
