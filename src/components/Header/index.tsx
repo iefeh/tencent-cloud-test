@@ -86,7 +86,7 @@ export const routeText: RouteMenu[] = [
     name: 'Games',
     children: [
       {
-        name: '/AstrArk',
+        name: 'AstrArk',
         icon: AstrarkIcon,
         route: '/AstrArk',
         children: [
