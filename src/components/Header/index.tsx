@@ -213,7 +213,7 @@ export const routeText: RouteMenu[] = [
             <div key={index} className="absolute inset-0 corner z-0"></div>
           ))}
 
-        <div className="absolute inset-0 pl-8 z-10 text-center ani-fall">
+        <div className="absolute inset-0 pl-6 z-10 text-center ani-jog">
           {name.split('').map((t, i) => (
             <span key={i} className="char" data-text={t} style={{ '--char-index': i } as CSSProperties}>
               {t === ' ' ? <>&nbsp;</> : t}
