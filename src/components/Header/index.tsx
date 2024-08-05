@@ -86,7 +86,7 @@ export const routeText: RouteMenu[] = [
     name: 'Games',
     children: [
       {
-        name: 'AstrArk',
+        name: '/AstrArk',
         icon: AstrarkIcon,
         children: [
           {
@@ -191,6 +191,7 @@ export const routeText: RouteMenu[] = [
   },
   {
     name: 'Play AstrArk Now',
+    route: '/AstrArk',
     render: (name) => (
       <div
         className={cn(['relative w-60 h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
