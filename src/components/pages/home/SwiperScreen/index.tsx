@@ -5,14 +5,12 @@ import EntertainmentSlide from '../slides/EntertainmentSlide';
 import LoyaltyProgramSlide from '../slides/LoyaltyProgramSlide';
 import InviteNewSlide from '../slides/InviteNewSlide';
 import YellowCircle from '@/components/common/YellowCircle';
-import { useState, useRef, useMemo, memo } from 'react';
+import { useState, useRef, memo } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 import BadgeSlide from '../slides/BadgeSlide';
 import NFT2Slide from '../slides/NFT2Slide';
-import Game2048Slide from '../slides/Game2048Slide';
 import LotterySlide from '../slides/LotterySlide';
-import { isMobile } from 'react-device-detect';
 import AstrArkAlphaTestSlide from '../slides/AstrArkAlphaTestSlide';
 
 const slides = [
@@ -26,15 +24,14 @@ const slides = [
   EntertainmentSlide,
 ];
 
-const SildeItem = memo(({ idx, needAni }: { idx: number, needAni: boolean }) => {
-  const Comp = slides[idx]
-  return <Comp needAni={needAni}></Comp>
-})
+const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAni: boolean }) {
+  const Comp = slides[idx];
+  return <Comp needAni={needAni}></Comp>;
+});
 
 export default function SwiperScreen() {
-  const [needAnis, setNeedAnis] = useState([true, ...Array(7).fill(false)]);
+  const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length).fill(false)]);
 
-  // slides.splice(isMobile ? 0 : 1, 0, Game2048SlideMemo);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
 
