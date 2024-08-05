@@ -2,12 +2,14 @@ import { FC, useEffect, useState } from 'react';
 import RegularTaskCategories from './RegularTaskCategories';
 import { TaskCategory } from '@/http/services/battlepass';
 import RegularTasksList from './RegularTasksList';
+import { useRouter } from 'next/router';
 
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
 
 const RegularTasks: FC<Props> = ({ defaultCategory = null }) => {
+  const router = useRouter();
   const [tasksVisible, setTasksVisible] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<Partial<TaskCategory> | null>(null);
 
@@ -21,6 +23,7 @@ const RegularTasks: FC<Props> = ({ defaultCategory = null }) => {
   function onBack() {
     setTasksVisible(false);
     setCurrentCategory(null);
+    router.push('/LoyaltyProgram/earn?tabKey=Regular+Tasks');
   }
 
   useEffect(() => {
