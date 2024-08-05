@@ -3,10 +3,11 @@ import RegularTasks from './RegularTasks';
 import SeasonalCampaigns from './SeasonalCampaigns';
 import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import Game2048Content from './Game2048Content';
+// import Game2048Content from './Game2048Content';
 import Image from 'next/image';
 import BushWhackContent from './BushWhackContent';
 import { TaskCategory } from '@/http/services/battlepass';
+import AstrArkContent from './AstrArkContent';
 
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
@@ -15,8 +16,9 @@ interface Props {
 export default function TaskTabs({ defaultCategory }: Props) {
   const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, []);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
-  const gameContent = useMemo(() => <Game2048Content />, []);
+  // const gameContent = useMemo(() => <Game2048Content />, []);
   const brContent = useMemo(() => <BushWhackContent />, []);
+  const aaContent = useMemo(() => <AstrArkContent />, []);
 
   const tabs = [
     {
@@ -62,6 +64,24 @@ export default function TaskTabs({ defaultCategory }: Props) {
         </div>
       ),
       content: brContent,
+    },
+    {
+      key: 'AstrArk',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <Image
+            className="object-contain w-7 h-7 mr-2 rounded-md"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/icon_astrark_ultra.png"
+            alt=""
+            width={1024}
+            height={1024}
+            unoptimized
+          />
+
+          {label}
+        </div>
+      ),
+      content: aaContent,
     },
   ];
   const router = useRouter();
