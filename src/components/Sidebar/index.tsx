@@ -5,7 +5,7 @@ import styles from './index.module.scss';
 import { routeText } from '../Header'
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionItem } from '@nextui-org/react';
 
 interface Props {
@@ -16,26 +16,8 @@ interface Props {
 export default function Sidebar({ visible, onClose }: Props) {
   const router = useRouter();
 
-  const [curMenu, setCurMenu] = useState<string>('');
-
-  useEffect(() => {
-    if (visible) {
-      setCurMenu('')
-    }
-  }, [visible])
-
-  const menuSwitch = (name: string) => {
-    if (curMenu === name) {
-      setCurMenu('')
-    } else {
-      setCurMenu(name)
-    }
-  }
-
-  function onLinkClick(value: RouteMenu, level: number = 1) {
-    const { route, name } = value || {}
-    // 一级菜单点击
-    if (level === 1) menuSwitch(name)
+  function onLinkClick(value: RouteMenu) {
+    const { route } = value || {}
 
     if (!route) return;
 
@@ -74,9 +56,9 @@ export default function Sidebar({ visible, onClose }: Props) {
 
   const renderHeader = (value: RouteMenu) => (
     <div
+      key={value.name}
       className={cn([
         styles.sidebarHeader,
-        curMenu === value.name && 'text-[#F6C799]'
       ])}
       onClick={() => onLinkClick(value)}
     >
@@ -101,13 +83,15 @@ export default function Sidebar({ visible, onClose }: Props) {
             classNames={{
               base: cn([
                 '!bg-transparent px-[4.5rem]',
-                curMenu === value.name && 'bg-gradient-to-r from-[#342D27] to-[#141310] rounded-2xl'
+                'data-[open=true]:bg-gradient-to-r from-[#342D27] to-[#141310] rounded-2xl'
               ]),
               heading: cn([
-                curMenu === value.name && 'border-b-2 border-[#EBDDB6]'
+                "data-[open=true]:border-b-2 border-[#EBDDB6] !text-[#F6C799]"
               ]),
-              title: 'py-[1rem]',
-              indicator: cn(['text-4xl', 'rotate-180', curMenu === value.name && 'text-[#EBDDB6]']),
+              title: 'py-[1rem] data-[open=true]:text-[#F6C799]',
+              indicator: cn([
+                'text-4xl', 'rotate-180',
+                'data-[open=true]:text-[#EBDDB6]']),
               content: 'py-0',
             }}
             title={renderHeader(value)}
@@ -118,12 +102,13 @@ export default function Sidebar({ visible, onClose }: Props) {
                 {value.children?.map((child, ci) => {
                   return (
                     <div
-                      key={ci}
+                      key={child.name}
                       className={styles.sidebarSubMenu}
-                      onClick={() => onLinkClick(child, 2)}
                     >
-                      {renderIcon(child.icon)}
-                      {child.name}
+                      <div onClick={() => onLinkClick(child)}>
+                        {renderIcon(child.icon)}
+                        {child.name}
+                      </div>
 
                       {
                         child.children && child.children.length > 0 &&
@@ -133,7 +118,7 @@ export default function Sidebar({ visible, onClose }: Props) {
                               return (
                                 <div
                                   key={i}
-                                  onClick={() => onLinkClick(item, 3)}
+                                  onClick={() => onLinkClick(item)}
                                 >
                                   {renderIcon(item.icon)}
                                   {item.name}
@@ -154,7 +139,7 @@ export default function Sidebar({ visible, onClose }: Props) {
         ))}
       </Accordion>
 
-      <MediaIconBar className={'max-sm:h-48 h-60 flex justify-center items-center ' + styles.sidebarMediaIcons} />
+      <MediaIconBar className={'max-sm:h-48 h-60 flex flex-shrink-0 justify-center items-center ' + styles.sidebarMediaIcons} />
     </div>,
     document.body,
   );

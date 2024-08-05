@@ -33,9 +33,11 @@
     font-family: Poppins, sans-serif;
     font-size: px2rem(24);
     padding-top: px2rem(32);
+    pointer-events: auto;
     .sidebarThreeLevel {
       display: flex;
       flex-direction: column;
+      pointer-events: auto;
       gap: px2rem(4);
       margin: px2rem(24) 0;
       font-size: px2rem(22);

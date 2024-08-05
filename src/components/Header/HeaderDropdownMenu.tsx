@@ -12,7 +12,7 @@ interface Props {
 }
 
 /** 渲染基础菜单基础 item 样式  */
-export const menuItemComp = (child: RouteMenu, ci: number, level: number) => {
+export const menuItemComp = (child: RouteMenu) => {
   const isHttpUrl = child.route?.startsWith('http');
   const url = isHttpUrl ? '' : child.route;
 
@@ -53,12 +53,19 @@ export default function HeaderDropdownMenu(props: Props) {
       ref={menuRef}
       {...anchorProps}
       href={item.route || ''}
-      className={cn([
-        'cursor-pointer m-2 transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799] text-[22px] ml-8 relative z-10',
-        isActive && 'text-[#F6C799] border-[#F6C799]',
-      ])}
+      scroll={!!item.route}
+      className="cursor-pointer m-2 text-[22px] ml-8 relative z-10"
     >
-      {item.name}
+      {item.render?.(item.name) || (
+        <div
+          className={cn([
+            'transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799]',
+            isActive && 'text-[#F6C799] border-[#F6C799]',
+          ])}
+        >
+          {item.name}
+        </div>
+      )}
     </Link>
   );
 
@@ -79,10 +86,10 @@ export default function HeaderDropdownMenu(props: Props) {
         <div className={styles.container}>
           {item.children!.map((child, ci) => (
             <div className={styles.itemWarpper} key={ci}>
-              <div className={styles.secondLevelItem}>{menuItemComp(child, ci, 2)}</div>
+              <div className={styles.secondLevelItem}>{menuItemComp(child)}</div>
 
               <div className={styles.threeLevelItem}>
-                {(child.children || [])!.map((item) => menuItemComp(item, ci, 3))}
+                {(child.children || [])!.map((item) => menuItemComp(item))}
               </div>
             </div>
           ))}
