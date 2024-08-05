@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import RegularTaskCategories from './RegularTaskCategories';
 import { TaskCategory } from '@/http/services/battlepass';
 import RegularTasksList from './RegularTasksList';
@@ -8,8 +8,8 @@ interface Props {
 }
 
 const RegularTasks: FC<Props> = ({ defaultCategory = null }) => {
-  const [tasksVisible, setTasksVisible] = useState(!!defaultCategory);
-  const [currentCategory, setCurrentCategory] = useState<Partial<TaskCategory> | null>(defaultCategory);
+  const [tasksVisible, setTasksVisible] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<Partial<TaskCategory> | null>(null);
 
   function onCategoryClick(item: TaskCategory) {
     if (item.quest_count < 1) return;
@@ -22,6 +22,11 @@ const RegularTasks: FC<Props> = ({ defaultCategory = null }) => {
     setTasksVisible(false);
     setCurrentCategory(null);
   }
+
+  useEffect(() => {
+    setCurrentCategory(defaultCategory);
+    setTasksVisible(!!defaultCategory);
+  }, [defaultCategory]);
 
   return (
     <>
