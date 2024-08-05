@@ -5,7 +5,7 @@ import EntertainmentSlide from '../slides/EntertainmentSlide';
 import LoyaltyProgramSlide from '../slides/LoyaltyProgramSlide';
 import InviteNewSlide from '../slides/InviteNewSlide';
 import YellowCircle from '@/components/common/YellowCircle';
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, memo } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 import BadgeSlide from '../slides/BadgeSlide';
@@ -15,29 +15,25 @@ import LotterySlide from '../slides/LotterySlide';
 import { isMobile } from 'react-device-detect';
 import AstrArkAlphaTestSlide from '../slides/AstrArkAlphaTestSlide';
 
+const slides = [
+  AstrArkAlphaTestSlide,
+  LoyaltyProgramSlide,
+  LotterySlide,
+  NFT2Slide,
+  InviteNewSlide,
+  BadgeSlide,
+  RaceSlide,
+  EntertainmentSlide,
+];
+
+const SildeItem = memo(({ idx, needAni }: { idx: number, needAni: boolean }) => {
+  const Comp = slides[idx]
+  return <Comp needAni={needAni}></Comp>
+})
+
 export default function SwiperScreen() {
   const [needAnis, setNeedAnis] = useState([true, ...Array(7).fill(false)]);
 
-  const AstrArkAlphaTestSlideMemo = useMemo(() => <AstrArkAlphaTestSlide needAni={needAnis[0]} />, [needAnis[0]]);
-  const LoyaltyProgramSlideMemo = useMemo(() => <LoyaltyProgramSlide needAni={needAnis[1]} />, [needAnis[1]]);
-  const LotterySlideMemo = useMemo(() => <LotterySlide needAni={needAnis[2]} />, [needAnis[2]]);
-  const NFT2SlideMemo = useMemo(() => <NFT2Slide needAni={needAnis[3]} />, [needAnis[3]]);
-  const InviteNewSlideMemo = useMemo(() => <InviteNewSlide needAni={needAnis[4]} />, [needAnis[4]]);
-  const BadgeSlideMemo = useMemo(() => <BadgeSlide needAni={needAnis[5]} />, [needAnis[5]]);
-  const RaceSlideMemo = useMemo(() => <RaceSlide needAni={needAnis[6]} />, [needAnis[6]]);
-  const EntertainmentSlideMemo = useMemo(() => <EntertainmentSlide needAni={needAnis[7]} />, [needAnis[7]]);
-  // const Game2048SlideMemo = useMemo(() => <Game2048Slide needAni={needAnis[7]} />, [needAnis[7]]);
-
-  const slides = [
-    AstrArkAlphaTestSlideMemo,
-    LoyaltyProgramSlideMemo,
-    LotterySlideMemo,
-    NFT2SlideMemo,
-    InviteNewSlideMemo,
-    BadgeSlideMemo,
-    RaceSlideMemo,
-    EntertainmentSlideMemo,
-  ];
   // slides.splice(isMobile ? 0 : 1, 0, Game2048SlideMemo);
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
@@ -79,8 +75,10 @@ export default function SwiperScreen() {
       >
         {/* 此处每个SwiperSlide中，组件的needAni属性判定的下标需要根据实际生效的顺序写 */}
 
-        {slides.map((slide, index) => (
-          <SwiperSlide key={index}>{slide}</SwiperSlide>
+        {slides.map((_, index) => (
+          <SwiperSlide key={index}>
+            <SildeItem idx={index} needAni={needAnis[index]}></SildeItem>
+          </SwiperSlide>
         ))}
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
