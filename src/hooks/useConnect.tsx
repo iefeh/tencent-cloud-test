@@ -19,7 +19,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   const [loading, setLoading] = useState(false);
   const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const bindTipsDisclosure = useDisclosure();
 
   const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
@@ -35,7 +35,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
       }
 
       if ([-9, -13, -16].includes(+code)) {
-        onOpen();
+        bindTipsDisclosure.onOpen();
       }
     }
     delete tokens[type];
@@ -59,7 +59,17 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     let data: { event: string; result: TelegramLoginData };
 
     try {
-      data = JSON.parse(event.data);
+      if (typeof event.data === 'string') {
+        console.log('onTelegramMessage event data: ', event.data);
+        data = JSON.parse(event.data);
+      } else if (typeof event.data === 'object') {
+        console.log('onTelegramMessage event data object: ', JSON.stringify(event.data));
+        data = event.data;
+      } else {
+        console.log('onTelegramMessage event data: ', event.data);
+        throw 'onTelegramMessage Invalid event data!';
+      }
+
       if (data.event === 'auth_result') {
         window.removeEventListener('message', onTelegramMessage);
         await connectTelegramAPI(data.result);
@@ -150,58 +160,5 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     };
   }, []);
 
-  const BindTipsModal = () => {
-    return (
-      <Modal
-        placement="center"
-        backdrop="blur"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        classNames={{ base: 'bg-[#141414] rounded-base max-w-[40rem]' }}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <ModalBody>
-              <div className="flex flex-col" style={{ paddingTop: '3rem', paddingBottom: '2.5rem' }}>
-                <p>
-                  We have detected an account connection conflict. This occurs when an attempt is made to link a
-                  platform that is already connected to another account.
-                </p>
-                <br />
-                <p>To resolve this, please follow these steps:</p>
-                <br />
-                <p style={{ textIndent: '1em' }}>
-                  1. Log in with the platform that is currently linked to the conflicting account.
-                </p>
-                <p style={{ textIndent: '1em' }}>
-                  2. Go to [User Center], and disconnect the platform account causing the conflict.
-                </p>
-                <p style={{ textIndent: '1em' }}>
-                  3. Wait for 12 hours before attempting to reconnect. This cooldown period helps us maintain platform
-                  integrity and prevent abusive practices.
-                </p>
-                <p style={{ textIndent: '1em' }}>
-                  4. After 12 hours, log in again and link the account you wish to use.
-                </p>
-                <br />
-                <p>
-                  If you encounter any issues, please contact our{' '}
-                  <a className="text-basic-yellow hover:underline" href="https://discord.gg/moonveil">
-                    support team
-                  </a>{' '}
-                  for assistance.
-                </p>
-
-                <div className="mt-4 flex justify-center">
-                  <LGButton actived label="Close" onClick={onClose} />
-                </div>
-              </div>
-            </ModalBody>
-          )}
-        </ModalContent>
-      </Modal>
-    );
-  };
-
-  return { isConnected, address, onConnect, loading, BindTipsModal };
+  return { isConnected, address, onConnect, loading, bindTipsDisclosure };
 }

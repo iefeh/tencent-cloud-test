@@ -3,8 +3,12 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 枚举合约分类，我们平台的合约类型，如SBT、DESTINY NFT等
 export enum ContractCategory {
+    // 徽章SBT合约
     SBT = 'SBT',
+    // Tetra系列NFT合约
     TETRA_SERIES = 'TETRA_SERIES',
+    // 通用抽奖合约
+    LOTTERY = 'LOTTERY',
 }
 
 // 子类型
@@ -46,3 +50,9 @@ ContractSchema.index({chain_id: 1, category: 1}, {unique: true});
 const connection = connectToMongoDbDev();
 const Contract = models.Contract || connection.model<IContract>('Contract', ContractSchema, 'contracts');
 export default Contract;
+
+
+// 查询指定链的抽奖合约
+export async function findLotteryContract(chain_id: string): Promise<IContract | null> {
+    return Contract.findOne({chain_id, category: ContractCategory.LOTTERY});
+}

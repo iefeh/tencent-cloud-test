@@ -30,7 +30,8 @@ export enum ResponseCode {
     ERROR_SIGNUP_CONFIRMATION = -20,
     ERROR_SIGNUP_CONFIRMATION_EXPIRED = -21,
     ERROR_WALLET_NOT_CONNECTED = -22,
-    ERROR_USER_SELF_DESTRUCTED = -23
+    ERROR_USER_SELF_DESTRUCTED = -23,
+    ERROR_TRANSACTION_NOT_RECONGNIZED = -24,
     // 添加对应的响应码
 }
 
@@ -77,7 +78,9 @@ const ResponseMessages = {
     // 必须连接钱包
     [ResponseCode.ERROR_WALLET_NOT_CONNECTED]: "You must connect wallet first",
     // 用户账户已自毁
-    [ResponseCode.ERROR_USER_SELF_DESTRUCTED]: "Account is self destructed."
+    [ResponseCode.ERROR_USER_SELF_DESTRUCTED]: "Account is self destructed.",
+    // 未识别的交易
+    [ResponseCode.ERROR_TRANSACTION_NOT_RECONGNIZED]: "Transaction not recongnized."
     // 添加响应码对应的msg
 }
 
@@ -116,3 +119,4 @@ export const signupConfirmation = build(ResponseCode.ERROR_SIGNUP_CONFIRMATION);
 export const signupConfirmationExpired = build(ResponseCode.ERROR_SIGNUP_CONFIRMATION_EXPIRED);
 export const walletNotConnected = build(ResponseCode.ERROR_WALLET_NOT_CONNECTED);
 export const userSelfDestructed = build(ResponseCode.ERROR_USER_SELF_DESTRUCTED);
+export const transactionNotRecongnized = build(ResponseCode.ERROR_USER_SELF_DESTRUCTED);

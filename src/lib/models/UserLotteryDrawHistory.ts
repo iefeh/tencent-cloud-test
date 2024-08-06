@@ -1,8 +1,12 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
-import { LotteryRewardType } from "@/lib/models/LotteryPool";
+import { LotteryRewardType } from "@/lib/lottery/types";
 
-export type IUserLotteryRewardItem = {
+export type CDKReward = {
+    cdk: string
+}
+
+export interface IUserLotteryRewardItem {
     // 奖励id
     item_id: string,
     // 中奖id
@@ -12,7 +16,9 @@ export type IUserLotteryRewardItem = {
     // 奖励名称
     reward_name: string, 
     // 徽章id，抽奖可能会奖励的徽章
-    badge_id: string,
+    badge_id?: string,
+    // 奖励cdk
+    cdk?: string,
     // 图标链接
     icon_url: string, 
     // 奖励等级
@@ -30,6 +36,8 @@ export interface IUserLotteryDrawHistory extends Document {
     draw_id: string;
     // 抽奖时间，毫秒时间戳
     draw_time: number;
+    // 链上请求id
+    chain_request_id: string;
     // 用户id
     user_id: string;
     // 奖池id
@@ -47,6 +55,7 @@ export interface IUserLotteryDrawHistory extends Document {
 const UserLotteryDrawHistorySchema = new Schema<IUserLotteryDrawHistory>({
     draw_id: { type: String },
     draw_time: { type: Number },
+    chain_request_id: { type: String },
     user_id: { type: String},
     lottery_pool_id: { type: String },
     rewards: { type: Schema.Types.Mixed },

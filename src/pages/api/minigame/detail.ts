@@ -5,16 +5,15 @@ import * as response from "@/lib/response/response";
 import { maybeAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import MiniGame, { IMiniGame, MiniGames, MiniGameStatus } from "@/lib/models/MiniGame";
 import { PipelineStage } from "mongoose";
-import UserBackpackModel from "@/lib/models/2048UserBackpack";
 import OAuth2Client from "@/lib/models/OAuth2Client";
-import MiniGameDetail, { IMiniGameDetail } from "@/lib/models/MiniGameDetail";
-import { any } from "video.js/dist/types/utils/events";
+import MiniGameDetail from "@/lib/models/MiniGameDetail";
 import { enrichTicket } from "./list";
 import { paginationQuests } from "../battlepass/tasks";
 import ScoreLeaderboardConfig from "@/lib/models/2048ScoreLeaderboardConfig";
 import UserScoreRank from "@/lib/models/2048UserScoreRank";
 import User from "@/lib/models/User";
 import { loadAllBadges } from "../badges/list";
+import QuestAchievement from "@/lib/models/QuestAchievement";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -35,7 +34,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
   // 查询游戏详情
   let detail: any = await findDetail(miniGame.client_id);
-  enrichGameInfo(detail, miniGame);// 添加游戏相关信息
+  await enrichGameInfo(detail, miniGame);// 添加游戏相关信息
   await enrichTicket(userId, [detail])
   await enrichTasks(userId, detail);
   await enrichRanking(userId, detail);
@@ -51,11 +50,10 @@ async function findDetail(client_id: string) {
   return results[0];
 }
 
-function enrichGameInfo(detail: any, miniGame: IMiniGame) {
+async function enrichGameInfo(detail: any, miniGame: IMiniGame) {
   detail.url = miniGame.url;
   detail.img_url = miniGame.img_url;
   detail.ticket = miniGame.ticket;
-
   // 判断游戏状态
   const now = Date.now();
   if (miniGame.end_time < now) {
@@ -68,15 +66,25 @@ function enrichGameInfo(detail: any, miniGame: IMiniGame) {
     // 进行中
     detail.status = MiniGameStatus.InProgress;
   }
+
+  const client = await OAuth2Client.findOne({ client_id: detail.client_id });
+  detail.name = client.client_name;
 }
 
 async function enrichTasks(userId: string | undefined, detail: any) {
+  // 查询是否完成分享任务
+  if (detail.share_task) {
+    const achivement = await QuestAchievement.findOne({ user_id: userId, quest_id: detail.share_task });
+    detail.share_reward_claimed = !!achivement;
+    delete detail.share_task;
+  }
+
   const result = await paginationQuests(1, 6, detail.task_category, undefined, userId as string);
   if (result) {
     detail.tasks = result.quests;
     return;
   }
-  
+
   detail.tasks = [];
 }
 
@@ -107,12 +115,13 @@ async function enrichRanking(userId: string | undefined, detail: any) {
           let userIds = lbInfos.map(r => r.uid);
 
           // 查询用户昵称信息
-          const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, _id: 0 });
-          const userIdNameMap: Map<string, string> = new Map<string, string>(infos.map(info => [info.user_id, info.username]));
+          const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, avatar_url: 1, _id: 0 });
+          const userIdInfoMap: Map<string, any> = new Map<string, any>(infos.map(info => [info.user_id, info]));
           let rank: number = 0;
           for (let lb of lbInfos) {
             lb.rank = ++rank;
-            lb.player = userIdNameMap.get(lb.uid);
+            lb.player = userIdInfoMap.get(lb.uid).username;
+            lb.avatar = userIdInfoMap.get(lb.uid).avatar_url;
             lb.score = lb.sum_score;
             delete lb.sum_score;
             delete lb.uid;
@@ -143,7 +152,7 @@ async function enrichBadge(userId: string | undefined, detail: any) {
       badgeIds.push(b.badge_id)
     }
 
-    const [badges, count] = await loadAllBadges(userId as string, 1, 5, badgeIds);
+    const [badges, count, total] = await loadAllBadges(userId as string, 1, 5, badgeIds);
     delete detail.badge;
     detail.badge = badges;
   }

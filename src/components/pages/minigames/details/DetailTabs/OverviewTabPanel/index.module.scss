@@ -1,0 +1,21 @@
+.puffyVideo {
+  :global(.vjs-big-play-button) {
+    width: 3.5rem;
+    height: 3.5rem;
+    border: none;
+    background-color: transparent !important;
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_play.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0;
+    transform: translate3d(-50%, -50%, 0);
+
+    span {
+      display: none;
+    }
+  }
+
+  :global(.vjs-text-track-display) {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
