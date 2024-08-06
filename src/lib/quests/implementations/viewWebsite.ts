@@ -1,8 +1,6 @@
 import { IQuest } from "@/lib/models/Quest";
 import { checkClaimableResult, claimRewardResult } from "@/lib/quests/types";
 import { QuestBase } from "@/lib/quests/implementations/base";
-import { format } from "date-fns";
-import UserBackpackModel from "@/lib/models/UserBackpack";
 
 export class ViewWebsiteQuest extends QuestBase {
     constructor(quest: IQuest) {

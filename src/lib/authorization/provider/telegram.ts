@@ -1,28 +1,15 @@
 import * as response from '@/lib/response/response';
 import { HmacSHA256, enc } from 'crypto-js';
-import { AuthorizationFlow, AuthorizationPayload } from '@/lib/models/authentication';
+import { AuthorizationPayload } from '@/lib/models/authentication';
 import { v4 as uuidv4 } from 'uuid';
-import { AuthFlowBase, ValidationResult } from '@/lib/authorization/provider/authFlow';
+import { AuthFlowBase, ValidationResult, AuthReturnType } from '@/lib/authorization/provider/authFlow';
 import User from '@/lib/models/User';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
 import { NextApiResponse } from 'next';
 import { AuthorizationType } from '@/lib/authorization/types';
-import { checkGetAuthorizationURLPrerequisite, validateCallbackState } from '@/lib/authorization/provider/util';
+import { checkGetAuthorizationURLPrerequisite } from '@/lib/authorization/provider/util';
 import UserTelegram from '@/lib/models/UserTelegram';
 import { Metric } from '@/lib/models/UserMetrics';
-
-export interface TelegramLoginData {
-  id: number;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-  auth_date: number;
-  hash: string;
-  invite_code?: string;
-  signup_mode?: string;
-  landing_url: string;
-}
 
 export async function generateAuthorizationURL(req: any, res: any) {
   // 检查用户的授权落地页
@@ -46,6 +33,10 @@ export async function generateAuthorizationURL(req: any, res: any) {
 }
 
 export class TelegramAuthFlow extends AuthFlowBase {
+  get authReturnType(): AuthReturnType {
+    return AuthReturnType.JSON;
+  }
+
   authorizationType(): AuthorizationType {
     return AuthorizationType.Telegram;
   }
@@ -58,19 +49,11 @@ export class TelegramAuthFlow extends AuthFlowBase {
     req.query.landing_url = req.body.landing_url;
     req.query.invite_code = req.body.invite_code;
     req.query.signup_mode = req.body.signup_mode;
-    console.log('req', req.query);
     // 检查用户的授权落地页
     const checkResult = await checkGetAuthorizationURLPrerequisite(req, res);
     if (!checkResult.passed) {
       return { passed: false };
     }
-
-    let data: any = {};
-    Object.assign(data, req.body);
-    delete data.hash; // Remove hash from object to build the verification string
-    delete data.invite_code;
-    delete data.signup_mode;
-    delete data.landing_url;
 
     req.body.inviter_id = checkResult.inviter?.direct;
     req.body.indirect_inviter_id = checkResult.inviter?.indirect;
@@ -78,6 +61,17 @@ export class TelegramAuthFlow extends AuthFlowBase {
     // 验证算法有问题，先直接返回成功
     let result = { passed: true, authPayload: req.body };
     return result;
+
+    let data: any = {};
+    Object.assign(data, req.body);
+    delete data.hash; // Remove hash from object to build the verification string
+    delete data.landing_url;
+    delete data.invite_code;
+    delete data.signup_mode;
+    delete data.authorization_user_id;
+    delete data.flow;
+    delete data.inviter_id;
+    delete data.indirect_inviter_id;
 
     const hash = req.body.hash as string;
     const secret = HmacSHA256(process.env.TELEGRAM_BOT_TOKEN!, 'WebAppData');
@@ -91,6 +85,7 @@ export class TelegramAuthFlow extends AuthFlowBase {
   }
 
   async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
+    authPayload.authorization_user_id = req.userId;
     return authPayload;
   }
 
