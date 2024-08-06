@@ -23,7 +23,7 @@ export interface IUserTelegram extends Document {
 const UserTelegramSchema = new Schema<IUserTelegram>({
   user_id: { type: String, required: true },
   telegram_id: { type: String, required: true },
-  username: { type: String, required: true },
+  username: { type: String },
   first_name: { type: String },
   last_name: { type: String },
   avatar: { type: String },
