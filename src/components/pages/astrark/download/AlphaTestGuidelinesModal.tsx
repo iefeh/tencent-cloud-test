@@ -1,5 +1,4 @@
-import { MediaURLs } from '@/constant/common';
-import LGButton from '@/pages/components/common/buttons/LGButton';
+import { MediaLinks } from '@/constant/common';
 import { Modal, ModalBody, ModalContent, ModalHeader, cn } from '@nextui-org/react';
 import type { FC } from 'react';
 
@@ -52,7 +51,7 @@ const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: 
         },
         {
           label: 'How to report bugs and crashes',
-          desc: `Join our official <a href="${MediaURLs.DISCORD}" target="_blank" class="text-basic-yellow hover:underline">Discord</a> community and reach out in the #support-general channel. We are still in a playtest stage and always welcome all the feedbacks from our players.`,
+          desc: `Join our official <a href="${MediaLinks.DISCORD}" target="_blank" class="text-basic-yellow hover:underline">Discord</a> community and reach out in the #support-general channel. We are still in a playtest stage and always welcome all the feedbacks from our players.`,
         },
         {
           label: 'Can I use an emulator to play?',
