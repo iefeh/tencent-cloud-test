@@ -7,5 +7,5 @@ export const MediaLinks = {
   MEDIUM: 'https://medium.com/@Moonveil_Studio',
   DISCORD: 'https://discord.gg/moonveil',
   TELEGRAM: 'https://t.me/+AeiqS8o2YmswYTgx',
-  YOUTUBE: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A',
-};
+  YOUTUBE: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A'
+}
