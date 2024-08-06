@@ -102,6 +102,10 @@ export const routeText: RouteMenu[] = [
             name: 'Game Lore',
             route: '/AstrArk',
           },
+          {
+            name: 'Alpha Test Tasks',
+            route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk'
+          }
         ],
       },
       {
@@ -116,16 +120,19 @@ export const routeText: RouteMenu[] = [
       // },
       {
         name: 'Mini Games',
-        route: '/minigames',
+        // route: '/minigames',
+        disabled: true,
         children: [
           {
             name: '2048',
             icon: Game2048Icon,
             route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
+            disabled: true,
           },
           {
             name: '黄金矿工',
             route: '',
+            disabled: true,
           },
           // {
           //   name: 'TG小火箭',
@@ -193,7 +200,7 @@ export const routeText: RouteMenu[] = [
   {
     // name: 'Play AstrArk Now',
     name: 'AstrArk Coming Soon!',
-    route: '/AstrArk',
+    route: '/AstrArk/Download',
     render: (name) => (
       <div
         className={cn(['relative w-[17rem] h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
@@ -214,7 +221,7 @@ export const routeText: RouteMenu[] = [
             <div key={index} className="absolute inset-0 corner z-0"></div>
           ))}
 
-        <div className="absolute inset-0 pl-8 z-10 text-center ani-jog-correct">
+        <div className="absolute inset-0 pl-8 z-10 text-center ani-jog">
           {name.split('').map((t, i) => (
             <span key={i} className="char" data-text={t} style={{ '--char-index': i } as CSSProperties}>
               {t === ' ' ? <>&nbsp;</> : t}
