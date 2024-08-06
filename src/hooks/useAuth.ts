@@ -1,7 +1,8 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { loginByMediaAPI, loginByWalletAPI } from '@/http/services/login';
+import { loginByMediaAPI, loginByWalletAPI, loginByTelegramAPI } from '@/http/services/login';
+import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
@@ -96,6 +97,44 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     setLoading(false);
   }
 
+  async function onTelegramMessage(event: MessageEvent) {
+    let data: { event: string; result: TelegramLoginData };
+
+    try {
+      if (typeof event.data === 'string') {
+        console.log('onTelegramMessage event data: ', event.data);
+        data = JSON.parse(event.data);
+      } else if (typeof event.data === 'object') {
+        console.log('onTelegramMessage event data object: ', JSON.stringify(event.data));
+        data = event.data;
+      } else {
+        console.log('onTelegramMessage event data: ', event.data);
+        throw 'onTelegramMessage Invalid event data!';
+      }
+
+      if (data.event === 'auth_result') {
+        window.removeEventListener('message', onTelegramMessage);
+        const res = await loginByTelegramAPI(data.result);
+        if (!res) throw new Error('Login Failed');
+
+        const { token, particle_jwt, signup_cred } = res || {};
+        localStorage.setItem(KEY_AUTHORIZATION, token);
+        localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
+        if (signup_cred) {
+          store.toggleNewUserModal(true);
+          localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
+          throw new Error('Is New User');
+        } else {
+          await store.initLoginInfo();
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function onConnect() {
     if (type === MediaType.EMAIL) {
       return;
@@ -132,6 +171,11 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
     openAuthWindow(res.authorization_url);
     startWatch();
+    if (type === MediaType.TELEGRAM) {
+      window.addEventListener('message', onTelegramMessage);
+      return;
+    }
+
     setLoading(false);
   }
 

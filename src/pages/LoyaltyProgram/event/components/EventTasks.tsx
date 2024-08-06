@@ -215,6 +215,8 @@ function EventTasks(props: EventTaskProps) {
         text = 'Twitter account';
       } else if (task.type === QuestType.ConnectSteam || task.authorization === MediaType.STEAM) {
         text = 'Steam account';
+      } else if (task.type === QuestType.ConnectTelegram || task.authorization === MediaType.TELEGRAM) {
+        text = 'Telegram account';
       }
 
       return text;

@@ -1,15 +1,16 @@
-import QuestAchievement from "@/lib/models/QuestAchievement";
-import { queryUserWalletAuthorization } from "@/lib/quests/implementations/connectWalletQuest";
-import { queryUserTwitterAuthorization } from "@/lib/quests/implementations/connectTwitterQuest";
-import { queryUserDiscordAuthorization } from "@/lib/quests/implementations/connectDiscordQuest";
-import { queryUserSteamAuthorization } from "@/lib/quests/implementations/connectSteamQuest";
-import { QuestType } from "@/lib/quests/types";
-import { getUserFirstWhitelist } from "@/lib/common/user";
-import { constructQuest } from "@/lib/quests/constructor";
-import { enrichQuestAuthorization } from "@/lib/quests/questEnrichment";
-import UserTwitter, { IUserTwitter } from "../models/UserTwitter";
-import TwitterTopicTweet from "../models/TwitterTopicTweet";
-import { ContractTransactionDataAndInputError } from "web3";
+import QuestAchievement from '@/lib/models/QuestAchievement';
+import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
+import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import { queryUserDiscordAuthorization } from '@/lib/quests/implementations/connectDiscordQuest';
+import { queryUserSteamAuthorization } from '@/lib/quests/implementations/connectSteamQuest';
+import { queryUserTelegramAuthorization } from '@/lib/quests/implementations/connectTelegramQuest';
+import { QuestType } from '@/lib/quests/types';
+import { getUserFirstWhitelist } from '@/lib/common/user';
+import { constructQuest } from '@/lib/quests/constructor';
+import { enrichQuestAuthorization } from '@/lib/quests/questEnrichment';
+import UserTwitter, { IUserTwitter } from '../models/UserTwitter';
+import TwitterTopicTweet from '../models/TwitterTopicTweet';
+import { ContractTransactionDataAndInputError } from 'web3';
 
 // 增强用户的tasks，场景：活动详情
 // 与enrichUserQuests的区别在于，tasks校验任务不给与奖励，quests校验任务给与奖励
@@ -39,7 +40,7 @@ function maskQuestProperty(quests: any[]) {
         // 只保留url属性
         quest.properties = { url: quest.properties.url };
         // 设置is_prepared标识
-        const questImpl = constructQuest(quest)
+        const questImpl = constructQuest(quest);
         quest.properties.is_prepared = questImpl.isPrepared();
         // 设置当前任务的开始标识
         quest.started = true;
@@ -53,7 +54,7 @@ function maskQuestProperty(quests: any[]) {
 // 为任务添加achieved、verified字段，标识当前用户是否已经校验任务
 async function enrichTaskVerification(userId: string, quests: any[], claimed: boolean) {
     // 默认任务未达成、未校验,verify不禁用
-    quests.forEach(async quest => {
+    quests.forEach(async (quest) => {
         quest.achieved = false;
         quest.verified = false;
         quest.verify_disabled = false;
@@ -61,7 +62,10 @@ async function enrichTaskVerification(userId: string, quests: any[], claimed: bo
         if (quest.type === QuestType.TweetInteraction || quest.type === QuestType.TwitterTopic) {
             let userTwitter = await UserTwitter.findOne({ user_id: userId, deleted_time: null });
             if (userTwitter) {
-                let tweet = await TwitterTopicTweet.findOne({ author_id: userTwitter.twitter_id, topic_id: quest.properties.topic_id });
+                let tweet = await TwitterTopicTweet.findOne({
+                    author_id: userTwitter.twitter_id,
+                    topic_id: quest.properties.topic_id,
+                });
                 if (!tweet) {
                     quest.verify_disabled = true;
                 }
@@ -74,25 +78,28 @@ async function enrichTaskVerification(userId: string, quests: any[], claimed: bo
     }
     if (claimed) {
         // 活动奖励已经领取，所有任务已达成、已校验
-        quests.forEach(quest => {
+        quests.forEach((quest) => {
             quest.achieved = true;
             quest.verified = true;
         });
         return;
     }
     // 获取用户已经校验的任务
-    const questIds = quests.map(quest => quest.id);
-    const verifiedQuests = await QuestAchievement.find({
-        user_id: userId,
-        quest_id: { $in: questIds },
-    }, {
-        _id: 0,
-        quest_id: 1,
-        verified_time: 1,
-    });
-    const verified = new Map<string, any>(verifiedQuests.map(q => [q.quest_id, q]));
+    const questIds = quests.map((quest) => quest.id);
+    const verifiedQuests = await QuestAchievement.find(
+        {
+            user_id: userId,
+            quest_id: { $in: questIds },
+        },
+        {
+            _id: 0,
+            quest_id: 1,
+            verified_time: 1,
+        },
+    );
+    const verified = new Map<string, any>(verifiedQuests.map((q) => [q.quest_id, q]));
     // 添加任务校验标识
-    quests.forEach(quest => {
+    quests.forEach((quest) => {
         const verifiedQuest = verified.get(quest.id);
         quest.achieved = !!verifiedQuest;
         quest.verified = quest.achieved && !!verifiedQuest.verified_time;
@@ -120,6 +127,10 @@ async function enrichTaskVerification(userId: string, quests: any[], claimed: bo
             case QuestType.ConnectSteam:
                 const steam = await queryUserSteamAuthorization(userId);
                 quest.achieved = !!steam;
+                break;
+            case QuestType.ConnectTelegram:
+                const telegram = await queryUserTelegramAuthorization(userId);
+                quest.achieved = !!telegram;
                 break;
             case QuestType.Whitelist:
                 const userWl = await getUserFirstWhitelist(userId, quest.properties.whitelist_id);
@@ -157,5 +168,3 @@ export async function enrichTasksProgress(userId: string, tasks: any[]) {
         }
     }
 }
-
-

@@ -38,6 +38,7 @@ export enum Metric {
   // 初出茅庐徽章，其他的加入社区/关注某人，按照完成任务算.
   TwitterConnected = 'twitter_connected',
   DiscordConnected = 'discord_connected',
+  TelegramConnected = 'telegram_connected',
   SteamConnected = 'steam_connected',
   WalletConnected = 'wallet_connected',
   GoogleConnected = 'google_connected',
@@ -126,6 +127,7 @@ export interface IUserMetrics extends Document {
   steam_connected: number;
   wallet_connected: number;
   google_connected: number;
+  telegram_connected: number;
   discord_joined_moonveil: number;
   twitter_followed_moonveil: number;
   twitter_followed_astrark: number;
@@ -138,7 +140,6 @@ export interface IUserMetrics extends Document {
   //第1赛季完成任务数
   battlepass_season_1_premium_pass: number;
   battlepass_season_1_standard_pass: number;
-
 
   // 被邀请人数
   total_invitee: number;
@@ -196,6 +197,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_connected: { Type: Number },
   wallet_connected: { Type: Number },
   google_connected: { Type: Number },
+  telegram_connected: { Type: Number },
   discord_joined_moonveil: { Type: Number },
   twitter_followed_moonveil: { Type: Number },
   twitter_followed_astrark: { Type: Number },
@@ -263,7 +265,6 @@ export async function createUserMetrics(userId: string, metrics: { [key: string]
   return result;
 }
 
-
 export async function incrUserMetric(userId: string, metric: Metric, incrValue: number, session: any) {
   await UserMetrics.updateOne(
     { user_id: userId },
@@ -278,7 +279,11 @@ export async function incrUserMetric(userId: string, metric: Metric, incrValue: 
   await sendBadgeCheckMessage(userId, metric);
 }
 
-export async function incrUserMetrics(userId: string, metrics: { [key: string]: string | number | boolean }, session: any) {
+export async function incrUserMetrics(
+  userId: string,
+  metrics: { [key: string]: string | number | boolean },
+  session: any,
+) {
   let incOps: any = {};
   for (const [metric, value] of Object.entries(metrics)) {
     incOps[metric] = value;
