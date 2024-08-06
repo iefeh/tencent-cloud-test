@@ -20,6 +20,13 @@
   --tf: linear;
 }
 
+.ani-jog-correct .char {
+  --name: jog-correct;
+  --dur: 500ms;
+  --del: calc(attr(data-index) * -0.025s);
+  --tf: linear;
+}
+
 @keyframes jog {
   0% {
     transform: translate(0, 0) rotate(5deg);
@@ -35,6 +42,24 @@
   }
   100% {
     transform: translate(0, 0) rotate(5deg);
+  }
+}
+
+@keyframes jog-correct {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(5%, -5%);
+  }
+  50% {
+    transform: translate(5%, 0);
+  }
+  75% {
+    transform: translate(10%, -5%);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }
 
