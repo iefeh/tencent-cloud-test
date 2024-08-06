@@ -58,8 +58,6 @@ export const enum LotteryRewardType {
   NFT = 'nft',
   NoPrize = 'no_prize',
   GIFT_CARD = 'gift_card',
-  CDK = 'cdk',
-  BADGE = 'badge',
 }
 
 export const LotteryRewardSizes = {

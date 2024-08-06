@@ -39,7 +39,7 @@ function PreRegistrationPage() {
 
         <FeatureScreen />
 
-        <FloatDownloadButton />
+        {/* <FloatDownloadButton /> */}
       </section>
     </>
   );

@@ -2,7 +2,6 @@ import type {NextApiResponse} from "next";
 import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
-import { LotteryRewardType } from '@/lib/lottery/types';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import UserLotteryDrawHistory from '@/lib/models/UserLotteryDrawHistory';
@@ -20,13 +19,6 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const pageNum = Number(page_num);
   const pageSize = Number(page_size);
   const pagination = await paginationLotteryHistory(lotteryPoolId, userId!, pageNum, pageSize);
-  for (let history of pagination.lotteryHistory) {
-    for (let reward of history.rewards) {
-      if (reward.reward_type === LotteryRewardType.CDK && !reward.claimed) {
-        delete reward.cdk;
-      }
-    }
-  }
   res.json(response.success({
       total: pagination.total,
       page_num: pageNum,

@@ -14,7 +14,6 @@ import { MAX_DISPLAY_COUNT } from '@/constant/badge';
 import { isMobile } from 'react-device-detect';
 import BScroll from 'better-scroll';
 import MintSuccessModal from '@/components/profile/assets/MintSuccessModal';
-import CirclePagination from '@/components/common/CirclePagination';
 
 function MyBadgesPage() {
   const {
@@ -24,7 +23,7 @@ function MyBadgesPage() {
     loading: displayLoaidng,
     validCount,
   } = useDisplayBadges();
-  const { total, allTotal, badges, queryMyBadges, claimBadge, mintBadge, loading: fullQueryLoading } = useMyBadges();
+  const { total, badges, queryMyBadges, claimBadge, mintBadge, loading: fullQueryLoading } = useMyBadges();
   const modalDisclosure = useDisclosure();
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -118,12 +117,6 @@ function MyBadgesPage() {
         onClaim={onClaimBadge}
         onMint={onMint}
         onView={onView}
-      />
-
-      <CirclePagination
-        className="self-center mt-6"
-        total={Math.ceil(allTotal / 36)}
-        onChange={(index) => queryMyBadges({ page_num: index })}
       />
 
       <BadgeModal

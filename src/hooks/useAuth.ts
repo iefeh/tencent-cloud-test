@@ -101,17 +101,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     let data: { event: string; result: TelegramLoginData };
 
     try {
-      if (typeof event.data === 'string') {
-        console.log('onTelegramMessage event data: ', event.data);
-        data = JSON.parse(event.data);
-      } else if (typeof event.data === 'object') {
-        console.log('onTelegramMessage event data object: ', JSON.stringify(event.data));
-        data = event.data;
-      } else {
-        console.log('onTelegramMessage event data: ', event.data);
-        throw 'onTelegramMessage Invalid event data!';
-      }
-
+      data = JSON.parse(event.data);
       if (data.event === 'auth_result') {
         window.removeEventListener('message', onTelegramMessage);
         const res = await loginByTelegramAPI(data.result);
