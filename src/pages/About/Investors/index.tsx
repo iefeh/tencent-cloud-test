@@ -13,7 +13,7 @@ const sponsorArray = [
   '/img/about/6.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/mask.png',
   '/svg/investors/ventures.svg',
-  '/img/about/2.png',
+  // '/img/about/2.png',
 
   '/img/about/4.png',
   '/img/about/8.png',
@@ -48,8 +48,6 @@ const InvestorPage = () => {
         <div className={`friends translate-y-[16px] fill-mode-[both] ${styles.slideInAnim}`}>
           <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
             {sponsorArray.map((value, index) => {
-              if (index === 10) return;
-
               return (
                 <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
                   <Image
