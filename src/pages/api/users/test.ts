@@ -27,7 +27,6 @@ import { promiseSleep } from "@/lib/common/sleep";
 import { v4 as uuidv4 } from "uuid";
 import { randomBytes, createHash } from 'crypto';
 import { constructQuest } from "@/lib/quests/constructor";
-import {getUserNonce, incrementUserNonce} from "@/lib/models/UserLotteryNonce";
 
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
 sdk.auth('df3d5e86-4d76-5375-a4bd-4dcae064a0e8');
@@ -45,9 +44,6 @@ function generateSecretKey(length: number = 32): string {
 // Covalent api 免费额度 RPS=4， 50$ RPS=100
 router.get(async (req, res) => {
 
-    const number = await incrementUserNonce("test3");
-    console.log(number);
-    return;
     const quest = await Quest.findOne({ id: "shushu-test", deleted_time: null });
     const questImpl = await constructQuest(quest);
     const result = await questImpl.checkClaimable("1227052316134215680");

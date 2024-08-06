@@ -5,16 +5,15 @@ import logger from '@/lib/logger/winstonLogger';
 import {
     constructMoonBeamAudit, constructVerifyResponse, getLotteryPoolById, verifyTwitterTopic
 } from '@/lib/lottery/lottery';
-import { LotteryRewardType } from '@/lib/lottery/types';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import Badges from '@/lib/models/Badge';
-import { ILotteryPool } from '@/lib/models/LotteryPool';
+import { ILotteryPool, LotteryRewardType } from '@/lib/models/LotteryPool';
 import User, { increaseUserMoonBeam } from '@/lib/models/User';
-import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryDrawHistory, {
     IUserLotteryDrawHistory, IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
+import UserBadges from '@/lib/models/UserBadges';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';

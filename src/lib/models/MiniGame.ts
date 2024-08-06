@@ -21,8 +21,6 @@ export interface IMiniGame extends Document {
     img_url: string,
     // 游戏ICON
     icon_url?: string,
-    // 简介
-    description: string,
     // 门票相关配置
     ticket?: any,
     // 是否可用
@@ -44,7 +42,6 @@ const MiniGameSchema = new Schema<IMiniGame>({
     url: { type: String },
     img_url: { type: String },
     icon_url: { type: String },
-    description: { type: String },
     ticket: { type: Schema.Types.Mixed },
     active: { type: Boolean },
     order: { type: Number, required: true },

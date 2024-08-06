@@ -3,18 +3,15 @@ import RegularTasks from './RegularTasks';
 import SeasonalCampaigns from './SeasonalCampaigns';
 import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
+import Game2048Content from './Game2048Content';
 import Image from 'next/image';
-import { TaskCategory } from '@/http/services/battlepass';
-import AstrArkContent from './AstrArkContent';
+import BushWhackContent from './BushWhackContent';
 
-interface Props {
-  defaultCategory?: Partial<TaskCategory> | null;
-}
-
-export default function TaskTabs({ defaultCategory }: Props) {
-  const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, [defaultCategory]);
+export default function TaskTabs() {
+  const regularTaskContent = useMemo(() => <RegularTasks />, []);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
-  const aaContent = useMemo(() => <AstrArkContent />, []);
+  const gameContent = useMemo(() => <Game2048Content />, []);
+  const brContent = useMemo(() => <BushWhackContent />, []);
 
   const tabs = [
     {
@@ -25,23 +22,41 @@ export default function TaskTabs({ defaultCategory }: Props) {
       key: 'Events',
       content: seasonalCampaignsContent,
     },
+    // {
+    //   key: '2048 Mini Game',
+    //   render: (label: string) => (
+    //     <div className="flex items-center">
+    //       <Image
+    //         className="object-contain w-8 h-7 mr-1"
+    //         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png"
+    //         alt=""
+    //         width={95}
+    //         height={83}
+    //         unoptimized
+    //       />
+
+    //       {label}
+    //     </div>
+    //   ),
+    //   content: gameContent,
+    // },
     {
-      key: 'AstrArk',
+      key: 'BushWhack',
       render: (label: string) => (
         <div className="flex items-center">
           <Image
-            className="object-contain w-7 h-7 mr-2 rounded-md"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/icon_astrark_ultra.png"
+            className="object-contain w-8 h-7 mr-1"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/bushwhack/br_icon.png"
             alt=""
-            width={1024}
-            height={1024}
+            width={95}
+            height={83}
             unoptimized
           />
 
           {label}
         </div>
       ),
-      content: aaContent,
+      content: brContent,
     },
   ];
   const router = useRouter();

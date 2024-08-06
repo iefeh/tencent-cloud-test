@@ -6,7 +6,6 @@ import { FC } from 'react';
 import rightArrowIconImg from 'img/profile/edit/icon_arrow_right.png';
 import { Tooltip } from '@nextui-org/react';
 import errorIconImg from 'img/icon/icon_error.png';
-import BindTipsModal from '@/components/common/modal/BindTipsModal';
 
 export interface MAItem {
   title: string;
@@ -25,7 +24,7 @@ interface Props {
 
 const MediaItem: FC<Props> = ({ item, onDisconnectClick }) => {
   const { getUserInfo } = useUserContext();
-  const { onConnect, bindTipsDisclosure } = useConnect(item.type, () => {
+  const { onConnect, BindTipsModal } = useConnect(item.type, () => {
     getUserInfo();
   });
 
@@ -67,7 +66,7 @@ const MediaItem: FC<Props> = ({ item, onDisconnectClick }) => {
         )}
       </div>
 
-      <BindTipsModal disclosure={bindTipsDisclosure} />
+      <BindTipsModal />
     </div>
   );
 };

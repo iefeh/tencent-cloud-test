@@ -28,7 +28,7 @@ export default function CircularLoading({
     <div
       ref={nodeRef}
       className={cn([
-        'absolute left-0 top-0 w-full h-full flex items-center justify-center bg-overlay/30 z-50 origin-center rounded-base',
+        'absolute left-0 top-0 w-full h-full flex items-center justify-center bg-overlay/30 z-[999] origin-center',
         noBlur || 'backdrop-saturate-150 backdrop-blur-md',
         className,
       ])}

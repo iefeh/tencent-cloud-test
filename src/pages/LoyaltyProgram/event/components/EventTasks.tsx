@@ -11,7 +11,6 @@ import useConnect from '@/hooks/useConnect';
 import useCountdown from '@/hooks/useCountdown';
 import dayjs from 'dayjs';
 import reverifyTipImg from 'img/loyalty/earn/reverify_tip.png';
-import BindTipsModal from '@/components/common/modal/BindTipsModal';
 
 interface VerifyTexts {
   label: string;
@@ -122,7 +121,7 @@ function EventTasks(props: EventTaskProps) {
     const {
       onConnect,
       loading: mediaLoading,
-      bindTipsDisclosure,
+      BindTipsModal,
     } = useConnect(connectType, () => {
       updateTasks?.();
     });
@@ -344,7 +343,7 @@ function EventTasks(props: EventTaskProps) {
           </ModalContent>
         </Modal>
 
-        <BindTipsModal disclosure={bindTipsDisclosure} />
+        <BindTipsModal />
       </div>
     );
   };

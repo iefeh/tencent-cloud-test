@@ -3,36 +3,24 @@ import { useEffect, useRef, useState } from 'react';
 
 interface Props<T, P> {
   key: string;
-  notFill?: boolean;
-  pageSize?: number;
   fn: (params: P) => Promise<PageResDTO<T>>;
-  paramsFn?: (pagi: P) => unknown;
+  paramsFn?: () => unknown;
 }
 
-export default function usePageQuery<T, P = PageQueryDto>({
-  key,
-  notFill,
-  pageSize = ASSETS_PAGE_SIZE,
-  fn,
-  paramsFn,
-}: Props<T, P>) {
+export default function usePageQuery<T, P = PageQueryDto>({ key, fn, paramsFn }: Props<T, P>) {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [data, setData] = useState<T[]>([]);
-  const pagi = useRef<P>({ page_num: 1, page_size: pageSize } as P);
+  const pagi = useRef<P>({ page_num: 1, page_size: ASSETS_PAGE_SIZE } as P);
 
-  async function queryData(isRefresh = false) {
+  async function queryData() {
     setLoading(true);
 
-    const params = paramsFn ? Object.assign({}, pagi.current, paramsFn(pagi.current)) : pagi.current;
-    if (isRefresh) {
-      (params as any).page_num = 1;
-    }
-
+    const params = paramsFn ? Object.assign({}, pagi.current, paramsFn()) : pagi.current;
     const res = await fn(params);
     let list = res?.[key] || [];
-    if (!notFill && list.length < pageSize) {
-      list.push(...Array(pageSize - list.length).fill(null));
+    if (list.length < ASSETS_PAGE_SIZE) {
+      list.push(...Array(ASSETS_PAGE_SIZE - list.length).fill(null));
     }
     setData(list);
     setTotal(res?.total || 0);
@@ -40,11 +28,7 @@ export default function usePageQuery<T, P = PageQueryDto>({
   }
 
   function onPageChange(params: Partial<P>) {
-    const data = Object.assign({}, pagi.current, params) as any;
-    const { page_num, page_size } = pagi.current as any;
-    if (data.page_num === page_num && data.page_size === page_size) return;
-
-    pagi.current = data;
+    pagi.current = Object.assign({}, pagi.current, params);
     queryData();
   }
 
@@ -52,5 +36,5 @@ export default function usePageQuery<T, P = PageQueryDto>({
     queryData();
   }, []);
 
-  return { loading, data, total, pagi, onPageChange, queryData, setData };
+  return { loading, data, total, onPageChange, queryData };
 }

@@ -28,7 +28,6 @@ declare namespace Lottery {
     reward_claim_type: number;
     amount: number;
     claimed: boolean;
-    cdk?: string;
   }
 
   interface RewardDTO {

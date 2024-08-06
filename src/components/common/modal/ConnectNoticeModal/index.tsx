@@ -7,36 +7,33 @@ import { FC } from 'react';
 
 interface Props {
   disclosure: Disclosure;
-  /** 账号显示文本，优先展示 */
-  mediaText?: string;
-  /** 账号类型，根据配置展示，第二优先级 */
-  mediaType?: MediaType;
+  mediaType: MediaType;
   onConnect: () => void;
 }
 
-function getAccountText(mediaType?: MediaType) {
-  let text = 'account';
-
-  switch (mediaType) {
-    case MediaType.DISCORD:
-      text = 'Discord account';
-      break;
-    case MediaType.TWITTER:
-      text = 'Twitter account';
-      break;
-    case MediaType.STEAM:
-      text = 'Steam account';
-      break;
-    case MediaType.TELEGRAM:
-      text = 'Telegram account';
-      break;
-  }
-
-  return text;
-}
-
-const ConnectNoticeModal: FC<Props> = ({ disclosure: { isOpen, onOpenChange }, mediaText, mediaType, onConnect }) => {
+const ConnectNoticeModal: FC<Props> = ({ disclosure: { isOpen, onOpenChange }, mediaType, onConnect }) => {
   const { userInfo, toggleLoginModal } = useUserContext();
+
+  function getAccountText() {
+    let text = 'account';
+
+    switch (mediaType) {
+      case MediaType.DISCORD:
+        text = 'Discord account';
+        break;
+      case MediaType.TWITTER:
+        text = 'Twitter account';
+        break;
+      case MediaType.STEAM:
+        text = 'Steam account';
+        break;
+      case MediaType.TELEGRAM:
+        text = 'Telegram account';
+        break;
+    }
+
+    return text;
+  }
 
   return (
     <Modal
@@ -54,8 +51,7 @@ const ConnectNoticeModal: FC<Props> = ({ disclosure: { isOpen, onOpenChange }, m
             <ModalBody>
               <p className="font-poppins-medium text-base">
                 {userInfo
-                  ? `Your ${mediaText || getAccountText(mediaType)
-                  } is not connected or the previous authorization has expired. Please click to reconnect.`
+                  ? `Your ${getAccountText()} is not connected or the previous authorization has expired. Please click to reconnect.`
                   : "It seems you haven't logged in to the website. Please log in first to access the content."}
               </p>
             </ModalBody>
