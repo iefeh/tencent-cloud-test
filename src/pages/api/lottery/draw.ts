@@ -12,9 +12,12 @@ import { errorInterceptor } from '@/lib/middleware/error';
 import LotteryPool, { ILotteryPool, ILotteryRewardItem } from '@/lib/models/LotteryPool';
 import User from '@/lib/models/User';
 import UserBadges from '@/lib/models/UserBadges';
-import UserLotteryDrawHistory, { IUserLotteryRewardItem } from '@/lib/models/UserLotteryDrawHistory';
+import UserLotteryDrawHistory, {
+    IUserLotteryRewardItem
+} from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
+import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
@@ -42,7 +45,8 @@ const noPrizeReward = {
 
 interface DrawResult {
   verified: boolean,
-  message: string,
+  duplicated: boolean,
+  message?: string,
   lottery_pool_id?: string,
   available_draw_time?: string | number,
   draw_id?: string,
@@ -99,6 +103,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
   if (!locked) {
     return {
       verified: false,
+      duplicated: false,
       message: `Lottery pool is under a ${interval}s waiting period, please try again later.`,
     };
   }
@@ -146,65 +151,76 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
     userRewards.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
   }
-  // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
-  const drawId = uuidv4();
-  const now = Date.now();
-  await doTransaction(async (session) => {
-    // 扣减用户mb和通用抽奖券
-    await User.updateOne({ user_id: userId }, { $inc: { moon_beam: -mbCost, lottery_ticket_amount: -lotteryTicketCost }}, { session: session });
-    // 扣减用户奖池抽奖券
-    await UserLotteryPool.updateOne(
-      { user_id: userId, lottery_pool_id: lotteryPoolId }, 
-      { 
-        $inc: { free_lottery_ticket_amount: -freeLotteryTicketCost, draw_amount: drawCount },
-        $setOnInsert: { created_time: now }
-      }, 
-      { session: session, upsert: true });
-    // 增加用户生涯总抽奖次数并检查徽章
-    await incrUserMetric(userId, Metric.TotalLotteryDrawAmount, drawCount, session);
-    // 扣减奖池总奖品数量
-    for (let reward of lotteryPool.rewards) {
-      let inventoryCost = itemInventoryDeltaMap.get(reward.item_id) as number;
-      if (reward.inventory_amount && inventoryCost) {
-        await LotteryPool.findOneAndUpdate(
-          { lottery_pool_id: lotteryPoolId, "rewards.item_id": reward.item_id }, 
-          { $inc: { "rewards.$[elem].inventory_amount" : -inventoryCost } }, 
-          { arrayFilters: [{ "elem.item_id": reward.item_id }], session: session });
+  try {
+    // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
+    const drawId = uuidv4();
+    const now = Date.now();
+    await doTransaction(async (session) => {
+      // 扣减用户mb和通用抽奖券
+      await User.updateOne({ user_id: userId }, { $inc: { moon_beam: -mbCost, lottery_ticket_amount: -lotteryTicketCost }}, { session: session });
+      // 扣减用户奖池抽奖券
+      await UserLotteryPool.updateOne(
+        { user_id: userId, lottery_pool_id: lotteryPoolId }, 
+        { 
+          $inc: { free_lottery_ticket_amount: -freeLotteryTicketCost, draw_amount: drawCount },
+          $setOnInsert: { created_time: now }
+        }, 
+        { session: session, upsert: true });
+      // 增加用户生涯总抽奖次数并检查徽章
+      await incrUserMetric(userId, Metric.TotalLotteryDrawAmount, drawCount, session);
+      // 扣减奖池总奖品数量
+      for (let reward of lotteryPool.rewards) {
+        let inventoryCost = itemInventoryDeltaMap.get(reward.item_id) as number;
+        if (reward.inventory_amount && inventoryCost) {
+          await LotteryPool.findOneAndUpdate(
+            { lottery_pool_id: lotteryPoolId, "rewards.item_id": reward.item_id }, 
+            { $inc: { "rewards.$[elem].inventory_amount" : -inventoryCost } }, 
+            { arrayFilters: [{ "elem.item_id": reward.item_id }], session: session });
+        }
+      }
+      // 写入用户中奖历史
+      await UserLotteryDrawHistory.updateOne(
+        { draw_id: drawId },
+        {
+          user_id: userId,
+          draw_time: now,
+          lottery_pool_id: lotteryPoolId,
+          rewards: userRewards,
+          need_verify_twitter: rewardNeedVerify,
+          chain_request_id: chainRequestId,
+          update_time: now
+        }, 
+        { session: session, upsert: true }
+      );
+    }, 3);
+    // 增加总抽奖次数
+    await LotteryPool.findOneAndUpdate(
+      { lottery_pool_id: lotteryPoolId }, 
+      { $inc: { total_draw_amount: drawCount } });
+    for (let reward of userRewards) {
+      if (reward.reward_type === LotteryRewardType.CDK) {
+        delete reward.cdk;
       }
     }
-    // 写入用户中奖历史
-    await UserLotteryDrawHistory.updateOne(
-      { draw_id: drawId },
-      {
-        user_id: userId,
-        draw_time: now,
-        lottery_pool_id: lotteryPoolId,
-        rewards: userRewards,
-        need_verify_twitter: rewardNeedVerify,
-        chain_request_id: chainRequestId,
-        update_time: now
-      }, 
-      { session: session, upsert: true }
-    );
-  }, 3);
-  // 增加总抽奖次数
-  await LotteryPool.findOneAndUpdate(
-    { lottery_pool_id: lotteryPoolId }, 
-    { $inc: { total_draw_amount: drawCount } });
-  for (let reward of userRewards) {
-    if (reward.reward_type === LotteryRewardType.CDK) {
-      delete reward.cdk;
+    return {
+      verified: true,
+      duplicated: false,
+      message: "Congratulations on winning the following rewards!",
+      lottery_pool_id: lotteryPoolId,
+      available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - (userLotteryPool? userLotteryPool.draw_amount: 0),
+      draw_id: drawId,
+      rewards: userRewards,
+      require_authorization: rewardNeedVerify? AuthorizationType.Twitter : undefined
     }
-  }
-  return {
-    verified: true,
-    message: "Congratulations on winning the following rewards!",
-    lottery_pool_id: lotteryPoolId,
-    available_draw_time: lotteryPool!.draw_limits === null ? "infinite" :  lotteryPool!.draw_limits - drawCount - (userLotteryPool? userLotteryPool.draw_amount: 0),
-    draw_id: drawId,
-    rewards: userRewards,
-    require_authorization: rewardNeedVerify? AuthorizationType.Twitter : undefined
-  }
+  } catch (error) {
+      console.log(error);
+      if (isDuplicateKeyError(error)) {
+          return { verified: false, duplicated: true}
+      }
+      console.error(error);
+      Sentry.captureException(error);
+      return { verified: false, duplicated: false}
+  } 
 }
 
 // 抽奖结果计算, 并返回抽到的奖品是否需要验证
