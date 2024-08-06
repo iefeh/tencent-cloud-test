@@ -1,14 +1,80 @@
-import LGButton from '@/pages/components/common/buttons/LGButton';
-import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
+import { MediaLinks } from '@/constant/common';
+import { Modal, ModalBody, ModalContent, ModalHeader, cn } from '@nextui-org/react';
 import type { FC } from 'react';
 
+interface RuleLi {
+  label: string;
+  desc?: string;
+}
+
+interface Rule {
+  title: string;
+  desc?: string;
+  lis: RuleLi[];
+}
+
 const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: { isOpen, onOpenChange } }) => {
-  // TODO 替换弹窗文案
+  const rules: Rule[] = [
+    {
+      title: 'Recommended Network Regions for AstrArk Alpha Test 2.0',
+      desc: 'The game will run more smoothly if your network is in one of these regions:',
+      lis: [
+        { label: 'North America' },
+        { label: 'Latin America' },
+        { label: 'Europe' },
+        { label: 'Japan, Korea, Southeast Asia' },
+        { label: 'India & Nigeria' },
+      ],
+    },
+    {
+      title: 'Common Questions and Solutions',
+      lis: [
+        {
+          label: 'Log in notice',
+          desc: 'Use your Moonveil account to log in to the game. Make sure your login details are correct.',
+        },
+        {
+          label: 'How to claim the rewards of Alpha Test 1.0',
+          desc: 'Log in with your Alpha Test 1.0 account to claim your rewards in the game.',
+        },
+        {
+          label: 'How to claim the rewards of Premium Pass',
+          desc: 'Check <a href="https://moonveil.gg/" target="_blank" class="text-basic-yellow hover:underline">Moonveil.gg</a> for your Redeem Code and enter it in AstrArk.',
+        },
+        {
+          label: 'How to claim the rewards of the Lottery System',
+          desc: 'Review your Draw History in 4th prize pool for Redeem Code and redeem it in AstrArk.',
+        },
+        {
+          label: 'Is this a data-deleted Test?',
+          desc: 'Yes, this is a data-deleted test. Your in-game data will be deleted after the test concludes.',
+        },
+        {
+          label: 'How to report bugs and crashes',
+          desc: `Join our official <a href="${MediaLinks.DISCORD}" target="_blank" class="text-basic-yellow hover:underline">Discord</a> community and reach out in the #support-general channel. We are still in a playtest stage and always welcome all the feedbacks from our players.`,
+        },
+        {
+          label: 'Can I use an emulator to play?',
+          desc: 'We recommend using the specified devices for better game experience. Emulators may cause lag or other issues.',
+        },
+      ],
+    },
+    {
+      title: 'Feedback & Suggestions',
+      desc: 'Alternatively, you can fill out a feedback form through other <a href="https://docs.google.com/forms/d/e/1FAIpQLSeG2QXW6iiN_q5vt4tw8kYJmvavlLWDgCxKc2NM61yZvm9EwQ/viewform?usp=sf_link" target="_blank" class="text-basic-yellow hover:underline">channels</a>. We appreciate feedback from all Commanders.',
+      lis: [],
+    },
+  ];
   return (
     <Modal
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      classNames={{ base: 'max-w-[50rem]', header: 'p-0', body: 'pb-4' }}
+      classNames={{
+        base: 'bg-black max-w-[40rem]',
+        header: 'p-0',
+        closeButton: 'z-10',
+        body: 'text-[#CCCCCC] font-poppins text-base leading-[1.875rem] py-8 px-10 max-h-[37.5rem] overflow-y-auto',
+      }}
     >
       <ModalContent>
         {() => (
@@ -20,19 +86,24 @@ const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: 
             </ModalHeader>
 
             <ModalBody>
-              <p>
-                <span className="text-basic-yellow">Step 1</span>&nbsp;&nbsp;Tap Settings &gt; General &gt; Profiles or
-                Profiles & Device Management. Under the &quot;Enterprise App&quot; heading, you see a profile for the
-                developer.
-              </p>
+              {rules.map((rule, index) => (
+                <ul key={index}>
+                  <li className="text-basic-yellow text-lg">
+                    <b>
+                      {index + 1}. {rule.title}
+                    </b>
+                  </li>
 
-              <p>
-                <span className="text-basic-yellow">Step 2</span>&nbsp;&nbsp;Tap the name of the developer profile under
-                the Enterprise App heading to establish trust for this developer. Then you see a prompt to confirm your
-                choice. After you trust this profile, you can manually install other apps from the same developer and
-                open them immediately. This developer remains trusted until you use the Delete App button to remove all
-                apps from the developer.
-              </p>
+                  {rule.desc && <li className="indent-[1em]" dangerouslySetInnerHTML={{ __html: rule.desc }}></li>}
+
+                  {rule.lis.map((item, ci) => (
+                    <li key={ci} className="indent-[1em]">
+                      <div className={cn([item.desc && 'font-bold'])}>· {item.label}</div>
+                      {item.desc && <p className="indent-[2em]" dangerouslySetInnerHTML={{ __html: item.desc }}></p>}
+                    </li>
+                  ))}
+                </ul>
+              ))}
             </ModalBody>
           </>
         )}

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import maskBg from 'img/astrark/bg-mask.png';
-import styles from './index.module.css';
+import styles from './index.module.scss';
 import { Button, cn, useDisclosure } from '@nextui-org/react';
 import Head from 'next/head';
 import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
@@ -34,8 +34,7 @@ export default function DownloadPage() {
     },
     {
       title: 'Android 日本語版',
-      img: '/img/astrark/pre-register/bg_btn_colored.png',
-      width: '19.6875rem',
+      className: styles.downloadBtn,
       label: 'ダウンロード',
       url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_JP_URL!,
     },
@@ -73,12 +72,15 @@ export default function DownloadPage() {
           {urls.map((item, index) => {
             let button = (
               <Button
-                className="w-[19.6875rem] h-[4.375rem] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
-                style={{ width: item.width || '13.25rem', backgroundImage: `url('${item.img}')` }}
+                className={cn([
+                  'w-[13.25rem] h-[4.375rem] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl',
+                  item.className,
+                ])}
+                style={item.img ? { backgroundImage: `url('${item.img}')` } : {}}
                 disableRipple
                 onPress={item.isAppStore ? () => onAppStore(item.url) : undefined}
               >
-                {item.label}
+                <span className="relative z-10">{item.label}</span>
               </Button>
             );
 

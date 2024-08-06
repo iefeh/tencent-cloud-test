@@ -1,6 +1,0 @@
-.maskVideo {
-  mask: url('/svg/logo.svg');
-  mask-size: 80%;
-  mask-repeat: no-repeat;
-  mask-position: 50% 50%;
-}
