@@ -3,9 +3,6 @@ import { ContractTransactionDataAndInputError } from 'web3';
 
 import { getUserFirstWhitelist } from '@/lib/common/user';
 import QuestAchievement from '@/lib/models/QuestAchievement';
-import UserTokenReward, {
-    UserTokenAuditStatus, UserTokenSourceType
-} from '@/lib/models/UserTokenReward';
 import { constructQuest } from '@/lib/quests/constructor';
 import { queryUserDiscordAuthorization } from '@/lib/quests/implementations/connectDiscordQuest';
 import { queryUserSteamAuthorization } from '@/lib/quests/implementations/connectSteamQuest';
@@ -76,9 +73,6 @@ async function enrichTaskVerification(userId: string, quests: any[], claimed: bo
                     quest.verify_disabled = true;
                 }
             }
-        } else if (quest.type === QuestType.TokenDispatch) {
-            const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`) });
-            quest.verified = !!userTokenReward;
         }
     });
     if (!userId) {

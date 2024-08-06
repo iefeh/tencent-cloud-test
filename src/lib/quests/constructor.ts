@@ -27,7 +27,6 @@ import { TweetInteractionQuest } from './implementations/tweetInteraction';
 import { TwitterFollowerQuest } from './implementations/twitterFollowerQuest';
 import { TwitterTopicQuest } from './implementations/twitterTopicQuest';
 import { ViewWebsiteQuest } from './implementations/viewWebsite';
-import { TokenDispatchQuest } from './implementations/tokenDispatchQuest';
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
@@ -84,8 +83,6 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new FollowOnTwitterQuestNew(quest);
         case QuestType.ThirdPartyCallback:
             return new ThirdPartyCallbackQuest(quest);
-        case QuestType.TokenDispatch:
-            return new TokenDispatchQuest(quest);
         default:
             throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
     }

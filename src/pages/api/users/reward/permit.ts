@@ -3,24 +3,22 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Contract, {ContractCategory, IContract} from "@/lib/models/Contract";
-import {redis} from "@/lib/redis/client";
 import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
 import {ethers} from 'ethers';
 import UserTokenReward, {
     IUserTokenReward,
-    UserTokenAuditStatus,
-    UserTokenSourceType
+    UserTokenAuditStatus
 } from "@/lib/models/UserTokenReward";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
-    const {reward_ids} = req.query;
+    const { reward_ids } = req.query;
     if (!reward_ids || reward_ids.length == 0) {
         return res.json(response.invalidParams());
     }
-    const ids = reward_ids.split(",");
+    const ids = String(reward_ids).split(",");
     const rewards = await UserTokenReward.find({reward_id: {$in: ids}}) as IUserTokenReward[];
     if (!rewards || rewards.length != ids.length) {
         return res.json(response.notFound("Unknown reward."));

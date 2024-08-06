@@ -19,7 +19,11 @@ export interface IWhitelist extends Document {
 type WhitelistReward = {
     // 奖励的MB数
     moon_beams: number;
-    tokens: number;
+    // 奖励的token
+    token: {
+        amount: number;
+        amount_formatted: string;
+    };
 }
 
 const WhitelistSchema = new Schema<IWhitelist>({

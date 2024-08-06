@@ -51,9 +51,7 @@ export enum QuestType {
     // 领取抽奖券
     ClaimLotteryTicket = 'claim_lottery_ticket',
     // twitter关注
-    FollowOnTwitterNew = 'follow_on_twitter_new',
-    // 发放token
-    TokenDispatch = 'token_dispatch',
+    FollowOnTwitterNew = 'follow_on_twitter_new'
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -88,6 +86,19 @@ export enum QuestRewardType {
     Fixed = 'fixed',
     // 范围奖励，奖励数量特定于任务进行动态分配
     Range = 'range',
+}
+
+export type TokenReward = {
+    // 奖励的token所在的链
+    chain_id: string;
+    // 奖励的token的合约地址，0地址代表奖励原生代币
+    token_address: string;
+    // 奖励的目标群体白名单id
+    whitelist_id: string;
+    // 预计奖励的抽奖时间
+    estimated_raffle_time: number;
+    // 实际抽奖时间
+    actual_raffle_time: number;
 }
 
 export type ThinkingDataQuery = {

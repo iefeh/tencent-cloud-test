@@ -1,15 +1,21 @@
-import {IQuest} from "@/lib/models/Quest";
-import {checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist} from "@/lib/quests/types";
-import QuestAchievement from "@/lib/models/QuestAchievement";
-import UserMoonBeamAudit, {UserMoonBeamAuditType} from "@/lib/models/UserMoonBeamAudit";
-import doTransaction from "@/lib/mongodb/transaction";
-import User from "@/lib/models/User";
-import {isDuplicateKeyError} from "@/lib/mongodb/client";
-import UserMetricReward, {checkMetricReward, IUserMetricReward} from "@/lib/models/UserMetricReward";
-import UserMetrics from "@/lib/models/UserMetrics";
-import logger from "@/lib/logger/winstonLogger";
-import {getUserFirstWhitelist} from "@/lib/common/user";
-import * as Sentry from "@sentry/nextjs";
+import { ethers } from 'ethers';
+
+import { getUserFirstWhitelist } from '@/lib/common/user';
+import logger from '@/lib/logger/winstonLogger';
+import { IQuest } from '@/lib/models/Quest';
+import QuestAchievement from '@/lib/models/QuestAchievement';
+import User from '@/lib/models/User';
+import UserMetricReward, {
+    checkMetricReward, IUserMetricReward
+} from '@/lib/models/UserMetricReward';
+import UserMetrics from '@/lib/models/UserMetrics';
+import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import { isDuplicateKeyError } from '@/lib/mongodb/client';
+import doTransaction from '@/lib/mongodb/transaction';
+import {
+    checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist
+} from '@/lib/quests/types';
+import * as Sentry from '@sentry/nextjs';
 
 interface IProjection {
     [key: string]: number;
@@ -61,7 +67,7 @@ export abstract class QuestBase {
         if (!userWl || !userWl.reward || !userWl.reward.moon_beams) {
             throw new Error(`quest ${this.quest.id} user ${userId} whitelist ${whitelist.whitelist_id} reward not properly configured`);
         }
-        return userWl?.reward?.moon_beams!;
+        return userWl?.reward?.moon_beams;
     }
 
     private async checkUserRewardDeltaFromUserMetric(userId: string): Promise<number> {
@@ -126,17 +132,16 @@ export abstract class QuestBase {
                 },
                 {upsert: true, session: session},
             );
-        });
-        
+        });   
     }
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
-    async saveUserReward<T>(userId: string, taint: string, moonBeamDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean }> {
+    async saveUserReward<T>(userId: string, taint: string, rewardDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean }> {
         const now = Date.now();
         const audit = new UserMoonBeamAudit({
             user_id: userId,
             type: UserMoonBeamAuditType.Quests,
-            moon_beam_delta: moonBeamDelta,
+            moon_beam_delta: rewardDelta,
             reward_taint: taint,
             corr_id: this.quest.id,
             extra_info: extra_info,

@@ -27,6 +27,8 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
     await enrichQuestAuthorization(userId, quests);
+    // 为任务添加user_token_reward字段
+    await enrichQuestTokenClaimStatus(userId, quests);
     // 丰富任务进度
     await enrichTasksProgress(userId, quests);
     // 丰富任务属性
@@ -39,7 +41,7 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
     maskQuestProperty(quests);
 
     for (let quest of quests) {
-        if (quest.type != QuestType.ConnectWallet || quest.type != QuestType.TokenDispatch || !quest.verified) {
+        if (quest.type != QuestType.ConnectWallet || !quest.verified) {
             continue;
         }
         if (quest.type === QuestType.ConnectWallet) {
@@ -61,10 +63,6 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
                     can_reverify_after: reverifyAfter,
                 };
             }
-        } else if (quest.type === QuestType.TokenDispatch) {
-            // 根据用户UserTokenReward的状态返回当前任务进度
-            const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`) });
-            quest.properties.token_dispatch_status = userTokenReward.status;
         }
     }
 }
@@ -116,10 +114,6 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
         if (!quest.verified) {
             if (quest.type === QuestType.ThinkingDataQuery) {
                 quest.verified = verified.has(`${quest.id},${dateStamp}`);
-            }
-            else if (quest.type === QuestType.TokenDispatch) {
-                const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`) });
-                quest.verified = !!userTokenReward;
             }
         }
         // 添加禁止verify标识
@@ -226,6 +220,25 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
     });
 }
 
+// 为任务添加user_token_reward字段
+async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
+    quests.forEach(async (quest) => {
+        // 任务存在token奖励, 查询用户token奖励领取状态
+        if (quest.reward.token_reward && quest.reward.token_reward.actual_raffle_time && quest.verified) {
+            const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`)});
+            // 用户已验证token奖励, 创建token奖励属性
+            if (userTokenReward) {
+                quest.user_token_reward = {
+                    token_claim_status: userTokenReward.status,
+                    token_reward_id: userTokenReward.reward_id,
+                    token_amount: userTokenReward.token_amount_raw,
+                    token_amount_formatted: userTokenReward.token_amount_formatted
+                }
+            }
+        }
+    })
+}
+
 async function getUserAuth(userId: string): Promise<Map<AuthorizationType, boolean>> {
     const userAuth = await queryUserAuth(userId);
     return new Map<AuthorizationType, boolean>([
@@ -269,7 +282,6 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
                 break;
             case QuestType.ConnectWallet:
             case QuestType.HoldNFT:
-            case QuestType.TokenDispatch:
                 quest.authorization = AuthorizationType.Wallet;
                 quest.user_authorized = false;
                 break;
