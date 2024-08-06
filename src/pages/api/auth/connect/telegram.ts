@@ -5,6 +5,7 @@ import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserTelegram from '@/lib/models/UserTelegram';
 import { TelegramAuthFlow } from '@/lib/authorization/provider/telegram';
 import { handleAuthCallback } from '@/lib/authorization/provider/authFlow';
+import { AuthorizationFlow } from '@/lib/models/authentication';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -16,6 +17,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     return;
   }
 
+  req.body.flow = AuthorizationFlow.CONNECT;
   await handleAuthCallback(new TelegramAuthFlow(), req, res);
 });
 

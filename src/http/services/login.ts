@@ -95,10 +95,6 @@ export interface TelegramLoginData {
   photo_url?: string;
   auth_date: number;
   hash: string;
-  invite_code?: string;
-  signup_mode?: string;
-  landing_url: string;
-  flow: AuthorizationFlow;
 }
 
 export function loginByWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
@@ -111,19 +107,19 @@ export function connectWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
 }
 
 export function loginByTelegramAPI(data: TelegramLoginData): Promise<TokenDto | null> {
-  data.landing_url = getAuthParams(`?type=telegram`).landing_url;
-  data.signup_mode = 'enabled';
-  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
-  data.flow = AuthorizationFlow.LOGIN;
-  return http.post('/api/auth/signin/telegram', JSON.stringify(data));
+  return http.post('/api/auth/signin/telegram', JSON.stringify(data), {
+    params: {
+      ...getAuthParams(`?type=telegram`),
+      invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
+      signup_mode: 'enabled',
+    },
+  });
 }
 
 export function connectTelegramAPI(data: TelegramLoginData): Promise<TokenDto | null> {
-  data.landing_url = getAuthParams(`/connect?type=telegram`).landing_url;
-  data.signup_mode = '';
-  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
-  data.flow = AuthorizationFlow.CONNECT;
-  return http.post('/api/auth/connect/telegram', JSON.stringify(data));
+  return http.post('/api/auth/connect/telegram', JSON.stringify(data), {
+    params: getAuthParams(`/connect?type=telegram`),
+  });
 }
 
 export function disconnectMediaAPI(type: string): Promise<null> {

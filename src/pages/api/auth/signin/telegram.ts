@@ -3,10 +3,12 @@ import { NextApiResponse, NextApiRequest } from 'next';
 import { createRouter } from 'next-connect';
 import { TelegramAuthFlow } from '@/lib/authorization/provider/telegram';
 import { handleAuthCallback } from '@/lib/authorization/provider/authFlow';
+import { AuthorizationFlow } from '@/lib/models/authentication';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
+  req.body.flow = AuthorizationFlow.LOGIN;
   await handleAuthCallback(new TelegramAuthFlow(), req, res);
 });
 
