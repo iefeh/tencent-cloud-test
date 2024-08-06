@@ -69,10 +69,9 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
     rewardsDisclosure.onOpen();
   }
 
-  function onClaimed(needClose?: boolean) {
+  async function onClaimed(needClose?: boolean) {
     if (needClose) rewardsDisclosure.onClose();
-    onUpdate?.();
-    drawHistoryModalRef.current?.update();
+    await Promise.all([onUpdate?.(), drawHistoryModalRef.current?.update()]);
   }
 
   function onShowHistory() {
@@ -91,7 +90,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
 
   useEffect(() => {
     setEndedModalContainer(document.getElementById('lottery-draw-screen') || undefined);
-  }, [])
+  }, []);
 
   return (
     <div id="lottery-draw-screen" className="relative w-screen h-[160vh] lg:h-screen">
