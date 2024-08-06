@@ -13,9 +13,12 @@ import PageDesc from '../../components/common/PageDesc';
 import Head from 'next/head';
 import EntertainmentSlide from './EntertainmentSlide';
 import { scrollRef, scrollStart } from '../../hooks/scroll';
+import styles from './index.module.scss';
 
 interface Figure {
-  img: StaticImageData;
+  img: string;
+  width: number;
+  height: number;
   name: string;
   subTitle: string;
   introduce: string;
@@ -23,10 +26,12 @@ interface Figure {
 
 const figureArray: Figure[] = [
   {
-    img: MJ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_mj.png',
+    width: 1153,
+    height: 1200,
     name: 'M.J',
     subTitle: 'CEO',
-    introduce: `<div class="subtitle text-left whitespace-nowrap" >
+    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- 10-year game dev & publishing experience</p>
   <p>- Lifetime hardcore gamer, Starcraft pro</p>
@@ -38,10 +43,12 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: JW,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_jw.png',
     name: 'Jason',
+    width: 1135,
+    height: 900,
     subTitle: 'COO',
-    introduce: `<div class="subtitle text-left whitespace-nowrap" >
+    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- Ex-pro player，lifetime hardcore gamer</p>
   <p>- Traveller on earth, also from Azeroth to Dragon isles</p>
@@ -50,10 +57,25 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: MasonZ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_chris.png',
+    name: 'Chris',
+    width: 492,
+    height: 505,
+    subTitle: 'Head of Game Dev',
+    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+  <p>- Formerly CTO at Riot Games China</p>
+  <p>- Formerly Engineering Director at Lilith Games</p>
+  <p>- Formerly Principal Software Architect at Roblox Inc., Machine Zone, CCP Games, Crytek GmbH</p>
+  <p>- 20+ years international industry experiences in game engine tech, MMO server tech, development processes, team building, etc</p>
+</div>`,
+  },
+  {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_mason.png',
     name: 'Mason Z',
+    width: 1127,
+    height: 1118,
     subTitle: 'Executive Producer',
-    introduce: `<div class="subtitle text-left whitespace-nowrap" >
+    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
   <p>- Formerly Head of a game studio of the Tencent family</p>
   <p>- Bacon evangelist</p>
@@ -62,10 +84,12 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: RobinZ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_robin.png',
     name: 'Robin Z',
+    width: 989,
+    height: 1042,
     subTitle: 'Web 3 Producer',
-    introduce: `<div class="subtitle text-left whitespace-nowrap" >
+    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
   <p>- DeFi project builder</p>
   <p>- Crypto native since 2014</p>
   <p>- 7 years full-stack mobile-game dev & production experience</p>
@@ -75,10 +99,12 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: PuffZ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_puff.png',
     name: 'Puff Z',
+    width: 1034,
+    height: 1024,
     subTitle: 'Art Director',
-    introduce: `<div class="subtitle text-left whitespace-nowrap" >
+    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
   <p>- 8 years Chief Gaming Companion experience</p>
   <p>- Discerning taste, unique aesthetics, and keen insight into players' psychology</p>
   <p>- Tree-climbing Pro</p>
@@ -88,6 +114,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
 ];
+
 const sponsorArray = [
   '/img/about/1.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/spartan.png',
@@ -168,7 +195,7 @@ export default function About({
         <title>About | Moonveil Entertainment</title>
 
         {figureArray.map((item, index) => (
-          <link key={index} rel="preload" as="image" href={item.img.src} crossOrigin="anonymous"></link>
+          <link key={index} rel="preload" as="image" href={item.img} crossOrigin="anonymous"></link>
         ))}
 
         {/* {sponsorArray.map((item, index) => (
@@ -209,12 +236,9 @@ export default function About({
                   />
                 </div>
                 <div className="w-1/2 flex items-end justify-center max-md:hidden">
-                  <Image
-                    className="object-cover w-[40rem] h-[40.75rem]"
-                    src={curFigure?.img!}
-                    alt={curFigure?.name!}
-                    unoptimized
-                  />
+                  <div className="w-[40rem] h-[40.75rem] relative">
+                    <Image className="object-cover" src={curFigure?.img!} alt={curFigure?.name!} fill unoptimized />
+                  </div>
                 </div>
               </div>
               <div className="blank w-full h-[11.875rem] relative">
@@ -283,6 +307,9 @@ export default function About({
                         className="w-auto h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
                         src={figureData.img}
                         alt={figureData.name}
+                        width={figureData.width}
+                        height={figureData.height}
+                        unoptimized
                       />
                       <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
                         <span className="text-white mb-1 leading-none">{figureData.name}</span>
