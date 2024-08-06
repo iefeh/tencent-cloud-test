@@ -8,6 +8,10 @@ export enum Metric {
   // 预约AstrArk
   PreRegisterAstrArk = 'pre_register_astrark',
   AstrarkHeroURL = 'astrark_hero_url',
+  // AA游戏局数
+  AstrarkGameCount = 'astrark_game_count',
+  AstrarkDrawSoldierCount = 'astrark_draw_soldier_count',
+  AstrarkDrawHerorCount = 'astrark_draw_hero_count',
 
   // 钱包指标使用的资产id
   WalletAssetId = 'wallet_asset_id',
@@ -85,6 +89,7 @@ export enum Metric {
 
   // 预约BushWhack
   PreRegisterBushWhack = 'pre_register_bushwhack',
+
 }
 
 // 用户内部指标，存放单独的集合
@@ -95,6 +100,9 @@ export interface IUserMetrics extends Document {
   pre_register_astrark: number;
   // astrark游戏英雄地址
   astrark_hero_url: string;
+  astrark_game_count: number;
+  astrark_draw_soldier_count: number;
+  astrark_draw_hero_count: number;
   // 绑定钱包拥有的token价值
   wallet_asset_id: string;
   wallet_token_usd_value: number;
@@ -171,6 +179,9 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   user_id: { type: String, required: true },
   pre_register_astrark: { type: Number },
   astrark_hero_url: { type: String },
+  astrark_game_count: { type: Number },
+  astrark_draw_soldier_count: { type: Number },
+  astrark_draw_hero_count: { type: Number },
   wallet_asset_id: { type: String },
   wallet_token_usd_value: { Type: Number },
   wallet_nft_usd_value: { Type: Number },
