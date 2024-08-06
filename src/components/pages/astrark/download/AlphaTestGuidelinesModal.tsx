@@ -62,7 +62,7 @@ const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: 
     },
     {
       title: 'Feedback & Suggestions',
-      desc: 'Alternatively, you can fill out a feedback form through other channels. We appreciate feedback from all Commanders.',
+      desc: 'Alternatively, you can fill out a feedback form through other <a href="https://docs.google.com/forms/d/e/1FAIpQLSeG2QXW6iiN_q5vt4tw8kYJmvavlLWDgCxKc2NM61yZvm9EwQ/viewform?usp=sf_link" target="_blank" class="text-basic-yellow hover:underline">channels</a>. We appreciate feedback from all Commanders.',
       lis: [],
     },
   ];
