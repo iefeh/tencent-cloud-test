@@ -11,7 +11,8 @@ import User from '@/lib/models/User';
 import UserInvite from '@/lib/models/UserInvite';
 import UserMetrics, { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import {
-    NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit
+    NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA,
+    saveNewInviteeRegistrationMoonBeamAudit,
 } from '@/lib/models/UserMoonBeamAudit';
 import connectToMongoDbDev, { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
@@ -21,8 +22,8 @@ import * as response from '@/lib/response/response';
 import * as Sentry from '@sentry/nextjs';
 
 export interface ValidationResult {
-    passed: boolean,
-    authPayload?: AuthorizationPayload
+    passed: boolean;
+    authPayload?: AuthorizationPayload;
 }
 
 export abstract class AuthFlowBase {
@@ -53,7 +54,7 @@ export abstract class AuthFlowBase {
 
 export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: any) {
     // 检查当前的回调state，获取state对应的授权负载
-    const {passed, authPayload} = await authFlow.validateCallbackState(req, res);
+    const { passed, authPayload } = await authFlow.validateCallbackState(req, res);
     if (!passed) {
         return;
     }
@@ -80,12 +81,20 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
     }
 }
 
-async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any): Promise<void> {
+async function handleUserConnectFlow(
+    authFlow: AuthFlowBase,
+    authPayload: AuthorizationPayload,
+    authParty: any,
+    res: any,
+): Promise<void> {
     // 检查当前是否存在授权cd
     const reconnectCdKey = authFlow.getReconnectCdKey(authParty);
     const canReconnectAt = await redis.get(reconnectCdKey);
     if (canReconnectAt) {
-        const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.connectionCoolingDown(canReconnectAt));
+        const landing_url = appendResponseToUrlQueryParams(
+            authPayload.landing_url,
+            response.connectionCoolingDown(canReconnectAt),
+        );
         res.redirect(landing_url);
         return;
     }
@@ -101,25 +110,25 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
     const userMetric = authFlow.authorizationMetric();
     try {
         await doTransaction(async (session) => {
-            const opts = {session};
+            const opts = { session };
             if (userConnection) {
                 // 移除历史绑定
-                userConnection.deleted_time = newUserConnection.created_time
+                userConnection.deleted_time = newUserConnection.created_time;
                 await userConnection.save(opts);
             }
             await newUserConnection.save(opts);
             // 更新用户授权指标
             await UserMetrics.updateOne(
-                {user_id: authPayload.authorization_user_id!},
+                { user_id: authPayload.authorization_user_id! },
                 {
                     $set: {
                         [userMetric]: 1,
                     },
                     $setOnInsert: {
-                        "created_time": Date.now(),
-                    }
+                        created_time: Date.now(),
+                    },
                 },
-                {upsert: true, session: session}
+                { upsert: true, session: session },
             );
         });
         const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.success());
@@ -127,7 +136,10 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
     } catch (error: any) {
         if (isDuplicateKeyError(error)) {
             logger.warn('唯一性键冲突：', error);
-            const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, response.accountDuplicateBound());
+            const landing_url = appendResponseToUrlQueryParams(
+                authPayload.landing_url,
+                response.accountDuplicateBound(),
+            );
             res.redirect(landing_url);
             return;
         }
@@ -138,7 +150,12 @@ async function handleUserConnectFlow(authFlow: AuthFlowBase, authPayload: Author
     }
 }
 
-async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any): Promise<void> {
+async function handleUserLoginFlow(
+    authFlow: AuthFlowBase,
+    authPayload: AuthorizationPayload,
+    authParty: any,
+    res: any,
+): Promise<void> {
     // 检查用户的绑定与登录模式，确认当前触发的流程分支
     let userConnection = await authFlow.queryUserConnectionFromParty(authParty);
     const isNewUser = !userConnection;
@@ -151,7 +168,13 @@ async function handleUserLoginFlow(authFlow: AuthFlowBase, authPayload: Authoriz
     await doUserLogin(authFlow, authPayload, authParty, userConnection, res);
 }
 
-async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, userConnection: any, res: any) {
+async function doUserLogin(
+    authFlow: AuthFlowBase,
+    authPayload: AuthorizationPayload,
+    authParty: any,
+    userConnection: any,
+    res: any,
+) {
     // 默认当前是登录流程，如果用户不存在，则需要创建新的用户与用户绑定
     const isNewUser = !userConnection;
     if (isNewUser) {
@@ -160,7 +183,7 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
         newUser.moon_beam = authPayload.inviter_id ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0;
         userConnection = authFlow.constructUserConnection(newUser.user_id, authParty);
         await doTransaction(async (session) => {
-            const opts = {session};
+            const opts = { session };
             await userConnection.save(opts);
             await newUser.save(opts);
             // 添加邀请记录
@@ -203,7 +226,12 @@ async function doUserLogin(authFlow: AuthFlowBase, authPayload: AuthorizationPay
     res.redirect(landing_url);
 }
 
-async function doUserSignupConfirmation(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, authParty: any, res: any) {
+async function doUserSignupConfirmation(
+    authFlow: AuthFlowBase,
+    authPayload: AuthorizationPayload,
+    authParty: any,
+    res: any,
+) {
     const newUser = authFlow.constructNewUser(authParty);
     const userConnection = authFlow.constructUserConnection(newUser.user_id, authParty);
     // 构建注册的负载信息

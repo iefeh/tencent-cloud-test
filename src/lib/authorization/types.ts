@@ -42,7 +42,6 @@ export interface AuthToken {
     [key: string]: any;
 }
 
-
 export interface OAuthRefreshTokenPayload {
     grant_type: 'refresh_token';
     client_id: string;
@@ -53,17 +52,18 @@ export interface OAuthRefreshTokenPayload {
 }
 
 export enum AuthorizationType {
-    Twitter = "twitter",
-    Discord = "discord",
-    Wallet = "wallet",
-    Google = "google",
-    Steam = "steam",
-    Email = "email",
+    Twitter = 'twitter',
+    Discord = 'discord',
+    Wallet = 'wallet',
+    Google = 'google',
+    Steam = 'steam',
+    Telegram = 'telegram',
+    Email = 'email',
 }
 
 export enum CaptchaType {
-    LoginCaptcha = "login_captcha",
-    ConnectCaptcha = "connect_captcha",
+    LoginCaptcha = 'login_captcha',
+    ConnectCaptcha = 'connect_captcha',
 }
 
 // 注册的负载信息，用于保存对应授权登录与用户的注册信息

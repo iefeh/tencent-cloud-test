@@ -1,7 +1,8 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { connectMediaAPI, connectWalletAPI } from '@/http/services/login';
+import { connectMediaAPI, connectWalletAPI, connectTelegramAPI } from '@/http/services/login';
+import { TelegramLoginData } from '@/lib/authorization/provider/telegram';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
@@ -52,6 +53,21 @@ export default function useConnect(type: string, callback?: (args?: any) => void
       );
       dialogWindowRef.current = dialog;
     }, 0);
+  }
+
+  function onTelegramMessage(event: MessageEvent) {
+    let data: { event: string; result: TelegramLoginData };
+
+    try {
+      data = JSON.parse(event.data);
+    } catch (error) {
+      return;
+    }
+
+    if (data.event === 'auth_result') {
+      connectTelegramAPI(data.result);
+      window.removeEventListener('message', onTelegramMessage);
+    }
   }
 
   async function onConnectWallet() {
@@ -117,6 +133,10 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     }
 
     openAuthWindow(res.authorization_url);
+    if (type === MediaType.TELEGRAM) {
+      window.addEventListener('message', onTelegramMessage);
+    }
+
     startWatch();
     setLoading(false);
   }
@@ -124,7 +144,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   useEffect(() => {
     return () => {
       stopWatch();
-    }
+    };
   }, []);
 
   const BindTipsModal = () => {

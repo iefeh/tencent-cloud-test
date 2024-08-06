@@ -1,6 +1,7 @@
 import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
 import { KEY_INVITE_CODE, KEY_SIGN_UP_CRED } from '@/constant/storage';
+import { TelegramLoginData } from '@/lib/authorization/provider/telegram';
 
 function getAuthParams(path = '') {
   const { origin } = location;
@@ -51,10 +52,24 @@ export function signInParticleAPI(data: ParticleAuthDto) {
 }
 
 export function connectMediaAPI(type: string): Promise<AuthDto> {
+  if (type === MediaType.TELEGRAM) {
+    return http.get('/api/auth/telegram/auth', { params: getAuthParams(`/connect?type=${type}`) });
+  }
+
   return http.get(`/api/auth/connect/${type}`, { params: getAuthParams(`/connect?type=${type}`) });
 }
 
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
+  if (type === MediaType.TELEGRAM) {
+    return http.get('/api/auth/telegram/auth', {
+      params: {
+        ...getAuthParams(`?type=${type}`),
+        invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
+        signup_mode: 'enabled',
+      },
+    });
+  }
+
   return http.get(`/api/auth/signin/${type}`, {
     params: {
       ...getAuthParams(`?type=${type}`),
@@ -81,7 +96,21 @@ export function connectWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/wallet', JSON.stringify(data));
 }
 
-export function disconnectMediaAPI(type: string): Promise<boolean | null> {
+export function loginByTelegramAPI(data: TelegramLoginData): Promise<boolean | null> {
+  data.signup_mode = 'enabled';
+  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
+  data.landing_url = `${location.origin}/Profile/edit`;
+  return http.post('/api/auth/signin/telegram', JSON.stringify(data));
+}
+
+export function connectTelegramAPI(data: TelegramLoginData): Promise<boolean | null> {
+  data.signup_mode = 'enabled';
+  data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
+  data.landing_url = `${location.origin}/Profile/edit`;
+  return http.post('/api/auth/connect/telegram', JSON.stringify(data));
+}
+
+export function disconnectMediaAPI(type: string): Promise<null> {
   return http.post(`/api/auth/disconnect/${type}`);
 }
 
