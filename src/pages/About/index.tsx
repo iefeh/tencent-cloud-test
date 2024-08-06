@@ -1,11 +1,6 @@
 'use client';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import MJ from 'img/about/1@2x.png';
-import JW from 'img/about/2@2x.png';
-import MasonZ from 'img/about/3@2x.png';
-import RobinZ from 'img/about/4@2x.png';
-import PuffZ from 'img/about/5@2x.png';
 import { useEffect, useRef, useState } from 'react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
@@ -13,7 +8,6 @@ import PageDesc from '../../components/common/PageDesc';
 import Head from 'next/head';
 import EntertainmentSlide from './EntertainmentSlide';
 import { scrollRef, scrollStart } from '../../hooks/scroll';
-import styles from './index.module.scss';
 
 interface Figure {
   img: string;
@@ -31,7 +25,7 @@ const figureArray: Figure[] = [
     height: 1200,
     name: 'M.J',
     subTitle: 'CEO',
-    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- 10-year game dev & publishing experience</p>
   <p>- Lifetime hardcore gamer, Starcraft pro</p>
@@ -48,7 +42,7 @@ const figureArray: Figure[] = [
     width: 1135,
     height: 900,
     subTitle: 'COO',
-    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
   <p>- Ex-pro player，lifetime hardcore gamer</p>
   <p>- Traveller on earth, also from Azeroth to Dragon isles</p>
@@ -62,7 +56,7 @@ const figureArray: Figure[] = [
     width: 492,
     height: 505,
     subTitle: 'Head of Game Dev',
-    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Formerly CTO at Riot Games China</p>
   <p>- Formerly Engineering Director at Lilith Games</p>
   <p>- Formerly Principal Software Architect at Roblox Inc., Machine Zone, CCP Games, Crytek GmbH</p>
@@ -75,7 +69,7 @@ const figureArray: Figure[] = [
     width: 1127,
     height: 1118,
     subTitle: 'Executive Producer',
-    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
   <p>- Formerly Head of a game studio of the Tencent family</p>
   <p>- Bacon evangelist</p>
@@ -89,7 +83,7 @@ const figureArray: Figure[] = [
     width: 989,
     height: 1042,
     subTitle: 'Web 3 Producer',
-    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- DeFi project builder</p>
   <p>- Crypto native since 2014</p>
   <p>- 7 years full-stack mobile-game dev & production experience</p>
@@ -104,7 +98,7 @@ const figureArray: Figure[] = [
     width: 1034,
     height: 1024,
     subTitle: 'Art Director',
-    introduce: `<div class="${styles.subtitle} text-left whitespace-nowrap" >
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 8 years Chief Gaming Companion experience</p>
   <p>- Discerning taste, unique aesthetics, and keen insight into players' psychology</p>
   <p>- Tree-climbing Pro</p>
@@ -116,32 +110,38 @@ const figureArray: Figure[] = [
 ];
 
 const sponsorArray = [
-  '/img/about/1.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/spartan.png',
+  '/img/about/1.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/animoca.png',
   '/img/about/3.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hashkey.png',
-  '/img/about/4.png',
+
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hivemind.png',
   '/img/about/5.png',
   '/img/about/6.png',
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/mask.png',
+  '/svg/investors/ventures.svg',
+  // '/img/about/2.png',
+
+  '/img/about/4.png',
   '/img/about/8.png',
-  '/img/about/2.png',
   '/img/about/7.png',
   '/img/about/9.png',
   '/img/about/10.png',
-  // '/img/about/11.png',
+
   '/img/about/12.png',
   '/img/about/13.png',
   '/img/about/14.png',
   '/img/about/15.png',
   '/img/about/16.png',
+
   '/img/about/17.png',
   '/img/about/18.png',
   '/img/about/19.png',
   '/img/about/20.png',
   '/img/about/21.png',
+
   '/img/about/22.png',
-  '/svg/investors/ventures.svg',
 ];
 
 export default function About({
