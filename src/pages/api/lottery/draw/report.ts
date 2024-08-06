@@ -3,29 +3,42 @@ import { ethers } from 'ethers';
 import { createRouter } from 'next-connect';
 
 import { WALLECT_NETWORKS } from '@/constant/mint';
-import { getLotteryPoolById } from '@/lib/lottery/lottery';
+import logger from '@/lib/logger/winstonLogger';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
-import { ILotteryPool } from '@/lib/models/LotteryPool';
 import UserLotteryDrawHistory from '@/lib/models/UserLotteryDrawHistory';
 import { incrementUserNonce } from '@/lib/models/UserLotteryNonce';
-import UserLotteryRequest, { IUserLotteryRequest } from '@/lib/models/UserLotteryRequest';
+import UserLotteryRequest from '@/lib/models/UserLotteryRequest';
 import doTransaction from '@/lib/mongodb/transaction';
 import * as response from '@/lib/response/response';
 import { draw } from '@/pages/api/lottery/draw';
+import { sleep } from '@/utils/common';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
   const userId = req.userId!;
-  const { tx_hash, lottery_pool_id } = req.body;
+  const { tx_hash, chain_id } = req.body;
   // - 检查tx_hash的有效性；
-  if (!tx_hash || !lottery_pool_id) {
+  if (!tx_hash || !chain_id) {
     return res.json(response.invalidParams());
   }
-  const lotteryPool = await getLotteryPoolById(lottery_pool_id) as ILotteryPool;
-  const rpcUrl = WALLECT_NETWORKS[lotteryPool.chain_id].rpcUrls[0];
+  
+  const rpcUrl = WALLECT_NETWORKS[chain_id].rpcUrls[0];
   const provider = new ethers.JsonRpcProvider(rpcUrl);
-  const receipt = await provider.getTransactionReceipt(tx_hash);
+  let receipt: any = null;
+  let retry = 0;
+  while (retry < 10) {
+    receipt = await provider.getTransactionReceipt(tx_hash);
+    if (receipt) {
+      break;
+    }
+    await sleep(1000);
+    retry += 1;
+  }
+  if (!receipt) {
+    logger.warn(`Trasaction is not recongnized chain id:${chain_id}, tx_hash:${tx_hash}.`);
+    return res.json(response.transactionNotRecongnized());
+  }
   let abi = [ "event Draw(bytes32 indexed reqId, address indexed claimer, uint256 nonce, uint256 seed, uint256 result)" ];
   let iface = new ethers.Interface(abi);
   if (receipt) {
@@ -41,13 +54,17 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
       return res.json(response.success(history));
     }
     // - 执行抽奖(可以考虑抽奖那边也基于请求id添加唯一索引，避免发生对相同请求进行二次抽奖的情况)
-    let drawResult = await draw(userId, lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost. reqId);
+    let drawResult = await draw(userId, request.lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost. reqId);
     if (drawResult.verified) {
       doTransaction(async (session) => {
         await incrementUserNonce(userId, session);
         await UserLotteryRequest.updateOne({ request_id: reqId }, { tx_hash: tx_hash }, { session });
       });
       return res.json(response.success(drawResult));
+    }
+    else if (drawResult.duplicated) {
+      const history = await UserLotteryDrawHistory.findOne({ chain_request_id: reqId });
+      return res.json(response.success(history));
     }
     else {
       return res.json(response.serverError(drawResult));
