@@ -85,7 +85,7 @@ const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: 
       lis: [
         {
           label: 'Log in notice',
-          desc: 'Use your Moonveil account to log in to the game. Make sure your login details are correct.',
+          desc: 'Use your Moonveil account to log in to the game. Please use the same Moonveil account to log in to the game. Make sure your login details are correct.',
         },
         {
           label: 'How to claim the rewards of Alpha Test 1.0',
