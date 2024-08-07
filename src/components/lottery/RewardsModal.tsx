@@ -24,7 +24,7 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
-  onClaimed?: (needClose?: boolean) => void;
+  onClaimed?: (needClose?: boolean, needWait?: boolean) => void;
   poolInfo?: Lottery.Pool | null;
 }
 
@@ -112,8 +112,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     setClaimDisabled(true);
     setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     if (hasCDK) {
+      await onClaimed?.(true, true);
       cdkClaimedDisclosure.onOpen();
-      await onClaimed?.(true);
       return;
     }
     const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
