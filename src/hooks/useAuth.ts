@@ -132,6 +132,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
       console.log(error);
     } finally {
       setLoading(false);
+      callback?.();
     }
   }
 

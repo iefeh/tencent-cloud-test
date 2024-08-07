@@ -13,7 +13,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import useWatchStorage from './useWatchStorage';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
-  const { userInfo, getUserInfo, toggleLoginModal } = useContext(MobxContext);
+  const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
@@ -73,7 +73,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
       if (data.event === 'auth_result') {
         window.removeEventListener('message', onTelegramMessage);
         await connectTelegramAPI(data.result);
-        getUserInfo();
+        callback?.();
       }
     } catch (error) {
       console.log(error);
