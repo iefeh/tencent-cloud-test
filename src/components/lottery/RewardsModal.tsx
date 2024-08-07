@@ -120,15 +120,6 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     onClaimed?.(needClose);
   }
 
-  async function onCopyCode(code: string) {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success('Copied!');
-    } catch (error: any) {
-      toast.error(error?.message || error);
-    }
-  }
-
   function initStatus() {
     if (!hasForceShareRewards) {
       setClaimDisabled(claimed);
@@ -210,28 +201,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasCDK ? (
-                        <>
-                          Contragulations on winning your AstrArk in game reward. Here is your in-game code:&nbsp;
-                          {cdks.length > 0 ? (
-                            cdks.map((cdk, index) => (
-                              <>
-                                {index > 0 && ', '}
-
-                                <span
-                                  className="text-basic-yellow cursor-pointer hover:underline"
-                                  onClick={() => onCopyCode(cdk)}
-                                >
-                                  {cdk}
-                                </span>
-                              </>
-                            ))
-                          ) : (
-                            <span className="text-basic-yellow">-</span>
-                          )}
-                          . You can copy and redeem your reward in the AstrArk game app. Have fun!
-                        </>
-                      ) : hasGiftCard ? (
+                      {hasGiftCard ? (
                         <>
                           Please contact Moonveil staff and claim your Gift Card.
                           <br />
