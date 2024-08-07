@@ -10,14 +10,14 @@ const router = createRouter<NextApiRequest, NextApiResponse>();
 router.get(async (req, res) => {
   const telegram_id = req.query.telegram_id as string;
   if (!telegram_id) {
-    res.status(400).json(response.invalidParams());
+    res.json(response.invalidParams());
     return;
   }
 
   try {
     const userTelegram = await UserTelegram.findOne({ telegram_id: telegram_id, deleted_time: null });
     if (!userTelegram) {
-      res.status(404).json(response.notFound());
+      res.json(response.notFound());
       return;
     }
 
@@ -26,7 +26,7 @@ router.get(async (req, res) => {
       throw new Error('User not found but Telegram user found');
     }
 
-    res.status(200).json(
+    res.json(
       response.success({
         username: user.username,
         invite_code: user.invite_code,
