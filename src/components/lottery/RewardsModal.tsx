@@ -108,14 +108,15 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     }
 
     toast.success('Reward Claimed');
-    setLoading(false);
     setClaimDisabled(true);
     setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     if (hasCDK) {
       await onClaimed?.(true, true);
       cdkClaimedDisclosure.onOpen();
+      setLoading(false);
       return;
     }
+    setLoading(false);
     const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     onClaimed?.(needClose);
   }
@@ -274,7 +275,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
 
       <ConnectNoticeModal disclosure={disclosure} mediaType={MediaType.TWITTER} onConnect={onConnect} />
 
-      <CDKClaimedModal cdks={cdks} disclosure={cdkClaimedDisclosure} />
+      <CDKClaimedModal key={JSON.stringify(cdks)} cdks={cdks} disclosure={cdkClaimedDisclosure} />
     </>
   );
 };
