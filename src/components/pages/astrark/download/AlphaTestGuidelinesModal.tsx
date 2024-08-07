@@ -5,6 +5,9 @@ import type { FC } from 'react';
 interface RuleLi {
   label: string;
   desc?: string;
+  noMark?: boolean;
+  bold?: boolean;
+  indent?: boolean;
 }
 
 interface Rule {
@@ -15,6 +18,57 @@ interface Rule {
 
 const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: { isOpen, onOpenChange } }) => {
   const rules: Rule[] = [
+    {
+      title: 'Recommended Devices for AstrArk Alpha Test 2.0',
+      lis: [
+        {
+          label: 'iOS Devices:',
+          bold: true,
+          noMark: true,
+        },
+        {
+          label: 'Model: iphone 12 or above',
+          indent: true,
+        },
+        {
+          label: 'CPU: A14',
+          indent: true,
+        },
+        {
+          label: 'RAM: 6GB or more',
+          indent: true,
+        },
+        {
+          label: 'Storage: 10GB',
+          indent: true,
+        },
+        {
+          label: 'System: IOS 15',
+          indent: true,
+        },
+        {
+          label: 'Android Devices:',
+          bold: true,
+          noMark: true,
+        },
+        {
+          label: 'CPU: Snapdragon 8 Gen 1, Dimensity 9000 or above',
+          indent: true,
+        },
+        {
+          label: 'RAM: 8GB or more',
+          indent: true,
+        },
+        {
+          label: 'Storage: 10GB',
+          indent: true,
+        },
+        {
+          label: 'Devices with less than 4GB of RAM may cause lag',
+          indent: true,
+        },
+      ],
+    },
     {
       title: 'Recommended Network Regions for AstrArk Alpha Test 2.0',
       desc: 'The game will run more smoothly if your network is in one of these regions:',
@@ -98,7 +152,10 @@ const AlphaTestGuidelinesModal: FC<{ disclosure: Disclosure }> = ({ disclosure: 
 
                   {rule.lis.map((item, ci) => (
                     <li key={ci} className="indent-[1em]">
-                      <div className={cn([item.desc && 'font-bold'])}>· {item.label}</div>
+                      <div className={cn([(item.desc || item.bold) && 'font-bold', item.indent && 'indent-[2em]'])}>
+                        {item.noMark ? '' : '· '}
+                        {item.label}
+                      </div>
                       {item.desc && <p className="indent-[2em]" dangerouslySetInnerHTML={{ __html: item.desc }}></p>}
                     </li>
                   ))}
