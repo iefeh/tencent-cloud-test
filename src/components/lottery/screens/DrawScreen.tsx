@@ -69,9 +69,15 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
     rewardsDisclosure.onOpen();
   }
 
-  async function onClaimed(needClose?: boolean) {
+  async function onClaimed(needClose?: boolean, needWait?: boolean) {
+    if (needWait) {
+      await Promise.all([onUpdate?.(), drawHistoryModalRef.current?.update()]);
+    } else {
+      onUpdate?.();
+      drawHistoryModalRef.current?.update();
+    }
+
     if (needClose) rewardsDisclosure.onClose();
-    await Promise.all([onUpdate?.(), drawHistoryModalRef.current?.update()]);
   }
 
   function onShowHistory() {
