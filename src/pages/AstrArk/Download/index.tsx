@@ -17,13 +17,13 @@ export default function DownloadPage() {
   const urls = [
     {
       title: 'English Version',
-      img: '/img/astrark/btn_app_store.png',
+      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
       url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
       isAppStore: true,
     },
     {
       title: '日本語版',
-      img: '/img/astrark/btn_app_store.png',
+      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
       url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_JP_URL!,
       isAppStore: true,
     },
