@@ -1,11 +1,6 @@
 'use client';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react';
-import MJ from 'img/about/1@2x.png';
-import JW from 'img/about/2@2x.png';
-import MasonZ from 'img/about/3@2x.png';
-import RobinZ from 'img/about/4@2x.png';
-import PuffZ from 'img/about/5@2x.png';
 import { useEffect, useRef, useState } from 'react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import { IntersectionObserverHook } from '@/hooks/intersectionObserverHook';
@@ -15,7 +10,9 @@ import EntertainmentSlide from './EntertainmentSlide';
 import { scrollRef, scrollStart } from '../../hooks/scroll';
 
 interface Figure {
-  img: StaticImageData;
+  img: string;
+  width: number;
+  height: number;
   name: string;
   subTitle: string;
   introduce: string;
@@ -23,7 +20,9 @@ interface Figure {
 
 const figureArray: Figure[] = [
   {
-    img: MJ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_mj.png',
+    width: 1153,
+    height: 1200,
     name: 'M.J',
     subTitle: 'CEO',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
@@ -38,8 +37,10 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: JW,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_jw.png',
     name: 'Jason',
+    width: 1135,
+    height: 900,
     subTitle: 'COO',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- Ex-Riot senior leadership</p>
@@ -50,8 +51,23 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: MasonZ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_chris.png',
+    name: 'Chris',
+    width: 492,
+    height: 505,
+    subTitle: 'Head of Game Dev',
+    introduce: `<div class="subtitle text-left whitespace-nowrap" >
+  <p>- Formerly CTO at Riot Games China</p>
+  <p>- Formerly Engineering Director at Lilith Games</p>
+  <p>- Formerly Principal Software Architect at Roblox Inc., Machine Zone, CCP Games, Crytek GmbH</p>
+  <p>- 20+ years international industry experiences in game engine tech, MMO server tech, development processes, team building, etc</p>
+</div>`,
+  },
+  {
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_mason.png',
     name: 'Mason Z',
+    width: 1127,
+    height: 1118,
     subTitle: 'Executive Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 14 years game production experience</p>
@@ -62,8 +78,10 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: RobinZ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_robin.png',
     name: 'Robin Z',
+    width: 989,
+    height: 1042,
     subTitle: 'Web 3 Producer',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- DeFi project builder</p>
@@ -75,8 +93,10 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: PuffZ,
+    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_puff.png',
     name: 'Puff Z',
+    width: 1034,
+    height: 1024,
     subTitle: 'Art Director',
     introduce: `<div class="subtitle text-left whitespace-nowrap" >
   <p>- 8 years Chief Gaming Companion experience</p>
@@ -88,30 +108,40 @@ const figureArray: Figure[] = [
 </div>`,
   },
 ];
+
 const sponsorArray = [
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/spartan.png',
   '/img/about/1.png',
-  '/img/about/2.png',
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/animoca.png',
   '/img/about/3.png',
-  '/img/about/4.png',
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hashkey.png',
+
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hivemind.png',
   '/img/about/5.png',
   '/img/about/6.png',
-  '/img/about/7.png',
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/mask.png',
+  '/svg/investors/ventures.svg',
+  // '/img/about/2.png',
+
+  '/img/about/4.png',
   '/img/about/8.png',
+  '/img/about/7.png',
   '/img/about/9.png',
   '/img/about/10.png',
-  '/img/about/11.png',
+
   '/img/about/12.png',
   '/img/about/13.png',
   '/img/about/14.png',
   '/img/about/15.png',
   '/img/about/16.png',
+
   '/img/about/17.png',
   '/img/about/18.png',
   '/img/about/19.png',
   '/img/about/20.png',
   '/img/about/21.png',
+
   '/img/about/22.png',
-  '/svg/investors/ventures.svg',
 ];
 
 export default function About({
@@ -165,7 +195,7 @@ export default function About({
         <title>About | Moonveil Entertainment</title>
 
         {figureArray.map((item, index) => (
-          <link key={index} rel="preload" as="image" href={item.img.src} crossOrigin="anonymous"></link>
+          <link key={index} rel="preload" as="image" href={item.img} crossOrigin="anonymous"></link>
         ))}
 
         {/* {sponsorArray.map((item, index) => (
@@ -206,12 +236,9 @@ export default function About({
                   />
                 </div>
                 <div className="w-1/2 flex items-end justify-center max-md:hidden">
-                  <Image
-                    className="object-cover w-[40rem] h-[40.75rem]"
-                    src={curFigure?.img!}
-                    alt={curFigure?.name!}
-                    unoptimized
-                  />
+                  <div className="w-[40rem] h-[40.75rem] relative">
+                    <Image className="object-cover" src={curFigure?.img!} alt={curFigure?.name!} fill unoptimized />
+                  </div>
                 </div>
               </div>
               <div className="blank w-full h-[11.875rem] relative">
@@ -280,6 +307,9 @@ export default function About({
                         className="w-auto h-[31.56rem] cursor-pointer group-hover:hover:scale-[1.1] duration-300"
                         src={figureData.img}
                         alt={figureData.name}
+                        width={figureData.width}
+                        height={figureData.height}
+                        unoptimized
                       />
                       <div className="flex flex-col items-center text-[2rem] -translate-y-[2.1rem] font-semakin">
                         <span className="text-white mb-1 leading-none">{figureData.name}</span>
@@ -330,8 +360,6 @@ export default function About({
             <div className={`friends translate-y-[16px] fill-mode-[both] ${isVisiable && 'slideInAnim'}`}>
               <ul className="max-md:gap-[1.5rem] gap-[2.38rem] grid grid-cols-5 max-md:grid-cols-2">
                 {sponsorArray.map((value, index) => {
-                  if (index === 10) return;
-
                   return (
                     <li key={index} className="max-sm:h-[3rem] w-[11.25rem] h-[5.53rem] relative">
                       <Image
