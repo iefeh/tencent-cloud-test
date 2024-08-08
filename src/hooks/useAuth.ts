@@ -1,7 +1,13 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { loginByMediaAPI, loginByWalletAPI, loginByTelegramAPI } from '@/http/services/login';
+import {
+  loginByMediaAPI,
+  loginByWalletAPI,
+  loginByTelegramAPI,
+  loginTelegramAuthAPI,
+  getTelegramAuthData,
+} from '@/http/services/login';
 import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
@@ -9,6 +15,7 @@ import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3mo
 import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
 import useWatchStorage from './useWatchStorage';
+import { appendQueryParamsToUrl } from '@/lib/common/url';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
   const store = useContext(MobxContext);
@@ -97,9 +104,48 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     setLoading(false);
   }
 
+  function openTelegramAuthWindow(res: TelegramAuthDto) {
+    const { origin } = location;
+    setTimeout(() => {
+      const dialog = window.open(
+        appendQueryParamsToUrl(res.authorization_url, {
+          bot_id: res.bot_id,
+          origin: origin,
+          return_to: origin,
+          request_access: 'write',
+        }),
+        'Authrization',
+        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      );
+      dialogWindowRef.current = dialog;
+      window.addEventListener('message', onTelegramMessage);
+      dialogWindowRef.current?.focus();
+      checkTelegramAuthWindowClose(res);
+    }, 0);
+  }
+
+  async function onTelegramConnect() {
+    setLoading(true);
+    const res = await loginTelegramAuthAPI();
+    if (!res?.authorization_url) {
+      toast.error('Get telegram authorization url failed!');
+      setLoading(false);
+      return;
+    }
+
+    if (!res?.bot_id) {
+      toast.error('Get telegram bot id failed!');
+      setLoading(false);
+      return;
+    }
+
+    const { origin } = location;
+    openTelegramAuthWindow(res);
+    startWatch();
+  }
+
   async function onTelegramMessage(event: MessageEvent) {
     let data: { event: string; result: TelegramLoginData };
-
     try {
       if (typeof event.data === 'string') {
         console.log('onTelegramMessage event data: ', event.data);
@@ -113,27 +159,59 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
       }
 
       if (data.event === 'auth_result') {
-        window.removeEventListener('message', onTelegramMessage);
-        const res = await loginByTelegramAPI(data.result);
-        if (!res) throw new Error('Login Failed');
-
-        const { token, particle_jwt, signup_cred } = res || {};
-        localStorage.setItem(KEY_AUTHORIZATION, token);
-        localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
-        if (signup_cred) {
-          store.toggleNewUserModal(true);
-          localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
-          throw new Error('Is New User');
-        } else {
-          await store.initLoginInfo();
-        }
+        onTelegramAuthDone(data.result);
       }
     } catch (error) {
       console.log(error);
     } finally {
+      window.removeEventListener('message', onTelegramMessage);
       setLoading(false);
       callback?.();
     }
+  }
+
+  async function onTelegramAuthDone(authData: TelegramLoginData) {
+    try {
+      const res = await loginByTelegramAPI(authData);
+      if (!res) throw new Error('Login Failed');
+
+      const { token, particle_jwt, signup_cred } = res || {};
+      localStorage.setItem(KEY_AUTHORIZATION, token);
+      localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
+      if (signup_cred) {
+        store.toggleNewUserModal(true);
+        localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
+        throw new Error('Is New User');
+      } else {
+        await store.initLoginInfo();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function checkTelegramAuthWindowClose(options: TelegramAuthDto) {
+    if (!dialogWindowRef.current) return;
+    if (!dialogWindowRef.current.window || dialogWindowRef.current.window.closed) {
+      try {
+        const authData = await getTelegramAuthData(options);
+        if (!authData || !authData.user) {
+          throw 'checkTelegramAuthWindowClose get telegram auth data failed';
+        }
+
+        console.log('checkTelegramAuthWindowClose: ', authData.user);
+        onTelegramAuthDone(authData.user);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        window.removeEventListener('message', onTelegramMessage);
+        setLoading(false);
+        callback?.();
+        return;
+      }
+    }
+
+    setTimeout(checkTelegramAuthWindowClose, 100, options);
   }
 
   async function onConnect() {
@@ -157,6 +235,15 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
       return;
     }
 
+    if (type === MediaType.TELEGRAM) {
+      try {
+        await onTelegramConnect();
+      } catch (error) {
+        console.log(error);
+      }
+      return;
+    }
+
     if (!type) {
       toast.error('Invalid authorization type!');
       return;
@@ -171,12 +258,6 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     }
 
     openAuthWindow(res.authorization_url);
-    startWatch();
-    if (type === MediaType.TELEGRAM) {
-      window.addEventListener('message', onTelegramMessage);
-      return;
-    }
-
     setLoading(false);
   }
 
