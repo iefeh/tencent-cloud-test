@@ -22,6 +22,8 @@ export async function generateAuthorizationURL(req: any, res: any) {
     response.success({
       authorization_url: process.env.TELEGRAM_AUTH_URL!,
       bot_id: process.env.TELEGRAM_BOT_ID!,
+      origin: process.env.TELEGRAM_AUTH_ORIGIN!,
+      redirect_url: process.env.TELEGRAM_REDIRECT_URL!,
     }),
   );
 }
