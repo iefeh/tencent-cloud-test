@@ -138,7 +138,6 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
       return;
     }
 
-    const { origin } = location;
     openTelegramAuthWindow(res);
     startWatch();
   }
