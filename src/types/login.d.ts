@@ -24,6 +24,8 @@ declare interface AuthDto {
 declare interface TelegramAuthDto {
   authorization_url: string;
   bot_id: string;
+  origin: string;
+  redirect_url: string;
 }
 
 declare interface ParticleAuthDto {
