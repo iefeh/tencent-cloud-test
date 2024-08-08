@@ -69,10 +69,6 @@ export function loginTelegramAuthAPI(): Promise<TelegramAuthDto> {
   });
 }
 
-export function getTelegramAuthData(options: TelegramAuthDto): Promise<TelegramAuthData> {
-  return http.post(options.authorization_url, { bot_id: options.bot_id });
-}
-
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/signin/${type}`, {
     params: {
@@ -103,6 +99,7 @@ export interface TelegramLoginData {
 
 export interface TelegramAuthData {
   origin: string;
+  html: string;
   user: TelegramLoginData;
 }
 
@@ -140,4 +137,38 @@ export function confirmSignUpAPI(): Promise<TokenDto | null> {
   if (!signUpCred) return Promise.resolve(null);
   localStorage.removeItem(KEY_SIGN_UP_CRED);
   return http.post('/api/auth/signup', JSON.stringify({ signup_cred: signUpCred }));
+}
+
+export function getTelegramAuthData(options: TelegramAuthDto): Promise<TelegramAuthData> {
+  const { origin } = location;
+  const emptyData = {} as TelegramAuthData;
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    var url = options.authorization_url + '/get';
+    xhr.open('POST', url);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (xhr.responseText) {
+          try {
+            var result = JSON.parse(xhr.responseText);
+          } catch (e) {
+            resolve(emptyData);
+          }
+
+          resolve(result);
+        } else {
+          resolve(emptyData);
+        }
+      }
+    };
+
+    xhr.onerror = function () {
+      reject(xhr.status);
+    };
+
+    xhr.withCredentials = true;
+    xhr.send('bot_id=' + encodeURIComponent(options.bot_id));
+  });
 }
