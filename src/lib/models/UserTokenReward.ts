@@ -36,7 +36,7 @@ export interface IUserTokenReward extends Document {
     claimed_time: number
 }
 
-const UserTwitterSchema = new Schema<IUserTokenReward>({
+const UserTokenRewardSchema = new Schema<IUserTokenReward>({
     reward_id: {type: String, required: true},
     user_id: {type: String, required: true},
     source_type: {type: String, required: true},
@@ -51,9 +51,9 @@ const UserTwitterSchema = new Schema<IUserTokenReward>({
     claimed_time: {type: Number}
 });
 // 唯一索引，同一个任务不允许多次完成
-UserTwitterSchema.index({reward_id: 1}, {unique: true});
+UserTokenRewardSchema.index({reward_id: 1}, {unique: true});
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();
-const UserTokenReward = models.UserTokenReward || connection.model<IUserTokenReward>('UserTokenReward', UserTwitterSchema, 'user_token_reward');
+const UserTokenReward = models.UserTokenReward || connection.model<IUserTokenReward>('UserTokenReward', UserTokenRewardSchema, 'user_token_reward');
 export default UserTokenReward;
