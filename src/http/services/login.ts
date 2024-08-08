@@ -140,7 +140,6 @@ export function confirmSignUpAPI(): Promise<TokenDto | null> {
 }
 
 export function getTelegramAuthData(options: TelegramAuthDto): Promise<TelegramAuthData> {
-  const { origin } = location;
   const emptyData = {} as TelegramAuthData;
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
