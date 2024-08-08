@@ -87,13 +87,12 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   }
 
   function openTelegramAuthWindow(res: TelegramAuthDto) {
-    const { origin } = location;
     setTimeout(() => {
       const dialog = window.open(
         appendQueryParamsToUrl(res.authorization_url, {
           bot_id: res.bot_id,
-          origin: origin,
-          return_to: origin,
+          origin: res.origin,
+          return_to: res.redirect_url,
           request_access: 'write',
         }),
         'Authrization',
