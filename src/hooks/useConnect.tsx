@@ -86,6 +86,26 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     }
   }
 
+  function openTelegramAuthWindow(res: TelegramAuthDto) {
+    const { origin } = location;
+    setTimeout(() => {
+      const dialog = window.open(
+        appendQueryParamsToUrl(res.authorization_url, {
+          bot_id: res.bot_id,
+          origin: origin,
+          return_to: origin,
+          request_access: 'write',
+        }),
+        'Authrization',
+        'width=800,height=600,menubar=no,toolbar=no,location=no,alwayRaised=yes,depended=yes,z-look=yes',
+      );
+      dialogWindowRef.current = dialog;
+      window.addEventListener('message', onTelegramMessage);
+      dialogWindowRef.current?.focus();
+      checkTelegramAuthWindowClose(res);
+    }, 0);
+  }
+
   async function onTelegramConnect() {
     setLoading(true);
     const res = await connectTelegramAuthAPI();
@@ -101,19 +121,9 @@ export default function useConnect(type: string, callback?: (args?: any) => void
       return;
     }
 
-    const { origin } = location;
-    openAuthWindow(
-      appendQueryParamsToUrl(res.authorization_url, {
-        bot_id: res.bot_id,
-        origin: origin,
-        return_to: origin,
-        request_access: 'write',
-      }),
-    );
+    openTelegramAuthWindow(res);
     startWatch();
-    window.addEventListener('message', onTelegramMessage);
-    dialogWindowRef.current?.focus();
-    checkTelegramAuthWindowClose(res);
+    setTimeout(() => {}, 0);
   }
 
   async function onTelegramMessage(event: MessageEvent) {
@@ -148,7 +158,6 @@ export default function useConnect(type: string, callback?: (args?: any) => void
   }
 
   async function checkTelegramAuthWindowClose(options: TelegramAuthDto) {
-    if (!loading) return;
     if (!dialogWindowRef.current) return;
     if (!dialogWindowRef.current.window || dialogWindowRef.current.window.closed) {
       try {
