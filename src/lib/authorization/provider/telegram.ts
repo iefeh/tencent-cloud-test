@@ -18,16 +18,10 @@ export async function generateAuthorizationURL(req: any, res: any) {
     return;
   }
 
-  // 生成授权的状态字段
-  const authURL = appendQueryParamsToUrl(process.env.TELEGRAM_AUTH_URL!, {
-    bot_id: process.env.TELEGRAM_BOT_ID!,
-    origin: process.env.TELEGRAM_AUTH_ORIGIN!,
-    return_to: process.env.TELEGRAM_REDIRECT_URL!,
-    request_access: 'write',
-  });
   res.json(
     response.success({
-      authorization_url: authURL,
+      authorization_url: process.env.TELEGRAM_AUTH_URL!,
+      bot_id: process.env.TELEGRAM_BOT_ID!,
     }),
   );
 }

@@ -1,8 +1,14 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import { connectMediaAPI, connectWalletAPI, connectTelegramAPI } from '@/http/services/login';
-import { TelegramLoginData } from '@/http/services/login';
+import {
+  connectMediaAPI,
+  connectTelegramAuthAPI,
+  connectWalletAPI,
+  connectTelegramAPI,
+  getTelegramAuthData,
+} from '@/http/services/login';
+import { TelegramLoginData, TelegramAuthData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
@@ -11,6 +17,7 @@ import { MobxContext } from '@/pages/_app';
 import { Modal, ModalContent, ModalBody, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import useWatchStorage from './useWatchStorage';
+import { appendQueryParamsToUrl } from '@/lib/common/url';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
@@ -55,33 +62,6 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     }, 0);
   }
 
-  async function onTelegramMessage(event: MessageEvent) {
-    let data: { event: string; result: TelegramLoginData };
-
-    try {
-      if (typeof event.data === 'string') {
-        console.log('onTelegramMessage event data: ', event.data);
-        data = JSON.parse(event.data);
-      } else if (typeof event.data === 'object') {
-        console.log('onTelegramMessage event data object: ', JSON.stringify(event.data));
-        data = event.data;
-      } else {
-        console.log('onTelegramMessage event data: ', event.data);
-        throw 'onTelegramMessage Invalid event data!';
-      }
-
-      if (data.event === 'auth_result') {
-        window.removeEventListener('message', onTelegramMessage);
-        await connectTelegramAPI(data.result);
-        callback?.();
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function onConnectWallet() {
     setLoading(true);
     const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
@@ -104,6 +84,91 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     } finally {
       setLoading(false);
     }
+  }
+
+  async function onTelegramConnect() {
+    setLoading(true);
+    const res = await connectTelegramAuthAPI();
+    if (!res?.authorization_url) {
+      toast.error('Get telegram authorization url failed!');
+      setLoading(false);
+      return;
+    }
+
+    if (!res?.bot_id) {
+      toast.error('Get telegram bot id failed!');
+      setLoading(false);
+      return;
+    }
+
+    const { origin } = location;
+    openAuthWindow(
+      appendQueryParamsToUrl(res.authorization_url, {
+        bot_id: res.bot_id,
+        origin: origin,
+        return_to: origin,
+        request_access: 'write',
+      }),
+    );
+    startWatch();
+    window.addEventListener('message', onTelegramMessage);
+    dialogWindowRef.current?.focus();
+    checkTelegramAuthWindowClose(res);
+  }
+
+  async function onTelegramMessage(event: MessageEvent) {
+    let data: { event: string; result: TelegramLoginData };
+
+    try {
+      if (typeof event.data === 'string') {
+        console.log('onTelegramMessage event data: ', event.data);
+        data = JSON.parse(event.data);
+      } else if (typeof event.data === 'object') {
+        console.log('onTelegramMessage event data object: ', JSON.stringify(event.data));
+        data = event.data;
+      } else {
+        console.log('onTelegramMessage event data: ', event.data);
+        throw 'onTelegramMessage Invalid event data!';
+      }
+
+      if (data.event === 'auth_result') {
+        onTelegramAuthDone(data.result);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      window.removeEventListener('message', onTelegramMessage);
+      setLoading(false);
+    }
+  }
+
+  async function onTelegramAuthDone(authData: TelegramLoginData) {
+    await connectTelegramAPI(authData);
+    callback?.();
+  }
+
+  async function checkTelegramAuthWindowClose(options: TelegramAuthDto) {
+    if (!loading) return;
+    if (!dialogWindowRef.current) return;
+    if (!dialogWindowRef.current.window || dialogWindowRef.current.window.closed) {
+      try {
+        const authData = await getTelegramAuthData(options);
+        if (!authData || !authData.user) {
+          throw 'checkTelegramAuthWindowClose get telegram auth data failed';
+        }
+
+        console.log('checkTelegramAuthWindowClose: ', authData.user);
+        onTelegramAuthDone(authData.user);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        window.removeEventListener('message', onTelegramMessage);
+        setLoading(false);
+        return;
+      }
+    }
+
+    setTimeout(checkTelegramAuthWindowClose, 100, options);
   }
 
   async function onConnect() {
@@ -131,12 +196,18 @@ export default function useConnect(type: string, callback?: (args?: any) => void
       return;
     }
 
+    if (type === MediaType.TELEGRAM) {
+      await onTelegramConnect();
+      return;
+    }
+
     if (!type) {
       toast.error('Invalid authorization type!');
       return;
     }
 
     setLoading(true);
+
     const res = await connectMediaAPI(type);
     if (!res?.authorization_url) {
       toast.error('Get authorization url failed!');
@@ -146,11 +217,6 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
     openAuthWindow(res.authorization_url);
     startWatch();
-    if (type === MediaType.TELEGRAM) {
-      window.addEventListener('message', onTelegramMessage);
-      return;
-    }
-
     setLoading(false);
   }
 
