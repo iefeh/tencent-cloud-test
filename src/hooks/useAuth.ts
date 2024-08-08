@@ -143,7 +143,6 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
   }
 
   async function onTelegramMessage(event: MessageEvent) {
-    return;
     let data: { event: string; result: TelegramLoginData };
     try {
       if (typeof event.data === 'string') {
