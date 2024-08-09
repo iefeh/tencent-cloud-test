@@ -1,5 +1,5 @@
 import PaginationRenderItem from '@/components/LoyaltyProgram/task/PaginationRenderItem';
-import { type MyTokensRecord, queryMyTokensListAPI } from '@/http/services/profile';
+import { type MyTokensRecord, queryMyTokensListAPI } from '@/http/services/token';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { useUserContext } from '@/store/User';
 import { Listbox, ListboxItem, Pagination, ScrollShadow, Tab, Tabs } from '@nextui-org/react';

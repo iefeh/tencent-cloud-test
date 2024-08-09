@@ -1,5 +1,5 @@
 import { TokenRewardStatus } from '@/constant/token';
-import { type MyTokensRecord } from '@/http/services/profile';
+import { type MyTokensRecord } from '@/http/services/token';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import dayjs from 'dayjs';
 import Link from 'next/link';
@@ -36,14 +36,18 @@ const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
         key={`${item.reward_id}_${item.created_time}`}
         className="flex justify-between items-center h-16 text-[#999] px-10 gap-4"
       >
-        <div className="flex-[360] whitespace-nowrap text-ellipsis overflow-hidden">{item.symbol || '--'}</div>
+        <div className="flex-[360] whitespace-nowrap text-ellipsis overflow-hidden">{item.token.symbol || '--'}</div>
+
         <div className="flex-[264] whitespace-nowrap text-ellipsis overflow-hidden">
           {item.token_amount_formatted || '--'}
         </div>
-        <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">{item.network || '--'}</div>
+
+        <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">{item.token.network || '--'}</div>
+
         <div className="flex-[156]">{statusText}</div>
-        {/* TODO 替换claim time字段 */}
-        <div className="flex-[156]">{item.created_time ? formatTime(item.created_time) : '--'}</div>
+
+        <div className="flex-[156]">{item.claimed_time ? formatTime(item.claimed_time) : '--'}</div>
+
         <div className="w-40 shrink-0 flex justify-end">
           <Link
             className="w-4/5"
