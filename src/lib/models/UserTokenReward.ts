@@ -18,10 +18,8 @@ export interface IUserTokenReward extends Document {
     user_id: string,
     source_type: UserTokenSourceType,
     source_id: string,
-    // 目标链id
-    chain_id: string,
-    // 目标token地址
-    token_address: string,
+    // 代币id
+    token_id: string,
     // 原始代币数量
     token_amount_raw: string,
     // 格式化以后的代币数量
@@ -41,8 +39,7 @@ const UserTokenRewardSchema = new Schema<IUserTokenReward>({
     user_id: {type: String, required: true},
     source_type: {type: String, required: true},
     source_id: {type: String},
-    chain_id: {type: String},
-    token_address: {type: String},
+    token_id: {type: String},
     token_amount_raw: {type: String},
     token_amount_formatted: {type: String},
     status: {type: String},
