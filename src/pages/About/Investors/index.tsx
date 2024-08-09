@@ -2,32 +2,38 @@ import Image from 'next/image';
 import styles from './index.module.scss';
 
 const sponsorArray = [
-  '/img/about/1.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/spartan.png',
+  '/img/about/1.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/animoca.png',
   '/img/about/3.png',
   'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hashkey.png',
-  '/img/about/4.png',
+
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hivemind.png',
   '/img/about/5.png',
   '/img/about/6.png',
+  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/mask.png',
+  '/svg/investors/ventures.svg',
+  // '/img/about/2.png',
+
+  '/img/about/4.png',
   '/img/about/8.png',
-  '/img/about/2.png',
   '/img/about/7.png',
   '/img/about/9.png',
   '/img/about/10.png',
-  // '/img/about/11.png',
+
   '/img/about/12.png',
   '/img/about/13.png',
   '/img/about/14.png',
   '/img/about/15.png',
   '/img/about/16.png',
+
   '/img/about/17.png',
   '/img/about/18.png',
   '/img/about/19.png',
   '/img/about/20.png',
   '/img/about/21.png',
+
   '/img/about/22.png',
-  '/svg/investors/ventures.svg',
 ];
 
 const InvestorPage = () => {
