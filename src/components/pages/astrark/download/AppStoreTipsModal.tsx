@@ -21,7 +21,7 @@ const AppStoreTipsModal: FC<{ disclosure: Disclosure; url?: string }> = ({
         {() => (
           <>
             <ModalHeader>
-              <div className="relative w-full h-16 bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
+              <div className="relative h-16 bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
                 <div className="font-semakin text-basic-yellow text-2xl">
                   How to Install custom enterprise apps on iOS
                 </div>
