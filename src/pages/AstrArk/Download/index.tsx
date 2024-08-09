@@ -1,17 +1,48 @@
 import Image from 'next/image';
 import maskBg from 'img/astrark/bg-mask.png';
-import styles from './index.module.css';
-import { Button, cn } from '@nextui-org/react';
+import styles from './index.module.scss';
+import { Button, cn, useDisclosure } from '@nextui-org/react';
 import Head from 'next/head';
 import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
+import Link from 'next/link';
+import AppStoreTipsModal from '@/components/pages/astrark/download/AppStoreTipsModal';
+import { useState } from 'react';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import AlphaTestGuidelinesModal from '@/components/pages/astrark/download/AlphaTestGuidelinesModal';
 
 export default function DownloadPage() {
-  function onDownloadClick() {
-    window.open(process.env.NEXT_PUBLIC_ASTRARK_DOWNLOAD_URL!, '_blank');
-  }
+  const disclosure = useDisclosure();
+  const guidelinesDisclosure = useDisclosure();
+  const [appStoreURL, setAppStoreURL] = useState('');
+  const urls = [
+    {
+      title: 'English Version',
+      img: '/img/astrark/btn_app_store.png',
+      url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
+      isAppStore: true,
+    },
+    {
+      title: '日本語版',
+      img: '/img/astrark/btn_app_store.png',
+      url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_JP_URL!,
+      isAppStore: true,
+    },
+    {
+      title: 'English Version',
+      img: '/img/astrark/btn_google_play.png',
+      url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!,
+    },
+    {
+      title: 'Android 日本語版',
+      className: styles.downloadBtn,
+      label: 'ダウンロード',
+      url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_JP_URL!,
+    },
+  ];
 
-  function onGooglePlayClick() {
-    window.open(process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL, '_blank');
+  function onAppStore(url: string) {
+    setAppStoreURL(url);
+    disclosure.onOpen();
   }
 
   return (
@@ -36,23 +67,49 @@ export default function DownloadPage() {
         <Image className="object-cover z-10 opacity-100" src={maskBg} alt="" fill unoptimized />
       </div>
 
-      <div className=" absolute left-1/2 -translate-x-1/2 bottom-[12.6%] flex flex-col md:flex-row items-center gap-[0.625rem]">
-        <Button
-          className="w-[19.6875rem] h-[4.375rem] bg-[url('/img/astrark/pre-register/bg_btn_colored.png')] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl"
-          disableRipple
-          onPress={onDownloadClick}
-        >
-          Download Now
-        </Button>
+      <div className=" absolute left-1/2 -translate-x-1/2 bottom-[10%] flex flex-col items-center">
+        <div className="flex flex-col md:flex-row items-center gap-[0.625rem]">
+          {urls.map((item, index) => {
+            let button = (
+              <Button
+                className={cn([
+                  'w-[13.25rem] h-[4.375rem] bg-cover bg-no-repeat !bg-transparent font-semakin text-black text-2xl',
+                  item.className,
+                ])}
+                style={item.img ? { backgroundImage: `url('${item.img}')` } : {}}
+                disableRipple
+                onPress={item.isAppStore ? () => onAppStore(item.url) : undefined}
+              >
+                <span className="relative z-10">{item.label}</span>
+              </Button>
+            );
 
-        <Button
-          className="w-[13.25rem] h-[4.375rem] bg-[url('/img/astrark/btn_google_play.png')] bg-cover bg-no-repeat !bg-transparent"
-          disableRipple
-          onPress={onGooglePlayClick}
-        />
+            if (!item.isAppStore) {
+              button = (
+                <Link href={item.url} target="_blank">
+                  {button}
+                </Link>
+              );
+            }
+
+            return (
+              <div key={index} className="flex flex-col items-center">
+                <p className="text-xl mb-2">{item.title}</p>
+
+                {button}
+              </div>
+            );
+          })}
+        </div>
+
+        <LGButton className="h-12 mt-6" label="Alpha Test Guidelines" onClick={guidelinesDisclosure.onOpen} />
       </div>
 
       <FloatRegisterButton />
+
+      <AppStoreTipsModal url={appStoreURL} disclosure={disclosure} />
+
+      <AlphaTestGuidelinesModal disclosure={guidelinesDisclosure} />
     </div>
   );
 }
