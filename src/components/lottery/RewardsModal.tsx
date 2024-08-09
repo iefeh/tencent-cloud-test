@@ -51,15 +51,6 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     return p;
   }, [] as string[]);
 
-  async function onCopyCode(code: string) {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success('Copied!');
-    } catch (error: any) {
-      toast.error(error?.message || error);
-    }
-  }
-
   async function onShare() {
     if (shareLabel === shareClaimMBLabel) {
       toast.success('Reward Claimed');
@@ -186,35 +177,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               </ModalHeader>
 
               <ModalBody>
-                {hasCDK && claimed ? (
-                  <>
-                    <div>
-                      Contragulations on winning your AstrArk in game reward. Here is your in-game code:&nbsp;
-                      {cdks.length > 0 ? (
-                        cdks.map((cdk, index) => (
-                          <>
-                            {index > 0 && ', '}
-
-                            <span
-                              className="text-basic-yellow cursor-pointer hover:underline"
-                              onClick={() => onCopyCode(cdk)}
-                            >
-                              {cdk}
-                            </span>
-                          </>
-                        ))
-                      ) : (
-                        <span className="text-basic-yellow">-</span>
-                      )}
-                      .<br />
-                      You can copy and redeem your reward in the AstrArk game app. Have fun!
-                    </div>
-
-                    <div className="flex items-center gap-x-[5.5rem] mt-5">
-                      <LGButton className="w-[18.5rem]" label="Confirm" actived onClick={onClose} />
-                    </div>
-                  </>
-                ) : hasShareAndConfirmRewards && claimed ? (
+                {hasShareAndConfirmRewards && !hasCDK && claimed ? (
                   <>
                     <div className="text-2xl">Reward Claimed</div>
 
