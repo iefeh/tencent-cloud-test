@@ -24,7 +24,7 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
-  onClaimed?: (needClose?: boolean) => void;
+  onClaimed?: (needClose?: boolean, needWait?: boolean) => void;
   poolInfo?: Lottery.Pool | null;
 }
 
@@ -108,25 +108,17 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     }
 
     toast.success('Reward Claimed');
-    setLoading(false);
     setClaimDisabled(true);
     setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     if (hasCDK) {
+      await onClaimed?.(true, true);
       cdkClaimedDisclosure.onOpen();
-      await onClaimed?.(true);
+      setLoading(false);
       return;
     }
+    setLoading(false);
     const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     onClaimed?.(needClose);
-  }
-
-  async function onCopyCode(code: string) {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success('Copied!');
-    } catch (error: any) {
-      toast.error(error?.message || error);
-    }
   }
 
   function initStatus() {
@@ -210,28 +202,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasCDK ? (
-                        <>
-                          Contragulations on winning your AstrArk in game reward. Here is your in-game code:&nbsp;
-                          {cdks.length > 0 ? (
-                            cdks.map((cdk, index) => (
-                              <>
-                                {index > 0 && ', '}
-
-                                <span
-                                  className="text-basic-yellow cursor-pointer hover:underline"
-                                  onClick={() => onCopyCode(cdk)}
-                                >
-                                  {cdk}
-                                </span>
-                              </>
-                            ))
-                          ) : (
-                            <span className="text-basic-yellow">-</span>
-                          )}
-                          . You can copy and redeem your reward in the AstrArk game app. Have fun!
-                        </>
-                      ) : hasGiftCard ? (
+                      {hasGiftCard ? (
                         <>
                           Please contact Moonveil staff and claim your Gift Card.
                           <br />
@@ -304,7 +275,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
 
       <ConnectNoticeModal disclosure={disclosure} mediaType={MediaType.TWITTER} onConnect={onConnect} />
 
-      <CDKClaimedModal cdks={cdks} disclosure={cdkClaimedDisclosure} />
+      <CDKClaimedModal key={JSON.stringify(cdks)} cdks={cdks} disclosure={cdkClaimedDisclosure} />
     </>
   );
 };
