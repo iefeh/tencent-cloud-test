@@ -51,15 +51,6 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     return p;
   }, [] as string[]);
 
-  async function onCopyCode(code: string) {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success('Copied!');
-    } catch (error: any) {
-      toast.error(error?.message || error);
-    }
-  }
-
   async function onShare() {
     if (shareLabel === shareClaimMBLabel) {
       toast.success('Reward Claimed');
