@@ -25,36 +25,31 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { draw_id, reward_id, lottery_pool_id } = req.body;
   if (!lottery_pool_id || !draw_id) {
-    res.json(response.invalidParams(constructVerifyResponse(false, "Invalid params.")));
-    return;
+    return res.json(response.invalidParams(constructVerifyResponse(false, "Invalid params.")));
   }
   try {
     const lotteryPoolId = String(lottery_pool_id);
     const drawId = String(draw_id);
     const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
     if (!lotteryPool) {
-      res.json(response.invalidParams(constructVerifyResponse(false, "The lottery pool is not opened or has been closed.")));
-      return;
+      return res.json(response.invalidParams(constructVerifyResponse(false, "The lottery pool is not opened or has been closed.")));
     }
     const lockKey = `claim_claim_lock:${drawId}`;
     // 锁定用户抽奖资源10秒
     let interval: number = 10;
     const locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
     if (!locked) {
-      res.json(response.serverError(constructVerifyResponse(false, "You are already claiming this reward, please try again later.")))
-      return;
+      return res.json(response.serverError(constructVerifyResponse(false, "You are already claiming this reward, please try again later.")))
     }
     const drawHistory = await UserLotteryDrawHistory.findOne({ user_id: req.userId, draw_id: drawId }) as IUserLotteryDrawHistory;
     if (!drawHistory) {
-      res.json(response.invalidParams(constructVerifyResponse(false, "Cannot find a draw record for this claim.")));
-      return;
+      return res.json(response.invalidParams(constructVerifyResponse(false, "Cannot find a draw record for this claim.")));
     }
     if (drawHistory.need_verify_twitter) {
       const maxClaimType = Math.max(...drawHistory.rewards.map(reward => (reward.reward_claim_type)));
       const verifyResult = await verifyTwitterTopic(drawHistory.user_id, lotteryPoolId, maxClaimType);
       if (!verifyResult.verified) {
-        res.json(response.success(verifyResult));
-        return;
+        return res.json(response.success(verifyResult));
       }
     }
     let rewards: IUserLotteryRewardItem[] = [];
@@ -74,8 +69,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
         await performClaimLotteryReward(reward!, lotteryPoolId, drawId, drawHistory.user_id, drawHistory.rewards.length);
       }
     }
-    res.json(response.success(constructVerifyResponse(true, "Congratulations on claiming your lottery rewards.")));
-    return;
+    return res.json(response.success({ verified: true, rewards: rewards }));
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
