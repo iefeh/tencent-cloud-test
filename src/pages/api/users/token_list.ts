@@ -5,7 +5,6 @@ import { createRouter } from 'next-connect';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserTokenReward, { UserTokenSourceType } from '@/lib/models/UserTokenReward';
 import * as response from '@/lib/response/response';
-import { WALLECT_NETWORKS } from '@/lib/web3/networks';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -32,7 +31,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     }
     // 查询奖励细节
     const tokens = pagination.tokens;
-    await enrichTokensDetail(tokens);
     return res.json(response.success({
         source_types: sourceTypes,
         current_source: source_type,
@@ -42,14 +40,6 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         items: tokens,
     }));
 });
-
-async function enrichTokensDetail(tokens: any[]): Promise<any> {
-    tokens.forEach(token => {
-        const networkDetail = WALLECT_NETWORKS[token.chain_id];
-        token.network = networkDetail.chainName;
-        token.symbol = networkDetail.nativeCurrency.symbol;
-    })
-}
 
 // 查询MB数据
 async function paginationUserTokenHistory(pageNum: number, pageSize: number, userId: string, sourceType?: string): Promise<{ total: number, tokens: any[] }> {
@@ -73,14 +63,32 @@ async function paginationUserTokenHistory(pageNum: number, pageSize: number, use
             }
         },
         {
+            $lookup: {
+                from: 'tokens',
+                let: { id: '$token_id' },
+                as: "token",
+                pipeline: [{
+                    $match: { $expr: { $and: [{ $eq: ['$token_id', '$$id'] }] } }
+                }]
+            }
+        }, 
+        {
+            $unwind: '$token'
+        },
+        {
             $project: {
                 _id: 0,
+                reward_id: 1,
                 source_type: 1,
-                chain_id: 1,
+                "token.name": 1,
+                "token.symbo": 1,
+                "token.chain_id": 1,
+                "token.address": 1,
+                "token.icon": 1,
                 token_amount_raw: 1,
                 token_amount_formatted: 1,
-                token_address: 1,
                 created_time: 1,
+                claimed_time: 1,
                 status: 1
             }
         },

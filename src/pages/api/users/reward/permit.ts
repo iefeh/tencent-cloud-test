@@ -1,14 +1,14 @@
+import { ethers } from 'ethers';
+import { PipelineStage } from 'mongoose';
+import { createRouter } from 'next-connect';
+
+import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import Contract, { ContractCategory, IContract } from '@/lib/models/Contract';
+import UserTokenReward, { UserTokenAuditStatus } from '@/lib/models/UserTokenReward';
+import UserWallet, { IUserWallet } from '@/lib/models/UserWallet';
+import * as response from '@/lib/response/response';
+
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import Contract, {ContractCategory, IContract} from "@/lib/models/Contract";
-import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
-import {ethers} from 'ethers';
-import UserTokenReward, {
-    IUserTokenReward,
-    UserTokenAuditStatus
-} from "@/lib/models/UserTokenReward";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -19,7 +19,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         return res.json(response.invalidParams());
     }
     const ids = String(reward_ids).split(",");
-    const rewards = await UserTokenReward.find({reward_id: {$in: ids}}) as IUserTokenReward[];
+    const rewards = await getUserTokenRewards(ids);
     if (!rewards || rewards.length != ids.length) {
         return res.json(response.notFound("Unknown reward."));
     }
@@ -32,9 +32,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         }
     }
     // 确保这些奖励必须是相同的链
-    const chainId = rewards[0].chain_id;
+    const chainId = rewards[0].token.chain_id;
     for (let reward of rewards) {
-        if (reward.chain_id != chainId) {
+        if (reward.token.chain_id != chainId) {
             return res.json(response.invalidParams({message: "Rewards must be on the same chain."}));
         }
     }
@@ -59,7 +59,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     }));
 });
 
-async function constructRewardPermit(userWallet: IUserWallet, rewards: IUserTokenReward[], paymentContract: IContract) {
+async function constructRewardPermit(userWallet: IUserWallet, rewards: any[], paymentContract: IContract) {
     const domain = {
         name: "GamePayment",
         version: "1",
@@ -80,7 +80,7 @@ async function constructRewardPermit(userWallet: IUserWallet, rewards: IUserToke
         const permit: any = {
             reqId: reward.reward_id,
             claimer: ethers.getAddress(userWallet.wallet_addr),
-            token: ethers.getAddress(reward.token_address),
+            token: ethers.getAddress(reward.token.address),
             tokenAmount: reward.token_amount_raw,
             expiration: Math.floor(Date.now() / 1000) + 1800,
         };
@@ -90,6 +90,38 @@ async function constructRewardPermit(userWallet: IUserWallet, rewards: IUserToke
     }
     return permits;
 }
+
+async function getUserTokenRewards(rewardIds: string[]): Promise<any[]> {
+    let matchOptions: any = { 
+      $match: {
+        reward_id: {$in: rewardIds}
+      }
+    };
+    const aggregateQuery: PipelineStage[] = [
+      matchOptions,
+        {
+            $lookup: {
+                from: 'tokens',
+                let: { id: '$token_id' },
+                as: "token",
+                pipeline: [{
+                    $match: { $expr: { $and: [{ $eq: ['$token_id', '$$id'] }] } }
+                }]
+            }
+        }, 
+        {
+            $unwind: '$token'
+        }, 
+        {
+            $project: {
+                _id: 0,
+                __v: 0
+            }
+        }
+    ];
+    const results = await UserTokenReward.aggregate(aggregateQuery);
+    return results;
+  }
 
 // this will run if none of the above matches
 router.all((req, res) => {
