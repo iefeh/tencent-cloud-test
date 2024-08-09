@@ -1,3 +1,4 @@
+import type { TokenRewardStatus } from '@/constant/token';
 import http from '../index';
 
 export interface MBHistoryRecord {
@@ -15,6 +16,19 @@ export interface MBHistoryDetailsRecord {
   item: string;
 }
 
+export interface MyTokensRecord {
+  source_type: string;
+  reward_id: string;
+  chain_id: string;
+  token_address: string;
+  token_amount_raw: string;
+  token_amount_formatted: string;
+  status: TokenRewardStatus;
+  created_time: number | null;
+  network: string;
+  symbol: string;
+}
+
 export function queryMBHistoryListAPI(params: PageQueryDto): Promise<PageResDTO<MBHistoryRecord>> {
   return http.get('/api/users/moonbeams', { params });
 }
@@ -23,6 +37,12 @@ export function queryMBHistoryDetailsListAPI(
   params: PageQueryDto & { tab?: string },
 ): Promise<PageResDTO<MBHistoryDetailsRecord> & { tabs: string[]; current_tab: string }> {
   return http.get('/api/users/moonbeam_list', { params });
+}
+
+export function queryMyTokensListAPI(
+  params: PageQueryDto & { source_type?: string },
+): Promise<PageResDTO<MyTokensRecord> & { source_types: string[] }> {
+  return http.get('/api/users/token_list', { params });
 }
 
 interface UpdateUserInfoDto {

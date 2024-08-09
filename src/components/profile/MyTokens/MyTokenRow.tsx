@@ -1,0 +1,67 @@
+import { TokenRewardStatus } from '@/constant/token';
+import { type MyTokensRecord } from '@/http/services/profile';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import dayjs from 'dayjs';
+import Link from 'next/link';
+import { FC, useState } from 'react';
+
+interface Props {
+  item: MyTokensRecord;
+  onClaim?: (item: MyTokensRecord) => Promise<void>;
+}
+
+const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
+  const [loading, setLoading] = useState(false);
+  const isClaimed = item.status === TokenRewardStatus.CLAIMED;
+  const isClaiming = item.status === TokenRewardStatus.CLAIMING;
+  const claimDisabled = isClaiming;
+  const claimBtnText = isClaimed ? 'View' : isClaiming ? 'Claiming' : 'Claim';
+  const statusText = isClaimed ? 'Claimed' : isClaiming ? 'Claiming' : 'Claim';
+
+  function formatTime(time: number) {
+    return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  async function onClaimClick() {
+    setLoading(true);
+
+    await onClaim?.(item);
+
+    setLoading(false);
+  }
+
+  return (
+    <ul className="text-base text-white transition-colors border-1 border-transparent rounded-base hover:border-basic-yellow">
+      <li
+        key={`${item.reward_id}_${item.created_time}`}
+        className="flex justify-between items-center h-16 text-[#999] px-10 gap-4"
+      >
+        <div className="flex-[360] whitespace-nowrap text-ellipsis overflow-hidden">{item.symbol || '--'}</div>
+        <div className="flex-[264] whitespace-nowrap text-ellipsis overflow-hidden">
+          {item.token_amount_formatted || '--'}
+        </div>
+        <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">{item.network || '--'}</div>
+        <div className="flex-[156]">{statusText}</div>
+        {/* TODO 替换claim time字段 */}
+        <div className="flex-[156]">{item.created_time ? formatTime(item.created_time) : '--'}</div>
+        <div className="w-40 shrink-0 flex justify-end">
+          <Link
+            className="w-4/5"
+            href={isClaimed ? 'http://moonveil.gg/' : 'javascript:;'}
+            target={isClaimed ? '_blank' : '_self'}
+          >
+            <LGButton
+              className="w-full"
+              label={claimBtnText}
+              disabled={claimDisabled}
+              loading={loading}
+              onClick={onClaimClick}
+            />
+          </Link>
+        </div>
+      </li>
+    </ul>
+  );
+};
+
+export default MyTokenRow;
