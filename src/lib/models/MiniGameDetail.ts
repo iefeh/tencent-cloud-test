@@ -12,18 +12,18 @@ export interface IMiniGameDetail extends Document {
     client_id: string,
     // 分享链接
     share: string,
+    // 分享任务ID
+    share_task?: string,
     // 游戏关键词
     keywords: string[],
     // 门票过期时间
-    ticket_expired_at: number,
+    ticket_expired_at?: number,
     // 简介
     description: string,
-    // 细节关键词
-    details: string[]
     // banner
-    banner: string[]
+    banner: any[]
     // 支持的平台
-    platform: Platform[],
+    platform: any[],
     // 任务分类
     task_category: string,
     // 排名配置
@@ -36,12 +36,13 @@ export interface IMiniGameDetail extends Document {
 
 const MiniGameDetailSchema = new Schema<IMiniGameDetail>({
     client_id: { type: String, required: true, unique: true },
+    share: { type: String },
+    share_task: { type: String },
     keywords: { type: [String] },
     ticket_expired_at: { type: Number },
     description: { type: String },
-    details: { type: [String] },
-    banner: { type: [String] },
-    platform: { type: [String] },
+    banner: { type: Schema.Types.Mixed },
+    platform: { type: Schema.Types.Mixed },
     task_category: { type: String },
     ranking: { type: Schema.Types.Mixed },
     badge: { type: Schema.Types.Mixed },

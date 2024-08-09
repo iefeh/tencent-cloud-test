@@ -10,6 +10,7 @@ import useConnect from '@/hooks/useConnect';
 import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '../common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
+import CDKClaimedModal from './modals/CDKClaimedModal';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -23,7 +24,7 @@ interface Props {
     getButtonProps: (props?: any) => any;
     getDisclosureProps: (props?: any) => any;
   };
-  onClaimed?: (needClose?: boolean) => void;
+  onClaimed?: (needClose?: boolean, needWait?: boolean) => void;
   poolInfo?: Lottery.Pool | null;
 }
 
@@ -41,8 +42,14 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const [hasClaimCD, setHasClaimCD] = useState(false);
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const disclosure = useDisclosure();
+  const cdkClaimedDisclosure = useDisclosure();
   const shareClaimMBLabel = 'Claim 20 MBs';
   const hasGiftCard = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.GIFT_CARD);
+  const hasCDK = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.CDK);
+  const cdks = (item?.rewards || []).reduce((p, c) => {
+    if (c.cdk) p.push(c.cdk);
+    return p;
+  }, [] as string[]);
 
   async function onShare() {
     if (shareLabel === shareClaimMBLabel) {
@@ -74,6 +81,13 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   }
 
   async function onClaim() {
+    if (claimed) {
+      if (hasCDK) {
+        cdkClaimedDisclosure.onOpen();
+        return;
+      }
+    }
+
     setLoading(true);
 
     const data = {
@@ -94,9 +108,15 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     }
 
     toast.success('Reward Claimed');
-    setLoading(false);
     setClaimDisabled(true);
     setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    if (hasCDK) {
+      await onClaimed?.(true, true);
+      cdkClaimedDisclosure.onOpen();
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
     const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     onClaimed?.(needClose);
   }
@@ -123,7 +143,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       actived
       hasCD={hasClaimCD}
       cd={30}
-      disabled={claimed || claimDisabled}
+      disabled={!hasCDK ? claimed || claimDisabled : false}
       loading={loading || connectLoading}
       onClick={onClaim}
       onCDOver={() => {
@@ -254,6 +274,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       </Modal>
 
       <ConnectNoticeModal disclosure={disclosure} mediaType={MediaType.TWITTER} onConnect={onConnect} />
+
+      <CDKClaimedModal key={JSON.stringify(cdks)} cdks={cdks} disclosure={cdkClaimedDisclosure} />
     </>
   );
 };
