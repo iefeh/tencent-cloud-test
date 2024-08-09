@@ -256,6 +256,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     }
 
     openAuthWindow(res.authorization_url);
+    startWatch();
     setLoading(false);
   }
 
