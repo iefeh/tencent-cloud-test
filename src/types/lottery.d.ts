@@ -28,6 +28,7 @@ declare namespace Lottery {
     reward_claim_type: number;
     amount: number;
     claimed: boolean;
+    cdk?: string;
   }
 
   interface RewardDTO {
@@ -49,6 +50,7 @@ declare namespace Lottery {
   }
 
   interface RewardResDTO {
+    draw_time?: number;
     available_draw_time?: number;
     draw_id: string;
     lottery_pool_id: string;

@@ -7,7 +7,7 @@ import Head from 'next/head';
 
 const AssetsPage: NextPage & BasePage = () => {
   const { data, queryData, loading } = useDisplayAssets();
-  const fonts = ['FZXinGHJW-DB.TTF', 'FZXinGHJW-SB.TTF'];
+  const fonts = ['FZXinGHJW-DB.TTF', 'FZXinGHJW-SB.TTF', 'Poppins-Regular.ttf'];
 
   return (
     <section className="relative w-screen bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg.png')] bg-top bg-contain bg-no-repeat flex flex-col items-center font-fzdb">

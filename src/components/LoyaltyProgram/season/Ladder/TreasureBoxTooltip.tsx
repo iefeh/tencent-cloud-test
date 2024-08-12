@@ -12,9 +12,10 @@ const TreasureBoxTooltip: FC = () => {
         onOpenChange={(isOpen) => !isOpen && setIsBoxTipsOpen(isOpen)}
         content={
           <div className="max-w-[25rem] px-2 py-1">
-            Upon reaching this level, we will directly send the reward package into your game account via in-game email
-            during the AstrArk Alpha Test 2.0 phase. Please log in to the game to claim it. If you do not receive the
-            reward within 48 hours of the test starting, please contact us via Discord Tickets.
+            Upon reaching this level, we will directly send the in-game redemption code via Moonveil website
+            notification during the AstrArk Alpha Test 2.0 phase. Please check your code, and log in to the game to
+            redeem for rewards. If you do not receive the reward within 48 hours of the test starting, please contact us
+            via Discord Tickets.
           </div>
         }
       >

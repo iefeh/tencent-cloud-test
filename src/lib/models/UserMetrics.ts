@@ -8,6 +8,10 @@ export enum Metric {
   // 预约AstrArk
   PreRegisterAstrArk = 'pre_register_astrark',
   AstrarkHeroURL = 'astrark_hero_url',
+  // AA游戏局数
+  AstrarkGameCount = 'astrark_game_count',
+  AstrarkDrawSoldierCount = 'astrark_draw_soldier_count',
+  AstrarkDrawHerorCount = 'astrark_draw_hero_count',
 
   // 钱包指标使用的资产id
   WalletAssetId = 'wallet_asset_id',
@@ -34,6 +38,7 @@ export enum Metric {
   // 初出茅庐徽章，其他的加入社区/关注某人，按照完成任务算.
   TwitterConnected = 'twitter_connected',
   DiscordConnected = 'discord_connected',
+  TelegramConnected = 'telegram_connected',
   SteamConnected = 'steam_connected',
   WalletConnected = 'wallet_connected',
   GoogleConnected = 'google_connected',
@@ -84,6 +89,7 @@ export enum Metric {
 
   // 预约BushWhack
   PreRegisterBushWhack = 'pre_register_bushwhack',
+
 }
 
 // 用户内部指标，存放单独的集合
@@ -94,6 +100,9 @@ export interface IUserMetrics extends Document {
   pre_register_astrark: number;
   // astrark游戏英雄地址
   astrark_hero_url: string;
+  astrark_game_count: number;
+  astrark_draw_soldier_count: number;
+  astrark_draw_hero_count: number;
   // 绑定钱包拥有的token价值
   wallet_asset_id: string;
   wallet_token_usd_value: number;
@@ -118,6 +127,7 @@ export interface IUserMetrics extends Document {
   steam_connected: number;
   wallet_connected: number;
   google_connected: number;
+  telegram_connected: number;
   discord_joined_moonveil: number;
   twitter_followed_moonveil: number;
   twitter_followed_astrark: number;
@@ -130,7 +140,6 @@ export interface IUserMetrics extends Document {
   //第1赛季完成任务数
   battlepass_season_1_premium_pass: number;
   battlepass_season_1_standard_pass: number;
-
 
   // 被邀请人数
   total_invitee: number;
@@ -170,6 +179,9 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   user_id: { type: String, required: true },
   pre_register_astrark: { type: Number },
   astrark_hero_url: { type: String },
+  astrark_game_count: { type: Number },
+  astrark_draw_soldier_count: { type: Number },
+  astrark_draw_hero_count: { type: Number },
   wallet_asset_id: { type: String },
   wallet_token_usd_value: { Type: Number },
   wallet_nft_usd_value: { Type: Number },
@@ -185,6 +197,7 @@ const UserMetricsSchema = new Schema<IUserMetrics>({
   steam_connected: { Type: Number },
   wallet_connected: { Type: Number },
   google_connected: { Type: Number },
+  telegram_connected: { Type: Number },
   discord_joined_moonveil: { Type: Number },
   twitter_followed_moonveil: { Type: Number },
   twitter_followed_astrark: { Type: Number },
@@ -252,7 +265,6 @@ export async function createUserMetrics(userId: string, metrics: { [key: string]
   return result;
 }
 
-
 export async function incrUserMetric(userId: string, metric: Metric, incrValue: number, session: any) {
   await UserMetrics.updateOne(
     { user_id: userId },
@@ -267,7 +279,11 @@ export async function incrUserMetric(userId: string, metric: Metric, incrValue: 
   await sendBadgeCheckMessage(userId, metric);
 }
 
-export async function incrUserMetrics(userId: string, metrics: { [key: string]: string | number | boolean }, session: any) {
+export async function incrUserMetrics(
+  userId: string,
+  metrics: { [key: string]: string | number | boolean },
+  session: any,
+) {
   let incOps: any = {};
   for (const [metric, value] of Object.entries(metrics)) {
     incOps[metric] = value;

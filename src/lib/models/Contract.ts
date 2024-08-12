@@ -9,7 +9,7 @@ export enum ContractCategory {
     TETRA_SERIES = 'TETRA_SERIES',
     // 游戏支付合约
     GAME_PAYMENT = 'GAME_PAYMENT',
-    // 抽奖合约
+    // 通用抽奖合约
     LOTTERY = 'LOTTERY',
 }
 
@@ -54,6 +54,7 @@ const Contract = models.Contract || connection.model<IContract>('Contract', Cont
 export default Contract;
 
 
-export async function findActiveContract(category: ContractCategory): Promise<IContract | null> {
-    return Contract.findOne({category, active: true});
+// 查询指定链的抽奖合约
+export async function findLotteryContract(chain_id: string): Promise<IContract | null> {
+    return Contract.findOne({chain_id, category: ContractCategory.LOTTERY});
 }

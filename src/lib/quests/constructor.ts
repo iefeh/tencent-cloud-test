@@ -3,6 +3,7 @@ import { QuestBase } from '@/lib/quests/implementations/base';
 import { ConnectDiscordQuest } from '@/lib/quests/implementations/connectDiscordQuest';
 import { ConnectSteamQuest } from '@/lib/quests/implementations/connectSteamQuest';
 import { ConnectTwitterQuest } from '@/lib/quests/implementations/connectTwitterQuest';
+import { ConnectTelegramQuest } from '@/lib/quests/implementations/connectTelegramQuest';
 import { ConnectWalletQuest } from '@/lib/quests/implementations/connectWalletQuest';
 import { FollowOnTwitterQuest } from '@/lib/quests/implementations/followOnTwitterQuest';
 import { HoldDiscordRoleQuest } from '@/lib/quests/implementations/holdDiscordRoleQuest';
@@ -21,7 +22,7 @@ import { CommentTweetQuest } from './implementations/commentTweetQuest';
 import { FollowOnTwitterQuestNew } from './implementations/followOnTwitterQuestNew';
 import { HoldBadgeSBTQuest } from './implementations/holdBadgeSBTQuest';
 import { ThinkingDataQueryQuest } from './implementations/thinkingDataQueryQuest';
-import { ThirdPartyCallbackQuest } from './implementations/ThirdPartyCallbackQuest';
+import { ThirdPartyCallbackQuest } from './implementations/thirdPartyCallbackQuest';
 import { TweetInteractionQuest } from './implementations/tweetInteraction';
 import { TwitterFollowerQuest } from './implementations/twitterFollowerQuest';
 import { TwitterTopicQuest } from './implementations/twitterTopicQuest';
@@ -46,6 +47,8 @@ export function constructQuest(quest: IQuest): QuestBase {
             return new ConnectTwitterQuest(quest);
         case QuestType.ConnectSteam:
             return new ConnectSteamQuest(quest);
+        case QuestType.ConnectTelegram:
+            return new ConnectTelegramQuest(quest);
         case QuestType.JoinDiscordServer:
             return new JoinDiscordServerQuest(quest);
         case QuestType.HoldDiscordRole:

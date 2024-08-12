@@ -48,6 +48,14 @@ router.post(async (req, res) => {
     if (isNewUser) {
         // 用户不存在，需要创建新的用户与钱包绑定
         userWallet = await createUserAndWallet(address, inviter);
+    } else {
+        //检查用户是否已经被删除
+        const now = Date.now();
+        const user = await User.findOne({ user_id: userWallet.user_id });
+        // 用户申请删除已经过了90天, 禁止登录
+        if (user.selfdestruct_request_time && user.selfdestruct_request_time + 1000 * 60 * 60 * 24 * 90 < now) {
+            return res.status(500).json(response.userSelfDestructed());
+        }
     }
     const token = await generateUserSession(userWallet.user_id);
     res.json(response.success({

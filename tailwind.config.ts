@@ -64,6 +64,8 @@ const config: Config = {
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       fontFamily: {
+        jcyt4: ['jcyt4'],
+        jcyt6: ['jcyt6'],
         semakin: ['semakin'],
         decima: ['decima'],
         poppins: ['poppins'],
@@ -79,7 +81,10 @@ const config: Config = {
         'shs-regular': ['shs-regular'],
       },
       colors: {
+        brown: '#5C0F0F',
+        'yellow-1': '#FDC511',
         'light-yellow': '#E7D4A9',
+        'light-yellow-1': '#F7E9CC',
         notion: '#ff4848',
         'pure-red': '#BD0000',
         'basic-red': '#FF0000',
@@ -111,8 +116,10 @@ const config: Config = {
       },
       borderRadius: {
         base: '0.625rem',
+        five: '0.3125rem',
       },
       spacing: {
+        five: '0.3125rem',
         ten: '0.625rem',
         '1px': '1px',
       },

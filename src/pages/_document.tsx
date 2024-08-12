@@ -11,14 +11,10 @@ export default function Document() {
         />
         <link rel="icon" href="/img/favicon.png" type="image/x-icon"></link>
         <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon"></link>
-        <link rel="preload" as="font" href="/fonts/Semakin.woff2" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Semakin.ttf" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Decima-Mono-W01-Regular.woff2" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Decima-Mono-W01-Regular.ttf" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Regular.woff2" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Regular.ttf" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Medium.woff2" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="/fonts/Poppins-Medium.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Semakin.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Decima-Mono-W01-Regular.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Regular.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Medium.ttf" crossOrigin="anonymous"></link>
       </Head>
       <body className="dark">
         <Main />

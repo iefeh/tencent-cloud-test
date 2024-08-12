@@ -26,6 +26,7 @@ createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: [mainnet],
   projectId,
+  allowUnsupportedChain: true,
 });
 
 export function Web3ModalProvider({ children }: { children: JSX.Element }) {

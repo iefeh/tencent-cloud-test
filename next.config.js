@@ -33,6 +33,9 @@ const nextConfig = {
       {
         hostname: 'cloudflare-ipfs.com',
       },
+      {
+        hostname: 't.me',
+      },
     ],
   },
   webpack(config) {
@@ -46,6 +49,7 @@ const nextConfig = {
   },
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
+    prependData: `@import "@/styles/global.scss";`
   },
 };
 
