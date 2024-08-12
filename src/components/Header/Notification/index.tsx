@@ -15,10 +15,10 @@ import NotiSvg from 'svg/notify.svg';
 import CheckSvg from 'svg/check.svg';
 import closeIcon from 'img/icon/icon_close.png';
 import styles from './index.module.css';
-import LGButton from '../../buttons/LGButton';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
 import useLoopQuery from '@/hooks/useLoopQuery';
-import CircularLoading from '../../CircularLoading';
+import CircularLoading from '@/pages/components/common/CircularLoading';
 
 const Notification: FC = () => {
   const { userInfo } = useContext(MobxContext);

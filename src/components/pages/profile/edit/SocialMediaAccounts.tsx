@@ -6,6 +6,7 @@ import discordIconImg from 'img/profile/edit/icon_discord.png';
 import steamIconImg from 'img/profile/edit/icon_steam.png';
 import xIconImg from 'img/profile/edit/icon_x.png';
 import googleIconImg from 'img/profile/edit/icon_google.png';
+import telegramIconImg from 'img/profile/edit/icon_telegram.png';
 import emailIconImg from 'img/profile/edit/icon_email.png';
 import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
@@ -44,12 +45,13 @@ const SocialMediaAccounts = function () {
     //   type: MediaType.FACEBOOK,
     //   connected: !!userInfo?.facebook,
     // },
-    // {
-    //   title: ' Telegram',
-    //   icon: telegramIconImg,
-    //   type: MediaType.TELEGRAM,
-    //   connected: !!userInfo?.telegram,
-    // },
+    {
+      title: 'Telegram',
+      icon: telegramIconImg,
+      type: MediaType.TELEGRAM,
+      connected: !!userInfo?.telegram,
+      connectedAccount: userInfo?.telegram?.username,
+    },
     {
       title: 'Steam',
       icon: steamIconImg,

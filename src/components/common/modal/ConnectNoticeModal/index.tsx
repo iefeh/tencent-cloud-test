@@ -27,6 +27,9 @@ function getAccountText(mediaType?: MediaType) {
     case MediaType.STEAM:
       text = 'Steam account';
       break;
+    case MediaType.TELEGRAM:
+      text = 'Telegram account';
+      break;
   }
 
   return text;
@@ -51,9 +54,8 @@ const ConnectNoticeModal: FC<Props> = ({ disclosure: { isOpen, onOpenChange }, m
             <ModalBody>
               <p className="font-poppins-medium text-base">
                 {userInfo
-                  ? `Your ${
-                      mediaText || getAccountText(mediaType)
-                    } is not connected or the previous authorization has expired. Please click to reconnect.`
+                  ? `Your ${mediaText || getAccountText(mediaType)
+                  } is not connected or the previous authorization has expired. Please click to reconnect.`
                   : "It seems you haven't logged in to the website. Please log in first to access the content."}
               </p>
             </ModalBody>

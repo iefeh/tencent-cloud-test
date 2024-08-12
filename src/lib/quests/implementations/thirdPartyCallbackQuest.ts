@@ -2,6 +2,7 @@ import axios, { isAxiosError } from 'axios';
 
 import { AuthorizationType } from '@/lib/authorization/types';
 import { queryUserAuth } from '@/lib/common/user';
+import logger from '@/lib/logger/winstonLogger';
 import { IQuest } from '@/lib/models/Quest';
 import QuestAchievement from '@/lib/models/QuestAchievement';
 import User from '@/lib/models/User';
@@ -48,30 +49,42 @@ export class ThirdPartyCallbackQuest extends QuestBase {
     for (let header of questProp.custom_headers) {
       headers[header.name] = header.value;
     }
-    const params = new URLSearchParams();
-    params.append('email', this.email);
-    params.append('twitter', this.twitter);
-    params.append('discord', this.discord);
-    params.append('address', this.address);
-    params.append('start_time', this.quest.start_time.toString());
-    params.append('end_time', this.quest.end_time.toString());
+    let emailParam = "";
+    if (this.email) {
+      emailParam = this.email;
+    } else if (userAuth.google && userAuth.google.email) {
+      emailParam = userAuth.google.email;
+    }
+    const params: any = {};
+    params.email = emailParam;
+    params.twitter = this.twitter;
+    params.discord = this.discord;
+    params.address = this.address;
+    params.start_time = this.quest.start_time;
+    params.end_time = this.quest.end_time;
     let claimable = false;
     let tip = undefined;
     let extra = undefined;
     // 以post方式调用第三方接口并设置5s的超时时间, 如果超时则认为验证失败
     try {
       const response = await axios.post(questProp.endpoint, params, { headers: headers, timeout: 5 * 1000 });
-      const result = response.data.data.result;
-      const error = response.data.data.error;
+      const result = response.data.result;
+      const error = response.data.error;
       if (result) {
         claimable = !!result.achieved;
         if (!claimable) {
-          tip = error? error.message: "Something wrong, please try again later.";
+          if (error) {
+            logger.debug(`Third party callback error: ${error.message}`);
+          }
+          tip = "The task is not completed.";
           extra = error? { errorCode: error.code }: undefined;
         }
       } else {
+        if (error) {
+          logger.debug(`Third party callback error: ${error.message}`);
+        }
         claimable = false;
-        tip = error? error.message: undefined;
+        tip = "The task is not completed.";
         extra = error? { errorCode: error.code }: undefined;
       }
     }
@@ -169,5 +182,5 @@ export class ThirdPartyCallbackQuest extends QuestBase {
         Sentry.captureException(error);
         return {done: false, duplicated: false}
     }
-}
+  }
 }

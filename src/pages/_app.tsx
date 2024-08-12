@@ -18,7 +18,6 @@ import './components/common/Belt/index.scss';
 import './components/common/Loading/index.scss';
 import '@/components/common/MediaIconBar/index.scss';
 import './components/character/character.scss';
-import './About/about.scss';
 import './NFT/components/home.scss';
 import '@/components/pages/astrark/home/schoolDesc/index.scss';
 import '@/components/pages/astrark/home/school/Mystery/index.scss';
@@ -51,7 +50,7 @@ export const MobxContext = createContext<UserStore>(new UserStore());
 export default function App({ Component, pageProps }: AppProps) {
   const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
-  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
+  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
