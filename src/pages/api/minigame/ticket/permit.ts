@@ -3,7 +3,7 @@ import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
 import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Mint, {IMint} from "@/lib/models/Mint";
-import Contract, {ContractCategory, findActiveContract, IContract} from "@/lib/models/Contract";
+import Contract, {ContractCategory, IContract} from "@/lib/models/Contract";
 import {redis} from "@/lib/redis/client";
 
 import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
@@ -26,7 +26,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     if (!miniGame) {
         return res.json(response.invalidParams("Unknown game"));
     }
-    if (Date.now() > miniGame.ticket_expired_at) {
+    if (Date.now() > miniGame.ticket_expired_at!) {
         return res.json(response.invalidParams("Cannot mint expired ticket"));
     }
     // 检查用户绑定的钱包
