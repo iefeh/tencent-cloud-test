@@ -53,6 +53,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
           'flex items-center',
         ]),
         body: cn([
+          'font-jcyt4',
           'pt-8 pl-10 pr-12 pb-[2.625rem] mr-6 bg-[#F7E9CC]',
           'rounded-bl-base rounded-br-base overflow-hidden',
           'border-basic-gray border-b-2 border-l-2 border-r-2',
@@ -84,7 +85,9 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                   {rule.items && (
                     <ul>
                       {rule.items.map((item, ci) => (
-                        <li key={ci}>- {item}</li>
+                        <li key={ci} className="indent-4">
+                          - {item}
+                        </li>
                       ))}
                     </ul>
                   )}

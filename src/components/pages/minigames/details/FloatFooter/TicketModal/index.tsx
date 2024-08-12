@@ -16,13 +16,19 @@ import Image from 'next/image';
 import TicketCountdown from '../../TicketCountdown';
 import RulesModal from '../RulesModal';
 import IntegerInput from '@/components/common/inputs/IntegerInput';
+import useBuyTickets from './useBuyTickets';
+import type { MiniGames } from '@/types/minigames';
+
+interface Props extends DisclosureProps {
+  item: MiniGames.GameDetailDTO | null;
+}
 
 const enum TicketChannel {
   MATIC = 'matic',
   MORE = 'more',
 }
 
-const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
+const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) => {
   const rulesDisclosure = useDisclosure();
   const radioOptions = [
     {
@@ -37,6 +43,10 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
   ];
   const [channel, setChannel] = useState<string>(radioOptions[0].key);
   const [ticketAmount, setTicketAmount] = useState('1');
+  const { loading: buyLoading, onBuyTickets } = useBuyTickets();
+
+  const digit = Math.ceil(-Math.log10(+(item?.ticket_price_formatted || 0)));
+  const totalPrice = (+(item?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
 
   return (
     <>
@@ -118,7 +128,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                     <div className="w-full h-0 border-t-1 border-brown border-dashed mt-7 mb-[1.125rem]"></div>
 
                     <div className="flex items-center">
-                      <div>0.01 Matic/Ticket</div>
+                      <div>{item?.ticket_price_formatted || '-'} Matic/Ticket</div>
 
                       <div className="flex-1 flex justify-end items-center mr-7">
                         <IntegerInput value={ticketAmount} min={1} max={10} onValueChange={setTicketAmount} />
@@ -126,15 +136,15 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                       <Tooltip
                         classNames={{
-                          base: 'max-w-[31.25rem] rounded-base bg-white px-5 py-6 shadow-[3px_6px_9px_1px_rgba(0,0,0,0.2)]',
+                          base: 'max-w-[36rem] rounded-base bg-white px-5 py-6 shadow-[3px_6px_9px_1px_rgba(0,0,0,0.2)]',
                           content: 'bg-transparent text-brown font-jcyt4 text-sm leading-6 p-0 shadow-none',
                         }}
                         content={
-                          <div className="">
-                            A charming game series by Moonveil featuring Puffy the cat. With delightful cartoon graphics
-                            and simple, intuitive gameplay, it&apos;s perfect for players of all ages. Join our vibrant
-                            community and dive into the playful world of Moonveil Mini today!
-                          </div>
+                          <ul>
+                            <li>- You can purchase up to 10 tickets once.</li>
+                            <li>- Tickets are non-refundable once purchased.</li>
+                            <li>- Tickets have a validity period and will automatically expire after this period.</li>
+                          </ul>
                         }
                       >
                         <Image
@@ -151,7 +161,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <p className="font-jcyt4 text-sm leading-none mt-4">Total Price</p>
 
-                    <p className="text-2xl leading-none mt-[0.375rem]">300 Matic</p>
+                    <p className="text-2xl leading-none mt-[0.375rem]">{totalPrice} Matic</p>
 
                     <div className="w-full h-0 border-t-1 border-brown border-dashed mt-6 mb-5"></div>
 
@@ -161,7 +171,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                       <StrokeButton
                         className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem]"
                         strokeType="ticket"
-                        strokeText="10"
+                        strokeText={item?.ticket.remain.toString() || '--'}
                         startContent={
                           <span className="absolute top-0 right-[0.375rem] text-sm leading-none text-brown">
                             Your Tickets
@@ -174,6 +184,8 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                         strokeType="blue"
                         strokeText="Buy Tickets"
                         isDisabled={+ticketAmount < 1 || +ticketAmount > 10}
+                        isLoading={buyLoading}
+                        onPress={() => item && onBuyTickets(item, +ticketAmount)}
                       />
 
                       <StrokeButton

@@ -63,7 +63,7 @@ const FloatFooter: FC = () => {
       </div>
 
       <ShareModal disclosure={shareDisclosure} />
-      <TicketModal disclosure={ticketDisclosure} />
+      <TicketModal item={data} disclosure={ticketDisclosure} />
     </div>
   );
 

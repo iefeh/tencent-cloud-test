@@ -57,5 +57,28 @@ declare namespace MiniGames {
     status: string;
     tasks: TaskItem[];
     badge: BadgeItem[];
+    ticket_price_formatted: string;
+    ticket_price_raw: string;
+    token_address: string;
+    url: string;
+    share_reward_claimed: boolean;
+  }
+
+  interface BuyTicketPermit {
+    claimer: string;
+    expiration: number;
+    reqId: string;
+    signature: string;
+    token: string;
+    tokenAmount: string;
+  }
+
+  interface BuyTicketPermitDTO {
+    /** 交互的目标链id */
+    chain_id: string;
+    /** 交互的目标合约地址 */
+    contract_address: string;
+    /** 交互参数，数组 */
+    permit: Permit;
   }
 }
