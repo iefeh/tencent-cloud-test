@@ -69,13 +69,10 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
     rewardsDisclosure.onOpen();
   }
 
-  async function onClaimed(needClose?: boolean, needWait?: boolean) {
-    if (needWait) {
-      await Promise.all([onUpdate?.(), drawHistoryModalRef.current?.update()]);
-    } else {
-      onUpdate?.();
-      drawHistoryModalRef.current?.update();
-    }
+  async function onClaimed(needClose?: boolean) {
+    const [_, list] = await Promise.all([onUpdate?.(), drawHistoryModalRef.current?.update()]);
+    const newCur = (list || []).find((item) => item.draw_id === currentReward?.draw_id);
+    if (newCur) setCurrentReward(newCur);
 
     if (needClose) rewardsDisclosure.onClose();
   }
@@ -151,7 +148,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
       )}
 
       <RewardsModal
-        key={currentReward?.draw_id}
+        key={`${currentReward?.draw_id}_${currentReward?.available_draw_time}_${currentReward?.draw_time}`}
         item={currentReward}
         poolInfo={poolInfo}
         disclosure={rewardsDisclosure}

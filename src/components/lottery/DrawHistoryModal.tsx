@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 import useBScroll from '@/hooks/useBScroll';
-import { throttle } from 'lodash';
+import { type DebouncedFunc, throttle } from 'lodash';
 import { queryDrawHistoryAPI } from '@/http/services/lottery';
 import dayjs from 'dayjs';
 import RewardText from './RewardText';
@@ -33,7 +33,7 @@ interface Props {
 }
 
 export interface DrawHisoryModalRef {
-  update: () => void;
+  update: DebouncedFunc<() => Promise<Lottery.DrawHistoryDTO[]>>;
 }
 
 const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & ItemProps<Lottery.Pool>> = (
@@ -59,6 +59,7 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
     setData(res?.lotteryHistory || []);
     setTotal(Math.ceil((res?.total || 0) / pagi.current.page_size));
     setLoading(false);
+    return res?.lotteryHistory || [];
   });
 
   function onPagiChange(index: number) {

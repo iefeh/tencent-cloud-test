@@ -52,24 +52,24 @@ export function signInParticleAPI(data: ParticleAuthDto) {
 }
 
 export function connectMediaAPI(type: string): Promise<AuthDto> {
-  if (type === MediaType.TELEGRAM) {
-    return http.get('/api/auth/telegram/auth', { params: getAuthParams(`/connect?type=${type}`) });
-  }
-
   return http.get(`/api/auth/connect/${type}`, { params: getAuthParams(`/connect?type=${type}`) });
 }
 
-export function loginByMediaAPI(type: string): Promise<AuthDto> {
-  if (type === MediaType.TELEGRAM) {
-    return http.get('/api/auth/telegram/auth', {
-      params: {
-        ...getAuthParams(`?type=${type}`),
-        invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
-        signup_mode: 'enabled',
-      },
-    });
-  }
+export function connectTelegramAuthAPI(): Promise<TelegramAuthDto> {
+  return http.get('/api/auth/telegram/auth', { params: getAuthParams('/connect?type=telegram') });
+}
 
+export function loginTelegramAuthAPI(): Promise<TelegramAuthDto> {
+  return http.get('/api/auth/telegram/auth', {
+    params: {
+      ...getAuthParams('?type=telegram'),
+      invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
+      signup_mode: 'enabled',
+    },
+  });
+}
+
+export function loginByMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/signin/${type}`, {
     params: {
       ...getAuthParams(`?type=${type}`),
@@ -97,6 +97,12 @@ export interface TelegramLoginData {
   hash: string;
 }
 
+export interface TelegramAuthData {
+  origin: string;
+  html: string;
+  user: TelegramLoginData;
+}
+
 export function loginByWalletAPI(data: WalletReqDto): Promise<TokenDto | null> {
   data.invite_code = localStorage.getItem(KEY_INVITE_CODE) || undefined;
   return http.post('/api/auth/signin/wallet', JSON.stringify(data));
@@ -116,7 +122,7 @@ export function loginByTelegramAPI(data: TelegramLoginData): Promise<TokenDto | 
   });
 }
 
-export function connectTelegramAPI(data: TelegramLoginData): Promise<TokenDto | null> {
+export function connectTelegramAPI(data: TelegramLoginData | any): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/telegram', JSON.stringify(data), {
     params: getAuthParams(`/connect?type=telegram`),
   });
@@ -131,4 +137,37 @@ export function confirmSignUpAPI(): Promise<TokenDto | null> {
   if (!signUpCred) return Promise.resolve(null);
   localStorage.removeItem(KEY_SIGN_UP_CRED);
   return http.post('/api/auth/signup', JSON.stringify({ signup_cred: signUpCred }));
+}
+
+export function getTelegramAuthData(options: TelegramAuthDto): Promise<TelegramAuthData> {
+  const emptyData = {} as TelegramAuthData;
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    var url = options.authorization_url + '/get';
+    xhr.open('POST', url);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (xhr.responseText) {
+          try {
+            var result = JSON.parse(xhr.responseText);
+          } catch (e) {
+            resolve(emptyData);
+          }
+
+          resolve(result);
+        } else {
+          resolve(emptyData);
+        }
+      }
+    };
+
+    xhr.onerror = function () {
+      reject(xhr.status);
+    };
+
+    xhr.withCredentials = true;
+    xhr.send('bot_id=' + encodeURIComponent(options.bot_id));
+  });
 }
