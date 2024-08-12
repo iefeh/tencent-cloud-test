@@ -16,6 +16,7 @@ import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
 import useWatchStorage from './useWatchStorage';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
+import useParticle from './useParticle';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
   const store = useContext(MobxContext);
@@ -24,6 +25,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
   const [loading, setLoading] = useState(false);
   const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
+  useParticle();
 
   const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_AUTH) || {};
