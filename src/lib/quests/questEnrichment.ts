@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { getUserFirstWhitelist, queryUserAuth } from '@/lib/common/user';
 import QuestAchievement from '@/lib/models/QuestAchievement';
+import Token from '@/lib/models/Token';
 import UserMetrics from '@/lib/models/UserMetrics';
 import UserMoonBeamAudit from '@/lib/models/UserMoonBeamAudit';
 import UserTokenReward from '@/lib/models/UserTokenReward';
@@ -229,10 +230,22 @@ async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
             // 用户已验证token奖励, 创建token奖励属性
             if (userTokenReward) {
                 quest.user_token_reward = {
-                    token_claim_status: userTokenReward.status,
-                    token_reward_id: userTokenReward.reward_id,
-                    token_amount: userTokenReward.token_amount_raw,
-                    token_amount_formatted: userTokenReward.token_amount_formatted
+                    reward_id: userTokenReward.reward_id,
+                    staus: userTokenReward.status,
+                    source_type: userTokenReward.source_type,
+                    token_amount_raw: userTokenReward.token_amount_raw,
+                    token_amount_formatted: userTokenReward.token_amount_formatted,
+                    created_time: userTokenReward.created_time,
+                };
+                const token = await Token.findOne({ token_id: userTokenReward.token_id });
+                if (token) {
+                    quest.user_token_reward.token = {
+                        chain_id: token.chain_id,
+                        address: token.address,
+                        icon: token.icon,
+                        name: token.name,
+                        symbo: token.symbo
+                    };
                 }
             }
         }
