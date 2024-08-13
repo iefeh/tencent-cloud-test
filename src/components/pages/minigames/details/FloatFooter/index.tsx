@@ -28,7 +28,7 @@ const FloatFooter: FC = () => {
       />
 
       <div className="relative z-0 right-[20.5rem] flex flex-col items-end mt-[0.8125rem] pointer-events-auto w-min ml-auto">
-        <TicketCountdown endTime={ticket_expired_at} />
+        <TicketCountdown key={data?.ticket_expired_at} endTime={data?.ticket_expired_at} />
 
         <div className="flex pr-1 mt-5">
           <StrokeButton
@@ -63,7 +63,7 @@ const FloatFooter: FC = () => {
       </div>
 
       <ShareModal disclosure={shareDisclosure} />
-      <TicketModal item={data} disclosure={ticketDisclosure} />
+      <TicketModal disclosure={ticketDisclosure} />
     </div>
   );
 

@@ -17,18 +17,16 @@ import TicketCountdown from '../../TicketCountdown';
 import RulesModal from '../RulesModal';
 import IntegerInput from '@/components/common/inputs/IntegerInput';
 import useBuyTickets from './useBuyTickets';
-import type { MiniGames } from '@/types/minigames';
-
-interface Props extends DisclosureProps {
-  item: MiniGames.GameDetailDTO | null;
-}
+import { useMGDContext } from '@/store/MiniGameDetails';
+import { observer } from 'mobx-react-lite';
 
 const enum TicketChannel {
   MATIC = 'matic',
   MORE = 'more',
 }
 
-const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) => {
+const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
+  const { data, queryTickets } = useMGDContext();
   const rulesDisclosure = useDisclosure();
   const radioOptions = [
     {
@@ -43,10 +41,21 @@ const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) 
   ];
   const [channel, setChannel] = useState<string>(radioOptions[0].key);
   const [ticketAmount, setTicketAmount] = useState('1');
-  const { loading: buyLoading, onBuyTickets } = useBuyTickets();
+  const [buyLoading, setBuyLoading] = useState(false);
+  const { onBuyTickets } = useBuyTickets();
 
-  const digit = Math.ceil(-Math.log10(+(item?.ticket_price_formatted || 0)));
-  const totalPrice = (+(item?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
+  const digit = data?.ticket_price_formatted ? Math.ceil(-Math.log10(+(data.ticket_price_formatted || 0))) : 0;
+  const totalPrice = (+(data?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
+
+  async function onBuyTicketsClick() {
+    if (!data) return;
+
+    setBuyLoading(true);
+    const res = await onBuyTickets(data, +ticketAmount);
+    if (res) await queryTickets();
+
+    setBuyLoading(false);
+  }
 
   return (
     <>
@@ -128,7 +137,7 @@ const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) 
                     <div className="w-full h-0 border-t-1 border-brown border-dashed mt-7 mb-[1.125rem]"></div>
 
                     <div className="flex items-center">
-                      <div>{item?.ticket_price_formatted || '-'} Matic/Ticket</div>
+                      <div>{data?.ticket_price_formatted || '-'} Matic/Ticket</div>
 
                       <div className="flex-1 flex justify-end items-center mr-7">
                         <IntegerInput value={ticketAmount} min={1} max={10} onValueChange={setTicketAmount} />
@@ -165,13 +174,13 @@ const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) 
 
                     <div className="w-full h-0 border-t-1 border-brown border-dashed mt-6 mb-5"></div>
 
-                    <TicketCountdown />
+                    <TicketCountdown endTime={data?.ticket_expired_at} />
 
                     <div className="flex items-center mt-6">
                       <StrokeButton
                         className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem]"
                         strokeType="ticket"
-                        strokeText={item?.ticket.remain.toString() || '--'}
+                        strokeText={data?.ticket.remain.toString() || '--'}
                         startContent={
                           <span className="absolute top-0 right-[0.375rem] text-sm leading-none text-brown">
                             Your Tickets
@@ -185,7 +194,7 @@ const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) 
                         strokeText="Buy Tickets"
                         isDisabled={+ticketAmount < 1 || +ticketAmount > 10}
                         isLoading={buyLoading}
-                        onPress={() => item && onBuyTickets(item, +ticketAmount)}
+                        onPress={onBuyTicketsClick}
                       />
 
                       <StrokeButton
@@ -218,4 +227,4 @@ const TicketModal: FC<Props> = ({ item, disclosure: { isOpen, onOpenChange } }) 
   );
 };
 
-export default TicketModal;
+export default observer(TicketModal);
