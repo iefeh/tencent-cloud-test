@@ -87,6 +87,7 @@ async function paginationUserTokenHistory(pageNum: number, pageSize: number, use
                 "token.icon": 1,
                 token_amount_raw: 1,
                 token_amount_formatted: 1,
+                tx_hash: 1,
                 created_time: 1,
                 claimed_time: 1,
                 status: 1

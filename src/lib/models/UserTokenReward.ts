@@ -24,6 +24,8 @@ export interface IUserTokenReward extends Document {
     token_amount_raw: string,
     // 格式化以后的代币数量
     token_amount_formatted: string,
+    // 交易hash
+    tx_hash: string,
     // 记录状态 pending(待领取)、claiming(领取中)、claimed(已领取)
     status: UserTokenAuditStatus,
     // 创建时间毫秒时间戳
@@ -42,6 +44,7 @@ const UserTokenRewardSchema = new Schema<IUserTokenReward>({
     token_id: {type: String},
     token_amount_raw: {type: String},
     token_amount_formatted: {type: String},
+    tx_hash: {type: String},
     status: {type: String},
     created_time: {type: Number, required: true},
     start_claim_time: {type: Number, default: null},
