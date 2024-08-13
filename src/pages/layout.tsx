@@ -12,6 +12,7 @@ import { Web3ModalProvider } from '@/store/Web3Modal';
 import { useStore } from '@/store';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
 import { MobxContext } from './_app';
+import { AuthCoreContextProvider } from '@particle-network/auth-core-modal';
 
 export default function RootLayout({
   children,
@@ -37,16 +38,31 @@ export default function RootLayout({
   );
 
   return (
-    <Web3ModalProvider>
-      <MobxContext.Provider value={store}>
-        <BattlePassContext.Provider value={bpStore}>
-          <React.Fragment>
-            <LineBorder />
+    <AuthCoreContextProvider
+      options={{
+        projectId: '6e3c69f1-f726-405a-8277-93542a2e602d',
+        clientKey: 'cqTW7Q9qUDlZOhZ0uTiwDYP3BidmCrx2eWlNHzSZ',
+        appId: 'f9d66501-274a-4a88-9848-5749641693d6',
+        promptSettingConfig: {
+          promptMasterPasswordSettingWhenLogin: 0,
+          promptPaymentPasswordSettingWhenSign: 0,
+        },
+        wallet: {
+          visible: false,
+        },
+      }}
+    >
+      <Web3ModalProvider>
+        <MobxContext.Provider value={store}>
+          <BattlePassContext.Provider value={bpStore}>
+            <React.Fragment>
+              <LineBorder />
 
-            {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
-          </React.Fragment>
-        </BattlePassContext.Provider>
-      </MobxContext.Provider>
-    </Web3ModalProvider>
+              {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
+            </React.Fragment>
+          </BattlePassContext.Provider>
+        </MobxContext.Provider>
+      </Web3ModalProvider>
+    </AuthCoreContextProvider>
   );
 }

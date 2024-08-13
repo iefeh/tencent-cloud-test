@@ -38,6 +38,12 @@ export default function DownloadPage() {
       label: 'ダウンロード',
       url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_JP_URL!,
     },
+    {
+      title: 'English Version',
+      className: styles.downloadBtn,
+      label: 'Download',
+      url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/apk/0624_awsonline_release_en_01.apk',
+    },
   ];
 
   function onAppStore(url: string) {
