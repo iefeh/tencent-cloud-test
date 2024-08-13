@@ -32,6 +32,15 @@ class UserStore {
     }
   };
 
+  setJWTToken = (val?: string) => {
+    this.jwtToken = val || '';
+    if (val) {
+      localStorage.setItem(KEY_PARTICLE_TOKEN, val);
+    } else {
+      localStorage.removeItem(KEY_PARTICLE_TOKEN);
+    }
+  };
+
   init = () => {
     this.token = localStorage.getItem(KEY_AUTHORIZATION) || '';
     this.inited = true;
@@ -113,8 +122,8 @@ class UserStore {
       await logoutAPI();
     }
 
-    this.token = '';
-    localStorage.removeItem(KEY_AUTHORIZATION);
+    this.setToken('');
+    this.setJWTToken('');
     this.setUserInfo(null);
   };
 

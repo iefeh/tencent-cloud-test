@@ -4,6 +4,7 @@ import { type UserInfo } from '@particle-network/auth-core';
 import { useConnect, useUserInfo } from '@particle-network/auth-core-modal';
 import { useEffect } from 'react';
 
+/** 仅用于接入particle和自动登出，全局应用一次即可 */
 export default function useParticle() {
   const { connect, connected, disconnect } = useConnect();
   const { userInfo } = useUserInfo();
@@ -12,10 +13,10 @@ export default function useParticle() {
   async function loginParticle() {
     let particleUserInfo: UserInfo | undefined;
     try {
-      particleUserInfo = await connect({ socialType: 'jwt', jwt: jwtToken } as any);
-      console.log("particle user info(return when it's null): ", particleUserInfo);
+      particleUserInfo = await connect({ provider: 'jwt', thirdpartyCode: jwtToken } as any);
+      console.log('particle user info: ', particleUserInfo);
     } catch (error) {
-      console.error('loginParticle', error);
+      console.error('loginParticle error:', error);
       return;
     }
     if (!particleUserInfo) return;
@@ -36,12 +37,12 @@ export default function useParticle() {
   }
 
   useEffect(() => {
-    if (jwtToken) {
+    if (jwtToken && !connected) {
       loginParticle();
-    } else if (connected) {
+    } else if (!jwtToken && connected) {
       disconnect();
     }
-  }, [jwtToken]);
+  }, [jwtToken, connected]);
 
   return { userInfo, connect, loginParticle };
 }
