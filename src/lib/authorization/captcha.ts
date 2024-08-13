@@ -13,7 +13,7 @@ export async function sendCaptcha(captchaType: CaptchaType, req: UserContextRequ
         res.json(response.invalidParams());
         return
     }
-    const emailKey = `${captchaType}:${email}`;
+    const emailKey = `${captchaType}:${String(email).toLowerCase()}`;
     // 检查邮件是否是测试邮件
     if (email == process.env.APPLE_REVIEW_USERNAME) {
         await redis.setex(emailKey, 60 * 60 * 15, process.env.APPLE_REVIEW_PASSWORD!);
@@ -28,7 +28,7 @@ export async function sendCaptcha(captchaType: CaptchaType, req: UserContextRequ
 
     const clientIP = req.socket.remoteAddress;
     // 检查发送间隔
-    const allowed = await allowToSendCaptcha(captchaType, email as string, clientIP as string);
+    const allowed = await allowToSendCaptcha(captchaType, String(email).toLowerCase(), clientIP as string);
     if (!allowed) {
         res.json(response.sendCaptchaDisallowed());
         return
@@ -36,6 +36,6 @@ export async function sendCaptcha(captchaType: CaptchaType, req: UserContextRequ
 
     const captcha = Math.floor(100000 + Math.random() * 900000);
     await redis.setex(emailKey, 60 * 60 * 15, captcha);
-    await sendCaptchaEmail(email as string, captcha, quick_fill_url as string);
+    await sendCaptchaEmail(String(email).toLowerCase(), captcha, quick_fill_url as string);
     res.json(response.success());
 }
