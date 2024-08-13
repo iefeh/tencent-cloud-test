@@ -22,7 +22,7 @@ const MyTokens: FC = () => {
   const pagiInfo = useRef<PagiInfo>({ pageIndex: 1, pageSize: 10 });
   const [pagiTotal, setPagiTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { onClaim } = useClaimToken();
+  const { onClaim } = useClaimToken({ updateList: queryItems });
 
   function onSelectionChange(key: Key) {
     const str = key.toString();

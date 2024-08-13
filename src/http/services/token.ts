@@ -30,5 +30,5 @@ export function queryTokenPermitAPI(params: { reward_ids?: string }): Promise<To
 }
 
 export function postTokenTxAPI(data: { tx_hash: string; chain_id: string }): Promise<null> {
-  return http.post('/api/users/reward/permit', JSON.stringify(data));
+  return http.post('/api/users/reward/report', JSON.stringify(data));
 }

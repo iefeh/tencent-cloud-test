@@ -23,11 +23,19 @@ const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
   }
 
   async function onClaimClick() {
-    setLoading(true);
+    switch (claimBtnText) {
+      case 'View':
+        window.open(`https://amoy.polygonscan.com/tx/${item.token.address}`, '_blank');
+        return;
+      case 'Claim':
+        setLoading(true);
+        await onClaim?.(item);
+        setLoading(false);
 
-    await onClaim?.(item);
-
-    setLoading(false);
+        return
+      default:
+        break;
+    }
   }
 
   return (
