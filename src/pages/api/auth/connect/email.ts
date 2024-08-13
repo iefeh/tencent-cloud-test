@@ -16,7 +16,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    const historyCaptcha = await redis.get(`${CaptchaType.ConnectCaptcha}:${email}`);
+    let lCaseEmail = String(email).toLowerCase()
+    const historyCaptcha = await redis.get(`${CaptchaType.ConnectCaptcha}:${lCaseEmail}`);
     if (!historyCaptcha) {
         res.json(response.captchaExpired());
         return
@@ -33,8 +34,8 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     }
     // 执行用户邮件绑定、删除验证码
     try {
-        await User.updateOne({'user_id': req.userId, email: null}, {email: email});
-        await redis.del(`${CaptchaType.ConnectCaptcha}:${email}`);
+        await User.updateOne({'user_id': req.userId, email: null}, {email: lCaseEmail});
+        await redis.del(`${CaptchaType.ConnectCaptcha}:${lCaseEmail}`);
     } catch (e) {
         if (isDuplicateKeyError(e)) {
             res.json(response.emailAlreadyBoundToOthers());
