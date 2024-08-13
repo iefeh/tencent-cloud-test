@@ -231,7 +231,7 @@ async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
             if (userTokenReward) {
                 quest.user_token_reward = {
                     reward_id: userTokenReward.reward_id,
-                    staus: userTokenReward.status,
+                    status: userTokenReward.status,
                     source_type: userTokenReward.source_type,
                     token_amount_raw: userTokenReward.token_amount_raw,
                     token_amount_formatted: userTokenReward.token_amount_formatted,
