@@ -31,7 +31,6 @@ export default function useTransaction({ abi, method }: Props) {
     if (!txProvider.current) return;
 
     setLoading(true);
-    await txProvider.current.beReady();
     const res = await txProvider.current.transaction(params, options, config);
     setLoading(false);
     return res;
