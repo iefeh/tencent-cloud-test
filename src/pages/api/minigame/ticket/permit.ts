@@ -12,7 +12,7 @@ import MiniGameDetail, {IMiniGameDetail} from "@/lib/models/MiniGameDetail";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).post(async (req, res) => {
+router.use(mustAuthInterceptor).get(async (req, res) => {
     const userId = req.userId;
     const {game_id, amount} = req.query;
     if (!game_id || !amount) {
