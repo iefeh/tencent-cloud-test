@@ -14,6 +14,8 @@ export interface IMiniGameDetail extends Document {
     client_id_hash: string,
     // 分享链接
     share: string,
+    // 分享奖励
+    share_reward: any,
     // 分享任务ID
     share_task?: string,
     // 海报相关
@@ -50,6 +52,7 @@ const MiniGameDetailSchema = new Schema<IMiniGameDetail>({
     client_id: { type: String, required: true, unique: true },
     client_id_hash: { type: String },
     share: { type: String },
+    share_reward: { type: Schema.Types.Mixed },
     share_task: { type: String },
     poster: { type: Schema.Types.Mixed },
     keywords: { type: [String] },
