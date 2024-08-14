@@ -14,7 +14,9 @@ const TopBanner: FC = () => {
 
   return (
     <div className="w-screen h-screen relative flex flex-col justify-end">
-      <Image className="object-cover" src={data?.poster?.img_url || ''} alt="" fill sizes="100%" unoptimized />
+      {data?.poster?.img_url && (
+        <Image className="object-cover" src={data.poster.img_url} alt="" fill sizes="100%" unoptimized />
+      )}
 
       <div className="relative z-0 pl-[16.25rem] mb-9">
         <div className="text-5xl">{data?.name || '--'}</div>
