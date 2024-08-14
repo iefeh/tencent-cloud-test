@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { getUserFirstWhitelist, queryUserAuth } from '@/lib/common/user';
 import QuestAchievement from '@/lib/models/QuestAchievement';
+import Token from '@/lib/models/Token';
 import UserMetrics from '@/lib/models/UserMetrics';
 import UserMoonBeamAudit from '@/lib/models/UserMoonBeamAudit';
 import UserTokenReward from '@/lib/models/UserTokenReward';
@@ -222,21 +223,33 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
 
 // 为任务添加user_token_reward字段
 async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
-    quests.forEach(async (quest) => {
+    await Promise.all(quests.map(async (quest) => {
         // 任务存在token奖励, 查询用户token奖励领取状态
         if (quest.reward.token_reward && quest.reward.token_reward.actual_raffle_time && quest.verified) {
             const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`)});
             // 用户已验证token奖励, 创建token奖励属性
             if (userTokenReward) {
                 quest.user_token_reward = {
-                    token_claim_status: userTokenReward.status,
-                    token_reward_id: userTokenReward.reward_id,
-                    token_amount: userTokenReward.token_amount_raw,
-                    token_amount_formatted: userTokenReward.token_amount_formatted
+                    reward_id: userTokenReward.reward_id,
+                    status: userTokenReward.status,
+                    source_type: userTokenReward.source_type,
+                    token_amount_raw: userTokenReward.token_amount_raw,
+                    token_amount_formatted: userTokenReward.token_amount_formatted,
+                    created_time: userTokenReward.created_time,
+                };
+                const token = await Token.findOne({ token_id: userTokenReward.token_id });
+                if (token) {
+                    quest.user_token_reward.token = {
+                        chain_id: token.chain_id,
+                        address: token.address,
+                        icon: token.icon,
+                        name: token.name,
+                        symbo: token.symbo
+                    };
                 }
             }
         }
-    })
+    }));
 }
 
 async function getUserAuth(userId: string): Promise<Map<AuthorizationType, boolean>> {

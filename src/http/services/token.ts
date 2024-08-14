@@ -10,6 +10,7 @@ export interface MyTokensRecord {
   status: TokenRewardStatus;
   created_time: number | null;
   claimed_time: number | null;
+  tx_hash?: string;
   token: {
     chain_id: string;
     address: string;

@@ -56,7 +56,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor).post(asy
             rewardIds.push(reqId);
           }
         }
-        await UserTokenReward.updateMany({ reward_id: { $in: rewardIds } }, { status: UserTokenAuditStatus.Claiming, start_claim_time: Date.now() });
+        await UserTokenReward.updateMany({ reward_id: { $in: rewardIds } }, { status: UserTokenAuditStatus.Claiming, start_claim_time: Date.now(), tx_hash: tx_hash });
         res.json(response.success());
     } catch (error) {
         logger.error(error);
