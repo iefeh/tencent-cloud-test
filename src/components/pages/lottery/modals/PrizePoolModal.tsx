@@ -3,8 +3,8 @@ import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
-import Reward from './Reward';
-import PrizePoolTimeoutInfo from './PrizePoolTimeoutInfo';
+import Reward from '../Reward';
+import PrizePoolTimeoutInfo from '../PrizePoolTimeoutInfo';
 
 interface Props {
   disclosure: {
