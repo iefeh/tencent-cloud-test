@@ -94,7 +94,7 @@ async function verifyShare(userId: string, shareReward: any) {
             twitterText = twitterText.replace(url.url, url.unwound_url);
           }
         }
-
+        console.log("twitterText", twitterText);
         verified = true;
         for (let kw of shareReward.tweet_kw) {
           if (!twitterText.includes(kw)) {
@@ -139,23 +139,23 @@ async function verifyShare(userId: string, shareReward: any) {
 }
 
 async function distributeTickets(userId: string, clientId: string, client: any) {
-// 缓存门票过期时间
-const cachedKey = `ticket-expiration:${clientId}`;
-let expiredAt: any = await redis.get(cachedKey);
-if (!expiredAt) {
+  // 缓存门票过期时间
+  const cachedKey = `ticket-expiration:${clientId}`;
+  let expiredAt: any = await redis.get(cachedKey);
+  if (!expiredAt) {
     const expiration = await MiniGameDetail.findOne({ client_id: clientId }, { _id: 0, ticket_expired_at: 1 });
     if (expiration.ticket_expired_at) {
-        expiredAt = expiration.ticket_expired_at;
+      expiredAt = expiration.ticket_expired_at;
     } else {
-        // 若未配置门票过期时间，则给一个大值，保证门票不过期。
-        expiredAt = 10 * Date.now();
+      // 若未配置门票过期时间，则给一个大值，保证门票不过期。
+      expiredAt = 10 * Date.now();
     }
     await redis.setex(cachedKey, 60, expiredAt);
-}
-expiredAt = Number(expiredAt);
+  }
+  expiredAt = Number(expiredAt);
 
-let tickets: any[] = [];
-for (let i = 0; i < client.share_reward.ticket_count; i++) {
+  let tickets: any[] = [];
+  for (let i = 0; i < client.share_reward.ticket_count; i++) {
     const ticket = new GameTicket();
     ticket.pass_id = ethers.id(`${userId},${clientId},share-reward,${i}`);
     ticket.user_id = userId;
@@ -163,17 +163,17 @@ for (let i = 0; i < client.share_reward.ticket_count; i++) {
     ticket.created_at = Date.now();
     ticket.expired_at = expiredAt;
     tickets.push(ticket);
-}
-// 保存门票
-if (tickets.length > 0) {
+  }
+  // 保存门票
+  if (tickets.length > 0) {
     try {
-        await GameTicket.insertMany(tickets);
+      await GameTicket.insertMany(tickets);
     } catch (error: any) {
-        if (error.code !== 11000) {
-            logger.warn(error);
-        }
+      if (error.code !== 11000) {
+        logger.warn(error);
+      }
     }
-}
+  }
 }
 // this will run if none of the above matches
 router.all((req, res) => {
