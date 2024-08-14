@@ -1,16 +1,19 @@
+import { ethers } from 'ethers';
+import { ContractTransactionDataAndInputError } from 'web3';
+
+import { getUserFirstWhitelist } from '@/lib/common/user';
 import QuestAchievement from '@/lib/models/QuestAchievement';
-import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
-import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import { constructQuest } from '@/lib/quests/constructor';
 import { queryUserDiscordAuthorization } from '@/lib/quests/implementations/connectDiscordQuest';
 import { queryUserSteamAuthorization } from '@/lib/quests/implementations/connectSteamQuest';
 import { queryUserTelegramAuthorization } from '@/lib/quests/implementations/connectTelegramQuest';
-import { QuestType } from '@/lib/quests/types';
-import { getUserFirstWhitelist } from '@/lib/common/user';
-import { constructQuest } from '@/lib/quests/constructor';
+import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
 import { enrichQuestAuthorization } from '@/lib/quests/questEnrichment';
-import UserTwitter, { IUserTwitter } from '../models/UserTwitter';
+import { QuestType } from '@/lib/quests/types';
+
 import TwitterTopicTweet from '../models/TwitterTopicTweet';
-import { ContractTransactionDataAndInputError } from 'web3';
+import UserTwitter, { IUserTwitter } from '../models/UserTwitter';
 
 // 增强用户的tasks，场景：活动详情
 // 与enrichUserQuests的区别在于，tasks校验任务不给与奖励，quests校验任务给与奖励

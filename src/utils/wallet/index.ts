@@ -44,6 +44,9 @@ async function addNetwork(provider: Eip1193Provider, targetChainId: number | str
 
 export async function switchNetwork(provider: Eip1193Provider, targetChainId: number | string): Promise<boolean> {
   try {
+    const currentChainId = await provider.request({ method: 'eth_chainId', params: []});
+    if (currentChainId.toString() === targetChainId.toString()) return true;
+
     await provider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: parseChainIdToHex(targetChainId) }],
@@ -58,6 +61,7 @@ export async function switchNetwork(provider: Eip1193Provider, targetChainId: nu
     } else {
       console.log('switchNetwork', error);
       console.dir(error);
+      return false;
     }
   }
 
