@@ -45,10 +45,7 @@ const RankingTabPanel: FC = () => {
               <TableCell className="rounded-l-base pl-5">
                 <Image
                   className="object-contain w-[2.0625rem] h-[2.0625rem]"
-                  src={
-                    row.avatar ||
-                    `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${row.rank}.png`
-                  }
+                  src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${row.rank}.png`}
                   alt=""
                   width={66}
                   height={66}
@@ -61,7 +58,7 @@ const RankingTabPanel: FC = () => {
                 <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown">
                   <Image
                     className="object-contain"
-                    src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png"
+                    src={row.avatar || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png'}
                     alt=""
                     fill
                     sizes="100%"

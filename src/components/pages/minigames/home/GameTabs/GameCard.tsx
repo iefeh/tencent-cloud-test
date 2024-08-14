@@ -24,7 +24,7 @@ const StatusConfig: Dict<{ label: string; color: string }> = {
   },
 };
 
-const GameCard: FC<Props> = ({ item: { img_url, client_id, status, icon_url, client_name } }) => {
+const GameCard: FC<Props> = ({ item: { ticket, img_url, client_id, status, icon_url, client_name } }) => {
   const { label, color } = StatusConfig[status] || {};
   const canPlay = status === GameStatus.IN_PROGRESS;
 
@@ -63,7 +63,7 @@ const GameCard: FC<Props> = ({ item: { img_url, client_id, status, icon_url, cli
         <StrokeButton
           className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] cursor-default"
           strokeType="ticket"
-          strokeText="10"
+          strokeText={ticket?.remain?.toString() || '-'}
           startContent={
             <span className="absolute top-0 right-2 text-sm leading-none text-brown font-jcyt4">Your Tickets</span>
           }
