@@ -23,7 +23,7 @@ export function getBuyTicketsPermitAPI(params: {
 }
 
 export function buyTicketsCallbackAPI(data: {
-  game_id: string;
+  gameId: string;
   txHash: string;
 }): Promise<{ available_tickets: number }> {
   return http.post('/api/minigame/ticket/paid', JSON.stringify(data));

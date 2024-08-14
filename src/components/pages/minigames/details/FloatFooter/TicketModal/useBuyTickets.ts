@@ -30,7 +30,7 @@ export default function useBuyTickets() {
       return false;
     }
 
-    const cbRes = await buyTicketsCallbackAPI({ game_id: item.client_id, txHash: txRes.hash });
+    const cbRes = await buyTicketsCallbackAPI({ gameId: item.client_id, txHash: txRes.hash });
     if (!cbRes) {
       setLoading(false);
       return false;
