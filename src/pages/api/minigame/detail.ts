@@ -14,6 +14,7 @@ import UserScoreRank from "@/lib/models/2048UserScoreRank";
 import User from "@/lib/models/User";
 import { loadAllBadges } from "../badges/list";
 import QuestAchievement from "@/lib/models/QuestAchievement";
+import { checkClaimed } from "./claim";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -39,6 +40,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   await enrichTasks(userId, detail);
   await enrichRanking(userId, detail);
   await enrichBadge(userId, detail);
+  await enrichShareReward(userId, detail);
 
   res.json(response.success(detail));
   return;
@@ -156,6 +158,15 @@ async function enrichBadge(userId: string | undefined, detail: any) {
     delete detail.badge;
     detail.badge = badges;
   }
+}
+
+async function enrichShareReward(userId: string | undefined, detail: any) {
+  if (!userId) {
+    detail.share_reward_claimed = false;
+    return;
+  }
+
+  detail.share_reward_claimed = await checkClaimed(userId, detail.client_id);
 }
 
 
