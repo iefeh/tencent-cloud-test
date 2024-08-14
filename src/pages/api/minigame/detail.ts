@@ -163,6 +163,7 @@ async function enrichBadge(userId: string | undefined, detail: any) {
 async function enrichShareReward(userId: string | undefined, detail: any) {
   if (!userId) {
     detail.share_reward_claimed = false;
+    delete detail.share_reward;
     return;
   }
 
