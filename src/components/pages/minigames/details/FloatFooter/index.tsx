@@ -45,14 +45,21 @@ const FloatFooter: FC = () => {
                 unoptimized
               />
             }
+            isDisabled={!data}
             onPress={shareDisclosure.onOpen}
           />
 
           <Link href={url || 'javascript:;'} target="_blank">
-            <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" />
+            <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" isDisabled={!url} />
           </Link>
 
-          <StrokeButton className="ml-3" strokeType="blue" strokeText="Buy Tickets" onPress={ticketDisclosure.onOpen} />
+          <StrokeButton
+            className="ml-3"
+            strokeType="blue"
+            strokeText="Buy Tickets"
+            isDisabled={!data}
+            onPress={ticketDisclosure.onOpen}
+          />
 
           <StrokeButton
             className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] ml-5"
