@@ -167,6 +167,7 @@ async function enrichShareReward(userId: string | undefined, detail: any) {
   }
 
   detail.share_reward_claimed = await checkClaimed(userId, detail.client_id);
+  delete detail.share_reward;
 }
 
 
