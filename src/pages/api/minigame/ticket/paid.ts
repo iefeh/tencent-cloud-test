@@ -7,7 +7,7 @@ import { buyTicket } from "../../oauth2/minigame/ticket/paid";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
+router.use(mustAuthInterceptor).post(async (req, res) => {
     try {
 
         const { gameId, txHash } = req.body;
