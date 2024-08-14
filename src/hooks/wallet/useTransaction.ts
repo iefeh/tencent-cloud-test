@@ -1,6 +1,7 @@
 import { useUserContext } from '@/store/User';
 import TransactionProvider, { type TransactionConfig } from '@/utils/wallet/transaction';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { type TransactionRequest } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -16,7 +17,7 @@ export default function useTransaction({ abi, method }: Props) {
   const [loading, setLoading] = useState(false);
   const txProvider = useRef<TransactionProvider>();
 
-  async function onTransaction(params: any, config: Partial<TransactionConfig>) {
+  async function onTransaction(params: any, options: TransactionRequest = {}, config: Partial<TransactionConfig>) {
     if (!userInfo) {
       toggleLoginModal(true);
       return;
@@ -31,7 +32,7 @@ export default function useTransaction({ abi, method }: Props) {
 
     setLoading(true);
     await txProvider.current.beReady();
-    const res = await txProvider.current.transaction(params, config);
+    const res = await txProvider.current.transaction(params, options, config);
     setLoading(false);
     return res;
   }
