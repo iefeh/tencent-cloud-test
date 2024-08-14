@@ -121,6 +121,7 @@ class TransactionProvider {
       const contract = new Contract(contractAddress, abi, signer);
       console.log('transaction method:', method);
       console.log('transaction params:', params);
+      console.log('transaction options:', options);
       const transaction = await contract[method](params, options);
       const result = await transaction.wait();
       console.log('transaction result:', result);

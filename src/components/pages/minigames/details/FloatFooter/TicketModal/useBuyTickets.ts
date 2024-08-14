@@ -24,12 +24,13 @@ export default function useBuyTickets() {
       { value: permit.tokenAmount },
       { contractAddress: contract_address, chainId: chain_id },
     );
-    if (!txRes) {
+    if (!txRes?.hash) {
+      toast.error('Transaction failed, please try again later.');
       setLoading(false);
       return false;
     }
 
-    const cbRes = await buyTicketsCallbackAPI({ game_id: item.client_id, txHash: txRes.transactionHash });
+    const cbRes = await buyTicketsCallbackAPI({ game_id: item.client_id, txHash: txRes.hash });
     if (!cbRes) {
       setLoading(false);
       return false;
