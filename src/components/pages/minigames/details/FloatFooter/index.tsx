@@ -8,10 +8,11 @@ import TicketCountdown from '../TicketCountdown';
 import { createPortal } from 'react-dom';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
+import Link from 'next/link';
 
 const FloatFooter: FC = () => {
   const { data } = useMGDContext();
-  const { ticket, ticket_expired_at } = data || {};
+  const { ticket, ticket_expired_at, url } = data || {};
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
 
@@ -28,7 +29,7 @@ const FloatFooter: FC = () => {
       />
 
       <div className="relative z-0 right-[20.5rem] flex flex-col items-end mt-[0.8125rem] pointer-events-auto w-min ml-auto">
-        <TicketCountdown key={data?.ticket_expired_at} endTime={data?.ticket_expired_at} />
+        <TicketCountdown key={ticket_expired_at} endTime={data?.ticket_expired_at} />
 
         <div className="flex pr-1 mt-5">
           <StrokeButton
@@ -47,7 +48,9 @@ const FloatFooter: FC = () => {
             onPress={shareDisclosure.onOpen}
           />
 
-          <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" />
+          <Link href={url || 'javascript:;'} target="_blank">
+            <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" />
+          </Link>
 
           <StrokeButton className="ml-3" strokeType="blue" strokeText="Buy Tickets" onPress={ticketDisclosure.onOpen} />
 

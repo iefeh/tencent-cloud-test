@@ -96,7 +96,6 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
 
               <Button
                 className="bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_close.png')] bg-contain bg-no-repeat w-[3.625rem] h-[3.75rem] absolute top-0 right-0 p-0 min-w-0"
-                data-text="Play Now"
                 onPress={onClose}
               />
             </ModalBody>
