@@ -1,6 +1,6 @@
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from '@/hooks/utils';
-import { Contract, BrowserProvider, type Eip1193Provider } from 'ethers';
+import { Contract, BrowserProvider, type Eip1193Provider, type TransactionRequest } from 'ethers';
 
 interface ContractProviderConfig {
   provider: Eip1193Provider;
@@ -107,7 +107,7 @@ class TransactionProvider {
     return true;
   };
 
-  transaction = async (params: any, config: Partial<TransactionConfig> = {}) => {
+  transaction = async (params: any, options: TransactionRequest = {}, config: Partial<TransactionConfig> = {}) => {
     const realConfig = Object.assign({}, this.config, config);
     const { abi, method, chainId, contractAddress } = realConfig;
     console.log('transaction config:', realConfig);
@@ -121,7 +121,7 @@ class TransactionProvider {
       const contract = new Contract(contractAddress, abi, signer);
       console.log('transaction method:', method);
       console.log('transaction params:', params);
-      const transaction = await contract[method](params);
+      const transaction = await contract[method](params, options);
       const result = await transaction.wait();
       console.log('transaction result:', result);
       return result;

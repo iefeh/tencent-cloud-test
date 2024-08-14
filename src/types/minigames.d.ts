@@ -65,10 +65,11 @@ declare namespace MiniGames {
   }
 
   interface BuyTicketPermit {
-    claimer: string;
+    game: string;
     expiration: number;
-    reqId: string;
+    player: string;
     signature: string;
+    tickets: string;
     token: string;
     tokenAmount: string;
   }

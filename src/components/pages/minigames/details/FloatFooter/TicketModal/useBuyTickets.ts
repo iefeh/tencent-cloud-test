@@ -1,13 +1,13 @@
-import useTransaction from '@/hooks/wallet/useTransaction';
 import { useState } from 'react';
 import mgTickets from '@/http/abi/mgTickets.json';
 import { buyTicketsCallbackAPI, getBuyTicketsPermitAPI } from '@/http/services/minigames';
 import { MiniGames } from '@/types/minigames';
 import { toast } from 'react-toastify';
+import useRPCTransaction from '@/hooks/wallet/useTransaction';
 
 export default function useBuyTickets() {
   const [loading, setLoading] = useState(false);
-  const { onTransaction } = useTransaction({ abi: mgTickets, method: 'buyTicket' });
+  const { onTransaction } = useRPCTransaction({ abi: mgTickets, method: 'buyTicket' });
 
   async function onBuyTickets(item: MiniGames.GameDetailDTO, amount: number) {
     setLoading(true);
@@ -19,7 +19,11 @@ export default function useBuyTickets() {
     }
 
     const { contract_address, chain_id, permit } = res;
-    const txRes = await onTransaction(permit, { contractAddress: contract_address, chainId: chain_id });
+    const txRes = await onTransaction(
+      permit,
+      { value: permit.tokenAmount },
+      { contractAddress: contract_address, chainId: chain_id },
+    );
     if (!txRes) {
       setLoading(false);
       return false;
