@@ -2,7 +2,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
-import BattlePassButton from '../../LoyaltyProgram/season/BattlePassButton';
+import BattlePassButton from '@/components/LoyaltyProgram/season/BattlePassButton';
 import { Lottery } from '@/types/lottery';
 import styles from './index.module.css';
 import { isMobile } from 'react-device-detect';

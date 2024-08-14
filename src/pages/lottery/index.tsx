@@ -1,11 +1,11 @@
-import CoverScreen from '@/components/lottery/screens/CoverScreen';
+import CoverScreen from '@/components/pages/lottery/screens/CoverScreen';
 import Head from 'next/head';
 import { FC, useRef } from 'react';
 import ScrollDownArrow from '../components/common/ScrollDownArrow';
-import DrawScreen from '@/components/lottery/screens/DrawScreen';
+import DrawScreen from '@/components/pages/lottery/screens/DrawScreen';
 import { createPortal } from 'react-dom';
-import BadgeScreen from '@/components/lottery/screens/BadgeScreen';
-import usePrizePool from '@/components/lottery/hooks/usePrizePool';
+import BadgeScreen from '@/components/pages/lottery/screens/BadgeScreen';
+import usePrizePool from '@/components/pages/lottery/hooks/usePrizePool';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import useTouchBottom from '@/hooks/useTouchBottom';

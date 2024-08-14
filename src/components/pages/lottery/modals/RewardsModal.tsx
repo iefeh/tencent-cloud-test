@@ -2,15 +2,15 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import { Modal, ModalBody, ModalContent, ModalHeader, Tooltip, useDisclosure } from '@nextui-org/react';
 import { FC, useEffect, useState } from 'react';
-import Reward from './Reward';
+import Reward from '../Reward';
 import { claimRewardAPI } from '@/http/services/lottery';
 import { toast } from 'react-toastify';
-import useShare from './hooks/useShare';
+import useShare from '../hooks/useShare';
 import useConnect from '@/hooks/useConnect';
 import { MediaType } from '@/constant/task';
-import ConnectNoticeModal from '../common/modal/ConnectNoticeModal';
+import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
-import CDKClaimedModal from './modals/CDKClaimedModal';
+import CDKClaimedModal from './CDKClaimedModal';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 

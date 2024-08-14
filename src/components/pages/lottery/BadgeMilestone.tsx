@@ -4,7 +4,7 @@ import { Lottery } from '@/types/lottery';
 import { cn, useDisclosure } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC, useState } from 'react';
-import BadgeModal from '../profile/badges/components/BadgeModal';
+import BadgeModal from '@/components/profile/badges/components/BadgeModal';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 
