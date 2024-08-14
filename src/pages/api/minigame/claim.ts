@@ -81,7 +81,7 @@ async function verifyShare(userId: string, shareReward: any) {
     return constructVerifyResponse(false, "Network busy, please try again later.");
   }
 
-  const twitterUrl = `https://api.twitter.com/2/users/${twitterAuth.twitter_id}/tweets?max_results=10&tweet.fields=text,entities`;
+  const twitterUrl = `https://api.twitter.com/2/users/${twitterAuth.twitter_id}/tweets?exclude=retweets&max_results=10&tweet.fields=text,entities`;
   const twitterRequest = twitterOAuthProvider.createRequest(twitterAuth.token);
   let verified = false;
   try {
@@ -94,7 +94,6 @@ async function verifyShare(userId: string, shareReward: any) {
             twitterText = twitterText.replace(url.url, url.unwound_url);
           }
         }
-        console.log("twitterText", twitterText);
         verified = true;
         for (let kw of shareReward.tweet_kw) {
           if (!twitterText.includes(kw)) {
@@ -113,7 +112,6 @@ async function verifyShare(userId: string, shareReward: any) {
     if (!isAxiosError(error)) {
       throw error;
     }
-    console.log(error);
     // 检查响应
     const response = error.response!;
     // 当前无权限，移除用户的授权token

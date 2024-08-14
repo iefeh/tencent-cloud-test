@@ -140,10 +140,10 @@ export async function enrichTicket(userId: string | undefined, games: any[]) {
       }
       // 是否可查询票数
       switch (q.ticket.game) {
-        case MiniGames.Puffy2048:
-          const pack = await UserBackpackModel.findOne({ uid: userId });
-          q.ticket.remain = pack ? pack.num : 0;
-          break;
+        // case MiniGames.Puffy2048:
+        //   const pack = await UserBackpackModel.findOne({ uid: userId });
+        //   q.ticket.remain = pack ? pack.num : 0;
+        //   break;
         default:
           q.ticket.remain = await ticketRemain(userId, q.client_id);
           break;
