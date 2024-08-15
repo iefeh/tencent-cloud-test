@@ -25,7 +25,6 @@ export default function useBuyTickets() {
       { contractAddress: contract_address, chainId: chain_id },
     );
     if (!txRes?.hash) {
-      toast.error('Transaction failed, please try again later.');
       setLoading(false);
       return false;
     }
