@@ -61,6 +61,7 @@ declare namespace MiniGames {
     ticket_price_raw: string;
     token_address: string;
     url: string;
+    share: string;
     share_reward_claimed: boolean;
   }
 

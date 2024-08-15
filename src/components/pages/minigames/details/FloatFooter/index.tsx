@@ -12,7 +12,7 @@ import Link from 'next/link';
 
 const FloatFooter: FC = () => {
   const { data } = useMGDContext();
-  const { ticket, ticket_expired_at, url } = data || {};
+  const { ticket, ticket_expired_at, url, share_reward_claimed } = data || {};
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
 
@@ -45,7 +45,7 @@ const FloatFooter: FC = () => {
                 unoptimized
               />
             }
-            isDisabled={!data}
+            isDisabled={!data || !!share_reward_claimed}
             onPress={shareDisclosure.onOpen}
           />
 

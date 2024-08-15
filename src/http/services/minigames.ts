@@ -28,3 +28,9 @@ export function buyTicketsCallbackAPI(data: {
 }): Promise<{ available_tickets: number }> {
   return http.post('/api/minigame/ticket/paid', JSON.stringify(data));
 }
+
+export function claimShareRewardAPI(data: {
+  client_id: string;
+}): Promise<InfoDTO & { require_authorization?: string }> {
+  return http.post('/api/minigame/claim', JSON.stringify(data));
+}
