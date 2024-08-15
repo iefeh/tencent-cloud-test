@@ -9,7 +9,7 @@ import { QuestType } from '@/constant/task';
 import ReverifyCountdown from './ReverifyCountdown';
 import TokenRewardProgress from './TokenRewardProgress';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import useClaimToken from '@/components/profile/MyTokens/useClaimToken';
+import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
 import { taskDetailsAPI } from '@/http/services/task';
 
 interface Props {
@@ -35,6 +35,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
       return onTaskUpdate?.(res.quest);
     },
   });
+  const progressStatus = getProgressStatus();
 
   function getProgressStatus() {
     const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
@@ -70,7 +71,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress status={getProgressStatus()} />}
+      {hasTokenReward && <TokenRewardProgress status={progressStatus} />}
 
       <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-12'])}>
         <div>{task.name}</div>
@@ -120,12 +121,32 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         </div>
 
         <div className="footer relative">
-          <div className="flex items-center">
-            <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
+          <div className='flex flex-wrap gap-x-4 gap-y-2'>
+            <div className="flex items-center">
+              <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
 
-            <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-              {task.reward.amount_formatted} Moon Beams
-            </span>
+              <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
+                {task.reward.amount_formatted} Moon Beams
+              </span>
+            </div>
+
+            {task.user_token_reward && (
+              <div className="flex items-center">
+                <Image
+                  className="w-8 h-8"
+                  src={task.user_token_reward.token.icon}
+                  alt=""
+                  unoptimized
+                  width={64}
+                  height={64}
+                  priority
+                />
+
+                <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
+                  {task.user_token_reward.token_amount_formatted} {task.user_token_reward.token.symbol}
+                </span>
+              </div>
+            )}
           </div>
 
           {task.verified && hasTokenReward ? (
@@ -137,6 +158,8 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                     ? 'Claimed'
                     : task.user_token_reward?.status === 'claiming'
                     ? 'Claiming'
+                    : progressStatus === 2
+                    ? 'Sorry, you didn’t win this time.'
                     : 'Claim'
                 }
                 actived
