@@ -9,7 +9,7 @@ export interface IToken extends Document {
     // 代币名称
     name: string,
     // 代币符号
-    symbo: string,
+    symbol: string,
     // 目标token地址
     address: string,
     // 原始代币小数位数
@@ -22,7 +22,7 @@ const TokenSchema = new Schema<IToken>({
     token_id: {type: String, required: true},
     chain_id: {type: String},
     name: {type: String},
-    symbo: {type: String},
+    symbol: {type: String},
     address: {type: String},
     decimal: {type: Number, required: true},
     icon: {type: String, required: true}

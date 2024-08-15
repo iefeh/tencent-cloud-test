@@ -25,7 +25,7 @@ const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
   async function onClaimClick() {
     switch (claimBtnText) {
       case 'View':
-        window.open(`https://amoy.polygonscan.com/tx/${item.token.address}`, '_blank');
+        window.open(`https://amoy.polygonscan.com/tx/${item.tx_hash}`, '_blank');
         return;
       case 'Claim':
         setLoading(true);

@@ -244,7 +244,7 @@ async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
                         address: token.address,
                         icon: token.icon,
                         name: token.name,
-                        symbo: token.symbo
+                        symbol: token.symbol
                     };
                 }
             }

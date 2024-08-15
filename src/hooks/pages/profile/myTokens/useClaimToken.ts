@@ -2,7 +2,6 @@ import useTransaction from '@/hooks/wallet/useTransaction';
 import { queryTokenPermitAPI, postTokenTxAPI, type MyTokensRecord } from '@/http/services/token';
 import tokenRewardABI from '@/http/abi/tokenReward.json';
 import { useState } from 'react';
-import { ethers } from 'ethers';
 
 interface ClaimTokenParams {
   updateList: () => void;
