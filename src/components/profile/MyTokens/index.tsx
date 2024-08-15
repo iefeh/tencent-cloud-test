@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC, Key, useEffect, useRef, useState } from 'react';
 import teamsImg from 'img/loyalty/task/teams.png';
-import useClaimToken from './useClaimToken';
+import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
 import MyTokenRow from './MyTokenRow';
 
 const MyTokens: FC = () => {

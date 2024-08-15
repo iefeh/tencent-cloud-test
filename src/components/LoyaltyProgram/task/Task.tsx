@@ -9,7 +9,7 @@ import { QuestType } from '@/constant/task';
 import ReverifyCountdown from './ReverifyCountdown';
 import TokenRewardProgress from './TokenRewardProgress';
 import LGButton from '@/pages/components/common/buttons/LGButton';
-import useClaimToken from '@/components/profile/MyTokens/useClaimToken';
+import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
 import { taskDetailsAPI } from '@/http/services/task';
 
 interface Props {
