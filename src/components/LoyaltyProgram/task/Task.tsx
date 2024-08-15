@@ -35,6 +35,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
       return onTaskUpdate?.(res.quest);
     },
   });
+  const progressStatus = getProgressStatus();
 
   function getProgressStatus() {
     const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
@@ -70,7 +71,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress status={getProgressStatus()} />}
+      {hasTokenReward && <TokenRewardProgress status={progressStatus} />}
 
       <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-12'])}>
         <div>{task.name}</div>
@@ -137,6 +138,8 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                     ? 'Claimed'
                     : task.user_token_reward?.status === 'claiming'
                     ? 'Claiming'
+                    : progressStatus === 2
+                    ? 'Sorry, you didn’t win this time.'
                     : 'Claim'
                 }
                 actived
