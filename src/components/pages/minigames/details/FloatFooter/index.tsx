@@ -45,7 +45,7 @@ const FloatFooter: FC = () => {
                 unoptimized
               />
             }
-            isDisabled={!data || !!share_reward_claimed}
+            isDisabled={!data}
             onPress={shareDisclosure.onOpen}
           />
 
