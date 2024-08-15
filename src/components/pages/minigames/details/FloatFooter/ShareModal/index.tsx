@@ -7,9 +7,10 @@ import { toast } from 'react-toastify';
 import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import { MediaType } from '@/constant/task';
 import useConnect from '@/hooks/useConnect';
+import { observer } from 'mobx-react-lite';
 
 const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
-  const { data } = useMGDContext();
+  const { data, queryDetails } = useMGDContext();
   const { share, share_reward_claimed } = data || {};
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
     }
 
     toast.success('You have successfully claimed 3 tickets!');
+    await queryDetails();
     setLoading(false);
   }
 
@@ -92,4 +94,4 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
   );
 };
 
-export default ShareModal;
+export default observer(ShareModal);
