@@ -3,6 +3,7 @@ import TransactionProvider, { type TransactionConfig } from '@/utils/wallet/tran
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { useEffect, useRef, useState } from 'react';
 import { type TransactionRequest } from 'ethers';
+import { toast } from 'react-toastify';
 
 interface Props {
   abi: any;
@@ -32,6 +33,9 @@ export default function useTransaction({ abi, method }: Props) {
 
     setLoading(true);
     const res = await txProvider.current.transaction(params, options, config);
+    if (!res) {
+      toast.error('Transaction failed, please try again later.');
+    }
     setLoading(false);
     return res;
   }

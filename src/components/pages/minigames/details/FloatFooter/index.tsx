@@ -35,6 +35,7 @@ const FloatFooter: FC = () => {
           <StrokeButton
             strokeType="brown"
             strokeText="Share"
+            needAuth
             startContent={
               <Image
                 className="w-[1.125rem] h-[1.125rem]"
@@ -57,6 +58,7 @@ const FloatFooter: FC = () => {
             className="ml-3"
             strokeType="blue"
             strokeText="Buy Tickets"
+            needAuth
             isDisabled={!data}
             onPress={ticketDisclosure.onOpen}
           />
