@@ -5,6 +5,10 @@ export function queryPrizePoolListAPI(): Promise<{ lottery_pool_ids: string[] | 
   return http.get('/api/lottery/list');
 }
 
+export function queryPoolsListAPI(): Promise<Lottery.Pool[]> {
+  return http.get('/api/lottery/list');
+}
+
 export function queryPrizePoolInfoAPI(params: { lottery_pool_id: string }): Promise<Lottery.Pool> {
   return http.get('/api/lottery/lotterypool', { params });
 }
