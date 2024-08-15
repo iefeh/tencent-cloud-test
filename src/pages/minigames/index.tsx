@@ -1,6 +1,8 @@
 import FloatTips from '@/components/pages/minigames/home/FloatTips';
 import GameTabs from '@/components/pages/minigames/home/GameTabs';
 import GameCollection from '@/components/pages/minigames/home/GameTabs/GameCollection';
+import CollectionWarpper from "@/components/pages/minigames/home/GameTabs/CollectionWarpper"
+
 import Head from 'next/head';
 import { CSSProperties, FC, useState } from 'react';
 
@@ -37,9 +39,9 @@ const MiniGamesPage: FC & BasePage = () => {
         onSelectionChange={setSelectedKey}
       />
 
-      <div className="bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg.png')] bg-[length:100%_auto] w-full flex flex-col items-center -mt-12 pt-[4.875rem] pb-[10.25rem]">
+      <CollectionWarpper>
         <GameCollection type={selectedKey} />
-      </div>
+      </CollectionWarpper>
 
       <FloatTips />
     </section>
