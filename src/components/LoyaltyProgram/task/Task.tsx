@@ -121,12 +121,32 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         </div>
 
         <div className="footer relative">
-          <div className="flex items-center">
-            <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
+          <div className='flex flex-wrap gap-x-4 gap-y-2'>
+            <div className="flex items-center">
+              <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
 
-            <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
-              {task.reward.amount_formatted} Moon Beams
-            </span>
+              <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
+                {task.reward.amount_formatted} Moon Beams
+              </span>
+            </div>
+
+            {task.user_token_reward && (
+              <div className="flex items-center">
+                <Image
+                  className="w-8 h-8"
+                  src={task.user_token_reward.token.icon}
+                  alt=""
+                  unoptimized
+                  width={64}
+                  height={64}
+                  priority
+                />
+
+                <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
+                  {task.user_token_reward.token_amount_formatted} {task.user_token_reward.token.symbol}
+                </span>
+              </div>
+            )}
           </div>
 
           {task.verified && hasTokenReward ? (
