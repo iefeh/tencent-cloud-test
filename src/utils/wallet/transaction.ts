@@ -81,7 +81,8 @@ class TransactionProvider {
     try {
       await this.bp.send('wallet_switchEthereumChain', [{ chainId: parseChainIdToHex(targetChainId) }]);
       return true;
-    } catch (error: any) {
+    } catch (e: any) {
+      let error = e?.error || e;
       if (error?.code === -32603 || error?.code === 4902 || error?.code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await this.addNetwork(targetChainId);
