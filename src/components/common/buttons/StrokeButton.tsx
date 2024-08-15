@@ -1,3 +1,4 @@
+import { useUserContext } from '@/store/User';
 import { Button, ButtonProps, cn } from '@nextui-org/react';
 import type { CSSProperties, FC } from 'react';
 
@@ -6,6 +7,7 @@ type StrokeType = 'yellow' | 'blue' | 'brown' | 'gray' | 'ticket';
 interface Props extends ButtonProps {
   strokeType: StrokeType;
   strokeText: string;
+  needAuth?: boolean;
 }
 
 const StrokeColors = {
@@ -19,12 +21,24 @@ const StrokeColors = {
 const StrokeButton: FC<Props> = ({
   strokeType,
   strokeText,
+  needAuth,
   style: { backgroundImage, ...restStyle } = {},
   className,
   isDisabled,
+  onPress,
   ...rest
 }) => {
+  const {userInfo, toggleLoginModal} = useUserContext();
   if (isDisabled) strokeType = 'gray';
+
+  function handlePress(e: any) {
+    if (needAuth && !userInfo) {
+      toggleLoginModal(true);
+      return;
+    }
+
+    onPress?.(e);
+  }
 
   return (
     <Button
@@ -47,6 +61,7 @@ const StrokeButton: FC<Props> = ({
           ...restStyle,
         } as CSSProperties
       }
+      onPress={handlePress}
       {...rest}
     >
       <span className="stroke-text-normal" data-text={strokeText}></span>
