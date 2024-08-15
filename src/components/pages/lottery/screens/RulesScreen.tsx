@@ -28,16 +28,7 @@ const BadgeScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePag
   }, [userInfo]);
 
   return (
-    <div className="relative w-screen flex flex-col items-center pt-16 mt-10">
-      <BadgeDesc milestone={milestone} />
-
-      <BadgeMilestone
-        className="mt-[12.75rem] mb-[4.875rem]"
-        item={item}
-        milestone={milestone}
-        onUpdate={queryDrawMilestone}
-      />
-
+    <div className="relative w-screen flex flex-col items-center pt-16">
       <LotteryRules milestone={milestone} />
     </div>
   );
