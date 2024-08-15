@@ -14,6 +14,7 @@ import GameTicket from "@/lib/models/GameTicket";
 import { redis } from "@/lib/redis/client";
 import MiniGameDetail from "@/lib/models/MiniGameDetail";
 import { ticketRemain } from "./mine";
+import { WALLECT_NETWORKS } from "@/constant/mint";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -37,8 +38,8 @@ router.use(dynamicCors).post(async (req, res) => {
 });
 
 export async function buyTicket(clientId: string, txHash: string) {
-    const game = await MiniGameDetail.findOne({ client_id: clientId }, { client_id_hash: 1, _id: 0 }); 
-    const voucher = await getPurchaseTicketEvnet(txHash);
+    const game = await MiniGameDetail.findOne({ client_id: clientId }, { client_id_hash: 1, chain_id: 1, _id: 0 });
+    const voucher = await getPurchaseTicketEvnet(game, txHash);
 
     if (!voucher) {
         logger.warn(`Transaction ${txHash} cannot be recognized as pass payment.`);
@@ -97,8 +98,8 @@ export async function buyTicket(clientId: string, txHash: string) {
 }
 
 
-async function getPurchaseTicketEvnet(txHash: string) {
-    let receipt = await getTokenTransactionReceiptByHash(txHash, 30, 1000);
+async function getPurchaseTicketEvnet(game: any, txHash: string) {
+    let receipt = await getTokenTransactionReceiptByHash(game, txHash, 30, 1000);
     if (!receipt || receipt.status !== 1) {
         return null;
     }
@@ -126,8 +127,8 @@ async function getPurchaseTicketEvnet(txHash: string) {
     };
 }
 
-async function getTokenTransactionReceiptByHash(txHash: string, maxWaitTimeSeconds: number, checkIntervalMillis: number = 5000) {
-    const provider = new ethers.JsonRpcProvider(process.env.BLOCKCHAIN_RPC_URL);
+async function getTokenTransactionReceiptByHash(game: any, txHash: string, maxWaitTimeSeconds: number, checkIntervalMillis: number = 5000) {
+    const provider = new ethers.JsonRpcProvider(WALLECT_NETWORKS[game.chain_id].rpcUrls[0]);
 
     // 每隔5秒检查一次交易是否存在
     const maxAttempts = Math.ceil(maxWaitTimeSeconds * 1000 / checkIntervalMillis);
