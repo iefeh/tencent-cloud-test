@@ -129,7 +129,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
       }
     }
     if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool.total_draw_amount >= reward.min_reward_draw_amount))
-      && (!reward.inventory_amount || reward.inventory_amount > 0)) {
+      && (reward.inventory_amount === null || reward.inventory_amount === undefined || reward.inventory_amount > 0)) {
       availableRewards.push(reward);
     }
   }
