@@ -59,7 +59,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
 
   const ticketsCount = await ticketRemain(userId, clientId);
 
-  return res.json(response.success({ available_tickets: ticketsCount }));
+  return res.json(response.success({ verified: true, available_tickets: ticketsCount }));
 });
 
 export async function checkClaimed(userId: string, clientId: string) {
