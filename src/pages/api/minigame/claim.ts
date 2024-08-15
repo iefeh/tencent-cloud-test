@@ -52,11 +52,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
 
   const result = await verifyShare(userId, client.share_reward);
   if (!result.verified) {
-    if(result.require_authorization){
-      return res.json(response.unauthorized(result));
-    }else{
-      return res.json(response.notFound(result));
-    }
+    return res.json(response.success(result));
   }
 
   await distributeTickets(userId, clientId, client);
