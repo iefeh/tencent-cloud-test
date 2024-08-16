@@ -9,6 +9,7 @@ import logger from "@/lib/logger/winstonLogger";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).post(async (req, res) => {
+    
     //根据授权码返回access token
     try {
         // 如当前用户使用了PKCE，则允许不传client_secret
