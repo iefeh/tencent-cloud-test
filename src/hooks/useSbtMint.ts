@@ -11,7 +11,7 @@ export default function useSbtMint() {
       params: data.permit,
       config: { chainId: data.chain_id, contractAddress: data.contract_address },
       onError: (code, message = '') => {
-        if (message.indexOf('permit already used')) {
+        if (message.indexOf('permit already used') > -1) {
           toast.error('You have already minted SBT. Please wait for data confirmation patiently.');
           return true;
         }
