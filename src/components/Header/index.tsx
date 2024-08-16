@@ -37,6 +37,16 @@ export const routeText: RouteMenu[] = [
       {
         name: 'Introduction',
         route: '/LoyaltyProgram/intro',
+        children: [
+          {
+            name: 'Moonveil Badge Introduction',
+            route: 'https://medium.com/@Moonveil_Studio/unlock-achievements-reap-rewards-the-moonveil-badge-system-unveiled-26c94eca97b5',
+          },
+          {
+            name: 'My Badges',
+            route: '/Profile/MyBadges',
+          },
+        ]
       },
       {
         name: 'My Season Pass',
