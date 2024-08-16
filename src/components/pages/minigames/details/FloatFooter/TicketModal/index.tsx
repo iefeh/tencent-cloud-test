@@ -32,12 +32,13 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
     {
       key: TicketChannel.MATIC,
       label: 'Buy with $Matic',
+      isDisabled: false,
     },
-    {
-      key: TicketChannel.MORE,
-      label: 'Buy with $More',
-      isDisabled: true,
-    },
+    // {
+    //   key: TicketChannel.MORE,
+    //   label: 'Buy with $More',
+    //   isDisabled: true,
+    // },
   ];
   const [channel, setChannel] = useState<string>(radioOptions[0].key);
   const [ticketAmount, setTicketAmount] = useState('1');

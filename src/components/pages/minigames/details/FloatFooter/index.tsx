@@ -34,7 +34,7 @@ const FloatFooter: FC = () => {
         <div className="flex pr-1 mt-5">
           <StrokeButton
             strokeType="brown"
-            strokeText="Share"
+            strokeText={share_reward_claimed ? 'Shared' : 'Share'}
             needAuth
             startContent={
               <Image
@@ -46,7 +46,7 @@ const FloatFooter: FC = () => {
                 unoptimized
               />
             }
-            isDisabled={!data}
+            isDisabled={!data || !!share_reward_claimed}
             onPress={shareDisclosure.onOpen}
           />
 
