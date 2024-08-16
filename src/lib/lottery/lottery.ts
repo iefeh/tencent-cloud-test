@@ -6,6 +6,7 @@ import { AuthorizationType } from '@/lib/authorization/types';
 import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
 import logger from '@/lib/logger/winstonLogger';
 import LotteryPool, { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/LotteryPool';
+import LotteryPoolRequirement from '@/lib/models/LotteryPoolRequirements';
 import User from '@/lib/models/User';
 import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
@@ -168,6 +169,9 @@ export async function verifyLotteryQualification(lotteryPoolId: string, drawCoun
       message: `No enough resource, you are going to draw ${drawCount} times, however the resource you choose can draw ${availableResourceDrawCount} times.`
     }
   }
+
+  //Todo check lottery pool requirements before drawing
+  const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
   return {
     verified: true,
     message: ""
