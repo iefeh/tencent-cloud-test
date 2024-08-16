@@ -11,11 +11,6 @@ import UserTelegram from '@/lib/models/UserTelegram';
 import axios from 'axios';
 
 export class JoinTelegramGroupQuest extends QuestBase {
-  // 定义telegram服务器id与指标的映射关系
-  private readonly joinGroupMetrics = new Map<string, Metric>([
-    [process.env.MOONVEIL_TELEGRAM_CHAT_ID!, Metric.TelegramJoinedMoonveil],
-  ]);
-
   // 用户的授权telegram_id，在checkClaimable()时设置
   private user_telegram_id = '';
 
@@ -86,36 +81,29 @@ export class JoinTelegramGroupQuest extends QuestBase {
 
   private async sendBadgeCheckMessage(userId: string) {
     const questProp = this.quest.properties as JoinTelegramGroup;
-    const joinGroupMetric = this.joinGroupMetrics.get(questProp.chat_id);
-    if (joinGroupMetric) {
-      await sendBadgeCheckMessages(userId, {
-        [joinGroupMetric]: 1,
-        [Metric.TelegramConnected]: 1,
-      });
-    }
+    await sendBadgeCheckMessages(userId, {
+      [Metric.TelegramJoinedMoonveil]: 1,
+      [Metric.TelegramConnected]: 1,
+    });
   }
 
   private checkUserMetric(userId: string): undefined | ((session: ClientSession) => Promise<void>) {
     const questProp = this.quest.properties as JoinTelegramGroup;
-    const joinGroupMetric = this.joinGroupMetrics.get(questProp.chat_id);
-    let updateMetric = undefined;
-    if (joinGroupMetric) {
-      updateMetric = async (session: any) => {
-        await UserMetrics.updateOne(
-          { user_id: userId },
-          {
-            $set: {
-              [joinGroupMetric]: 1,
-              [Metric.TelegramConnected]: 1,
-            },
-            $setOnInsert: {
-              created_time: Date.now(),
-            },
+    let updateMetric = async (session: any) => {
+      await UserMetrics.updateOne(
+        { user_id: userId },
+        {
+          $set: {
+            [Metric.TelegramJoinedMoonveil]: 1,
+            [Metric.TelegramConnected]: 1,
           },
-          { upsert: true, session: session },
-        );
-      };
-    }
+          $setOnInsert: {
+            created_time: Date.now(),
+          },
+        },
+        { upsert: true, session: session },
+      );
+    };
     return updateMetric;
   }
 
