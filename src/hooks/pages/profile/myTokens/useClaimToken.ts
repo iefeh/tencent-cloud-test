@@ -22,7 +22,7 @@ export default function useClaimToken(pramas: ClaimTokenParams) {
       }
       const { contract_address, chain_id, permits } = permitRes || {};
 
-      const res = await onTransaction(permits, {}, { contractAddress: contract_address, chainId: chain_id });
+      const res = await onTransaction(permits, { contractAddress: contract_address, chainId: chain_id });
       console.log('claim result:', res);
 
       const { hash } = res || {};

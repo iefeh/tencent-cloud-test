@@ -108,7 +108,7 @@ class TransactionProvider {
     return true;
   };
 
-  transaction = async (params: any, options: TransactionRequest = {}, config: Partial<TransactionConfig> = {}) => {
+  transaction = async (params: any, config: Partial<TransactionConfig> = {}, options: TransactionRequest = {}) => {
     const realConfig = Object.assign({}, this.config, config);
     const { abi, method, chainId, contractAddress } = realConfig;
     console.log('transaction config:', realConfig);
