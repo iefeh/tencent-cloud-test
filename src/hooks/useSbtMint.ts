@@ -1,160 +1,22 @@
-import { throttle } from 'lodash';
-import { useRef, useState } from 'react';
-import { Contract, BrowserProvider, JsonRpcSigner } from 'ethers';
 import { MintPermitResDTO } from '@/http/services/badges';
-import { toast } from 'react-toastify';
-import { useWalletInfo, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import sbtContractABI from '@/http/sbt_abi.json';
-import { WALLECT_NETWORKS } from '@/constant/mint';
-import { parseChainIdToHex } from './utils';
-import { useUserContext } from '@/store/User';
+import useTransaction from './wallet/useTransaction';
+import { toast } from 'react-toastify';
 
 export default function useSbtMint() {
-  const { userInfo } = useUserContext();
-  const { walletProvider } = useWeb3ModalProvider();
-  const signer = useRef<JsonRpcSigner | null>(null);
-  const { isConnected, chainId } = useWeb3ModalAccount();
-  const { open } = useWeb3Modal();
-  const [loading, setLoading] = useState(false);
-  const { walletInfo } = useWalletInfo();
-
-  function toastError(error: any, step = '') {
-    console.log('nft error', step, error);
-    let message: string = error?.reason || error?.data?.message || error?.message || error || '';
-
-    switch (step) {
-      case 'mint':
-        if (message.toLowerCase().indexOf('permit already used') > -1) {
-          message = 'You have minted, please wait our confirmation.';
-        } else {
-          message = 'Transaction failed.';
-        }
-        break;
-    }
-
-    toast.error(message);
-  }
-
-  async function getAccounts(provider: BrowserProvider) {
-    try {
-      const accounts = (await provider.send('eth_requestAccounts', [])) as unknown as string[];
-      return accounts;
-    } catch (error) {
-      console.log('connect error:', error);
-    }
-  }
-
-  async function checkNetwork(targetChainId: string) {
-    try {
-      const isNetCorrected = chainId?.toString() === targetChainId;
-      console.log('current mint network chainId:', chainId);
-      return isNetCorrected;
-    } catch (error: any) {
-      toastError(error, 'checkNetwork');
-      return false;
-    }
-  }
-
-  async function addNetwork(provider: BrowserProvider, targetChainId: string) {
-    try {
-      const network = WALLECT_NETWORKS[targetChainId!];
-      if (!network) throw Error('Please try switching network manually.');
-
-      const res = await provider.send('wallet_addEthereumChain', [network]);
-      console.log('connected network', res);
-      return true;
-    } catch (error: any) {
-      toastError(error, 'addNetwork');
-      return false;
-    }
-  }
-
-  async function switchNetwork(provider: BrowserProvider, targetChainId: string): Promise<boolean> {
-    try {
-      await provider.send('wallet_switchEthereumChain', [{ chainId: parseChainIdToHex(targetChainId) }]);
-      return true;
-    } catch (error: any) {
-      const code = error?.error?.code || error?.code;
-      if (code === 4902 || code === 5000) {
-        // 未添加此网络，添加后自动唤起切换
-        const res = await addNetwork(provider, targetChainId);
-        if (!res) return false;
-        return await switchNetwork(provider, targetChainId);
-      } else {
-        toastError(error, 'switchNetwork');
-      }
-    }
-
-    return false;
-  }
-
-  const mint = throttle(async (provider: BrowserProvider, data: MintPermitResDTO): Promise<string | undefined> => {
-    try {
-      signer.current = await provider.getSigner();
-      const contract = new Contract(data.contract_address, sbtContractABI, signer.current);
-      const transaction = await contract.mint(data.permit);
-      const result = await transaction.wait();
-      console.log('mint result:', result);
-      return result;
-    } catch (error: any) {
-      // toastError(error, 'mint');
-      toast.error('Transaction failed, please try again later.');
-    }
-  }, 500);
-
-  async function testNetwork(provider: BrowserProvider) {
-    try {
-      await provider._detectNetwork()
-    } catch (error) {
-      console.log('detect network:', error);
-    }
-  }
+  const { loading, onTransaction } = useTransaction({ abi: sbtContractABI, method: 'mint' });
 
   async function onButtonClick(data: MintPermitResDTO) {
-    const errorEvent = {
-      message: 'sbt_mint',
-      userId: userInfo?.user_id,
-      isConnected: false,
-      hasPermission: false,
-      networkOk: false,
-      switchedNetwork: false,
-      sendMint: false,
-      walletType: walletInfo?.name || '',
-    };
-
-    if (!isConnected) {
-      open();
-      return;
-    }
-
-    errorEvent.isConnected = true;
-    setLoading(true);
-
-    const provider = new BrowserProvider(walletProvider!);
-    const accounts = await getAccounts(provider);
-    await testNetwork(provider);
-    if (!accounts || accounts.length < 1) {
-      return false;
-    }
-
-    errorEvent.hasPermission = true;
-
-    const res = await checkNetwork(data.chain_id);
-    if (!res) {
-      const switchRes = await switchNetwork(provider, data.chain_id);
-      if (!switchRes) {
-        setLoading(false);
-        return;
-      }
-      errorEvent.switchedNetwork = true;
-    }
-    await testNetwork(provider);
-
-    errorEvent.networkOk = true;
-
-    const result = await mint(provider, data);
-    errorEvent.sendMint = true;
-    setLoading(false);
+    const result = await onTransaction({
+      params: data.permit,
+      config: { chainId: data.chain_id, contractAddress: data.contract_address },
+      onError: (code, message = '') => {
+        if (message.indexOf('permit already used')) {
+          toast.error('You have already minted SBT. Please wait for data confirmation patiently.');
+          return true;
+        }
+      },
+    });
 
     return !!result;
   }

@@ -1,6 +1,6 @@
 import { cn, menu } from '@nextui-org/react';
 import { ControlledMenu, MenuItem, useClick, useMenuState } from '@szhsin/react-menu';
-import Link from 'next/link';
+import Link from '@/components/link';
 import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import styles from './index.module.scss';
@@ -50,7 +50,7 @@ export default function HeaderDropdownMenu(props: Props) {
 
   const mainContent = (
     <Link
-      ref={menuRef}
+      refEl={menuRef}
       {...anchorProps}
       href={item.route || ''}
       scroll={!!item.route}
