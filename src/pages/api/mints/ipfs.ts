@@ -22,6 +22,7 @@ router.get(async (req, res) => {
     if (!badge_id || !level) {
         return res.json(response.invalidParams());
     }
+    
     const ipfsHash = await getBadgeSeriesMetadataHash(badge_id as string, level as string);
     return res.json(response.success({
         ipfs_hash: ipfsHash
