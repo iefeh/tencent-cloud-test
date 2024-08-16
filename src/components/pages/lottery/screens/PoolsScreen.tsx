@@ -12,7 +12,7 @@ const PoolsScreen: FC = () => {
       <div className="flex justify-between items-center text-basic-yellow">
         <div className="font-semakin text-2xl leading-none">More and $MORE Lottery Pools</div>
 
-        <Link href="/lottery/list" className="text-base leading-none hover:underline">
+        <Link href="/lottery/list" target="_self" className="text-base leading-none hover:underline">
           More &gt;&gt;
         </Link>
       </div>

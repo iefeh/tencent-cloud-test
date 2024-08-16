@@ -1,4 +1,4 @@
-import BattlePass from '@/components/LoyaltyProgram/season/BattlePass';
+import BattlePass from './BattlePass';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import Image from 'next/image';
