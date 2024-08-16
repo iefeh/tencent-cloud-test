@@ -35,7 +35,7 @@ const ShineBackground: FC<Props> = ({ count }) => {
     containerRef.current?.addEventListener('resize', init);
   }, []);
 
-  return <div ref={containerRef} className="absolute left-0 top-0 pointer-events-none"></div>;
+  return <div ref={containerRef} className="absolute left-0 top-0 z-10 pointer-events-none"></div>;
 };
 
 export default ShineBackground;
