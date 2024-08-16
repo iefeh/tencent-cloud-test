@@ -1,13 +1,11 @@
-import { FC, ForwardRefRenderFunction, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import BadgeDesc from '../BadgeDesc';
+import { ForwardRefRenderFunction, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import LotteryRules from '../LotteryRules';
-import BadgeMilestone from '../BadgeMilestone';
 import { Lottery } from '@/types/lottery';
 import { queryDrawMilestoneAPI } from '@/http/services/lottery';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 
-const BadgeScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePage & ItemProps<Lottery.Pool>> = (
+const RulesScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePage & ItemProps<Lottery.Pool>> = (
   { item },
   ref,
 ) => {
@@ -34,4 +32,4 @@ const BadgeScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePag
   );
 };
 
-export default observer(forwardRef(BadgeScreen));
+export default observer(forwardRef(RulesScreen));

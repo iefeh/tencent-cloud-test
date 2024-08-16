@@ -6,6 +6,7 @@ import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import ShineBackground from '@/components/common/ShineBackground';
 import MeteorLayer from '@/components/common/MeteorLayer';
+import RulesScreen from '@/components/pages/lottery/screens/RulesScreen';
 
 const LotteryPage: FC = () => {
   const { getUserInfo } = useUserContext();
@@ -33,6 +34,8 @@ const LotteryPage: FC = () => {
         <MeteorLayer className="z-10" />
 
         <DrawScreen ended={ended} item={poolInfo} onUpdate={onUpdate} />
+
+        <RulesScreen item={poolInfo} />
       </section>
     </>
   );
