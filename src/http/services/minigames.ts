@@ -10,3 +10,27 @@ export function queryMiniGamesAPI(
 export function queryMiniGameDetailsAPI(params: { client_id: string }): Promise<MiniGames.GameDetailDTO> {
   return http.get('/api/minigame/detail', { params });
 }
+
+export function queryGameTicketsAPI(params: { game_id: string }): Promise<{ available_tickets: number }> {
+  return http.get('/api/minigame/ticket/mine', { params });
+}
+
+export function getBuyTicketsPermitAPI(params: {
+  game_id: string;
+  amount: number;
+}): Promise<MiniGames.BuyTicketPermitDTO> {
+  return http.get('/api/minigame/ticket/permit', { params });
+}
+
+export function buyTicketsCallbackAPI(data: {
+  gameId: string;
+  txHash: string;
+}): Promise<{ available_tickets: number }> {
+  return http.post('/api/minigame/ticket/paid', JSON.stringify(data));
+}
+
+export function claimShareRewardAPI(data: {
+  client_id: string;
+}): Promise<InfoDTO & { require_authorization?: string }> {
+  return http.post('/api/minigame/claim', JSON.stringify(data));
+}

@@ -18,7 +18,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     }
     await User.updateOne({user_id: req.userId!}, {$unset: {email: ""}});
     // 添加cd
-    await redis.set(`reconnect_cd:${AuthorizationType.Email}:${user.email}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
+    await redis.set(`reconnect_cd:${AuthorizationType.Email}:${String(user.email).toLowerCase()}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
     res.json(response.success());
 });
 

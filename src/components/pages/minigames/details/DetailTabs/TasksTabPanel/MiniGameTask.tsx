@@ -6,6 +6,10 @@ import { FC, useLayoutEffect, useRef, useState } from 'react';
 import TaskButtons from './TaskButtons';
 import { QuestType } from '@/constant/task';
 import ReverifyCountdown from './ReverifyCountdown';
+import LGButton from '@/pages/components/common/buttons/LGButton';
+import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
+import { taskDetailsAPI } from '@/http/services/task';
+import TokenRewardProgress from './TokenRewardProgress';
 
 interface Props {
   task: TaskItem;
@@ -22,6 +26,25 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
   const [isContentVisible, setIsContentVisibble] = useState(false);
   const [needEllipsis, setNeedEllipsis] = useState(false);
   const shadowTextRef = useRef<HTMLDivElement>(null);
+  const hasTokenReward = !!task.reward.token_reward;
+  const { loading, onClaim } = useClaimToken({
+    updateList: async () => {
+      const res = await taskDetailsAPI({ quest_id: task.id });
+      if (!res) return;
+      return onTaskUpdate?.(res.quest);
+    },
+  });
+  const progressStatus = getProgressStatus();
+
+  function getProgressStatus() {
+    const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
+    if (!!actual_raffle_time) return 2;
+
+    const now = Date.now();
+    if (estimated_raffle_time && now > +estimated_raffle_time) return 1;
+
+    return 0;
+  }
 
   function showContent() {
     setIsContentVisibble(true);
@@ -42,11 +65,14 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
   return (
     <div
       className={cn([
-        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] pt-[2.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
+        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
+        hasTokenReward ? 'pt-[1.25rem]' : 'pt-[2.5rem]',
         classNames?.task,
       ])}
     >
-      <div className="task-name text-xl flex justify-between items-center">
+      {hasTokenReward && <TokenRewardProgress status={progressStatus} />}
+
+      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-12'])}>
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (
@@ -91,24 +117,67 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
         </div>
 
         <div className="footer relative">
-          <div className="flex items-center">
-            <Image
-              className="w-8 h-8"
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png"
-              alt=""
-              width={64}
-              height={64}
-              unoptimized
-            />
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex items-center">
+              <Image
+                className="w-8 h-8"
+                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png"
+                alt=""
+                width={64}
+                height={64}
+                unoptimized
+              />
 
-            <span className="text-base ml-[0.4375rem]">{task.reward.amount_formatted} Moon Beams</span>
+              <span className="font-semakin text-base text-brown ml-[0.4375rem]">
+                {task.reward.amount_formatted} Moon Beams
+              </span>
+            </div>
+
+            {task.user_token_reward && (
+              <div className="flex items-center">
+                <Image
+                  className="w-8 h-8"
+                  src={task.user_token_reward.token.icon}
+                  alt=""
+                  unoptimized
+                  width={64}
+                  height={64}
+                  priority
+                />
+
+                <span className="font-semakin text-base text-brown ml-[0.4375rem]">
+                  {task.user_token_reward.token_amount_formatted} {task.user_token_reward.token.symbol}
+                </span>
+              </div>
+            )}
           </div>
 
-          <TaskButtons
-            classNames={{ connectBtn: classNames?.connectBtn, verifyBtn: classNames?.verifyBtn }}
-            task={task}
-            onUpdate={onTaskUpdate}
-          />
+          {task.verified && hasTokenReward ? (
+            <>
+              <LGButton
+                className="mt-5"
+                label={
+                  task.user_token_reward?.status === 'claimed'
+                    ? 'Claimed'
+                    : task.user_token_reward?.status === 'claiming'
+                    ? 'Claiming'
+                    : progressStatus === 2
+                    ? 'Sorry, you didn’t win this time.'
+                    : 'Claim'
+                }
+                actived
+                disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}
+                loading={loading}
+                onClick={() => task.user_token_reward && onClaim(task.user_token_reward)}
+              />
+            </>
+          ) : (
+            <TaskButtons
+              classNames={{ connectBtn: classNames?.connectBtn, verifyBtn: classNames?.verifyBtn }}
+              task={task}
+              onUpdate={onTaskUpdate}
+            />
+          )}
 
           {task.type === QuestType.ConnectWallet && task.verified && (task.properties?.can_reverify_after || 0) > 0 && (
             <ReverifyCountdown task={task} onFinished={onReverifyCDFinished} />
@@ -138,7 +207,7 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
       </div>
 
       {task.is_new && (
-        <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute right-4 top-2 p-2 z-10 task-new">
+        <div className="font-semakin text-xl text-transparent bg-clip-text bg-[linear-gradient(270deg,#CAA67E_0%,#5C0F0F_100%)] absolute right-4 top-2 p-2 z-10 task-new">
           NEW
         </div>
       )}
