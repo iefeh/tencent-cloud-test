@@ -21,8 +21,8 @@ export default function useBuyTickets() {
     const { contract_address, chain_id, permit } = res;
     const txRes = await onTransaction(
       permit,
-      { value: permit.tokenAmount },
       { contractAddress: contract_address, chainId: chain_id },
+      { value: permit.tokenAmount },
     );
     if (!txRes?.hash) {
       setLoading(false);
