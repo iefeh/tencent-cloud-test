@@ -113,7 +113,9 @@ export class JoinTelegramGroupQuest extends QuestBase {
       return {
         verified: false,
         require_authorization: claimableResult.require_authorization,
-        tip: claimableResult.require_authorization ? 'You should connect your Telegram Account first.' : undefined,
+        tip: claimableResult.require_authorization
+          ? 'You should connect your Telegram Account first.'
+          : claimableResult.tip,
       };
     }
 
