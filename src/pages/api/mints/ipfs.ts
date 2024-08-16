@@ -40,6 +40,9 @@ async function getBadgeSeriesMetadataHash(badge_id: string, level: string) {
         throw new Error("Badge series not found");
     }
     const series = badge.series.get(level);
+    if (!series) {
+        throw new Error("Badge series not found");
+    }
     // 检查如果当前徽章的metadata_url存在，则直接返回
     if (series.metadata_ipfs_hash) {
         return series.metadata_ipfs_hash;
