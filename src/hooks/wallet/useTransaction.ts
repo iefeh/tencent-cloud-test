@@ -18,7 +18,7 @@ export default function useTransaction({ abi, method }: Props) {
   const [loading, setLoading] = useState(false);
   const txProvider = useRef<TransactionProvider>();
 
-  async function onTransaction(params: any, options: TransactionRequest = {}, config: Partial<TransactionConfig>) {
+  async function onTransaction(params: any, config: Partial<TransactionConfig> = {}, options: TransactionRequest = {}) {
     if (!userInfo) {
       toggleLoginModal(true);
       return;
@@ -32,7 +32,7 @@ export default function useTransaction({ abi, method }: Props) {
     if (!txProvider.current) return;
 
     setLoading(true);
-    const res = await txProvider.current.transaction(params, options, config);
+    const res = await txProvider.current.transaction(params, config, options);
     if (!res) {
       toast.error('Transaction failed, please try again later.');
     }
