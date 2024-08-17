@@ -6,21 +6,19 @@ import { errorInterceptor } from '@/lib/middleware/error';
 import { ILotteryPool } from '@/lib/models/LotteryPool';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import * as response from '@/lib/response/response';
-import { canClaimPremiumBenifits, getLotteryPoolById } from '@/lib/lottery/lottery';
+import { canClaimPremiumBenifits, getActiveLotteryPoolById } from '@/lib/lottery/lottery';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id } = req.body;
   if (!lottery_pool_id) {
-    res.json(response.invalidParams());
-    return;
+    return res.json(response.invalidParams());
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
-  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  const lotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
-    res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
-    return;
+    return res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
   }
   const canClaimBenifits = await canClaimPremiumBenifits(userId, lotteryPoolId);
   if (canClaimBenifits) {
@@ -32,12 +30,10 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
         $setOnInsert: { created_time: Date.now() }
       }, 
       { upsert: true });
-    res.json(response.success({ message: "You have claimed all premium benifits for this lottery pool!" }));
-    return;
+    return res.json(response.success({ message: "You have claimed all premium benifits for this lottery pool!" }));
   }
   else {
-    res.json(response.success({ message: "You have already claimed all premium benifits for this lottery pool!" }));
-    return;
+    return res.json(response.success({ message: "You have already claimed all premium benifits for this lottery pool!" }));
   }
 });
 

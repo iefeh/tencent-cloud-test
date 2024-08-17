@@ -2,7 +2,7 @@ import type {NextApiResponse} from "next";
 import { ethers } from 'ethers';
 import { createRouter } from 'next-connect';
 
-import { getLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
+import { getActiveLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { findLotteryContract, IContract } from '@/lib/models/Contract';
 import { ILotteryPool } from '@/lib/models/LotteryPool';
@@ -46,7 +46,10 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     if (!userWallet) {
         return res.json(response.walletNotConnected());
     }
-    const pool = await getLotteryPoolById(lottery_pool_id) as ILotteryPool;
+    const pool = await getActiveLotteryPoolById(lottery_pool_id) as ILotteryPool;
+    if (!pool) {
+        return res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+    }
     const targetChain = pool.chain_id;
     if (!targetChain) {
         throw new Error(`lottery pool ${lottery_pool_id} chain id not found.`);

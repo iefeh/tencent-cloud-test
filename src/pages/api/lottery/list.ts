@@ -2,6 +2,7 @@ import type {NextApiResponse} from "next";
 import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
+import { enrichRequirementsInfo, lotteryRequirementSatisfy } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import LotteryPool, { LotteryPoolType } from '@/lib/models/LotteryPool';
@@ -27,12 +28,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   if(pageNum <= 0 || pageSize <= 0){
     return res.json(response.invalidParams());
   }
+  const userId = String(req.userId);
   const pagination = await paginationLotteryPools(pageNum, pageSize, open_status as string);
   const now = Date.now();
   let result: any[] = [];
   for (let pool of pagination.data) {
-    // todo, add requirement types and details
-    const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: pool.lottery_pool_id });
+    const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: pool.lottery_pool_id }, { type: 1, description: 1, properties: 1, _id: 0 });
+    const meetRequirement = (await lotteryRequirementSatisfy(userId, pool.lottery_pool_id)).meet_requirement;
+    await enrichRequirementsInfo(requirements);
     let openStatus = LotteryPoolOpenStatus.ALL;
     if (pool.start_time > now) {
       openStatus = LotteryPoolOpenStatus.COMING_SOON;
@@ -46,6 +49,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       if (reward.reward_level >= 5) {
         rewards.push({
           reward_name: reward.reward_name,
+          reward_level: reward.reward_level,
           icon_url: reward.icon_url
         });
       }
@@ -54,11 +58,12 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       lottery_pool_id: pool.lottery_pool_id,
       name: pool.name,
       requirements: requirements,
+      user_meet_requirement: meetRequirement,
       icon_url: pool.icon_url,
       start_time: pool.start_time,
       end_time: pool.end_time,
       open_status: openStatus,
-      rewards: rewards
+      limited_rewards: rewards
     });
   }
   return res.json(response.success({
@@ -74,7 +79,8 @@ async function paginationLotteryPools(pageNum: number, pageSize: number, open_st
   const skip = (pageNum - 1) * pageSize;
   let matchOpt: any = {
     $match: {
-      active: true
+      active: true,
+      type: LotteryPoolType.Public
     }
   };
   if (open_status) {

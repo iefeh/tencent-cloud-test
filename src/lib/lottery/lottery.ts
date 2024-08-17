@@ -1,21 +1,34 @@
 import { isAxiosError } from 'axios';
+import { PipelineStage } from 'mongoose';
 
 import { twitterOAuthProvider } from '@/lib/authorization/provider/twitter';
 import { deleteAuthToken } from '@/lib/authorization/provider/util';
 import { AuthorizationType } from '@/lib/authorization/types';
-import { isPremiumSatisfied } from '@/lib/battlepass/battlepass';
+import {
+    findUserWithDiscordWhitelist, findUserWithEmailWhitelist, findUserWithGoogleWhitelist,
+    findUserWithSteamWhitelist, findUserWithTwitterWhitelist, findUserWithUserWhitelist,
+    findUserWithWalletWhitelist, isPremiumSatisfied
+} from '@/lib/battlepass/battlepass';
 import logger from '@/lib/logger/winstonLogger';
+import Badges from '@/lib/models/Badge';
+import ContractNFT from '@/lib/models/ContractNFT';
 import LotteryPool, { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/LotteryPool';
-import LotteryPoolRequirement from '@/lib/models/LotteryPoolRequirements';
+import LotteryPoolRequirement, {
+    LotteryPoolRequirementType
+} from '@/lib/models/LotteryPoolRequirements';
 import User from '@/lib/models/User';
+import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import UserWallet from '@/lib/models/UserWallet';
 import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
 import { redis } from '@/lib/redis/client';
 
-export async function getLotteryPoolById(lotteryPoolId: string): Promise<ILotteryPool | null> {
+import { WhitelistEntityType } from '../quests/types';
+
+export async function getActiveLotteryPoolById(lotteryPoolId: string): Promise<ILotteryPool | null> {
   const now = Date.now()
-  const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lotteryPoolId, deleted_time: null, start_time: { $lte: now }, end_time: { $gte: now }});
+  const lotteryPool = await LotteryPool.findOne({ lottery_pool_id: lotteryPoolId, active: true, deleted_time: null, start_time: { $lte: now }, end_time: { $gte: now }});
   return lotteryPool;
 }
 
@@ -30,7 +43,7 @@ export function constructVerifyResponse(verified: boolean, message: string, requ
 }
 
 export async function verifyTwitterTopic(userId: string, lotteryPoolId: string, maxRewardClaimType: number): Promise<any> {
-  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  const lotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     return constructVerifyResponse(false, "The lottery pool is not opened or has been closed.");
   }
@@ -116,7 +129,7 @@ export async function verifyLotteryQualification(lotteryPoolId: string, drawCoun
     };
   }
   const user = await User.findOne({ user_id: userId });
-  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  const lotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     return {
       verified: false,
@@ -171,7 +184,13 @@ export async function verifyLotteryQualification(lotteryPoolId: string, drawCoun
   }
 
   //Todo check lottery pool requirements before drawing
-  const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
+  const canEnterlottery = await lotteryRequirementSatisfy(userId, lotteryPoolId);
+  if (!canEnterlottery.meet_requirement) {
+    return {
+      verified: false,
+      message: "Sorry you don't meet the draw requirement of this lottery pool."
+    };
+  }
   return {
     verified: true,
     message: ""
@@ -189,4 +208,238 @@ export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, re
     created_time: Date.now(),
   });
   return audit;
+}
+
+//判断用户是否有抽奖资格
+export async function lotteryRequirementSatisfy(userId: string, lotteryPoolId: string): Promise<{ meet_requirement: boolean }> {
+  //先判断徽章是否达到要求
+  const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
+  let result = { meet_requirement: true };
+  if (requirements && requirements.length > 0) {
+    result = await lotterySatisfyByBadge(userId, requirements);
+    if (!result.meet_requirement) {
+      //判断白名单是否满足要求
+      result = await lotterySatisfyByWhiteList(userId, requirements);
+    }
+    if (!result.meet_requirement) {
+      //判断NFT是否满足要求
+      result = await lotterySatisfyByNFT(userId, requirements);
+    }
+    if (!result.meet_requirement) {
+      //判断MB是否满足要求
+      result = await lotterySatisfyMB(userId, requirements);
+    }
+  }
+  return { meet_requirement: result.meet_requirement };
+}
+
+export async function enrichRequirementsInfo(requirements: any[]): Promise<any> {
+  let badgeIds: string[] = [];
+  for (let r of requirements) {
+    if (r.type === LotteryPoolRequirementType.Badge) {
+      for (let p of r.properties) {
+        badgeIds.push(p.badge_id);
+      }
+    }
+  }
+  //查询徽章
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      id: { $in: badgeIds }
+    }
+  }, {
+    $project: {
+      id: 1,
+      series: 1
+    }
+  }];
+  const badges: any[] = await Badges.aggregate(pipeline);
+  //处理徽章查询结果，方便根据徽章ID，取出徽章信息
+  let badgeInfos: Map<string, any> = new Map();
+  for (let b of badges) {
+    badgeInfos.set(b.id, b);
+  }
+  let targetBadge: any;
+  for (let r of requirements) {
+    if (r.type === LotteryPoolRequirementType.Badge) {
+      for (let p of r.properties) {
+        targetBadge = badgeInfos.get(p.badge_id);
+        if (targetBadge) {
+          let targetBadgeLevel = targetBadge.series[p.lvl];
+          p.icon_url = targetBadgeLevel.icon_url;
+          p.image_url = targetBadgeLevel.image_url;
+          p.description = targetBadgeLevel.description;
+        }
+      }
+    }
+  }
+}
+
+//判断徽章获得情况，判断是否满足高阶条件
+async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promise<{ meet_requirement: boolean }> {
+  //取出徽章ID用于查询
+  let badgeIds: string[] = [];
+  for (let r of requirements) {
+    if (r.type === LotteryPoolRequirementType.Badge) {
+      for (let p of r.properties) {
+        badgeIds.push(p.badge_id);
+      }
+    }
+  }
+  //查询用户已拥有的徽章
+  const pipeline: PipelineStage[] = [{
+    $match: {
+      user_id: userId,
+      badge_id: { $in: badgeIds }
+    }
+  }, {
+    $project: {
+      badge_id: 1,
+      series: 1
+    }
+  }];
+  const userBadges: any[] = await UserBadges.aggregate(pipeline);
+  //处理徽章查询结果，方便根据徽章ID，取出徽章信息
+  let badgeInfos: Map<string, any> = new Map();
+  for (let b of userBadges) {
+    badgeInfos.set(b.badge_id, b);
+  }
+
+  //判断徽章是否满足要求
+  let targetBadge: any;
+  let badgeSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为徽章类要求
+    if (r.type === LotteryPoolRequirementType.Badge) {
+      for (let p of r.properties) {
+        targetBadge = badgeInfos.get(p.badge_id)
+        if (targetBadge) {
+          for (let s of Object.keys(targetBadge.series)) {
+            if (targetBadge.series[s]?.claimed_time != null) {
+              //判断是否有更高阶的徽章被领取
+              if (Number(s) >= Number(p.lvl)) {
+                badgeSatisfied = true;
+                break;
+              }
+            } else {
+              badgeSatisfied = false;
+            }
+          }
+        } else {
+          badgeSatisfied = false;
+        }
+        //当有多个徽章等级要求时，出现一个不满足即退出不再进行判断，即多徽章要求之间是且的关系。若需要徽章之间是或的关系，则可以配置成单个的要求。
+        if (!badgeSatisfied) {
+          break;
+        }
+      }
+      //出现满足的徽章条件即退出
+      if (badgeSatisfied) {
+        return { meet_requirement: true };
+      }
+    }
+  }
+
+  return { meet_requirement: false };
+}
+
+async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): Promise<{ meet_requirement: boolean }> {
+  let whitelistSatisfied: boolean = false;
+  let userWhitelist: any;
+  for (let r of requirements) {
+    //是否为白名单类要求
+    if (r.type === LotteryPoolRequirementType.WhiteList) {
+      //判断所有的白名单要求
+      for (let p of r.properties) {
+        switch (p.whitelist_entity_type) {
+          case WhitelistEntityType.WalletAddr:
+            userWhitelist = await findUserWithWalletWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.DiscordId:
+            userWhitelist = await findUserWithDiscordWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.TwitterId:
+            userWhitelist = await findUserWithTwitterWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.GoogleId:
+            userWhitelist = await findUserWithGoogleWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.SteamId:
+            userWhitelist = await findUserWithSteamWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.UserId:
+            userWhitelist = await findUserWithUserWhitelist(userId, p.whitelist_id);
+            break;
+          case WhitelistEntityType.Email:
+            userWhitelist = await findUserWithEmailWhitelist(userId, p.whitelist_id);
+            break;
+        }
+        whitelistSatisfied = !!userWhitelist;
+
+        if (!whitelistSatisfied) {
+          break;
+        }
+      }
+      //如果用户通过白名单获得高阶通证，则需要进行更新
+      if (whitelistSatisfied) {
+        return { meet_requirement: true };
+      }
+    }
+  }
+  return { meet_requirement: false };
+}
+
+//判断NFT获得情况，判断是否满足高阶条件
+async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise<{ meet_requirement: boolean }> {
+  let nftSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为NFT类要求
+    if (r.type === LotteryPoolRequirementType.NFT) {
+      //判断所有的NFT要求
+      for (let p of r.properties) {
+        const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+        if (userWallet) {
+          const userNFT = await ContractNFT.findOne({ wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, deleted_time: null, transaction_status: 'confirmed' });
+          nftSatisfied = !!userNFT;
+        } else {
+          nftSatisfied = false;
+        }
+        //当有多个NFT持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要NFT之间是或的关系，则可以配置成单个的要求。
+        if (!nftSatisfied) {
+          break;
+        }
+      }
+      if (nftSatisfied) {
+        return { meet_requirement: true };
+      }
+    }
+  }
+  return { meet_requirement: false };
+}
+
+async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{ meet_requirement: boolean }> {
+  let mbSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为NFT类要求
+    if (r.type === LotteryPoolRequirementType.Moonbeam) {
+      const user = await User.findOne({ user_id: userId });
+      const mb = user.moon_beam;
+      //判断所有的NFT要求
+      for (let p of r.properties) {
+        if (mb >= p.mb_amount) {
+          mbSatisfied = true;
+        } else {
+          mbSatisfied = false;
+        }
+        //当有多个NFT持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要NFT之间是或的关系，则可以配置成单个的要求。
+        if (!mbSatisfied) {
+          break;
+        }
+      }
+      if (mbSatisfied) {
+        return { meet_requirement: true };
+      }
+    }
+  }
+  return { meet_requirement: false };
 }
