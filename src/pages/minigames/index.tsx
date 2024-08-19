@@ -89,20 +89,20 @@ const MiniGamesPage: FC & BasePage = () => {
           setSwiperIndex(swiper.realIndex);
           setAnimation(false)
         }}
-        onWheel={() => { debugger }}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
       >
         <SwiperSlide className='releative !p-0 h-[100vh]' key='title1'>
           <GameTitle swiperIndex={swiperIndex} />
           <FloatTips />
+
+        </SwiperSlide>
+
+        <SwiperSlide className='releative !p-0 mt-[14rem] h-[90vh]' key='tabs2'>
           <GameTabs
-            className="absolute z-20 top-[73.125rem] left-1/2 -translate-x-1/2"
+            className="absolute z-20 top-[-5rem] left-1/2 -translate-x-1/2"
             value={selectedKey}
             onSelectionChange={setSelectedKey}
           />
-        </SwiperSlide>
-
-        <SwiperSlide className='releative !p-0 mt-[14rem] h-[120vh]' key='tabs2'>
           <CollectionWarpper>
             <GameCollection type={selectedKey} />
           </CollectionWarpper>

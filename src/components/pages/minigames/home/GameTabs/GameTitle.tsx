@@ -62,7 +62,7 @@ const cloudUrls = [
   },
   {
     url: getUrl('cloud_10'),
-    classNames: 'left-0 bottom-[8rem] w-[55rem] aspect-[1784/1450] z-40',
+    classNames: 'left-0 bottom-[11rem] w-[55rem] aspect-[1784/1450] z-40',
     style: { '--translate-x': '-100%', '--translate-y': '100%' },
   },
   // {
@@ -129,7 +129,7 @@ const bgBaseUrls = [
   },
   {
     url: getUrl('box'),
-    classNames: 'left-[50%] bottom-[16rem] translate-x-[-50%] w-[34rem] aspect-[1066/554] z-1'
+    classNames: 'left-[50%] bottom-[18rem] translate-x-[-50%] w-[34rem] aspect-[1066/554] z-1'
   },
   {
     url: getUrl('title'),
@@ -163,7 +163,7 @@ const GameTitle: FC<Props> = (props) => {
   if (isMobile) {
     return (
       <div
-        className="pt-[68.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png')] bg-[length:100%_auto] bg-no-repeat text-white"
+        className="pt-[70.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png')] bg-[length:100%_auto] bg-no-repeat text-white"
         style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
       >
         Moonveil Mini Games
@@ -173,7 +173,7 @@ const GameTitle: FC<Props> = (props) => {
 
   return (
     <div
-      className="pt-[68.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
+      className="pt-[70.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
       style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
     >
       {/* 背景基本要素 */}
