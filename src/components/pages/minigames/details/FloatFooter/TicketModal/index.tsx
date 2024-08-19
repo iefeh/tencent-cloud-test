@@ -175,7 +175,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <div className="w-full h-0 border-t-1 border-brown border-dashed mt-6 mb-5"></div>
 
-                    <TicketCountdown endTime={data?.ticket_expired_at} />
+                    <TicketCountdown key={data?.ticket_expired_at} endTime={data?.ticket_expired_at} isBrown />
 
                     <div className="flex items-center mt-6">
                       <StrokeButton

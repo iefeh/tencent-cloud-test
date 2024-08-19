@@ -6,9 +6,10 @@ import { FC, Fragment, useState } from 'react';
 
 interface Props {
   endTime?: number | null;
+  isBrown?: boolean;
 }
 
-const TicketCountdown: FC<Props> = ({ endTime }) => {
+const TicketCountdown: FC<Props> = ({ endTime, isBrown }) => {
   const [cdNumbers, setCDNumbers] = useState(Array(4).fill('00'));
   // 注意du.days()会返回对30的模
   useCountdown(endTime || dayjs().valueOf(), dayjs().valueOf(), (time) => {
@@ -21,7 +22,9 @@ const TicketCountdown: FC<Props> = ({ endTime }) => {
     <div className="h-[2.125rem] flex items-center">
       <Image
         className="object-contain w-[0.875rem] h-4 mr-2"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_date.png"
+        src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${
+          isBrown ? 'date_brown' : 'date'
+        }.png`}
         alt=""
         width={28}
         height={32}
