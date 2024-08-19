@@ -32,14 +32,7 @@ const rockImgUrls = [
     url: getUrl('rock_3'),
     classNames: 'top-[60%] left-[35%] w-[6rem] h-[6rem]',
   },
-  // {
-  //   url: getUrl('rock_1'),
-  //   classNames: '',
-  //   width: '7.5rem',
-  //   height: '7.5rem',
-  // },
 ]
-
 
 const ImageComp = (props: ImageCompProps) => {
 
