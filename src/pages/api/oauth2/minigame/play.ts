@@ -40,7 +40,7 @@ router.use(dynamicCors).get(async (req, res) => {
             res.json(response.insufficientTickets(result));
             return;
         }
-
+        console.log(result);
         // 消费成功
         res.json(response.success(result));
     } catch (error: any) {
@@ -56,7 +56,7 @@ export async function consumeTicket(userId: string, gameId: string, count: any) 
     let result = { modifiedCount: 0, ticketRemain: 0 };
     let remain = await ticketRemain(userId, gameId);
     result.ticketRemain = remain;
-    
+
     if (!count) {
         count = 1;// 默认消耗1张门票
     }
@@ -86,7 +86,7 @@ export async function consumeTicket(userId: string, gameId: string, count: any) 
     }
 
     // 查询余额
-    result.ticketRemain = await ticketRemain(userId, gameId);
+    result.ticketRemain = remain - count;
     return result;
 }
 
