@@ -85,7 +85,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                   />
 
                   <div className="flex flex-col justify-between relative z-0 h-full">
-                    <div className="text-3xl leading-none">[ $300 ] Puffy 2048</div>
+                    <div className="text-3xl leading-none">{data?.name || '-'}</div>
 
                     <div className="relative w-[26rem] aspect-square rounded-md overflow-hidden">
                       <Image
