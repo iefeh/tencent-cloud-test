@@ -19,13 +19,12 @@ export default function useBuyTickets() {
     }
 
     const { contract_address, chain_id, permit } = res;
-    const txRes = await onTransaction(
-      permit,
-      { value: permit.tokenAmount },
-      { contractAddress: contract_address, chainId: chain_id },
-    );
+    const txRes = await onTransaction({
+      params: permit,
+      config: { contractAddress: contract_address, chainId: chain_id },
+      options: { value: permit.tokenAmount },
+    });
     if (!txRes?.hash) {
-      toast.error('Transaction failed, please try again later.');
       setLoading(false);
       return false;
     }

@@ -29,12 +29,13 @@ const FloatFooter: FC = () => {
       />
 
       <div className="relative z-0 right-[20.5rem] flex flex-col items-end mt-[0.8125rem] pointer-events-auto w-min ml-auto">
-        <TicketCountdown key={ticket_expired_at} endTime={data?.ticket_expired_at} />
+        <TicketCountdown key={ticket_expired_at} endTime={ticket_expired_at} />
 
         <div className="flex pr-1 mt-5">
           <StrokeButton
             strokeType="brown"
-            strokeText="Share"
+            strokeText={share_reward_claimed ? 'Shared' : 'Share'}
+            needAuth
             startContent={
               <Image
                 className="w-[1.125rem] h-[1.125rem]"
@@ -57,6 +58,7 @@ const FloatFooter: FC = () => {
             className="ml-3"
             strokeType="blue"
             strokeText="Buy Tickets"
+            needAuth
             isDisabled={!data}
             onPress={ticketDisclosure.onOpen}
           />

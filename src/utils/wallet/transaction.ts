@@ -1,10 +1,18 @@
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from '@/hooks/utils';
 import { Contract, BrowserProvider, type Eip1193Provider, type TransactionRequest } from 'ethers';
+import { toast } from 'react-toastify';
 
 interface ContractProviderConfig {
   provider: Eip1193Provider;
   config?: Partial<TransactionConfig>;
+}
+
+export interface TransactionParams {
+  params: any;
+  config?: Partial<TransactionConfig>;
+  options?: TransactionRequest;
+  onError?: (code?: number, message?: string) => boolean | undefined;
 }
 
 export interface TransactionConfig {
@@ -81,7 +89,8 @@ class TransactionProvider {
     try {
       await this.bp.send('wallet_switchEthereumChain', [{ chainId: parseChainIdToHex(targetChainId) }]);
       return true;
-    } catch (error: any) {
+    } catch (e: any) {
+      let error = e?.error || e;
       if (error?.code === -32603 || error?.code === 4902 || error?.code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await this.addNetwork(targetChainId);
@@ -107,7 +116,7 @@ class TransactionProvider {
     return true;
   };
 
-  transaction = async (params: any, options: TransactionRequest = {}, config: Partial<TransactionConfig> = {}) => {
+  transaction = async ({ params, config = {}, options = {}, onError }: TransactionParams) => {
     const realConfig = Object.assign({}, this.config, config);
     const { abi, method, chainId, contractAddress } = realConfig;
     console.log('transaction config:', realConfig);
@@ -129,6 +138,19 @@ class TransactionProvider {
     } catch (error: any) {
       console.log('transaction', error);
       console.dir(error);
+
+      const code = error?.info?.error?.code || error?.error?.code || error?.code;
+      const message = error?.message || error?.error?.message || error?.info?.error?.message;
+
+      let showDefaultTips = !onError;
+      if (onError) {
+        showDefaultTips = !onError(+code, message?.toString?.()?.toLowerCase());
+      }
+
+      if (showDefaultTips) {
+        toast.error('Transaction failed, please try again later.');
+      }
+
       return null;
     }
   };

@@ -37,6 +37,16 @@ export const routeText: RouteMenu[] = [
       {
         name: 'Introduction',
         route: '/LoyaltyProgram/intro',
+        children: [
+          {
+            name: 'Moonveil Badge Introduction',
+            route: 'https://medium.com/@Moonveil_Studio/unlock-achievements-reap-rewards-the-moonveil-badge-system-unveiled-26c94eca97b5',
+          },
+          {
+            name: 'My Badges',
+            route: '/Profile/MyBadges',
+          },
+        ]
       },
       {
         name: 'My Season Pass',
@@ -121,13 +131,13 @@ export const routeText: RouteMenu[] = [
       {
         name: 'Mini Games',
         route: '/minigames',
-        disabled: true,
+        // disabled: true,
         children: [
           {
             name: '2048',
             icon: Game2048Icon,
             route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
-            disabled: true,
+            // disabled: true,
           },
           // {
           //   name: '黄金矿工',

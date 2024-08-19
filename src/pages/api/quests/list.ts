@@ -1,6 +1,5 @@
 import type {NextApiResponse} from "next";
 import {createRouter} from "next-connect";
-import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import {maybeAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
 import Quest from "@/lib/models/Quest";
@@ -96,6 +95,7 @@ async function paginationQuests(pageNum: number, pageSize: number): Promise<{ to
                 'active': 0,
                 'order': 0,
                 'reward.range_reward_ids': 0,
+                'token_reward.whitelist_id': 0,
             }
         },
         {

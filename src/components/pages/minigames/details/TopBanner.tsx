@@ -1,16 +1,18 @@
 import { useMGDContext } from '@/store/MiniGameDetails';
+import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC, useEffect } from 'react';
 
 const TopBanner: FC = () => {
+  const { userInfo } = useUserContext();
   const { data, queryDetails } = useMGDContext();
   const router = useRouter();
 
   useEffect(() => {
     queryDetails(router.query.id as string);
-  }, [router.query.id]);
+  }, [router.query.id, userInfo]);
 
   return (
     <div className="w-screen h-screen relative flex flex-col justify-end">
