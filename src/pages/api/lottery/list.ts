@@ -21,7 +21,7 @@ enum LotteryPoolOpenStatus {
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const { page_num, page_size, open_status } = req.query;
   if (!page_num || !page_size) {
-    return res.json(response.invalidParams());
+    return res.json(response.invalidParams({ message: "Required parameter is missing."}));
   }
   const pageNum: number = Number(page_num);
   const pageSize: number = Number(page_size);

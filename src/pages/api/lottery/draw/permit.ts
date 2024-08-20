@@ -19,7 +19,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     const {lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost} = req.body;
     const validDrawCount = [1, 3, 5];
     if (!lottery_pool_id || !draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
-        res.json(response.invalidParams({verified: false, message: "Invalid params."}));
+        res.json(response.invalidParams({verified: false, message: "Required parameter is missing."}));
         return;
     }
     const lockKey = `lottery_request_lock:${lottery_pool_id}:${userId}`;
@@ -48,7 +48,7 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     }
     const pool = await getActiveLotteryPoolById(lottery_pool_id) as ILotteryPool;
     if (!pool) {
-        return res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+        return res.json(response.invalidParams({ message: "The lottery pool is not opened or has been closed." }));
     }
     const targetChain = pool.chain_id;
     if (!targetChain) {
