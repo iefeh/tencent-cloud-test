@@ -34,7 +34,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   let result: any[] = [];
   for (let pool of pagination.data) {
     const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: pool.lottery_pool_id }, { type: 1, description: 1, properties: 1, _id: 0 });
-    const meetRequirement = (await lotteryRequirementSatisfy(userId, pool.lottery_pool_id)).meet_requirement;
+    const requirementSatisfy = await lotteryRequirementSatisfy(userId, pool.lottery_pool_id);
     await enrichRequirementsInfo(requirements);
     let openStatus = LotteryPoolOpenStatus.ALL;
     if (pool.start_time > now) {
@@ -58,7 +58,8 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       lottery_pool_id: pool.lottery_pool_id,
       name: pool.name,
       requirements: requirements,
-      user_meet_requirement: meetRequirement,
+      user_meet_requirement_type: requirementSatisfy.requirement_type,
+      user_meet_requirement: requirementSatisfy.meet_requirement,
       icon_url: pool.icon_url,
       start_time: pool.start_time,
       end_time: pool.end_time,
@@ -102,7 +103,7 @@ async function paginationLotteryPools(pageNum: number, pageSize: number, open_st
   matchOpt,
   {
     $sort: {
-      'start_time': 1
+      'start_time': -1
     }
   },
   {

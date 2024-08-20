@@ -39,7 +39,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   const userFreeLotteryTicketAmount = userLotteryPool ? userLotteryPool.free_lottery_ticket_amount : 0;
   const firstTwitterTopicVerified = userLotteryPool? userLotteryPool.first_twitter_topic_verified: false;
-  const meetRequirement = (await lotteryRequirementSatisfy(userId, lotteryPoolId)).meet_requirement; 
+  const requirementSatisfy = await lotteryRequirementSatisfy(userId, lotteryPoolId); 
   let rewards: any[] = [];
   for (let reward of lotteryPool.rewards) {
     rewards.push({
@@ -63,7 +63,8 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     user_s1_lottery_ticket_amount: user.lottery_ticket_amount,
     user_free_lottery_ticket_amount: userFreeLotteryTicketAmount,
     user_mb_amount: user.moon_beam,
-    user_meet_requirement: meetRequirement,
+    user_meet_requirement_type: requirementSatisfy.requirement_type,
+    user_meet_requirement: requirementSatisfy.meet_requirement,
     can_claim_premium_benifits: notifiyPremiumBenifitsClaim,
     first_twitter_topic_verified: firstTwitterTopicVerified,
     requirements: requirements,

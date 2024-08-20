@@ -211,10 +211,10 @@ export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, re
 }
 
 //判断用户是否有抽奖资格
-export async function lotteryRequirementSatisfy(userId: string, lotteryPoolId: string): Promise<{ meet_requirement: boolean }> {
+export async function lotteryRequirementSatisfy(userId: string, lotteryPoolId: string): Promise<{ requirement_type: string, meet_requirement: boolean }> {
   //先判断徽章是否达到要求
   const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
-  let result = { meet_requirement: true };
+  let result = { requirement_type: "", meet_requirement: true };
   if (requirements && requirements.length > 0) {
     result = await lotterySatisfyByBadge(userId, requirements);
     if (!result.meet_requirement) {
@@ -230,7 +230,7 @@ export async function lotteryRequirementSatisfy(userId: string, lotteryPoolId: s
       result = await lotterySatisfyMB(userId, requirements);
     }
   }
-  return { meet_requirement: result.meet_requirement };
+  return { requirement_type: result.requirement_type, meet_requirement: result.meet_requirement };
 }
 
 export async function enrichRequirementsInfo(requirements: any[]): Promise<any> {
@@ -281,7 +281,7 @@ export async function enrichRequirementsInfo(requirements: any[]): Promise<any> 
 }
 
 //判断徽章获得情况，判断是否满足高阶条件
-async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promise<{ meet_requirement: boolean }> {
+async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
   //取出徽章ID用于查询
   let badgeIds: string[] = [];
   for (let r of requirements) {
@@ -340,15 +340,15 @@ async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promi
       }
       //出现满足的徽章条件即退出
       if (badgeSatisfied) {
-        return { meet_requirement: true };
+        return { requirement_type: LotteryPoolRequirementType.Badge, meet_requirement: true };
       }
     }
   }
 
-  return { meet_requirement: false };
+  return { requirement_type: LotteryPoolRequirementType.Badge, meet_requirement: false };
 }
 
-async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): Promise<{ meet_requirement: boolean }> {
+async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
   let whitelistSatisfied: boolean = false;
   let userWhitelist: any;
   for (let r of requirements) {
@@ -387,15 +387,15 @@ async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): P
       }
       //如果用户通过白名单获得高阶通证，则需要进行更新
       if (whitelistSatisfied) {
-        return { meet_requirement: true };
+        return { requirement_type: LotteryPoolRequirementType.WhiteList, meet_requirement: true };
       }
     }
   }
-  return { meet_requirement: false };
+  return { requirement_type: LotteryPoolRequirementType.WhiteList, meet_requirement: false };
 }
 
 //判断NFT获得情况，判断是否满足高阶条件
-async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise<{ meet_requirement: boolean }> {
+async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
   let nftSatisfied: boolean = false;
   for (let r of requirements) {
     //是否为NFT类要求
@@ -415,14 +415,14 @@ async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise
         }
       }
       if (nftSatisfied) {
-        return { meet_requirement: true };
+        return { requirement_type: LotteryPoolRequirementType.NFT, meet_requirement: true };
       }
     }
   }
-  return { meet_requirement: false };
+  return { requirement_type: LotteryPoolRequirementType.NFT, meet_requirement: false };
 }
 
-async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{ meet_requirement: boolean }> {
+async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
   let mbSatisfied: boolean = false;
   for (let r of requirements) {
     //是否为NFT类要求
@@ -442,9 +442,9 @@ async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{
         }
       }
       if (mbSatisfied) {
-        return { meet_requirement: true };
+        return { requirement_type: LotteryPoolRequirementType.Moonbeam, meet_requirement: true };
       }
     }
   }
-  return { meet_requirement: false };
+  return { requirement_type: LotteryPoolRequirementType.Moonbeam, meet_requirement: false };
 }
