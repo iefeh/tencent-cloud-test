@@ -1,5 +1,6 @@
-import { BadgeSerie } from './../http/services/badges';
-import { LotteryRewardType, RewardQuality } from '@/constant/lottery';
+import type { BattlePassRewardDTO } from '@/http/services/battlepass';
+import type { BadgeSerie } from './../http/services/badges';
+import type { LotteryRewardType, LotteryStatus, RewardQuality } from '@/constant/lottery';
 
 declare namespace Lottery {
   interface Pool {
@@ -17,6 +18,18 @@ declare namespace Lottery {
     rewards: RewardItem[];
     need_verify_twitter?: boolean;
     title: string;
+    name?: string;
+    icon_url?: string;
+    limited_rewards?: LimitedReward[];
+    open_status?: LotteryStatus;
+    user_meet_requirement?: boolean;
+    requirements: BattlePassRewardDTO[];
+  }
+
+  interface LimitedReward {
+    reward_name: string;
+    reward_level: number;
+    icon_url: string;
   }
 
   interface RewardItem {

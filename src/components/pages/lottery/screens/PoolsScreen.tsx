@@ -1,11 +1,19 @@
 import Link from 'next/link';
 import { FC } from 'react';
-import usePools from '../hooks/usePools';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import PoolCard from '../PoolCard';
+import usePageQuery from '@/hooks/usePageQuery';
+import { queryPoolsListAPI } from '@/http/services/lottery';
+// import { LotteryStatus } from '@/constant/lottery';
 
 const PoolsScreen: FC = () => {
-  const { loading, pools } = usePools();
+  const { loading, data: pools } = usePageQuery({
+    key: 'lottery_pools',
+    pageSize: 3,
+    fn: queryPoolsListAPI,
+    notFill: true,
+    // paramsFn: (pagi) => ({ ...pagi, open_status: LotteryStatus.IN_PROGRESS }),
+  });
 
   return (
     <section className="max-w-[87.5rem] mx-auto relative z-0">
@@ -17,7 +25,7 @@ const PoolsScreen: FC = () => {
         </Link>
       </div>
 
-      <div className='w-full h-0 border-t-1 border-basic-gray mt-5'></div>
+      <div className="w-full h-0 border-t-1 border-basic-gray mt-5"></div>
 
       <div className="relative min-h-[12.5rem] grid grid-cols-3 gap-6 mt-10">
         {pools.map((pool, index) => (

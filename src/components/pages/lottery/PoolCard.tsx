@@ -1,17 +1,37 @@
+import { LotteryStatusConfig } from '@/constant/lottery';
 import BattlePass from './BattlePass';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
+import dayjs from 'dayjs';
+import Duration from 'dayjs/plugin/duration';
+
+dayjs.extend(Duration);
 
 const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
+  const limitedTime = getLimitedTime();
+
+  function getLimitedTime() {
+    const du = dayjs.duration(Math.max((item?.end_time || 0) - Date.now(), 0));
+
+    const days = ~~du.asDays();
+    if (days > 0) return `${days} days`;
+
+    const hours = du.hours();
+    if (hours > 0) return `${hours} hours`;
+
+    const mins = du.minutes();
+    return `${mins} minutes`;
+  }
+
   return (
     <div className="flex flex-col px-6 py-7 bg-[#0E0E0E] border-1 border-basic-gray rounded-base transition-colors hover:border-basic-yellow">
-      <div className="relative w-full aspect-square">
+      <div className="relative w-[25rem] h-[25rem] aspect-square">
         <Image
           className="object-cover rounded-base"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png"
+          src={item?.icon_url || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png'}
           alt=""
           fill
           unoptimized
@@ -29,7 +49,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span>Close in 3 days</span>
+            <span>Close in {limitedTime}</span>
           </div>
 
           <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
@@ -42,21 +62,23 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span>Limited Qty : 3</span>
+            <span>Limited Qty : {item?.limited_rewards?.length || 0}</span>
           </div>
         </div>
 
         <div className="absolute top-[13%] left-[3.5%]">
           <div className="flex items-center px-[1.125rem] py-2 bg-white/20 rounded-five text-sm leading-none">
-            <span className="text-basic-yellow">In progress</span>
+            <span className="text-basic-yellow">
+              {item?.open_status ? LotteryStatusConfig[item.open_status].label || '--' : '--'}
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 text-white text-xl leading-6">AstrArk Character Voice Rally</div>
+      <div className="mt-5 text-white text-xl leading-6">{item?.name || '--'}</div>
 
       <div className="flex flex-wrap gap-x-4 gap-y-5 mt-6">
-        {(item?.rewards || []).slice(0, 3).map((reward, index) => (
+        {(item?.limited_rewards || []).map((reward, index) => (
           <div key={index} className="flex items-center">
             <Image
               className="w-8 h-8 object-contain"

@@ -1,4 +1,3 @@
-import BasicButton from '@/pages/components/common/BasicButton';
 import { useBattlePassContext } from '@/store/BattlePass';
 import { Tooltip, cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';

@@ -4,7 +4,6 @@ import { FC, useRef } from 'react';
 import ScrollDownArrow from '../components/common/ScrollDownArrow';
 import { createPortal } from 'react-dom';
 import BadgeScreen from '@/components/pages/lottery/screens/BadgeScreen';
-import usePrizePool from '@/components/pages/lottery/hooks/usePrizePool';
 import { observer } from 'mobx-react-lite';
 import useTouchBottom from '@/hooks/useTouchBottom';
 import ShineBackground from '@/components/common/ShineBackground';
@@ -12,7 +11,6 @@ import MeteorLayer from '@/components/common/MeteorLayer';
 import PoolsScreen from '@/components/pages/lottery/screens/PoolsScreen';
 
 const LotteryPage: FC = () => {
-  const { poolInfo } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
 
@@ -34,7 +32,7 @@ const LotteryPage: FC = () => {
 
         <PoolsScreen />
 
-        <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
+        <BadgeScreen ref={badgeScreenRef} />
 
         {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
       </section>

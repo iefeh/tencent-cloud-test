@@ -5,7 +5,7 @@ export function queryPrizePoolListAPI(): Promise<{ lottery_pool_ids: string[] | 
   return http.get('/api/lottery/list');
 }
 
-export function queryPoolsListAPI(params: PageQueryDto & { status?: string }): Promise<PageResDTO<Lottery.Pool>> {
+export function queryPoolsListAPI(params: PageQueryDto & { open_status?: string }): Promise<PageResDTO<Lottery.Pool>> {
   return http.get('/api/lottery/list', { params });
 }
 

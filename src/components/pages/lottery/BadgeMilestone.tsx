@@ -13,7 +13,7 @@ interface Props extends ClassNameProps {
   milestone: Lottery.MilestoneDTO | null;
 }
 
-const BadgeMilestone: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, milestone, onUpdate }) => {
+const BadgeMilestone: FC<Props> = ({ className, milestone, onUpdate }) => {
   const currentDraws = milestone?.total_draw_amount || 0;
   const levels = BadgeIcons.map((options, index) => {
     const { requirements, image_url, icon_url } = milestone?.luckyDrawBadge?.series?.[index] || {};

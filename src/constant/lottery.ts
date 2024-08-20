@@ -112,3 +112,21 @@ export const LotteryBorders = {
 };
 
 export const MBsPerDraw = 25;
+
+export const enum LotteryStatus {
+  IN_PROGRESS = 'in_progress',
+  COMING = 'coming',
+  ENDED = 'ended',
+}
+
+export const LotteryStatusConfig = {
+  [LotteryStatus.IN_PROGRESS]: {
+    label: 'In progress'
+  },
+  [LotteryStatus.COMING]: {
+    label: 'Coming Soon'
+  },
+  [LotteryStatus.ENDED]: {
+    label: 'Ended'
+  },
+}

@@ -1,17 +1,19 @@
 import PageDesc from '@/components/common/PageDesc';
 import { Tab, Tabs, cn } from '@nextui-org/react';
 import Image from 'next/image';
-import { type FC, type Key, useState } from 'react';
+import { type FC, type Key, useState, useEffect, useRef } from 'react';
 import usePools from '../hooks/usePools';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import EmptyContent from '@/components/common/EmptyContent';
 import PoolCard from '../PoolCard';
 import CirclePagination from '@/components/common/CirclePagination';
+import usePageQuery from '@/hooks/usePageQuery';
+import { queryPoolsListAPI } from '@/http/services/lottery';
 
 const PoolListScreen: FC = () => {
   const tabs = [
     {
-      name: 'all',
+      name: '',
       label: 'All',
     },
     {
@@ -29,15 +31,31 @@ const PoolListScreen: FC = () => {
     },
   ];
   const [selectedTab, setSelectedTab] = useState(tabs[0].name);
-  const { pagination, totalPages, loading, pools, queryPool } = usePools();
+  const selectedTabRef = useRef(tabs[0].name);
+  const {
+    pagi,
+    loading,
+    data: pools,
+    queryData,
+    total,
+  } = usePageQuery({
+    key: 'lottery_pools',
+    pageSize: 9,
+    fn: queryPoolsListAPI,
+    notFill: true,
+    paramsFn: (pagi) => ({ ...pagi, open_status: selectedTabRef.current }),
+  });
 
   function onSelectionChange(key: Key) {
+    pagi.current = { ...pagi.current, page_num: 1 };
     setSelectedTab(key.toString());
-    queryPool({ status: key.toString(), page_num: 1 });
+    selectedTabRef.current = key.toString();
+    queryData();
   }
 
   function onPageChange(index: number) {
-    queryPool({ page_num: index, status: selectedTab });
+    pagi.current = { ...pagi.current, page_num: index };
+    queryData();
   }
 
   return (
@@ -84,14 +102,20 @@ const PoolListScreen: FC = () => {
         ))}
       </Tabs>
 
-      <div className="max-w-[87.5rem] min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
-        <div className="w-full grid grid-cols-3">
+      <div className="w-[87.5rem] max-w-full min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
+        <div className="w-full grid grid-cols-3 gap-x-6 gap-y-8">
           {pools.length > 0 ? pools.map((pool, index) => <PoolCard key={index} item={pool} />) : <EmptyContent />}
         </div>
 
-        <CirclePagination className="mt-20" total={totalPages} page={pagination.page_num} onChange={onPageChange} />
+        <CirclePagination
+          key={selectedTab}
+          className="mt-20"
+          total={Math.ceil(total / 9)}
+          page={pagi.current.page_num}
+          onChange={onPageChange}
+        />
 
-        {loading && <CircularLoading />}
+        {loading && <CircularLoading className="z-[1000]" />}
       </div>
     </div>
   );

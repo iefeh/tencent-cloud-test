@@ -7,10 +7,7 @@ import { queryDrawMilestoneAPI } from '@/http/services/lottery';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 
-const BadgeScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePage & ItemProps<Lottery.Pool>> = (
-  { item },
-  ref,
-) => {
+const BadgeScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePage> = ({}, ref) => {
   const { userInfo } = useUserContext();
   const [milestone, setMilestone] = useState<Lottery.MilestoneDTO | null>(null);
 
@@ -31,12 +28,7 @@ const BadgeScreen: ForwardRefRenderFunction<UpdateForwardRenderFunction, BasePag
     <div className="relative w-screen flex flex-col items-center pt-16 mt-10">
       <BadgeDesc milestone={milestone} />
 
-      <BadgeMilestone
-        className="mt-[12.75rem] mb-[4.875rem]"
-        item={item}
-        milestone={milestone}
-        onUpdate={queryDrawMilestone}
-      />
+      <BadgeMilestone className="mt-[12.75rem] mb-[4.875rem]" milestone={milestone} onUpdate={queryDrawMilestone} />
 
       <LotteryRules milestone={milestone} />
     </div>
