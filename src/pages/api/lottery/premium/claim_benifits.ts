@@ -18,7 +18,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const lotteryPoolId = String(lottery_pool_id);
   const lotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
-    return res.json(response.invalidParams("The lottery pool is not opened or has been closed."));
+    return res.json(response.invalidParams({ message: "The lottery pool is not opened or has been closed." }));
   }
   const canClaimBenifits = await canClaimPremiumBenifits(userId, lotteryPoolId);
   if (canClaimBenifits) {

@@ -1,6 +1,50 @@
 import { Lottery } from '@/types/lottery';
 import http from '../index';
 
+export interface LotteryBadgeRequirementPropertyDTO {
+  badge_id: string;
+  name: string;
+  icon_url: string;
+  image_url: string;
+  description: string;
+  lvl: string;
+}
+
+export interface LotteryNFTRequirementPropertyDTO {
+  contract_addr: string;
+  name: string;
+}
+
+export interface LotteryMBRequirementPropertyDTO {
+  mb_amount: number;
+}
+
+export interface LotteryWhitelistRequirementPropertyDTO {
+  image_url: string;
+}
+
+export interface LotteryBadgeRequirementDTO {
+  type: 'badge';
+  properties: LotteryBadgeRequirementPropertyDTO[];
+}
+
+export interface LotteryNFTRequirementDTO {
+  type: 'nft';
+  properties: LotteryNFTRequirementPropertyDTO[];
+}
+
+export interface LotteryMBRequirementDTO {
+  type: 'moon_beam';
+  properties: LotteryMBRequirementPropertyDTO[];
+}
+
+export interface LotteryWhitelistRequirementDTO {
+  type: 'whitelist';
+  properties: LotteryWhitelistRequirementPropertyDTO[];
+}
+
+export type LotteryRequirementDTO = LotteryBadgeRequirementDTO | LotteryNFTRequirementDTO | LotteryMBRequirementDTO | LotteryWhitelistRequirementDTO;
+
 export function queryPrizePoolListAPI(): Promise<{ lottery_pool_ids: string[] | null }> {
   return http.get('/api/lottery/list');
 }
