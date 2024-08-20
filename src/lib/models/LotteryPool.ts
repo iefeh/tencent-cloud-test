@@ -73,6 +73,8 @@ export interface ILotteryPool extends Document {
     active: boolean;
     // 奖池类型
     type: LotteryPoolType;
+    // 限量奖励数量, 无此属性或者小于0代表没有
+    limited_qty: number;
     // 支持的链id
     chain_id: string;
     // 创建时间毫秒时间戳
@@ -97,6 +99,7 @@ const LotteryPoolSchema = new Schema<ILotteryPool>({
     rewards: { type: Schema.Types.Mixed, required: true },
     active: { type: Boolean, required: true },
     type: { type: String, required: true },
+    limited_qty: { type: Number, required: true },
     chain_id: { type: String},
     created_time: { type: Number },
     updated_time: { type: Number },

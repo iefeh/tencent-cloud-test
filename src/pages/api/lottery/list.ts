@@ -61,6 +61,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       user_meet_requirement_type: requirementSatisfy.requirement_type,
       user_meet_requirement: requirementSatisfy.meet_requirement,
       icon_url: pool.icon_url,
+      limited_qty: pool.limited_qty,
       start_time: pool.start_time,
       end_time: pool.end_time,
       open_status: openStatus,

@@ -59,6 +59,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     start_time: lotteryPool.start_time,
     end_time: lotteryPool.end_time,
     draw_limits: lotteryPool.draw_limits,
+    limited_qty: lotteryPool.limited_qty,
     rest_draw_amount: restDrawAmount,
     user_s1_lottery_ticket_amount: user.lottery_ticket_amount,
     user_free_lottery_ticket_amount: userFreeLotteryTicketAmount,
