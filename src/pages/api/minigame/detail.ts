@@ -15,6 +15,7 @@ import User from "@/lib/models/User";
 import { loadAllBadges } from "../badges/list";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import { checkClaimed } from "./claim";
+import { enrichUserQuests } from "@/lib/quests/questEnrichment";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -82,8 +83,10 @@ async function enrichTasks(userId: string | undefined, detail: any) {
   }
 
   const result = await paginationQuests(1, 6, detail.task_category, undefined, userId as string);
-  if (result) {
-    detail.tasks = result.quests;
+  if (result && result.quests.length > 0) {
+    let quests: any[] = result.quests;
+    await enrichUserQuests(userId!, quests);
+    detail.tasks = quests;
     return;
   }
 
