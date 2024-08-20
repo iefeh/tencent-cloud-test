@@ -271,6 +271,11 @@ export async function enrichRequirementsInfo(requirements: any[]): Promise<any> 
           p.description = targetBadgeLevel.description;
         }
       }
+    } else if (r.type === LotteryPoolRequirementType.WhiteList) {
+      for (let p of r.properties) {
+        delete p.whitelist_id;
+        delete p.whitelist_entity_type;
+      }
     }
   }
 }
