@@ -121,12 +121,19 @@ export const enum LotteryStatus {
 
 export const LotteryStatusConfig = {
   [LotteryStatus.IN_PROGRESS]: {
-    label: 'In progress'
+    label: 'In progress',
   },
   [LotteryStatus.COMING]: {
-    label: 'Coming Soon'
+    label: 'Coming Soon',
   },
   [LotteryStatus.ENDED]: {
-    label: 'Ended'
+    label: 'Ended',
   },
+};
+
+export const enum LotteryRequirementType {
+  NFT = 'nft',
+  BADGE = 'badge',
+  MB = 'moon_beam',
+  WHITELIST = 'whitelist',
 }

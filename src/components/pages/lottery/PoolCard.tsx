@@ -27,7 +27,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
   }
 
   return (
-    <div className="flex flex-col px-6 py-7 bg-[#0E0E0E] border-1 border-basic-gray rounded-base transition-colors hover:border-basic-yellow">
+    <div className="flex flex-col justify-between px-6 py-7 bg-[#0E0E0E] border-1 border-basic-gray rounded-base transition-colors hover:border-basic-yellow">
       <div className="relative w-[25rem] h-[25rem] aspect-square">
         <Image
           className="object-cover rounded-base"
@@ -77,9 +77,9 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
 
       <div className="mt-5 text-white text-xl leading-6">{item?.name || '--'}</div>
 
-      <div className="flex flex-wrap gap-x-4 gap-y-5 mt-6">
+      <div className="grid auto-cols-max place-content-start gap-x-4 gap-y-5 mt-6 flex-1">
         {(item?.limited_rewards || []).map((reward, index) => (
-          <div key={index} className="flex items-center">
+          <div key={index} className="flex items-center h-min">
             <Image
               className="w-8 h-8 object-contain"
               src={reward.icon_url}
@@ -96,7 +96,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
       </div>
 
       <div className="flex justify-between items-center mt-16">
-        <BattlePass hideTitle />
+        <BattlePass item={item} />
 
         <Link href={`/lottery/${item?.lottery_pool_id}`} target="_blank">
           <LGButton className="w-[8.75rem]" label="Play" />
