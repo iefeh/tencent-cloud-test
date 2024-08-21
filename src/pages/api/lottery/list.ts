@@ -61,6 +61,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       user_meet_requirement_type: requirementSatisfy.requirement_type,
       user_meet_requirement: requirementSatisfy.meet_requirement,
       icon_url: pool.icon_url,
+      icon_frame_level: pool.icon_frame_level,
       limited_qty: pool.limited_qty,
       start_time: pool.start_time,
       end_time: pool.end_time,
@@ -113,6 +114,8 @@ async function paginationLotteryPools(pageNum: number, pageSize: number, open_st
       lottery_pool_id: 1,
       name: 1,
       icon_url: 1,
+      icon_frame_level: 1,
+      limited_qty: 1,
       rewards: 1,
       start_time: 1,
       end_time: 1
