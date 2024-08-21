@@ -52,8 +52,8 @@ const CollectionWarpper: FC<Props> = (props) => {
   const { children } = props;
   return (
     <div className="bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_base.png')] bg-[length:100%_auto] w-full flex flex-col items-center -mt-12 pt-[4.875rem] pb-[10.25rem] relative">
-      {rockImgUrls.map(img => (
-        <div className={cn([
+      {rockImgUrls.map((img, index) => (
+        <div key={index} className={cn([
           'absolute ani-rockFall',
           img.classNames
         ])}>
