@@ -311,9 +311,9 @@ const Header = () => {
           })}
 
           <MoreLinks />
-
-          <Notification />
         </div>
+
+        <Notification />
 
         <UserInfo />
 
