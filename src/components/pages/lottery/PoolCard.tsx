@@ -28,15 +28,26 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
 
   return (
     <div className="flex flex-col justify-between px-6 py-7 bg-[#0E0E0E] border-1 border-basic-gray rounded-base transition-colors hover:border-basic-yellow">
-      <div className="relative w-[25rem] h-[25rem] aspect-square">
-        <Image
-          className="object-cover rounded-base"
-          src={item?.icon_url || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png'}
-          alt=""
-          fill
-          unoptimized
-          priority
-        />
+      <div className="relative w-[25rem] aspect-square">
+        <div
+          className="w-full h-full relative rounded-base overflow-hidden"
+        >
+          <div className="absolute inset-0 z-0 blur-lg">
+            {item?.icon_url && (
+              <Image className="object-contain scale-80" src={item.icon_url} alt="" fill sizes="100%" unoptimized />
+            )}
+          </div>
+
+          <Image
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 aspect-square object-cover z-10"
+            src={item?.icon_url || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png'}
+            alt=""
+            width={1}
+            height={1}
+            unoptimized
+            priority
+          />
+        </div>
 
         <div className="absolute top-[3.5%] left-[3.5%] flex items-center gap-x-2">
           <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
