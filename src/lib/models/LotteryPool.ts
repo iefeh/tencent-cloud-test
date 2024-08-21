@@ -59,6 +59,8 @@ export interface ILotteryPool extends Document {
     end_time: number;
     // 奖池图片信息
     icon_url: string;
+    // 图标外框等级
+    icon_frame_level: number,
     // 分享推文信息
     twitter_topics: LotteryTwitterTopic[];
     // 奖池分享tweet mb奖励数量
@@ -92,6 +94,7 @@ const LotteryPoolSchema = new Schema<ILotteryPool>({
     start_time: { type: Number, required: true },
     end_time: { type: Number, required: true },
     icon_url: { type: String, required: true },
+    icon_frame_level: { type: Number, required: true, default: 5 },
     twitter_topics: { type: Schema.Types.Mixed },
     twitter_verify_mb_reward_amount: { type: Number, default: 20 },
     draw_limits: { type: Number, default: 10 },
