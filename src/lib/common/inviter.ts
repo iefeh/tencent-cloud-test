@@ -1,37 +1,51 @@
-import User from "../models/User";
-import UserInvite from "../models/UserInvite";
+import User from '../models/User';
+import UserInvite from '../models/UserInvite';
 
 export async function getInviteRelationshipFromDirectInviteUser(userId: string): Promise<inviteRelationship | null> {
-    // 检查用户的直接邀请人
-    const directInviter = await UserInvite.findOne({ invitee_id: userId });
-    if (!directInviter) {
-        return null;
-    }
-    // 检查间接邀请人
-    const indirectInviter = await UserInvite.findOne({ invitee_id: directInviter.user_id });
-    return {
-        direct: directInviter.user_id,
-        indirect: indirectInviter ? indirectInviter.user_id : undefined,
-    }
+  // 检查用户的直接邀请人
+  const directInviter = await UserInvite.findOne({ invitee_id: userId });
+  if (!directInviter) {
+    return null;
+  }
+
+  const virtual = directInviter.virtual ? true : false;
+  // 检查间接邀请人
+  const indirectInviter = await UserInvite.findOne({ invitee_id: directInviter.user_id });
+  return {
+    direct: directInviter.user_id,
+    indirect: indirectInviter ? indirectInviter.user_id : undefined,
+    virtual: virtual,
+    indirectVirtual: indirectInviter ? indirectInviter.virtual : false,
+  };
 }
 
-export async function getInviteRelationshipFromDirectInviteCode(inviteCode: string): Promise<inviteRelationship | null> {
-    // 检查用户的直接邀请人
-    const directInviter = await User.findOne({ invite_code: inviteCode }, { _id: 0, user_id: 1 });
-    if (!directInviter) {
-        return null;
-    }
-    // 检查间接邀请人
-    const indirectInviter = await UserInvite.findOne({ invitee_id: directInviter.user_id });
-    return {
-        direct: directInviter.user_id,
-        indirect: indirectInviter ? indirectInviter.user_id : undefined,
-    }
+export async function getInviteRelationshipFromDirectInviteCode(
+  inviteCode: string,
+): Promise<inviteRelationship | null> {
+  // 检查用户的直接邀请人
+  const directInviter = await User.findOne({ invite_code: inviteCode }, { _id: 0, user_id: 1 });
+  if (!directInviter) {
+    return null;
+  }
+
+  const virtual = directInviter.virtual ? true : false;
+  // 检查间接邀请人
+  const indirectInviter = await UserInvite.findOne({ invitee_id: directInviter.user_id });
+  return {
+    direct: directInviter.user_id,
+    indirect: indirectInviter ? indirectInviter.user_id : undefined,
+    virtual: virtual,
+    indirectVirtual: indirectInviter ? indirectInviter.virtual : false,
+  };
 }
 
 export type inviteRelationship = {
-    // 直接邀请人
-    direct: string;
-    // 间接邀请人
-    indirect: string;
-}
+  // 直接邀请人
+  direct: string;
+  // 间接邀请人
+  indirect: string;
+  // 是虚拟邀请人
+  virtual?: boolean;
+  // 间接邀请人是虚拟邀请人
+  indirectVirtual?: boolean;
+};

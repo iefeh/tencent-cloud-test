@@ -24,6 +24,7 @@ import {
   saveNewInviteeRegistrationMoonBeamAudit,
 } from '@/lib/models/UserMoonBeamAudit';
 import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
+import { incrVirtualKOLMetric } from '@/lib/models/VirtualKOLMetrics';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -40,7 +41,8 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
   const payload = JSON.parse(payloadStr) as SignupPayload;
   // 保存用户信息
   try {
-    payload.user.moon_beam = payload.invite ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0;
+    // moon_beam逻辑未用到，并且因为有虚拟KOL的逻辑，这里不好处理，注释掉
+    // payload.user.moon_beam = payload.invite ? NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA : 0;
     await doTransaction(async function (session) {
       const opts = { session };
       const user = new User(payload.user);
@@ -74,11 +76,19 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
       if (payload.invite) {
         const invite = new UserInvite(payload.invite);
         await invite.save(opts);
-        await saveNewInviteeRegistrationMoonBeamAudit(payload.user.user_id, payload.invite.user_id, session);
-        await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
+        if (payload.invite.virtual) {
+          await incrVirtualKOLMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
+        } else {
+          await saveNewInviteeRegistrationMoonBeamAudit(payload.user.user_id, payload.invite.user_id, session);
+          await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
+        }
 
         if (payload.indirect_inviter_id) {
-          await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
+          if (payload.indirect_virtual) {
+            await incrVirtualKOLMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
+          } else {
+            await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
+          }
         }
       }
     });
@@ -110,4 +120,3 @@ router.all((req, res) => {
 });
 
 export default router.handler();
-
