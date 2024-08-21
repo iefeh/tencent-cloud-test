@@ -158,9 +158,9 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                     ? 'Claimed'
                     : task.user_token_reward?.status === 'claiming'
                     ? 'Claiming'
-                    : progressStatus === 2
-                    ? 'Sorry, you didn’t win this time.'
-                    : 'Claim'
+                    : task.user_token_reward
+                    ? 'Claim'
+                    : 'Sorry, you didn’t win this time.'
                 }
                 actived
                 disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}
