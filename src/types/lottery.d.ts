@@ -21,6 +21,7 @@ declare namespace Lottery {
     title: string;
     name?: string;
     icon_url?: string;
+    icon_frame_level?: number;
     limited_rewards?: LimitedReward[];
     open_status?: LotteryStatus;
     user_meet_requirement?: boolean;

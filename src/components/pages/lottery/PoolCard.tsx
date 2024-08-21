@@ -1,4 +1,4 @@
-import { LotteryStatusConfig } from '@/constant/lottery';
+import { LotteryBorders, LotteryStatusConfig, RewardQuality } from '@/constant/lottery';
 import BattlePass from './BattlePass';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
@@ -10,7 +10,12 @@ import Duration from 'dayjs/plugin/duration';
 
 dayjs.extend(Duration);
 
+const DEFAULT_IMG = 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png';
+
 const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
+  const { icon_frame_level, icon_url } = item || {};
+  const border = LotteryBorders[(icon_frame_level || RewardQuality.COPPERY) as RewardQuality];
+  const itemSize = '90%';
   const limitedTime = getLimitedTime();
 
   function getLimitedTime() {
@@ -29,24 +34,56 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
   return (
     <div className="flex flex-col justify-between px-6 py-7 bg-[#0E0E0E] border-1 border-basic-gray rounded-base transition-colors hover:border-basic-yellow">
       <div className="relative w-[25rem] aspect-square">
-        <div
-          className="w-full h-full relative rounded-base overflow-hidden"
-        >
+        <div className="w-full h-full relative rounded-base overflow-hidden">
           <div className="absolute inset-0 z-0 blur-lg">
-            {item?.icon_url && (
-              <Image className="object-contain scale-80" src={item.icon_url} alt="" fill sizes="100%" unoptimized />
-            )}
+            <Image
+              className="object-contain scale-80"
+              src={icon_url || DEFAULT_IMG}
+              alt=""
+              fill
+              sizes="100%"
+              unoptimized
+            />
           </div>
 
-          <Image
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 aspect-square object-cover z-10"
-            src={item?.icon_url || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png'}
-            alt=""
-            width={1}
-            height={1}
-            unoptimized
-            priority
-          />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 aspect-square flex flex-col justify-center items-center origin-bottom-right rotate-[-15deg] bg-[#0E0E0E] rounded-3xl">
+            <Image
+              className="object-contain absolute left-0 bottom-0 z-0 max-w-none"
+              src={border.img}
+              style={{ width: `${border.width / 1.54}%`, height: `${border.height / 1.54}%` }}
+              alt=""
+              width={154}
+              height={154}
+              unoptimized
+            />
+
+            <div className="relative z-0" style={{ width: itemSize, height: itemSize }}>
+              <Image className="object-contain " src={icon_url || DEFAULT_IMG} alt="" fill sizes="100%" unoptimized />
+            </div>
+          </div>
+
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 aspect-square flex flex-col justify-center items-center origin-[50%_100%] rotate-12 bg-[#0E0E0E] rounded-3xl">
+            <Image
+              className="object-contain absolute left-0 bottom-0 z-0 max-w-none"
+              src={border.img}
+              style={{ width: `${border.width / 1.54}%`, height: `${border.height / 1.54}%` }}
+              alt=""
+              width={154}
+              height={154}
+              unoptimized
+            />
+
+            <div className="relative z-0" style={{ width: itemSize, height: itemSize }}>
+              <Image
+                className="object-contain "
+                src={icon_url || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png'}
+                alt=""
+                fill
+                sizes="100%"
+                unoptimized
+              />
+            </div>
+          </div>
         </div>
 
         <div className="absolute top-[3.5%] left-[3.5%] flex items-center gap-x-2">
