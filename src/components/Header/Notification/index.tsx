@@ -111,7 +111,7 @@ const Notification: FC = () => {
 
   return (
     <>
-      <div ref={anchorRef} className="inline-block" {...anchorProps}>
+      <div ref={anchorRef} className="inline-block mr-4" {...anchorProps}>
         <Badge
           isOneChar
           className={cn(['w-2 h-2 bg-[#FF3333]', hasUnread || 'hidden'])}
