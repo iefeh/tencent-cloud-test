@@ -5,7 +5,6 @@ export interface MyTokensRecord {
   source_type: string;
   reward_id: string;
   token_amount_raw: string;
-  tx_hash: string;
   token_amount_formatted: string;
   status: TokenRewardStatus;
   created_time: number | null;

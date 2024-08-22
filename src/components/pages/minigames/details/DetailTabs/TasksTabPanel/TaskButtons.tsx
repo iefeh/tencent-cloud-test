@@ -174,6 +174,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           }
           label=""
           actived
+          needAuth
           loading={connectLoading}
           disabled={achieved || verified}
           onClick={onConnectClick}
@@ -191,6 +192,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
         disabled={!verifiable}
         hasCD={hasVerifyCD}
         actived
+        needAuth
         tooltip={
           isLongCD && (
             <div className="max-w-[25rem] px-4 py-3">

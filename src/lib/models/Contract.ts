@@ -3,13 +3,14 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 
 // 枚举合约分类，我们平台的合约类型，如SBT、DESTINY NFT等
 export enum ContractCategory {
-    // 徽章SBT合约
+    // 徽章合约
     SBT = 'SBT',
-    // Tetra系列NFT合约
+    // TETRA系列合约
     TETRA_SERIES = 'TETRA_SERIES',
+    // 游戏支付合约
+    GAME_PAYMENT = 'GAME_PAYMENT',
     // 通用抽奖合约
     LOTTERY = 'LOTTERY',
-    GAME_PAYMENT = 'GAME_PAYMENT',
 }
 
 // 子类型
@@ -41,7 +42,7 @@ const ContractSchema = new Schema<IContract>({
     name: {type: String},
     category: {type: String},
     sub_category: {type: String},
-    expolorer_url: {type: String}
+    expolorer_url: {type: String},
 });
 
 

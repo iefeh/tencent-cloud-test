@@ -50,6 +50,7 @@ declare namespace Lottery {
   }
 
   interface RewardResDTO {
+    draw_time?: number;
     available_draw_time?: number;
     draw_id: string;
     lottery_pool_id: string;

@@ -6,35 +6,53 @@ import Image from 'next/image';
 const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   const rules = [
     {
-      content: 'Daily check-ins reward 2 Moon Beams.',
-    },
-    {
-      content: 'Accumulate 7 consecutive days to receive the Daily Devotee badge and extra Moon Beams.',
-    },
-    {
-      content: 'Continued check-ins lead to badge upgrades, with additional Moon Beams awarded as follows:',
+      content: 'Ticket Purchase InstructionsTicket Purchase Process:',
       items: [
-        '7 days: Level 1, +20 Moon Beams',
-        '20 days: Level 2, +40 Moon Beams',
-        '40 days: Level 3, +60 Moon Beams',
-        '60 days: Level 4, +80 Moon Beams',
-        '80 days: Level 5, +100 Moon Beams',
-        '100 days: Level 6, +120 Moon Beams',
-        '120 days: Level 7, +140 Moon Beams',
-        '140 days: Level 8, +160 Moon Beams',
-        '160 days: Level 9, +180 Moon Beams',
-        '200 days: Level 10, +200 Moon Beams',
+        'Visit our mini games page.',
+        'Choose the game you wish to participate in.',
+        'Click the "Buy Ticket" button.',
+        'Select your payment method and complete the transaction confirmation in your wallet.',
+        'Once the purchase is complete, your ticket will be recorded in your account.',
       ],
     },
     {
-      content: 'Achieve a full-level badge with 200 cumulative days in a year.',
+      content: 'Ticket Price:',
+      items: [
+        'The ticket price for each game may vary. Please refer to the game details page for specific ticket prices.',
+      ],
     },
     {
-      content:
-        'Three free retroactive check-ins annually; subsequent ones cost Moon Beams: 5 MB for the 4th, 10 MB for the 5th, and so forth.',
+      content: 'Ticket Validity:',
+      items: [
+        'Please note that tickets not used within the specified time will automatically become invalid.',
+        'Once purchased, tickets are non-refundable.',
+      ],
     },
     {
-      content: 'A new badge will be issued at the start of the second year.',
+      content: 'Game Participation:',
+      items: [
+        'After successfully purchasing a ticket, you can immediately participate in the game.',
+        'Each ticket is valid for one game participation only.',
+      ],
+    },
+    {
+      content: 'Game Time:',
+      items: ['Each game has a specific start and end time. Please participate within the specified time.'],
+    },
+    {
+      content: 'Game Rules:',
+      items: ['Each game may have different rules and gameplay. Please refer to the game page for detailed rules.'],
+    },
+    {
+      content: 'Winning and Rewards:',
+      items: ['The winning conditions and reward rules for each game will be detailed on the game page and task page.'],
+    },
+    {
+      content: 'Notes:',
+      items: [
+        'Before participating in the game, please ensure your network connection is stable. Tickets will not be refunded for game failures caused by network issues.',
+        "All participants must comply with the platform's terms of use and game rules. Violators will be disqualified from participation and may face further penalties.",
+      ],
     },
   ];
 
@@ -53,8 +71,9 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
           'flex items-center',
         ]),
         body: cn([
+          'font-jcyt4 max-h-[32.5rem] has-scroll-bar',
           'pt-8 pl-10 pr-12 pb-[2.625rem] mr-6 bg-[#F7E9CC]',
-          'rounded-bl-base rounded-br-base overflow-hidden',
+          'rounded-bl-base rounded-br-base overflow-y-scroll',
           'border-basic-gray border-b-2 border-l-2 border-r-2',
         ]),
       }}
@@ -79,12 +98,14 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
             <ModalBody>
               {rules.map((rule, index) => (
                 <div key={index}>
-                  <p>· {rule.content}</p>
+                  <p className='font-jcyt6'>· {rule.content}</p>
 
                   {rule.items && (
                     <ul>
                       {rule.items.map((item, ci) => (
-                        <li key={ci}>- {item}</li>
+                        <li key={ci} className="indent-4">
+                          - {item}
+                        </li>
                       ))}
                     </ul>
                   )}
@@ -93,7 +114,6 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
 
               <Button
                 className="bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_close.png')] bg-contain bg-no-repeat w-[3.625rem] h-[3.75rem] absolute top-0 right-0 p-0 min-w-0"
-                data-text="Play Now"
                 onPress={onClose}
               />
             </ModalBody>

@@ -111,7 +111,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     setClaimDisabled(true);
     setShareDisabled(!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
     if (hasCDK) {
-      await onClaimed?.(true, true);
+      await onClaimed?.(true);
       cdkClaimedDisclosure.onOpen();
       setLoading(false);
       return;
@@ -177,7 +177,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               </ModalHeader>
 
               <ModalBody>
-                {hasShareAndConfirmRewards && claimed ? (
+                {hasShareAndConfirmRewards && !hasCDK && claimed ? (
                   <>
                     <div className="text-2xl">Reward Claimed</div>
 

@@ -28,19 +28,20 @@ const defaultErrorResponse = response.success({
   message: "Network busy, please try again later.",
 });
 
-const noPrizeReward = {
-  item_id: "no_prize",
-  reward_type: LotteryRewardType.NoPrize,
-  reward_name: "No Prize This Time, Give It Another Shot!",
+const drawOnce = {
+  item_id: "drawOnceMore",
+  reward_type: LotteryRewardType.LotteryTicket,
+  reward_name: "Golden S1 Ticket x1",
   reward_claim_type: 1,
-  reward_level: 1,
-  icon_url: "",
+  reward_level: 2,
+  icon_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png",
+  badge_id: "",
   first_three_draw_probability: 0,
   next_six_draw_probability: 0,
   inventory_amount: null,
   min_reward_draw_amount: 0,
   guaranteed_draw_count: [],
-  amount: 0
+  amount: 1
 };
 
 interface DrawResult {
@@ -128,7 +129,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
       }
     }
     if ((reward.min_reward_draw_amount <= 0 || (reward.min_reward_draw_amount > 0 && lotteryPool.total_draw_amount >= reward.min_reward_draw_amount))
-      && (!reward.inventory_amount || reward.inventory_amount > 0)) {
+      && (reward.inventory_amount === null || reward.inventory_amount === undefined || reward.inventory_amount > 0)) {
       availableRewards.push(reward);
     }
   }
@@ -228,8 +229,8 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
   guaranteedRewards: ILotteryRewardItem[], 
   availableRewards: ILotteryRewardItem[], 
   itemInventoryDeltaMap: Map<string, number>,
-  userRewards: IUserLotteryRewardItem[]): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
-  let reward: ILotteryRewardItem = noPrizeReward;
+  allDrawResults: IUserLotteryRewardItem[]): Promise<{drawResult: IUserLotteryRewardItem, verifyNeeded: boolean}> {
+  let reward: ILotteryRewardItem = drawOnce;
   let verifyNeeded: boolean = false;
   // 优先抽取保底避免无人抽中
   if (guaranteedRewards && guaranteedRewards.length > 0) {
@@ -246,22 +247,22 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
           const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
           const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.badge_id": reward.badge_id });
           if (userBadge || userDrawHistory) {
-            reward = noPrizeReward;
+            reward = drawOnce;
           }
-          for (let drawResult of userRewards) {
+          for (let drawResult of allDrawResults) {
             if (drawResult.reward_type === LotteryRewardType.Badge && drawResult.badge_id === reward.badge_id) {
-              reward = noPrizeReward;
+              reward = drawOnce;
               break;
             }
           }
         } else if (reward.reward_type === LotteryRewardType.CDK) {
           const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.cdk": reward.cdk });
           if (userDrawHistory) {
-            reward = noPrizeReward;
+            reward = drawOnce;
           }
-          for (let drawResult of userRewards) {
+          for (let drawResult of allDrawResults) {
             if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.cdk === reward.cdk) {
-              reward = noPrizeReward;
+              reward = drawOnce;
               break;
             }
           }
@@ -270,7 +271,7 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
         if (reward.inventory_amount) {
           const cost = itemInventoryDeltaMap.has(reward.item_id)? itemInventoryDeltaMap.get(reward.item_id) as number + 1 : 1;
           if (cost > reward.inventory_amount) {
-            reward = noPrizeReward;
+            reward = drawOnce;
           }
           if (reward.reward_type !== LotteryRewardType.NoPrize) {
             itemInventoryDeltaMap.set(reward.item_id, cost);

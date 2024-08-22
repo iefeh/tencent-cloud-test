@@ -11,10 +11,8 @@ import Image from 'next/image';
 import BadgeSlide from '../slides/BadgeSlide';
 import NFT2Slide from '../slides/NFT2Slide';
 import LotterySlide from '../slides/LotterySlide';
-import AstrArkAlphaTestSlide from '../slides/AstrArkAlphaTestSlide';
 
 const slides = [
-  AstrArkAlphaTestSlide,
   LoyaltyProgramSlide,
   LotterySlide,
   NFT2Slide,

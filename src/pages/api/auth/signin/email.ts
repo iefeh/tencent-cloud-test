@@ -1,13 +1,13 @@
 import * as response from '../../../../lib/response/response';
-import {NextApiRequest, NextApiResponse} from 'next'
-import {redis} from '@/lib/redis/client';
-import User, {IUser} from "@/lib/models/User";
-import {v4 as uuidv4} from 'uuid';
+import { NextApiRequest, NextApiResponse } from 'next'
+import { redis } from '@/lib/redis/client';
+import User, { IUser } from "@/lib/models/User";
+import { v4 as uuidv4 } from 'uuid';
 import connectToMongoDbDev from "@/lib/mongodb/client";
-import {createRouter} from "next-connect";
-import {generateUserSession, generateUserSignupSession} from "@/lib/middleware/session";
-import {genLoginJWT} from "@/lib/particle.network/auth";
-import {AuthorizationType, CaptchaType, SignupPayload} from "@/lib/authorization/types";
+import { createRouter } from "next-connect";
+import { generateUserSession, generateUserSignupSession } from "@/lib/middleware/session";
+import { genLoginJWT } from "@/lib/particle.network/auth";
+import { AuthorizationType, CaptchaType, SignupPayload } from "@/lib/authorization/types";
 import doTransaction from "@/lib/mongodb/transaction";
 import UserInvite from "@/lib/models/UserInvite";
 import { NEW_INVITEE_REGISTRATION_MOON_BEAM_DELTA, saveNewInviteeRegistrationMoonBeamAudit } from '@/lib/models/UserMoonBeamAudit';
@@ -17,7 +17,7 @@ import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from '@
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.post(async (req, res) => {
-    const {email, captcha, invite_code, signup_mode} = req.body;
+    const { email, captcha, invite_code, signup_mode } = req.body;
     if (!email || !captcha) {
         console.log("request body:", req.body);
         res.json(response.invalidParams());
@@ -27,8 +27,11 @@ router.post(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
+
+    let lCaseEmail = String(email).toLowerCase()
     // 校验验证码
-    const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${email}`);
+    const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${lCaseEmail}`);
+
     if (!historyCaptcha) {
         res.json(response.captchaExpired());
         return
@@ -47,13 +50,16 @@ router.post(async (req, res) => {
         }
     }
     // 执行用户登录
-    let user = await User.findOne({'email': email});
+    let user = await User.findOne({ 'email': email });
+    if (!user) {
+        user = await User.findOne({ 'email': lCaseEmail });
+    }
     const isNewUser = !user;
     if (isNewUser && signup_mode) {
-        await doSignupConfirmation(res, inviter, email);
+        await doSignupConfirmation(res, inviter, lCaseEmail);
         return;
     }
-    await doUserLogin(res, inviter, user as IUser, email);
+    await doUserLogin(res, inviter, user as IUser, lCaseEmail);
 });
 
 async function doSignupConfirmation(res: any, inviter: inviteRelationship | null, email: string) {
@@ -97,7 +103,7 @@ async function doUserLogin(res: any, inviter: inviteRelationship | null, user: I
             created_time: Date.now(),
         });
         await doTransaction(async function (session) {
-            const opts = {session};
+            const opts = { session };
             await user.save(opts);
             if (inviter) {
                 const invite = new UserInvite({

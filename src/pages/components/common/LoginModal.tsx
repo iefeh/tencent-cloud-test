@@ -21,6 +21,7 @@ import { sendEmailCodeAPI, sendEmailConnectCodeAPI } from '@/http/services/login
 import { observer } from 'mobx-react-lite';
 import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
+import useParticle from '@/hooks/useParticle';
 
 interface BtnGroup {
   title: string;
@@ -164,6 +165,7 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
     initLoginInfo,
     switchAccount,
   } = useContext(MobxContext);
+  useParticle();
   const [emailLoginVisible, setEmailLoginVisible] = useState(isConnect);
   const connectList: BtnGroup[] = [
     {
