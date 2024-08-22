@@ -21,7 +21,7 @@ export interface IUserTokenReward extends Document {
     // 代币id
     token_id: string,
     // 原始代币数量
-    token_amount_raw: number,
+    token_amount_raw: string,
     // 格式化以后的代币数量
     token_amount_formatted: string,
     // 交易hash
@@ -42,7 +42,7 @@ const UserTokenRewardSchema = new Schema<IUserTokenReward>({
     source_type: {type: String, required: true},
     source_id: {type: String},
     token_id: {type: String},
-    token_amount_raw: {type: Number},
+    token_amount_raw: {type: String },
     token_amount_formatted: {type: String},
     tx_hash: {type: String},
     status: {type: String},
