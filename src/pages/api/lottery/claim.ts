@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 
 import logger from '@/lib/logger/winstonLogger';
 import {
-    constructMoonBeamAudit, constructVerifyResponse, getLotteryPoolById, verifyTwitterTopic
+    constructMoonBeamAudit, constructVerifyResponse, getActiveLotteryPoolById, verifyTwitterTopic
 } from '@/lib/lottery/lottery';
 import { LotteryRewardType } from '@/lib/lottery/types';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
@@ -31,7 +31,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   try {
     const lotteryPoolId = String(lottery_pool_id);
     const drawId = String(draw_id);
-    const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+    const lotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
     if (!lotteryPool) {
       return res.json(response.invalidParams(constructVerifyResponse(false, "The lottery pool is not opened or has been closed.")));
     }

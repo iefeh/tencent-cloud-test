@@ -1,0 +1,35 @@
+import { Document, models, Schema } from 'mongoose';
+import connectToMongoDbDev from '@/lib/mongodb/client';
+
+//用户高阶通证获得类型
+export enum LotteryPoolRequirementType {
+  NFT = 'nft',
+  Badge = 'badge',
+  Moonbeam = 'moon_beam',
+  WhiteList = 'whitelist'
+}
+
+export interface ILotteryPoolRequirement extends Document {
+  id: string,
+  lottery_pool_id: string,
+  type: LotteryPoolRequirementType,
+  description: string,
+  properties: any[]
+}
+
+const LotteryPoolRequirementSchema = new Schema<ILotteryPoolRequirement>({
+  id: { type: String, required: true },
+  lottery_pool_id: { type: String, required: true },
+  type: { type: String },
+  description: { type: String },
+  properties: { type: Schema.Types.Mixed }
+});
+
+LotteryPoolRequirementSchema.index({ id: 1 });
+
+// 使用既有模型或者新建模型
+const connection = connectToMongoDbDev();
+const LotteryPoolRequirements =
+  models.LotteryPoolRequirements ||
+  connection.model<ILotteryPoolRequirement>('LotteryPoolRequirements', LotteryPoolRequirementSchema, 'lottery_pool_requirements');
+export default LotteryPoolRequirements;

@@ -8,15 +8,15 @@ import DrawScreenMainContent from '../DrawScreenMainContent';
 import DrawFooter from '../DrawFooter';
 import PlanetAni from '../PlanetAni';
 import { useDisclosure } from '@nextui-org/react';
-import RewardsModal from '../RewardsModal';
+import RewardsModal from '../modals/RewardsModal';
 import { Lottery } from '@/types/lottery';
-import PrizePoolModal from '../PrizePoolModal';
-import DrawModal from '../DrawModal';
-import DrawHistoryModal, { type DrawHisoryModalRef } from '../DrawHistoryModal';
+import PrizePoolModal from '../modals/PrizePoolModal';
+import DrawModal from '../modals/DrawModal';
+import DrawHistoryModal, { type DrawHisoryModalRef } from '../modals/DrawHistoryModal';
 import DrawAni from '../DrawAni';
-import S1TicketModal from '../S1TicketModal';
+import S1TicketModal from '../modals/S1TicketModal';
 import { sleep } from '@/utils/common';
-import EndedModal from '../EndedModal';
+import EndedModal from '../modals/EndedModal';
 
 interface Props {
   ended: boolean;

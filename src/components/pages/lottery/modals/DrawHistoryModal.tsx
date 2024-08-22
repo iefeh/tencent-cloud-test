@@ -13,10 +13,10 @@ import useBScroll from '@/hooks/useBScroll';
 import { type DebouncedFunc, throttle } from 'lodash';
 import { queryDrawHistoryAPI } from '@/http/services/lottery';
 import dayjs from 'dayjs';
-import RewardText from './RewardText';
-import CirclePagination from '../common/CirclePagination';
+import RewardText from '../RewardText';
+import CirclePagination from '@/components/common/CirclePagination';
 import CircularLoading from '@/pages/components/common/CircularLoading';
-import EmptyContent from '../common/EmptyContent';
+import EmptyContent from '@/components/common/EmptyContent';
 
 interface Props {
   disclosure: {
