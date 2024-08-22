@@ -1,10 +1,9 @@
-import { badge, cn } from "@nextui-org/react";
-import { title } from "process";
-import { FC, CSSProperties, useEffect } from "react";
+import { cn } from "@nextui-org/react";
+import { FC, CSSProperties, useEffect, useRef } from "react";
 import { isMobile } from 'react-device-detect';
 import BgImageComp from "@/components/common/BgImage"
-import styles from "./index.module.scss";
 import { useState } from "react";
+import CloudItemComp from "./CloudItemComp"
 
 interface Props {
   swiperIndex: number | null;
@@ -18,76 +17,82 @@ const cloudUrls = [
   {
     url: getUrl('cloud_0'),
     classNames: 'right-[16rem] top-[10rem] w-[48rem] aspect-[1532/570]',
+    position: 'rt'
   },
   {
     url: getUrl('cloud_1'),
-    classNames: 'right-[4rem] top-[-1rem] w-[56rem] aspect-[1532/570]'
+    classNames: 'right-[4rem] top-[-1rem] w-[56rem] aspect-[1532/570]',
+    position: 'rt'
   },
   {
     url: getUrl('cloud_2'),
-    classNames: 'right-[18rem] top-[-3rem] w-[38rem] aspect-[1532/570]'
+    classNames: 'right-[18rem] top-[-3rem] w-[38rem] aspect-[1532/570]',
+    position: 'rt'
   },
   {
     url: getUrl('cloud_3'),
     classNames: 'left-0 top-[-3rem] w-[38rem] aspect-[1532/570]',
-    style: { '--translate-x': '-100%', '--translate-y': '-100%' },
+    position: 'lt'
   },
   {
     url: getUrl('cloud_4'),
     classNames: 'left-0 top-[20rem] w-[38rem] aspect-[1532/570]',
-    style: { '--translate-x': '-100%', '--translate-y': '-100%' },
+    position: 'lt'
   },
   {
     url: getUrl('cloud_5'),
     classNames: 'left-[34%] top-[13rem] w-[14rem] aspect-[1532/570]',
+    position: 'lt'
   },
   {
     url: getUrl('cloud_6'),
     classNames: 'left-[46%] top-[10.5rem] w-[14rem] aspect-[1532/570]',
+    position: 'rt'
   },
   {
     url: getUrl('cloud_7'),
     classNames: 'left-[10rem] top-[15rem] w-[30rem] aspect-[1532/570]',
-    style: { '--translate-x': '-100%', '--translate-y': '-100%' },
+    position: 'lt'
   },
   {
     url: getUrl('cloud_8'),
     classNames: 'left-[30rem] top-[38rem] w-[18rem] aspect-[520/234]',
-    style: { '--translate-x': '-100%', '--translate-y': '-100%' },
+    position: 'lb'
   },
   {
     url: getUrl('cloud_9'),
     classNames: 'left-[12rem] top-[10rem] w-[30rem] aspect-[1076/1496]',
-    style: { '--translate-x': '-100%', '--translate-y': '-100%' },
+    position: 'lb'
   },
   {
     url: getUrl('cloud_10'),
-    classNames: 'left-0 bottom-[8rem] w-[55rem] aspect-[1784/1450] z-40',
-    style: { '--translate-x': '-100%', '--translate-y': '100%' },
+    classNames: 'left-0 bottom-[11rem] w-[55rem] aspect-[1784/1450] z-40',
+    position: 'lb'
   },
-  // {
-  //   url: getUrl('cloud_11'),
-  //   classNames: 'left-0 top-[2rem] w-[30rem] aspect-[520/234]',
-  //   style: { '--translate-x': '-100%', '--translate-y': '100%' },
-  // },
+  {
+    url: getUrl('cloud_11'),
+    classNames: 'left-0 top-[1.5rem] w-[20rem] aspect-[652/953]',
+    position: 'lb'
+  },
   {
     url: getUrl('cloud_12'),
     classNames: 'left-[44%] top-[43%] w-[16rem] aspect-[738/196]',
+    position: 'lb'
   },
   {
     url: getUrl('cloud_13'),
     classNames: 'right-0 top-[8rem] w-[28rem] aspect-[1784/1450]',
-    style: { '--translate-x': '100%', '--translate-y': '-100%' },
+    position: 'rb'
   },
   {
     url: getUrl('cloud_14'),
     classNames: 'right-[13rem] bottom-[20rem] w-[56rem] aspect-[1970/928] z-40',
-    style: { '--translate-x': '100%', '--translate-y': '100%' },
+    position: 'rb'
   },
   {
     url: getUrl('cloud_15'),
     classNames: 'right-0 bottom-[14rem] w-[35rem] aspect-[1136/1490] z-[45]',
-    style: { '--translate-x': '100%', '--translate-y': '100%' },
+    position: 'rb'
   },
 ]
 
@@ -129,7 +134,7 @@ const bgBaseUrls = [
   },
   {
     url: getUrl('box'),
-    classNames: 'left-[50%] bottom-[16rem] translate-x-[-50%] w-[34rem] aspect-[1066/554] z-1'
+    classNames: 'left-[50%] bottom-[18rem] translate-x-[-50%] w-[34rem] aspect-[1066/554] z-1'
   },
   {
     url: getUrl('title'),
@@ -163,7 +168,7 @@ const GameTitle: FC<Props> = (props) => {
   if (isMobile) {
     return (
       <div
-        className="pt-[68.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png')] bg-[length:100%_auto] bg-no-repeat text-white"
+        className="pt-[70.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png')] bg-[length:100%_auto] bg-no-repeat text-white"
         style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
       >
         Moonveil Mini Games
@@ -173,7 +178,7 @@ const GameTitle: FC<Props> = (props) => {
 
   return (
     <div
-      className="pt-[68.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
+      className="pt-[73.1875rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
       style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
     >
       {/* 背景基本要素 */}
@@ -192,19 +197,7 @@ const GameTitle: FC<Props> = (props) => {
       {/* 云 */}
       {
         cloudUrls.map((bg, index) => (
-          <BgImageComp
-            key={index}
-            src={bg.url}
-            style={bg.style as CSSProperties}
-            classNames={cn([
-              inAni === null
-                ? ''
-                : inAni
-                  ? styles["ani-out"]
-                  : styles["ani-in"],
-              'z-10',
-              bg.classNames
-            ])} />
+          <CloudItemComp item={bg} key={index} inAni={inAni}></CloudItemComp>
         ))
       }
 
