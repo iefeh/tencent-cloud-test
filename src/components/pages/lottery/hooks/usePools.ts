@@ -12,7 +12,7 @@ export default function usePools() {
   async function queryPool(options: Partial<PageQueryDto & { status?: string }> = {}) {
     setLoading(true);
     const { status, ...pagi } = Object.assign({}, pagination, options);
-    const res = await queryPoolsListAPI({ status, ...pagi });
+    const res = await queryPoolsListAPI({ open_status: status, ...pagi });
     setPools(testPools as Lottery.Pool[]);
     setTotal(+(res.total || 0));
     setPagination(pagi);
