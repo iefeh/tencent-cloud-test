@@ -5,13 +5,14 @@ interface ImageCompProps extends Omit<ImageProps, 'alt' | 'height' | 'width'> {
   alt?: string;
   classNames?: string;
   style?: React.CSSProperties;
+  refEl?: React.RefObject<HTMLDivElement>;
 }
 
 const BgImageComp = (props: ImageCompProps) => {
-  const { classNames, style = {}, ...rest } = props;
+  const { classNames, refEl, style = {}, ...rest } = props;
 
   return (
-    <div style={style} className={cn(['absolute', classNames])}>
+    <div ref={refEl} style={style} className={cn(['absolute', classNames])}>
       <Image
         className="object-contain"
         sizes="100%"
