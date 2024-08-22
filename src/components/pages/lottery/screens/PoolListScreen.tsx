@@ -9,8 +9,12 @@ import PoolCard from '../PoolCard';
 import CirclePagination from '@/components/common/CirclePagination';
 import usePageQuery from '@/hooks/usePageQuery';
 import { queryPoolsListAPI } from '@/http/services/lottery';
+import { useUserContext } from '@/store/User';
+import { observer } from 'mobx-react-lite';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 
 const PoolListScreen: FC = () => {
+  const { userInfo } = useUserContext();
   const tabs = [
     {
       name: '',
@@ -58,6 +62,10 @@ const PoolListScreen: FC = () => {
     queryData();
   }
 
+  useEffect(() => {
+    queryData(true);
+  }, [userInfo])
+
   return (
     <div className="relative w-screen pt-[19.5rem] mb-[6.5625rem] flex flex-col justify-center items-center bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png')] bg-[length:100%_auto] bg-no-repeat z-10">
       <PageDesc
@@ -98,11 +106,12 @@ const PoolListScreen: FC = () => {
                 <span>{tab.label}</span>
               </div>
             }
+            isDisabled={!userInfo}
           />
         ))}
       </Tabs>
 
-      <div className="w-[87.5rem] max-w-full min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
+      {userInfo ? <div className="w-[87.5rem] max-w-full min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
         <div className="w-full grid grid-cols-3 gap-x-6 gap-y-8">
           {pools.length > 0 ? pools.map((pool, index) => <PoolCard key={index} item={pool} />) : <EmptyContent />}
         </div>
@@ -116,9 +125,12 @@ const PoolListScreen: FC = () => {
         />
 
         {loading && <CircularLoading className="z-[1000]" />}
-      </div>
+      </div> : 
+        <div className="w-[87.5rem] min-h-[12.5rem] flex flex-col justify-center items-center mt-10">
+          <LGButton label='Please sign-in to continue' actived needAuth />
+        </div>}
     </div>
   );
 };
 
-export default PoolListScreen;
+export default observer(PoolListScreen);
