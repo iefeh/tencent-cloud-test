@@ -17,13 +17,13 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
   const itemRef = useRef<HTMLDivElement>(null)
   const countRef = useRef<number>(1)
 
-  const getStepValue = () => {
+  const getStepValue = (top: number = 1) => {
     if (!itemRef.current) return
 
-    const totalHeight = document.body.clientHeight + itemRef.current?.clientHeight - 200;
+    const totalHeight = document.body.clientHeight + top * itemRef.current?.clientHeight;
     const totalWidth = itemRef.current?.clientWidth;
-    const translateY = totalWidth / step * countRef.current
-    const translateX = totalHeight / step * countRef.current
+    const translateY = totalHeight / step * countRef.current
+    const translateX = totalWidth / step * countRef.current
 
     return {
       totalHeight,
@@ -34,34 +34,34 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
   }
 
   const aniOut = () => {
-
     if (!itemRef.current) return
 
-    const bottomDirection = item.position === 'lb' ? -1 : 1
-    // const topDirection = item.position === 'rt' ? 1 : -1
+    let bottomDirection = 1;
+    let topDirection = 1;
+    ['lb', 'lt'].includes(item.position) && (bottomDirection = -1);
+    ['lt', 'rt'].includes(item.position) && (topDirection = -1);
 
-    let { totalHeight, totalWidth, translateY, translateX } = getStepValue() || {}
-
+    let { totalHeight, totalWidth, translateY, translateX } = getStepValue(topDirection) || {}
     if (!totalHeight || !totalWidth || !translateY || !translateX) return
 
     const setFinalState = () => {
       translateY = totalHeight
       translateX = totalWidth
-      countRef.current = Math.floor(step)
+      countRef.current = Math.ceil(step)
     }
 
     if (translateY >= totalHeight) setFinalState()
 
     itemRef.current.setAttribute(
       "style", `
-        transform: translate(${bottomDirection * translateY}px, ${translateX}px);
+        transform: translate(${bottomDirection * translateX}px, ${translateY}px);
         opacity: ${1 - (1 / step) * countRef.current};
       `
     );
 
     if (countRef.current <= step) {
       countRef.current += 1
-      requestAnimationFrame(() => aniOut())
+      requestAnimationFrame(aniOut)
     } else {
       setFinalState()
     }
@@ -70,11 +70,13 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
   const aniIn = () => {
     if (!itemRef.current) return
 
-    let { totalHeight, totalWidth, translateY, translateX } = getStepValue() || {}
-    console.log("aniIn", totalHeight, totalWidth, translateY, translateX);
+    let bottomDirection = 1;
+    let topDirection = 1;
+    ['lb', 'lt'].includes(item.position) && (bottomDirection = -1);
+    ['lt', 'rt'].includes(item.position) && (topDirection = -1);
 
+    let { totalHeight, totalWidth, translateY, translateX } = getStepValue(topDirection) || {}
     if (!totalHeight || !totalWidth || !translateY || !translateX) return
-
 
     let opacityVal = step * countRef.current
 
@@ -85,21 +87,19 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
       countRef.current = 1
     }
 
-    const min = Math.min(translateX, translateY)
-    const bottomDirection = item.position === 'lb' ? -1 : 1
-
-    if (min <= 0) setFinalState()
+    if (translateY < 0) setFinalState()
 
     itemRef.current.setAttribute(
       "style", `
         transform: translate(${bottomDirection * translateX}px, ${translateY}px);
         opacity: ${opacityVal};
-    `
+      `
     );
 
     if (countRef.current > 1) {
       countRef.current -= 1
-      requestAnimationFrame(() => aniIn())
+
+      requestAnimationFrame(aniIn)
     } else {
       setFinalState()
     }

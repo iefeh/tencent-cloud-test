@@ -72,7 +72,7 @@ const cloudUrls = [
   {
     url: getUrl('cloud_11'),
     classNames: 'left-0 top-[1.5rem] w-[20rem] aspect-[652/953]',
-    position: 'lb'
+    position: 'lt'
   },
   {
     url: getUrl('cloud_12'),
@@ -82,7 +82,7 @@ const cloudUrls = [
   {
     url: getUrl('cloud_13'),
     classNames: 'right-0 top-[8rem] w-[28rem] aspect-[1784/1450]',
-    position: 'rb'
+    position: 'rt'
   },
   {
     url: getUrl('cloud_14'),
@@ -134,7 +134,7 @@ const bgBaseUrls = [
   },
   {
     url: getUrl('box'),
-    classNames: 'left-[50%] bottom-[18rem] translate-x-[-50%] w-[34rem] aspect-[1066/554] z-1'
+    classNames: 'left-[50%] bottom-[16rem] translate-x-[-50%] w-[34rem] aspect-[1066/554] z-1'
   },
   {
     url: getUrl('title'),
@@ -145,6 +145,7 @@ const bgBaseUrls = [
     classNames: 'left-[38.4rem] top-[23rem] w-[58rem] h-[6rem]'
   },
 ]
+
 const titleIndex = 0
 
 const GameTitle: FC<Props> = (props) => {
