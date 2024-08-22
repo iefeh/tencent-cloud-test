@@ -1,12 +1,12 @@
-import { LotteryBorders, LotteryStatusConfig, RewardQuality } from '@/constant/lottery';
+import { LotteryBorders, LotteryStatus, LotteryStatusConfig, RewardQuality } from '@/constant/lottery';
 import BattlePass from './BattlePass';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Lottery } from '@/types/lottery';
 import Image from 'next/image';
-import Link from 'next/link';
 import { FC } from 'react';
 import dayjs from 'dayjs';
 import Duration from 'dayjs/plugin/duration';
+import Link from '@/components/link';
 
 dayjs.extend(Duration);
 
@@ -146,8 +146,12 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
       <div className="flex justify-between items-center mt-16">
         <BattlePass item={item} />
 
-        <Link href={`/lottery/${item?.lottery_pool_id}`} target="_blank">
-          <LGButton className="w-[8.75rem]" label="Play" />
+        <Link href={item && item.open_status === LotteryStatus.IN_PROGRESS ? `/lottery/${item?.lottery_pool_id}` : ''}>
+          <LGButton
+            className="w-[8.75rem]"
+            label="Play"
+            disabled={item?.open_status !== LotteryStatus.IN_PROGRESS || !item?.user_meet_requirement}
+          />
         </Link>
       </div>
     </div>
