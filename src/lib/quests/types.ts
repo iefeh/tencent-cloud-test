@@ -86,12 +86,16 @@ export enum QuestRewardType {
 }
 
 export type TokenReward = {
-  // 奖励的token所在的链
-  chain_id: string;
-  // 奖励的token的合约地址，0地址代表奖励原生代币
-  token_address: string;
-  // 奖励的目标群体白名单id
-  whitelist_id: string;
+  // 奖励的token id
+  token_id: string;
+  // 是否自动抽取
+  auto_raffle: boolean;
+  // 抽取人数
+  auto_raffle_count: number;
+  // 奖励代币数量
+  token_amount_raw: number;
+  // 格式化奖励代币数量
+  token_amount_formatted: string;
   // 预计奖励的抽奖时间
   estimated_raffle_time: number;
   // 实际抽奖时间
