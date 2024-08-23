@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import EmptyContent from '../common/EmptyContent';
+import EmptyContent from '@/components/common/EmptyContent';
 import { createPortal } from 'react-dom';
 
 

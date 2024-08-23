@@ -4,7 +4,7 @@ import { Lottery } from '@/types/lottery';
 import { cn, useDisclosure } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC, useState } from 'react';
-import BadgeModal from '../profile/badges/components/BadgeModal';
+import BadgeModal from '@/components/profile/badges/components/BadgeModal';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 
@@ -13,7 +13,7 @@ interface Props extends ClassNameProps {
   milestone: Lottery.MilestoneDTO | null;
 }
 
-const BadgeMilestone: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, milestone, onUpdate }) => {
+const BadgeMilestone: FC<Props> = ({ className, milestone, onUpdate }) => {
   const currentDraws = milestone?.total_draw_amount || 0;
   const levels = BadgeIcons.map((options, index) => {
     const { requirements, image_url, icon_url } = milestone?.luckyDrawBadge?.series?.[index] || {};

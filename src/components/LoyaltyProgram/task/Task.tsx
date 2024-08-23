@@ -121,7 +121,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         </div>
 
         <div className="footer relative">
-          <div className='flex flex-wrap gap-x-4 gap-y-2'>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <div className="flex items-center">
               <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
 
@@ -149,7 +149,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
             )}
           </div>
 
-          {task.verified && hasTokenReward ? (
+          {task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time ? (
             <>
               <LGButton
                 className="mt-5"

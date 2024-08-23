@@ -152,7 +152,7 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
             )}
           </div>
 
-          {task.verified && hasTokenReward ? (
+          {task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time ? (
             <>
               <LGButton
                 className="mt-5"

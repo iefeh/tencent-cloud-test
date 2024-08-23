@@ -4,8 +4,7 @@ import GameCollection from '@/components/pages/minigames/home/GameTabs/GameColle
 import CollectionWarpper from "@/components/pages/minigames/home/GameTabs/CollectionWarpper"
 import GameTitle from '@/components/pages/minigames/home/GameTabs/GameTitle';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore from 'swiper';
-import { Mousewheel } from 'swiper/modules';
+import { Mousewheel, FreeMode } from 'swiper/modules';
 import Head from 'next/head';
 import { FC, useState, useRef, useEffect } from 'react';
 
@@ -15,35 +14,6 @@ import 'swiper/css';
 const MiniGamesPage: FC & BasePage = () => {
   const [selectedKey, setSelectedKey] = useState('');
   const [swiperIndex, setSwiperIndex] = useState<number | null>(null);
-  const [animation, setAnimation] = useState(false)
-
-  const swiperRef = useRef<SwiperCore | null>(null);
-
-  useEffect(() => {
-    document.addEventListener('wheel', (event) => {
-      if (animation) return
-
-      if (event.deltaY > 0) {
-        setAnimation(true)
-
-        setTimeout(() => {
-          if (swiperRef.current) {
-            if (event.deltaY > 0) {
-              swiperRef.current.allowSlideNext = true;
-              swiperRef.current.slideNext();
-            }
-          }
-        }, 1000)
-        setSwiperIndex(1)
-      }
-    })
-  }, [])
-
-  useEffect(() => {
-    if (swiperIndex === 0) {
-      swiperRef.current && (swiperRef.current.allowSlideNext = false);
-    }
-  }, [swiperIndex])
 
   return (
     <section className="relative flex flex-col items-center font-jcyt6 w-screen text-brown">
@@ -63,51 +33,38 @@ const MiniGamesPage: FC & BasePage = () => {
       </Head>
 
       <Swiper
-        className="w-full h-[110vh]"
-        modules={[Mousewheel]}
-        mousewheel={{
-          sensitivity: 1,
-          releaseOnEdges: true,
-        }}
+        className="w-full h-[110vh] relative z-20"
+        modules={[Mousewheel, FreeMode]}
+        mousewheel={true}
         direction="vertical"
-        speed={3000}
+        speed={1300}
+        scrollbar={{ draggable: true }}
         slidesPerView={1}
         spaceBetween={0}
-        allowSlideNext={false}
         onSlideChangeTransitionStart={(swiper) => {
-          setAnimation(true)
           setSwiperIndex(swiper.realIndex);
         }}
         onSlideChangeTransitionEnd={(swiper) => {
-          setAnimation(false)
-          swiper.allowSlideNext = true;
-
-          setTimeout(() => {
-            swiper.allowSlideNext = false;
-          }, 100);
-
           setSwiperIndex(swiper.realIndex);
-          setAnimation(false)
         }}
-        onWheel={() => { debugger }}
-        onSwiper={(swiper) => (swiperRef.current = swiper)}
       >
-        <SwiperSlide className='releative !p-0 h-[100vh]' key='title1'>
+        <SwiperSlide className='releative !p-0 h-[100vh] z-20' key='title1'>
           <GameTitle swiperIndex={swiperIndex} />
           <FloatTips />
+        </SwiperSlide>
+
+        <SwiperSlide className='releative !p-0 mt-[14rem] h-[90vh] z-10' key='tabs2'>
           <GameTabs
-            className="absolute z-20 top-[73.125rem] left-1/2 -translate-x-1/2"
+            className="absolute z-20 top-[-2rem] left-1/2 -translate-x-1/2"
             value={selectedKey}
             onSelectionChange={setSelectedKey}
           />
-        </SwiperSlide>
-
-        <SwiperSlide className='releative !p-0 mt-[14rem] h-[120vh]' key='tabs2'>
           <CollectionWarpper>
             <GameCollection type={selectedKey} />
           </CollectionWarpper>
         </SwiperSlide>
       </Swiper>
+
     </section >
   );
 };

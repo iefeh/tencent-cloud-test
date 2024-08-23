@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { promiseSleep } from '@/lib/common/sleep';
 import logger from '@/lib/logger/winstonLogger';
-import { getLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
+import { getActiveLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
 import { LotteryRewardType } from '@/lib/lottery/types';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
@@ -60,11 +60,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const { lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost } = req.body;
   const validDrawCount = [1, 3, 5]; 
   if (!lottery_pool_id || !draw_count || !validDrawCount.includes(draw_count) || lottery_ticket_cost < 0 || mb_cost < 0) {
-    return res.json(response.invalidParams({verified: false, message: "Invalid params."}));
+    return res.json(response.invalidParams({verified: false, message: "Required parameter is missing."}));
   }
   const userId = String(req.userId);
   const lotteryPoolId = String(lottery_pool_id);
-  const lotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  const lotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   if (!lotteryPool) {
     return res.json(response.invalidParams({verified: false, message: "The lottery pool is not opened or has been closed."}));
   }
@@ -111,7 +111,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
   const userLotteryPool = await UserLotteryPool.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, deleted_time: null });
   const freeLotteryTicketCost = drawCount - lotteryTicketCost - mbCost/25;
   // 重新查询保证查到的是最新的奖池状态
-  const lotteryPool: ILotteryPool = await getLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  const lotteryPool: ILotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   // 1-3抽和4-10抽奖池和中奖几率不同所以要分别计算
   let firstThreeDrawCumulativeProbabilities = 0;
   let nextSixDrawCumulativeProbabilities = 0;

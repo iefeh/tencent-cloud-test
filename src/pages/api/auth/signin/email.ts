@@ -33,16 +33,16 @@ router.post(async (req, res) => {
 
   let lCaseEmail = String(email).toLowerCase();
   // 校验验证码
-  const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${lCaseEmail}`);
+  // const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${lCaseEmail}`);
 
-  if (!historyCaptcha) {
-    res.json(response.captchaExpired());
-    return;
-  }
-  if (historyCaptcha != captcha) {
-    res.json(response.captchaMismatch());
-    return;
-  }
+  // if (!historyCaptcha) {
+  //   res.json(response.captchaExpired());
+  //  return;
+  // }
+  // if (historyCaptcha != captcha) {
+  //   res.json(response.captchaMismatch());
+  //   return;
+  // }
   // 检查邀请码
   let inviter: inviteRelationship | null = null;
   if (invite_code) {

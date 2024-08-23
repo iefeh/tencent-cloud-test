@@ -20,6 +20,9 @@ import { BattlePassRequirementType } from '@/lib/models/BattlepassPremiumRequire
 import { generateBattlepass } from '../battlepass/participate';
 import { getCurrentBattleSeason } from '@/lib/battlepass/battlepass';
 import { resolveRuntimeExtensions } from '@aws-sdk/client-ses/dist-types/runtimeExtensions';
+import GameTicket from '@/lib/models/GameTicket';
+import { ethers } from 'ethers';
+import MiniGameDetail from '@/lib/models/MiniGameDetail';
 
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -179,6 +182,9 @@ async function redeemCDK(cdkInfo: any, userId: string): Promise<any> {
         case CDKRewardType.PremiumPass:
           await redeemPremiumPassReward(userId, session, reward);
           break;
+        case CDKRewardType.GameTicket:
+          await redeemGameTicketReward(userId, cdkInfo.cdk, session, reward);
+          break;
       }
     }
 
@@ -296,6 +302,30 @@ async function redeemPremiumPassReward(userId: string, session: any, reward: any
   }
 
   await UserBattlePassSeasons.updateOne({ user_id: userId, battlepass_season_id: reward.season_id }, { premium_type: BattlePassRequirementType.WhiteList, premium_source: 'Special Event Whitelist', is_premium: true, updated_time: Date.now() }, { session: session });
+}
+
+async function redeemGameTicketReward(userId: string, cdk: string, session: any, reward: any) {
+  // 获取过期时间
+  const client = await MiniGameDetail.findOne({ client_id: reward.game_id });
+
+  let expiration: number;
+  if (client.ticket_expired_at) {
+    expiration = client.ticket_expired_at;
+  } else {
+    expiration = 10 * Date.now();
+  }
+  let tickets: any[] = [];
+  for (let i = 0; i < reward.amount; i++) {
+    const ticket = new GameTicket();
+    ticket.pass_id = ethers.id(`${userId}-${cdk}-${i}`);
+    ticket.user_id = userId;
+    ticket.game_id = reward.game_id;
+    ticket.created_at = Date.now();
+    ticket.expired_at = expiration;
+    tickets.push(ticket);
+  }
+  
+  await GameTicket.insertMany(tickets, { session: session });
 }
 
 // this will run if none of the above matches

@@ -134,7 +134,7 @@ async function enrichRanking(userId: string | undefined, detail: any) {
           // 查询用户排行信息
           let userRank: any = '-';
           if (userId) {
-            const userRankInfo = await UserScoreRank.findOne({ leaderboard_id: lbconfig, uid: userId });
+            const userRankInfo = await UserScoreRank.findOne({ leaderboard_id: lbconfig.lbid, uid: userId });
             if (userRankInfo) {
               userRank = await UserScoreRank.count({ leaderboard_id: lbconfig.lbid, sum_score: { $gt: userRankInfo.sum_score } });
               userRank++;
