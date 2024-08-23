@@ -179,7 +179,7 @@ const GameTitle: FC<Props> = (props) => {
 
   return (
     <div
-      className="pt-[70.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
+      className="pt-[73.1875rem] pb-[1.5rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
       style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
     >
       {/* 背景基本要素 */}

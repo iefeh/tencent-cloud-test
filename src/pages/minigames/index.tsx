@@ -51,14 +51,14 @@ const MiniGamesPage: FC & BasePage = () => {
         <SwiperSlide className='releative !p-0 z-20 !h-auto' key='title1'>
           <GameTitle swiperIndex={swiperIndex} />
           <FloatTips />
-          <GameTabs
-            className="absolute z-20 left-1/2 -translate-x-1/2 -translate-y-[120%]"
-            value={selectedKey}
-            onSelectionChange={setSelectedKey}
-          />
         </SwiperSlide>
 
         <SwiperSlide className='releative !p-0 !h-auto mt-[1.5rem] z-10' key='tabs2'>
+          <GameTabs
+            className="absolute z-20 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            value={selectedKey}
+            onSelectionChange={setSelectedKey}
+          />
           <CollectionWarpper>
             <GameCollection type={selectedKey} />
           </CollectionWarpper>
