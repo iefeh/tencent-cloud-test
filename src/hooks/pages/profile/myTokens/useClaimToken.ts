@@ -32,10 +32,11 @@ export default function useClaimToken(pramas: ClaimTokenParams) {
       const { hash } = res || {};
 
       if (hash) {
-        await postTokenTxAPI({ tx_hash: hash, chain_id: chain_id });
+        const postRes = await postTokenTxAPI({ tx_hash: hash, chain_id: chain_id });
+        if (!postRes) {
+          toast.success('You have successfully claimed rewards!');
+        }
       }
-
-      toast.success('You have successfully claimed rewards!');
 
       await updateList();
     } catch (error) {
