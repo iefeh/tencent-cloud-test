@@ -1,6 +1,7 @@
 import StrokeButton from '@/components/common/buttons/StrokeButton';
 import { GameStatus } from '@/constant/minigames';
 import type { MiniGames } from '@/types/minigames';
+import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -29,7 +30,7 @@ const GameCard: FC<Props> = ({ item: { ticket, img_url, client_id, status, icon_
   const canPlay = status === GameStatus.IN_PROGRESS;
 
   return (
-    <div className="px-6 py-7 bg-[#F7E9CC] border-2 border-basic-gray rounded-base">
+    <div className="px-6 py-7 transition-colors bg-[#F7E9CC] group hover:bg-white border-2 border-basic-gray rounded-base">
       <div className="relative w-[25rem] h-[11.25rem] rounded-base overflow-hidden">
         <Image className="object-cover" src={img_url} alt="" fill sizes="100%" unoptimized priority />
 
@@ -57,7 +58,12 @@ const GameCard: FC<Props> = ({ item: { ticket, img_url, client_id, status, icon_
 
       <div className="mt-8 flex justify-between items-center">
         <Link href={canPlay ? `/minigames/details/${client_id}` : 'javascript:;'} target={canPlay ? '_blank' : '_self'}>
-          <StrokeButton className="w-[12.75rem]" strokeType="yellow" strokeText="Play Now" isDisabled={!canPlay} />
+          <StrokeButton
+            className="w-[12.75rem] group-hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]"
+            strokeType="yellow"
+            strokeText="Play Now"
+            isDisabled={!canPlay}
+          />
         </Link>
 
         <StrokeButton
