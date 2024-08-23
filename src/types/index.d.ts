@@ -24,3 +24,5 @@ interface DisclosureProps {
 declare interface UpdateForwardRenderFunction {
   update: () => void;
 }
+
+type Override<P, S> = Omit<P, keyof S> & S;
