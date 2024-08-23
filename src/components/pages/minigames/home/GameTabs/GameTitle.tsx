@@ -170,17 +170,18 @@ const GameTitle: FC<Props> = (props) => {
     return (
       <div
         className="pt-[70.1875rem] pb-[5.0625rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png')] bg-[length:100%_auto] bg-no-repeat text-white"
-        style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
       >
-        Moonveil Mini Games
       </div>
     )
   }
 
   return (
     <div
-      className="pt-[73.1875rem] pb-[1.5rem] stroke-content relative text-5xl text-center z-10 w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png')] bg-[length:100%_auto] bg-no-repeat text-white"
-      style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
+      className="pt-[73.1875rem] pb-[1.5rem] relative text-center z-10 w-full. bg-[length:100%_auto] "
+      style={{
+        backgroundImage: "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png'), url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_base.png')",
+        backgroundRepeat: "no-repeat, repeat",
+      } as CSSProperties}
     >
       {/* 背景基本要素 */}
       {
@@ -201,8 +202,6 @@ const GameTitle: FC<Props> = (props) => {
           <CloudItemComp item={bg} key={index} inAni={inAni}></CloudItemComp>
         ))
       }
-
-      Moonveil Mini Games
     </div >
   )
 }

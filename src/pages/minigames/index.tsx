@@ -6,7 +6,7 @@ import GameTitle from '@/components/pages/minigames/home/GameTabs/GameTitle';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel, FreeMode } from 'swiper/modules';
 import Head from 'next/head';
-import { FC, useState, useRef, useEffect } from 'react';
+import { FC, useState, CSSProperties } from 'react';
 
 import 'swiper/css';
 
@@ -54,12 +54,18 @@ const MiniGamesPage: FC & BasePage = () => {
         </SwiperSlide>
 
         <SwiperSlide className='releative !p-0 !h-auto mt-[1.5rem] z-10' key='tabs2'>
-          <GameTabs
-            className="absolute z-20 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            value={selectedKey}
-            onSelectionChange={setSelectedKey}
-          />
           <CollectionWarpper>
+            <div
+              className='stroke-content text-5xl  text-white'
+              style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
+            >
+              Moonveil Mini Games
+            </div>
+            <GameTabs
+              className="transform-[translateX(calc(50vw - 50%))] my-[1rem]"
+              value={selectedKey}
+              onSelectionChange={setSelectedKey}
+            />
             <GameCollection type={selectedKey} />
           </CollectionWarpper>
         </SwiperSlide>
