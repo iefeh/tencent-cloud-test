@@ -6,7 +6,7 @@ import Image from 'next/image';
 const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   const rules = [
     {
-      content: 'Ticket Purchase InstructionsTicket Purchase Process:',
+      content: 'Ticket Purchase Instructions',
       items: [
         'Visit our mini games page.',
         'Choose the game you wish to participate in.',
