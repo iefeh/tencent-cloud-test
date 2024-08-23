@@ -165,11 +165,16 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
       {isNeedConnect && (
         <LGButton
           className={cn([
-            'uppercase !border-solid border-2 border-[#BB683D] !bg-gradient-to-t from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 !text-white group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
+            'uppercase !border-solid border-2 border-[#BB683D] from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 text-white',
+            !(achieved || verified || isExpired) &&
+              'bg-gradient-to-t group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
             classNames?.connectBtn,
           ])}
           prefix={
-            <div className="stroke-content" style={{ '--stroke-color': '#7A0A08' } as CSSProperties}>
+            <div
+              className="stroke-content"
+              style={{ '--stroke-color': achieved || verified || isExpired ? '#999' : '#7A0A08' } as CSSProperties}
+            >
               {getConnectLabel(task)}
             </div>
           }
@@ -184,7 +189,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
 
       <LGButton
         className={cn([
-          'ml-2 uppercase !border-solid border-2 border-brown !bg-none bg-transparent !text-brown h-9',
+          'ml-2 uppercase !border-solid border-2 border-brown !bg-none bg-transparent text-brown hover:text-brown h-9',
           !verifiable && 'grayscale opacity-50',
           classNames?.verifyBtn,
         ])}
