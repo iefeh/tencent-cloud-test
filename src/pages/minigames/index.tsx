@@ -39,7 +39,7 @@ const MiniGamesPage: FC & BasePage = () => {
         direction="vertical"
         speed={1300}
         scrollbar={{ draggable: true }}
-        slidesPerView={1}
+        slidesPerView="auto"
         spaceBetween={0}
         onSlideChangeTransitionStart={(swiper) => {
           setSwiperIndex(swiper.realIndex);
@@ -48,17 +48,17 @@ const MiniGamesPage: FC & BasePage = () => {
           setSwiperIndex(swiper.realIndex);
         }}
       >
-        <SwiperSlide className='releative !p-0 h-[100vh] z-20' key='title1'>
+        <SwiperSlide className='releative !p-0 z-20' key='title1'>
           <GameTitle swiperIndex={swiperIndex} />
           <FloatTips />
-        </SwiperSlide>
-
-        <SwiperSlide className='releative !p-0 mt-[14rem] h-[90vh] z-10' key='tabs2'>
           <GameTabs
-            className="absolute z-20 top-[-2rem] left-1/2 -translate-x-1/2"
+            className="absolute z-20 left-1/2 -translate-x-1/2 -translate-y-[120%]"
             value={selectedKey}
             onSelectionChange={setSelectedKey}
           />
+        </SwiperSlide>
+
+        <SwiperSlide className='releative !p-0 !h-auto mt-[14rem] z-10' key='tabs2'>
           <CollectionWarpper>
             <GameCollection type={selectedKey} />
           </CollectionWarpper>
