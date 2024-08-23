@@ -20,7 +20,6 @@ import { genLoginJWT } from '@/lib/particle.network/auth';
 import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
 import * as Sentry from '@sentry/nextjs';
-import { incrVirtualKOLMetric } from '@/lib/models/VirtualKOLMetrics';
 
 export interface ValidationResult {
   passed: boolean;
@@ -219,22 +218,15 @@ async function doUserLogin(
           created_time: Date.now(),
         });
         await invite.save(opts);
-        if (authPayload.virtual) {
-          // 虚拟邀请者添加邀请数
-          await incrVirtualKOLMetric(authPayload.inviter_id, Metric.TotalInvitee, 1, session);
-        } else {
+        if (!authPayload.virtual) {
           // 当前用户添加被邀请奖励
           await saveNewInviteeRegistrationMoonBeamAudit(newUser.user_id, authPayload.inviter_id, session);
-          // 直接或间接邀请者添加邀请数
-          await incrUserMetric(authPayload.inviter_id, Metric.TotalInvitee, 1, session);
         }
 
+        // 直接或间接邀请者添加邀请数
+        await incrUserMetric(authPayload.inviter_id, Metric.TotalInvitee, 1, session);
         if (authPayload.indirect_inviter_id) {
-          if (authPayload.indirect_virtual) {
-            await incrVirtualKOLMetric(authPayload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
-          } else {
-            await incrUserMetric(authPayload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
-          }
+          await incrUserMetric(authPayload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
         }
       }
     });

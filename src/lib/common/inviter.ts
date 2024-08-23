@@ -15,7 +15,6 @@ export async function getInviteRelationshipFromDirectInviteUser(userId: string):
     direct: directInviter.user_id,
     indirect: indirectInviter ? indirectInviter.user_id : undefined,
     virtual: virtual,
-    indirectVirtual: indirectInviter ? indirectInviter.virtual : false,
   };
 }
 
@@ -35,7 +34,6 @@ export async function getInviteRelationshipFromDirectInviteCode(
     direct: directInviter.user_id,
     indirect: indirectInviter ? indirectInviter.user_id : undefined,
     virtual: virtual,
-    indirectVirtual: indirectInviter ? indirectInviter.virtual : false,
   };
 }
 
@@ -46,6 +44,4 @@ export type inviteRelationship = {
   indirect: string;
   // 是虚拟邀请人
   virtual?: boolean;
-  // 间接邀请人是虚拟邀请人
-  indirectVirtual?: boolean;
 };

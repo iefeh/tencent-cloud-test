@@ -16,7 +16,6 @@ import {
 } from '@/lib/models/UserMoonBeamAudit';
 import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
 import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from '@/lib/common/inviter';
-import { incrVirtualKOLMetric } from '@/lib/models/VirtualKOLMetrics';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -120,21 +119,15 @@ async function doUserLogin(res: any, inviter: inviteRelationship | null, user: I
           created_time: Date.now(),
         });
         await invite.save(opts);
-        if (inviter.virtual) {
-          // 添加虚拟用户邀请数
-          await incrVirtualKOLMetric(inviter.direct, Metric.TotalInvitee, 1, session);
-        } else {
+        if (!inviter.virtual) {
           // 当前用户添加被邀请奖励
           await saveNewInviteeRegistrationMoonBeamAudit(user.user_id, inviter.direct, session);
-          // 直接或间接邀请者添加邀请数
-          await incrUserMetric(inviter.direct, Metric.TotalInvitee, 1, session);
         }
+
+        // 直接或间接邀请者添加邀请数
+        await incrUserMetric(inviter.direct, Metric.TotalInvitee, 1, session);
         if (inviter.indirect) {
-          if (inviter.indirectVirtual) {
-            await incrVirtualKOLMetric(inviter.indirect, Metric.TotalIndirectInvitee, 1, session);
-          } else {
-            await incrUserMetric(inviter.indirect, Metric.TotalIndirectInvitee, 1, session);
-          }
+          await incrUserMetric(inviter.indirect, Metric.TotalIndirectInvitee, 1, session);
         }
       }
     });

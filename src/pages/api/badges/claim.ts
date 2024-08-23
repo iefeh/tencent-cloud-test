@@ -16,7 +16,6 @@ import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { getInviteRelationshipFromDirectInviteUser, inviteRelationship } from '@/lib/common/inviter';
 import Mint, { MintSourceType, MintStatus } from '@/lib/models/Mint';
 import { keccak256 } from 'js-sha3';
-import { incrVirtualKOLMetric } from '@/lib/models/VirtualKOLMetrics';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -106,20 +105,14 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
       );
 
       if (inviter) {
-        if (inviter.virtual) {
-          // 虚拟KOL邀请人不添加邀请奖励
-          await incrVirtualKOLMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);
-        } else {
+        await incrUserMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);
+        if (!inviter.virtual) {
           // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
-          await incrUserMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);
           await saveInviterMoonBeamReward(userId, inviter.direct, inviter.indirect, session);
         }
+
         if (inviter.indirect) {
-          if (inviter.indirectVirtual) {
-            await incrVirtualKOLMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
-          } else {
-            await incrUserMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
-          }
+          await incrUserMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
         }
       }
       if (mint) {

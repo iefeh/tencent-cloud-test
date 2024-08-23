@@ -77,6 +77,4 @@ export interface SignupPayload {
   invite?: any;
   // 非直接邀请信息
   indirect_inviter_id?: string;
-  // 是否是间接虚拟邀请人
-  indirect_virtual?: boolean;
 }
