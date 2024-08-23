@@ -48,7 +48,7 @@ const MiniGamesPage: FC & BasePage = () => {
           setSwiperIndex(swiper.realIndex);
         }}
       >
-        <SwiperSlide className='releative !p-0 z-20' key='title1'>
+        <SwiperSlide className='releative !p-0 z-20 !h-auto' key='title1'>
           <GameTitle swiperIndex={swiperIndex} />
           <FloatTips />
           <GameTabs
@@ -58,7 +58,7 @@ const MiniGamesPage: FC & BasePage = () => {
           />
         </SwiperSlide>
 
-        <SwiperSlide className='releative !p-0 !h-auto mt-[14rem] z-10' key='tabs2'>
+        <SwiperSlide className='releative !p-0 !h-auto mt-[1.5rem] z-10' key='tabs2'>
           <CollectionWarpper>
             <GameCollection type={selectedKey} />
           </CollectionWarpper>
