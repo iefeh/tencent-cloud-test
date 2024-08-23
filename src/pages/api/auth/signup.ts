@@ -24,7 +24,6 @@ import {
   saveNewInviteeRegistrationMoonBeamAudit,
 } from '@/lib/models/UserMoonBeamAudit';
 import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
-import { incrVirtualKOLMetric } from '@/lib/models/VirtualKOLMetrics';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -76,19 +75,14 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
       if (payload.invite) {
         const invite = new UserInvite(payload.invite);
         await invite.save(opts);
-        if (payload.invite.virtual) {
-          await incrVirtualKOLMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
-        } else {
+        if (!payload.invite.virtual) {
           await saveNewInviteeRegistrationMoonBeamAudit(payload.user.user_id, payload.invite.user_id, session);
-          await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
         }
 
+        await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
+
         if (payload.indirect_inviter_id) {
-          if (payload.indirect_virtual) {
-            await incrVirtualKOLMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
-          } else {
-            await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
-          }
+          await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
         }
       }
     });

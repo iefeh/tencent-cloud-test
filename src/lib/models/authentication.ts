@@ -15,8 +15,6 @@ export interface AuthorizationPayload {
   indirect_inviter_id?: string;
   // 是否为虚拟邀请人
   virtual?: boolean;
-  // 非直接邀请人是否为虚拟邀请人
-  indirect_virtual?: boolean;
   // 注册模式
   signup_mode?: string;
 }

@@ -16,7 +16,6 @@ import {
 } from '@/lib/models/UserMoonBeamAudit';
 import { Metric, incrUserMetric } from '@/lib/models/UserMetrics';
 import { getInviteRelationshipFromDirectInviteCode, inviteRelationship } from '@/lib/common/inviter';
-import { incrVirtualKOLMetric } from '@/lib/models/VirtualKOLMetrics';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
@@ -136,12 +135,11 @@ async function createUserAndWallet(address: string, inviter: inviteRelationship 
         created_time: Date.now(),
       });
       await invite.save(opts);
-      if (inviter.virtual) {
-        await incrVirtualKOLMetric(inviter.direct, Metric.TotalInvitee, 1, session);
-      } else {
+      if (!inviter.virtual) {
         await saveNewInviteeRegistrationMoonBeamAudit(user.user_id, inviter.direct, session);
-        await incrUserMetric(inviter.direct, Metric.TotalInvitee, 1, session);
       }
+
+      await incrUserMetric(inviter.direct, Metric.TotalInvitee, 1, session);
     }
   });
   return userWallet;

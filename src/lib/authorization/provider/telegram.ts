@@ -51,7 +51,6 @@ export class TelegramAuthFlow extends AuthFlowBase {
     req.body.inviter_id = checkResult.inviter?.direct;
     req.body.indirect_inviter_id = checkResult.inviter?.indirect;
     req.body.virtual = checkResult.inviter?.virtual;
-    req.body.indirect_virtual = checkResult.inviter?.indirectVirtual;
 
     // 验证算法有问题，先直接返回成功
     let result = { passed: true, authPayload: req.body };

@@ -15,7 +15,6 @@ import { v4 as uuidv4 } from 'uuid';
 import * as Sentry from '@sentry/nextjs';
 import { sendBadgeCheckMessage, sendBadgeCheckMessages } from '@/lib/kafka/client';
 import UserInvite from '@/lib/models/UserInvite';
-import { incrVirtualKOLMetrics } from '@/lib/models/VirtualKOLMetrics';
 
 const Debank = require('debank');
 const sdk = require('api')('@reservoirprotocol/v3.0#j7ej3alr9o3etb');
@@ -225,11 +224,7 @@ export class ConnectWalletQuest extends QuestBase {
           [Metric.TotalInviteeWalletNftUsdValue]: refreshResult.userMetric[Metric.WalletNftUsdValue],
           [Metric.TotalInviteeWalletAssetUsdValue]: refreshResult.userMetric[Metric.WalletAssetUsdValue],
         };
-        if (inviter.virtual) {
-          await incrVirtualKOLMetrics(inviter.user_id, inviterMetrics, session);
-        } else {
-          await incrUserMetrics(inviter.user_id, inviterMetrics, session);
-        }
+        await incrUserMetrics(inviter.user_id, inviterMetrics, session);
       }
     });
     if (result.duplicated) {
@@ -407,4 +402,3 @@ export async function verifyConnectWalletQuest(userId: string, quest: IQuest): P
   const wallet = await queryUserWalletAuthorization(userId);
   return { claimable: !!wallet };
 }
-
