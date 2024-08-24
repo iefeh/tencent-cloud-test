@@ -66,7 +66,12 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                   </p>
 
                   <div className="flex justify-center gap-x-[0.375rem] mt-12">
-                    <StrokeButton className="w-56" strokeType="brown" strokeText="Share to Twitter" onPress={onShare} />
+                    <StrokeButton
+                      className="w-60"
+                      strokeType="brown"
+                      strokeText="Share for Free Tickets"
+                      onPress={onShare}
+                    />
 
                     <StrokeButton
                       className="w-56"

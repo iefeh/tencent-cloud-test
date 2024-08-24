@@ -36,6 +36,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
     },
   });
   const progressStatus = getProgressStatus();
+  const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
 
   function getProgressStatus() {
     const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
@@ -149,12 +150,14 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
             )}
           </div>
 
-          {task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time ? (
+          {(task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time) || isExpired ? (
             <>
               <LGButton
                 className="mt-5"
                 label={
-                  task.user_token_reward?.status === 'claimed'
+                  isExpired && !task.user_token_reward
+                    ? 'Task incomplete, not eligible for the raffle.'
+                    : task.user_token_reward?.status === 'claimed'
                     ? 'Claimed'
                     : task.user_token_reward?.status === 'claiming'
                     ? 'Claiming'

@@ -15,12 +15,12 @@ const TopBanner: FC = () => {
   }, [router.query.id, userInfo]);
 
   return (
-    <div className="w-screen h-screen relative flex flex-col justify-end">
+    <div className="w-screen md:h-screen h-[50vh] relative flex flex-col justify-end">
       {data?.poster?.img_url && (
         <Image className="object-cover" src={data.poster.img_url} alt="" fill sizes="100%" unoptimized />
       )}
 
-      <div className="relative z-0 pl-[16.25rem] mb-9">
+      <div className="relative z-0 lg:pl-[16.25rem] md:pl-40 pl-8 mb-9">
         <div className="text-5xl">{data?.name || '--'}</div>
 
         <div className="flex items-center gap-x-2 mt-[1.125rem]">

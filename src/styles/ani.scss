@@ -155,19 +155,19 @@
 
 @keyframes rockFall {
   0% {
-    transform: translateY(0) rotate(0deg) scale(1);
+    transform: translateY(0) scale(1);
   }
 
   50% {
-    transform: translateY(-1rem) rotate(10deg) scale(1.05);
+    transform: translateY(-1rem) scale(1.02);
   }
 
   100% {
-    transform: translateY(0) rotate(0deg) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
 .ani-rockFall {
   transform-origin: center center;
-  animation: rockFall 4s linear infinite;
+  animation: rockFall 4s ease-in-out infinite;
 }

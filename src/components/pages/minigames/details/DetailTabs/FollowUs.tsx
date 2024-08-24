@@ -31,15 +31,15 @@ const FollowUs: FC = () => {
   ];
 
   return (
-    <div>
+    <div className='px-6 md:px-0'>
       <div className="mt-14 mb-8 w-full flex justify-between items-center">
         <span className="text-3xl leading-none">Follow us</span>
       </div>
 
-      <div className="w-full h-[19.375rem] pt-12 pb-[2.625rem] grid grid-cols-3 bg-[#F7E9CC] text-brown rounded-[1.25rem]">
+      <div className="w-full pt-12 pb-[2.625rem] grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 bg-[#F7E9CC] text-brown rounded-[1.25rem]">
         {medias.map((media, index) => (
           <div
-            className="flex flex-col justify-between items-center border-dashed border-brown pt-3 pb-2 [&+div]:border-l-1"
+            className="flex flex-col justify-between items-center border-dashed border-brown pt-3 pb-2 [&+div]:border-t-1 [&+div]:border-l-0 lg:[&+div]:border-t-0 lg:[&+div]:border-l-1 h-[13.75rem]"
             key={index}
           >
             <Image
