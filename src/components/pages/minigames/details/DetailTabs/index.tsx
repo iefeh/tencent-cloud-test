@@ -82,19 +82,19 @@ const DetailTabs: FC = () => {
       className="w-full min-h-screen bg-[#472E24] bg-[length:100%_auto] bg-repeat-y"
       style={{ backgroundImage: `url('${data?.poster?.bg_img_url}')` }}
     >
-      <div className="w-[87.5rem] mx-auto mt-[3.75rem] pb-[9.875rem] relative">
+      <div className="w-[87.5rem] max-w-full mx-auto mt-[3.75rem] pb-[9.875rem] relative">
         <Tabs
           aria-label="Options"
           color="primary"
           variant="underlined"
           selectedKey={selectedKey}
           classNames={{
-            base: 'w-full',
-            tabList: cn(['gap-16 w-full relative rounded-none p-0', styles.tabList]),
+            base: 'w-full overflow-x-auto',
+            tabList: cn(['gap-16 w-max overflow-x-visible mx-6 relative rounded-none p-0', styles.tabList]),
             cursor: 'w-full h-five bg-yellow-1 rounded-[0.1563rem]',
             tab: 'max-w-fit px-0 h-14 py-0 overflow-visible',
             tabContent: 'text-white text-xl group-data-[selected=true]:text-yellow-1',
-            panel: 'p-0',
+            panel: 'px-6 py-0 md:px-0',
           }}
           onSelectionChange={(key) => setSelectedKey(key.toString())}
         >
