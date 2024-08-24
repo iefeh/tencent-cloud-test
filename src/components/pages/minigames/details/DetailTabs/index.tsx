@@ -9,6 +9,8 @@ import FollowUs from './FollowUs';
 import styles from './index.module.scss';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 interface TabItem {
   name: string;
@@ -22,8 +24,13 @@ const DetailTabs: FC = () => {
   const { data } = useMGDContext();
   const { tasks, ranking, task_category } = data || {};
   const tabs = getTabs();
+  const router = useRouter();
 
   const [selectedKey, setSelectedKey] = useState(tabs[0].name);
+
+  function onBack() {
+    router.replace('/minigames');
+  }
 
   function getTabs() {
     const list: TabItem[] = [
@@ -75,7 +82,7 @@ const DetailTabs: FC = () => {
       className="w-full min-h-screen bg-[#472E24] bg-[length:100%_auto] bg-repeat-y"
       style={{ backgroundImage: `url('${data?.poster?.bg_img_url}')` }}
     >
-      <div className="w-[87.5rem] mx-auto mt-[3.75rem] pb-[9.875rem]">
+      <div className="w-[87.5rem] mx-auto mt-[3.75rem] pb-[9.875rem] relative">
         <Tabs
           aria-label="Options"
           color="primary"
@@ -111,6 +118,22 @@ const DetailTabs: FC = () => {
         </Tabs>
 
         <FollowUs />
+
+        <div
+          className="flex items-center cursor-pointer absolute top-3 -left-12 -translate-x-full border-current border-1 px-3 py-2 rounded-base opacity-80 hover:bg-basic-gray/50"
+          onClick={onBack}
+        >
+          <Image
+            className="w-[1.625rem] h-[1.375rem]"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_arrow_white.png"
+            alt=""
+            width={26}
+            height={22}
+            unoptimized
+          />
+
+          <span className="ml-3 text-2xl">BACK</span>
+        </div>
       </div>
     </div>
   );

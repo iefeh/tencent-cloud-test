@@ -57,9 +57,13 @@ const GameCard: FC<Props> = ({ item: { ticket, img_url, client_id, status, icon_
       </div>
 
       <div className="mt-8 flex justify-between items-center">
-        <Link href={canPlay ? `/minigames/details/${client_id}` : 'javascript:;'} target={canPlay ? '_blank' : '_self'}>
+        <Link href={canPlay ? `/minigames/details/${client_id}` : 'javascript:;'} target="_self">
           <StrokeButton
-            className="w-[12.75rem] group-hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]"
+            className={cn([
+              'w-[12.75rem]',
+              canPlay &&
+                "group-hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]",
+            ])}
             strokeType="yellow"
             strokeText="Play Now"
             isDisabled={!canPlay}
