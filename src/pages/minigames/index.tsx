@@ -1,7 +1,7 @@
 import FloatTips from '@/components/pages/minigames/home/FloatTips';
 import GameTabs from '@/components/pages/minigames/home/GameTabs';
 import GameCollection from '@/components/pages/minigames/home/GameTabs/GameCollection';
-import CollectionWarpper from "@/components/pages/minigames/home/GameTabs/CollectionWarpper"
+import CollectionWarpper from '@/components/pages/minigames/home/GameTabs/CollectionWarpper';
 import GameTitle from '@/components/pages/minigames/home/GameTabs/GameTitle';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel, FreeMode } from 'swiper/modules';
@@ -9,7 +9,7 @@ import Head from 'next/head';
 import { FC, useState, CSSProperties } from 'react';
 
 import 'swiper/css';
-
+import { isMobile } from 'react-device-detect';
 
 const MiniGamesPage: FC & BasePage = () => {
   const [selectedKey, setSelectedKey] = useState('');
@@ -38,6 +38,7 @@ const MiniGamesPage: FC & BasePage = () => {
         mousewheel={true}
         direction="vertical"
         speed={1300}
+        freeMode={isMobile}
         scrollbar={{ draggable: true }}
         slidesPerView="auto"
         spaceBetween={0}
@@ -48,21 +49,21 @@ const MiniGamesPage: FC & BasePage = () => {
           setSwiperIndex(swiper.realIndex);
         }}
       >
-        <SwiperSlide className='releative !p-0 z-20 !h-auto' key='title1'>
+        <SwiperSlide className="releative !p-0 z-20 !h-auto" key="title1">
           <GameTitle swiperIndex={swiperIndex} />
           <FloatTips />
         </SwiperSlide>
 
-        <SwiperSlide className='releative !p-0 !h-auto mt-[1.5rem] z-10' key='tabs2'>
+        <SwiperSlide className="releative !p-0 !h-auto mt-[1.5rem] z-10" key="tabs2">
           <CollectionWarpper>
             <div
-              className='stroke-content text-5xl  text-white'
-              style={{ '--stroke-color': '#403930', '--stroke-width': '3px' } as CSSProperties}
+              className="stroke-content lg:text-5xl text-4xl text-white text-center"
+              style={{ '--stroke-color': '#403930', '--stroke-width': '2px' } as CSSProperties}
             >
               Moonveil Mini Games
             </div>
             <GameTabs
-              className="transform-[translateX(calc(50vw - 50%))] my-[1rem]"
+              className="my-[1rem]"
               value={selectedKey}
               onSelectionChange={setSelectedKey}
             />
@@ -70,8 +71,7 @@ const MiniGamesPage: FC & BasePage = () => {
           </CollectionWarpper>
         </SwiperSlide>
       </Swiper>
-
-    </section >
+    </section>
   );
 };
 
