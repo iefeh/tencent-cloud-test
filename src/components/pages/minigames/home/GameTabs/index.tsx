@@ -40,8 +40,8 @@ const GameTabs: FC<Props> = ({ className, value, onSelectionChange }) => {
       variant="underlined"
       selectedKey={value}
       classNames={{
-        base: cn(['text-brown', className]),
-        tabList: 'gap-[0.375rem] w-full relative rounded-none p-0',
+        base: cn(['text-brown w-full lg:w-auto overflow-x-auto', className]),
+        tabList: 'gap-[0.375rem] w-max relative rounded-none overflow-x-visible p-0 mx-6',
         cursor: 'hidden',
         tab: 'max-w-fit h-auto px-5 py-3 bg-[#F7E9CC] !rounded-base border-2 border-[#403930] data-[selected=true]:bg-[#FFD641]',
         tabContent: 'text-brown text-base group-data-[selected=true]:text-brown',

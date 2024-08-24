@@ -1,5 +1,16 @@
 import { useMGDContext } from '@/store/MiniGameDetails';
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, cn } from '@nextui-org/react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  cn,
+} from '@nextui-org/react';
 import Image from 'next/image';
 import type { CSSProperties, FC } from 'react';
 
@@ -54,21 +65,31 @@ const RankingTabPanel: FC = () => {
                 />
               </TableCell>
 
-              <TableCell className="pl-5 flex items-center">
-                <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown">
-                  <Image
-                    className="object-contain"
-                    src={row.avatar || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png'}
-                    alt=""
-                    fill
-                    sizes="100%"
-                    unoptimized
-                    priority
-                  />
-                </div>
-                <span className="text-lg leading-none ml-[1.125rem] text-brown max-w-[15.5rem] overflow-hidden text-ellipsis whitespace-nowrap">
-                  {row.player || '-'}
-                </span>
+              <TableCell className="pl-5">
+                <Popover placement="bottom" showArrow={true}>
+                  <PopoverTrigger>
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown">
+                        <Image
+                          className="object-contain"
+                          src={
+                            row.avatar || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png'
+                          }
+                          alt=""
+                          fill
+                          sizes="100%"
+                          unoptimized
+                          priority
+                        />
+                      </div>
+                      <span className="text-lg leading-none ml-[1.125rem] text-brown lg:max-w-[15.5rem] md:max-w-[11rem] max-w-[4rem] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {row.player || '-'}
+                      </span>
+                    </div>
+                  </PopoverTrigger>
+
+                  <PopoverContent>{row.player || '-'}</PopoverContent>
+                </Popover>
               </TableCell>
 
               <TableCell className="rounded-r-base pl-5 text-yellow-1 text-2xl">
