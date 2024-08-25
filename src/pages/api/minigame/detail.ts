@@ -170,7 +170,7 @@ async function enrichShareReward(userId: string | undefined, detail: any) {
     return;
   }
 
-  detail.share_reward_claimed = await checkClaimed(userId, detail.client_id);
+  detail.share_reward_claimed = await checkClaimed(userId, detail.share_reward.round, detail.client_id);
   delete detail.share_reward;
 }
 
