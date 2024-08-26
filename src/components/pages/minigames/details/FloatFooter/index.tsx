@@ -1,4 +1,4 @@
-import { useDisclosure } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
 import Image from 'next/image';
 import type { FC } from 'react';
 import ShareModal from './ShareModal';
@@ -8,12 +8,15 @@ import TicketCountdown from '../TicketCountdown';
 import { createPortal } from 'react-dom';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
+import Link from 'next/link';
+import { GameStatus } from '@/constant/minigames';
 
 const FloatFooter: FC = () => {
   const { data } = useMGDContext();
-  const { ticket, ticket_expired_at } = data || {};
+  const { ticket, ticket_expired_at, url, share_reward_claimed, status } = data || {};
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
+  const canPlay = status === GameStatus.IN_PROGRESS;
 
   const content = (
     <div className="fixed z-50 bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none font-jcyt6">
@@ -28,15 +31,16 @@ const FloatFooter: FC = () => {
       />
 
       <div className="relative z-0 right-[20.5rem] flex flex-col items-end mt-[0.8125rem] pointer-events-auto w-min ml-auto">
-        <TicketCountdown endTime={ticket_expired_at} />
+        <TicketCountdown key={ticket_expired_at} endTime={ticket_expired_at} />
 
         <div className="flex pr-1 mt-5">
           <StrokeButton
             strokeType="brown"
-            strokeText="Share"
+            strokeText={share_reward_claimed ? 'Shared' : 'Share'}
+            needAuth
             startContent={
               <Image
-                className="w-[1.125rem] h-[1.125rem]"
+                className={cn(['w-[1.125rem] h-[1.125rem]', (!data || !!share_reward_claimed) && 'grayscale'])}
                 src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/share_stroke.png"
                 alt=""
                 width={22}
@@ -44,12 +48,22 @@ const FloatFooter: FC = () => {
                 unoptimized
               />
             }
+            isDisabled={!data || !!share_reward_claimed || !canPlay}
             onPress={shareDisclosure.onOpen}
           />
 
-          <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" />
+          <Link href={url || 'javascript:;'} target="_blank">
+            <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" isDisabled={!url || !canPlay} />
+          </Link>
 
-          <StrokeButton className="ml-3" strokeType="blue" strokeText="Buy Tickets" onPress={ticketDisclosure.onOpen} />
+          <StrokeButton
+            className="ml-3"
+            strokeType="blue"
+            strokeText="Buy Tickets"
+            needAuth
+            isDisabled={!data || !canPlay}
+            onPress={ticketDisclosure.onOpen}
+          />
 
           <StrokeButton
             className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] ml-5"

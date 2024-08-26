@@ -2,11 +2,12 @@ import Head from 'next/head';
 import ProfileHeader from './components/ProfileHeader';
 import MoonBeams from './components/MoonBeams';
 import MyBadges from './components/MyBadges';
-import DailyCheckIn from '@/components/LoyaltyProgram/earn/EarnBanner/DailyCheckIn';
+// import DailyCheckIn from '@/components/LoyaltyProgram/earn/EarnBanner/DailyCheckIn';
 import Invite from '@/components/LoyaltyProgram/earn/EarnBanner/Invite';
 import MyNFT from './components/MyNFT';
-import EventsParticipated from './components/EventsParticipated';
+// import EventsParticipated from './components/EventsParticipated';
 import BattlePassCard from '@/components/card/BattlePassCard';
+import MyTokens from '@/components/profile/MyTokens';
 
 export default function ProfilePage() {
   return (
@@ -35,7 +36,9 @@ export default function ProfilePage() {
 
       <MyNFT />
 
-      <EventsParticipated />
+      {/* <EventsParticipated /> */}
+      
+      <MyTokens />
     </section>
   );
 }

@@ -6,6 +6,7 @@ import MiniGame, { MiniGames, MiniGameStatus } from "@/lib/models/MiniGame";
 import { PipelineStage } from "mongoose";
 import UserBackpackModel from "@/lib/models/2048UserBackpack";
 import OAuth2Client from "@/lib/models/OAuth2Client";
+import { ticketRemain } from "../oauth2/minigame/ticket/mine";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -139,9 +140,12 @@ export async function enrichTicket(userId: string | undefined, games: any[]) {
       }
       // 是否可查询票数
       switch (q.ticket.game) {
-        case MiniGames.Puffy2048:
-          const pack = await UserBackpackModel.findOne({ uid: userId });
-          q.ticket.remain = pack ? pack.num : 0;
+        // case MiniGames.Puffy2048:
+        //   const pack = await UserBackpackModel.findOne({ uid: userId });
+        //   q.ticket.remain = pack ? pack.num : 0;
+        //   break;
+        default:
+          q.ticket.remain = await ticketRemain(userId, q.client_id);
           break;
       }
       delete q.ticket.game;

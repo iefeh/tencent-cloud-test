@@ -1,28 +1,18 @@
-import CoverScreen from '@/components/lottery/screens/CoverScreen';
+import CoverScreen from '@/components/pages/lottery/screens/CoverScreen';
 import Head from 'next/head';
 import { FC, useRef } from 'react';
 import ScrollDownArrow from '../components/common/ScrollDownArrow';
-import DrawScreen from '@/components/lottery/screens/DrawScreen';
 import { createPortal } from 'react-dom';
-import BadgeScreen from '@/components/lottery/screens/BadgeScreen';
-import usePrizePool from '@/components/lottery/hooks/usePrizePool';
-import { useUserContext } from '@/store/User';
+import BadgeScreen from '@/components/pages/lottery/screens/BadgeScreen';
 import { observer } from 'mobx-react-lite';
 import useTouchBottom from '@/hooks/useTouchBottom';
 import ShineBackground from '@/components/common/ShineBackground';
 import MeteorLayer from '@/components/common/MeteorLayer';
+import PoolsScreen from '@/components/pages/lottery/screens/PoolsScreen';
 
 const LotteryPage: FC = () => {
-  const { getUserInfo } = useUserContext();
-  const { poolInfo, queryPoolInfo, ended } = usePrizePool();
   const { isTouchedBottom } = useTouchBottom();
   const badgeScreenRef = useRef<UpdateForwardRenderFunction>(null);
-
-  function onUpdate() {
-    queryPoolInfo();
-    getUserInfo();
-    badgeScreenRef.current?.update();
-  }
 
   return (
     <>
@@ -40,9 +30,9 @@ const LotteryPage: FC = () => {
 
         <CoverScreen />
 
-        <DrawScreen ended={ended} item={poolInfo} onUpdate={onUpdate} />
+        <PoolsScreen />
 
-        <BadgeScreen ref={badgeScreenRef} item={poolInfo} />
+        <BadgeScreen ref={badgeScreenRef} />
 
         {isTouchedBottom || createPortal(<ScrollDownArrow className="!fixed" />, document.body)}
       </section>

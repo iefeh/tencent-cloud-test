@@ -41,10 +41,10 @@ const GameCollection: FC<Props> = ({ type }) => {
   }, [type]);
 
   return (
-    <div className="w-[87.5rem] relative flex flex-col items-center min-h-[15rem]">
+    <div className="w-[87.5rem] max-w-full px-6 lg:px-0 relative flex flex-col items-center min-h-[15rem]">
       {data.length > 0 ? (
         <>
-          <div className="grid grid-cols-3 gap-x-6 gap-y-7 w-full">
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-x-6 gap-y-7 w-full">
             {data.map((item, index) => (
               <GameCard key={index} item={item} />
             ))}
