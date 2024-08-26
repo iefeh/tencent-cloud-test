@@ -14,6 +14,7 @@ declare namespace MiniGames {
     status: string;
     client_name: string;
     icon_url: string;
+    description: string;
   }
 
   interface BannerMedia {

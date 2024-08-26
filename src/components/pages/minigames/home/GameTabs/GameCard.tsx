@@ -25,7 +25,7 @@ const StatusConfig: Dict<{ label: string; color: string }> = {
   },
 };
 
-const GameCard: FC<Props> = ({ item: { ticket, img_url, client_id, status, icon_url, client_name } }) => {
+const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, status, icon_url, client_name } }) => {
   const { label, color } = StatusConfig[status] || {};
   const canPlay = status === GameStatus.IN_PROGRESS;
 
@@ -50,9 +50,7 @@ const GameCard: FC<Props> = ({ item: { ticket, img_url, client_id, status, icon_
         <div className="mt-[0.1875rem]">
           <div className="text-xl leading-6">{client_name}</div>
 
-          <p className="mt-4 font-jcyt4 text-sm leading-6">
-            Our test server will open at 4:00 pm, Nov. 16th, Singapore time...
-          </p>
+          <p className="mt-4 font-jcyt4 text-sm leading-6 line-clamp-3">{description}</p>
         </div>
       </div>
 
