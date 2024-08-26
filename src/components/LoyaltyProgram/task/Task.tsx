@@ -155,7 +155,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
               <LGButton
                 className="mt-5"
                 label={
-                  isExpired && !task.user_token_reward
+                  isExpired && !task.verified
                     ? 'Task incomplete, not eligible for the raffle.'
                     : task.user_token_reward?.status === 'claimed'
                     ? 'Claimed'
