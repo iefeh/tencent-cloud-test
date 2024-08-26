@@ -122,7 +122,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         </div>
 
         <div className="footer relative">
-          <div className='flex flex-wrap gap-x-4 gap-y-2'>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <div className="flex items-center">
               <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
 
@@ -155,7 +155,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
               <LGButton
                 className="mt-5"
                 label={
-                  isExpired && !task.user_token_reward
+                  isExpired && !task.verified
                     ? 'Task incomplete, not eligible for the raffle.'
                     : task.user_token_reward?.status === 'claimed'
                     ? 'Claimed'
