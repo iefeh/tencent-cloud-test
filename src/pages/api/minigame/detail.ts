@@ -42,6 +42,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   await enrichRanking(userId, detail);
   await enrichBadge(userId, detail);
   await enrichShareReward(userId, detail);
+  enrichStatus(miniGame, detail);
 
   res.json(response.success(detail));
   return;
@@ -174,6 +175,19 @@ async function enrichShareReward(userId: string | undefined, detail: any) {
   delete detail.share_reward;
 }
 
+function enrichStatus(game: any, detail: any) {
+  const now = Date.now();
+  if (game.end_time < now) {
+    // 等待下一轮
+    detail.status = MiniGameStatus.WaitForNextRound;
+  } else if (game.start_time > now) {
+    // 即将开始
+    detail.status = MiniGameStatus.ComingSoon;
+  } else {
+    // 进行中
+    detail.status = MiniGameStatus.InProgress;
+  }
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {
