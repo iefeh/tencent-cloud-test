@@ -9,12 +9,14 @@ import { createPortal } from 'react-dom';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
+import { GameStatus } from '@/constant/minigames';
 
 const FloatFooter: FC = () => {
   const { data } = useMGDContext();
-  const { ticket, ticket_expired_at, url, share_reward_claimed } = data || {};
+  const { ticket, ticket_expired_at, url, share_reward_claimed, status } = data || {};
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
+  const canPlay = status === GameStatus.IN_PROGRESS;
 
   const content = (
     <div className="fixed z-50 bottom-0 left-0 w-[120rem] h-[8.5rem] pointer-events-none font-jcyt6">
@@ -46,12 +48,12 @@ const FloatFooter: FC = () => {
                 unoptimized
               />
             }
-            isDisabled={!data || !!share_reward_claimed}
+            isDisabled={!data || !!share_reward_claimed || !canPlay}
             onPress={shareDisclosure.onOpen}
           />
 
           <Link href={url || 'javascript:;'} target="_blank">
-            <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" isDisabled={!url} />
+            <StrokeButton className="ml-3" strokeType="yellow" strokeText="Play Now" isDisabled={!url || !canPlay} />
           </Link>
 
           <StrokeButton
@@ -59,7 +61,7 @@ const FloatFooter: FC = () => {
             strokeType="blue"
             strokeText="Buy Tickets"
             needAuth
-            isDisabled={!data}
+            isDisabled={!data || !canPlay}
             onPress={ticketDisclosure.onOpen}
           />
 
