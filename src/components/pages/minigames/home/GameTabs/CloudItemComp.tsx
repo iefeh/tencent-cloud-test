@@ -7,7 +7,6 @@ export type CloudItemPosition = 'lt' | 'lb' | 'rt' | 'rb'
 interface CloudItemProps {
   item: { url: string, classNames: string, style?: CSSProperties, position: CloudItemPosition },
   inAni: boolean | null,
-  speed: number,
 }
 
 
@@ -18,7 +17,6 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
   const countRef = useRef<number>(1)
 
   const step = swiperSpeed / 16.6
-
 
   const getStepValue = (top: number = 1) => {
     if (!itemRef.current) return
