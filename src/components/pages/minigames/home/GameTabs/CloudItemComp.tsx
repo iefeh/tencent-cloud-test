@@ -1,21 +1,24 @@
 import BgImageComp from "@/components/common/BgImage"
-import { CSSProperties, useEffect, useRef, FC } from "react"
+import { CSSProperties, useEffect, useRef, FC, useMemo } from "react"
 import { cn } from "@nextui-org/react";
+import { swiperSpeed } from "@/pages/minigames"
 
-// 'lt' | 'lb' | 'rt' | 'rb'
+export type CloudItemPosition = 'lt' | 'lb' | 'rt' | 'rb'
 interface CloudItemProps {
-  item: { url: string, classNames: string, style?: CSSProperties, position: string },
-  inAni: boolean | null
+  item: { url: string, classNames: string, style?: CSSProperties, position: CloudItemPosition },
+  inAni: boolean | null,
+  speed: number,
 }
 
-const totalAniTime = 1000
-const step = totalAniTime / 16.6
 
 const CloudItemComp: FC<CloudItemProps> = (props) => {
   const { item, inAni } = props || {}
   const { url, classNames, style = {} } = item || {}
   const itemRef = useRef<HTMLDivElement>(null)
   const countRef = useRef<number>(1)
+
+  const step = swiperSpeed / 16.6
+
 
   const getStepValue = (top: number = 1) => {
     if (!itemRef.current) return
@@ -73,12 +76,12 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
     let bottomDirection = 1;
     let topDirection = 1;
     ['lb', 'lt'].includes(item.position) && (bottomDirection = -1);
-    ['lt', 'rt'].includes(item.position) && (topDirection = -1);
+    ['lt', 'rt'].includes(item.position) && (topDirection = -2);
 
     let { totalHeight, totalWidth, translateY, translateX } = getStepValue(topDirection) || {}
     if (!totalHeight || !totalWidth || !translateY || !translateX) return
 
-    let opacityVal = step * countRef.current
+    let opacityVal = 1 - countRef.current / step
 
     const setFinalState = () => {
       translateX = 0

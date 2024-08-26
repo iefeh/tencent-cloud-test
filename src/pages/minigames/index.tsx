@@ -10,6 +10,7 @@ import { FC, useState, CSSProperties } from 'react';
 
 import 'swiper/css';
 import { isMobile } from 'react-device-detect';
+export const swiperSpeed = 1500;
 
 const MiniGamesPage: FC & BasePage = () => {
   const [selectedKey, setSelectedKey] = useState('');
@@ -37,7 +38,7 @@ const MiniGamesPage: FC & BasePage = () => {
         modules={[Mousewheel, FreeMode]}
         mousewheel={true}
         direction="vertical"
-        speed={1300}
+        speed={swiperSpeed}
         freeMode={isMobile}
         scrollbar={{ draggable: true }}
         slidesPerView="auto"
