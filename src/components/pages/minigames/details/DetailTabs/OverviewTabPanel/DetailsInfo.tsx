@@ -57,7 +57,7 @@ const DetailsInfo: FC = () => {
 
         <div className="flex items-center mt-5 font-jcyt4">
           {(keywords || []).map((kw, index) => (
-            <div key={index} className="px-4 py-ten bg-brown/20 rounded-five [&+div]:ml-ten">
+            <div key={index} className="px-4 py-ten bg-brown/20 rounded-five [&+div]:ml-ten whitespace-nowrap">
               {kw}
             </div>
           ))}

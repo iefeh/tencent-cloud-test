@@ -1,4 +1,4 @@
-import { useDisclosure } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
 import Image from 'next/image';
 import type { FC } from 'react';
 import ShareModal from './ShareModal';
@@ -38,7 +38,7 @@ const FloatFooter: FC = () => {
             needAuth
             startContent={
               <Image
-                className="w-[1.125rem] h-[1.125rem]"
+                className={cn(['w-[1.125rem] h-[1.125rem]', (!data || !!share_reward_claimed) && 'grayscale'])}
                 src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/share_stroke.png"
                 alt=""
                 width={22}
