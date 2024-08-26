@@ -38,7 +38,7 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
       return;
     }
 
-    toast.success('You have successfully claimed 1 tickets!');
+    toast.success(`You have successfully claimed ${res.reward_tickets || '-'} tickets!`);
     await queryDetails();
     setLoading(false);
   }
