@@ -38,7 +38,7 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
       return;
     }
 
-    toast.success('You have successfully claimed 3 tickets!');
+    toast.success('You have successfully claimed 1 tickets!');
     await queryDetails();
     setLoading(false);
   }
@@ -60,9 +60,9 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
               <ModalBody>
                 <div className="bg-[#F7E9CC] border-2 border-basic-gray rounded-base overflow-hidden pt-[3.875rem] pl-[4.5rem] pr-[5.25rem] pb-[3.25rem] font-jcyt6">
                   <p>
-                    Welcome to Moonveil Mini Games! During each round, you can share content on Twitter to earn three
-                    free tickets. Please make sure to follow the required Tweet Template. After sent the post, you can
-                    verify to claim your rewards.
+                    Welcome to Moonveil Mini Games! During each round, you can share content on Twitter to earn one free
+                    tickets. Please make sure to follow the required Tweet Template. After sent the post, you can verify
+                    to claim your rewards.
                   </p>
 
                   <div className="flex justify-center gap-x-[0.375rem] mt-12">
