@@ -63,6 +63,8 @@ declare namespace MiniGames {
     url: string;
     share: string;
     share_reward_claimed: boolean;
+    icon_url: string;
+    image_url: string;
   }
 
   interface BuyTicketPermit {
