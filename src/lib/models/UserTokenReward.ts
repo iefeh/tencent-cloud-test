@@ -42,7 +42,7 @@ const UserTokenRewardSchema = new Schema<IUserTokenReward>({
     source_type: {type: String, required: true},
     source_id: {type: String},
     token_id: {type: String},
-    token_amount_raw: {type: String},
+    token_amount_raw: {type: String },
     token_amount_formatted: {type: String},
     tx_hash: {type: String},
     status: {type: String},

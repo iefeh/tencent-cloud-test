@@ -25,7 +25,7 @@ router.use(dynamicCors).get(async (req, res) => {
 });
 
 export async function ticketRemain(userId: string, gameId: string) {
-    return await GameTicket.count({ user_id: userId, game_id: gameId, expired_at: { $gt: Date.now() }, consumed_time: null });
+    return await GameTicket.count({ user_id: userId, game_id: gameId, expired_at: { $gt: Date.now() }, consumed_at: null });
 }
 
 // this will run if none of the above matches

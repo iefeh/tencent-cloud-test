@@ -95,44 +95,7 @@ export class ConnectTelegramQuest extends QuestBase {
 //                 token: "$oauth_tokens"
 //             }
 export async function queryUserTelegramAuthorization(userId: string): Promise<any> {
-  const aggregateQuery: PipelineStage[] = [
-    {
-      $match: {
-        user_id: userId,
-        deleted_time: null,
-      },
-    },
-    {
-      $lookup: {
-        from: 'oauth_tokens',
-        let: { platform_id: '$telegram_id' },
-        pipeline: [
-          // 联表时过滤已删除的记录
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ['$platform_id', '$$platform_id'] }, { $eq: ['$deleted_time', null] }],
-              },
-            },
-          },
-        ],
-        as: 'oauth_tokens',
-      },
-    },
-    {
-      $unwind: '$oauth_tokens',
-    },
-    {
-      $project: {
-        _id: 0,
-        user_id: 1,
-        telegram_id: 1,
-        token: '$oauth_tokens',
-      },
-    },
-  ];
-  const results = await UserTelegram.aggregate(aggregateQuery);
-  return results.length > 0 ? results[0] : null;
+  return await UserTelegram.findOne({ user_id: userId, deleted_time: null });
 }
 
 // 校验用户是否绑定了telegram

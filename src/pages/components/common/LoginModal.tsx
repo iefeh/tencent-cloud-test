@@ -204,10 +204,10 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
       ],
     },
     {
-      title: 'MetaMask',
+      title: 'Wallet',
       btns: [
         {
-          label: 'MetaMask',
+          label: 'Wallet',
           type: MediaType.METAMASK,
           icon: metamaskIconImg,
         },

@@ -29,30 +29,30 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
   const badgeId = String(badge_id);
   const lv = String(badge_lv);
   let userId = req.userId!;
-  const data = await try2ClaimBadge(userId, badgeId, lv)
+  const data = await try2ClaimBadge(userId, badgeId, lv);
   res.json(data);
 });
 
 async function try2ClaimBadge(userId: string, badgeId: string, level: string): Promise<any> {
   const claimLock = `claim_badge_lock:${badgeId}:${userId}`;
-  const locked = await redis.set(claimLock, Date.now(), "EX", 60, "NX");
+  const locked = await redis.set(claimLock, Date.now(), 'EX', 60, 'NX');
   if (!locked) {
     return response.success({
-      result: "Claim is under a waiting period, please try again later.",
-    })
+      result: 'Claim is under a waiting period, please try again later.',
+    });
   }
   try {
     // 检查徽章
     const badge = await Badge.findOne({ id: badgeId });
     if (!badge) {
       return response.success({
-        result: "Unknown badge.",
-      })
+        result: 'Unknown badge.',
+      });
     }
     if (!badge.active) {
       return response.success({
-        result: "Badge cannot be clamed temporarily.",
-      })
+        result: 'Badge cannot be clamed temporarily.',
+      });
     }
     // 检查用户达成的徽章
     const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: badgeId });
@@ -61,7 +61,7 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         result: 'Badge not obtained.',
       });
     }
-    const series = userBadge.series.get(level)
+    const series = userBadge.series.get(level);
     if (!series) {
       return response.success({
         result: 'You are not eligible to claim this badge level.',
@@ -96,14 +96,21 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
         await UserMoonBeamAudit.bulkSave(reward.audits, opts);
         await User.updateOne({ user_id: userId }, { $inc: { moon_beam: reward.mb } }, opts);
       }
-      await UserBadges.updateOne({ user_id: userId, badge_id: badgeId }, {
-        $set: claimBadge,
-      }, opts);
+      await UserBadges.updateOne(
+        { user_id: userId, badge_id: badgeId },
+        {
+          $set: claimBadge,
+        },
+        opts,
+      );
 
       if (inviter) {
-        // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
         await incrUserMetric(inviter.direct, Metric.TotalNoviceBadgeInvitee, 1, session);
-        await saveInviterMoonBeamReward(userId, inviter.direct, inviter.indirect, session);
+        if (!inviter.virtual) {
+          // 当前用户有邀请人，更新直接、间接邀请人的指标，添加用户的邀请奖励
+          await saveInviterMoonBeamReward(userId, inviter.direct, inviter.indirect, session);
+        }
+
         if (inviter.indirect) {
           await incrUserMetric(inviter.indirect, Metric.TotalIndirectNoviceBadgeInvitee, 1, session);
         }
@@ -115,9 +122,9 @@ async function try2ClaimBadge(userId: string, badgeId: string, level: string): P
     });
     // 尝试刷新对应用户的MB缓存
     await try2AddUsers2MBLeaderboard(
-      inviter ? inviter.direct : "",
-      inviter ? inviter.indirect : "",
-      reward.mb > 0 ? userId : "",
+      inviter ? inviter.direct : '',
+      inviter ? inviter.indirect : '',
+      reward.mb > 0 ? userId : '',
     );
     // 根据是否下发MB进行不同的响应
     if (reward.mb > 0) {
@@ -144,7 +151,10 @@ async function checkNoviceNotchInviter(userId: string, badge: IBadges): Promise<
 }
 
 // 构建徽章下发的奖励，如MB
-async function constructBadgeMoonbeamReward(userBadge: IUserBadges, level: string): Promise<{ mb: number, series: string[], audits: any[] }> {
+async function constructBadgeMoonbeamReward(
+  userBadge: IUserBadges,
+  level: string,
+): Promise<{ mb: number; series: string[]; audits: any[] }> {
   const badge = await Badge.findOne({ id: userBadge.badge_id });
   if (!badge) {
     throw new Error(`Badge ${userBadge.badge_id} should but not found.`);
@@ -188,15 +198,17 @@ async function constructBadgeMoonbeamReward(userBadge: IUserBadges, level: strin
     }
     logger.debug(`user ${userBadge.user_id} claiming badge ${badge.id} series ${s.level} mb ${s.reward_moon_beam}.`);
     mb += s.reward_moon_beam;
-    rewards.push(new UserMoonBeamAudit({
-      user_id: userBadge.user_id,
-      type: UserMoonBeamAuditType.Badges,
-      moon_beam_delta: s.reward_moon_beam,
-      reward_taint: `badge:${userBadge.badge_id},level:${s.level},user:${userBadge.user_id}`,
-      corr_id: userBadge.badge_id,
-      extra_info: s.level,
-      created_time: now,
-    }));
+    rewards.push(
+      new UserMoonBeamAudit({
+        user_id: userBadge.user_id,
+        type: UserMoonBeamAuditType.Badges,
+        moon_beam_delta: s.reward_moon_beam,
+        reward_taint: `badge:${userBadge.badge_id},level:${s.level},user:${userBadge.user_id}`,
+        corr_id: userBadge.badge_id,
+        extra_info: s.level,
+        created_time: now,
+      }),
+    );
   }
   return {
     mb,
@@ -218,8 +230,8 @@ function constructMint(userId: string, badge: any, series: string): any {
     user_id: userId,
     status: MintStatus.Qualified,
     obtained_time: Date.now(),
-    taints: [taint]
-  })
+    taints: [taint],
+  });
 
   return mint;
 }
@@ -227,7 +239,7 @@ function constructMint(userId: string, badge: any, series: string): any {
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({
-    error: "Method not allowed",
+    error: 'Method not allowed',
   });
 });
 

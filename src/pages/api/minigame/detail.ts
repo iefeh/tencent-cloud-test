@@ -15,6 +15,7 @@ import User from "@/lib/models/User";
 import { loadAllBadges } from "../badges/list";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import { checkClaimed } from "./claim";
+import { enrichUserQuests } from "@/lib/quests/questEnrichment";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -41,6 +42,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   await enrichRanking(userId, detail);
   await enrichBadge(userId, detail);
   await enrichShareReward(userId, detail);
+  enrichStatus(miniGame, detail);
 
   res.json(response.success(detail));
   return;
@@ -55,6 +57,7 @@ async function findDetail(client_id: string) {
 async function enrichGameInfo(detail: any, miniGame: IMiniGame) {
   detail.url = miniGame.url;
   detail.img_url = miniGame.img_url;
+  detail.icon_url = miniGame.icon_url;
   detail.ticket = miniGame.ticket;
   // 判断游戏状态
   const now = Date.now();
@@ -82,8 +85,10 @@ async function enrichTasks(userId: string | undefined, detail: any) {
   }
 
   const result = await paginationQuests(1, 6, detail.task_category, undefined, userId as string);
-  if (result) {
-    detail.tasks = result.quests;
+  if (result && result.quests.length > 0) {
+    let quests: any[] = result.quests;
+    await enrichUserQuests(userId!, quests);
+    detail.tasks = quests;
     return;
   }
 
@@ -131,7 +136,7 @@ async function enrichRanking(userId: string | undefined, detail: any) {
           // 查询用户排行信息
           let userRank: any = '-';
           if (userId) {
-            const userRankInfo = await UserScoreRank.findOne({ leaderboard_id: lbconfig, uid: userId });
+            const userRankInfo = await UserScoreRank.findOne({ leaderboard_id: lbconfig.lbid, uid: userId });
             if (userRankInfo) {
               userRank = await UserScoreRank.count({ leaderboard_id: lbconfig.lbid, sum_score: { $gt: userRankInfo.sum_score } });
               userRank++;
@@ -167,10 +172,23 @@ async function enrichShareReward(userId: string | undefined, detail: any) {
     return;
   }
 
-  detail.share_reward_claimed = await checkClaimed(userId, detail.client_id);
+  detail.share_reward_claimed = await checkClaimed(userId, detail.share_reward.round, detail.client_id);
   delete detail.share_reward;
 }
 
+function enrichStatus(game: any, detail: any) {
+  const now = Date.now();
+  if (game.end_time < now) {
+    // 等待下一轮
+    detail.status = MiniGameStatus.WaitForNextRound;
+  } else if (game.start_time > now) {
+    // 即将开始
+    detail.status = MiniGameStatus.ComingSoon;
+  } else {
+    // 进行中
+    detail.status = MiniGameStatus.InProgress;
+  }
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {
