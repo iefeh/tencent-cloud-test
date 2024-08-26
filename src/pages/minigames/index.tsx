@@ -10,7 +10,7 @@ import { FC, useState, CSSProperties } from 'react';
 
 import 'swiper/css';
 import { isMobile } from 'react-device-detect';
-export const swiperSpeed = 1500;
+export const swiperSpeed = 2000;
 
 const MiniGamesPage: FC & BasePage = () => {
   const [selectedKey, setSelectedKey] = useState('');
