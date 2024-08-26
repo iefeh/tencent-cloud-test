@@ -198,16 +198,20 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                         onPress={onBuyTicketsClick}
                       />
 
-                      <StrokeButton
-                        className="ml-ten w-56"
-                        strokeType="yellow"
-                        strokeText="Exchange Tickets"
-                        isDisabled
-                        style={{
-                          backgroundImage:
-                            "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
-                        }}
-                      />
+                      <Tooltip content="Coming Soon">
+                        <div>
+                          <StrokeButton
+                            className="ml-ten w-56"
+                            strokeType="yellow"
+                            strokeText="Exchange Tickets"
+                            isDisabled
+                            style={{
+                              backgroundImage:
+                                "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
+                            }}
+                          />
+                        </div>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
