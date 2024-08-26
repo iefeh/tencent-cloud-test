@@ -57,9 +57,9 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
 
   await distributeTickets(userId, clientId, client);
 
-  // const ticketsCount = await ticketRemain(userId, clientId);
+  const ticketsCount = await ticketRemain(userId, clientId);
 
-  return res.json(response.success({ verified: true, available_tickets: client.share_reward.ticket_count }));
+  return res.json(response.success({ verified: true, available_tickets: ticketsCount, reward_tickets: client.share_reward.ticket_count }));
 });
 
 export async function checkClaimed(userId: string, round: any, clientId: string) {
