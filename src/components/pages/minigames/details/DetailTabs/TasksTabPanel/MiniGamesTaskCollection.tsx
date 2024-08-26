@@ -4,11 +4,11 @@ import type { FC } from 'react';
 import MiniGameTask from './MiniGameTask';
 
 interface Props extends ClassNameProps {
-  hidePagi?: boolean;
   items: TaskItem[];
+  onTaskUpdate?: (task: TaskItem) => void;
 }
 
-const MiniGamesTaskCollection: FC<Props> = ({ className, hidePagi, items }) => {
+const MiniGamesTaskCollection: FC<Props> = ({ className, onTaskUpdate, items }) => {
   return (
     <div className={cn(['mt-7 mb-[8.75rem] flex flex-col items-center relative', className])}>
       <div
@@ -19,12 +19,7 @@ const MiniGamesTaskCollection: FC<Props> = ({ className, hidePagi, items }) => {
         ])}
       >
         {items.map((task) => (
-          <MiniGameTask
-            key={`${task.id}_${task.achieved}`}
-            task={task}
-            // onTaskUpdate={updateTaskById}
-            // onReverifyCDFinished={queryTasks}
-          />
+          <MiniGameTask key={`${task.id}_${task.achieved}`} task={task} onTaskUpdate={onTaskUpdate} />
         ))}
       </div>
     </div>
