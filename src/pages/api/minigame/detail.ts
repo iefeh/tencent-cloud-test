@@ -57,6 +57,7 @@ async function findDetail(client_id: string) {
 async function enrichGameInfo(detail: any, miniGame: IMiniGame) {
   detail.url = miniGame.url;
   detail.img_url = miniGame.img_url;
+  detail.icon_url = miniGame.icon_url;
   detail.ticket = miniGame.ticket;
   // 判断游戏状态
   const now = Date.now();
