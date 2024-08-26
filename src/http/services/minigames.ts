@@ -29,8 +29,12 @@ export function buyTicketsCallbackAPI(data: {
   return http.post('/api/minigame/ticket/paid', JSON.stringify(data));
 }
 
-export function claimShareRewardAPI(data: {
-  client_id: string;
-}): Promise<InfoDTO & { require_authorization?: string }> {
+interface ClaimShareRewardDTO extends InfoDTO {
+  reward_tickets?: string | number;
+  available_tickets?: string | number;
+  require_authorization?: string;
+}
+
+export function claimShareRewardAPI(data: { client_id: string }): Promise<ClaimShareRewardDTO> {
   return http.post('/api/minigame/claim', JSON.stringify(data));
 }
