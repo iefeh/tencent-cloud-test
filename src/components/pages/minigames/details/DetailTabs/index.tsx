@@ -124,7 +124,7 @@ const DetailTabs: FC = () => {
           onClick={onBack}
         >
           <Image
-            className="w-[1.625rem] h-[1.375rem]"
+            className="w-5 h-[1.0625rem]"
             src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_arrow_white.png"
             alt=""
             width={26}
@@ -132,7 +132,7 @@ const DetailTabs: FC = () => {
             unoptimized
           />
 
-          <span className="ml-3 text-2xl">BACK</span>
+          <span className="ml-3 text-lg">BACK</span>
         </div>
       </div>
     </div>
