@@ -5,8 +5,7 @@ import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { TaskCategory } from '@/http/services/battlepass';
-import AstrArkContent from './AstrArkContent';
-
+import Game2048Content from './Game2048Content';
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
@@ -14,7 +13,7 @@ interface Props {
 export default function TaskTabs({ defaultCategory }: Props) {
   const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, [defaultCategory]);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
-  const aaContent = useMemo(() => <AstrArkContent />, []);
+  const gameContent = useMemo(() => <Game2048Content />, []);
 
   const tabs = [
     {
@@ -26,22 +25,22 @@ export default function TaskTabs({ defaultCategory }: Props) {
       content: seasonalCampaignsContent,
     },
     {
-      key: 'AstrArk',
+      key: '2048 Mini Game',
       render: (label: string) => (
         <div className="flex items-center">
           <Image
-            className="object-contain w-7 h-7 mr-2 rounded-md"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/icon_astrark_ultra.png"
+            className="object-contain w-8 h-7 mr-1 rounded-md"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/2048LOGO.png"
             alt=""
-            width={1024}
-            height={1024}
+            width={95}
+            height={83}
             unoptimized
           />
 
           {label}
         </div>
       ),
-      content: aaContent,
+      content: gameContent,
     },
   ];
   const router = useRouter();
