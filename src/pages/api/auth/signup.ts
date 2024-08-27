@@ -80,7 +80,9 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
         }
       }
     });
-    await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, null);
+    if (payload.invite) {
+      await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, null);
+    }
     if (payload.indirect_inviter_id) {
       await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, null);
     }
