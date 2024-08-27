@@ -1,9 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Video from '../components/common/Video';
 import { cn } from '@nextui-org/react';
 import S3Image from '@/components/common/medias/S3Image';
 import Planet, { type PlanetProps } from '@/components/pages/about/Planet';
+import useShake from '@/hooks/useShake';
 
 const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
   /* Bushwhack */
@@ -151,6 +152,11 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
 
 export default function About() {
   const [isWidthMore, setIsWidthMore] = useState(true);
+  const shakeRef1 = useRef<HTMLImageElement>(null);
+  const shakeRef2 = useRef<HTMLImageElement>(null);
+
+  useShake(shakeRef1);
+  useShake(shakeRef2);
 
   function onResize() {
     const { innerWidth, innerHeight } = window;
@@ -173,12 +179,12 @@ export default function About() {
   }
 
   useEffect(() => {
-    window.addEventListener('resize', onResize);
-    window.addEventListener('mousemove', onMouseMove);
+    // window.addEventListener('resize', onResize);
+    // window.addEventListener('mousemove', onMouseMove);
 
     return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('mousemove', onMouseMove);
+      // window.removeEventListener('resize', onResize);
+      // window.removeEventListener('mousemove', onMouseMove);
     };
   }, []);
 
@@ -191,7 +197,6 @@ export default function About() {
           // isWidthMore ? 'h-full' : 'w-full',
           'w-full',
         ])}
-        style={{ transformStyle: 'preserve-3d', perspective: '500px' }}
       >
         <Video
           className="w-full h-full"
@@ -207,15 +212,21 @@ export default function About() {
           }}
         />
 
-        <S3Image
-          className="w-[25.875rem] h-[49.75rem] absolute left-0 bottom-0 z-0"
-          src="/about/ecoanimations/nebula_lb.png"
-        />
+        <div className="absolute left-0 bottom-0 z-10">
+          <S3Image
+            ref={shakeRef1}
+            className="w-[25.875rem] h-[49.75rem] object-contain"
+            src="/about/ecoanimations/nebula_lb.png"
+          />
+        </div>
 
-        <S3Image
-          className="w-[34.375rem] h-[33.25rem] absolute right-0 top-0 z-0"
-          src="/about/ecoanimations/nebula_tr.png"
-        />
+        <div className="absolute right-0 top-0 z-10">
+          <S3Image
+            ref={shakeRef2}
+            className="w-[34.375rem] h-[33.25rem] object-contain"
+            src="/about/ecoanimations/nebula_tr.png"
+          />
+        </div>
 
         {Planets.map((planet, index) => (
           <Planet key={index} {...planet} />
