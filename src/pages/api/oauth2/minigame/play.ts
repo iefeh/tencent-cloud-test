@@ -67,7 +67,7 @@ export async function consumeTicket(userId: string, gameId: string, count: numbe
             }
         },
         {
-            $sort: { expired_at: -1 }
+            $sort: { expired_at: 1 }
         },
         {
             $project: { _id: 0, pass_id: 1 }
