@@ -19,7 +19,6 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).get(async (req, res) => {
     let lockKey: any = undefined;
     try {
-        console.log(Date.now());
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo });
         const gameId = token.client.id;
         const userId = token.user.user_id;
@@ -46,7 +45,6 @@ router.use(dynamicCors).get(async (req, res) => {
         }
         // console.log(result);
         // 消费成功
-        console.log(Date.now());
         res.json(response.success(result));
     } catch (error: any) {
         return responseOnOauthError(res, error);
