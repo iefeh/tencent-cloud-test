@@ -64,6 +64,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
   const [hasVerifyCD, setHasVerifyCD] = useState(false);
   const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
   const is2048 = task.type === QuestType.Claim2048Ticket;
+  const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
 
   const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
   const {
@@ -164,33 +165,40 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
       {isNeedConnect && (
         <LGButton
           className={cn([
-            'uppercase !border-solid border-2 border-[#BB683D] !bg-gradient-to-t from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 !text-white group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
+            'uppercase !border-solid border-2 border-[#BB683D] from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 text-white',
+            !(achieved || verified || isExpired) &&
+              'bg-gradient-to-t group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
             classNames?.connectBtn,
           ])}
           prefix={
-            <div className="stroke-content" style={{ '--stroke-color': '#7A0A08' } as CSSProperties}>
+            <div
+              className="stroke-content"
+              style={{ '--stroke-color': achieved || verified || isExpired ? '#999' : '#7A0A08' } as CSSProperties}
+            >
               {getConnectLabel(task)}
             </div>
           }
           label=""
           actived
+          needAuth
           loading={connectLoading}
-          disabled={achieved || verified}
+          disabled={achieved || verified || isExpired}
           onClick={onConnectClick}
         />
       )}
 
       <LGButton
         className={cn([
-          'ml-2 uppercase !border-solid border-2 border-brown !bg-none bg-transparent !text-brown h-9',
+          'ml-2 uppercase !border-solid border-2 border-brown !bg-none bg-transparent text-brown hover:text-brown h-9',
           !verifiable && 'grayscale opacity-50',
           classNames?.verifyBtn,
         ])}
         label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
         loading={verifyLoading || mediaLoading}
-        disabled={!verifiable}
+        disabled={!verifiable || isExpired}
         hasCD={hasVerifyCD}
         actived
+        needAuth
         tooltip={
           isLongCD && (
             <div className="max-w-[25rem] px-4 py-3">

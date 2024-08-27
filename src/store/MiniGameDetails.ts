@@ -1,4 +1,4 @@
-import { queryMiniGameDetailsAPI } from '@/http/services/minigames';
+import { queryGameTicketsAPI, queryMiniGameDetailsAPI } from '@/http/services/minigames';
 import type { MiniGames } from '@/types/minigames';
 import { makeAutoObservable } from 'mobx';
 import { createContext, useContext } from 'react';
@@ -47,6 +47,20 @@ class MiniGameDetailsStore {
     this.setId(res.client_id || '');
 
     this.setLoading(false);
+  };
+
+  queryTickets = async (id: string = this.id) => {
+    if (!id) {
+      this.setId('');
+      this.setData(null);
+      return;
+    }
+
+    const res = await queryGameTicketsAPI({ game_id: id });
+    if (!res) return;
+    const ticket = { remain: res.available_tickets || 0 };
+    if (!this.data) return;
+    this.setData({ ...this.data, ticket });
   };
 }
 

@@ -28,6 +28,14 @@ export interface BattlePassTreasureBoxRewardDTO {
   };
 }
 
+export interface BattlePassMoonBeamRewardDTO {
+  type: 'moon_beam';
+  properties: {
+    mb_amount: number;
+    description: string;
+  };
+}
+
 export type BattlePassRewardDTO = BattlePassBadgeRewardDTO | BattlePassMBRewardDTO | BattlePassTreasureBoxRewardDTO;
 
 export interface BattlePassLevelDTO {

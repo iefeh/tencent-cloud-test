@@ -6,6 +6,7 @@ export enum CDKRewardType {
   Badge = 'badge',
   LotteryTicket = 'lottery_ticket',
   PremiumPass = 'premium_pass',
+  GameTicket = 'game_ticket'
 }
 
 export interface ICDK extends Document {

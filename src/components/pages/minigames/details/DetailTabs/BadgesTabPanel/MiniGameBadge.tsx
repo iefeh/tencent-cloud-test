@@ -115,17 +115,17 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function MiniGameBadge
     <li
       ref={ref}
       className={cn([
-        'px-[1.125rem] pt-5 pb-6 shrink-0 relative rounded-[1.25rem] border-2 border-basic-gray transition-colors bg-[#F7E9CC] hover:bg-white',
-        item ? 'drag-item' : 'empty-item',
+        'px-[1.125rem] pt-5 pb-6 shrink-0 relative rounded-[1.25rem] border-2 border-basic-gray transition-colors bg-[#F7E9CC] hover:bg-white w-2/3 lg:w-auto',
         className,
       ])}
     >
       <div
         className={cn([
-          'inline-flex justify-center items-center w-[13.75rem] h-[13.75rem] bg-black relative overflow-hidden border-1 border-basic-gray rounded-base transition-colors',
+          'inline-flex justify-center items-center w-full lg:w-[13.75rem] aspect-square bg-black relative overflow-hidden border-1 border-basic-gray rounded-base transition-colors',
           item && !achieved && 'grayscale opacity-50',
         ])}
         onClick={() => onView?.(item)}
+        onTouchEnd={() => onView?.(item)}
       >
         <div className={cn(['relative', !item && forDisplay ? 'w-[1.5625rem] h-[1.5625rem]' : 'w-full h-full'])}>
           <Image

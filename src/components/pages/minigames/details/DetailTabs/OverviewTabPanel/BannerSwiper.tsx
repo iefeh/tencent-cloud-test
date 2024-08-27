@@ -41,8 +41,8 @@ const BannerSwiper: FC = () => {
 
   return (
     <div className="bg-[#F7E9CC] px-[1.875rem] py-[2.4375rem] rounded-[1.25rem]">
-      <div className="wrapper w-[50rem]">
-        <div className="relative w-full h-[28.125rem]">
+      <div className="wrapper w-[50rem] max-w-full">
+        <div className="relative w-full aspect-[400/225]">
           {activeMedia &&
             (VideoPattern.test(activeMedia.url) ? (
               <Video

@@ -152,3 +152,22 @@
     transform: rotateY(-25deg);
   }
 }
+
+@keyframes rockFall {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-1rem) scale(1.02);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ani-rockFall {
+  transform-origin: center center;
+  animation: rockFall 4s ease-in-out infinite;
+}

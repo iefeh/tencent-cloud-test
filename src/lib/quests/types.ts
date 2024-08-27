@@ -26,7 +26,7 @@ export enum QuestType {
   TwitterTopic = 'twitter_topic',
   // 推文互动(点赞、评论、转推)
   TweetInteraction = 'tweet_interaction',
-  // 加入discord社区ef21257a8c2a3e64ec4d118f295d491fb8bd1126
+  // 加入discord社区
   JoinDiscordServer = 'join_discord_server',
   // 持有discord角色
   HoldDiscordRole = 'hold_discord_role',

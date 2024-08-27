@@ -1,6 +1,7 @@
 import StrokeButton from '@/components/common/buttons/StrokeButton';
 import { GameStatus } from '@/constant/minigames';
 import type { MiniGames } from '@/types/minigames';
+import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -24,12 +25,12 @@ const StatusConfig: Dict<{ label: string; color: string }> = {
   },
 };
 
-const GameCard: FC<Props> = ({ item: { img_url, client_id, status, icon_url, client_name } }) => {
+const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, status, icon_url, client_name } }) => {
   const { label, color } = StatusConfig[status] || {};
   const canPlay = status === GameStatus.IN_PROGRESS;
 
   return (
-    <div className="px-6 py-7 bg-[#F7E9CC] border-2 border-basic-gray rounded-base">
+    <div className="px-6 py-7 transition-colors bg-[#F7E9CC] group hover:bg-white border-2 border-basic-gray rounded-base">
       <div className="relative w-[25rem] h-[11.25rem] rounded-base overflow-hidden">
         <Image className="object-cover" src={img_url} alt="" fill sizes="100%" unoptimized priority />
 
@@ -49,21 +50,28 @@ const GameCard: FC<Props> = ({ item: { img_url, client_id, status, icon_url, cli
         <div className="mt-[0.1875rem]">
           <div className="text-xl leading-6">{client_name}</div>
 
-          <p className="mt-4 font-jcyt4 text-sm leading-6">
-            Our test server will open at 4:00 pm, Nov. 16th, Singapore time...
-          </p>
+          <p className="mt-4 font-jcyt4 text-sm leading-6 line-clamp-3">{description}</p>
         </div>
       </div>
 
       <div className="mt-8 flex justify-between items-center">
-        <Link href={canPlay ? `/minigames/details/${client_id}` : 'javascript:;'} target={canPlay ? '_blank' : '_self'}>
-          <StrokeButton className="w-[12.75rem]" strokeType="yellow" strokeText="Play Now" isDisabled={!canPlay} />
+        <Link href={canPlay ? `/minigames/details/${client_id}` : 'javascript:;'} target="_self">
+          <StrokeButton
+            className={cn([
+              'w-[12.75rem]',
+              canPlay &&
+                "group-hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]",
+            ])}
+            strokeType="yellow"
+            strokeText="Play Now"
+            isDisabled={!canPlay}
+          />
         </Link>
 
         <StrokeButton
           className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] cursor-default"
           strokeType="ticket"
-          strokeText="10"
+          strokeText={ticket?.remain?.toString() || '-'}
           startContent={
             <span className="absolute top-0 right-2 text-sm leading-none text-brown font-jcyt4">Your Tickets</span>
           }
