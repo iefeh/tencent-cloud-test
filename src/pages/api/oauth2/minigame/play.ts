@@ -23,7 +23,7 @@ router.use(dynamicCors).get(async (req, res) => {
         const { count } = req.query;// 消耗的门票数量
 
         lockKey = `play,${gameId},${userId}`;
-        const locked = await redis.set(lockKey, Date.now(), "EX", 2 * 60, "NX");
+        const locked = await redis.set(lockKey, Date.now(), "EX", 60, "NX");
         if (!locked) {
             res.json(response.tooManyRequests());
             return;
@@ -46,9 +46,9 @@ router.use(dynamicCors).get(async (req, res) => {
     } catch (error: any) {
         return responseOnOauthError(res, error);
     } finally {
-        if (lockKey) {
-            await redis.del(lockKey);
-        }
+        // if (lockKey) {
+            // await redis.del(lockKey);
+        // }
     }
 });
 
