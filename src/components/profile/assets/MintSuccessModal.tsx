@@ -25,7 +25,7 @@ const MintSuccessModal: FC<Props> = ({ disclosure }) => {
             <ModalBody>
               <p>
                 SBT mint transaction sent successfully, currently confirming on the blockchain. Please note you need to
-                wait ahout <span className="text-basic-yellow">5 minutes</span>. Once minted, you can view this SBT on{' '}
+                wait about <span className="text-basic-yellow">5 minutes</span>. Once minted, you can view this SBT on{' '}
                 <Link className="text-basic-yellow hover:underline" href="/Profile/MyAssets">
                   My Assets
                 </Link>{' '}
