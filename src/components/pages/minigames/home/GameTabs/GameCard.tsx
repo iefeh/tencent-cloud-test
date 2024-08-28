@@ -60,7 +60,7 @@ const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, 
             className={cn([
               'w-[12.75rem]',
               canPlay &&
-                "group-hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]",
+                "hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]",
             ])}
             strokeType="yellow"
             strokeText="Play Now"
