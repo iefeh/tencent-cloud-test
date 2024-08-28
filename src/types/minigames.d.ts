@@ -22,6 +22,17 @@ declare namespace MiniGames {
     thumb?: string;
   }
 
+  interface GameDetialLeaderboard {
+    game: string;
+    leaderboard: {
+      rank: number;
+      player: string;
+      score: number;
+      avatar: string;
+    }[];
+    user_rank: string;
+  }
+
   interface GameDetailDTO {
     client_id: string;
     name: string;
@@ -32,16 +43,7 @@ declare namespace MiniGames {
     banner: BannerMedia[];
     platform: { url?: string; platform: string; icon: string }[];
     task_category: string;
-    ranking: {
-      game: string;
-      leaderboard: {
-        rank: number;
-        player: string;
-        score: number;
-        avatar: string;
-      }[];
-      user_rank: string;
-    };
+    ranking: GameDetialLeaderboard;
     social: {
       type: string;
       description: string;
@@ -56,8 +58,8 @@ declare namespace MiniGames {
       remain: number;
     };
     status: string;
-    tasks: TaskItem[];
-    badge: BadgeItem[];
+    tasks?: TaskItem[];
+    badge?: BadgeItem[];
     ticket_price_formatted: string;
     ticket_price_raw: string;
     token_address: string;
