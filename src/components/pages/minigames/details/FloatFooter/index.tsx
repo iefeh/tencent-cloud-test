@@ -36,7 +36,7 @@ const FloatFooter: FC = () => {
         <div className="flex pr-1 mt-5">
           <StrokeButton
             strokeType="brown"
-            strokeText={share_reward_claimed ? 'Shared' : 'Share'}
+            strokeText={share_reward_claimed ? 'Shared' : 'Free Tickets'}
             needAuth
             startContent={
               <Image
