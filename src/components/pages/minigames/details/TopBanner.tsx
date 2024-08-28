@@ -1,3 +1,4 @@
+import CircularLoading from '@/pages/components/common/CircularLoading';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
@@ -16,8 +17,10 @@ const TopBanner: FC = () => {
 
   return (
     <div className="w-screen md:h-screen h-[50vh] relative flex flex-col justify-end">
-      {data?.poster?.img_url && (
+      {data?.poster?.img_url ? (
         <Image className="object-cover" src={data.poster.img_url} alt="" fill sizes="100%" unoptimized />
+      ) : (
+        <CircularLoading />
       )}
 
       <div className="relative z-0 lg:pl-[16.25rem] md:pl-40 pl-8 mb-9">

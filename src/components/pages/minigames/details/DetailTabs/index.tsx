@@ -22,48 +22,30 @@ interface TabItem {
 
 const DetailTabs: FC = () => {
   const { data } = useMGDContext();
-  const { tasks, ranking, task_category } = data || {};
-  const tabs = getTabs();
-  const router = useRouter();
-
-  const [selectedKey, setSelectedKey] = useState(tabs[0].name);
-
-  function onBack() {
-    router.replace('/minigames');
-  }
-
-  function getTabs() {
-    const list: TabItem[] = [
-      {
-        name: 'overview',
-        label: 'Overview',
-        title: 'About',
-        content: <OverviewTabPanel />,
-      },
-    ];
-
-    if ((tasks?.length || 0) > 0) {
-      list.push({
-        name: 'tasks',
-        label: 'Tasks',
-        content: <TasksTabPanel />,
-        right: (
-          <Link href={`/LoyaltyProgram/earn/group/${task_category}`} target="_blank">
-            More &gt;&gt;
-          </Link>
-        ),
-      });
-    }
-
-    if (ranking) {
-      list.push({
-        name: 'ranking',
-        label: 'Ranking',
-        content: <RankingTabPanel />,
-      });
-    }
-
-    list.push({
+  const { task_category } = data || {};
+  const tabs: TabItem[] = [
+    {
+      name: 'overview',
+      label: 'Overview',
+      title: 'About',
+      content: <OverviewTabPanel />,
+    },
+    {
+      name: 'tasks',
+      label: 'Tasks',
+      content: <TasksTabPanel />,
+      right: (
+        <Link href={`/LoyaltyProgram/earn/group/${task_category}`} target="_blank">
+          More &gt;&gt;
+        </Link>
+      ),
+    },
+    {
+      name: 'leaderboard',
+      label: 'Leaderboard',
+      content: <RankingTabPanel />,
+    },
+    {
       name: 'badges',
       label: 'Badges & SBTs',
       content: <BadgesTabPanel />,
@@ -72,9 +54,14 @@ const DetailTabs: FC = () => {
           More &gt;&gt;
         </Link>
       ),
-    });
+    },
+  ];
+  const router = useRouter();
 
-    return list;
+  const [selectedKey, setSelectedKey] = useState(tabs[0].name);
+
+  function onBack() {
+    router.replace('/minigames');
   }
 
   return (
