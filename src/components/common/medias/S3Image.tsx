@@ -1,11 +1,16 @@
 import Image, { type ImageProps } from 'next/image';
 import { FC } from 'react';
 
-type Props = Override<ImageProps, { src: string; alt?: string }>;
+type Props = Override<ImageProps, {
+  src: string;
+  alt?: string;
+  refEl?: React.RefObject<HTMLImageElement>;
+}>;
 
-const S3Image: FC<Props> = ({ src, alt, unoptimized = true, width, height, fill, ...props }) => {
+const S3Image: FC<Props> = ({ src, alt, unoptimized = true, width, height, fill, refEl, ...props }) => {
   return (
     <Image
+      ref={refEl}
       src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/${src.replace(/^\/+/, '')}`}
       alt={alt || ''}
       unoptimized={unoptimized}

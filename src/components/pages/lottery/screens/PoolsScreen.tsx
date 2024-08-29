@@ -7,6 +7,8 @@ import { queryPoolsListAPI } from '@/http/services/lottery';
 import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
 import LGButton from '@/pages/components/common/buttons/LGButton';
+import EmptyContent from '@/components/common/EmptyContent';
+import { cn } from '@nextui-org/react';
 // import { LotteryStatus } from '@/constant/lottery';
 
 const PoolsScreen: FC = () => {
@@ -40,16 +42,20 @@ const PoolsScreen: FC = () => {
       <div className="w-full h-0 border-t-1 border-basic-gray mt-5"></div>
 
       {userInfo ? (
-        <div className="relative min-h-[12.5rem] grid grid-cols-3 gap-6 mt-10">
-          {pools.map((pool, index) => (
-            <PoolCard key={index} item={pool} />
-          ))}
-
-          {loading && <CircularLoading />}
+        <div
+          className={cn(['relative grid grid-cols-3 gap-6 mt-10 min-h-[12.5rem]', pools.length < 1 && 'min-h-[36rem]'])}
+        >
+          {loading ? (
+            <CircularLoading />
+          ) : pools.length < 1 ? (
+            <EmptyContent content="Coming soon, please stay tuned." />
+          ) : (
+            pools.map((pool, index) => <PoolCard key={index} item={pool} />)
+          )}
         </div>
       ) : (
         <div className="w-full min-h-[12.5rem] flex flex-col justify-center items-center mt-10">
-          <LGButton label='Please sign-in to continue' actived needAuth />
+          <LGButton label="Please sign-in to continue" actived needAuth />
         </div>
       )}
     </section>

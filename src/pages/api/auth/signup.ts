@@ -78,14 +78,14 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
         if (!payload.invite.virtual) {
           await saveNewInviteeRegistrationMoonBeamAudit(payload.user.user_id, payload.invite.user_id, session);
         }
-
-        await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, session);
-
-        if (payload.indirect_inviter_id) {
-          await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, session);
-        }
       }
     });
+    if (payload.invite) {
+      await incrUserMetric(payload.invite.user_id, Metric.TotalInvitee, 1, null);
+    }
+    if (payload.indirect_inviter_id) {
+      await incrUserMetric(payload.indirect_inviter_id, Metric.TotalIndirectInvitee, 1, null);
+    }
   } catch (e) {
     if (isDuplicateKeyError(e)) {
       logger.warn(e);
