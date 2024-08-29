@@ -27,7 +27,6 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     res.json(response.invalidParams());
     return;
   }
-console.log(detail);
   await enrichRanking(userId, detail);
 
   res.json(response.success(detail));

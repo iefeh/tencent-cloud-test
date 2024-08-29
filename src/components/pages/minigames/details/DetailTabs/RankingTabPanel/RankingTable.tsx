@@ -1,8 +1,4 @@
-import EmptyContent from '@/components/common/EmptyContent';
-import { queryMiniGameLeaderboardAPI } from '@/http/services/minigames';
-import CircularLoading from '@/pages/components/common/CircularLoading';
-import { useMGDContext } from '@/store/MiniGameDetails';
-import { MiniGames } from '@/types/minigames';
+import type { MiniGames } from '@/types/minigames';
 import {
   Popover,
   PopoverContent,
@@ -15,41 +11,43 @@ import {
   TableRow,
   cn,
 } from '@nextui-org/react';
-import { observer } from 'mobx-react-lite';
+import dayjs from 'dayjs';
 import Image from 'next/image';
-import { useState, type CSSProperties, type FC, useEffect } from 'react';
+import type { CSSProperties, FC } from 'react';
+import { isMobile } from 'react-device-detect';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 
-const RankingTabPanel: FC = () => {
-  const { data } = useMGDContext();
-  const [ranking, setRanking] = useState<MiniGames.GameDetialLeaderboard | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { leaderboard, user_rank } = ranking || {};
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
+
+
+interface Props {
+  ranking?: MiniGames.GameDetialLeaderboardItem | null;
+}
+
+const RankingTable: FC<Props> = ({ ranking }) => {
+  const { lbInfos: leaderboard, user_rank, start_time } = ranking || {};
   const columns = ['Rank', 'Player', 'Score'];
   const varStyles = { '--stroke-color': '#7A0A08' } as CSSProperties;
 
-  async function queryLeaderboard() {
-    if (!data?.client_id) {
-      setRanking(null);
-      return;
-    }
-
-    setLoading(true);
-    const res = await queryMiniGameLeaderboardAPI({ client_id: data.client_id });
-    setRanking(res?.ranking || null);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    queryLeaderboard();
-  }, [data]);
-
   return (
-    <div className="pt-6 px-[1.875rem] pb-9 rounded-[1.25rem] bg-[#F7E9CC] relative" style={varStyles}>
-      {loading ? (
-        <CircularLoading />
-      ) : !ranking ? (
-        <EmptyContent />
-      ) : (
+    <div className="flex-1">
+      <div className="w-full h-6 flex justify-between items-center mb-6">
+        <div className="max-w-fit px-0 py-0 text-3xl leading-none">Leaderboard</div>
+
+        {start_time ? <div>{dayjs(start_time).tz(dayjs.tz.guess()).format('MMMM DD, YYYY, GMTZ')}</div> : '--'}
+      </div>
+
+      <div
+        className={cn([
+          'pt-6 px-[1.875rem] pb-9 rounded-[1.25rem] bg-[#F7E9CC] relative overflow-hidden',
+          !isMobile && !ranking && 'h-[36rem]',
+        ])}
+        style={varStyles}
+      >
         <Table
           aria-label="Events participated"
           classNames={{
@@ -126,25 +124,28 @@ const RankingTabPanel: FC = () => {
             ))}
           </TableBody>
         </Table>
-      )}
 
-      <div className="flex items-center bg-[#E4D4B2] rounded-base border-1 border-dashed border-[#8F5535] h-20 mt-3 pl-6">
-        <span className="text-brown text-2xl">My Rank</span>
+        <div className="flex items-center bg-[#E4D4B2] rounded-base border-1 border-dashed border-[#8F5535] h-20 mt-3 pl-6">
+          <span className="text-brown text-2xl">My Rank</span>
 
-        <Image
-          className="object-contain w-[3.125rem] h-[3.125rem] ml-11"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_star.png"
-          alt=""
-          width={100}
-          height={100}
-          unoptimized
-          priority
-        />
+          <Image
+            className="object-contain w-[3.125rem] h-[3.125rem] ml-11"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_star.png"
+            alt=""
+            width={100}
+            height={100}
+            unoptimized
+            priority
+          />
 
-        <span className="ml-[0.875rem] stroke-text-normal text-3xl text-[#FDC511]" data-text={user_rank || '-'}></span>
+          <span
+            className="ml-[0.875rem] stroke-text-normal text-3xl text-[#FDC511]"
+            data-text={user_rank || '-'}
+          ></span>
+        </div>
       </div>
     </div>
   );
 };
 
-export default observer(RankingTabPanel);
+export default RankingTable;

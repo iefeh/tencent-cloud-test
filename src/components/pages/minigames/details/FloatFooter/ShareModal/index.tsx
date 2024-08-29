@@ -49,6 +49,7 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         hideCloseButton
+        placement='center'
         classNames={{
           base: 'max-w-[42.5rem] text-brown rounded-none bg-transparent shadow-none',
           body: 'pl-0 pb-0 pt-5 pr-6',
@@ -65,7 +66,7 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                     to claim your rewards.
                   </p>
 
-                  <div className="flex justify-center gap-x-[0.375rem] mt-12">
+                  <div className="flex flex-col md:flex-row justify-center items-center gap-x-[0.375rem] gap-y-4 mt-12">
                     <StrokeButton
                       className="w-60"
                       strokeType="brown"
