@@ -43,14 +43,15 @@ const RankingTable: FC<Props> = ({ ranking }) => {
 
       <div
         className={cn([
-          'pt-6 px-[1.875rem] pb-9 rounded-[1.25rem] bg-[#F7E9CC] relative overflow-hidden',
-          !isMobile && !ranking && 'h-[36rem]',
+          'pt-6 px-[1.875rem] pb-9 rounded-[1.25rem] bg-[#F7E9CC] relative overflow-hidden flex flex-col flex-1',
+          !isMobile && !ranking && 'h-[33rem]',
         ])}
         style={varStyles}
       >
         <Table
           aria-label="Events participated"
           classNames={{
+            base: 'flex-1',
             table: 'border-collapse',
             wrapper: 'bg-transparent shadow-none p-0 rounded-none',
             thead: '[&>tr:nth-child(2)]:hidden rounded-tl-[1.25rem]',
