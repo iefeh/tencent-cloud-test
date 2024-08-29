@@ -33,7 +33,7 @@ const TicketCountdown: FC<Props> = ({ endTime, isBrown, isSmall }) => {
         unoptimized
       />
 
-      <span className={cn([isSmall ? 'text-[0.875rem] mr-[0.625rem]' : 'text-sm mr-[0.875rem]'])}>
+      <span className={cn(['whitespace-nowrap', isSmall ? 'text-[0.875rem] mr-[0.625rem]' : 'text-sm mr-[0.875rem]'])}>
         Current tickets will expire in
       </span>
 
@@ -43,9 +43,7 @@ const TicketCountdown: FC<Props> = ({ endTime, isBrown, isSmall }) => {
           <div
             className={cn([
               'aspect-square bg-[#E0D1B1] rounded-five text-brown text-center font-semibold',
-              isSmall
-                ? 'text-[0.84375rem] w-[1.75rem] leading-[1.75rem]'
-                : 'text-base w-[2.125rem] leading-[2.125rem]',
+              isSmall ? 'text-[0.84375rem] w-[1.75rem] leading-[1.75rem]' : 'text-base w-[2.125rem] leading-[2.125rem]',
             ])}
           >
             {no}
