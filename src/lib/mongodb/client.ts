@@ -60,3 +60,14 @@ export function connectToMongoDb2048(): Connection {
     }
     return connectToDatabase(mongoURI);
 }
+
+// 连接至dev库
+export function connectToMongoDbGoldminer(): Connection {
+    const mongoURI = process.env.MONGODB_GOLDMINER_URI!
+    if (!mongoURI) {
+        throw new Error(
+            'Please define the MONGODB_2048_URI environment variable'
+        )
+    }
+    return connectToDatabase(mongoURI);
+}

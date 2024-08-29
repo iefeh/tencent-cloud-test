@@ -1,5 +1,5 @@
 import { Document, Model, model, models, PipelineStage, Schema } from 'mongoose';
-import { connectToMongoDb2048 } from '../mongodb/client';
+import { connectToMongoDbGoldminer } from '../mongodb/client';
 import User from './User';
 
 // 2048排行榜信息
@@ -18,11 +18,12 @@ const UserScoreRankSchema = new Schema<IUserScoreRank>({
     sum_score: { type: Number },
 });
 
-const connection = connectToMongoDb2048();
-const Puffy2048UserScoreRank: Model<IUserScoreRank> = models.UserScoreRank || connection.model<IUserScoreRank>("UserScoreRank", UserScoreRankSchema, 'user_score_rank');
-export default Puffy2048UserScoreRank;
+const connection = connectToMongoDbGoldminer();
+const GoldminerUserScoreRank: Model<IUserScoreRank> = models.UserScoreRank || connection.model<IUserScoreRank>("UserScoreRank", UserScoreRankSchema, 'user_score_rank');
+export default GoldminerUserScoreRank;
 
-export async function get2048Leaderboard(userId: string | undefined, lbId: string) {
+
+export async function getGoldminerLeaderboard(userId: string | undefined, lbId: string) {
     // 查询排行榜信息
     const pipeline: PipelineStage[] = [
         {
@@ -37,8 +38,8 @@ export async function get2048Leaderboard(userId: string | undefined, lbId: strin
         {
             $limit: 5
         }];
-        
-    let lbInfos: any[] = await Puffy2048UserScoreRank.aggregate(pipeline);
+
+    let lbInfos: any[] = await GoldminerUserScoreRank.aggregate(pipeline);
     let userIds = lbInfos.map(r => r.uid);
 
     // 查询用户昵称信息
@@ -56,12 +57,12 @@ export async function get2048Leaderboard(userId: string | undefined, lbId: strin
     // 查询用户排行信息
     let userRank: any = '-';
     if (userId) {
-        const userRankInfo = await Puffy2048UserScoreRank.findOne({ leaderboard_id: lbId, uid: userId });
+        const userRankInfo = await GoldminerUserScoreRank.findOne({ leaderboard_id: lbId, uid: userId });
         if (userRankInfo) {
-            userRank = await Puffy2048UserScoreRank.count({ leaderboard_id: lbId, sum_score: { $gt: userRankInfo.sum_score } });
+            userRank = await GoldminerUserScoreRank.count({ leaderboard_id: lbId, sum_score: { $gt: userRankInfo.sum_score } });
             userRank++;
         }
     }
-    
+
     return { lbInfos: lbInfos, userRank: userRank };
 }

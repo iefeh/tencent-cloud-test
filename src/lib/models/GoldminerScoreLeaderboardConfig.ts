@@ -1,5 +1,5 @@
 import { Document, Model, model, models, Schema } from 'mongoose';
-import { connectToMongoDb2048 } from '../mongodb/client';
+import { connectToMongoDbGoldminer } from '../mongodb/client';
 
 // 2048排行榜配置信息
 export interface IScoreLeaderboardConfig extends Document {
@@ -14,7 +14,7 @@ const ScoreLeaderboardConfigSchema = new Schema<IScoreLeaderboardConfig>({
     end_time: { type: Number, required: true }
 });
 
-const connection = connectToMongoDb2048();
-const Puffy2048ScoreLeaderboardConfig: Model<IScoreLeaderboardConfig> = models.ScoreLeaderboardConfig || connection.model<IScoreLeaderboardConfig>("ScoreLeaderboardConfig", ScoreLeaderboardConfigSchema, 'score_leaderboard_config');
-export default Puffy2048ScoreLeaderboardConfig;
+const connection = connectToMongoDbGoldminer();
+const GoldminerScoreLeaderboardConfig: Model<IScoreLeaderboardConfig> = models.ScoreLeaderboardConfig || connection.model<IScoreLeaderboardConfig>("ScoreLeaderboardConfig", ScoreLeaderboardConfigSchema, 'score_leaderboard_config');
+export default GoldminerScoreLeaderboardConfig;
 
