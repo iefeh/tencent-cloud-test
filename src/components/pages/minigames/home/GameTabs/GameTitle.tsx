@@ -3,11 +3,13 @@ import { FC, CSSProperties, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
 import BgImageComp from '@/components/common/BgImage';
 import { useState } from 'react';
-import CloudItemComp, { CloudItemPosition } from './CloudItemComp';
+import CloudItemComp, { CloudItemPosition } from './CloudItemAni';
+
 import Image from 'next/image';
 
 interface Props {
   swiperIndex: number | null;
+  animation: boolean;
 }
 
 const getUrl = (name: string): string => {
