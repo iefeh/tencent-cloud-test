@@ -29,7 +29,6 @@ const ShortButton: FC<Props> = ({
   ...rest
 }) => {
   const { userInfo, toggleLoginModal } = useUserContext();
-  if (isDisabled) strokeType = 'gray';
 
   function handlePress(e: any) {
     if (needAuth && !userInfo) {
@@ -48,6 +47,7 @@ const ShortButton: FC<Props> = ({
         '!opacity-100',
         'w-[5.8125rem] h-[3.422rem] text-[1.03125rem] leading-[1.125rem]',
         strokeType === 'ticket' ? 'border-2 border-[#433127]/50 cursor-default bg-[#F7E9CC]' : '',
+        isDisabled && 'grayscale',
         className,
       ])}
       isDisabled={isDisabled}

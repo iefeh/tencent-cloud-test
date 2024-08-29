@@ -4,6 +4,9 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Radio,
   RadioGroup,
   Tooltip,
@@ -163,15 +166,26 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                           </ul>
                         }
                       >
-                        <Image
-                          className="object-contain w-8 h-8"
-                          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_question.png"
-                          alt=""
-                          width={64}
-                          height={64}
-                          unoptimized
-                          priority
-                        />
+                        <Popover placement="right">
+                          <PopoverTrigger>
+                            <Image
+                              className="object-contain w-8 h-8"
+                              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_question.png"
+                              alt=""
+                              width={64}
+                              height={64}
+                              unoptimized
+                              priority
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <ul>
+                              <li>- You can purchase up to 10 tickets once.</li>
+                              <li>- Tickets are non-refundable once purchased.</li>
+                              <li>- Tickets have a validity period and will automatically expire after this period.</li>
+                            </ul>
+                          </PopoverContent>
+                        </Popover>
                       </Tooltip>
                     </div>
 
@@ -212,28 +226,30 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                         onPress={onBuyTicketsClick}
                       />
 
-                      <Tooltip content="Coming Soon">
-                        <div className="order-3 w-full md:w-auto">
-                          <StrokeButton
-                            className={cn([
-                              'w-full md:w-56',
-                              isMobile &&
-                                "!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_gray_longest.png')]",
-                            ])}
-                            strokeType="yellow"
-                            strokeText="Exchange Tickets"
-                            isDisabled
-                            style={
-                              isMobile
-                                ? {}
-                                : {
-                                    backgroundImage:
-                                      "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
-                                  }
-                            }
-                          />
-                        </div>
-                      </Tooltip>
+                      {isMobile || (
+                        <Tooltip content="Coming Soon">
+                          <div className="order-3 w-full md:w-auto">
+                            <StrokeButton
+                              className={cn([
+                                'w-full md:w-56',
+                                isMobile &&
+                                  "!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_gray_longest.png')]",
+                              ])}
+                              strokeType="yellow"
+                              strokeText="Exchange Tickets"
+                              isDisabled
+                              style={
+                                isMobile
+                                  ? {}
+                                  : {
+                                      backgroundImage:
+                                        "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
+                                    }
+                              }
+                            />
+                          </div>
+                        </Tooltip>
+                      )}
                     </div>
                   </div>
                 </div>
