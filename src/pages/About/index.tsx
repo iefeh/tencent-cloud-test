@@ -1,15 +1,16 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Video from '../components/common/Video';
 import { cn } from '@nextui-org/react';
 import S3Image from '@/components/common/medias/S3Image';
 import Planet, { type PlanetProps } from '@/components/pages/about/Planet';
+import useShake from '@/hooks/useShake';
 
 const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
   /* Bushwhack */
   {
-    top: 156,
-    left: 752,
+    top: 178,
+    left: 600,
     width: 96,
     height: 87,
     offsetFX: -1.5,
@@ -37,18 +38,24 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
       />
     ),
   },
-  /* Other Games */
+  /* Mini Games */
   {
-    top: 291,
-    left: 1268,
+    top: 320,
+    left: 1168,
     width: 61,
     height: 60,
     offsetFX: -3,
     offsetFY: 1.7,
     src: '/about/ecoanimations/planet_other.png',
-    label: 'Other Games',
+    getLogo: (fn, className) => (
+      <div className={cn(['flex items-center gap-x-3 w-max', className])}>
+        <S3Image className="object-contain w-8 h-8" src="/about/ecoanimations/minigames.png" />
+
+        <span>Mini Games</span>
+      </div>
+    ),
   },
-  /* Mini-Games */
+  /* Badge System */
   {
     top: 404,
     left: 437,
@@ -56,10 +63,10 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     height: 33,
     offsetFX: -2.4,
     offsetFY: 1.4,
-    src: '/about/ecoanimations/planet_minigames.png',
-    label: 'Mini-Games',
+    src: '/about/ecoanimations/planet_hceb.png',
+    label: 'Badge System',
   },
-  /* Badge System */
+  /** Moon Beam Points */
   {
     top: 485,
     left: 604,
@@ -68,9 +75,9 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: 2.2,
     offsetFY: -1.6,
     src: '/about/ecoanimations/planet_badge.png',
-    label: 'Badge System',
+    label: 'Moon Beam Points',
   },
-  /* Moon Beams */
+  /* Identity SBT */
   {
     top: 550,
     left: 762,
@@ -79,34 +86,45 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: -2,
     offsetFY: 1.7,
     src: '/about/ecoanimations/planet_mb.png',
-    label: 'Moon Beams',
+    label: 'Identity SBT',
   },
-  /* Value Capture Mechanism */
+  /* Identity Data Layer */
   {
-    top: 546,
+    top: 568,
     left: 982,
     width: 51,
     height: 50,
     offsetFX: 1.8,
     offsetFY: 1.6,
     src: '/about/ecoanimations/planet_vcm.png',
-    label: 'Value Capture Mechanism',
+    label: 'Identity Data Layer',
   },
-  /* CDK Chain */
+  /* Value Capture Tools */
   {
-    top: 541,
-    left: 204,
+    top: 610,
+    left: 1282,
+    width: 51,
+    height: 50,
+    offsetFX: 1.8,
+    offsetFY: 1.6,
+    src: '/about/ecoanimations/planet_cdk.png',
+    label: 'Value Capture Tools',
+  },
+  /* Integrated Wallets */
+  {
+    top: 600,
+    left: 360,
     width: 35,
     height: 34,
     offsetFX: 2.8,
     offsetFY: 1.8,
     src: '/about/ecoanimations/planet_cdk.png',
-    label: 'CDK Chain',
+    label: 'Integrated Wallets',
   },
   /* Highly customizableenvironment for builders */
   {
-    top: 683,
-    left: 461,
+    top: 740,
+    left: 720,
     width: 51,
     height: 50,
     offsetFX: -2.3,
@@ -114,29 +132,13 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     src: '/about/ecoanimations/planet_hceb.png',
     getLogo: (fn, className) => (
       <span className={className}>
-        Highly customizable
+        Customizable
         <br />
-        environment for builders
+        Environment for Builders
       </span>
     ),
   },
-  /* Seamless UX & interoperability for gamers */
-  {
-    top: 787,
-    left: 800,
-    width: 51,
-    height: 50,
-    offsetFX: 1.88,
-    offsetFY: -2.4,
-    src: '/about/ecoanimations/planet_ux.png',
-    getLogo: (fn, className) => (
-      <span className={className}>
-        Seamless UX
-        <br />& interoperability for gamers
-      </span>
-    ),
-  },
-  /* Unified and frictionless liquidity */
+  /* Unified Liquidity */
   {
     top: 787,
     left: 1200,
@@ -145,12 +147,59 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: -2.3,
     offsetFY: 2.3,
     src: '/about/ecoanimations/planet_unified.png',
-    label: 'Unified and frictionless liquidity',
+    label: 'Unified Liquidity',
+  },
+  /* Top Quality Games */
+  {
+    top: 300,
+    left: 1600,
+    width: 35,
+    height: 34,
+    offsetFX: -2.3,
+    offsetFY: 2.3,
+    isSrcText: true,
+    src: 'Top Quality Games',
+    getLogo: (fn, className) => (
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>Product Layer</div>
+    ),
+  },
+  /* OPS & Identity Layer */
+  {
+    top: 560,
+    left: 1700,
+    width: 35,
+    height: 34,
+    offsetFX: -2.3,
+    offsetFY: 2.3,
+    isSrcText: true,
+    src: 'Data & Operations',
+    getLogo: (fn, className) => (
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
+    ),
+  },
+  /* OPS & Identity Layer */
+  {
+    top: 800,
+    left: 1656,
+    width: 35,
+    height: 34,
+    offsetFX: -2.3,
+    offsetFY: 2.3,
+    isSrcText: true,
+    src: 'Moonveil L2 Chain',
+    getLogo: (fn, className) => (
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>Infra Layer</div>
+    ),
   },
 ];
 
 export default function About() {
   const [isWidthMore, setIsWidthMore] = useState(true);
+  const shakeRef1 = useRef<HTMLImageElement>(null);
+  const shakeRef2 = useRef<HTMLImageElement>(null);
+
+  useShake(shakeRef1);
+  useShake(shakeRef2);
 
   function onResize() {
     const { innerWidth, innerHeight } = window;
@@ -173,12 +222,12 @@ export default function About() {
   }
 
   useEffect(() => {
-    window.addEventListener('resize', onResize);
-    window.addEventListener('mousemove', onMouseMove);
+    // window.addEventListener('resize', onResize);
+    // window.addEventListener('mousemove', onMouseMove);
 
     return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('mousemove', onMouseMove);
+      // window.removeEventListener('resize', onResize);
+      // window.removeEventListener('mousemove', onMouseMove);
     };
   }, []);
 
@@ -191,7 +240,6 @@ export default function About() {
           // isWidthMore ? 'h-full' : 'w-full',
           'w-full',
         ])}
-        style={{ transformStyle: 'preserve-3d', perspective: '500px' }}
       >
         <Video
           className="w-full h-full"
@@ -207,15 +255,21 @@ export default function About() {
           }}
         />
 
-        <S3Image
-          className="w-[25.875rem] h-[49.75rem] absolute left-0 bottom-0 z-0"
-          src="/about/ecoanimations/nebula_lb.png"
-        />
+        <div className="absolute left-0 bottom-0 z-0">
+          <S3Image
+            ref={shakeRef1}
+            className="w-[25.875rem] h-[49.75rem] object-contain"
+            src="/about/ecoanimations/nebula_lb.png"
+          />
+        </div>
 
-        <S3Image
-          className="w-[34.375rem] h-[33.25rem] absolute right-0 top-0 z-0"
-          src="/about/ecoanimations/nebula_tr.png"
-        />
+        <div className="absolute right-0 top-0 z-0">
+          <S3Image
+            ref={shakeRef2}
+            className="w-[34.375rem] h-[33.25rem] object-contain"
+            src="/about/ecoanimations/nebula_tr.png"
+          />
+        </div>
 
         {Planets.map((planet, index) => (
           <Planet key={index} {...planet} />
