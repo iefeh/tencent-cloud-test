@@ -1,7 +1,7 @@
 import { cn } from '@nextui-org/react';
 import { FC, CSSProperties, useEffect, useRef } from 'react';
 import { isMobile } from 'react-device-detect';
-import BgImageComp from '@/components/common/BgImage';
+import S3Image from '@/components/common/medias/S3Image';
 import { useState } from 'react';
 import CloudItemComp, { CloudItemPosition } from './CloudItemAni';
 
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const getUrl = (name: string): string => {
-  return `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/${name}.png`;
+  return `/minigames/home/${name}.png`;
 };
 
 const cloudUrls: {
@@ -204,11 +204,11 @@ const GameTitle: FC<Props> = (props) => {
     >
       {/* 背景基本要素 */}
       {bgBaseUrls.map((bg, index) => (
-        <BgImageComp key={index} src={bg.url} classNames={cn(['z-20', bg.classNames])} />
+        <S3Image key={index} src={bg.url} className={cn(['z-20 absolute object-contain', bg.classNames])} />
       ))}
       {/* 陨石 */}
       {meteorUrls.map((bg, index) => (
-        <BgImageComp key={index} src={bg.url} classNames={cn(['z-50', bg.classNames])} />
+        <S3Image key={index} src={bg.url} className={cn(['z-50 absolute object-contain', bg.classNames])} />
       ))}
 
       {/* 云 */}

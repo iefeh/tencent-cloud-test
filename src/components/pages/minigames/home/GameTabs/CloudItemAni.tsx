@@ -1,7 +1,7 @@
-import BgImageComp from "@/components/common/BgImage"
 import { CSSProperties, useRef, FC } from "react"
 import { cn } from "@nextui-org/react";
 import styles from './index.module.scss'
+import S3Image from '@/components/common/medias/S3Image';
 
 export type CloudItemPosition = 'lt' | 'lb' | 'rt' | 'rb'
 interface CloudItemProps {
@@ -35,14 +35,15 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
   }
 
   return (
-    <BgImageComp
+    <S3Image
       src={url}
       style={{
         ...calcStyleVar(),
         '--duration-time': '2s'
       } as CSSProperties}
-      classNames={
+      className={
         cn([
+          'absolute',
           'pointer-events-none',
           'z-10',
           inAni === null
