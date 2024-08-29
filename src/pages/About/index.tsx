@@ -160,7 +160,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Top Quality Games',
     getLogo: (fn, className) => (
-      <div className={cn(['-right-14 text-3xl text-basic-yellow', className])}>Product Layer</div>
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>Product Layer</div>
     ),
   },
   /* OPS & Identity Layer */
@@ -174,7 +174,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Data & Operations',
     getLogo: (fn, className) => (
-      <div className={cn(['-right-14 text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
     ),
   },
   /* OPS & Identity Layer */
@@ -188,7 +188,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Moonveil L2 Chain',
     getLogo: (fn, className) => (
-      <div className={cn(['-right-14 text-3xl text-basic-yellow', className])}>Infra Layer</div>
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>Infra Layer</div>
     ),
   },
 ];
