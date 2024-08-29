@@ -4,17 +4,93 @@ import GameCollection from '@/components/pages/minigames/home/GameTabs/GameColle
 import CollectionWarpper from '@/components/pages/minigames/home/GameTabs/CollectionWarpper';
 import GameTitle from '@/components/pages/minigames/home/GameTabs/GameTitle';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import SwiperEl from 'swiper';
 import { Mousewheel, FreeMode } from 'swiper/modules';
 import Head from 'next/head';
-import { FC, useState, CSSProperties } from 'react';
-
+import { FC, useState, CSSProperties, useRef, useEffect } from 'react';
 import 'swiper/css';
 import { isMobile } from 'react-device-detect';
-export const swiperSpeed = 2000;
+
+export const aniSpeed = 2000
+const swiperSpeed = 1500;
 
 const MiniGamesPage: FC & BasePage = () => {
   const [selectedKey, setSelectedKey] = useState('');
   const [swiperIndex, setSwiperIndex] = useState<number | null>(null);
+
+  const animationRef = useRef<boolean>(false)
+
+  let swiperRef = useRef<SwiperEl | null>(null);
+
+  const disableSlider = () => {
+    if (!swiperRef.current) return
+    swiperRef.current.allowSlideNext = false;
+    swiperRef.current.allowSlidePrev = false;
+  }
+
+  const enableSlider = () => {
+    if (!swiperRef.current) return
+    swiperRef.current.allowSlideNext = true;
+    swiperRef.current.allowSlidePrev = true;
+  }
+
+  useEffect(() => {
+    if (isMobile) return
+    if (!swiperRef.current) return
+
+    const dom = swiperRef.current.el
+    dom.addEventListener('wheel', handleMouseWheel);
+
+    return () => {
+      dom.removeEventListener('wheel', handleMouseWheel)
+    }
+  }, [])
+
+  const handleMouseWheel = (event: WheelEvent) => {
+    event.preventDefault();
+
+    if (!swiperRef.current || animationRef.current) return
+
+    disableSlider()
+    animationRef.current = true
+
+    // 向下滚动
+    if (event.deltaY > 0) {
+      setSwiperIndex(1)
+
+      const timeout = setTimeout(() => {
+        if (!swiperRef.current) return
+
+        swiperRef.current.allowSlideNext = true;
+        swiperRef.current.slideNext();
+        clearTimeout(timeout)
+
+        const timeout2 = setTimeout(() => {
+          clearTimeout(timeout2)
+          animationRef.current = false
+          enableSlider()
+        }, swiperSpeed)
+      }, aniSpeed);
+
+    }
+
+    // 向上滚动
+    if (event.deltaY < 0) {
+      const timeout = setTimeout(() => {
+        enableSlider()
+        animationRef.current = false
+        clearTimeout(timeout)
+      }, aniSpeed)
+    }
+  }
+
+  useEffect(() => {
+    if (swiperIndex === 0) {
+      setTimeout(() => {
+        swiperRef.current && (swiperRef.current.allowSlideNext = false);
+      }, aniSpeed + 10)
+    }
+  }, [swiperIndex])
 
   return (
     <section className="relative flex flex-col items-center font-jcyt6 w-screen text-brown">
@@ -38,20 +114,23 @@ const MiniGamesPage: FC & BasePage = () => {
         modules={[Mousewheel, FreeMode]}
         mousewheel={true}
         direction="vertical"
-        speed={swiperSpeed}
+        speed={1500}
         freeMode={isMobile}
         scrollbar={{ draggable: true }}
         slidesPerView="auto"
         spaceBetween={0}
+        allowSlideNext={false}
+        allowSlidePrev={false}
         onSlideChangeTransitionStart={(swiper) => {
           setSwiperIndex(swiper.realIndex);
         }}
         onSlideChangeTransitionEnd={(swiper) => {
           setSwiperIndex(swiper.realIndex);
         }}
+        onSwiper={(swiper) => swiperRef.current = swiper}
       >
         <SwiperSlide className="releative !p-0 z-20 !h-auto" key="title1">
-          <GameTitle swiperIndex={swiperIndex} />
+          <GameTitle animation={animationRef.current} swiperIndex={swiperIndex} />
           <FloatTips />
         </SwiperSlide>
 

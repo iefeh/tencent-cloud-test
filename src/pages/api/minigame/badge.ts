@@ -15,7 +15,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   if (!client_id) {
     res.json(response.invalidParams());
     return
-  }
+  } 
   const userId = req.userId;
 
   // 查询游戏详情

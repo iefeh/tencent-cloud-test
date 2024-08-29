@@ -23,7 +23,11 @@ const TopBanner: FC = () => {
         <CircularLoading />
       )}
 
-      <div className="relative z-0 lg:pl-[16.25rem] md:pl-40 pl-8 mb-9">
+      <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-black/50 to-transparent z-0"></div>
+
+      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black/50 to-transparent z-0"></div>
+
+      <div className="relative z-10 lg:pl-[16.25rem] md:pl-40 pl-8 mb-9">
         <div className="text-5xl">{data?.name || '--'}</div>
 
         <div className="flex items-center gap-x-2 mt-[1.125rem]">

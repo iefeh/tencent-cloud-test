@@ -64,7 +64,7 @@ const PoolListScreen: FC = () => {
 
   useEffect(() => {
     queryData(true);
-  }, [userInfo])
+  }, [userInfo]);
 
   return (
     <div className="relative w-screen pt-[19.5rem] mb-[6.5625rem] flex flex-col justify-center items-center bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png')] bg-[length:100%_auto] bg-no-repeat z-10">
@@ -111,24 +111,31 @@ const PoolListScreen: FC = () => {
         ))}
       </Tabs>
 
-      {userInfo ? <div className="w-[87.5rem] max-w-full min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
-        <div className="w-full grid grid-cols-3 gap-x-6 gap-y-8">
-          {pools.length > 0 ? pools.map((pool, index) => <PoolCard key={index} item={pool} />) : <EmptyContent />}
+      {userInfo ? (
+        <div className="w-[87.5rem] max-w-full min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
+          <div className="w-full grid grid-cols-3 gap-x-6 gap-y-8">
+            {pools.length > 0 ? (
+              pools.map((pool, index) => <PoolCard key={index} item={pool} />)
+            ) : (
+              <EmptyContent content="Coming soon, please stay tuned." />
+            )}
+          </div>
+
+          <CirclePagination
+            key={selectedTab}
+            className="mt-20"
+            total={Math.ceil(total / 9)}
+            page={pagi.current.page_num}
+            onChange={onPageChange}
+          />
+
+          {loading && <CircularLoading className="z-[1000]" />}
         </div>
-
-        <CirclePagination
-          key={selectedTab}
-          className="mt-20"
-          total={Math.ceil(total / 9)}
-          page={pagi.current.page_num}
-          onChange={onPageChange}
-        />
-
-        {loading && <CircularLoading className="z-[1000]" />}
-      </div> : 
+      ) : (
         <div className="w-[87.5rem] min-h-[12.5rem] flex flex-col justify-center items-center mt-10">
-          <LGButton label='Please sign-in to continue' actived needAuth />
-        </div>}
+          <LGButton label="Please sign-in to continue" actived needAuth />
+        </div>
+      )}
     </div>
   );
 };
