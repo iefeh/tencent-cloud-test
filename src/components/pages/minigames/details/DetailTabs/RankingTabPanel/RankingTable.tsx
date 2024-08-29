@@ -38,7 +38,7 @@ const RankingTable: FC<Props> = ({ ranking }) => {
       <div className="w-full h-6 flex justify-between items-center mb-6">
         <div className="max-w-fit px-0 py-0 text-3xl leading-none">Leaderboard</div>
 
-        {start_time ? <div>{dayjs(start_time).tz(dayjs.tz.guess()).format('MMMM DD, YYYY, GMTZ')}</div> : '--'}
+        {start_time ? <div>{dayjs(start_time).tz(dayjs.tz.guess()).format('MMMM DD, YYYY, zzz')}</div> : '--'}
       </div>
 
       <div
