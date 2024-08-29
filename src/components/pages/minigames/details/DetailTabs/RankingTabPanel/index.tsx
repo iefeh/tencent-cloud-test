@@ -62,7 +62,7 @@ const RankingTabPanel: FC = () => {
         <>
           <RankingTable ranking={latest} />
 
-          <RankingTable ranking={previous} />
+          <RankingTable />
         </>
       )}
     </div>
