@@ -135,7 +135,7 @@ export const routeText: RouteMenu[] = [
             // disabled: true,
           },
           {
-            name: '黄金矿工',
+            name: 'Puff Miner',
             icon: '/minigames/icons/icon_miner.png',
             route: '/minigames/details/1bcb51aa-bab1-476d-b09a-f20d103d16d0',
           },
