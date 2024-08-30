@@ -49,7 +49,8 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
   const [buyLoading, setBuyLoading] = useState(false);
   const { onBuyTickets } = useBuyTickets();
 
-  const digit = data?.ticket_price_formatted ? Math.ceil(-Math.log10(+(data.ticket_price_formatted || 0))) : 0;
+  const tpf = +(data?.ticket_price_formatted || 0);
+  const digit = tpf ? Math.ceil(-Math.log10(tpf % 1)) : 0;
   const totalPrice = (+(data?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
 
   async function onBuyTicketsClick() {
