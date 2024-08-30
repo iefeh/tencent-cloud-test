@@ -21,12 +21,6 @@ import UserInfo from '@/pages/components/common/UserInfo';
 import Link from 'next/link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
-import { isMobile } from 'react-device-detect';
-import Entry2048 from '@/components/pages/header/Entry2048';
-import Game2048Icon from 'img/header/2048.png';
-import AstrarkIcon from 'img/header/astrark.png';
-import BushwhackIcon from 'img/header/bushwhack.png';
-import FlamingPetsIcon from 'img/header/flaming_pets.png';
 import styles from './index.module.scss';
 
 export const routeText: RouteMenu[] = [
@@ -37,6 +31,17 @@ export const routeText: RouteMenu[] = [
       {
         name: 'Introduction',
         route: '/LoyaltyProgram/intro',
+        children: [
+          {
+            name: 'Moonveil Badge Introduction',
+            route:
+              'https://medium.com/@Moonveil_Studio/unlock-achievements-reap-rewards-the-moonveil-badge-system-unveiled-26c94eca97b5',
+          },
+          {
+            name: 'My Badges',
+            route: '/Profile/MyBadges',
+          },
+        ],
       },
       {
         name: 'My Season Pass',
@@ -87,13 +92,13 @@ export const routeText: RouteMenu[] = [
     children: [
       {
         name: 'AstrArk',
-        icon: AstrarkIcon,
+        icon: "/header/icons/astrark.png",
         route: '/AstrArk',
         children: [
-          {
-            name: 'Game Download',
-            route: '/AstrArk/Download',
-          },
+          // {
+          //   name: 'Game Download',
+          //   route: '/AstrArk/Download',
+          // },
           {
             name: 'Pre-Registration',
             route: '/AstrArk/PreRegistration',
@@ -104,14 +109,14 @@ export const routeText: RouteMenu[] = [
           },
           {
             name: 'Alpha Test Tasks',
-            route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk'
-          }
+            route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk',
+          },
         ],
       },
       {
         name: 'Bushwhack',
         route: '/Bushwhack',
-        icon: BushwhackIcon,
+        icon: "/header/icons/bushwhack.png",
       },
       // {
       //   name: 'Gyoza',
@@ -120,20 +125,20 @@ export const routeText: RouteMenu[] = [
       // },
       {
         name: 'Mini Games',
-        // route: '/minigames',
-        disabled: true,
+        route: '/minigames',
+        // disabled: true,
         children: [
-          // {
-          //   name: '2048',
-          //   icon: Game2048Icon,
-          //   route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
-          //   disabled: true,
-          // },
-          // {
-          //   name: '黄金矿工',
-          //   route: '',
-          //   disabled: true,
-          // },
+          {
+            name: '2048',
+            icon: "/header/icons/2048.png",
+            route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
+            // disabled: true,
+          },
+          {
+            name: 'Puffy Miner',
+            icon: '/minigames/icons/icon_miner.png',
+            route: '/minigames/details/1bcb51aa-bab1-476d-b09a-f20d103d16d0',
+          },
           // {
           //   name: 'TG小火箭',
           //   route: '',
@@ -197,40 +202,6 @@ export const routeText: RouteMenu[] = [
       // },
     ],
   },
-  {
-    // name: 'Play AstrArk Now',
-    name: 'AstrArk Coming Soon!',
-    route: '/AstrArk/Download',
-    render: (name) => (
-      <div
-        className={cn(['relative w-[17rem] h-8 leading-8 rounded-2xl cursor-pointer font-poppins text-xl', styles.aaMenu])}
-      >
-        <Image
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 z-10 rounded-md"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/icon_astrark_ultra.png"
-          alt=""
-          width={1024}
-          height={1024}
-          unoptimized
-          priority
-        />
-
-        {Array(4)
-          .fill(null)
-          .map((_, index) => (
-            <div key={index} className="absolute inset-0 corner z-0"></div>
-          ))}
-
-        <div className="absolute inset-0 pl-8 z-10 text-center ani-jog">
-          {name.split('').map((t, i) => (
-            <span key={i} className="char" data-text={t} style={{ '--char-index': i } as CSSProperties}>
-              {t === ' ' ? <>&nbsp;</> : t}
-            </span>
-          ))}
-        </div>
-      </div>
-    ),
-  },
 ];
 
 const mediaIcon = [
@@ -292,12 +263,14 @@ const Header = () => {
   const router = useRouter();
 
   const DropMenu = useMemo(() => {
-    return <>
-      {routeText.map((value, index) => (
-        <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
-      ))}
-    </>
-  }, [])
+    return (
+      <>
+        {routeText.map((value, index) => (
+          <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
+        ))}
+      </>
+    );
+  }, []);
 
   function isActiveRoute(menu: RouteMenu) {
     const route = router.asPath || '/';
@@ -314,9 +287,7 @@ const Header = () => {
 
       {/* <Entry2048 /> */}
 
-      <div className="font-semakin flex items-center max-lg:hidden">
-        {DropMenu}
-      </div>
+      <div className="font-semakin flex items-center max-lg:hidden">{DropMenu}</div>
 
       <div className="flex items-center flex-[1] justify-end">
         <div className="max-lg:hidden flex items-center mr-4">
@@ -335,9 +306,9 @@ const Header = () => {
           })}
 
           <MoreLinks />
-
-          <Notification />
         </div>
+
+        <Notification />
 
         <UserInfo />
 

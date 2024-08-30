@@ -1,18 +1,23 @@
+import { format } from 'date-fns';
+import { ethers } from 'ethers';
+
+import { AuthorizationType } from '@/lib/authorization/types';
+import { getUserFirstWhitelist, queryUserAuth } from '@/lib/common/user';
 import QuestAchievement from '@/lib/models/QuestAchievement';
-import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
-import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import Token from '@/lib/models/Token';
+import UserMetrics from '@/lib/models/UserMetrics';
+import UserMoonBeamAudit from '@/lib/models/UserMoonBeamAudit';
+import UserTokenReward from '@/lib/models/UserTokenReward';
+import { constructQuest } from '@/lib/quests/constructor';
 import { queryUserDiscordAuthorization } from '@/lib/quests/implementations/connectDiscordQuest';
 import { queryUserSteamAuthorization } from '@/lib/quests/implementations/connectSteamQuest';
 import { queryUserTelegramAuthorization } from '@/lib/quests/implementations/connectTelegramQuest';
-import { AuthorizationType } from '@/lib/authorization/types';
+import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
 import { QuestType } from '@/lib/quests/types';
-import UserMetrics from '@/lib/models/UserMetrics';
-import UserMoonBeamAudit from '@/lib/models/UserMoonBeamAudit';
-import { getUserFirstWhitelist, queryUserAuth } from '@/lib/common/user';
-import { constructQuest } from '@/lib/quests/constructor';
-import UserTwitter from '../models/UserTwitter';
+
 import TwitterTopicTweet from '../models/TwitterTopicTweet';
-import { format } from 'date-fns';
+import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
 
 // 增强用户的quests，场景：用户任务列表
@@ -23,6 +28,8 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     await enrichQuestAchievement(userId, quests);
     // 为任务添加authorization、user_authorized字段
     await enrichQuestAuthorization(userId, quests);
+    // 为任务添加user_token_reward字段
+    await enrichQuestTokenClaimStatus(userId, quests);
     // 丰富任务进度
     await enrichTasksProgress(userId, quests);
     // 丰富任务属性
@@ -38,23 +45,25 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
         if (quest.type != QuestType.ConnectWallet || !quest.verified) {
             continue;
         }
-        // 用户已经完成钱包任务，获取钱包资产上次同步时间
-        const metrics = await UserMetrics.findOne(
-            { user_id: userId },
-            { _id: 0, wallet_asset_value_last_refresh_time: 1 },
-        );
-        // 用服务器时间进行校验行为矫正
-        const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
-        let reverifyAfter = reverifyAt - Date.now();
-        reverifyAfter = reverifyAfter > 0 ? reverifyAfter : 0;
-        if (quest.properties) {
-            quest.properties.last_verified_time = metrics.wallet_asset_value_last_refresh_time;
-            quest.properties.can_reverify_after = reverifyAfter;
-        } else {
-            quest.properties = {
-                last_verified_time: metrics.wallet_asset_value_last_refresh_time,
-                can_reverify_after: reverifyAfter,
-            };
+        if (quest.type === QuestType.ConnectWallet) {
+            // 用户已经完成钱包任务，获取钱包资产上次同步时间
+            const metrics = await UserMetrics.findOne(
+                { user_id: userId },
+                { _id: 0, wallet_asset_value_last_refresh_time: 1 },
+            );
+            // 用服务器时间进行校验行为矫正
+            const reverifyAt = Number(metrics.wallet_asset_value_last_refresh_time) + 12 * 60 * 60 * 1000;
+            let reverifyAfter = reverifyAt - Date.now();
+            reverifyAfter = reverifyAfter > 0 ? reverifyAfter : 0;
+            if (quest.properties) {
+                quest.properties.last_verified_time = metrics.wallet_asset_value_last_refresh_time;
+                quest.properties.can_reverify_after = reverifyAfter;
+            } else {
+                quest.properties = {
+                    last_verified_time: metrics.wallet_asset_value_last_refresh_time,
+                    can_reverify_after: reverifyAfter,
+                };
+            }
         }
     }
 }
@@ -103,8 +112,10 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
     quests.forEach(async (quest) => {
         // 添加任务校验标识
         quest.verified = verified.has(quest.id);
-        if (!quest.verified && quest.type === QuestType.ThinkingDataQuery) {
-            quest.verified = verified.has(`${quest.id},${dateStamp}`);
+        if (!quest.verified) {
+            if (quest.type === QuestType.ThinkingDataQuery) {
+                quest.verified = verified.has(`${quest.id},${dateStamp}`);
+            }
         }
         // 添加禁止verify标识
         quest.verify_disabled = false;
@@ -208,6 +219,38 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
         }
         quest.user_authorized = userAuth.get(quest.authorization) || false;
     });
+}
+
+// 为任务添加user_token_reward字段
+async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
+    await Promise.all(quests.map(async (quest) => {
+        // 任务存在token奖励, 查询用户token奖励领取状态
+        if (quest.reward.token_reward && quest.reward.token_reward.actual_raffle_time && quest.verified) {
+            const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`)});
+            // 用户已验证token奖励, 创建token奖励属性
+            if (userTokenReward) {
+                quest.user_token_reward = {
+                    reward_id: userTokenReward.reward_id,
+                    status: userTokenReward.status,
+                    source_type: userTokenReward.source_type,
+                    token_amount_raw: userTokenReward.token_amount_raw,
+                    token_amount_formatted: userTokenReward.token_amount_formatted,
+                    created_time: userTokenReward.created_time,
+                };
+                const token = await Token.findOne({ token_id: userTokenReward.token_id });
+                if (token) {
+                    quest.user_token_reward.token = {
+                        chain_id: token.chain_id,
+                        address: token.address,
+                        icon: token.icon,
+                        name: token.name,
+                        symbol: token.symbol,
+                        decimal: token.decimal
+                    };
+                }
+            }
+        }
+    }));
 }
 
 async function getUserAuth(userId: string): Promise<Map<AuthorizationType, boolean>> {

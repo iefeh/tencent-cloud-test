@@ -53,6 +53,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
     authorization_user_id: req.userId,
     inviter_id: checkResult.inviter?.direct,
     indirect_inviter_id: checkResult.inviter?.indirect,
+    virtual: checkResult.inviter?.virtual,
     signup_mode: signup_mode,
   };
   const state = uuidv4();
@@ -178,4 +179,3 @@ export class DiscordAuthFlow extends AuthFlowBase {
     });
   }
 }
-

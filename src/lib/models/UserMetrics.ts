@@ -45,6 +45,7 @@ export enum Metric {
   DiscordJoinedMoonveil = 'discord_joined_moonveil',
   TwitterFollowedMoonveil = 'twitter_followed_moonveil',
   TwitterFollowedAstrArk = 'twitter_followed_astrark',
+  TelegramJoinedMoonveil = 'telegram_joined_moonveil',
 
   // 奔走相告徽章，完成转推次数
   RetweetCount = 'retweet_count',
@@ -89,7 +90,6 @@ export enum Metric {
 
   // 预约BushWhack
   PreRegisterBushWhack = 'pre_register_bushwhack',
-
 }
 
 // 用户内部指标，存放单独的集合

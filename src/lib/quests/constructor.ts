@@ -27,63 +27,66 @@ import { TweetInteractionQuest } from './implementations/tweetInteraction';
 import { TwitterFollowerQuest } from './implementations/twitterFollowerQuest';
 import { TwitterTopicQuest } from './implementations/twitterTopicQuest';
 import { ViewWebsiteQuest } from './implementations/viewWebsite';
+import { JoinTelegramGroupQuest } from './implementations/joinTelegramGroupQuest';
 
 // 根据quest的type构造对应的quest实例
 export function constructQuest(quest: IQuest): QuestBase {
-    switch (quest.type) {
-        case QuestType.ConnectWallet:
-            return new ConnectWalletQuest(quest);
-        case QuestType.ConnectDiscord:
-            return new ConnectDiscordQuest(quest);
-        case QuestType.FollowOnTwitter:
-            return new FollowOnTwitterQuest(quest);
-        case QuestType.RetweetTweet:
-            return new RetweetTweetQuest(quest);
-        case QuestType.LikeTweet:
-            return new LikeTweetQuest(quest);
-        case QuestType.CommentTweet:
-            return new CommentTweetQuest(quest);
-        case QuestType.ConnectTwitter:
-            return new ConnectTwitterQuest(quest);
-        case QuestType.ConnectSteam:
-            return new ConnectSteamQuest(quest);
-        case QuestType.ConnectTelegram:
-            return new ConnectTelegramQuest(quest);
-        case QuestType.JoinDiscordServer:
-            return new JoinDiscordServerQuest(quest);
-        case QuestType.HoldDiscordRole:
-            return new HoldDiscordRoleQuest(quest);
-        case QuestType.SendDiscordMessage:
-            return new SendDiscordMessageQuest(quest);
-        case QuestType.UserMetric:
-            return new UserMetricQuest(quest);
-        case QuestType.Whitelist:
-            return new WhitelistQuest(quest);
-        case QuestType.HoldNFT:
-            return new HoldNFTQuest(quest);
-        case QuestType.TwitterFollower:
-            return new TwitterFollowerQuest(quest);
-        case QuestType.TwitterTopic:
-            return new TwitterTopicQuest(quest);
-        case QuestType.TweetInteraction:
-            return new TweetInteractionQuest(quest);
-        case QuestType.HoldBadgeSBT:
-            return new HoldBadgeSBTQuest(quest);
-        case QuestType.ThinkingDataQuery:
-            return new ThinkingDataQueryQuest(quest);
-        case QuestType.Claim2048Ticket:
-            return new Claim2048TicketQuest(quest);
-        case QuestType.ViewWebsite:
-            return new ViewWebsiteQuest(quest);
-        case QuestType.ClaimLotteryTicket:
-            return new ClaimLotteryTicketQuest(quest);
-        case QuestType.ViewWebsite:
-            return new ViewWebsiteQuest(quest);
-        case QuestType.FollowOnTwitterNew:
-            return new FollowOnTwitterQuestNew(quest);
-        case QuestType.ThirdPartyCallback:
-            return new ThirdPartyCallbackQuest(quest);
-        default:
-            throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
-    }
+  switch (quest.type) {
+    case QuestType.ConnectWallet:
+      return new ConnectWalletQuest(quest);
+    case QuestType.ConnectDiscord:
+      return new ConnectDiscordQuest(quest);
+    case QuestType.FollowOnTwitter:
+      return new FollowOnTwitterQuest(quest);
+    case QuestType.RetweetTweet:
+      return new RetweetTweetQuest(quest);
+    case QuestType.LikeTweet:
+      return new LikeTweetQuest(quest);
+    case QuestType.CommentTweet:
+      return new CommentTweetQuest(quest);
+    case QuestType.ConnectTwitter:
+      return new ConnectTwitterQuest(quest);
+    case QuestType.ConnectSteam:
+      return new ConnectSteamQuest(quest);
+    case QuestType.ConnectTelegram:
+      return new ConnectTelegramQuest(quest);
+    case QuestType.JoinDiscordServer:
+      return new JoinDiscordServerQuest(quest);
+    case QuestType.HoldDiscordRole:
+      return new HoldDiscordRoleQuest(quest);
+    case QuestType.SendDiscordMessage:
+      return new SendDiscordMessageQuest(quest);
+    case QuestType.JoinTelegramGroup:
+      return new JoinTelegramGroupQuest(quest);
+    case QuestType.UserMetric:
+      return new UserMetricQuest(quest);
+    case QuestType.Whitelist:
+      return new WhitelistQuest(quest);
+    case QuestType.HoldNFT:
+      return new HoldNFTQuest(quest);
+    case QuestType.TwitterFollower:
+      return new TwitterFollowerQuest(quest);
+    case QuestType.TwitterTopic:
+      return new TwitterTopicQuest(quest);
+    case QuestType.TweetInteraction:
+      return new TweetInteractionQuest(quest);
+    case QuestType.HoldBadgeSBT:
+      return new HoldBadgeSBTQuest(quest);
+    case QuestType.ThinkingDataQuery:
+      return new ThinkingDataQueryQuest(quest);
+    case QuestType.Claim2048Ticket:
+      return new Claim2048TicketQuest(quest);
+    case QuestType.ViewWebsite:
+      return new ViewWebsiteQuest(quest);
+    case QuestType.ClaimLotteryTicket:
+      return new ClaimLotteryTicketQuest(quest);
+    case QuestType.ViewWebsite:
+      return new ViewWebsiteQuest(quest);
+    case QuestType.FollowOnTwitterNew:
+      return new FollowOnTwitterQuestNew(quest);
+    case QuestType.ThirdPartyCallback:
+      return new ThirdPartyCallbackQuest(quest);
+    default:
+      throw new Error(`quest ${quest.id} type ${quest.type} not implemented`);
+  }
 }

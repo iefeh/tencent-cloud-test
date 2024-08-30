@@ -64,6 +64,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
   const [hasVerifyCD, setHasVerifyCD] = useState(false);
   const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
   const is2048 = task.type === QuestType.Claim2048Ticket;
+  const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
 
   const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
   const {
@@ -167,7 +168,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           label={getConnectLabel(task)}
           actived
           loading={connectLoading}
-          disabled={achieved || verified}
+          disabled={achieved || verified || isExpired}
           onClick={onConnectClick}
         />
       )}
@@ -176,7 +177,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
         className={cn(['ml-2 uppercase', classNames?.verifyBtn])}
         label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
         loading={verifyLoading || mediaLoading}
-        disabled={!verifiable}
+        disabled={!verifiable || isExpired}
         hasCD={hasVerifyCD}
         tooltip={
           isLongCD && (

@@ -1,10 +1,10 @@
-import { cn, menu } from '@nextui-org/react';
+import { cn } from '@nextui-org/react';
 import { ControlledMenu, MenuItem, useClick, useMenuState } from '@szhsin/react-menu';
-import Link from 'next/link';
+import Link from '@/components/link';
 import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import styles from './index.module.scss';
-import Image from 'next/image';
+import S3Image from '../common/medias/S3Image';
 
 interface Props {
   item: RouteMenu;
@@ -35,7 +35,7 @@ export const menuItemComp = (child: RouteMenu) => {
         href={(!child.disabled && url) || ''}
         onClick={() => onTextClick(child)}
       >
-        {child.icon && <Image className={cn(['object-contain', styles.itemIcon])} src={child.icon} alt="" />}
+        {child.icon && <S3Image className={cn(['object-contain', styles.itemIcon])} src={child.icon} />}
         {child.name}
       </Link>
     </MenuItem>
@@ -50,7 +50,7 @@ export default function HeaderDropdownMenu(props: Props) {
 
   const mainContent = (
     <Link
-      ref={menuRef}
+      refEl={menuRef}
       {...anchorProps}
       href={item.route || ''}
       scroll={!!item.route}
@@ -88,9 +88,7 @@ export default function HeaderDropdownMenu(props: Props) {
             <div className={styles.itemWarpper} key={ci}>
               <div className={styles.secondLevelItem}>{menuItemComp(child)}</div>
 
-              <div className={styles.threeLevelItem}>
-                {(child.children || [])!.map((item) => menuItemComp(item))}
-              </div>
+              <div className={styles.threeLevelItem}>{(child.children || [])!.map((item) => menuItemComp(item))}</div>
             </div>
           ))}
         </div>

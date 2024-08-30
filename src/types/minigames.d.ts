@@ -14,11 +14,29 @@ declare namespace MiniGames {
     status: string;
     client_name: string;
     icon_url: string;
+    description: string;
   }
 
   interface BannerMedia {
     url: string;
     thumb?: string;
+  }
+
+  interface GameDetialLeaderboardItem {
+    lbInfos: {
+      rank: number;
+      player: string;
+      score: number;
+      avatar: string;
+    }[];
+    user_rank: string;
+    start_time: number;
+    end_time: number;
+  }
+
+  interface GameDetialLeaderboard {
+    latest: GameDetialLeaderboardItem;
+    previous: GameDetialLeaderboardItem;
   }
 
   interface GameDetailDTO {
@@ -31,16 +49,7 @@ declare namespace MiniGames {
     banner: BannerMedia[];
     platform: { url?: string; platform: string; icon: string }[];
     task_category: string;
-    ranking: {
-      game: string;
-      leaderboard: {
-        rank: number;
-        player: string;
-        score: number;
-        avatar: string;
-      }[];
-      user_rank: string;
-    };
+    ranking: GameDetialLeaderboard;
     social: {
       type: string;
       description: string;
@@ -55,7 +64,34 @@ declare namespace MiniGames {
       remain: number;
     };
     status: string;
-    tasks: TaskItem[];
-    badge: BadgeItem[];
+    tasks?: TaskItem[];
+    badge?: BadgeItem[];
+    ticket_price_formatted: string;
+    ticket_price_raw: string;
+    token_address: string;
+    url: string;
+    share: string;
+    share_reward_claimed: boolean;
+    icon_url: string;
+    image_url: string;
+  }
+
+  interface BuyTicketPermit {
+    game: string;
+    expiration: number;
+    player: string;
+    signature: string;
+    tickets: string;
+    token: string;
+    tokenAmount: string;
+  }
+
+  interface BuyTicketPermitDTO {
+    /** 交互的目标链id */
+    chain_id: string;
+    /** 交互的目标合约地址 */
+    contract_address: string;
+    /** 交互参数，数组 */
+    permit: Permit;
   }
 }

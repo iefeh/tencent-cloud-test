@@ -1,5 +1,5 @@
 import { Document, Schema, models, model } from 'mongoose'
-import { QuestRewardType, QuestType } from "@/lib/quests/types";
+import { GameTicketReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
@@ -34,8 +34,12 @@ export interface IQuest extends Document {
         range_reward_ids: string[],
         // 徽章列表id，任务可能会奖励的徽章，这里只是为了展示用.
         badge_ids: string[],
-        //任务权重
-        season_pass_progress: number
+        // 任务权重
+        season_pass_progress: number,
+        // token配置
+        token_reward: TokenReward,
+        // 游戏门票奖励配置
+        game_ticket_reward?: GameTicketReward,
     },
     // 任务是否激活，不展示未激活
     active: boolean;
@@ -68,7 +72,9 @@ const QuestSchema = new Schema<IQuest>({
         amount_formatted: { type: String },
         range_reward_ids: [String],
         badge_ids: [String],
-        season_pass_progress: { type: Number }
+        season_pass_progress: { type: Number },
+        token_reward: { type: Schema.Types.Mixed },
+        game_ticket_reward: { type: Schema.Types.Mixed },
     },
     active: { type: Boolean, default: false },
     order: { type: Number },

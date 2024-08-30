@@ -15,6 +15,6 @@ const ScoreLeaderboardConfigSchema = new Schema<IScoreLeaderboardConfig>({
 });
 
 const connection = connectToMongoDb2048();
-const ScoreLeaderboardConfig: Model<IScoreLeaderboardConfig> = models.userBackpack || connection.model<IScoreLeaderboardConfig>("ScoreLeaderboardConfig", ScoreLeaderboardConfigSchema, 'score_leaderboard_config');
-export default ScoreLeaderboardConfig;
+const Puffy2048ScoreLeaderboardConfig: Model<IScoreLeaderboardConfig> = models.ScoreLeaderboardConfig || connection.model<IScoreLeaderboardConfig>("ScoreLeaderboardConfig", ScoreLeaderboardConfigSchema, 'score_leaderboard_config');
+export default Puffy2048ScoreLeaderboardConfig;
 
