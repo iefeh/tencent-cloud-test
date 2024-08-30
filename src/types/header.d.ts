@@ -3,6 +3,6 @@ declare interface RouteMenu {
   route?: string;
   children?: RouteMenu[];
   disabled?: boolean;
-  icon?: StaticImageData;
+  icon?: StaticImageData | string;
   render?: (name: string) => JSX.Element;
 }

@@ -21,12 +21,6 @@ import UserInfo from '@/pages/components/common/UserInfo';
 import Link from 'next/link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
-import { isMobile } from 'react-device-detect';
-import Entry2048 from '@/components/pages/header/Entry2048';
-import Game2048Icon from 'img/header/2048.png';
-import AstrarkIcon from 'img/header/astrark.png';
-import BushwhackIcon from 'img/header/bushwhack.png';
-import FlamingPetsIcon from 'img/header/flaming_pets.png';
 import styles from './index.module.scss';
 
 export const routeText: RouteMenu[] = [
@@ -40,13 +34,14 @@ export const routeText: RouteMenu[] = [
         children: [
           {
             name: 'Moonveil Badge Introduction',
-            route: 'https://medium.com/@Moonveil_Studio/unlock-achievements-reap-rewards-the-moonveil-badge-system-unveiled-26c94eca97b5',
+            route:
+              'https://medium.com/@Moonveil_Studio/unlock-achievements-reap-rewards-the-moonveil-badge-system-unveiled-26c94eca97b5',
           },
           {
             name: 'My Badges',
             route: '/Profile/MyBadges',
           },
-        ]
+        ],
       },
       {
         name: 'My Season Pass',
@@ -97,7 +92,7 @@ export const routeText: RouteMenu[] = [
     children: [
       {
         name: 'AstrArk',
-        icon: AstrarkIcon,
+        icon: "/header/icons/astrark.png",
         route: '/AstrArk',
         children: [
           // {
@@ -114,14 +109,14 @@ export const routeText: RouteMenu[] = [
           },
           {
             name: 'Alpha Test Tasks',
-            route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk'
-          }
+            route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk',
+          },
         ],
       },
       {
         name: 'Bushwhack',
         route: '/Bushwhack',
-        icon: BushwhackIcon,
+        icon: "/header/icons/bushwhack.png",
       },
       // {
       //   name: 'Gyoza',
@@ -135,15 +130,15 @@ export const routeText: RouteMenu[] = [
         children: [
           {
             name: '2048',
-            icon: Game2048Icon,
+            icon: "/header/icons/2048.png",
             route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
             // disabled: true,
           },
-          // {
-          //   name: '黄金矿工',
-          //   route: '',
-          //   disabled: true,
-          // },
+          {
+            name: '黄金矿工',
+            icon: '/minigames/icons/icon_miner.png',
+            route: '/minigames/details/1bcb51aa-bab1-476d-b09a-f20d103d16d0',
+          },
           // {
           //   name: 'TG小火箭',
           //   route: '',
@@ -268,12 +263,14 @@ const Header = () => {
   const router = useRouter();
 
   const DropMenu = useMemo(() => {
-    return <>
-      {routeText.map((value, index) => (
-        <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
-      ))}
-    </>
-  }, [])
+    return (
+      <>
+        {routeText.map((value, index) => (
+          <HeaderDropdownMenu item={value} key={index} isActive={!!isActiveRoute(value)} />
+        ))}
+      </>
+    );
+  }, []);
 
   function isActiveRoute(menu: RouteMenu) {
     const route = router.asPath || '/';
@@ -290,9 +287,7 @@ const Header = () => {
 
       {/* <Entry2048 /> */}
 
-      <div className="font-semakin flex items-center max-lg:hidden">
-        {DropMenu}
-      </div>
+      <div className="font-semakin flex items-center max-lg:hidden">{DropMenu}</div>
 
       <div className="flex items-center flex-[1] justify-end">
         <div className="max-lg:hidden flex items-center mr-4">
