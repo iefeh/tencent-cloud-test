@@ -99,7 +99,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                       <div className="relative w-[26rem] aspect-square rounded-md overflow-hidden">
                         <Image
                           className="object-contain"
-                          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/ticket.png"
+                          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/img_ticket.png"
                           alt=""
                           fill
                           sizes="100%"
