@@ -307,3 +307,12 @@ export enum ThinkingDataQuestType {
   // 范围奖励，奖励数量特定于任务进行动态分配
   Once = 'once',
 }
+
+export type GameTicketReward = {
+  // 游戏ID
+  game_id: string,
+  // 奖励的门票数量
+  amount: number,
+  // 门票过期时间
+  expired_at: number
+};
