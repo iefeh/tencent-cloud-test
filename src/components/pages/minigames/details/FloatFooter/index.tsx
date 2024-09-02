@@ -77,7 +77,7 @@ const FloatFooter: FC = () => {
             onPress={shareDisclosure.onOpen}
           />
 
-          <Link href={url || 'javascript:;'} target="_blank">
+          <Link href={(canPlay && url) || 'javascript:;'} target={canPlay && url ? '_blank' : '_self'}>
             <SButton className="ml-3" strokeType="yellow" strokeText="Play Now" isDisabled={!url || !canPlay} />
           </Link>
 
