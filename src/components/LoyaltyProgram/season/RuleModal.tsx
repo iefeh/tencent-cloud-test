@@ -21,7 +21,7 @@ const RuleModal: FC<Props> = ({ isOpen, onOpenChange }) => {
     'X Factor Badge Lv 4 or above',
     'AstrArk Alpha Tester Badge Lv5',
     "Diplomat's Insignia Badge Lv6 or above",
-    'Lucky Draw Master Badge Lv2 or above',
+    'Lucky Draw Master Badge Lv4 or above',
   ];
   return (
     <Modal

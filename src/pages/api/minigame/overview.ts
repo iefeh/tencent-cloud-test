@@ -28,7 +28,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   }
 
   // 查询游戏详情
-  let detail: any = await findGameDetail(miniGame.client_id, { $project: { _id: 0, badge: 0, task_category: 0, ranking: 0 } });
+  let detail: any = await findGameDetail(miniGame.client_id, { $project: { _id: 0, badge: 0, ranking: 0 } });
   await enrichGameInfo(detail, miniGame);// 添加游戏相关信息
   await enrichTicket(userId, [detail]);
   await enrichShareReward(userId, detail);
