@@ -7,20 +7,22 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperEl from 'swiper';
 import { Mousewheel, FreeMode } from 'swiper/modules';
 import Head from 'next/head';
-import { FC, useState, CSSProperties, useRef, useEffect } from 'react';
+import { FC, useState, CSSProperties, useRef, useEffect, useMemo } from 'react';
 import 'swiper/css';
 import { isMobile } from 'react-device-detect';
 
 export const aniSpeed = 2000
-const swiperSpeed = 1500;
+const swiperSpeed = 2000;
 
 const MiniGamesPage: FC & BasePage = () => {
   const [selectedKey, setSelectedKey] = useState('');
   const [swiperIndex, setSwiperIndex] = useState<number | null>(null);
 
   const animationRef = useRef<boolean>(false)
-
+  const indexRef = useRef<number | null>(0)
   let swiperRef = useRef<SwiperEl | null>(null);
+
+  const isFristScreen = () => [null, 0].includes(indexRef.current)
 
   const disableSlider = () => {
     if (!swiperRef.current) return
@@ -46,48 +48,59 @@ const MiniGamesPage: FC & BasePage = () => {
     }
   }, [])
 
-  const handleMouseWheel = (event: WheelEvent) => {
-    event.preventDefault();
+  const promiseFn = (cb: () => void, time: number) => {
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        cb()
+        resolve(true)
+        clearTimeout(timeout)
+      }, time)
+    })
+  }
 
+  const handleMouseWheel = async (event: WheelEvent) => {
     if (!swiperRef.current || animationRef.current) return
 
-    disableSlider()
-    animationRef.current = true
-
     // 向下滚动
-    if (event.deltaY > 0) {
+    if (event.deltaY > 0 && isFristScreen()) {
+      disableSlider()
+      animationRef.current = true
       setSwiperIndex(1)
 
-      const timeout = setTimeout(() => {
-        if (!swiperRef.current) return
+      await promiseFn(
+        () => {
+          if (!swiperRef.current) return
+          swiperRef.current.allowSlideNext = true;
+          swiperRef.current.slideNext();
+        }, aniSpeed
+      )
 
-        swiperRef.current.allowSlideNext = true;
-        swiperRef.current.slideNext();
-        clearTimeout(timeout)
-
-        const timeout2 = setTimeout(() => {
-          clearTimeout(timeout2)
+      await promiseFn(
+        () => {
           animationRef.current = false
           enableSlider()
-        }, swiperSpeed)
-      }, aniSpeed);
-
+        },
+        swiperSpeed
+      )
     }
 
     // 向上滚动
     if (event.deltaY < 0) {
-      const timeout = setTimeout(() => {
+      disableSlider()
+      animationRef.current = true
+      await promiseFn(() => {
+        if (!swiperRef.current) return
         enableSlider()
         animationRef.current = false
-        clearTimeout(timeout)
       }, aniSpeed)
     }
   }
 
   useEffect(() => {
-    if (swiperIndex === 0) {
+    indexRef.current = swiperIndex
+    if (isFristScreen()) {
       setTimeout(() => {
-        swiperRef.current && (swiperRef.current.allowSlideNext = false);
+        swiperRef.current && disableSlider();
       }, aniSpeed + 10)
     }
   }, [swiperIndex])
@@ -114,7 +127,7 @@ const MiniGamesPage: FC & BasePage = () => {
         modules={[Mousewheel, FreeMode]}
         mousewheel={true}
         direction="vertical"
-        speed={1500}
+        speed={swiperSpeed}
         freeMode={isMobile}
         scrollbar={{ draggable: true }}
         slidesPerView="auto"
