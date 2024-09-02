@@ -4,6 +4,9 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Radio,
   RadioGroup,
   Tooltip,
@@ -19,6 +22,7 @@ import IntegerInput from '@/components/common/inputs/IntegerInput';
 import useBuyTickets from './useBuyTickets';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
+import { isMobile } from 'react-device-detect';
 
 const enum TicketChannel {
   MATIC = 'matic',
@@ -45,7 +49,8 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
   const [buyLoading, setBuyLoading] = useState(false);
   const { onBuyTickets } = useBuyTickets();
 
-  const digit = data?.ticket_price_formatted ? Math.ceil(-Math.log10(+(data.ticket_price_formatted || 0))) : 0;
+  const tpf = +(data?.ticket_price_formatted || 0);
+  const digit = tpf ? Math.ceil(-Math.log10(tpf % 1)) : 0;
   const totalPrice = (+(data?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
 
   async function onBuyTicketsClick() {
@@ -64,44 +69,49 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         hideCloseButton
+        placement="center"
         classNames={{
           base: 'max-w-[71.5625rem] text-brown rounded-none bg-transparent shadow-none',
-          body: 'pl-0 pb-0 pt-5 pr-6',
+          body: 'pl-5 md:pl-0 pb-0 pt-5 pr-6',
         }}
       >
         <ModalContent>
           {(onClose) => (
             <>
               <ModalBody>
-                <div className="relative w-[70rem] h-[34.8125rem] overflow-hidden pt-[3.125rem] pl-8 pr-12 pb-8 font-jcyt6 text-brown z-0 flex gap-x-[3.75rem]">
-                  <Image
-                    className="object-cover"
-                    src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_modal_ticket.png"
-                    alt=""
-                    fill
-                    sizes="100%"
-                    unoptimized
-                    priority
-                  />
+                <div className="relative w-[70rem] max-w-full h-auto md:h-[34.8125rem] overflow-hidden pt-[3.125rem] pl-6 md:p-8 pr-6 md:pr-12 pb-8 font-jcyt6 text-brown z-0 flex flex-col md:flex-row gap-x-[3.75rem] gap-y-4 bg-[#F7E9CC] md:bg-transparent rounded-2xl md:rounded-none">
+                  {isMobile || (
+                    <Image
+                      className="object-cover"
+                      src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_modal_ticket.png"
+                      alt=""
+                      fill
+                      sizes="100%"
+                      unoptimized
+                      priority
+                    />
+                  )}
 
                   <div className="flex flex-col justify-between relative z-0 h-full">
                     <div className="text-3xl leading-none">{data?.name || '-'}</div>
 
-                    <div className="relative w-[26rem] aspect-square rounded-md overflow-hidden">
-                      <Image
-                        className="object-contain"
-                        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/ticket.png"
-                        alt=""
-                        fill
-                        sizes="100%"
-                        unoptimized
-                        priority
-                      />
-                    </div>
+                    {isMobile || (
+                      <div className="relative w-[26rem] aspect-square rounded-md overflow-hidden">
+                        <Image
+                          className="object-contain"
+                          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/img_ticket.png"
+                          alt=""
+                          fill
+                          sizes="100%"
+                          unoptimized
+                          priority
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="relative z-0 flex-1">
-                    <div className="flex justify-end">
+                    <div className="flex justify-start md:justify-end">
                       <Button className="bg-[#E0D1B1] !rounded-five text-inherit" onPress={rulesDisclosure.onOpen}>
                         Rules
                       </Button>
@@ -135,7 +145,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <p className="text-lg leading-none mt-4">Network: Polygon</p>
 
-                    <div className="w-full h-0 border-t-1 border-brown border-dashed mt-7 mb-[1.125rem]"></div>
+                    <div className="w-full h-0 border-t-1 border-brown/20 md: border-dashed mt-7 mb-[1.125rem]"></div>
 
                     <div className="flex items-center">
                       <div>{data?.ticket_price_formatted || '-'} Matic/Ticket</div>
@@ -157,15 +167,26 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                           </ul>
                         }
                       >
-                        <Image
-                          className="object-contain w-8 h-8"
-                          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_question.png"
-                          alt=""
-                          width={64}
-                          height={64}
-                          unoptimized
-                          priority
-                        />
+                        <Popover placement="right">
+                          <PopoverTrigger>
+                            <Image
+                              className="object-contain w-8 h-8"
+                              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_question.png"
+                              alt=""
+                              width={64}
+                              height={64}
+                              unoptimized
+                              priority
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <ul>
+                              <li>- You can purchase up to 10 tickets once.</li>
+                              <li>- Tickets are non-refundable once purchased.</li>
+                              <li>- Tickets have a validity period and will automatically expire after this period.</li>
+                            </ul>
+                          </PopoverContent>
+                        </Popover>
                       </Tooltip>
                     </div>
 
@@ -173,13 +194,13 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <p className="text-2xl leading-none mt-[0.375rem]">{totalPrice} Matic</p>
 
-                    <div className="w-full h-0 border-t-1 border-brown border-dashed mt-6 mb-5"></div>
+                    <div className="w-full h-0 border-t-1 border-brown/20 md:border-brown border-dashed mt-6 mb-5"></div>
 
                     <TicketCountdown key={data?.ticket_expired_at} endTime={data?.ticket_expired_at} isBrown />
 
-                    <div className="flex items-center mt-6">
+                    <div className="flex justify-between md:justify-start items-center mt-6 flex-wrap md:flex-nowrap gap-x-ten gap-y-4">
                       <StrokeButton
-                        className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem]"
+                        className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] order-2 md:order-1"
                         strokeType="ticket"
                         strokeText={data?.ticket.remain.toString() || '--'}
                         startContent={
@@ -190,28 +211,46 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                       />
 
                       <StrokeButton
-                        className="ml-ten"
+                        className="w-[12.5625rem] order-1 md:order-2"
                         strokeType="blue"
                         strokeText="Buy Tickets"
                         isDisabled={+ticketAmount < 1 || +ticketAmount > 10}
                         isLoading={buyLoading}
+                        style={
+                          isMobile
+                            ? {
+                                backgroundImage:
+                                  "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue_longest.png')",
+                              }
+                            : {}
+                        }
                         onPress={onBuyTicketsClick}
                       />
 
-                      <Tooltip content="Coming Soon">
-                        <div>
-                          <StrokeButton
-                            className="ml-ten w-56"
-                            strokeType="yellow"
-                            strokeText="Exchange Tickets"
-                            isDisabled
-                            style={{
-                              backgroundImage:
-                                "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
-                            }}
-                          />
-                        </div>
-                      </Tooltip>
+                      {isMobile || (
+                        <Tooltip content="Coming Soon">
+                          <div className="order-3 w-full md:w-auto">
+                            <StrokeButton
+                              className={cn([
+                                'w-full md:w-56',
+                                isMobile &&
+                                  "!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_gray_longest.png')]",
+                              ])}
+                              strokeType="yellow"
+                              strokeText="Exchange Tickets"
+                              isDisabled
+                              style={
+                                isMobile
+                                  ? {}
+                                  : {
+                                      backgroundImage:
+                                        "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
+                                    }
+                              }
+                            />
+                          </div>
+                        </Tooltip>
+                      )}
                     </div>
                   </div>
                 </div>

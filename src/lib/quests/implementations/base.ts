@@ -16,6 +16,7 @@ import {
     checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist
 } from '@/lib/quests/types';
 import * as Sentry from '@sentry/nextjs';
+import GameTicket from '@/lib/models/GameTicket';
 
 interface IProjection {
     [key: string]: number;
@@ -73,11 +74,11 @@ export abstract class QuestBase {
     private async checkUserRewardDeltaFromUserMetric(userId: string): Promise<number> {
         // 动态任务奖励，查询关联的奖励设置，根据设置计算用户奖励
         const rewardIds = this.quest.reward.range_reward_ids;
-        const rewards = await UserMetricReward.find({id: {$in: rewardIds}});
+        const rewards = await UserMetricReward.find({ id: { $in: rewardIds } });
         // 查询需要的用户指标
-        const projection: IProjection = {_id: 0};
+        const projection: IProjection = { _id: 0 };
         rewards.forEach((reward: IUserMetricReward) => projection[reward.require_metric] = 1);
-        const userMetric = await UserMetrics.findOne({user_id: userId}, projection);
+        const userMetric = await UserMetrics.findOne({ user_id: userId }, projection);
         // 检查用户指标是否存在，不存在时直接报错
         for (let reward of rewards) {
             if (reward.require_metric in userMetric) {
@@ -100,13 +101,13 @@ export abstract class QuestBase {
 
     // 检查用户是否达成任务
     async checkAchieved(userId: string): Promise<boolean> {
-        const achievement = await QuestAchievement.findOne({user_id: userId, quest_id: this.quest.id});
+        const achievement = await QuestAchievement.findOne({ user_id: userId, quest_id: this.quest.id });
         return !!achievement;
     }
 
     // 检查用户是否已经领取任务奖励
     async checkVerified(userId: string): Promise<boolean> {
-        const reward = await UserMoonBeamAudit.findOne({user_id: userId, corr_id: this.quest.id, deleted_time: null});
+        const reward = await UserMoonBeamAudit.findOne({ user_id: userId, corr_id: this.quest.id, deleted_time: null });
         return !!reward;
     }
 
@@ -123,16 +124,16 @@ export abstract class QuestBase {
                 await extraTxOps(session);
             }
             await QuestAchievement.updateOne(
-                {user_id: userId, quest_id: this.quest.id, verified_time: null},
+                { user_id: userId, quest_id: this.quest.id, verified_time: null },
                 {
                     $set: inserts,
                     $setOnInsert: {
                         created_time: now,
                     },
                 },
-                {upsert: true, session: session},
+                { upsert: true, session: session },
             );
-        });   
+        });
     }
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
@@ -147,6 +148,25 @@ export abstract class QuestBase {
             extra_info: extra_info,
             created_time: now,
         });
+
+        let tickets: any[];
+        if (this.quest.reward.game_ticket_reward) {
+            tickets = [];
+            const amount = Number(this.quest.reward.game_ticket_reward.amount);
+            const gameId = String(this.quest.reward.game_ticket_reward.game_id);
+            const expiredAt = Number(this.quest.reward.game_ticket_reward.expired_at);
+
+            for (let i = 0; i < amount; i++) {
+                const ticket = new GameTicket();
+                ticket.pass_id = `QUEST-${ethers.id(`${userId}-${gameId}-${this.quest.id}-${i}`)}`;
+                ticket.user_id = userId;
+                ticket.game_id = gameId;
+                ticket.created_at = Date.now();
+                ticket.expired_at = expiredAt;
+                tickets.push(ticket);
+            }
+        }
+
         try {
             // 保存用户任务达成记录、任务奖励记录、用户MB奖励
             await doTransaction(async (session) => {
@@ -154,9 +174,9 @@ export abstract class QuestBase {
                     // 执行额外的事务操作
                     await extraTxOps(session);
                 }
-                const opts = {session};
+                const opts = { session };
                 await QuestAchievement.updateOne(
-                    {user_id: userId, quest_id: this.quest.id, verified_time: null},
+                    { user_id: userId, quest_id: this.quest.id, verified_time: null },
                     {
                         $set: {
                             verified_time: now,
@@ -165,20 +185,24 @@ export abstract class QuestBase {
                             created_time: now,
                         },
                     },
-                    {upsert: true, session: session},
+                    { upsert: true, session: session },
                 );
                 await audit.save(opts);
-                await User.updateOne({user_id: userId}, {$inc: {moon_beam: audit.moon_beam_delta}}, opts);
+                await User.updateOne({ user_id: userId }, { $inc: { moon_beam: audit.moon_beam_delta } }, opts);
+                if (tickets) {
+                    await GameTicket.insertMany(tickets, { session: session });
+                }
+
             });
-            return {done: true, duplicated: false}
+            return { done: true, duplicated: false }
         } catch (error) {
             console.log(error);
             if (isDuplicateKeyError(error)) {
-                return {done: false, duplicated: true}
+                return { done: false, duplicated: true }
             }
             console.error(error);
             Sentry.captureException(error);
-            return {done: false, duplicated: false}
+            return { done: false, duplicated: false }
         }
     }
 }

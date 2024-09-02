@@ -4,11 +4,12 @@ import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
 import { maybeAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
 import { MiniGames } from "@/lib/models/MiniGame";
-import { PipelineStage } from "mongoose";
-import ScoreLeaderboardConfig from "@/lib/models/2048ScoreLeaderboardConfig";
-import UserScoreRank from "@/lib/models/2048UserScoreRank";
-import User from "@/lib/models/User";
 import { findGameDetail } from "./overview";
+import Puffy2048ScoreLeaderboardConfig from "@/lib/models/2048ScoreLeaderboardConfig";
+import { PipelineStage } from "mongoose";
+import { get2048Leaderboard } from "@/lib/models/2048UserScoreRank";
+import GoldminerScoreLeaderboardConfig from "@/lib/models/GoldminerScoreLeaderboardConfig";
+import { getGoldminerLeaderboard } from "@/lib/models/GoldminerUserScoreRank";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -26,7 +27,6 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     res.json(response.invalidParams());
     return;
   }
-
   await enrichRanking(userId, detail);
 
   res.json(response.success(detail));
@@ -35,61 +35,84 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 async function enrichRanking(userId: string | undefined, detail: any) {
   if (detail.ranking.game) {
+    // 查询总的排行榜
+    const now = Date.now();
+    const pipeline: PipelineStage[] = [
+      {
+        $match: {
+          $or: [
+            {
+              start_time: {
+                $lte: now
+              }
+            }
+          ]
+        }
+      },
+      {
+        $sort: {
+          end_time: -1
+        }
+      },
+      { $limit: 2 },
+      {
+        $project: {
+          _id: 0,
+          lbid: 1,
+          start_time: 1,
+          end_time: 1
+        }
+      }
+    ];
+
     switch (detail.ranking.game) {
       case MiniGames.Puffy2048:
-        // 查询总的排行榜
-        const now = Date.now();
-        const lbconfig = await ScoreLeaderboardConfig.findOne({ start_time: { $lte: now }, end_time: { $gte: now } });
-        if (lbconfig) {
-          // 查询排行榜信息
-          const pipeline: PipelineStage[] = [
-            {
-              $match: { leaderboard_id: lbconfig.lbid }
-            },
-            {
-              $project: { _id: 0, __v: 0, leaderboard_id: 0 }
-            },
-            {
-              $sort: { sum_score: -1 }
-            },
-            {
-              $limit: 5
-            }];
+        let puffy2048Lbconfigs = await Puffy2048ScoreLeaderboardConfig.aggregate(pipeline);
+        if (puffy2048Lbconfigs.length > 0) {
+          detail.leaderboard = {};
+          const latest = await get2048Leaderboard(userId, puffy2048Lbconfigs[0].lbid);
+          enrichLatest(detail, latest, puffy2048Lbconfigs[0]);
 
-          let lbInfos: any[] = await UserScoreRank.aggregate(pipeline);
-          let userIds = lbInfos.map(r => r.uid);
-
-          // 查询用户昵称信息
-          const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, avatar_url: 1, _id: 0 });
-          const userIdInfoMap: Map<string, any> = new Map<string, any>(infos.map(info => [info.user_id, info]));
-          let rank: number = 0;
-          for (let lb of lbInfos) {
-            lb.rank = ++rank;
-            lb.player = userIdInfoMap.get(lb.uid).username;
-            lb.avatar = userIdInfoMap.get(lb.uid).avatar_url;
-            lb.score = lb.sum_score;
-            delete lb.sum_score;
-            delete lb.uid;
+          if (puffy2048Lbconfigs.length > 1) {
+            const previous = await get2048Leaderboard(userId, puffy2048Lbconfigs[1].lbid);
+            enrichPrevious(detail, previous, puffy2048Lbconfigs[1]);
           }
-          // 查询用户排行信息
-          let userRank: any = '-';
-          if (userId) {
-            const userRankInfo = await UserScoreRank.findOne({ leaderboard_id: lbconfig.lbid, uid: userId });
-            if (userRankInfo) {
-              userRank = await UserScoreRank.count({ leaderboard_id: lbconfig.lbid, sum_score: { $gt: userRankInfo.sum_score } });
-              userRank++;
-            }
-          }
+        }
+        break;
+      case MiniGames.Goldminer:
+        let goldminerLbconfigs = await GoldminerScoreLeaderboardConfig.aggregate(pipeline);
+        if (goldminerLbconfigs.length > 0) {
+          detail.leaderboard = {};
+          const latest = await getGoldminerLeaderboard(userId, goldminerLbconfigs[0].lbid);
+          enrichLatest(detail, latest, goldminerLbconfigs[0]);
 
-          // 保存排行榜信息
-          detail.ranking.leaderboard = lbInfos;
-          detail.ranking.user_rank = userRank;
+          if (goldminerLbconfigs.length > 1) {
+            const previous = await getGoldminerLeaderboard(userId, goldminerLbconfigs[1].lbid);
+            enrichPrevious(detail, previous, goldminerLbconfigs[1]);
+          }
         }
         break;
     }
-    delete detail.ranking.game;
+    delete detail.ranking;
   }
 }
+
+function enrichLatest(detail: any, data: any, config: any) {
+  detail.leaderboard.latest = {};
+  detail.leaderboard.latest.lbInfos = data.lbInfos;
+  detail.leaderboard.latest.user_rank = data.userRank;
+  detail.leaderboard.latest.start_time = config.start_time;
+  detail.leaderboard.latest.end_time = config.end_time;
+}
+
+function enrichPrevious(detail: any, data: any, config: any) {
+  detail.leaderboard.previous = {};
+  detail.leaderboard.previous.lbInfos = data.lbInfos;
+  detail.leaderboard.previous.user_rank = data.userRank;
+  detail.leaderboard.previous.start_time = config.start_time;
+  detail.leaderboard.previous.end_time = config.end_time;
+}
+
 
 // this will run if none of the above matches
 router.all((req, res) => {

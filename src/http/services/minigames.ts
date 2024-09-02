@@ -27,7 +27,7 @@ export function queryMiniGameBadgesAPI(params: { client_id: string }): Promise<{
 
 export function queryMiniGameLeaderboardAPI(params: {
   client_id: string;
-}): Promise<{ ranking: MiniGames.GameDetialLeaderboard }> {
+}): Promise<{ leaderboard: MiniGames.GameDetialLeaderboard }> {
   return http.get('/api/minigame/leaderboard', { params });
 }
 

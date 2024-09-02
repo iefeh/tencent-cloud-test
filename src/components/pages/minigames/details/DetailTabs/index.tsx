@@ -94,11 +94,13 @@ const DetailTabs: FC = () => {
                 </div>
               }
             >
-              <div className="mt-14 mb-8 w-full flex justify-between items-center">
-                <span className="text-3xl leading-none">{tab.title || tab.label}</span>
+              {tab.name !== 'leaderboard' && (
+                <div className="mt-14 mb-8 w-full flex justify-between items-center">
+                  <span className="text-3xl leading-none">{tab.title || tab.label}</span>
 
-                {tab.right}
-              </div>
+                  {tab.right}
+                </div>
+              )}
               {tab.content}
             </Tab>
           ))}
