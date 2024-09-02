@@ -72,7 +72,7 @@ const MiniGamesPage: FC & BasePage = () => {
           if (!swiperRef.current) return
           swiperRef.current.allowSlideNext = true;
           swiperRef.current.slideNext();
-        }, aniSpeed
+        }, aniSpeed - 800
       )
 
       await promiseFn(
