@@ -53,7 +53,7 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
     {
       title: 'The Lucky Draw Master Badge',
       items: [
-        'You can unlock the Lucky Draw Master Badge by accumulating draw counts, with the badge level increasing as you make more draws. *Surprise bonus: Achieving a Lv2 Lucky Draw Master Badge in Season 1 will grant you an S1 Premium Pass for free!',
+        'You can unlock the Lucky Draw Master Badge by accumulating draw counts, with the badge level increasing as you make more draws. *Surprise bonus: Achieving a Lv4 Lucky Draw Master Badge in Season 1 will grant you an S1 Premium Pass for free!',
       ],
     },
     {
