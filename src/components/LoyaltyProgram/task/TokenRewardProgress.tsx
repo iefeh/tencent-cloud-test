@@ -1,12 +1,15 @@
 import { Fragment } from 'react';
 import { cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
+import TokenRewardProgressCountdown from '@/components/common/task/TokenRewardProgressCountdown';
+import { TaskReward } from '@/http/services/task';
 
 interface Props {
+  item: TaskReward['token_reward'];
   status: number;
 }
 
-function TokenRewardProgress({ status }: Props) {
+function TokenRewardProgress({ item, status }: Props) {
   const progressData = [
     {
       label: 'Questing',
@@ -23,42 +26,51 @@ function TokenRewardProgress({ status }: Props) {
   ];
 
   return (
-    <div className="flex justify-between items-center pl-7 pr-24 gap-x-4">
-      {progressData.map((item, index) => (
-        <Fragment key={index}>
-          {index > 0 && (
+    <>
+      <div className="flex justify-between items-center pl-7 pr-24 gap-x-4 mb-12">
+        {progressData.map((item, index) => (
+          <Fragment key={index}>
+            {index > 0 && (
+              <div
+                className={cn([
+                  'w-28 lg:w-[10.5625rem] h-1px bg-current',
+                  item.checked ? 'text-basic-yellow' : 'text-white',
+                ])}
+              ></div>
+            )}
+
             <div
               className={cn([
-                'w-28 lg:w-[10.5625rem] h-1px bg-current',
+                'w-2 h-2 rounded-full relative shrink-0 bg-current',
                 item.checked ? 'text-basic-yellow' : 'text-white',
               ])}
-            ></div>
-          )}
-
-          <div
-            className={cn([
-              'w-2 h-2 rounded-full relative shrink-0 bg-current',
-              item.checked ? 'text-basic-yellow' : 'text-white',
-            ])}
-          >
-            <div
-              className={cn([
-                'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 border-1 rounded-full border-current',
-              ])}
-            ></div>
-
-            <div
-              className={cn([
-                'absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none',
-                item.checked || 'text-[#999]',
-              ])}
             >
-              {item.label}
+              <div
+                className={cn([
+                  'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 border-1 rounded-full border-current',
+                ])}
+              ></div>
+
+              <div
+                className={cn([
+                  'absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none',
+                  item.checked || 'text-[#999]',
+                ])}
+              >
+                {item.label}
+              </div>
             </div>
-          </div>
-        </Fragment>
-      ))}
-    </div>
+          </Fragment>
+        ))}
+      </div>
+
+      {status !== 1 && status < 3 && (
+        <TokenRewardProgressCountdown
+          label={progressData[status]?.label || '-'}
+          endTime={status === 0 ? item?.estimated_raffle_time : item?.actual_raffle_time}
+        />
+      )}
+    </>
   );
 }
 

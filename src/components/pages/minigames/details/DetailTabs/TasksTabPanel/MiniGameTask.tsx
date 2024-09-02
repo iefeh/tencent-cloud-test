@@ -39,9 +39,10 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
 
   function getProgressStatus() {
     const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
-    if (!!actual_raffle_time) return 2;
-
     const now = Date.now();
+
+    if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
+
     if (estimated_raffle_time && now > +estimated_raffle_time) return 1;
 
     return 0;
@@ -66,14 +67,14 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
   return (
     <div
       className={cn([
-        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
+        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-center bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
         hasTokenReward ? 'pt-[1.25rem]' : 'pt-[2.5rem]',
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress status={progressStatus} />}
+      {hasTokenReward && <TokenRewardProgress item={task.reward.token_reward} status={progressStatus} />}
 
-      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-12'])}>
+      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-4'])}>
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (
@@ -87,7 +88,7 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
         )}
       </div>
 
-      <div className="mt-3 flex-1 flex flex-col justify-between relative">
+      <div className="mt-3 flex flex-col justify-between relative">
         <div className="text-sm font-jcyt4">
           <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
             <div className="line-clamp-2 task-description" dangerouslySetInnerHTML={{ __html: task.description }}></div>
