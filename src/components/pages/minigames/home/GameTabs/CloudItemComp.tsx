@@ -116,7 +116,7 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
 
   return (
     <S3Image
-      refEl={itemRef}
+      ref={itemRef}
       src={url}
       className={cn([
         'absolute object-contain',
