@@ -20,8 +20,8 @@ const TokenRewardProgressCountdown: FC<Props> = ({ isBrown, label, endTime }) =>
 
   return (
     <>
-      <div className="h-[2.125rem] flex items-center">
-        <span className="mr-2">{label} will end in</span>
+      <div className="h-[1.625rem] flex items-center">
+        <span className="mr-2 text-sm">{label} will end in</span>
 
         {cdNumbers.map((no, index) => (
           <Fragment key={index}>
@@ -29,7 +29,7 @@ const TokenRewardProgressCountdown: FC<Props> = ({ isBrown, label, endTime }) =>
             <div
               className={cn([
                 'aspect-square bg-[#E0D1B1] rounded-five text-brown text-center font-semibold',
-                'text-base w-[2.125rem] leading-[2.125rem]',
+                'text-sm h-full leading-[1.625rem]',
               ])}
             >
               {no}
