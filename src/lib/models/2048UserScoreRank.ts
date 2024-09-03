@@ -35,7 +35,7 @@ export async function get2048Leaderboard(userId: string | undefined, lbId: strin
             $sort: { sum_score: -1 }
         },
         {
-            $limit: 20 
+            $limit: 20
         }];
         
     let lbInfos: any[] = await Puffy2048UserScoreRank.aggregate(pipeline);
