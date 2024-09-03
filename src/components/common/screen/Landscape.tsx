@@ -10,6 +10,7 @@ const Landscape: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
+    onResize();
 
     return () => window.removeEventListener('resize', onResize);
   }, []);
