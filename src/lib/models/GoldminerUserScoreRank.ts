@@ -36,7 +36,7 @@ export async function getGoldminerLeaderboard(userId: string | undefined, lbId: 
             $sort: { sum_score: -1 }
         },
         {
-            $limit: 5
+            $limit: 20
         }];
 
     let lbInfos: any[] = await GoldminerUserScoreRank.aggregate(pipeline);
