@@ -5,9 +5,24 @@ import Card from './Card';
 import Image from 'next/image';
 import { Button } from '@nextui-org/react';
 import CommonTable from '@/components/common/CommonTable';
+import FollowUs from '@/components/pages/minigames/details/DetailTabs/FollowUs';
+import { MediaLinks } from '@/constant/common';
+import { BaseButton } from './Buttons/gostButton';
+import BadgePanel from './TabsItem/BadgesPanel';
 
 interface TabContentsProps {
   tabKey: GyozaTabsEnum;
+}
+
+const commonBtnStyle = 'hover:bg-[#EBAB8B] shadow-[0px_2px_5px_0px_rgba(46,26,15,0.5)]'
+const firstWidth = '10rem'
+const secondWidth = '20rem'
+
+const titleMap = {
+  [GyozaTabsEnum.Overview]: 'Game data',
+  [GyozaTabsEnum.Tasks]: 'Tasks',
+  [GyozaTabsEnum.Ranking]: 'Ranking',
+  [GyozaTabsEnum.BadgesAndSBTs]: 'Badges and SBTs',
 }
 
 const TabContents: FC<TabContentsProps> = (props) => {
@@ -17,21 +32,26 @@ const TabContents: FC<TabContentsProps> = (props) => {
     {
       dataIndex: '',
       name: 'Rack',
-      render: (_: string, __: any, idx: number) => `# ${idx + 1}`
+      width: firstWidth,
+      render: (_: string, __: any, idx: number) => (<div className='text-[#6D5346] text-lg px-4'># {idx + 1}</div>)
     },
     {
       dataIndex: '',
       name: 'Player',
+      width: secondWidth,
       render: (t: string, r: Dict<string>) => (
-        <div>
-          <Image className='w-12 h-12 rounded-' src="" alt=''></Image>
-          <span></span>
+        <div className='flex items-center gap-x-4 text-[#6D5346] text-lg'>
+          <Image className='w-12 h-12 rounded-full border-[#C6886A]' src="" alt=''></Image>
+          <span>Panda</span>
         </div>
       )
     },
     {
       dataIndex: '',
       name: 'Score',
+      render: (t: string, r: Dict<string>) => (
+        <div className='text-[#8F6E35] text-xl'>2,364,487</div>
+      )
     }
   ]
 
@@ -99,11 +119,24 @@ const TabContents: FC<TabContentsProps> = (props) => {
   }
 
   const renderRanking = () => {
+    const renderMyRanK = () => {
+      return (
+        <div className='flex items-center text-[#2E1A0F] text-3xl py-6 mt-3 bg-[#EFD4A4] shadow-[0px_2px_5px_0px_rgba(46,26,15,0.5)] rounded-xl'>
+          <div style={{ width: firstWidth }} className='pl-6'>My Rank</div>
+          <div style={{ width: secondWidth }} className='pl-6'># 123123</div>
+          <div className='pl-2'>2,232,233</div>
+        </div>
+      )
+    }
+
     return (
       <CommonTable<Dict<string>>
         columns={columns}
         dataList={rankingList}
-      ></CommonTable>
+        renderComp={{
+          renderContent: renderMyRanK
+        }}
+      />
     )
   }
 
@@ -121,15 +154,59 @@ const TabContents: FC<TabContentsProps> = (props) => {
 
         return renderRanking()
 
+      case GyozaTabsEnum.BadgesAndSBTs:
+
+        return <BadgePanel></BadgePanel>
+
       default:
         break;
     }
   }
 
   return (
-    <div className='pt-[3.6875rem]'>
+    <div
+      className='h-[calc(100vh-10.5625rem)] overflow-y-auto'>
+      <div className='text-white text-3xl pt-14 pb-9'>{titleMap[tabKey]}</div>
       {renderTabContent()}
-    </div>
+      <FollowUs
+        className="bg-[#e6cab1]"
+        medias={[
+          {
+            name: '/minigames/miner/media_x.png',
+            label: 'Twitter Follow @Moonveil_Studio',
+            btn: 'Follow us',
+            renderBtn: (btn: string) => (
+              <BaseButton className={commonBtnStyle}>
+                {btn}
+              </BaseButton>
+            ),
+            link: MediaLinks.TWITTER,
+          },
+          {
+            name: '/minigames/miner/media_discord.png',
+            label: 'Join Moonveil’s Discord',
+            btn: 'Join us',
+            renderBtn: (btn: string) => (
+              <BaseButton className={commonBtnStyle}>
+                {btn}
+              </BaseButton>
+            ),
+            link: MediaLinks.DISCORD,
+          },
+          {
+            name: '/minigames/miner/media_tg.png',
+            label: 'Telegram',
+            btn: 'Follow us',
+            renderBtn: (btn: string) => (
+              <BaseButton className={commonBtnStyle}>
+                {btn}
+              </BaseButton>
+            ),
+            link: MediaLinks.TELEGRAM,
+          },
+        ]}
+      />
+    </div >
   )
 }
 

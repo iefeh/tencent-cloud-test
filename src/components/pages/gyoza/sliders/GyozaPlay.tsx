@@ -1,13 +1,12 @@
 import React, { FC } from "react";
-import BgImage from '@/components/common/BgImage'
+import S3Image from '@/components/common/medias/S3Image';
 import { Button, cn } from '@nextui-org/react';
 
 interface IProps {
   toPrev: () => void;
-  toNext?: () => void;
 }
 
-const titleImgUrl = ''
+const titleImgUrl = '/minigames/miner/title_play_now.png'
 
 const GyozaPlay: FC<IProps> = (props) => {
   const { toPrev } = props;
@@ -15,7 +14,7 @@ const GyozaPlay: FC<IProps> = (props) => {
   return (
     <div className="absolute h-[18.75rem] top-[14.375rem] right-[50%] translate-x-1/2">
       <div className="relative w-[36.75rem] h-[23.6875rem] bg-[#F9E9DB] opacity-90 rounded-t-[6.25rem] rounded-b-[1.875rem]">
-        <BgImage src={titleImgUrl} classNames="absolute w-[29.1875rem] h-[12.9375rem] top-[-5.25rem] right-[50%] translate-x-1/2" />
+        <S3Image src={titleImgUrl} className="absolute w-[29.1875rem] h-[12.9375rem] top-[-5.25rem] right-[50%] translate-x-1/2" />
         <div className="pt-[10.625rem] px-[3.375rem] text-2xl text-[#2E1A0F]">
           Join forces with the Animal Spirits. Choose your castle and start your adventure today!
         </div>

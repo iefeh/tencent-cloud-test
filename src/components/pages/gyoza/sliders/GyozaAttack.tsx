@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import BgImage from '@/components/common/BgImage'
+import S3Image from '@/components/common/medias/S3Image';
 import { GostButton, BaseButton } from "../Buttons/gostButton";
 
 interface IProps {
@@ -7,7 +7,7 @@ interface IProps {
   toNext: () => void;
 }
 
-const attackImgUrl = '';
+const attackImgUrl = '/minigames/miner/guide_cannon.png';
 
 const GyozaAttack: FC<IProps> = (props) => {
   const { toPrev, toNext } = props;
@@ -24,7 +24,7 @@ const GyozaAttack: FC<IProps> = (props) => {
         </div>
       </div>
 
-      <BgImage src={attackImgUrl} classNames='mr-[1.375rem] relative h-full w-[34.25rem] shrink-0' />
+      <S3Image src={attackImgUrl} className='mr-[1.375rem] relative h-full w-[34.25rem] shrink-0' />
     </div>
   )
 }

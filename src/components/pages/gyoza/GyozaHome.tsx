@@ -6,12 +6,13 @@ interface GyozaHomeProps {
   showMask?: boolean;
 }
 
+
 const GyozaHome: FC<GyozaHomeProps> = (props) => {
   const { showMask = false } = props;
   return (
     <div
       className={cn([
-        "z-10 w-full h-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png')] bg-[length:100%_auto] bg-no-repeat text-white",
+        "z-10 w-full h-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/miner/bg.png')] bg-[length:100%_auto] bg-no-repeat text-white",
       ])}
     >
       <div className={cn([

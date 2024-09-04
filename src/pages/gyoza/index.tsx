@@ -2,17 +2,22 @@ import Head from 'next/head';
 import { FC, useState } from 'react';
 import gyozaComp from "@/components/pages/gyoza"
 import { GyozaTabsEnum } from '@/components/pages/gyoza/GyozaTabs';
-import BgImage from '@/components/common/BgImage'
-
+import S3Image from '@/components/common/medias/S3Image';
+import { cn } from '@nextui-org/react';
 const { GyozaHome, GuidePage, GyozaTabs, TabContents } = gyozaComp;
 
+const getUrl = (name: string) => {
+  return `/minigames/miner/${name}.png`
+}
+
 const bgImgList = [
-  { url: '', classNames: 'w-[37.3125rem] h-[27.5rem] top-[8.0625rem] right-0' },
-  { url: '', classNames: 'w-[867px] h-[40.625rem] bottom-0 left-0' },
+  { url: getUrl('cannon'), classNames: 'w-[37.3125rem] h-[27.5rem] top-[8.0625rem] right-0' },
+  { url: getUrl('castle'), classNames: 'w-[867px] h-[40.625rem] bottom-0 left-0' },
 ]
 
 const GyozaPage: FC & BasePage = () => {
   const [tabkeys, setTabkeys] = useState<GyozaTabsEnum>(GyozaTabsEnum.Overview)
+  const [showGuide, setShowGuide] = useState(true)
 
   return (
     <section className=" font-jcyt6 w-screen h-screen">
@@ -26,21 +31,26 @@ const GyozaPage: FC & BasePage = () => {
       </Head>
 
       <GyozaHome showMask>
-        {/* <GuidePage></GuidePage> */}
+        {showGuide
+          ? <GuidePage toSkip={() => { setShowGuide(false) }}></GuidePage>
+          : (
+            <div className='pt-[5.5625rem] w-[87.5rem] mx-auto'>
+              {bgImgList.map((img, index) => (
+                <S3Image key={index} src={img.url} className={cn([
+                  img.classNames,
+                  'absolute object-contain z-[-1]'
+                ])} />
+              ))}
 
+              <GyozaTabs
+                value={tabkeys}
+                onSelectionChange={(key) => setTabkeys(key as GyozaTabsEnum)}
+              ></GyozaTabs>
 
-        <div className='pt-[5.5625rem] w-[87.5rem] mx-auto'>
-          {bgImgList.map((img, index) => (
-            <BgImage key={index} src={img.url} classNames={img.classNames + ' bg-[pink] z-[-1]'} />
-          ))}
-
-          <GyozaTabs
-            value={tabkeys}
-            onSelectionChange={(key) => setTabkeys(key as GyozaTabsEnum)}
-          ></GyozaTabs>
-
-          <TabContents tabKey={tabkeys}></TabContents>
-        </div>
+              <TabContents tabKey={tabkeys}></TabContents>
+            </div>
+          )
+        }
       </GyozaHome>
 
     </section>

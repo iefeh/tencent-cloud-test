@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import BgImage from '@/components/common/BgImage'
+import S3Image from '@/components/common/medias/S3Image';
 import { GostButton, BaseButton } from '../Buttons/gostButton'
 
 interface IProps {
@@ -7,14 +7,14 @@ interface IProps {
   toNext: () => void;
 }
 
-const pvpImgUrl = ''
+const pvpImgUrl = '/minigames/miner/versus.png'
 
 const GyozaPVP: FC<IProps> = (props) => {
   const { toPrev, toNext } = props
 
   return (
     <div className="absolute w-[65.25rem] top-[15.9375rem] right-[50%] translate-x-1/2">
-      <BgImage src={pvpImgUrl} classNames='relative w-full h-[26.25rem]' />
+      <S3Image src={pvpImgUrl} className='relative w-full object-contain h-[26.25rem]' />
       <div className="mx-[6.5rem] font-[1.125rem]">
         In the mystical realm of Flaming Pets, Pirates and Sprite Guardians clash in an age-old conflict. Legends tell of 25 enchanted castles, each guarded by resilient Animal Spirits. These castles, filled with power, attract adventurers from afar to join an endless saga of strategy and conquest.
       </div>
