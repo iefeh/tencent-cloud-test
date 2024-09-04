@@ -9,7 +9,7 @@ import FollowUs from '@/components/pages/minigames/details/DetailTabs/FollowUs';
 import { MediaLinks } from '@/constant/common';
 import { BaseButton } from './Buttons/gostButton';
 import BadgePanel from './TabsItem/BadgesPanel';
-
+import TasksTabPanel from './TasksTabPanel'
 interface TabContentsProps {
   tabKey: GyozaTabsEnum;
 }
@@ -76,48 +76,6 @@ const TabContents: FC<TabContentsProps> = (props) => {
     )
   }
 
-  const renderTasks = () => {
-    return (
-      <div className='flex flex-wrap gap-x-6 gap-y-8'>
-        {tasksList.map((item, index) => (
-          <Card key={index}>
-            <div className='p-10 w-[28.125rem]'>
-              <div className='text-lg text-[#2E1A0F]'>Connect Your Wallet</div>
-
-              <div className='text-sm text-[#8C7264] pt-5 pb-10'>
-                Connect to your crypto wallet Be sure to use the most valuable ...
-              </div>
-
-              <div className='text-lg text-[#2E1A0F] flex'>
-                <Image className='w-8 h-8' src='' alt=''></Image>
-                3500 MBs Max
-              </div>
-
-              <div className='pt-5'>
-                <Button
-                  variant="bordered"
-                  radius="full"
-                  className='mr-2 text-[#2E1A0F] border-[#C6886A] bg-[#F9E9DB] h-auto px-6 py-1 text-[.875rem]'
-                >
-                  Connect
-                </Button>
-                <Button
-                  variant="bordered"
-                  radius="full"
-                  className='text-[#6B5549] border-[#6B5549] bg-[#E5C9B1] h-auto py-1 text-[.875rem]'
-                >
-                  Verify
-                </Button>
-              </div>
-
-            </div>
-          </Card>
-        ))
-        }
-      </div>
-    )
-  }
-
   const renderRanking = () => {
     const renderMyRanK = () => {
       return (
@@ -148,7 +106,7 @@ const TabContents: FC<TabContentsProps> = (props) => {
 
       case GyozaTabsEnum.Tasks:
 
-        return renderTasks()
+        return <TasksTabPanel></TasksTabPanel>
 
       case GyozaTabsEnum.Ranking:
 
