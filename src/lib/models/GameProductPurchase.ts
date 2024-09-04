@@ -2,17 +2,21 @@ import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IGameProductPurchase extends Document {
-    user_id: string
-    client_id: string;
+    // 用户id
+    user_id: string;
+    // 游戏id
+    game_id: string;
+    // 产品id
     product_id: string;
-    purchase_time: number;
+    // 购买时间, ISO时间戳, daily: 
+    purchase_period: string;
 }
 
 const GameProductPurchaseSchema = new Schema<IGameProductPurchase>({
     user_id: { type: String, required: true },
-    client_id: { type: String, required: true },
+    game_id: { type: String, required: true },
     product_id: { type: String, required: true },
-    purchase_time: { type: Number, required: true },
+    purchase_period: { type: String, required: true },
 });
 
 GameProductPurchaseSchema.index({ product_id: 1 });
