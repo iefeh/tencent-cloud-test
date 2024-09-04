@@ -8,8 +8,8 @@ import { NextPage } from 'next';
 
 const DeleteAccountPage: NextPage & BasePage = () => {
   return (
-    <Landscape>
-      <section className="w-screen h-screen flex flex-col relative">
+    <Landscape className="font-fzdb">
+      <section className="w-screen h-screen flex flex-col gap-y-6 relative font-fzdb">
         <S3Image className="object-cover" src="/astrark/shop/bg.png" fill />
 
         <ShopHeader />

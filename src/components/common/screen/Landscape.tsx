@@ -1,6 +1,7 @@
+import { cn } from '@nextui-org/react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 
-const Landscape: FC<PropsWithChildren> = ({ children }) => {
+const Landscape: FC<PropsWithChildren & ClassNameProps> = ({ children, className }) => {
   const [isHorizontal, setIsHorizontal] = useState(false);
 
   function onResize() {
@@ -18,7 +19,7 @@ const Landscape: FC<PropsWithChildren> = ({ children }) => {
   if (isHorizontal) return children;
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
+    <div className={cn(['w-screen h-screen flex justify-center items-center', className])}>
       <span className="text-2xl">Please view this page in landscape mode.</span>
     </div>
   );
