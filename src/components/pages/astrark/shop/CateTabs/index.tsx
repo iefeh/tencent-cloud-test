@@ -2,9 +2,9 @@ import CircularLoading from '@/pages/components/common/CircularLoading';
 import { Button, Tab, Tabs, cn } from '@nextui-org/react';
 import { useState, type FC, type Key, useEffect } from 'react';
 import { type CateTab, cateTabs } from '../model';
-import ShopItem from '../ShopItem';
 import S3Image from '@/components/common/medias/S3Image';
 import styles from './index.module.scss';
+import ItemCollections from './ItemCollections';
 
 const CateTabs: FC = () => {
   const [tabs, setTabs] = useState<CateTab[]>([]);
@@ -29,14 +29,16 @@ const CateTabs: FC = () => {
 
     const { children = [] } = tabs.find((item) => item.key === newKey) || {};
     setListTabs(children);
-    setSelectedListKey(children[0]?.key || '');
+    const listKey = children[0]?.key || '';
+    setSelectedListKey(listKey);
+    onListSelectionChange(listKey, children);
   }
 
-  function onListSelectionChange(key: Key) {
+  function onListSelectionChange(key: Key, list = listTabs) {
     const newKey = key.toString();
     setSelectedListKey(newKey);
 
-    const tab = listTabs.find((item) => item.key === newKey);
+    const tab = list.find((item) => item.key === newKey);
     setSelectedListTab(tab);
   }
 
@@ -45,7 +47,7 @@ const CateTabs: FC = () => {
   }, []);
 
   return (
-    <div className="h-full relative flex flex-nowrap gap-14 z-0">
+    <div className="h-full relative flex flex-nowrap gap-14 z-0 pr-12">
       <div className="bg-gradient-to-b from-transparent via-black/30 to-transparent flex flex-col w-[11.3125rem] overflow-x-visible">
         <Tabs
           aria-label="Options"
@@ -86,7 +88,7 @@ const CateTabs: FC = () => {
         >
           <S3Image className="object-contain" src="/astrark/shop/btn_process.png" fill />
 
-          <S3Image className="w-5 h-5 object-contain relative z-0" src="/astrark/shop/icon_question.png" />
+          <S3Image className="w-5 h-5 object-contain relative z-0" src="/astrark/shop/icons/icon_question.png" />
 
           <span className="relative z-0 text-base leading-[1.125rem] text-left">
             Purchase
@@ -101,7 +103,7 @@ const CateTabs: FC = () => {
         >
           <S3Image className="object-contain" src="/astrark/shop/btn_back.png" fill />
 
-          <S3Image className="w-5 h-5 object-contain relative z-0" src="/astrark/shop/icon_back.png" />
+          <S3Image className="w-5 h-5 object-contain relative z-0" src="/astrark/shop/icons/icon_back.png" />
 
           <span className="relative z-0 text-base leading-[1.125rem] text-[#5D3C13] text-left">
             Return to
@@ -111,33 +113,33 @@ const CateTabs: FC = () => {
         </Button>
       </div>
 
-      <Tabs
-        color="primary"
-        selectedKey={selectedListKey}
-        classNames={{
-          base: 'flex-1',
-          tabList: cn(['flex-1 bg-transparent p-0 rounded-none relative', styles.listTabs]),
-          cursor: 'w-full bg-transparent',
-          tab: "data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_list_tab_repeat.png')] bg-[length:auto_100%] bg-no-repeat bg-repeat-x px-7 pt-0 pb-2 h-[3.125rem] rounded-none w-auto",
-          tabContent: 'text-[#8BA4BE] text-xl group-data-[selected=true]:text-white',
-        }}
-        onSelectionChange={onListSelectionChange}
-      >
-        {listTabs.map((tab) => (
-          <Tab
-            key={tab.key}
-            title={
-              <div className="flex items-center">
-                <span>{tab.label}</span>
-              </div>
-            }
-          ></Tab>
-        ))}
-      </Tabs>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Tabs
+          color="primary"
+          selectedKey={selectedListKey}
+          classNames={{
+            tabList: cn(['flex-1 bg-transparent p-0 rounded-none relative', styles.listTabs]),
+            cursor: 'w-full bg-transparent',
+            tab: "data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_list_tab_repeat.png')] bg-[length:auto_100%] bg-no-repeat bg-repeat-x px-7 pt-0 pb-2 h-[3.125rem] rounded-none w-auto",
+            tabContent: 'text-[#8BA4BE] text-xl group-data-[selected=true]:text-white',
+          }}
+          onSelectionChange={onListSelectionChange}
+        >
+          {listTabs.map((tab) => (
+            <Tab
+              key={tab.key}
+              title={
+                <div className="flex items-center">
+                  <span>{tab.label}</span>
+                </div>
+              }
+            ></Tab>
+          ))}
+        </Tabs>
 
-      {selectedListTab?.items instanceof Array
-        ? selectedListTab.items.map((item) => <ShopItem key={item.id} item={item} />)
-        : selectedListTab?.items}
+        {selectedListTab && <ItemCollections key={selectedListTab.key} item={selectedListTab} /
+        >}
+      </div>
 
       {loading && <CircularLoading />}
     </div>
