@@ -3,11 +3,18 @@ import { ShopItemType } from '@/constant/astrark';
 import type { AstrArk } from '@/types/astrark';
 import { FC } from 'react';
 
-const BenefitsDailyItem: FC<ItemProps<AstrArk.ShopItem>> = ({ item }) => {
+interface ClickProps {
+  onClick?: (item: AstrArk.ShopItem) => void;
+}
+
+const BenefitsDailyItem: FC<ItemProps<AstrArk.ShopItem> & ClickProps> = ({ item, onClick }) => {
   const { icon_url, price_in_usdc, limit: { amount = '-', sold_amount = '-' } = {} } = item || {};
 
   return (
-    <div className="relative h-[24.875rem] max-h-full aspect-[259/398] flex flex-col justify-between cursor-pointer">
+    <div
+      className="relative h-[24.875rem] max-h-full aspect-[259/398] flex flex-col justify-between cursor-pointer"
+      onClick={() => item && onClick?.(item)}
+    >
       {icon_url && <S3Image className="object-cover" src={icon_url} fill />}
 
       <div className="flex-1 z-0"></div>
@@ -23,12 +30,12 @@ const BenefitsDailyItem: FC<ItemProps<AstrArk.ShopItem>> = ({ item }) => {
   );
 };
 
-const ShopItem: FC<ItemProps<AstrArk.ShopItem>> = ({ item }) => {
+const ShopItem: FC<ItemProps<AstrArk.ShopItem> & ClickProps> = ({ item, onClick }) => {
   if (!item) return null;
 
   switch (item.type) {
     case ShopItemType.BENEFITS_DAILY:
-      return <BenefitsDailyItem item={item} />;
+      return <BenefitsDailyItem item={item} onClick={onClick} />;
     default:
       return null;
   }
