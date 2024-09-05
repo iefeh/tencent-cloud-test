@@ -62,6 +62,10 @@ router.post(async (req, res) => {
     if (user.selfdestruct_request_time && user.selfdestruct_request_time + 1000 * 60 * 60 * 24 * 90 < now) {
       return res.status(500).json(response.userSelfDestructed());
     }
+    // 判断用户是否已封禁
+    if (user.is_banned) {
+      return res.json(response.unauthorized());
+    }
   }
   const token = await generateUserSession(userWallet.user_id);
   res.json(
