@@ -5,13 +5,13 @@ declare namespace AstrArk {
     id: string;
     type?: ShopItemType;
     icon_url: string;
-    limit: {
+    limit?: {
       amount: number;
       sold_amount?: number;
     };
     name: string;
     price_in_usdc: number;
-    sold_out: boolean;
+    sold_out?: boolean;
     desc?: string;
   };
 }

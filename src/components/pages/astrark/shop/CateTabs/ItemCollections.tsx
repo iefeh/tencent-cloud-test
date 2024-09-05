@@ -4,6 +4,7 @@ import useBScroll from '@/hooks/useBScroll';
 import ShopItem from './ShopItem';
 import ItemsCountdown from './ItemsCountdown';
 import type { AstrArk } from '@/types/astrark';
+import S3Image from '@/components/common/medias/S3Image';
 
 interface ClickProps {
   onClick?: (item: AstrArk.ShopItem) => void;
@@ -47,6 +48,23 @@ const BenefitsWeeklyItemCollection: ShopItemCollectionCom = ({ item, onClick }) 
   );
 };
 
+const BenefitsMonthlyItemCollection: ShopItemCollectionCom = ({ item, onClick }) => {
+  const shopItem = item?.items?.[0];
+  const { icon_url } = shopItem || {};
+
+  return (
+    <div className="flex justify-center mt-9 relative">
+      {icon_url && (
+        <S3Image
+          className="w-[46.5625rem] aspect-[745/406] object-contain cursor-pointer"
+          src={icon_url}
+          onClick={() => shopItem && onClick?.(shopItem)}
+        />
+      )}
+    </div>
+  );
+};
+
 const ResourcesDiamondItemCollection: ShopItemCollectionCom = ({ item, onClick }) => {
   const { scrollRef } = useBScroll({ scrollX: false, scrollY: true });
 
@@ -66,6 +84,7 @@ const ResourcesDiamondItemCollection: ShopItemCollectionCom = ({ item, onClick }
 const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.BENEFITS_DAILY]: BenefitsDailyItemCollection,
   [ShopCateType.BENEFITS_WEEKLY]: BenefitsWeeklyItemCollection,
+  [ShopCateType.BENEFITS_MONTHLY]: BenefitsMonthlyItemCollection,
   [ShopCateType.RESOURCES_DIAMOND_TOP_UP]: ResourcesDiamondItemCollection,
 };
 

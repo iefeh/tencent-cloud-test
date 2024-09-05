@@ -16,7 +16,7 @@ export interface CateTab {
   isFree?: boolean;
   endTime?: number;
   children?: CateTab[];
-  items?: AstrArk.ShopItem[] | JSX.Element;
+  items?: AstrArk.ShopItem[];
 }
 
 export const cateTabs: CateTab[] = [
@@ -68,6 +68,20 @@ export const cateTabs: CateTab[] = [
       {
         key: 'monthly_card',
         label: 'Monthly Card',
+        type: ShopCateType.BENEFITS_MONTHLY,
+        items: [
+          {
+            id: '0',
+            type: ShopItemType.BENEFITS_MONTHLY,
+            icon_url: '/astrark/shop/bg_monthly_card.png',
+            limit: {
+              amount: 99,
+            },
+            name: 'xxx',
+            price_in_usdc: 99,
+            sold_out: false,
+          },
+        ],
       },
     ],
   },
