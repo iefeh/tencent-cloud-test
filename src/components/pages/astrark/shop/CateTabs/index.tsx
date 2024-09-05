@@ -80,7 +80,10 @@ const CateTabs: FC = () => {
           ))}
         </Tabs>
 
-        <Button className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.8125rem] flex-shrink-0 ml-2 rounded-none">
+        <Button
+          className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.8125rem] flex-shrink-0 ml-2 rounded-none"
+          disableRipple
+        >
           <S3Image className="object-contain" src="/astrark/shop/btn_process.png" fill />
 
           <S3Image className="w-5 h-5 object-contain relative z-0" src="/astrark/shop/icon_question.png" />
@@ -92,7 +95,10 @@ const CateTabs: FC = () => {
           </span>
         </Button>
 
-        <Button className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.1875rem] flex-shrink-0 -mt-ten mb-4 ml-2 rounded-none">
+        <Button
+          className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.1875rem] flex-shrink-0 -mt-ten mb-4 ml-2 rounded-none"
+          disableRipple
+        >
           <S3Image className="object-contain" src="/astrark/shop/btn_back.png" fill />
 
           <S3Image className="w-5 h-5 object-contain relative z-0" src="/astrark/shop/icon_back.png" />
