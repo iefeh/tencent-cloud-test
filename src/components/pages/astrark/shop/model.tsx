@@ -6,6 +6,7 @@ export const enum ShopCateType {
   BENEFITS_DAILY = 'benefits_daily',
   BENEFITS_WEEKLY = 'benefits_weekly',
   BENEFITS_MONTHLY = 'benefits_monthly',
+  RESOURCES_DIAMOND_TOP_UP = 'resources_diamond_top_up',
 }
 
 export interface CateTab {
@@ -77,5 +78,28 @@ export const cateTabs: CateTab[] = [
   {
     label: 'Resources',
     key: ShopCate.RESOURCES,
+    children: [
+      {
+        key: 'resources_diamond_top_up',
+        label: 'Diamond Top-up',
+        type: ShopCateType.RESOURCES_DIAMOND_TOP_UP,
+        endTime: dayjs().add(3, 'h').valueOf(),
+        items: Array(10)
+          .fill(null)
+          .map((_, i) => {
+            return {
+              id: i + '',
+              type: ShopItemType.RESOURCES_DIAMOND,
+              icon_url: '/astrark/shop/bg_item_diamond.png',
+              limit: {
+                amount: 99,
+              },
+              name: 'xxx',
+              price_in_usdc: 99,
+              sold_out: false,
+            };
+          }),
+      },
+    ],
   },
 ];

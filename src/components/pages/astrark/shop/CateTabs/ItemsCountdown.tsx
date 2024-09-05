@@ -18,7 +18,7 @@ const ItemsCountdown: FC<ItemProps<CateTab>> = ({ item }) => {
 
   return (
     item?.endTime && (
-      <div className="flex items-center absolute right-0 top-3">
+      <div className="flex items-center absolute right-0 -top-1 -translate-y-full">
         <S3Image className="object-contain w-[1.125rem] aspect-square" src="/astrark/shop/icons/icon_timeout.png" />
 
         <span className="ml-[0.375rem]">{timeoutText}</span>

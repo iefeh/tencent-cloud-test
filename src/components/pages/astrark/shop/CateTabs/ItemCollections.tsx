@@ -15,12 +15,16 @@ const BenefitsDailyItemCollection: ShopItemCollectionCom = ({ item, onClick }) =
   const { scrollRef } = useBScroll({ scrollX: true, scrollY: false });
 
   return (
-    <div ref={scrollRef} className="w-full relative overflow-hidden">
-      <div className="w-max flex">
-        {item?.items instanceof Array
-          ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
-          : item?.items}
+    <div className="flex mt-9 mr-4 relative">
+      <div ref={scrollRef} className="w-full relative overflow-hidden">
+        <div className="w-max flex">
+          {item?.items instanceof Array
+            ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
+            : item?.items}
+        </div>
       </div>
+
+      <ItemsCountdown item={item} />
     </div>
   );
 };
@@ -29,11 +33,31 @@ const BenefitsWeeklyItemCollection: ShopItemCollectionCom = ({ item, onClick }) 
   const { scrollRef } = useBScroll({ scrollX: false, scrollY: true });
 
   return (
-    <div ref={scrollRef} className="w-full relative overflow-hidden">
-      <div className="w-full flex flex-wrap gap-x-1 gap-y-2">
-        {item?.items instanceof Array
-          ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
-          : item?.items}
+    <div className="flex mt-9 ml-14 mr-12 relative">
+      <div ref={scrollRef} className="w-full relative overflow-hidden">
+        <div className="w-full flex flex-wrap gap-x-1 gap-y-2">
+          {item?.items instanceof Array
+            ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
+            : item?.items}
+        </div>
+      </div>
+
+      <ItemsCountdown item={item} />
+    </div>
+  );
+};
+
+const ResourcesDiamondItemCollection: ShopItemCollectionCom = ({ item, onClick }) => {
+  const { scrollRef } = useBScroll({ scrollX: false, scrollY: true });
+
+  return (
+    <div className="flex mt-6 mx-[5.25rem] relative">
+      <div ref={scrollRef} className="w-full relative overflow-hidden">
+        <div className="w-full flex flex-wrap gap-x-2 gap-y-1">
+          {item?.items instanceof Array
+            ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
+            : item?.items}
+        </div>
       </div>
     </div>
   );
@@ -42,6 +66,7 @@ const BenefitsWeeklyItemCollection: ShopItemCollectionCom = ({ item, onClick }) 
 const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.BENEFITS_DAILY]: BenefitsDailyItemCollection,
   [ShopCateType.BENEFITS_WEEKLY]: BenefitsWeeklyItemCollection,
+  [ShopCateType.RESOURCES_DIAMOND_TOP_UP]: ResourcesDiamondItemCollection,
 };
 
 const ItemCollections: FC<ItemProps<CateTab>> = ({ item }) => {
@@ -52,11 +77,7 @@ const ItemCollections: FC<ItemProps<CateTab>> = ({ item }) => {
   }
 
   return (
-    <div className="flex-1 pt-9 w-[calc(100%_-_1rem)] relative">
-      {CollectionCom && <CollectionCom item={item} onClick={onItemClick} />}
-
-      <ItemsCountdown item={item} />
-    </div>
+    <div className="flex-1 w-full relative">{CollectionCom && <CollectionCom item={item} onClick={onItemClick} />}</div>
   );
 };
 
