@@ -34,6 +34,8 @@ export interface IUser extends Document {
   deleted_time: number;
   // 是否为虚拟用户
   virtual: boolean;
+  // 是否被封禁
+  is_banned: boolean;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -55,6 +57,7 @@ const UserSchema = new Schema<IUser>({
   selfdestruct_request_time: { type: Number },
   deleted_time: { type: Number, default: null },
   virtual: { type: Boolean, default: false },
+  is_banned: { type: Boolean, default: false },
 });
 
 // 用户邮件，同一个邮件不允许多次绑定
