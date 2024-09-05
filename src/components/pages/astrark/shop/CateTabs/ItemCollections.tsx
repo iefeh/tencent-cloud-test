@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { CateTab } from '../model';
 import useBScroll from '@/hooks/useBScroll';
-import ShopItem from '../ShopItem';
+import ShopItem from './ShopItem';
 import ItemsCountdown from './ItemsCountdown';
 
 const ItemCollections: FC<ItemProps<CateTab>> = ({ item }) => {
