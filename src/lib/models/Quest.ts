@@ -81,6 +81,7 @@ const QuestSchema = new Schema<IQuest>({
     active: { type: Boolean, default: false },
     order: { type: Number },
     start_time: { type: Number },
+    participant_end_time: { type: Number },
     end_time: { type: Number },
     created_time: { type: Number },
     updated_time: { type: Number },
