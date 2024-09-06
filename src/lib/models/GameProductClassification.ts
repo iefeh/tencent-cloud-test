@@ -1,4 +1,5 @@
-import {Document, Schema, models, model} from 'mongoose'
+import {Document, Schema, models, model} from 'mongoose';
+import { ProductLimitType } from '@/lib/models/GameProduct';
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export type ProductTypeItem = {
@@ -6,13 +7,16 @@ export type ProductTypeItem = {
     id: string;
     // 包体分类名称
     name: string;
+    // 包体刷新周期
+    limit_type: ProductLimitType; 
     // 显示顺序
     order: number;
 }
 
-const ProductTypeItemSchema = new Schema({
+const ProductTypeItemSchema = new Schema<ProductTypeItem>({
     id: { type: String, required: true },
     name: { type: String, required: true },
+    limit_type: { type: String, required: true },
     order: { type: Number, required: true },
 });
 
