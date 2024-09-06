@@ -36,7 +36,7 @@ const GetTicketModal: FC<DisclosureProps & Props> = ({
             <>
               <ModalBody>
                 <div className="bg-[#F7E9CC] border-2 border-basic-gray rounded-base overflow-hidden pt-[3.875rem] pl-[4.5rem] pr-[5.25rem] pb-[3.25rem] font-jcyt6">
-                  <p className="text-center">Welcome to Moonveil Mini Games!</p>
+                  <p className="text-center text-xl">Welcome to Moonveil Mini Games!</p>
 
                   <p className="mt-6">Each game requires one ticket. You can obtain tickets in the following ways:</p>
 
