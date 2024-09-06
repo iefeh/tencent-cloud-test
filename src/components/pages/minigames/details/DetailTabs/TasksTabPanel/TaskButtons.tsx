@@ -172,7 +172,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           ])}
           prefix={
             <div
-              className="stroke-content"
+              className={cn(['stroke-content', !(achieved || verified || isExpired) && 'text-white'])}
               style={{ '--stroke-color': achieved || verified || isExpired ? '#999' : '#7A0A08' } as CSSProperties}
             >
               {getConnectLabel(task)}
@@ -181,6 +181,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           label=""
           actived
           needAuth
+          linearDisabled
           loading={connectLoading}
           disabled={achieved || verified || isExpired}
           onClick={onConnectClick}
