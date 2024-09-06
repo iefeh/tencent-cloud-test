@@ -2,7 +2,10 @@ import type {NextApiResponse} from "next";
 import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
-import { getISOFullDateTime, getISOMonthDayTime, getISOYearWeekString } from '@/lib/common/utils';
+import {
+    getFirstDayOfNextMonth, getFirstDayOfNextWeek, getISOFullDateTimeString,
+    getISOMonthDayTimeString, getISOYearWeekString
+} from '@/lib/common/timeUtils';
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
 import GameProductClassification from '@/lib/models/GameProductClassification';
@@ -39,8 +42,8 @@ router.use(dynamicCors).get(async (req, res) => {
     })
     const gamePurchase = await getProductPurchase(gameId as string, userId);
     const currentWeek = getISOYearWeekString(new Date());
-    const currentMonthDay = getISOMonthDayTime(new Date());
-    const currentDate = getISOFullDateTime(new Date());
+    const currentMonthDay = getISOMonthDayTimeString(new Date());
+    const currentDate = getISOFullDateTimeString(new Date());
     gamePurchase.forEach(purchase => {
       const product = productMap.get(purchase.product_id);
       // 根据产品限量周期和购买周期计算已售出数量
@@ -55,7 +58,10 @@ router.use(dynamicCors).get(async (req, res) => {
     });
     gameProducts.forEach(gameProduct => {
       // 判断当前周期内产品是否已经售空
-      if (gameProduct.sold_amount >= gameProduct.limit.amount) {
+      if (gameProduct.limit.sold_amount === undefined) {
+        gameProduct.limit.sold_amount = 0;
+      }
+      if (gameProduct.limit.sold_amount >= gameProduct.limit.amount) {
         gameProduct.sold_out = true;
       } else {
         gameProduct.sold_out = false;
@@ -68,9 +74,17 @@ router.use(dynamicCors).get(async (req, res) => {
         targetArr.push(gameProduct);
       }
     });
+    const now = new Date();
     productClasses.forEach(productClass => {
       for (let productType of productClass.product_types) {
         productType.products = productTypeMap.get(productType.id);
+        if (productType.limit_type === ProductLimitType.Daily) {
+          productType.refresh_time = (new Date(now.getTime()+(24 * 60 * 60 * 1000))).setHours(0, 0, 0, 0);
+        } else if (productType.limit_type === ProductLimitType.Weekly) {
+          productType.refresh_time = getFirstDayOfNextWeek(now);
+        } else if (productType.limit_type === ProductLimitType.Monthly) {
+          productType.refresh_time = getFirstDayOfNextMonth(now);
+        }
         delete productType.id;
       }
     });
