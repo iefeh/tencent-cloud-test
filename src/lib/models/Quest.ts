@@ -47,6 +47,8 @@ export interface IQuest extends Document {
     order: number;
     // 任务开始的日期
     start_time: number;
+    // 任务参与结束时间
+    participant_end_time: number;
     // 任务结束的日期
     end_time: number;
     // 创建时间毫秒时间戳
