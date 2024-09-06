@@ -47,7 +47,7 @@ const CateTabs: FC = () => {
   }, []);
 
   return (
-    <div className="h-full relative flex flex-nowrap gap-14 z-0 pr-12">
+    <div className="flex-1 relative flex flex-nowrap gap-14 z-0 pr-12 overflow-hidden">
       <div className="bg-gradient-to-b from-transparent via-black/30 to-transparent flex flex-col w-[11.3125rem] overflow-x-visible">
         <Tabs
           aria-label="Options"
