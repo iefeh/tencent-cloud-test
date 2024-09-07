@@ -230,7 +230,7 @@ async function doUserLogin(
         }
       }
     });
-    http.get(`/api/users/invite?userId=${newUser.user_id}`);// 创建邀请码
+    await http.get(`/api/users/invite?userId=${newUser.user_id}`);// 创建邀请码
   } else {
     //检查用户是否已经被删除
     const now = Date.now();
