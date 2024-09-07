@@ -1,7 +1,7 @@
 import { tr } from 'date-fns/locale';
 import { NextApiResponse } from 'next';
 import { v4 as uuidv4 } from 'uuid';
-
+import http from '../../../http/index';
 import { AuthorizationType, CaptchaType, SignupPayload } from '@/lib/authorization/types';
 import { appendQueryParamsToUrl, appendResponseToUrlQueryParams } from '@/lib/common/url';
 import logger from '@/lib/logger/winstonLogger';
@@ -230,6 +230,7 @@ async function doUserLogin(
         }
       }
     });
+    http.get(`/api/users/invite?userId=${newUser.user_id}`);// 创建邀请码
   } else {
     //检查用户是否已经被删除
     const now = Date.now();
