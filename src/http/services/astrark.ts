@@ -53,3 +53,7 @@ export function deleteAccountAPI(): Promise<ResultDTO> {
 export function cancelDeleteAccountAPI(): Promise<ResultDTO> {
   return http.post('/api/oauth2/selfdestruct/cancel');
 }
+
+export function queryAuthCodeAPI(): Promise<ResultDTO> {
+  return http.post('/api/oauth2/otp/authorize', { withBearer: true });
+}
