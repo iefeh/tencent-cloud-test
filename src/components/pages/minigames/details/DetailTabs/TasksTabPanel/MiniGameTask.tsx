@@ -157,7 +157,11 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
             )}
           </div>
 
-          {(task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time) || isExpired ? (
+          {(task.verified &&
+            hasTokenReward &&
+            (task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute ||
+              !!task.reward.token_reward?.actual_raffle_time)) ||
+          isExpired ? (
             <>
               <LGButton
                 className="mt-5"
@@ -173,7 +177,11 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
                     : 'Sorry, you didn’t win this time.'
                 }
                 actived
-                disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}
+                disabled={
+                  (task.reward.token_reward?.distribute_type !== TokenRewardDistributeType.DirectDistribute &&
+                    !task.reward.token_reward?.actual_raffle_time) ||
+                  task.user_token_reward?.status !== 'pending'
+                }
                 loading={loading}
                 onClick={() => task.user_token_reward && onClaim(task.user_token_reward)}
               />
