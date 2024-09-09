@@ -65,6 +65,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
   const isLongCD = [QuestType.TweetInteraction, QuestType.TwitterTopic].includes(task.type);
   const is2048 = task.type === QuestType.Claim2048Ticket;
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
+  const isConnectExpired = !!task.participant_end_time && Date.now() > task.participant_end_time;
 
   const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
   const {
@@ -162,7 +163,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
 
   return (
     <div className="mt-5 flex items-center">
-      {isNeedConnect && (
+      {isNeedConnect && !isConnectExpired && (
         <LGButton
           className={cn([
             'uppercase !border-solid border-2 border-[#BB683D] from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 text-white',

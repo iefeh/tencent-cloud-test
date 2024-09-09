@@ -1,4 +1,4 @@
-import { AcceleratorType, EVENT_REWARD_TYPE, EventStatus, QuestType } from '@/constant/task';
+import { AcceleratorType, EVENT_REWARD_TYPE, EventStatus, QuestType, TokenRewardDistributeType } from '@/constant/task';
 import http from '../index';
 import { MyTokensRecord } from './token';
 
@@ -23,6 +23,8 @@ export interface TaskReward {
     whitelist_id: string[];
     estimated_raffle_time: number | null;
     actual_raffle_time: number | null;
+    distribute_type?: TokenRewardDistributeType;
+    distribute_mid_state_name?: string;
   };
 }
 
@@ -46,6 +48,7 @@ export interface TaskListItem {
   current_progress?: number;
   target_progress?: number;
   user_token_reward?: MyTokensRecord;
+  participant_end_time?: number;
 }
 
 export interface TaskListResDto {
