@@ -84,6 +84,11 @@ const MiniGamesPage: FC & BasePage = () => {
       )
     }
 
+    // 非首屏兼容
+    if (event.deltaY > 0 && !isFristScreen()) {
+      enableSlider()
+    }
+
     // 向上滚动
     if (event.deltaY < 0) {
       disableSlider()

@@ -4,7 +4,7 @@ import { TaskCategory } from '@/http/services/battlepass';
 
 const GameMinerContent: FC = () => {
   const [currentCategory, setCurrentCategory] = useState<TaskCategory>({
-    id: '1bcb51aa-bab1-476d-b09a-f20d103d16d0',
+    id: 'fbbdb5d8-59c5-4c9d-8cd5-02210b061ebb',
     name: 'Puffy Miner',
     quest_count: 0,
     achieve_count: 0,

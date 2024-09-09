@@ -35,11 +35,11 @@ export async function get2048Leaderboard(userId: string | undefined, lbId: strin
             $sort: { sum_score: -1 }
         },
         {
-            $limit: 5
+            $limit: 20
         }];
         
     let lbInfos: any[] = await Puffy2048UserScoreRank.aggregate(pipeline);
-    let userIds = lbInfos.map(r => r.uid);
+    let userIds = lbInfos.map(r => r.uid); 
 
     // 查询用户昵称信息
     const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, avatar_url: 1, _id: 0 });

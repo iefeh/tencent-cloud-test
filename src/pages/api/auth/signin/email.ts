@@ -33,16 +33,16 @@ router.post(async (req, res) => {
 
   let lCaseEmail = String(email).toLowerCase();
   // 校验验证码
-  // const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${lCaseEmail}`);
+  const historyCaptcha = await redis.get(`${CaptchaType.LoginCaptcha}:${lCaseEmail}`);
 
-  // if (!historyCaptcha) {
-  //   res.json(response.captchaExpired());
-  //  return;
-  // }
-  // if (historyCaptcha != captcha) {
-  //   res.json(response.captchaMismatch());
-  //   return;
-  // }
+  if (!historyCaptcha) {
+    res.json(response.captchaExpired());
+    return;
+  }
+  if (historyCaptcha != captcha) {
+    res.json(response.captchaMismatch());
+    return;
+  }
   // 检查邀请码
   let inviter: inviteRelationship | null = null;
   if (invite_code) {
@@ -137,6 +137,10 @@ async function doUserLogin(res: any, inviter: inviteRelationship | null, user: I
     // 用户申请删除已经过了90天, 禁止登录
     if (user.selfdestruct_request_time && user.selfdestruct_request_time + 1000 * 60 * 60 * 24 * 90 < now) {
       return res.status(500).json(response.userSelfDestructed());
+    }
+    // 判断用户是否已封禁
+    if (user.is_banned) {
+      return res.json(response.unauthorized());
     }
   }
   // 删除验证码

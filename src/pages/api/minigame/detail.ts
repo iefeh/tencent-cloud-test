@@ -25,7 +25,7 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
     res.json(response.invalidParams());
     return
   }
-  const userId = req.userId;
+  const userId = req.userId; 
 
   // 查询是否存在对应游戏
   const miniGame = await MiniGame.findOne({ client_id: client_id, active: true });
