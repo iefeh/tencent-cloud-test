@@ -88,11 +88,11 @@ const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.RESOURCES_DIAMOND_TOP_UP]: ResourcesDiamondItemCollection,
 };
 
-const ItemCollections: FC<ItemProps<CateTab>> = ({ item }) => {
+const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrArk.ShopItem) => void }> = ({ item, handleItemClick }) => {
   const CollectionCom = item?.type && ItemCollectionComs[item.type];
 
   function onItemClick(item: AstrArk.ShopItem) {
-    // TODO 打开购买弹窗
+    handleItemClick && handleItemClick(item);
   }
 
   return (

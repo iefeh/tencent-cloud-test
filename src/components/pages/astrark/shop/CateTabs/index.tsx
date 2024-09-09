@@ -1,10 +1,12 @@
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { Button, Tab, Tabs, cn } from '@nextui-org/react';
-import { useState, type FC, type Key, useEffect } from 'react';
+import { useState, type FC, type Key, useEffect, useMemo } from 'react';
 import { type CateTab, cateTabs } from '../model';
 import S3Image from '@/components/common/medias/S3Image';
 import styles from './index.module.scss';
 import ItemCollections from './ItemCollections';
+import PayModal from "../Modal/PayModal"
+import useModalDataHook from "../Modal/useModalDataHook"
 
 const CateTabs: FC = () => {
   const [tabs, setTabs] = useState<CateTab[]>([]);
@@ -13,6 +15,8 @@ const CateTabs: FC = () => {
   const [selectedListKey, setSelectedListKey] = useState<string>();
   const [selectedListTab, setSelectedListTab] = useState<CateTab | undefined>();
   const [loading, setLoading] = useState(false);
+
+  const { modalData, openModal } = useModalDataHook()
 
   async function queryTabs() {
     setLoading(true);
@@ -137,11 +141,12 @@ const CateTabs: FC = () => {
           ))}
         </Tabs>
 
-        {selectedListTab && <ItemCollections key={selectedListTab.key} item={selectedListTab} /
-        >}
+        {selectedListTab && <ItemCollections key={selectedListTab?.key || ''} item={selectedListTab} handleItemClick={openModal} />}
       </div>
 
       {loading && <CircularLoading />}
+
+      <PayModal {...modalData}></PayModal>
     </div>
   );
 };
