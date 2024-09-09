@@ -112,7 +112,7 @@ export async function handleAuthCallback(authFlow: AuthFlowBase, req: any, res: 
     console.error(e);
     Sentry.captureException(e);
     onErrorResponse(authFlow, authPayload, res, response.serverError());
-  }
+  } 
 }
 
 async function handleUserConnectFlow(
