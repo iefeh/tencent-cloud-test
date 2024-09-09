@@ -2,16 +2,18 @@ import { Fragment } from 'react';
 import { cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 import TokenRewardProgressCountdown from '@/components/common/task/TokenRewardProgressCountdown';
-import { TaskReward } from '@/http/services/task';
+import { TaskListItem } from '@/http/services/task';
 import { TokenRewardDistributeType } from '@/constant/task';
 
 interface Props {
-  item: TaskReward['token_reward'];
+  task: TaskListItem;
   status: number;
 }
 
-function TokenRewardProgress({ item, status }: Props) {
+function TokenRewardProgress({ task, status }: Props) {
+  const item = task.reward.token_reward;
   const { distribute_type, distribute_mid_state_name } = item || {};
+  const isDirectTokenReward = distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressData = [
     {
       label: 'Questing',
@@ -23,11 +25,17 @@ function TokenRewardProgress({ item, status }: Props) {
     },
   ];
 
-  if (distribute_type !== TokenRewardDistributeType.DirectDistribute || !!distribute_mid_state_name) {
+  if (!isDirectTokenReward || !!distribute_mid_state_name) {
     progressData.splice(1, 0, {
       label: distribute_mid_state_name || 'Raffling',
       checked: status >= 1,
     });
+  }
+
+  function getProgressLabel(val = status): string {
+    if (val < 0) return '-';
+
+    return progressData[val]?.label || getProgressLabel(val - 1);
   }
 
   return (
@@ -69,10 +77,18 @@ function TokenRewardProgress({ item, status }: Props) {
         ))}
       </div>
 
-      {status !== 1 && status < 3 && (
+      {!isDirectTokenReward && status !== 1 && status < 3 && (
         <TokenRewardProgressCountdown
-          label={progressData[status]?.label || '-'}
+          label={getProgressLabel(status)}
           endTime={status === 0 ? item?.estimated_raffle_time : item?.actual_raffle_time}
+        />
+      )}
+
+      {isDirectTokenReward && (
+        <TokenRewardProgressCountdown
+          isBrown
+          label={getProgressLabel(status)}
+          endTime={status < 2 ? task.participant_end_time : task.end_time}
         />
       )}
     </>

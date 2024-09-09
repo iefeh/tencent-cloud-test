@@ -49,6 +49,7 @@ export interface TaskListItem {
   target_progress?: number;
   user_token_reward?: MyTokensRecord;
   participant_end_time?: number;
+  end_time?: number;
 }
 
 export interface TaskListResDto {
