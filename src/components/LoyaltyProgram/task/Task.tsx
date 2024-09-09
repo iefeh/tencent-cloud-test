@@ -35,15 +35,16 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
       return onTaskUpdate?.(res.quest);
     },
   });
-  const progressStatus = getProgressStatus();
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
+  const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
+  const progressStatus = getProgressStatus();
 
   function getProgressStatus() {
     const { verified } = task;
-    const { actual_raffle_time, estimated_raffle_time, distribute_type } = task.reward.token_reward || {};
+    const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
     const now = Date.now();
 
-    if (distribute_type === TokenRewardDistributeType.DirectDistribute) return !!verified ? 3 : 1;
+    if (isDirectTokenReward) return !!verified ? 3 : 1;
 
     if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
 
@@ -76,7 +77,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress item={task.reward.token_reward} status={progressStatus} />}
+      {hasTokenReward && <TokenRewardProgress task={task} status={progressStatus} />}
 
       <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-4'])}>
         <div>{task.name}</div>
@@ -156,8 +157,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
 
           {(task.verified &&
             hasTokenReward &&
-            (task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute ||
-              !!task.reward.token_reward?.actual_raffle_time)) ||
+            (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
           isExpired ? (
             <>
               <LGButton
@@ -175,8 +175,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                 }
                 actived
                 disabled={
-                  (task.reward.token_reward?.distribute_type !== TokenRewardDistributeType.DirectDistribute &&
-                    !task.reward.token_reward?.actual_raffle_time) ||
+                  (!isDirectTokenReward && !task.reward.token_reward?.actual_raffle_time) ||
                   task.user_token_reward?.status !== 'pending'
                 }
                 loading={loading}
