@@ -3,6 +3,7 @@ import { cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 import TokenRewardProgressCountdown from '@/components/common/task/TokenRewardProgressCountdown';
 import { TaskReward } from '@/http/services/task';
+import { TokenRewardDistributeType } from '@/constant/task';
 
 interface Props {
   item: TaskReward['token_reward'];
@@ -10,20 +11,24 @@ interface Props {
 }
 
 function TokenRewardProgress({ item, status }: Props) {
+  const { distribute_type, distribute_mid_state_name } = item || {};
   const progressData = [
     {
       label: 'Questing',
       checked: status >= 0,
     },
     {
-      label: 'Raffling',
-      checked: status >= 1,
-    },
-    {
       label: 'Claiming',
       checked: status >= 2,
     },
   ];
+
+  if (distribute_type !== TokenRewardDistributeType.DirectDistribute || !!distribute_mid_state_name) {
+    progressData.splice(1, 0, {
+      label: distribute_mid_state_name || 'Raffling',
+      checked: status >= 1,
+    });
+  }
 
   return (
     <>
@@ -51,7 +56,7 @@ function TokenRewardProgress({ item, status }: Props) {
                 ])}
               ></div>
 
-              <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none">
+              <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none capitalize">
                 {item.label}
               </div>
             </div>

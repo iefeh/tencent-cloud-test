@@ -5,7 +5,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import closeImg from 'img/loyalty/earn/close.png';
 import { FC, useLayoutEffect, useRef, useState } from 'react';
 import TaskButtons from './TaskButtons';
-import { QuestType } from '@/constant/task';
+import { QuestType, TokenRewardDistributeType } from '@/constant/task';
 import ReverifyCountdown from './ReverifyCountdown';
 import TokenRewardProgress from './TokenRewardProgress';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -39,8 +39,11 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
 
   function getProgressStatus() {
-    const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
+    const { verified } = task;
+    const { actual_raffle_time, estimated_raffle_time, distribute_type } = task.reward.token_reward || {};
     const now = Date.now();
+
+    if (distribute_type === TokenRewardDistributeType.DirectDistribute) return !!verified ? 3 : 1;
 
     if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
 
@@ -151,7 +154,11 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
             )}
           </div>
 
-          {(task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time) || isExpired ? (
+          {(task.verified &&
+            hasTokenReward &&
+            (task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute ||
+              !!task.reward.token_reward?.actual_raffle_time)) ||
+          isExpired ? (
             <>
               <LGButton
                 className="mt-5"
@@ -167,7 +174,11 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                     : 'Sorry, you didn’t win this time.'
                 }
                 actived
-                disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}
+                disabled={
+                  (task.reward.token_reward?.distribute_type !== TokenRewardDistributeType.DirectDistribute &&
+                    !task.reward.token_reward?.actual_raffle_time) ||
+                  task.user_token_reward?.status !== 'pending'
+                }
                 loading={loading}
                 onClick={() => task.user_token_reward && onClaim(task.user_token_reward)}
               />
