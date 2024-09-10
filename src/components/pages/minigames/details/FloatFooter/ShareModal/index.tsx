@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 
 const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   const { data, queryDetails } = useMGDContext();
-  const { share, share_reward_claimed } = data || {};
+  const { share, share_reward_claimed, share_reward_ticket_amount } = data || {};
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const [loading, setLoading] = useState(false);
   const disclosure = useDisclosure();
@@ -64,9 +64,8 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                 <div className="bg-[#F7E9CC] border-2 border-basic-gray rounded-base overflow-hidden pt-[3.875rem] pl-[4.5rem] pr-[5.25rem] pb-[3.25rem] font-jcyt6">
                   <p>
                     Welcome to Moonveil Mini Games! During each round, you can share content on Twitter to earn{' '}
-                    {is2048 ? 'three' : 'one'}
-                    free tickets. Please make sure to follow the required Tweet Template. After sent the post, you can
-                    verify to claim your rewards.
+                    {share_reward_ticket_amount || '-'} free tickets. Please make sure to follow the required Tweet
+                    Template. After sent the post, you can verify to claim your rewards.
                   </p>
 
                   <div className="flex flex-col md:flex-row justify-center items-center gap-x-[0.375rem] gap-y-4 mt-12">
