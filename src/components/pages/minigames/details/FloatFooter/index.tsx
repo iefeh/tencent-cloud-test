@@ -16,7 +16,11 @@ import S3Image from '@/components/common/medias/S3Image';
 import GetTicketModal from './GetTicketModal';
 import { useUserContext } from '@/store/User';
 
-const FloatFooter: FC = () => {
+interface Props {
+  onCompleteTasks?: () => void;
+}
+
+const FloatFooter: FC<Props> = ({ onCompleteTasks }) => {
   const { toggleRedeemModal } = useUserContext();
   const { data } = useMGDContext();
   const { ticket, ticket_expired_at, url, share_reward_claimed, status } = data || {};
@@ -121,6 +125,10 @@ const FloatFooter: FC = () => {
 
       <GetTicketModal
         disclosure={getTicketDisclosure}
+        onCompleteTasks={() => {
+          getTicketDisclosure.onClose();
+          onCompleteTasks?.();
+        }}
         onRedeemCode={() => {
           getTicketDisclosure.onClose();
           toggleRedeemModal(true);

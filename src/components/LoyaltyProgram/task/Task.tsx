@@ -72,14 +72,13 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   return (
     <div
       className={cn([
-        'task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-center hover:border-basic-yellow transition-[border-color] duration-500 relative',
-        hasTokenReward ? 'pt-[1.25rem]' : 'pt-[2.5rem]',
+        'task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] px-[2.375rem] py-12 flex flex-col justify-center hover:border-basic-yellow transition-[border-color] duration-500 relative',
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress task={task} status={progressStatus} />}
+      <TokenRewardProgress task={task} status={progressStatus} />
 
-      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-4'])}>
+      <div className="task-name text-xl flex justify-between items-center mt-4">
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (
