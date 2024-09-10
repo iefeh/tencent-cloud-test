@@ -1,147 +1,140 @@
-import type { NextApiResponse } from "next";
-import { createRouter } from "next-connect";
+import type {NextApiResponse} from "next";
+import {createRouter} from "next-connect";
 import * as response from "@/lib/response/response";
-import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
-import Mint, { IMint } from "@/lib/models/Mint";
-import Contract, { ContractCategory } from "@/lib/models/Contract";
-import { redis } from "@/lib/redis/client";
+import {dynamicCors, mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
+import Mint, {IMint} from "@/lib/models/Mint";
+import Contract, {ContractCategory, IContract} from "@/lib/models/Contract";
+import {redis} from "@/lib/redis/client";
 
 import Badges from "@/lib/models/Badge";
 import doTransaction from "@/lib/mongodb/transaction";
 import IpfsMetadata from "@/lib/models/IpfsMetadata";
-import UserWallet from "@/lib/models/UserWallet";
-import { ethers } from 'ethers';
+import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
+import {ethers} from 'ethers';
+import {responseOnOauthError} from "@/lib/oauth2/response";
+import OAuth2Server from "@/lib/oauth2/server";
+import {Request, Response} from "@node-oauth/oauth2-server";
+import {OAuth2Scopes} from "@/lib/models/OAuth2Scopes";
+import {IMiniGameDetail} from "@/lib/models/MiniGameDetail";
 
 const pinataSDK = require('@pinata/sdk');
-const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT!});
+const pinata = new pinataSDK({pinataJWTKey: process.env.PINATA_JWT!});
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).get(async (req, res) => {
-    const userId = req.userId;
-    const { mint_id } = req.query;
-    if (!mint_id) {
-        return res.json(response.invalidParams());
-    }
-    const mint = await Mint.findOne({ id: mint_id });
-    if (!mint) {
-        return res.json(response.notFound("Mint not qualified"));
-    }
-    // 检查用户绑定的钱包
-    const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
-    if (!userWallet) {
-        return res.json(response.walletNotConnected());
-    }
-    // 获取SBT合约
-    const sbtContract = await Contract.findOne({ chain_id: mint.chain_id, category: ContractCategory.SBT });
-    if (!sbtContract) {
-        throw new Error("SBT contract not found");
-    }
-    const lockKey = `sbt_permit_lock:${mint_id}:${userId}`;
-    const locked = await redis.set(lockKey, Date.now(), "EX", 15, "NX");
-    if (!locked) {
-        return res.json(response.tooManyRequests({
-            message: "Verification is under a 15s waiting period, please try again later.",
+router.use(dynamicCors).get(async (req, res) => {
+    let lockKey: string;
+    try {
+        const token = await OAuth2Server.authenticate(new Request(req), new Response(res), {scope: OAuth2Scopes.UserInfo});
+        const userId = token.user.user_id;
+        const gameId = token.client.id;
+
+        const {productId, tokenId} = req.query;
+        if (!productId || !tokenId) {
+            return res.json(response.invalidParams());
+        }
+        // 锁定用户操作
+        lockKey = `purchase_permit:${userId}:${gameId}`;
+        const locked = await redis.set(lockKey, Date.now(), "EX", 15, "NX");
+        if (!locked) {
+            return res.json(response.tooManyRequests({
+                message: "Purchase is under a 15s waiting period, please try again later.",
+            }));
+        }
+        // 检查购买请求
+        const purchaseRequest = await checkUserGameProductPurchaseRequest(userId, gameId, productId as string, tokenId as string);
+        if (!purchaseRequest) {
+            return res.json(response.invalidParams({message: "Invalid purchase request."}));
+        }
+        // 生成购买许可
+        const paymentContract = await Contract.findOne({
+            chain_id: purchaseRequest.payment_chain_id,
+            category: ContractCategory.GAME_PAYMENT
+        }) as IContract;
+        if (!paymentContract) {
+            throw new Error("Game payment contract not found");
+        }
+        const permit = await generatePurchasePermit(purchaseRequest, paymentContract);
+        return res.json(response.success({
+            chain_id: paymentContract.chain_id,
+            contract_address: paymentContract.address,
+            permit: permit,
         }));
+    } catch (error) {
+        return responseOnOauthError(res, error);
+    } finally {
+        if (lockKey) {
+            await redis.del(lockKey);
+        }
     }
-    mint.metadata_ipfs_hash = await getBadgeSeriesMetadataHash(mint);
-    const permit = await constructMintPermit(mint, sbtContract.address, userWallet.wallet_addr);
-    await redis.del(lockKey);
-    return res.json(response.success({
-        chain_id: mint.chain_id,
-        contract_address: sbtContract.address,
-        permit: permit,
-    }));
 });
 
-async function constructMintPermit(mint:IMint,contractAddress:string, mintToAddr:string) {
+async function checkUserGameProductPurchaseRequest(userId: string, gameId: string, productId: string, tokenId: string): Promise<PurchaseRequest | null> {
+    // 1. 检查支付的产品存在，且用户当前依然有购买资格
+    // 2. 检查用户需要支付的代币数量
+    // 3. 构建PurchaseRequest
+}
+
+type PurchaseRequest = {
+    // 请求id，生产规则 ethers.id(`productPermit:${gameId}:${productId}:${userId}:${Date.now()}`)
+    request_id: string;
+    // 用户id
+    user_id: string;
+    // 游戏id
+    game_id: string;
+    // 用户请求使用支付的代币id
+    token_id: string;
+    // 产品id
+    product_id: string;
+    // 产品id的hash
+    product_id_hash: string;
+    // 产品价格，用于当时价格
+    product_price_in_usd: string;
+    // 请求时间，毫秒时间戳
+    request_time: number;
+    // 请求的周期
+    request_period: string;
+    // 请求过期时间，毫秒时间戳
+    request_expire_time: number;
+
+    // 支付的网络id
+    payment_chain_id: string;
+    // 支付代币地址
+    payment_token_address: string;
+    // 支付代币数量，需要实际支付的代币数量，而非格式化后的数量
+    payment_token_amount: string;
+    // 代币价格
+    payment_token_price_in_usd: string;
+}
+
+async function generatePurchasePermit(request: PurchaseRequest, gamePaymentContract: IContract) {
     const domain = {
-        name: "MoonveilBadges",
+        name: "GamePayment",
         version: "1",
-        chainId: Number(mint.chain_id),
-        verifyingContract: ethers.getAddress(contractAddress),
+        chainId: Number(gamePaymentContract.chain_id),
+        verifyingContract: ethers.getAddress(gamePaymentContract.address),
     };
     const types = {
-        MintPermit: [
-            { name: "uri", type: "string" },
-            { name: "recipient", type: "address" },
-            { name: "reqId", type: "bytes32" },
-            { name: "expiredTime", type: "uint128" },
+        ProductPermit: [
+            {name: "reqId", type: "bytes32"},
+            {name: "productId", type: "bytes32"},
+            {name: "token", type: "address"},
+            {name: "tokenAmount", type: "uint256"},
+            {name: "expiration", type: "uint128"},
         ],
     };
-    const expiredTime = Math.floor(Date.now()/1000 + 10*60*60);
-    const mintPermit: any = {
-        uri: mint.metadata_ipfs_hash,
-        recipient: ethers.getAddress(mintToAddr),
-        reqId: mint.id,
-        expiredTime: expiredTime,
+
+    const productPermit: any = {
+        reqId: request.request_id,
+        productId: request.product_id_hash,
+        token: request.payment_token_address,
+        tokenAmount: request.payment_token_amount,
+        expiration: Math.floor(Date.now() / 1000) + 600, // 10 min过期
     };
     const signer = new ethers.Wallet(process.env.DEVELOPER_PRIVATE_KEY!, null);
-    mintPermit.signature = await signer.signTypedData(domain, types, mintPermit);
-    return mintPermit;
+    productPermit.signature = await signer.signTypedData(domain, types, productPermit);
+    return productPermit;
 }
-
-async function getBadgeSeriesMetadataHash(mint: IMint) {
-    // 查询当前徽章的元数据
-    const badge = await Badges.findOne({ id: mint.source_id }, { _id: 0, name:1, description:1, [`series.${mint.badge_level}`]: 1 });
-    if (!badge || !badge.series.get(mint.badge_level)) {
-        throw new Error("Badge series not found");
-    }
-    const series = badge.series.get(mint.badge_level);
-    // 检查如果当前徽章的metadata_url存在，则直接返回
-    if (series.metadata_ipfs_hash) {
-        return series.metadata_ipfs_hash;
-    }
-    // 如果不存在，则构建metadata
-    const metadata = {
-        "name": badge.name,
-        "description": badge.description,
-        "image": series.image_url,
-        "attributes": [{
-            "trait_type": "Level",
-            "value": mint.badge_level
-        },
-        {
-            "value": "Moonveil SBT"
-        }],
-    };
-    // 上传metadata
-    const options = {
-        pinataMetadata: {
-            name: `${badge.name}-${mint.badge_level}.meta`
-        },
-        pinataOptions: {
-            cidVersion: 0
-        }
-    };
-    const res = await pinata.pinJSONToIPFS(metadata, options);
-    const cid = res.IpfsHash;
-    await doTransaction(async (session) => {
-        // 更新metadata_url
-        await Badges.updateOne({ id: mint.source_id }, { 
-            [`series.${mint.badge_level}.metadata_ipfs_hash`]: `ipfs://${cid}`,
-        }, { session });
-        // 更新mint的metadata_url
-        await Mint.updateOne({ id: mint.id }, { metadata_ipfs_hash: `ipfs://${cid}` }, { session });
-        // 添加元信息
-        await IpfsMetadata.updateOne(
-            { ipfs_hash: `ipfs://${cid}` },
-            {
-              $set: { 
-                ipfs_access_url: `https://ipfs.io/ipfs/${cid}`,
-                metadata: metadata,
-               },
-              $setOnInsert: {
-                created_time: Date.now(),
-              },
-            },
-            { upsert: true, session: session },
-          );
-    });
-    return `ipfs://${cid}`;
-}
-
-
 
 // this will run if none of the above matches
 router.all((req, res) => {
