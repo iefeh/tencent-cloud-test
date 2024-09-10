@@ -10,6 +10,8 @@ export enum ProductLimitType {
 export interface IGameProduct extends Document {
     // 产品id
     id: string;
+    // 产品id哈希
+    id_hash: string;
     // 产品名称
     name: string;
     // 游戏id
@@ -33,6 +35,7 @@ export interface IGameProduct extends Document {
 
 const GameProductSchema = new Schema<IGameProduct>({
     id: { type: String, required: true },
+    id_hash: { type: String, required: true },
     name: { type: String, required: true },
     game_id: { type: String, required: true },
     icon_url: { type: String, required: true },
