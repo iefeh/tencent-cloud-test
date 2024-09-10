@@ -71,14 +71,13 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
   return (
     <div
       className={cn([
-        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col justify-center bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
-        hasTokenReward ? 'pt-[1.25rem]' : 'pt-[2.5rem]',
+        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] py-12 flex flex-col justify-center bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress task={task} status={progressStatus} />}
+      <TokenRewardProgress task={task} status={progressStatus} />
 
-      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-4'])}>
+      <div className="task-name text-xl flex justify-between items-center mt-4">
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (

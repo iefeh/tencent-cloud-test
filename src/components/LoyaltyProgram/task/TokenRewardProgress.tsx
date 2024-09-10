@@ -11,6 +11,7 @@ interface Props {
 }
 
 function TokenRewardProgress({ task, status }: Props) {
+  const hasTokenReward = !!task.reward.token_reward;
   const item = task.reward.token_reward;
   const { distribute_type, distribute_mid_state_name } = item || {};
   const isDirectTokenReward = distribute_type === TokenRewardDistributeType.DirectDistribute;
@@ -40,56 +41,62 @@ function TokenRewardProgress({ task, status }: Props) {
 
   return (
     <>
-      <div className="flex justify-between items-center pl-7 pr-24 gap-x-4 mb-12">
-        {progressData.map((item, index) => (
-          <Fragment key={index}>
-            {index > 0 && (
+      {hasTokenReward && (
+        <div className="flex justify-between items-center pl-7 pr-24 gap-x-4 mb-12">
+          {progressData.map((item, index) => (
+            <Fragment key={index}>
+              {index > 0 && (
+                <div
+                  className={cn([
+                    'w-28 lg:w-[10.5625rem] h-1px bg-current',
+                    item.checked ? 'text-basic-yellow' : 'text-white',
+                  ])}
+                ></div>
+              )}
+
               <div
                 className={cn([
-                  'w-28 lg:w-[10.5625rem] h-1px bg-current',
+                  'w-2 h-2 rounded-full relative shrink-0 bg-current',
                   item.checked ? 'text-basic-yellow' : 'text-white',
                 ])}
-              ></div>
-            )}
-
-            <div
-              className={cn([
-                'w-2 h-2 rounded-full relative shrink-0 bg-current',
-                item.checked ? 'text-basic-yellow' : 'text-white',
-              ])}
-            >
-              <div
-                className={cn([
-                  'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 border-1 rounded-full border-current',
-                ])}
-              ></div>
-
-              <div
-                className={cn([
-                  'absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none capitalize',
-                  item.checked || 'text-[#999]',
-                ])}
               >
-                {item.label}
-              </div>
-            </div>
-          </Fragment>
-        ))}
-      </div>
+                <div
+                  className={cn([
+                    'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 border-1 rounded-full border-current',
+                  ])}
+                ></div>
 
-      {!isDirectTokenReward && status !== 1 && status < 3 && (
-        <TokenRewardProgressCountdown
-          label={getProgressLabel(status)}
-          endTime={status === 0 ? item?.estimated_raffle_time : item?.actual_raffle_time}
-        />
+                <div
+                  className={cn([
+                    'absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none capitalize',
+                    item.checked || 'text-[#999]',
+                  ])}
+                >
+                  {item.label}
+                </div>
+              </div>
+            </Fragment>
+          ))}
+        </div>
       )}
 
-      {isDirectTokenReward && (
-        <TokenRewardProgressCountdown
-          isBrown
-          label={getProgressLabel(status)}
-          endTime={status < 2 ? task.participant_end_time : task.end_time}
-        />
+      {hasTokenReward ? (
+        isDirectTokenReward ? (
+          <TokenRewardProgressCountdown
+            label={getProgressLabel(status)}
+            endTime={status < 2 ? task.participant_end_time : task.end_time}
+          />
+        ) : (
+          status !== 1 &&
+          status < 3 && (
+            <TokenRewardProgressCountdown
+              label={getProgressLabel(status)}
+              endTime={status === 0 ? item?.estimated_raffle_time : item?.actual_raffle_time}
+            />
+          )
+        )
+      ) : (
+        <TokenRewardProgressCountdown label={getProgressLabel(status)} endTime={task.end_time} />
       )}
     </>
   );
