@@ -40,11 +40,15 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   const progressStatus = getProgressStatus();
 
   function getProgressStatus() {
-    const { verified } = task;
-    const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
+    const { verified, reward } = task;
+    const { verify_end_time, token_reward } = reward || {};
+    const { actual_raffle_time, estimated_raffle_time } = token_reward || {};
     const now = Date.now();
 
-    if (isDirectTokenReward) return !!verified ? 3 : 1;
+    if (isDirectTokenReward) {
+      if (!!verified || (verify_end_time && now > verify_end_time)) return 3;
+      return 1;
+    }
 
     if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
 
@@ -162,7 +166,9 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
               <LGButton
                 className="mt-5"
                 label={
-                  isExpired && !task.verified
+                  isDirectTokenReward && !!task.verified && !task.user_token_reward
+                    ? 'Loading'
+                    : isExpired && !task.verified
                     ? 'Task incomplete, not eligible for the raffle.'
                     : task.user_token_reward?.status === 'claimed'
                     ? 'Claimed'
@@ -174,6 +180,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                 }
                 actived
                 disabled={
+                  (isDirectTokenReward && !!task.verified && !task.user_token_reward) ||
                   (!isDirectTokenReward && !task.reward.token_reward?.actual_raffle_time) ||
                   task.user_token_reward?.status !== 'pending'
                 }
