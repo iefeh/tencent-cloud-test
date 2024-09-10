@@ -7,11 +7,13 @@ import { type FC } from 'react';
 import { isMobile } from 'react-device-detect';
 
 interface Props {
+  onCompleteTasks?: () => void;
   onRedeemCode?: () => void;
   onBuyTicket?: () => void;
 }
 
 const GetTicketModal: FC<DisclosureProps & Props> = ({
+  onCompleteTasks,
   onRedeemCode,
   onBuyTicket,
   disclosure: { isOpen, onOpenChange },
@@ -47,12 +49,12 @@ const GetTicketModal: FC<DisclosureProps & Props> = ({
                   </ul>
 
                   <div className="flex flex-col md:flex-row justify-center items-center gap-x-2 gap-y-4 mt-12">
-                    <Link
+                    <StrokeButton
                       className={cn(['flex-shrink-0', isMobile && 'w-60'])}
-                      href={`/LoyaltyProgram/earn/group/${task_category}`}
-                    >
-                      <StrokeButton className="w-full" strokeType="brown" strokeText="Complete Tasks" />
-                    </Link>
+                      strokeType="brown"
+                      strokeText="Complete Tasks"
+                      onClick={onCompleteTasks}
+                    />
 
                     <StrokeButton
                       className={cn(['flex-shrink-0', isMobile && 'w-56'])}

@@ -1,5 +1,5 @@
 import { Tab, Tabs, cn } from '@nextui-org/react';
-import { FC, useState } from 'react';
+import { FC, ForwardRefRenderFunction, RefObject, forwardRef, useImperativeHandle, useState } from 'react';
 import OverviewTabPanel from './OverviewTabPanel';
 import TasksTabPanel from './TasksTabPanel';
 import RankingTabPanel from './RankingTabPanel';
@@ -20,7 +20,15 @@ interface TabItem {
   right?: JSX.Element;
 }
 
-const DetailTabs: FC = () => {
+interface Props {
+  ref?: RefObject<DetailTabsRef>;
+}
+
+export interface DetailTabsRef {
+  compelteTasks: () => void;
+}
+
+const DetailTabs: ForwardRefRenderFunction<DetailTabsRef, Props> = ({}, ref) => {
   const { data } = useMGDContext();
   const { task_category } = data || {};
   const tabs: TabItem[] = [
@@ -59,6 +67,12 @@ const DetailTabs: FC = () => {
   const router = useRouter();
 
   const [selectedKey, setSelectedKey] = useState(tabs[0].name);
+
+  function compelteTasks() {
+    setSelectedKey(tabs[1].name);
+  }
+
+  useImperativeHandle(ref, () => ({ compelteTasks }));
 
   function onBack() {
     router.replace('/minigames');
@@ -128,4 +142,4 @@ const DetailTabs: FC = () => {
   );
 };
 
-export default observer(DetailTabs);
+export default observer(forwardRef(DetailTabs));
