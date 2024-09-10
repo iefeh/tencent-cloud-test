@@ -36,7 +36,7 @@ function TokenRewardProgress({ task, status }: Props) {
   function getProgressLabel(val = status): string {
     if (val < 0) return '-';
 
-    return progressData[status]?.label || getProgressLabel(val - 1);
+    return progressData[val]?.label || getProgressLabel(val - 1);
   }
 
   return (
