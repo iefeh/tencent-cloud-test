@@ -47,7 +47,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
 
     if (isDirectTokenReward) {
       if (!!verified || (verify_end_time && now > verify_end_time)) return 3;
-      return 1;
+      return 0;
     }
 
     if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
