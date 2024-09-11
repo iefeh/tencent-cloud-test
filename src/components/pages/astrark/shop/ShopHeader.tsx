@@ -22,6 +22,14 @@ const ShopHeader: FC = () => {
 
         <span className="text-white text-base leading-none">Connect wallet</span>
       </Button>
+
+      <div className="w-[16.8125rem] aspect-[269/134] absolute top-0 right-5 z-50">
+        <S3Image className="object-contain" src="/astrark/shop/bg_ad.png" fill />
+
+        <div className="rounded-full w-[4.875rem] aspect-square absolute left-7 top-1/2 -translate-y-1/2">
+          <S3Image className="object-contain animate-spin5 w-full h-full" src="/astrark/shop/circle_text.png" />
+        </div>
+      </div>
     </div>
   );
 };

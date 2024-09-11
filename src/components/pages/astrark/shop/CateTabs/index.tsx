@@ -41,7 +41,7 @@ const CateTabs: FC = () => {
 
   return (
     <div className="flex-1 relative flex flex-nowrap gap-14 z-0 pr-12 overflow-hidden">
-      <div className="bg-gradient-to-b from-transparent via-black/30 to-transparent flex flex-col w-[11.3125rem] overflow-x-visible">
+      <div className="bg-gradient-to-b from-transparent via-black/30 to-transparent flex flex-col w-[11.3125rem] overflow-x-visible pt-12">
         <Tabs
           aria-label="Options"
           color="primary"
@@ -106,15 +106,15 @@ const CateTabs: FC = () => {
         </Button>
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden pt-2">
         <Tabs
           color="primary"
           selectedKey={selectedListKey}
           classNames={{
             tabList: cn(['flex-1 bg-transparent p-0 rounded-none relative', styles.listTabs]),
             cursor: 'w-full bg-transparent',
-            tab: "data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_list_tab_repeat.png')] bg-[length:auto_100%] bg-no-repeat bg-repeat-x px-7 pt-0 pb-2 h-[3.125rem] rounded-none w-auto",
-            tabContent: 'text-[#8BA4BE] text-xl group-data-[selected=true]:text-white',
+            tab: "data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_list_tab_repeat.png')] bg-[length:auto_100%] bg-no-repeat bg-repeat-x px-6 pt-0 pb-2 h-[3.125rem] rounded-none w-auto",
+            tabContent: 'text-[#8BA4BE] text-lg group-data-[selected=true]:text-white',
           }}
           onSelectionChange={onListSelectionChange}
         >
