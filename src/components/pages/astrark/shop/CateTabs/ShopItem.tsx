@@ -3,7 +3,7 @@ import { ShopItemType } from '@/constant/astrark';
 import type { AstrArk } from '@/types/astrark';
 import { FC } from 'react';
 
-interface ClickProps {
+export interface ClickProps {
   onClick?: (item: AstrArk.ShopItem) => void;
 }
 
