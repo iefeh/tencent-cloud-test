@@ -65,8 +65,9 @@ const DetailTabs: ForwardRefRenderFunction<DetailTabsRef, Props> = ({}, ref) => 
     },
   ];
   const router = useRouter();
-
-  const [selectedKey, setSelectedKey] = useState(tabs[0].name);
+  const routerTab = router.query.tab as string;
+  const defaultKey = routerTab && tabs.some((item) => item.name === routerTab) ? routerTab : tabs[0].name;
+  const [selectedKey, setSelectedKey] = useState(defaultKey);
 
   function compelteTasks() {
     setSelectedKey(tabs[1].name);
