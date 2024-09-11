@@ -1,31 +1,24 @@
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { Button, Tab, Tabs, cn } from '@nextui-org/react';
-import { useState, type FC, type Key, useEffect, useMemo } from 'react';
-import { type CateTab, cateTabs } from '../model';
+import { useState, type FC, type Key } from 'react';
+import { type CateTab } from '../model';
 import S3Image from '@/components/common/medias/S3Image';
 import styles from './index.module.scss';
 import ItemCollections from './ItemCollections';
 import PayModal from "../Modal/PayModal"
 import useModalDataHook from "../Modal/useModalDataHook"
+import useShopInfo from './useShopInfo';
+import { observer } from 'mobx-react-lite';
 
 const CateTabs: FC = () => {
-  const [tabs, setTabs] = useState<CateTab[]>([]);
   const [listTabs, setListTabs] = useState<CateTab[]>([]);
   const [selectedKey, setSelectedKey] = useState<string>();
   const [selectedListKey, setSelectedListKey] = useState<string>();
   const [selectedListTab, setSelectedListTab] = useState<CateTab | undefined>();
-  const [loading, setLoading] = useState(false);
 
   const { modalData, openModal } = useModalDataHook()
 
-  async function queryTabs() {
-    setLoading(true);
-
-    setTabs(cateTabs);
-    setTimeout(() => onSelectionChange(cateTabs[0].key || ''), 0);
-
-    setLoading(false);
-  }
+  const { cates: tabs, loading } = useShopInfo();
 
   function onSelectionChange(key: Key) {
     const newKey = key.toString();
@@ -45,10 +38,6 @@ const CateTabs: FC = () => {
     const tab = list.find((item) => item.key === newKey);
     setSelectedListTab(tab);
   }
-
-  useEffect(() => {
-    queryTabs();
-  }, []);
 
   return (
     <div className="flex-1 relative flex flex-nowrap gap-14 z-0 pr-12 overflow-hidden">
@@ -151,4 +140,4 @@ const CateTabs: FC = () => {
   );
 };
 
-export default CateTabs;
+export default observer(CateTabs);

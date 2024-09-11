@@ -7,7 +7,7 @@ import type { AstrArk } from '@/types/astrark';
 import S3Image from '@/components/common/medias/S3Image';
 
 interface ClickProps {
-  onClick?: (item: AstrArk.ShopItem) => void;
+  onClick?: (item: AstrArk.Product) => void;
 }
 
 type ShopItemCollectionCom = FC<ItemProps<CateTab> & ClickProps>;
@@ -88,10 +88,10 @@ const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.RESOURCES_DIAMOND_TOP_UP]: ResourcesDiamondItemCollection,
 };
 
-const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrArk.ShopItem) => void }> = ({ item, handleItemClick }) => {
+const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrArk.Product) => void }> = ({ item, handleItemClick }) => {
   const CollectionCom = item?.type && ItemCollectionComs[item.type];
 
-  function onItemClick(item: AstrArk.ShopItem) {
+  function onItemClick(item: AstrArk.Product) {
     handleItemClick && handleItemClick(item);
   }
 

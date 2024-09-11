@@ -42,6 +42,7 @@ class UserStore {
   init = () => {
     this.token = localStorage.getItem(KEY_AUTHORIZATION_AA) || '';
     this.inited = true;
+    return this.token;
   };
 
   setLocale = (val?: Locale) => {

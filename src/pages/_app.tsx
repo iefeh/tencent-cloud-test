@@ -50,7 +50,7 @@ export const MobxContext = createContext<UserStore>(new UserStore());
 export default function App({ Component, pageProps }: AppProps) {
   const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
-  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets'];
+  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
   const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/shop'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
