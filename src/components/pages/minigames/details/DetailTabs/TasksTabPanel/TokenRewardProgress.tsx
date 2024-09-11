@@ -83,8 +83,7 @@ function TokenRewardProgress({ task, status }: Props) {
             endTime={status < 2 ? task.participant_end_time : task.end_time}
           />
         ) : (
-          status !== 1 &&
-          status < 3 && (
+          status !== 1 && (
             <TokenRewardProgressCountdown
               isBrown
               label={getProgressLabel(status)}
