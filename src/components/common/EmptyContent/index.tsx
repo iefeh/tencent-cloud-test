@@ -10,7 +10,7 @@ const EmptyContent: FC<Props> = ({ className, content = 'No history found.' }) =
   return (
     <div
       className={cn([
-        'absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none',
+        'absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-40 flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none',
         className,
       ])}
     >

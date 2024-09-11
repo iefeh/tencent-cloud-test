@@ -91,7 +91,7 @@ function TokenRewardProgress({ task, status }: Props) {
           status < 3 && (
             <TokenRewardProgressCountdown
               label={getProgressLabel(status)}
-              endTime={status === 0 ? item?.estimated_raffle_time : item?.actual_raffle_time}
+              endTime={status === 0 ? item?.estimated_raffle_time : task.end_time}
             />
           )
         )
