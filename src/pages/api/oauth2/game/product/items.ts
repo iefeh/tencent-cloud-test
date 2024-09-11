@@ -23,7 +23,7 @@ router.use(dynamicCors).get(async (req, res) => {
     const userId = token.user.user_id;
     const gameId = token.client.id;
     if (!gameId) {
-      return res.json(response.invalidParams());
+      return res.json(response.serverError());
     }
     const productClasses = await getProductClasses(gameId as string);
     if (!productClasses) {
