@@ -38,17 +38,17 @@ export async function getCurrentBattleSeason(): Promise<any> {
 export async function getUserBattlePass(user_id: string): Promise<any> {
   const season: any = await getCurrentBattleSeason();
   //非赛季时间
-  if(!season){
+  if (!season) {
     return undefined;
   }
 
-  let user_season_pass:any = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
-  if(!user_season_pass){
+  let user_season_pass: any = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
+  if (!user_season_pass) {
     //创建普通通证
-    await generateBattlepass(user_id,season);
+    await generateBattlepass(user_id, season);
     user_season_pass = await UserBattlePassSeasons.findOne({ user_id: user_id, battlepass_season_id: season.id });
   }
-  
+
   return user_season_pass;
 }
 
@@ -60,7 +60,7 @@ export async function updateUserBattlepass(userId: string, questId: string, mbAm
     const quest = await Quest.findOne({ id: questId });
     //普通任务，赛季进度+1
     let seasonPassProgress: number = 1;
-    if (quest.reward.season_pass_progress) {
+    if (quest.reward.season_pass_progress != undefined) {
       //特殊任务根据配置而定
       seasonPassProgress = quest.reward.season_pass_progress;
     }
