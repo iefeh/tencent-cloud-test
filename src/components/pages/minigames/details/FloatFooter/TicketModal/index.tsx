@@ -24,7 +24,7 @@ import { isMobile } from 'react-device-detect';
 import TicketConfirmModal from '../TicketConfirmModal';
 
 const enum TicketChannel {
-  MATIC = 'matic',
+  MATIC = 'POL',
   MORE = 'more',
 }
 
@@ -35,7 +35,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
   const radioOptions = [
     {
       key: TicketChannel.MATIC,
-      label: 'Buy with $Matic',
+      label: `Buy with $${TicketChannel.MATIC}`,
       isDisabled: false,
     },
     // {
@@ -136,7 +136,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                     <div className="w-full h-0 border-t-1 border-brown/20 md: border-dashed mt-7 mb-[1.125rem]"></div>
 
                     <div className="flex items-center">
-                      <div>{data?.ticket_price_formatted || '-'} Matic/Ticket</div>
+                      <div>{data?.ticket_price_formatted || '-'} {channel}/Ticket</div>
 
                       <div className="flex-1 flex justify-end items-center mr-7">
                         <IntegerInput value={ticketAmount} min={1} max={10} onValueChange={setTicketAmount} />
@@ -180,7 +180,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <p className="font-jcyt4 text-sm leading-none mt-4">Total Price</p>
 
-                    <p className="text-2xl leading-none mt-[0.375rem]">{totalPrice} Matic</p>
+                    <p className="text-2xl leading-none mt-[0.375rem]">{totalPrice} {channel}</p>
 
                     <div className="w-full h-0 border-t-1 border-brown/20 md:border-brown border-dashed mt-6 mb-5"></div>
 
