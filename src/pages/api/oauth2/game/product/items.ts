@@ -9,7 +9,7 @@ import {
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
 import GameProductClassification from '@/lib/models/GameProductClassification';
-import GameProductPurchase from '@/lib/models/GameProductPurchase';
+import GameProductPurchaseRequest from '@/lib/models/GameProductPurchaseRequest';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import { responseOnOauthError } from '@/lib/oauth2/response';
 import OAuth2Server from '@/lib/oauth2/server';
@@ -160,16 +160,16 @@ async function getProductPurchase(gameId: string, userId: string) {
       $group: {
         _id: {
           product_id: "$product_id",
-          purchase_period: "$purchase_period",
+          request_period: "$request_period",
         },
         count: {$sum: 1}
       }
     },
     {
-      $project: { _id: 0, product_id: '$_id.product_id', period: '$_id.purchase_period', count: 1 }
+      $project: { _id: 0, product_id: '$_id.product_id', period: '$_id.request_period', count: 1 }
     }
   ];
-  const results = await GameProductPurchase.aggregate(aggregateQuery);
+  const results = await GameProductPurchaseRequest.aggregate(aggregateQuery);
   return results;
 }
 
