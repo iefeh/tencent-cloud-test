@@ -98,7 +98,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
             <ModalBody>
               {rules.map((rule, index) => (
                 <div key={index}>
-                  <p className='font-jcyt6'>· {rule.content}</p>
+                  <p className="font-jcyt6">· {rule.content}</p>
 
                   {rule.items && (
                     <ul>
