@@ -43,20 +43,24 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 async function enrichCampaign(userId: string, campaign: any) {
     setCampaignStatus(campaign);
-    await setCampaignBadgeImage(campaign);
+    await handleCampaignRewards(campaign);
     await enrichCampaignClaimed(userId, campaign);
     await enrichUserTasks(userId, campaign.tasks, campaign.claimed);
     await enrichCampaignClaimable(userId, campaign);
     await enrichCampaignClaimAccelerators(userId, campaign);
 }
 
-async function setCampaignBadgeImage(campaign: any) {
+async function handleCampaignRewards(campaign: any) {
     for (let c of campaign.rewards) {
         if (c.type == "badge") {
             let targetBadge = await getMaxLevelBadge(c.badge_id);
             c.name = targetBadge.name;
             c.image_small = targetBadge.icon_url;
             c.image_medium = targetBadge.image_url;
+        }
+
+        if (c.type == "task") {
+           delete c.invalid_pass_progress;
         }
     }
 }
