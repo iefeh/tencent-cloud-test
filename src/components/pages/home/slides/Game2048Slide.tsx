@@ -1,13 +1,17 @@
 import { GAME_URL_2048 } from '@/constant/2048';
+import { MinigameID } from '@/constant/minigames';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 interface Props {
   needAni?: boolean;
 }
 
 export default function Game2048Slide(props: Props) {
+  const router = useRouter();
+
   function onExplore() {
-    window.open(GAME_URL_2048);
+    router.push(`/minigames/details/${MinigameID.PUFFY2048}`)
   }
 
   return (
@@ -17,7 +21,7 @@ export default function Game2048Slide(props: Props) {
     >
       <Image
         className="object-cover"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/cover.png"
+        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/1000U.png"
         alt=""
         fill
         sizes="100%"
