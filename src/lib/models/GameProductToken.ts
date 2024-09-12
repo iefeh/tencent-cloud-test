@@ -13,7 +13,7 @@ export interface IGameProductToken extends Document {
     // 代币小数位数
     decimal: number;
     // 代币地址, 0代表源生代币
-    token_address: string;
+    address: string;
     // 链id
     chain_id: string;
     // usdc定价
@@ -30,7 +30,7 @@ const GameProductTokenSchema = new Schema<IGameProductToken>({
     icon_url: { type: String, required: true },
     symbol: { type: String, required: true },
     decimal: { type: Number, required: true },
-    token_address: { type: String, required: true },
+    address: { type: String, required: true },
     chain_id: { type: String, required: true },
     price_in_usdc: { type: Number, required: true },
     price_updated_at: { type: Number },
