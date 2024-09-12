@@ -37,7 +37,9 @@ router.use(dynamicCors).get(async (req, res) => {
         token_name: token.name,
         icon_url: token.icon_url,
         symbol: token.symbol,
-        product_price: price*(1-token.product_discount),
+        product_price_discount: token.product_discount,
+        product_price_with_discount: price*(1-token.product_discount),
+        product_price_without_discount: price,
       });
     }
     res.json(response.success(gameProduct));
