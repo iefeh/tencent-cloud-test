@@ -146,6 +146,7 @@ async function paginationQuests(pageNum: number, pageSize: number, category: str
                 'active': 0,
                 'order': 0,
                 'reward.range_reward_ids': 0,
+                'reward.season_pass_progress': 0
             }
         },
         {
