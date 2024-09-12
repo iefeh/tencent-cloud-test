@@ -12,16 +12,16 @@ import BadgeSlide from '../slides/BadgeSlide';
 import NFT2Slide from '../slides/NFT2Slide';
 import LotterySlide from '../slides/LotterySlide';
 import MinigamesSlide from '../slides/MinigamesSlide';
+import Game2048Slide from '../slides/Game2048Slide';
 
 const slides = [
   LoyaltyProgramSlide,
+  Game2048Slide,
   MinigamesSlide,
   LotterySlide,
   NFT2Slide,
   InviteNewSlide,
-  BadgeSlide,
   RaceSlide,
-  EntertainmentSlide,
 ];
 
 const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAni: boolean }) {
