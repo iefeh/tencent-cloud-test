@@ -2,7 +2,8 @@ import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export interface IBlockChain extends Document {
-    chain_id: string
+    chain_id: string;
+    name: string;
     icon_url: string;
     explorer_url: string;
     private_rpc_url: string;
@@ -11,6 +12,7 @@ export interface IBlockChain extends Document {
 
 const BlockChainSchema = new Schema<IBlockChain>({
     chain_id: { type: String, required: true },
+    name: { type: String, required: true },
     icon_url: { type: String, required: true },
     explorer_url: { type: String, required: true },
     private_rpc_url: { type: String, required: true },
