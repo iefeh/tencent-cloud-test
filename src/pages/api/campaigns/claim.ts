@@ -136,7 +136,7 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
     //判断奖励中是否有高权重的奖励
     const seasonPassProgress = campaign.rewards.reduce((tasks, reward) => {
         if (reward.type === CampaignRewardType.Task) {
-            return reward.season_pass_progress;
+            return reward.season_pass_progress; 
         }
         return tasks;
     }, 1);
