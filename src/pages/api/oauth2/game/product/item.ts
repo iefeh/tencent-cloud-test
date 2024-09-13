@@ -27,7 +27,7 @@ router.use(dynamicCors).get(async (req, res) => {
     if (!gameProduct) {
       return res.json(response.invalidParams({ message: "Invalid item id." }));
     }
-    const tokens = await GameProductToken.find();
+    const tokens = await getGameTokens();
     gameProduct.price_in_tokens = [];
     gameProduct.price_updated_at = tokens[0].price_updated_at;
     for (let token of tokens) {
@@ -37,9 +37,13 @@ router.use(dynamicCors).get(async (req, res) => {
         token_name: token.name,
         icon_url: token.icon_url,
         symbol: token.symbol,
+        network: {
+          name: token.block_chain.name,
+          icon_url: token.block_chain.icon_url,
+        },
         product_price_discount: token.product_discount,
-        product_price_with_discount: price*(1-token.product_discount),
-        product_price_without_discount: price,
+        product_token_price_with_discount: price*(1-token.product_discount),
+        product_usdc_price_with_discount: gameProduct.price_in_usdc*(1-token.product_discount),
       });
     }
     res.json(response.success(gameProduct));
@@ -72,6 +76,41 @@ async function getGameProduct(gameId: string, itemId: string): Promise<any> {
   }
   // 产品详情只返回一个产品的信息
   return results[0];
+} 
+
+async function getGameTokens(): Promise<any[]> {
+  const aggregateQuery: PipelineStage[] = [
+    {
+      $lookup: {
+        from: "block_chains",
+        localField: "chain_id",
+        foreignField: "chain_id",
+        pipeline: [
+          {
+            $project: {
+              _id: 0,
+              "name": 1,
+              "icon_url": 1,
+            }
+          }
+        ],
+        as: "block_chain",
+      }
+    },
+    {
+      $unwind: "$block_chain",
+    },
+    {
+      $project: {
+        _id: 0,
+        __v: 0,
+        active: 0,
+        game_id: 0,
+      },
+    }
+  ];
+  const results = await GameProductToken.aggregate(aggregateQuery);
+  return results;
 } 
 
 // this will run if none of the above matches
