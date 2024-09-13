@@ -30,6 +30,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
         if (reward.status != UserTokenAuditStatus.Pending) {
             return res.json(response.invalidParams({message: "Reward already claimed."}));
         }
+        if (reward.expire_time < Date.now()) {
+            return res.json(response.invalidParams({message: "Reward is expired."}));
+        }
     }
     // 确保这些奖励必须是相同的链
     const chainId = rewards[0].token.chain_id;

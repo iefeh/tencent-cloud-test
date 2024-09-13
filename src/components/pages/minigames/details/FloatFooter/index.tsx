@@ -13,12 +13,20 @@ import { GameStatus } from '@/constant/minigames';
 import { isMobile } from 'react-device-detect';
 import ShortButton from '@/components/common/buttons/ShortButton';
 import S3Image from '@/components/common/medias/S3Image';
+import GetTicketModal from './GetTicketModal';
+import { useUserContext } from '@/store/User';
 
-const FloatFooter: FC = () => {
+interface Props {
+  onCompleteTasks?: () => void;
+}
+
+const FloatFooter: FC<Props> = ({ onCompleteTasks }) => {
+  const { toggleRedeemModal } = useUserContext();
   const { data } = useMGDContext();
   const { ticket, ticket_expired_at, url, share_reward_claimed, status } = data || {};
   const shareDisclosure = useDisclosure();
   const ticketDisclosure = useDisclosure();
+  const getTicketDisclosure = useDisclosure();
   const canPlay = status === GameStatus.IN_PROGRESS;
   const SButton = isMobile ? ShortButton : StrokeButton;
 
@@ -84,10 +92,10 @@ const FloatFooter: FC = () => {
           <SButton
             className="ml-3"
             strokeType="blue"
-            strokeText="Buy Tickets"
+            strokeText="Get Tickets"
             needAuth
             isDisabled={!data || !canPlay}
-            onPress={ticketDisclosure.onOpen}
+            onPress={getTicketDisclosure.onOpen}
           />
 
           <SButton
@@ -115,6 +123,21 @@ const FloatFooter: FC = () => {
         </div>
       </div>
 
+      <GetTicketModal
+        disclosure={getTicketDisclosure}
+        onCompleteTasks={() => {
+          getTicketDisclosure.onClose();
+          onCompleteTasks?.();
+        }}
+        onRedeemCode={() => {
+          getTicketDisclosure.onClose();
+          toggleRedeemModal(true);
+        }}
+        onBuyTicket={() => {
+          getTicketDisclosure.onClose();
+          ticketDisclosure.onOpen();
+        }}
+      />
       <ShareModal disclosure={shareDisclosure} />
       <TicketModal disclosure={ticketDisclosure} />
     </div>
