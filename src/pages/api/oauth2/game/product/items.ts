@@ -9,7 +9,7 @@ import {
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
 import GameProductClassification from '@/lib/models/GameProductClassification';
-import GameProductPurchaseRequest from '@/lib/models/GameProductPurchaseRequest';
+import { getUserProductPurchase } from '@/lib/models/GameProductPurchaseRequest';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import { responseOnOauthError } from '@/lib/oauth2/response';
 import OAuth2Server from '@/lib/oauth2/server';
@@ -40,7 +40,7 @@ router.use(dynamicCors).get(async (req, res) => {
     gameProducts.forEach(gameProduct => {
       productMap.set(gameProduct.id, gameProduct);
     })
-    const gamePurchase = await getProductPurchase(gameId as string, userId);
+    const gamePurchase = await getUserProductPurchase(userId, gameId as string);
     const currentWeek = getISOYearWeekString(new Date());
     const currentMonthDay = getISOMonthDayTimeString(new Date());
     const currentDate = getISOFullDateTimeString(new Date());
@@ -138,38 +138,6 @@ async function getGameProducts(gameId: string) {
     }
   ];
   const results = await GameProduct.aggregate(aggregateQuery);
-  return results;
-} 
-
-async function getProductPurchase(gameId: string, userId: string) {
-  const aggregateQuery: PipelineStage[] = [
-    {
-      $match: {
-        game_id: gameId,
-        user_id: userId
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        __v: 0,
-        game_id: 0,
-      },
-    },
-    {
-      $group: {
-        _id: {
-          product_id: "$product_id",
-          request_period: "$request_period",
-        },
-        count: {$sum: 1}
-      }
-    },
-    {
-      $project: { _id: 0, product_id: '$_id.product_id', period: '$_id.request_period', count: 1 }
-    }
-  ];
-  const results = await GameProductPurchaseRequest.aggregate(aggregateQuery);
   return results;
 }
 

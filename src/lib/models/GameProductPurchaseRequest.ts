@@ -1,5 +1,6 @@
 import {Document, Schema, models, model} from 'mongoose'
 import connectToMongoDbDev from "@/lib/mongodb/client";
+import { PipelineStage } from 'mongoose';
 
 export interface IGameProductPurchaseRequest extends Document {
     // 请求id
@@ -59,3 +60,39 @@ GameProductPurchaseRequestSchema.index({user_id: 1, game_id: 1});
 const connection = connectToMongoDbDev();
 const GameProductPurchaseRequest = models.GameProductPurchaseRequest || connection.model<IGameProductPurchaseRequest>('GameProductPurchaseRequest', GameProductPurchaseRequestSchema, 'game_product_purchase_requests');
 export default GameProductPurchaseRequest;
+
+export async function getUserProductPurchase(userId: string, gameId: string, productId?: string) {
+    let matchOpt: any = {
+        $match: {
+            game_id: gameId,
+            user_id: userId
+        }
+    };
+    if (productId) {
+        matchOpt.$match.id = productId;
+    }
+    const aggregateQuery: PipelineStage[] = [
+        matchOpt,
+        {
+            $project: {
+            _id: 0,
+            __v: 0,
+            game_id: 0,
+            },
+        },
+        {
+            $group: {
+            _id: {
+                product_id: "$product_id",
+                request_period: "$request_period",
+            },
+            count: {$sum: 1}
+            }
+        },
+        {
+            $project: { _id: 0, product_id: '$_id.product_id', period: '$_id.request_period', count: 1 }
+        }
+    ];
+    const results = await GameProductPurchaseRequest.aggregate(aggregateQuery);
+    return results;
+  }
