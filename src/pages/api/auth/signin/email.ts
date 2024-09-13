@@ -37,7 +37,7 @@ router.post(async (req, res) => {
 
   if (!historyCaptcha) {
     res.json(response.captchaExpired());
-   return;
+    return;
   }
   if (historyCaptcha != captcha) {
     res.json(response.captchaMismatch());
@@ -137,6 +137,10 @@ async function doUserLogin(res: any, inviter: inviteRelationship | null, user: I
     // 用户申请删除已经过了90天, 禁止登录
     if (user.selfdestruct_request_time && user.selfdestruct_request_time + 1000 * 60 * 60 * 24 * 90 < now) {
       return res.status(500).json(response.userSelfDestructed());
+    }
+    // 判断用户是否已封禁
+    if (user.is_banned) {
+      return res.json(response.unauthorized());
     }
   }
   // 删除验证码

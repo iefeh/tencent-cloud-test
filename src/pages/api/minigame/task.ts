@@ -39,7 +39,7 @@ async function enrichTasks(userId: string | undefined, detail: any) {
     delete detail.share_task;
   }
 
-  const result = await paginationQuests(1, 6, detail.task_category, undefined, userId as string);
+  const result = await paginationQuests(1, 100, detail.task_category, undefined, userId as string);
   delete detail.task_category;
   if (result && result.quests.length > 0) {
     let quests: any[] = result.quests;

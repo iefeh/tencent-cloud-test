@@ -69,6 +69,10 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
     // 对认证客户进行授权, 返回授权码
     try {
         const user = await User.findOne({user_id: req.userId});
+        // 判断用户是否已封禁
+        if(user.is_banned){
+            return res.json(response.unauthorized());
+        }
         const code = await OAuth2Server.authorize(
             new Request(req),
             new Response(res),

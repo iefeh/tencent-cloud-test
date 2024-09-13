@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as response from "@/lib/response/response";
 import { redis } from "@/lib/redis/client";
+import User from "../models/User";
 
 // UserContextRequest 请求携带用户上下文信息
 export interface UserContextRequest extends NextApiRequest {
@@ -22,7 +23,7 @@ export async function dynamicCors(req: UserContextRequest, res: NextApiResponse,
 
     // 直接对OPTIONS请求返回200
     if (req.method === 'OPTIONS') {
-        res.status(200).end(); 
+        res.status(200).end();
         return;
     }
     next();
@@ -41,6 +42,12 @@ export async function mustAuthInterceptor(req: UserContextRequest, res: NextApiR
         return;
     }
 
+    const isBanned = await checkBannedAndRemoveAuth(authorization, userId);
+    if (isBanned) {
+        res.json(response.unauthorized());
+        return;
+    }
+
     // 将用户数据添加到请求对象中
     req.userId = userId;
 
@@ -53,9 +60,22 @@ export async function maybeAuthInterceptor(req: UserContextRequest, res: NextApi
     if (authorization) {
         const userId = await redis.get(`user_session:${authorization}`);
         if (userId) {
-            // 将用户数据添加到请求对象中
-            req.userId = userId;
+            const isBanned = await checkBannedAndRemoveAuth(authorization, userId);
+            if (!isBanned) {
+                // 将用户数据添加到请求对象中
+                req.userId = userId;
+            }
         }
     }
     next();
+}
+
+async function checkBannedAndRemoveAuth(authorization: string, userId: string) {
+    // 判断用户是否被封禁
+    const user = await User.findOne({ user_id: userId }, { is_banned: 1 });
+    if (user.is_banned) {
+        await redis.del(`user_session:${authorization}`);
+    }
+
+    return !!user.is_banned;
 }
