@@ -1,4 +1,4 @@
-import { KEY_AUTHORIZATION } from '@/constant/storage';
+import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AA } from '@/constant/storage';
 import { useStore } from '@/store';
 import { Axios } from 'axios';
 import { toast } from 'react-toastify';
@@ -12,7 +12,12 @@ const axios = new Axios({
 
 axios.interceptors.request.use((config) => {
   if (config.responseType === 'json') {
-    config.headers.Authorization = localStorage.getItem(KEY_AUTHORIZATION) || '';
+    const { isAA, withBearer } = config;
+    const authKey = isAA ? KEY_AUTHORIZATION_AA : KEY_AUTHORIZATION;
+
+    let auth = localStorage.getItem(authKey) || '';
+    if (withBearer) auth = 'Bearer ' + auth;
+    config.headers.Authorization = auth;
   }
   return config;
 });
