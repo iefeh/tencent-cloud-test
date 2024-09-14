@@ -1,21 +1,21 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import {dynamicCors, mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import Mint, {IMint} from "@/lib/models/Mint";
-import Contract, {ContractCategory, IContract} from "@/lib/models/Contract";
-import {redis} from "@/lib/redis/client";
+import { ethers } from 'ethers';
+import { createRouter } from 'next-connect';
 
-import Badges from "@/lib/models/Badge";
-import doTransaction from "@/lib/mongodb/transaction";
-import IpfsMetadata from "@/lib/models/IpfsMetadata";
-import UserWallet, {IUserWallet} from "@/lib/models/UserWallet";
-import {ethers} from 'ethers';
-import {responseOnOauthError} from "@/lib/oauth2/response";
-import OAuth2Server from "@/lib/oauth2/server";
-import {Request, Response} from "@node-oauth/oauth2-server";
-import {OAuth2Scopes} from "@/lib/models/OAuth2Scopes";
-import {IMiniGameDetail} from "@/lib/models/MiniGameDetail";
+import {
+    getISOFullDateTimeString, getISOMonthDayTimeString, getISOYearWeekString
+} from '@/lib/common/timeUtils';
+import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
+import Contract, { ContractCategory, IContract } from '@/lib/models/Contract';
+import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
+import { getUserProductPurchase } from '@/lib/models/GameProductPurchaseRequest';
+import GameProductToken from '@/lib/models/GameProductToken';
+import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
+import { responseOnOauthError } from '@/lib/oauth2/response';
+import OAuth2Server from '@/lib/oauth2/server';
+import { redis } from '@/lib/redis/client';
+import * as response from '@/lib/response/response';
+import { Request, Response } from '@node-oauth/oauth2-server';
 
 const pinataSDK = require('@pinata/sdk');
 const pinata = new pinataSDK({pinataJWTKey: process.env.PINATA_JWT!});
@@ -23,7 +23,7 @@ const pinata = new pinataSDK({pinataJWTKey: process.env.PINATA_JWT!});
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(dynamicCors).get(async (req, res) => {
-    let lockKey: string;
+    let lockKey: string = "";
     try {
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), {scope: OAuth2Scopes.UserInfo});
         const userId = token.user.user_id;
@@ -71,8 +71,58 @@ router.use(dynamicCors).get(async (req, res) => {
 
 async function checkUserGameProductPurchaseRequest(userId: string, gameId: string, productId: string, tokenId: string): Promise<PurchaseRequest | null> {
     // 1. 检查支付的产品存在，且用户当前依然有购买资格
+    const gameProduct = await GameProduct.findOne({ id: productId, game_id: gameId, active: true });
+    if (!gameProduct) {
+        return null;
+    }
+    const gamePurchase = await getUserProductPurchase(userId, gameId, productId);
+    const currentWeek = getISOYearWeekString(new Date());
+    const currentMonthDay = getISOMonthDayTimeString(new Date());
+    const currentDate = getISOFullDateTimeString(new Date());
+    let soldAmount = 0;
+    for (let purchase of gamePurchase) {
+        // 根据产品限量周期和购买周期计算已售出数量
+        if (gameProduct.limit.type === ProductLimitType.Daily && purchase.period === currentDate ||
+            gameProduct.limit.type === ProductLimitType.Weekly && purchase.period === currentWeek ||
+            gameProduct.limit.type === ProductLimitType.Monthly && purchase.period === currentMonthDay) {
+            soldAmount = purchase.count;
+            break;
+        }
+    }
+    if (gameProduct.limit.amount <= soldAmount) {
+        return null;
+    }
     // 2. 检查用户需要支付的代币数量
+    const token = await GameProductToken.findOne({ id: tokenId });
+    if (!token) {
+        return null;
+    }
+    let price = (gameProduct.price_in_usdc/token.price_in_usdc)*(1 - token.product_discount);
+    const now = Date.now();
     // 3. 构建PurchaseRequest
+    let currentPurchasePeriod = currentDate;
+    if (gameProduct.limit.type === ProductLimitType.Weekly) {
+        currentPurchasePeriod = currentWeek;
+    } else if (gameProduct.limit.type === ProductLimitType.Monthly) {
+        currentPurchasePeriod = currentMonthDay;
+    }
+    let request: PurchaseRequest = {
+        request_id: ethers.id(`productPermit:${gameId}:${productId}:${userId}:${now}`),
+        user_id: userId,
+        game_id: gameId,
+        token_id: tokenId,
+        product_id: productId,
+        product_id_hash: gameProduct.id_hash,
+        product_price_in_usd: (gameProduct.price_in_usdc)*(1 - token.product_discount),
+        request_time: now,
+        request_period: currentPurchasePeriod,
+        request_expire_time: now + 10 * 60 * 1000,
+        payment_chain_id: "",
+        payment_token_address: "",
+        payment_token_amount: "",
+        payment_token_price_in_usd: "",
+    };
+    return request;
 }
 
 type PurchaseRequest = {
@@ -89,7 +139,7 @@ type PurchaseRequest = {
     // 产品id的hash
     product_id_hash: string;
     // 产品价格，用于当时价格
-    product_price_in_usd: string;
+    product_price_in_usd: number;
     // 请求时间，毫秒时间戳
     request_time: number;
     // 请求的周期
