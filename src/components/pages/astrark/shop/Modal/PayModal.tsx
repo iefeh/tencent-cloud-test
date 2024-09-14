@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 
 export interface PayModalProps {
   disclosure: Disclosure;
-  shopItemProps: ItemProps<AstrArk.ShopItem> & ClickProps;
+  shopItemProps: ItemProps<AstrArk.Product> & ClickProps;
 }
 
 const TokenUrlEnum = {
