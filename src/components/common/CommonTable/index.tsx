@@ -89,7 +89,7 @@ const CommonTable = <T extends { id?: string }>(props: CommonTableProps<T>) => {
                   ])}
                 >
                   {column.render
-                    ? column.render(getKeyValue(item, column.dataIndex || '') || item, item, rowIdx)
+                    ? column.render(getKeyValue(item, column.dataIndex || ''), item, rowIdx)
                     : getKeyValue(item, column.dataIndex || '') || '-'}
                 </TableCell>
               ))}

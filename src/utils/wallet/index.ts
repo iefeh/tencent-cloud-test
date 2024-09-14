@@ -78,3 +78,10 @@ export async function handleWalletExecutionError(error?: InformableError) {
 
   toast.error(tips || 'Transaction failed, please try again later.');
 }
+
+export async function getCurrentNetwork(provider: Eip1193Provider) {
+  const currentChainId = await provider.request({ method: 'eth_chainId', params: []});
+  const network = WALLECT_NETWORKS[currentChainId!];
+
+  return network.chainName || ''
+}
