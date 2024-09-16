@@ -8,7 +8,7 @@ import {
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import Contract, { ContractCategory, IContract } from '@/lib/models/Contract';
 import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
-import { getUserProductPurchase } from '@/lib/models/GameProductPurchaseRequest';
+import GameProductPurchaseRequest, { IGameProductPurchaseRequest, getUserProductPurchase } from '@/lib/models/GameProductPurchaseRequest';
 import GameProductToken from '@/lib/models/GameProductToken';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import { responseOnOauthError } from '@/lib/oauth2/response';
@@ -55,6 +55,22 @@ router.use(dynamicCors).get(async (req, res) => {
             throw new Error("Game payment contract not found");
         }
         const permit = await generatePurchasePermit(purchaseRequest, paymentContract);
+        // 保存购买请求
+        const productPurchaseRequest = new GameProductPurchaseRequest({
+            request_id: purchaseRequest.request_id,
+            user_id: purchaseRequest.user_id,
+            game_id: purchaseRequest.game_id,
+            token_id: purchaseRequest.token_id,
+            product_id: purchaseRequest.product_id,
+            product_price_in_usd: purchaseRequest.product_price_in_usd,
+            request_time: purchaseRequest.request_time,
+            request_period: purchaseRequest.request_period,
+            request_expire_time: purchaseRequest.request_expire_time,
+            payment_token_address: purchaseRequest.payment_token_address,
+            payment_token_amount: purchaseRequest.payment_token_amount,
+            payment_token_price_in_usd: purchaseRequest.payment_token_price_in_usd,
+        });
+        await productPurchaseRequest.save();
         return res.json(response.success({
             chain_id: paymentContract.chain_id,
             contract_address: paymentContract.address,
@@ -97,7 +113,7 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
     if (!token) {
         return null;
     }
-    let price = (gameProduct.price_in_usdc/token.price_in_usdc)*(1 - token.product_discount);
+    let tokenAmount = (gameProduct.price_in_usdc/token.price_in_usdc)*(1 - token.product_discount);
     const now = Date.now();
     // 3. 构建PurchaseRequest
     let currentPurchasePeriod = currentDate;
@@ -117,10 +133,10 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
         request_time: now,
         request_period: currentPurchasePeriod,
         request_expire_time: now + 10 * 60 * 1000,
-        payment_chain_id: "",
-        payment_token_address: "",
-        payment_token_amount: "",
-        payment_token_price_in_usd: "",
+        payment_chain_id: token.chain_id,
+        payment_token_address: token.address,
+        payment_token_amount: String(tokenAmount*Math.pow(10, token.decimal)),
+        payment_token_price_in_usd: token.price_in_usdc,
     };
     return request;
 }
@@ -154,7 +170,7 @@ type PurchaseRequest = {
     // 支付代币数量，需要实际支付的代币数量，而非格式化后的数量
     payment_token_amount: string;
     // 代币价格
-    payment_token_price_in_usd: string;
+    payment_token_price_in_usd: number;
 }
 
 async function generatePurchasePermit(request: PurchaseRequest, gamePaymentContract: IContract) {
