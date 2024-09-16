@@ -14,7 +14,7 @@ export interface IGameProductPurchaseRequest extends Document {
     // 产品id
     product_id: string;
     // 产品价格，用于当时价格
-    product_price_in_usd: string;
+    product_price_in_usd: number;
     // 请求时间，毫秒时间戳
     request_time: number;
     // 请求的周期
