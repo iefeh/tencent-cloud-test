@@ -34,6 +34,8 @@ export interface IGameProductPurchaseRequest extends Document {
     payment_address: string;
     // 支付确认时间，经过一定区块数的确认.
     payment_confirm_time: number;
+    // 支付通知已发送
+    payment_notification_sent: boolean;
 }
 
 const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>({
@@ -50,6 +52,7 @@ const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>
     payment_token_address: {type: String},
     payment_token_amount: {type: String},
     payment_confirm_time: {type: Number},
+    payment_notification_sent: {type: Boolean},
 });
 
 GameProductPurchaseRequestSchema.index({request_id: 1}, {unique: true});

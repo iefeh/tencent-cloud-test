@@ -69,9 +69,6 @@ router.use(dynamicCors).get(async (req, res) => {
             payment_token_address: purchaseRequest.payment_token_address,
             payment_token_amount: purchaseRequest.payment_token_amount,
             payment_token_price_in_usd: purchaseRequest.payment_token_price_in_usd,
-            payment_tx_hash: "",
-            payment_address: "",
-            payment_confirm_time: 0,
         });
         await productPurchaseRequest.save();
         return res.json(response.success({
