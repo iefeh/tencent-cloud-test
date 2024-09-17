@@ -52,7 +52,7 @@ const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>
     payment_token_address: {type: String},
     payment_token_amount: {type: String},
     payment_confirm_time: {type: Number},
-    payment_notification_sent: {type: Boolean}
+    payment_notification_sent: {type: Boolean, required: true, default: false}
 });
 
 GameProductPurchaseRequestSchema.index({request_id: 1}, {unique: true});
