@@ -29,8 +29,8 @@ router.use(dynamicCors).get(async (req, res) => {
         const userId = token.user.user_id;
         const gameId = token.client.id;
 
-        const {productId, tokenId} = req.query;
-        if (!productId || !tokenId) {
+        const {product_id, token_id} = req.query;
+        if (!product_id || !token_id) {
             return res.json(response.invalidParams());
         }
         // 锁定用户操作
@@ -42,7 +42,7 @@ router.use(dynamicCors).get(async (req, res) => {
             }));
         }
         // 检查购买请求
-        const purchaseRequest = await checkUserGameProductPurchaseRequest(userId, gameId, productId as string, tokenId as string);
+        const purchaseRequest = await checkUserGameProductPurchaseRequest(userId, gameId, product_id as string, token_id as string);
         if (!purchaseRequest) {
             return res.json(response.invalidParams({message: "Invalid purchase request."}));
         }
