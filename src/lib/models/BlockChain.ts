@@ -19,8 +19,7 @@ const BlockChainSchema = new Schema<IBlockChain>({
     chain_layer: { type: String },
 });
 
-BlockChainSchema.index({ product_id: 1 });
-BlockChainSchema.index({ user_id: 1, client_id: 1 });
+BlockChainSchema.index({ chain_id: 1 });
 
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();
