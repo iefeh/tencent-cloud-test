@@ -7,6 +7,7 @@ import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import useBuyTicket from "./useBuyTicket"
 import { observer } from 'mobx-react-lite';
 import type { AstrArk } from '@/types/astrark';
+import Web3 from "web3";
 
 interface ModalProps {
   disclosure: Disclosure;
@@ -42,6 +43,7 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   const toApprove = () => {
     // if (!isAvailable) return;
+    // TODO 初始化钱包
 
     setBtnStsList(["wait", undefined])
   }
@@ -101,8 +103,7 @@ const WalletModal: FC<ModalProps> = (props) => {
                 </div>
                 <div>
                   Availiable Balance:
-                  {/* <span className="text-[#a6c5ed] ml-2">{walletInfo?.balance}</span> */}
-                  <span className="text-[#a6c5ed] ml-2">-</span>
+                  <span className="text-[#a6c5ed] ml-2">{Number(Web3.utils.fromWei(walletInfo?.balance || '', 'ether')).toFixed(5)}</span>
                 </div>
                 <div>
                   Current Price:
