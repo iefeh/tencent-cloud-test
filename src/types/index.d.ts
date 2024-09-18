@@ -5,6 +5,7 @@ declare class InformableError {
 
 declare interface Window {
   InformableError: typeof InformableError;
+  ta: any;
 }
 
 declare interface Disclosure {

@@ -41,6 +41,7 @@ import MouseWheel from '@better-scroll/mouse-wheel';
 import useRouteLocale from '@/hooks/useRouteLocale';
 import { NextUIProvider } from '@nextui-org/react';
 import '@/styles/aa.scss';
+import useEventTracking from '@/hooks/useEventTracking';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -84,6 +85,8 @@ export default function App({ Component, pageProps }: AppProps) {
       setScale((1 / ratio).toFixed(2));
     }
   }
+
+  useEventTracking();
 
   useEffect(() => {
     resetRem();
