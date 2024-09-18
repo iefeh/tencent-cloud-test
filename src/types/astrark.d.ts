@@ -41,13 +41,14 @@ declare namespace AstrArk {
   }
 
   interface PriceToken {
+    product_id?: string;
     token_id: string; 
     token_name: string; 
     icon_url: string; 
     symbol: string; 
     product_price_discount: number; 
-    product_price_with_discount: number; 
-    product_price_without_discount: number; 
+    product_token_price_with_discount: number; 
+    product_usdc_price_with_discount: number;
     network: {
       name: string;
       icon_url: string; 
@@ -66,5 +67,22 @@ declare namespace AstrArk {
     price_in_tokens: PriceToken[];
     product_type_id: string;
     price_updated_at: number;
+  }
+
+  interface PermitProps {
+    product_id: string;
+    token_id: string;
+  }
+
+  interface BuyTicketProps extends PermitProps {
+    // chain_id: string;
+    // contract_address: string;
+    // permit: {
+    //   player: string,
+    //   token: string, 
+    //   tokenAmount: number, 
+    //   game: string,
+    //   tickets: number,
+    // }
   }
 }

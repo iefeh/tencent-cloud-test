@@ -22,7 +22,7 @@ interface CommonTableProps<T = {}> extends TableProps {
   calcCellClassNames?: (idx: number, rowIdx: number) => string;
 }
 
-const CommonTable = <T extends { id?: string }>(props: CommonTableProps<T>) => {
+const CommonTable = <T extends {}>(props: CommonTableProps<T>) => {
   const {
     columns,
     dataList,
@@ -76,7 +76,7 @@ const CommonTable = <T extends { id?: string }>(props: CommonTableProps<T>) => {
               style={{
 
               }}
-              key={item.id || rowIdx}
+              key={rowIdx}
             >
               {columns.map((column, index) => (
                 <TableCell

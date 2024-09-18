@@ -9,6 +9,8 @@ interface ContractProviderConfig {
 }
 
 export interface TransactionParams {
+  /** 跳过登录检测 */
+  passLogin?: boolean;
   params: any;
   config?: Partial<TransactionConfig>;
   options?: TransactionRequest;

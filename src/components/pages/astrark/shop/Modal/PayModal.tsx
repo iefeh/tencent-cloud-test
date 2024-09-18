@@ -118,6 +118,17 @@ const PayModal: FC<PayModalProps> = (props) => {
     walletDisclosure.onOpen()
   }
 
+  const getCurSelectedKey = (): AstrArk.PriceToken | undefined => {
+    const key = (selectedKeys as any)?.values()?.next()?.value
+    const item = questInfo?.price_in_tokens?.[key]
+    if (!item) return
+
+    return {
+      ...item,
+      product_id: questInfo?.id,
+    }
+  }
+
   const compareIndex = (idx: number) => {
     const key = (selectedKeys as any)?.values()?.next()?.value
     return idx === Number(key)
@@ -135,7 +146,7 @@ const PayModal: FC<PayModalProps> = (props) => {
   }
 
   const renderTable = () => (
-    <PayTable
+    <PayTable<AstrArk.PriceToken>
       selectedKeys={selectedKeys}
       onSelectionChange={setSelectedKeys}
       selectionMode="single"
@@ -231,7 +242,7 @@ const PayModal: FC<PayModalProps> = (props) => {
         </ModalContent>
       </Modal >
 
-      <WalletModal outModalClose={onClose} disclosure={walletDisclosure}></WalletModal>
+      <WalletModal outModalClose={onClose} disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
     </>
   );
 }

@@ -6,7 +6,7 @@ enum ButtonStatus {
   WAIT = 'wait',
 }
 
-export type ButtonStatusUnion = `${ButtonStatus}`;
+export type ButtonStatusUnion = `${ButtonStatus}` | undefined;
 
 interface Props extends ButtonProps {
   children: React.ReactNode;

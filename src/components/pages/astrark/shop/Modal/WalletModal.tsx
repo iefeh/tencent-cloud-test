@@ -1,39 +1,63 @@
 import React, { useState, FC, useMemo } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, Button } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
 import S3Image from "@/components/common/medias/S3Image";
 import PayButton, { type ButtonStatusUnion } from "../Buttons";
 import useWalletInfo from "./useWalletInfo";
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import useBuyTicket from "./useBuyTicket"
+import { observer } from 'mobx-react-lite';
+import type { AstrArk } from '@/types/astrark';
 
 interface ModalProps {
   disclosure: Disclosure;
   outModalClose: () => void;
-  currentPrice: number;
+  itemInfo: AstrArk.PriceToken | undefined;
 }
 
 const WalletModal: FC<ModalProps> = (props) => {
-  const { disclosure, currentPrice, outModalClose } = props;
+  const { disclosure, outModalClose, itemInfo } = props;
   const { walletProvider } = useWeb3ModalProvider();
 
   const { isOpen, onClose } = disclosure || {};
-  const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>(["disabled", "wait"]);
+  const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>(["disabled", undefined]);
+  const { onButtonClick } = useBuyTicket()
 
   const { walletInfo } = useWalletInfo({
     provider: walletProvider
   });
 
   const isAvailable = useMemo(() => {
-    return Number(walletInfo?.balance) >= currentPrice;
-  }, [walletInfo?.balance, currentPrice])
+    if (itemInfo === undefined) return false;
+
+    return Number(walletInfo?.balance) >= itemInfo?.product_usdc_price_with_discount;
+  }, [walletInfo?.balance, itemInfo?.product_usdc_price_with_discount])
 
   const toApprove = () => {
     // 
   }
 
-  const toPurchase = () => {
-    // 
+  const toPurchase = async () => {
+    const { token_id, product_id } = itemInfo || {};
+    if (!token_id || !product_id) return
 
+    await onButtonClick({
+      token_id,
+      product_id,
+    })
+
+    onClose()
     outModalClose()
+  }
+
+  const formatString = (str: string | undefined, startLength: number = 6, endLength: number = 4) => {
+    if (str === undefined) return "";
+
+    if (str.length <= startLength + endLength) {
+      return str;
+    }
+    const startPart = str.slice(0, startLength);
+    const endPart = str.slice(-endLength);
+    return `${startPart}...${endPart}`;
   }
 
   return (
@@ -59,11 +83,11 @@ const WalletModal: FC<ModalProps> = (props) => {
               <div className="px-3 flex flex-col gap-3 text-xl">
                 <div>
                   Connected Wallet:
-                  <span className="text-[#a6c5ed] ml-2">{walletInfo?.walletAddress}</span>
+                  <span className="text-[#a6c5ed] ml-2">{formatString(walletInfo?.walletAddress)}</span>
                 </div>
                 <div>
                   Network:
-                  <span className="text-[#a6c5ed] ml-2">{walletInfo?.network}</span>
+                  <span className="text-[#a6c5ed] ml-2">{itemInfo?.network?.name}</span>
                 </div>
                 <div>
                   Availiable Balance:
@@ -71,7 +95,7 @@ const WalletModal: FC<ModalProps> = (props) => {
                 </div>
                 <div>
                   Current Price:
-                  <span className="text-[#a6c5ed] ml-2">{currentPrice}</span>
+                  <span className="text-[#f33f3f] ml-2">{itemInfo?.product_usdc_price_with_discount} USDT</span>
                 </div>
               </div>
 
@@ -109,4 +133,4 @@ const WalletModal: FC<ModalProps> = (props) => {
   )
 }
 
-export default WalletModal;
+export default observer(WalletModal);

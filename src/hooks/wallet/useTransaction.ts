@@ -17,7 +17,9 @@ export default function useTransaction({ abi, method }: Props) {
   const txProvider = useRef<TransactionProvider>();
 
   async function onTransaction(params: TransactionParams) {
-    if (!userInfo) {
+    const { passLogin = false } = params;
+    
+    if (!userInfo && !passLogin) {
       toggleLoginModal(true);
       return;
     }
