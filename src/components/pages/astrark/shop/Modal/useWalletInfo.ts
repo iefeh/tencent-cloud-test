@@ -15,16 +15,15 @@ interface WalletInfoProps {
 const useWalletInfo = (props: WalletInfoProps) => {
   const { provider } = props;
 
-  if (!provider) 
-    return {
-      walletAddress: "",
-      network: "",
-      balance: ""
-    }
-
-  const [walletInfo, setWalletInfo] = useState<WalletInfo>({} as WalletInfo);
+  const [walletInfo, setWalletInfo] = useState<WalletInfo>({
+    walletAddress: "",
+    network: "",
+    balance: ""
+  });
 
   const getBalance = async () => {
+    if (!provider) return
+
     const balance = await getCurrentBalance(provider)
     
     setWalletInfo(c => {
@@ -36,6 +35,8 @@ const useWalletInfo = (props: WalletInfoProps) => {
   }
 
   const getAddress = async () => {
+    if (!provider) return
+
     const address = await getCurrentAccount(provider)
     setWalletInfo(c => {
       return {
@@ -46,6 +47,8 @@ const useWalletInfo = (props: WalletInfoProps) => {
   }
 
   const getNetwork = async () => {
+    if (!provider) return
+
     const network = await getCurrentNetwork(provider)
     setWalletInfo(c => {
       return {
