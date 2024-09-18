@@ -26,7 +26,7 @@ export interface IGameProductPurchaseRequest extends Document {
     // 支付代币数量
     payment_token_amount: string;
     // 代币价格
-    payment_token_price_in_usd: string;
+    payment_token_price_in_usd: number;
 
     // 支付交易哈希，仅在交易确认后再添加以下数据.
     payment_tx_hash: string;
@@ -44,13 +44,15 @@ const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>
     game_id: {type: String, required: true},
     token_id: {type: String, required: true},
     product_id: {type: String, required: true},
+    product_price_in_usd: {type: Number, required: true},
     request_time: {type: Number},
     request_period: {type: String},
     request_expire_time: {type: Number},
-    payment_tx_hash: {type: String},
-    payment_address: {type: String},
     payment_token_address: {type: String},
     payment_token_amount: {type: String},
+    payment_token_price_in_usd: {type: Number},
+    payment_tx_hash: {type: String},
+    payment_address: {type: String},
     payment_confirm_time: {type: Number},
     payment_notification_sent: {type: Boolean, required: true, default: false}
 });
