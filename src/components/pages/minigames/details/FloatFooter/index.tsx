@@ -86,7 +86,13 @@ const FloatFooter: FC<Props> = ({ onCompleteTasks }) => {
           />
 
           <Link href={(canPlay && url) || 'javascript:;'} target={canPlay && url ? '_blank' : '_self'}>
-            <SButton className="ml-3" strokeType="yellow" strokeText="Play Now" isDisabled={!url || !canPlay} />
+            <SButton
+              className="ml-3"
+              strokeType="yellow"
+              strokeText="Play Now"
+              isDisabled={!url || !canPlay}
+              onPress={() => window.ta.track('play_now')}
+            />
           </Link>
 
           <SButton

@@ -11,7 +11,7 @@ import {
 import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
-import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useWalletInfo, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
 import useWatchStorage from './useWatchStorage';
@@ -24,6 +24,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
   const [loading, setLoading] = useState(false);
   const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
+  const { walletInfo } = useWalletInfo();
 
   const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_AUTH) || {};
@@ -38,9 +39,9 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
     if (signup_cred) {
       localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
-      store.toggleNewUserModal();
+      store.toggleNewUserModal(undefined, { is_new_user: true, login_type: type as MediaType, wallet_type: '' });
     } else {
-      store.initLoginInfo();
+      store.initLoginInfo({ is_new_user: false, login_type: type as MediaType, wallet_type: '' });
       callback?.();
     }
 
@@ -92,12 +93,20 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     localStorage.setItem(KEY_AUTHORIZATION, token);
     localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
     if (signup_cred) {
-      store.toggleNewUserModal(true);
+      store.toggleNewUserModal(true, {
+        is_new_user: true,
+        login_type: MediaType.METAMASK,
+        wallet_type: walletInfo?.name || '',
+      });
       localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
       throw new Error('Is New User');
     } else {
       try {
-        await store.initLoginInfo();
+        await store.initLoginInfo({
+          is_new_user: false,
+          login_type: MediaType.METAMASK,
+          wallet_type: walletInfo?.name || '',
+        });
       } catch (error) {}
     }
 
@@ -177,11 +186,11 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
       localStorage.setItem(KEY_AUTHORIZATION, token);
       localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
       if (signup_cred) {
-        store.toggleNewUserModal(true);
+        store.toggleNewUserModal(true, { is_new_user: true, login_type: MediaType.TELEGRAM, wallet_type: '' });
         localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
         throw new Error('Is New User');
       } else {
-        await store.initLoginInfo();
+        await store.initLoginInfo({ is_new_user: false, login_type: MediaType.TELEGRAM, wallet_type: '' });
       }
     } catch (error) {
       console.log(error);
