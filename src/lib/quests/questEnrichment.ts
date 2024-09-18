@@ -225,7 +225,7 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
 async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
     await Promise.all(quests.map(async (quest) => {
         // 任务存在token奖励, 查询用户token奖励领取状态
-        if (quest.reward.token_reward && quest.reward.token_reward.actual_raffle_time && quest.verified) {
+        if (quest.reward.token_reward && quest.verified) {
             const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`)});
             // 用户已验证token奖励, 创建token奖励属性
             if (userTokenReward) {
@@ -244,7 +244,8 @@ async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
                         address: token.address,
                         icon: token.icon,
                         name: token.name,
-                        symbol: token.symbol
+                        symbol: token.symbol,
+                        decimal: token.decimal
                     };
                 }
             }

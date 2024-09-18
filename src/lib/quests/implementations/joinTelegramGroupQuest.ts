@@ -66,7 +66,7 @@ export class JoinTelegramGroupQuest extends QuestBase {
       console.error(error);
       Sentry.captureException(error);
     }
-    return { claimable: false };
+    return { claimable: false, tip: 'Internal server error' };
   }
 
   async addUserAchievement<T>(

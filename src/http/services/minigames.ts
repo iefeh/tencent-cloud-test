@@ -1,5 +1,7 @@
 import type { MiniGames } from '@/types/minigames';
 import http from '../index';
+import type { TaskItem } from '@/types/quest';
+import type { BadgeItem } from './badges';
 
 export function queryMiniGamesAPI(
   params: PageQueryDto & { status?: string; ticket_available?: number },
@@ -9,6 +11,24 @@ export function queryMiniGamesAPI(
 
 export function queryMiniGameDetailsAPI(params: { client_id: string }): Promise<MiniGames.GameDetailDTO> {
   return http.get('/api/minigame/detail', { params });
+}
+
+export function queryMiniGameOverviewAPI(params: { client_id: string }): Promise<MiniGames.GameDetailDTO> {
+  return http.get('/api/minigame/overview', { params });
+}
+
+export function queryMiniGameTasksAPI(params: { client_id: string }): Promise<{ tasks: TaskItem[] }> {
+  return http.get('/api/minigame/task', { params });
+}
+
+export function queryMiniGameBadgesAPI(params: { client_id: string }): Promise<{ badge: BadgeItem[] }> {
+  return http.get('/api/minigame/badge', { params });
+}
+
+export function queryMiniGameLeaderboardAPI(params: {
+  client_id: string;
+}): Promise<{ leaderboard: MiniGames.GameDetialLeaderboard }> {
+  return http.get('/api/minigame/leaderboard', { params });
 }
 
 export function queryGameTicketsAPI(params: { game_id: string }): Promise<{ available_tickets: number }> {
@@ -29,8 +49,12 @@ export function buyTicketsCallbackAPI(data: {
   return http.post('/api/minigame/ticket/paid', JSON.stringify(data));
 }
 
-export function claimShareRewardAPI(data: {
-  client_id: string;
-}): Promise<InfoDTO & { require_authorization?: string }> {
+interface ClaimShareRewardDTO extends InfoDTO {
+  reward_tickets?: string | number;
+  available_tickets?: string | number;
+  require_authorization?: string;
+}
+
+export function claimShareRewardAPI(data: { client_id: string }): Promise<ClaimShareRewardDTO> {
   return http.post('/api/minigame/claim', JSON.stringify(data));
 }

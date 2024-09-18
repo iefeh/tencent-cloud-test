@@ -2,22 +2,40 @@ import BadgeModal from '@/components/profile/badges/components/BadgeModal';
 import { reqClaimBadge } from '@/hooks/pages/profile/badges/hooks/useMyBadges';
 import { queryMintPermitAPI, type BadgeItem } from '@/http/services/badges';
 import { useMGDContext } from '@/store/MiniGameDetails';
-import { useDisclosure } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
 import { throttle } from 'lodash';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import MiniGameBadge from './MiniGameBadge';
 import useBScroll from '@/hooks/useBScroll';
 import useSbtMint from '@/hooks/useSbtMint';
 import MintSuccessModal from '@/components/profile/assets/MintSuccessModal';
+import { isMobile } from 'react-device-detect';
+import { queryMiniGameBadgesAPI } from '@/http/services/minigames';
+import CircularLoading from '@/pages/components/common/CircularLoading';
+import EmptyContent from '@/components/common/EmptyContent';
+import { observer } from 'mobx-react-lite';
 
 const BadgesTabPanel: FC = () => {
   const { data, queryDetails } = useMGDContext();
-  const { badge: badges } = data || {};
+  const [badges, setBadges] = useState<BadgeItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [currentItem, setCurrentItem] = useState<BadgeItem | null>(null);
-  const { scrollRef } = useBScroll();
+  const { scrollRef } = useBScroll({ scrollX: !isMobile, scrollY: isMobile });
   const modalDisclosure = useDisclosure();
   const mintDisclosure = useDisclosure();
   const { onButtonClick } = useSbtMint();
+
+  async function queryBadges() {
+    if (!data?.client_id) {
+      setBadges([]);
+      return;
+    }
+
+    setLoading(true);
+    const res = await queryMiniGameBadgesAPI({ client_id: data.client_id });
+    setBadges(res?.badge || []);
+    setLoading(false);
+  }
 
   function onView(item?: BadgeItem | null) {
     setCurrentItem(item || null);
@@ -51,15 +69,38 @@ const BadgesTabPanel: FC = () => {
     mintDisclosure.onOpen();
   }
 
+  useEffect(() => {
+    queryBadges();
+  }, [data]);
+
   return (
-    <div>
-      <div ref={scrollRef} className="w-full overflow-hidden">
-        <ul className="flex items-center gap-x-[1.5625rem] flex-nowrap w-max">
-          {(badges || []).map((badge, index) => (
-            <MiniGameBadge key={index} item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
-          ))}
-        </ul>
-      </div>
+    <div
+      className={cn([
+        'w-full min-h-[20rem] rounded-base overflow-hidden relative',
+        !isMobile && badges.length < 1 && 'h-[36rem]',
+      ])}
+    >
+      {loading ? (
+        <CircularLoading />
+      ) : badges.length < 1 ? (
+        <EmptyContent />
+      ) : (
+        <div ref={scrollRef} className={cn(['w-full overflow-hidden', isMobile && 'max-h-[30rem]'])}>
+          <ul
+            className={cn([
+              'flex flex-col lg:flex-row items-center gap-x-[1.5625rem] gap-y-4 flex-nowrap',
+              isMobile ? 'w-full' : 'w-max',
+            ])}
+          >
+            {Array(2)
+              .fill(badges || [])
+              .flat()
+              .map((badge, index) => (
+                <MiniGameBadge key={index} item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
+              ))}
+          </ul>
+        </div>
+      )}
 
       <BadgeModal
         item={currentItem}
@@ -74,4 +115,4 @@ const BadgesTabPanel: FC = () => {
   );
 };
 
-export default BadgesTabPanel;
+export default observer(BadgesTabPanel);

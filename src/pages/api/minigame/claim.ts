@@ -44,7 +44,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
     res.json(response.success());
     return;
   }
-  const claimed = await checkClaimed(userId, clientId);
+  const claimed = await checkClaimed(userId, client.share_reward.round, clientId);
   if (claimed) {
     res.json(response.tooManyRequests("This account has already claimed the sharing reward."));
     return;
@@ -59,12 +59,12 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
 
   const ticketsCount = await ticketRemain(userId, clientId);
 
-  return res.json(response.success({ verified: true, available_tickets: ticketsCount }));
+  return res.json(response.success({ verified: true, available_tickets: ticketsCount, reward_tickets: client.share_reward.ticket_count }));
 });
 
-export async function checkClaimed(userId: string, clientId: string) {
-  const passId = ethers.id(`${userId},${clientId},share-reward,0`);
-  const tickets = await GameTicket.findOne({ pass_id: passId });
+export async function checkClaimed(userId: string, round: any, clientId: string) {
+  const passId = ethers.id(`${userId},${clientId},share-reward,${round},0`);
+  const tickets = await GameTicket.findOne({ pass_id: `SHARE-${passId}` });
   return !!tickets;
 }
 
@@ -154,7 +154,7 @@ async function distributeTickets(userId: string, clientId: string, client: any) 
   let tickets: any[] = [];
   for (let i = 0; i < client.share_reward.ticket_count; i++) {
     const ticket = new GameTicket();
-    ticket.pass_id = ethers.id(`${userId},${clientId},share-reward,${i}`);
+    ticket.pass_id = `SHARE-${ethers.id(`${userId},${clientId},share-reward,${client.share_reward.round},${i}`)}`;
     ticket.user_id = userId;
     ticket.game_id = clientId;
     ticket.created_at = Date.now();
@@ -171,6 +171,8 @@ async function distributeTickets(userId: string, clientId: string, client: any) 
       }
     }
   }
+
+  return client.share_reward.ticket_count;
 }
 // this will run if none of the above matches
 router.all((req, res) => {

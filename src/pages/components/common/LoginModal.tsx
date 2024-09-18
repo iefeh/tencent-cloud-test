@@ -164,6 +164,7 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
     toggleNewUserModal,
     initLoginInfo,
     switchAccount,
+    newUserTrackingDto,
   } = useContext(MobxContext);
   useParticle();
   const [emailLoginVisible, setEmailLoginVisible] = useState(isConnect);
@@ -234,7 +235,7 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
     setInitLoading(true);
 
     try {
-      await initLoginInfo();
+      await initLoginInfo(newUserTrackingDto);
     } catch (error: any) {
       toast.error(error?.message || error);
       console.log('Continue Login Error:', error);

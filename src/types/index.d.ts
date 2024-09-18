@@ -5,6 +5,7 @@ declare class InformableError {
 
 declare interface Window {
   InformableError: typeof InformableError;
+  ta: any;
 }
 
 declare interface Disclosure {
@@ -24,3 +25,5 @@ interface DisclosureProps {
 declare interface UpdateForwardRenderFunction {
   update: () => void;
 }
+
+type Override<P, S> = Omit<P, keyof S> & S;

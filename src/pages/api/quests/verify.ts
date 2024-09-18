@@ -35,7 +35,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
         return;
     }
     const now = Date.now();
-    if (quest.start_time > now || quest.end_time <= now) {
+    if (quest.start_time > now || quest.end_time <= now || (quest.reward.verify_end_time && quest.reward.verify_end_time <= now)) {
         res.json(response.success({
             verified: false,
             tip: "Quest is not available.",

@@ -2,6 +2,7 @@ import useTransaction from '@/hooks/wallet/useTransaction';
 import { queryTokenPermitAPI, postTokenTxAPI, type MyTokensRecord } from '@/http/services/token';
 import tokenRewardABI from '@/http/abi/tokenReward.json';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface ClaimTokenParams {
   updateList: () => void;
@@ -31,7 +32,10 @@ export default function useClaimToken(pramas: ClaimTokenParams) {
       const { hash } = res || {};
 
       if (hash) {
-        await postTokenTxAPI({ tx_hash: hash, chain_id: chain_id });
+        const postRes = await postTokenTxAPI({ tx_hash: hash, chain_id: chain_id });
+        if (!postRes) {
+          toast.success('You have successfully claimed rewards!');
+        }
       }
 
       await updateList();

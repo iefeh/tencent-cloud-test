@@ -52,7 +52,7 @@ const BadgeDesc: FC<Props> = ({ milestone }) => {
             </p>
 
             <p className="text-basic-yellow italic">
-              *Surprise bonus: Achieving a Lv2 Lucky Draw Master Badge in Season 1 will grant you an S1 Premium Pass for
+              *Surprise bonus: Achieving a Lv4 Lucky Draw Master Badge in Season 1 will grant you an S1 Premium Pass for
               free!
             </p>
           </div>

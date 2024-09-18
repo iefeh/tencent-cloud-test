@@ -59,6 +59,10 @@ body {
   src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti400W.ttf');
 }
 
+.szh-menu-container {
+  z-index: 99;
+}
+
 .szh-menu-container--theme-dark .szh-menu.szh-menu {
   background-color: #1a1917;
   border: none;

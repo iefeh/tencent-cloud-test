@@ -23,6 +23,14 @@ export default function useBuyTickets() {
       params: permit,
       config: { contractAddress: contract_address, chainId: chain_id },
       options: { value: permit.tokenAmount },
+      onError: (code, message) => {
+        if (message && message.indexOf('unexpected message sender') > -1) {
+          toast.error(
+            'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
+          );
+          return true;
+        }
+      },
     });
     if (!txRes?.hash) {
       setLoading(false);
@@ -35,6 +43,7 @@ export default function useBuyTickets() {
       return false;
     }
 
+    window.ta.tracking('buy_ticket');
     toast.success(`You have successfully purchased ${amount} ticket(s).`);
     setLoading(false);
     return true;

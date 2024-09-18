@@ -1,12 +1,17 @@
-import DetailTabs from '@/components/pages/minigames/details/DetailTabs';
+import DetailTabs, { type DetailTabsRef } from '@/components/pages/minigames/details/DetailTabs';
 import FloatFooter from '@/components/pages/minigames/details/FloatFooter';
 import TopBanner from '@/components/pages/minigames/details/TopBanner';
 import { MGDContext, useMGDStore } from '@/store/MiniGameDetails';
 import Head from 'next/head';
-import type { FC } from 'react';
+import { useRef, type FC } from 'react';
 
 const MiniGameDetailsPage: FC & BasePage = () => {
   const mgdStore = useMGDStore();
+  const detailTabsRef = useRef<DetailTabsRef>(null);
+
+  function onCompleteTasks() {
+    detailTabsRef.current?.compelteTasks?.();
+  }
 
   return (
     <MGDContext.Provider value={mgdStore}>
@@ -28,9 +33,9 @@ const MiniGameDetailsPage: FC & BasePage = () => {
 
         <TopBanner />
 
-        <DetailTabs />
+        <DetailTabs ref={detailTabsRef} />
 
-        <FloatFooter />
+        <FloatFooter onCompleteTasks={onCompleteTasks} />
       </section>
     </MGDContext.Provider>
   );

@@ -5,7 +5,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import closeImg from 'img/loyalty/earn/close.png';
 import { FC, useLayoutEffect, useRef, useState } from 'react';
 import TaskButtons from './TaskButtons';
-import { QuestType } from '@/constant/task';
+import { QuestType, TokenRewardDistributeType } from '@/constant/task';
 import ReverifyCountdown from './ReverifyCountdown';
 import TokenRewardProgress from './TokenRewardProgress';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -35,13 +35,23 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
       return onTaskUpdate?.(res.quest);
     },
   });
+  const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
+  const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressStatus = getProgressStatus();
 
   function getProgressStatus() {
-    const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
-    if (!!actual_raffle_time) return 2;
-
+    const { verified, reward } = task;
+    const { verify_end_time, token_reward } = reward || {};
+    const { actual_raffle_time, estimated_raffle_time } = token_reward || {};
     const now = Date.now();
+
+    if (isDirectTokenReward) {
+      if (!!verified || (verify_end_time && now > verify_end_time)) return 3;
+      return 0;
+    }
+
+    if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
+
     if (estimated_raffle_time && now > +estimated_raffle_time) return 1;
 
     return 0;
@@ -66,14 +76,13 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   return (
     <div
       className={cn([
-        'task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col hover:border-basic-yellow transition-[border-color] duration-500 relative',
-        hasTokenReward ? 'pt-[1.25rem]' : 'pt-[2.5rem]',
+        'task-item col-span-1 overflow-hidden border-1 border-basic-gray rounded-[0.625rem] min-h-[17.5rem] px-[2.375rem] py-12 flex flex-col justify-center hover:border-basic-yellow transition-[border-color] duration-500 relative',
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress status={progressStatus} />}
+      <TokenRewardProgress task={task} status={progressStatus} />
 
-      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-12'])}>
+      <div className="task-name text-xl flex justify-between items-center mt-4">
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (
@@ -87,7 +96,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         )}
       </div>
 
-      <div className="mt-3 flex-1 flex flex-col justify-between relative">
+      <div className="mt-3 flex flex-col justify-between relative">
         <div className="text-sm">
           <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
             <div
@@ -121,7 +130,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         </div>
 
         <div className="footer relative">
-          <div className='flex flex-wrap gap-x-4 gap-y-2'>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <div className="flex items-center">
               <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
 
@@ -149,21 +158,32 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
             )}
           </div>
 
-          {task.verified && hasTokenReward ? (
+          {(task.verified &&
+            hasTokenReward &&
+            (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
+          isExpired ? (
             <>
               <LGButton
                 className="mt-5"
                 label={
-                  task.user_token_reward?.status === 'claimed'
+                  isDirectTokenReward && !!task.verified && !task.user_token_reward
+                    ? 'Loading'
+                    : isExpired && !task.verified
+                    ? 'Task incomplete, not eligible for the raffle.'
+                    : task.user_token_reward?.status === 'claimed'
                     ? 'Claimed'
                     : task.user_token_reward?.status === 'claiming'
                     ? 'Claiming'
-                    : progressStatus === 2
-                    ? 'Sorry, you didn’t win this time.'
-                    : 'Claim'
+                    : task.user_token_reward
+                    ? 'Claim'
+                    : 'Sorry, you didn’t win this time.'
                 }
                 actived
-                disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}
+                disabled={
+                  (isDirectTokenReward && !!task.verified && !task.user_token_reward) ||
+                  (!isDirectTokenReward && !task.reward.token_reward?.actual_raffle_time) ||
+                  task.user_token_reward?.status !== 'pending'
+                }
                 loading={loading}
                 onClick={() => task.user_token_reward && onClaim(task.user_token_reward)}
               />
