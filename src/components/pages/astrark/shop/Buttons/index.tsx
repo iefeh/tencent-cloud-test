@@ -41,7 +41,7 @@ const PayButton: React.FC<Props> = (props) => {
           className={
             cn([
               "flex-shrink-0 rounded-full w-[1.1875rem] h-[1.1875rem] bg-[#5D3C13] text-white text-sm [text-shadow:none]",
-              [ButtonStatus.DISABLED, ButtonStatus.WAIT].includes(btnStatus as any) && 'bg-white text-[#555]',
+              [ButtonStatus.DISABLED, ButtonStatus.WAIT].includes(btnStatus as any) && 'bg-white !text-[#333]',
             ])}
         >
           {index}

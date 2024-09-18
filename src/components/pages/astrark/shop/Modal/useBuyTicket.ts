@@ -8,25 +8,24 @@ import type { AstrArk } from '@/types/astrark';
 const useBuyTicket = () => {
   const { loading, onTransaction } = useTransaction({ abi: payTicketABI, method: 'buyProduct' });
 
-  async function onButtonClick(data: AstrArk.BuyTicketProps) {
+  async function onButtonClick(data: AstrArk.PermitProps) {
     const { product_id, token_id } = data
 
     const res = await buyTicketPermitAPI({ product_id, token_id })
-
-    console.log('res', res);
-    
-    // const { contract_address, chain_id, permit } = res;
+    const { contract_address, chain_id, permit } = res;
 
     const result = await onTransaction({
       passLogin: true,
-      params: data.permit,
-      config: { chainId: data.chain_id, contractAddress: data.contract_address },
-      // onError: (code, message = '') => {
-      //   if (message.indexOf('permit already used') > -1) {
-      //     toast.error('You have already minted SBT. Please wait for data confirmation patiently.');
-      //     return true;
-      //   }
-      // },
+      params: permit,
+      config: { chainId: chain_id, contractAddress: contract_address },
+      onError: (code, message = '') => {
+        if (message && message.indexOf('unexpected message sender') > -1) {
+          toast.error(
+            'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
+          );
+          return true;
+        }
+      },
     });
 
     return !!result;

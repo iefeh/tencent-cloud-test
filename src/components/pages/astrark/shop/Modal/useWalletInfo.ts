@@ -26,6 +26,7 @@ const useWalletInfo = (props: WalletInfoProps) => {
 
   const getBalance = async () => {
     const balance = await getCurrentBalance(provider)
+    
     setWalletInfo(c => {
       return {
         ...c,

@@ -1,4 +1,4 @@
-import React, { useState, FC, useMemo } from "react";
+import React, { useState, FC, useMemo, useEffect } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
 import S3Image from "@/components/common/medias/S3Image";
 import PayButton, { type ButtonStatusUnion } from "../Buttons";
@@ -19,7 +19,7 @@ const WalletModal: FC<ModalProps> = (props) => {
   const { walletProvider } = useWeb3ModalProvider();
 
   const { isOpen, onClose } = disclosure || {};
-  const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>(["disabled", undefined]);
+  const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>([undefined, "wait"]);
   const { onButtonClick } = useBuyTicket()
 
   const { walletInfo } = useWalletInfo({
@@ -32,8 +32,18 @@ const WalletModal: FC<ModalProps> = (props) => {
     return Number(walletInfo?.balance) >= itemInfo?.product_usdc_price_with_discount;
   }, [walletInfo?.balance, itemInfo?.product_usdc_price_with_discount])
 
+  // useEffect(() => {
+  //   if (isAvailable) {
+  //     setBtnStsList([undefined, "wait"])
+  //   } else {
+  //     setBtnStsList(["disabled", "wait"])
+  //   }
+  // }, [isAvailable])
+
   const toApprove = () => {
-    // 
+    // if (!isAvailable) return;
+
+    setBtnStsList(["wait", undefined])
   }
 
   const toPurchase = async () => {
@@ -91,7 +101,8 @@ const WalletModal: FC<ModalProps> = (props) => {
                 </div>
                 <div>
                   Availiable Balance:
-                  <span className="text-[#a6c5ed] ml-2">{walletInfo?.balance}</span>
+                  {/* <span className="text-[#a6c5ed] ml-2">{walletInfo?.balance}</span> */}
+                  <span className="text-[#a6c5ed] ml-2">-</span>
                 </div>
                 <div>
                   Current Price:

@@ -74,15 +74,16 @@ declare namespace AstrArk {
     token_id: string;
   }
 
-  interface BuyTicketProps extends PermitProps {
-    // chain_id: string;
-    // contract_address: string;
-    // permit: {
-    //   player: string,
-    //   token: string, 
-    //   tokenAmount: number, 
-    //   game: string,
-    //   tickets: number,
-    // }
+  interface PermitRespose {
+    chain_id: string;
+    contract_address: string;
+    permit: {
+      reqId: string;
+      expiration: number;
+      productId: string;
+      signature: string;
+      token: string;
+      tokenAmount: string;
+    }
   }
 }
