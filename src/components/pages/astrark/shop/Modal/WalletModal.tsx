@@ -43,6 +43,7 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   const toApprove = () => {
     // if (!isAvailable) return;
+    // TODO 初始化钱包
 
     setBtnStsList(["wait", undefined])
   }
