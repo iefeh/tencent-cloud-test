@@ -7,10 +7,15 @@ const S3Image = forwardRef<HTMLImageElement, Props>(function S3Image(
   { src, alt, unoptimized = true, width, height, fill, ...props },
   ref,
 ) {
+
+  const url = src.startsWith('http')
+    ? src
+    : `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/${src.replace(/^\/+/, '')}`;
+
   return (
     <Image
       ref={ref}
-      src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/${src.replace(/^\/+/, '')}`}
+      src={url}
       alt={alt || ''}
       unoptimized={unoptimized}
       width={fill ? undefined : width || 1}

@@ -1,6 +1,7 @@
 import { NFTCategory } from '@/constant/nft';
 import http from '../index';
 import type { MyNFTQueryParams, NFTItem } from './mint';
+import type { AstrArk } from '@/types/astrark';
 
 export function preRegisterAPI(): Promise<boolean | null> {
   return http.post('/api/games/astrark/preregister');
@@ -52,4 +53,22 @@ export function deleteAccountAPI(): Promise<ResultDTO> {
 
 export function cancelDeleteAccountAPI(): Promise<ResultDTO> {
   return http.post('/api/oauth2/selfdestruct/cancel');
+}
+
+export function exchangeAuthCodeAPI(data: {
+  authorization_code: string;
+}): Promise<{ access_token: string; expires_at: string }> {
+  return http.post('/api/oauth2/otp/exchange', JSON.stringify(data), { withBearer: true, isAA: true });
+}
+
+export function queryShopInfoAPI(): Promise<AstrArk.ShopCate[]> {
+  return http.get('/api/oauth2/game/product/items', { withBearer: true, isAA: true });
+}
+
+export function queryShopItemAPI(item_id: string): Promise<AstrArk.ProductItem> {
+  return http.get('/api/oauth2/game/product/item', { params: { item_id }, withBearer: true, isAA: true });
+}
+
+export function buyTicketPermitAPI(data: AstrArk.PermitProps): Promise<AstrArk.PermitRespose> {
+  return http.get('/api/oauth2/game/product/permit', { params: data, withBearer: true, isAA: true });
 }
