@@ -21,7 +21,7 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   const { isOpen, onClose } = disclosure || {};
   const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>([undefined, "wait"]);
-  const { onButtonClick } = useBuyTicket()
+  const { beReadyForBuyTicket, onButtonClick } = useBuyTicket()
 
   const { walletInfo } = useWalletInfo({
     provider: walletProvider
@@ -33,29 +33,35 @@ const WalletModal: FC<ModalProps> = (props) => {
     return Number(walletInfo?.balance) >= itemInfo?.product_usdc_price_with_discount;
   }, [walletInfo?.balance, itemInfo?.product_usdc_price_with_discount])
 
-  // useEffect(() => {
-  //   if (isAvailable) {
-  //     setBtnStsList([undefined, "wait"])
-  //   } else {
-  //     setBtnStsList(["disabled", "wait"])
-  //   }
-  // }, [isAvailable])
+  useEffect(() => {
+    if (isAvailable) {
+      setBtnStsList([undefined, "wait"])
+    } else {
+      setBtnStsList(["disabled", "wait"])
+    }
+  }, [isAvailable])
 
-  const toApprove = () => {
-    // if (!isAvailable) return;
-    // TODO 初始化钱包
-
-    setBtnStsList(["wait", undefined])
-  }
-
-  const toPurchase = async () => {
+  const toApprove = async () => {
+    debugger
+    if (!isAvailable) return;
     const { token_id, product_id } = itemInfo || {};
+
     if (!token_id || !product_id) return
 
-    await onButtonClick({
+    const res = await beReadyForBuyTicket({
       token_id,
       product_id,
     })
+
+    console.log('res', res);
+
+    if (res) {
+      setBtnStsList(["wait", undefined])
+    }
+  }
+
+  const toPurchase = async () => {
+    await onButtonClick()
 
     onClose()
     outModalClose()

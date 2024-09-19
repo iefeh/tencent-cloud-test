@@ -3,17 +3,28 @@ import payTicketABI from '@/http/abi/shop_abi.json'
 import { buyTicketPermitAPI } from '@/http/services/astrark';
 import { toast } from 'react-toastify';
 import type { AstrArk } from '@/types/astrark';
+import { useState } from 'react';
 
 
 const useBuyTicket = () => {
-  const { loading, onTransaction } = useTransaction({ abi: payTicketABI, method: 'buyProduct' });
+  const { loading, onTransaction, beReady } = useTransaction({ abi: payTicketABI, method: 'buyProduct' });
+  const [transactionInfo, setTransactionInfo] = useState({
+    contract_address: '',
+    chain_id: '',
+    permit: {}
+  });
 
-  async function onButtonClick(data: AstrArk.PermitProps) {
+  const beReadyForBuyTicket = async (data: AstrArk.PermitProps) => {
     const { product_id, token_id } = data
-
     const res = await buyTicketPermitAPI({ product_id, token_id })
-    const { contract_address, chain_id, permit } = res;
+    setTransactionInfo(res)
 
+    await beReady();
+  }
+
+  async function onButtonClick() {
+    const { contract_address, chain_id, permit } = transactionInfo || {};
+   
     const result = await onTransaction({
       passLogin: true,
       params: permit,
@@ -31,7 +42,7 @@ const useBuyTicket = () => {
     return !!result;
   }
 
-  return { loading, onButtonClick };
+  return { loading, onButtonClick, beReadyForBuyTicket };
 }
 
 export default useBuyTicket;
