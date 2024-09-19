@@ -43,8 +43,8 @@ router.use(dynamicCors).get(async (req, res) => {
           icon_url: token.block_chain.icon_url,
         },
         product_price_discount: token.product_discount,
-        product_token_price_with_discount: String(price*(1-token.product_discount)),
-        product_usdc_price_with_discount: String(gameProduct.price_in_usdc*(1-token.product_discount)),
+        product_token_price_with_discount: Math.ceil(price*(1-token.product_discount)*Math.pow(10, 6))/Math.pow(10, 6),
+        product_usdc_price_with_discount: Math.ceil(gameProduct.price_in_usdc*(1-token.product_discount)*Math.pow(10, 6))/Math.pow(10, 6),
       });
     }
     res.json(response.success(gameProduct));
