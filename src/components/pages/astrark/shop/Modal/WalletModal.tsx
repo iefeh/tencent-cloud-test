@@ -1,5 +1,5 @@
 import React, { useState, FC, useMemo, useEffect } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, cn } from "@nextui-org/react";
 import S3Image from "@/components/common/medias/S3Image";
 import PayButton, { type ButtonStatusUnion } from "../Buttons";
 import useWalletInfo from "./useWalletInfo";
@@ -27,10 +27,14 @@ const WalletModal: FC<ModalProps> = (props) => {
     provider: walletProvider
   });
 
+  const balance = useMemo(() => {
+    return Number(Web3.utils.fromWei(walletInfo?.balance || '', 'ether')).toFixed(5)
+  }, [walletInfo?.balance])
+
   const isAvailable = useMemo(() => {
     if (itemInfo === undefined) return false;
 
-    return Number(walletInfo?.balance) >= itemInfo?.product_usdc_price_with_discount;
+    return Number(balance) >= itemInfo?.product_usdc_price_with_discount;
   }, [walletInfo?.balance, itemInfo?.product_usdc_price_with_discount])
 
   useEffect(() => {
@@ -42,26 +46,23 @@ const WalletModal: FC<ModalProps> = (props) => {
   }, [isAvailable])
 
   const toApprove = async () => {
-    debugger
     if (!isAvailable) return;
-    const { token_id, product_id } = itemInfo || {};
-
-    if (!token_id || !product_id) return
-
-    const res = await beReadyForBuyTicket({
-      token_id,
-      product_id,
-    })
-
-    console.log('res', res);
+    const { network } = itemInfo || {};
+    const res = await beReadyForBuyTicket(network?.chain_id)
 
     if (res) {
-      setBtnStsList(["wait", undefined])
+      setBtnStsList(["disabled", undefined])
     }
   }
 
   const toPurchase = async () => {
-    await onButtonClick()
+    const { token_id, product_id } = itemInfo || {};
+    if (!token_id || !product_id) return
+
+    await onButtonClick({
+      token_id,
+      product_id,
+    })
 
     onClose()
     outModalClose()
@@ -109,7 +110,7 @@ const WalletModal: FC<ModalProps> = (props) => {
                 </div>
                 <div>
                   Availiable Balance:
-                  <span className="text-[#a6c5ed] ml-2">{Number(Web3.utils.fromWei(walletInfo?.balance || '', 'ether')).toFixed(5)}</span>
+                  <span className="text-[#a6c5ed] ml-2">{balance} USDT</span>
                 </div>
                 <div>
                   Current Price:
@@ -126,16 +127,17 @@ const WalletModal: FC<ModalProps> = (props) => {
 
               <div className="flex">
                 <PayButton
-                  className="mr-[-0.125rem]"
                   btnStatus={btnStsList[0]}
                   index={1}
                   onClick={toApprove}
                 >
                   Approve
                 </PayButton>
-                <div className="h-[2px] w-[2.625rem] bg-[#686868] mt-[1.8125rem]"></div>
+                <div className="h-[2px] w-[3.625rem] bg-[#686868] mt-[1.8125rem] z-[-1] ml-[-1rem] mr-[-0.3rem]"></div>
                 <PayButton
-                  className="ml-[-0.23rem]"
+                  className={cn([
+                    btnStsList[1] === undefined && "ml-[-0.5rem]"
+                  ])}
                   btnStatus={btnStsList[1]}
                   index={2}
                   onClick={toPurchase}

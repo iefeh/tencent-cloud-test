@@ -92,6 +92,8 @@ const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrAr
   const CollectionCom = item?.type && ItemCollectionComs[item.type];
 
   function onItemClick(item: AstrArk.Product) {
+    if (item.sold_out) return
+
     handleItemClick && handleItemClick(item);
   }
 

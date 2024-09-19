@@ -51,7 +51,8 @@ declare namespace AstrArk {
     product_usdc_price_with_discount: number;
     network: {
       name: string;
-      icon_url: string; 
+      icon_url: string;
+      chain_id: string;
     }
   }
 

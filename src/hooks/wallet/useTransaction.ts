@@ -37,14 +37,14 @@ export default function useTransaction({ abi, method }: Props) {
     return res;
   }
 
-  const beReady = async () => {
+  const beReady = async (chain_id: string) => {
     if (!isConnected) {
       open();
       return;
     }
 
     try {
-      const res = await txProvider.current?.beReady();
+      const res = await txProvider.current?.beReady(chain_id);
       return res;
     } catch (error) {
       console.log('useTransaction beReady', error);

@@ -1,20 +1,63 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import type { AstrArk } from '@/types/astrark';
 import { queryShopItemAPI } from "@/http/services/astrark";
+import useLoopCountdown from '@/hooks/useLoopCountDown';
+import dayjs from 'dayjs';
+import { sleep } from "@/utils/common";
 
-const useQuestInfo = () => {
+const sleepTime = 5000
+
+const useQuestInfo = ({ open }: {
+  open: boolean;
+}) => {
+
   const [questInfo, setQuestInfo] = useState<AstrArk.ProductItem>();
+  const [cdText, setCdText] = useState<string>('00:00');
+  const [ timeRemaining, setTimeRemaining ] = useState<number>(0);
+  const curIdRef = useRef<string>();
 
+  const calcTimeRemaining = (startTime: number | undefined) => {
+    if (!startTime) return 0
+    const now = Date.now().valueOf()
+
+    if (now - startTime > 10 * 60 * 1000) {
+      return 0
+    } else {
+      return now - startTime
+    }
+  }
+
+  useLoopCountdown(timeRemaining, 0, (leftTime) => {
+    const du = dayjs.duration(leftTime);
+    setCdText(du.format('mm:ss'));
+  });
 
   const getQuestInfo = async (id: string | undefined) => {
     if (!id) return;
-    const res = await queryShopItemAPI(id);
+    curIdRef.current = id;
+    let res = await queryShopItemAPI(id);
+    
+    setTimeRemaining(calcTimeRemaining(res.price_updated_at))
     setQuestInfo(res);
   }
+
+  const queryLoop = async () => {
+    if (!curIdRef.current) return;
+    await sleep(sleepTime)
+    getQuestInfo(curIdRef.current)
+  }
+
+  useEffect(() => {
+    if ((timeRemaining === 0 || cdText === '00:00') && open) {
+      queryLoop()
+      return
+    }
+  }, [open, cdText, questInfo])
 
   return {
     questInfo,
     getQuestInfo,
+    cdText
   }
 }
 
