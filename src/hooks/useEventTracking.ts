@@ -11,9 +11,8 @@ export default function useEventTracking() {
     },
   };
 
-  thinkingdata.init(config);
-
   useEffect(() => {
+    thinkingdata.init(config);
     window.ta = thinkingdata;
   }, []);
 }
