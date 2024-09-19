@@ -26,6 +26,7 @@ declare namespace Lottery {
     open_status?: LotteryStatus;
     user_meet_requirement?: boolean;
     user_meet_requirement_type?: LotteryRequirementType;
+    requirement_description?: string;
     requirements: LotteryRequirementDTO[];
   }
 

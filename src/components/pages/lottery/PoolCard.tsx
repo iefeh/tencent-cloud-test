@@ -19,22 +19,14 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
     icon_url,
     open_status,
     user_meet_requirement = false,
-    user_meet_requirement_type,
-    requirements,
+    requirement_description,
   } = item || {};
   const border = LotteryBorders[(icon_frame_level || RewardQuality.COPPERY) as RewardQuality];
   const itemSize = '90%';
   const limitedTime = getLimitedTime();
   const isInProgress = open_status === LotteryStatus.IN_PROGRESS;
-  const canPlay = open_status === LotteryStatus.IN_PROGRESS && !!user_meet_requirement;
-  let requirementDesc = '';
-
-  if (!user_meet_requirement) {
-    const reqItem = (requirements || []).find((item) => item.type === user_meet_requirement_type);
-    if (reqItem) {
-      requirementDesc = reqItem.description || '';
-    }
-  }
+  const hasReachedRequirement = !!user_meet_requirement;
+  const canPlay = open_status === LotteryStatus.IN_PROGRESS && hasReachedRequirement;
 
   function getLimitedTime() {
     const du = dayjs.duration(Math.max((item?.end_time || 0) - Date.now(), 0));
@@ -48,12 +40,6 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
     const mins = du.minutes();
     return `${mins} minutes`;
   }
-
-  const playBtn = (
-    <Link href={isInProgress ? `/lottery/${item?.lottery_pool_id}` : ''}>
-      <LGButton className="w-[8.75rem]" label="Play" disabled={!canPlay} />
-    </Link>
-  );
 
   return (
     <div className="flex flex-col justify-between px-6 py-7 bg-[#0E0E0E] border-1 border-basic-gray rounded-base transition-colors hover:border-basic-yellow">
@@ -170,16 +156,16 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
       <div className="flex justify-between items-center mt-16">
         <BattlePass item={item} />
 
-        {canPlay ? (
+        {hasReachedRequirement ? (
           <Link href={isInProgress ? `/lottery/${item?.lottery_pool_id}` : ''}>
-            <LGButton className="w-[8.75rem]" label="Play" />
+            <LGButton className="w-[8.75rem]" label="Play" disabled={canPlay} />
           </Link>
         ) : (
           <Tooltip
             content={
               <div>
                 <div className="text-lg">You need to meet the following condition:</div>
-                <div className="indent-6 mt-2">· {requirementDesc}</div>
+                <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
               </div>
             }
           >
