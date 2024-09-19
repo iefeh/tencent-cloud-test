@@ -1,4 +1,4 @@
-import { cn } from '@nextui-org/react';
+import { Tooltip, cn } from '@nextui-org/react';
 import { FC, useRef } from 'react';
 import nftPassImg from 'img/loyalty/season/pass_nft.png';
 import badgePassImg from 'img/loyalty/season/pass_badge.png';
@@ -26,7 +26,7 @@ const REQUIREMENT_ICONS: Dict<StaticImageData | string> = {
 };
 
 const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, float, visible, onRuleClick }) => {
-  const { user_meet_requirement = false, user_meet_requirement_type } = item || {};
+  const { user_meet_requirement = false, user_meet_requirement_type, requirement_description } = item || {};
   const nodeRef = useRef<HTMLDivElement>(null);
   const passList: { actived: boolean; img: StaticImageData | string }[] = [];
 
@@ -61,7 +61,21 @@ const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, floa
             </div>
           );
 
-          return passBody;
+          if (item.actived) return passBody;
+
+          return (
+            <Tooltip
+              key={index}
+              content={
+                <div>
+                  <div className="text-lg">You need to meet the following condition:</div>
+                  <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
+                </div>
+              }
+            >
+              {passBody}
+            </Tooltip>
+          );
         })}
       </div>
     </div>

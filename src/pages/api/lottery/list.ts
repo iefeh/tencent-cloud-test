@@ -46,7 +46,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     }
     let rewards: any[] = [];
     for (let reward of pool.rewards) {
-      if (reward.reward_level >= 5) {
+      if (reward.reward_level >= 5 && rewards.length < 3) {
         rewards.push({
           reward_name: reward.reward_name,
           reward_level: reward.reward_level,
@@ -63,6 +63,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       icon_url: pool.icon_url,
       icon_frame_level: pool.icon_frame_level,
       limited_qty: pool.limited_qty,
+      requirement_description: pool.requirement_description,
       start_time: pool.start_time,
       end_time: pool.end_time,
       open_status: openStatus,
