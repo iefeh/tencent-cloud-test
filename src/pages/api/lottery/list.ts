@@ -118,6 +118,7 @@ async function paginationLotteryPools(pageNum: number, pageSize: number, open_st
       icon_frame_level: 1,
       limited_qty: 1,
       rewards: 1,
+      requirement_description: 1,
       start_time: 1,
       end_time: 1
     }
