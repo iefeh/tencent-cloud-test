@@ -14,6 +14,8 @@ const useQuestInfo = ({ open }: {
   const [questInfo, setQuestInfo] = useState<AstrArk.ProductItem>();
   const [cdText, setCdText] = useState<string>('00:00');
   const [ timeRemaining, setTimeRemaining ] = useState<number>(0);
+  const [ loading, setLoading ] = useState<boolean>(false);
+
   const curIdRef = useRef<string>();
 
   const calcTimeRemaining = (startTime: number | undefined) => {
@@ -42,13 +44,17 @@ const useQuestInfo = ({ open }: {
   }
 
   const queryLoop = async () => {
+    setLoading(true)
     if (!curIdRef.current) return;
     await sleep(sleepTime)
-    getQuestInfo(curIdRef.current)
+    await getQuestInfo(curIdRef.current)
+    setLoading(false)
   }
 
   useEffect(() => {
     if ((timeRemaining === 0 || cdText === '00:00') && open) {
+      if (loading) return
+
       queryLoop()
       return
     }

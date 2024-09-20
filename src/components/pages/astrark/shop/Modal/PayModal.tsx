@@ -179,6 +179,7 @@ const PayModal: FC<PayModalProps> = (props) => {
       <Modal
         {...disclosure}
         hideCloseButton
+        isDismissable={false}
         isOpen={isOpen}
         onClose={onClose}
         style={{
@@ -222,7 +223,7 @@ const PayModal: FC<PayModalProps> = (props) => {
         </ModalContent>
       </Modal >
 
-      <WalletModal outModalClose={onClose} disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
+      <WalletModal disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
     </>
   );
 }
