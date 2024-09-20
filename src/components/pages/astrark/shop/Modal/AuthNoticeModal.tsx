@@ -4,7 +4,12 @@ import { FC } from 'react';
 
 const AuthNoticeModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} classNames={{ header: 'p-0', body: 'py-8' }}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      isDismissable={false}
+      classNames={{ header: 'p-0', body: 'py-8' }}
+    >
       <ModalContent>
         {(onClose) => (
           <>
