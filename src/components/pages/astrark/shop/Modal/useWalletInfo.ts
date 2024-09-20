@@ -3,9 +3,9 @@ import { getCurrentBalance, getCurrentNetwork, getCurrentAccount } from "@/utils
 import { Eip1193Provider } from 'ethers';
 
 interface WalletInfo {
-  walletAddress: string;
-  network: string;
-  balance: string;
+  walletAddress: string | undefined;
+  network: string | undefined;
+  balance: string | undefined;
 }
 
 interface WalletInfoProps {
@@ -16,9 +16,9 @@ const useWalletInfo = (props: WalletInfoProps) => {
   const { provider } = props;
 
   const [walletInfo, setWalletInfo] = useState<WalletInfo>({
-    walletAddress: "",
-    network: "",
-    balance: ""
+    walletAddress: undefined,
+    network: undefined,
+    balance: undefined,
   });
 
   const getBalance = async () => {
@@ -58,13 +58,17 @@ const useWalletInfo = (props: WalletInfoProps) => {
     })
   }
 
+  const getInfo =  async () => {
+    await getBalance()
+    await getAddress()
+    await getNetwork()
+  }
+
   useEffect(() => {
-    getBalance()
-    getAddress()
-    getNetwork()
+    getInfo()
   }, [])
 
-  return { walletInfo };
+  return { walletInfo, getInfo };
 }
 
 export default useWalletInfo;

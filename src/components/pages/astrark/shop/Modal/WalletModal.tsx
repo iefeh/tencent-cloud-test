@@ -23,16 +23,20 @@ const WalletModal: FC<ModalProps> = (props) => {
   const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>([undefined, "wait"]);
   const { beReadyForBuyTicket, onButtonClick } = useBuyTicket()
 
-  const { walletInfo } = useWalletInfo({
+  const { walletInfo, getInfo } = useWalletInfo({
     provider: walletProvider
   });
 
   const balance = useMemo(() => {
+    if (walletInfo.balance === undefined) return null;
+
     return Number(Web3.utils.fromWei(walletInfo?.balance || '', 'ether')).toFixed(5)
   }, [walletInfo?.balance])
 
   const isAvailable = useMemo(() => {
     if (itemInfo === undefined) return false;
+    // 表示未获取到钱包余额，开放 approve 重新拉取钱包
+    if (balance === null) return true;
 
     return Number(balance) >= itemInfo?.product_usdc_price_with_discount;
   }, [walletInfo?.balance, itemInfo?.product_usdc_price_with_discount])
@@ -49,10 +53,10 @@ const WalletModal: FC<ModalProps> = (props) => {
     if (!isAvailable) return;
     const { network } = itemInfo || {};
     const res = await beReadyForBuyTicket(network?.chain_id)
-
     if (res) {
       setBtnStsList(["disabled", undefined])
     }
+    await getInfo()
   }
 
   const toPurchase = async () => {
@@ -101,20 +105,25 @@ const WalletModal: FC<ModalProps> = (props) => {
             <ModalBody className="px-20 py-10">
               <div className="px-3 flex flex-col gap-3 text-xl">
                 <div>
-                  Connected Wallet:
-                  <span className="text-[#a6c5ed] ml-2">{formatString(walletInfo?.walletAddress)}</span>
+                  Connected Wallet：
+                  <span className="text-[#a6c5ed] ml-1">{formatString(walletInfo?.walletAddress)}</span>
                 </div>
                 <div>
-                  Network:
-                  <span className="text-[#a6c5ed] ml-2">{itemInfo?.network?.name}</span>
+                  Network：
+                  <span className="text-[#a6c5ed] ml-1">{itemInfo?.network?.name}</span>
                 </div>
                 <div>
-                  Availiable Balance:
-                  <span className="text-[#a6c5ed] ml-2">{balance} USDT</span>
+                  Availiable Balance：
+                  <span className="text-[#a6c5ed] ml-1">
+                    {balance === null
+                      ? '—'
+                      : balance + ' USDT'
+                    }
+                  </span>
                 </div>
                 <div>
-                  Current Price:
-                  <span className="text-[#f33f3f] ml-2">{itemInfo?.product_usdc_price_with_discount} USDT</span>
+                  Current Price：
+                  <span className="text-[#f33f3f] ml-1">{itemInfo?.product_usdc_price_with_discount} USDT</span>
                 </div>
               </div>
 
