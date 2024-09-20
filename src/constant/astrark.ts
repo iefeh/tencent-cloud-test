@@ -11,12 +11,6 @@ export const enum ShopItemType {
   RESOURCES_DIAMOND = 'resources_diamond',
 }
 
-export const enum ProductLimitType {
-  Daily = 'daily',
-  Weekly = 'weekly',
-  Monthly = 'monthly',
-}
-
 export const enum ShopCateName {
   BENEFITS = 'Benefits',
   STORE = 'Store',

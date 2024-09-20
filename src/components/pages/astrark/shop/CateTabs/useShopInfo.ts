@@ -1,4 +1,4 @@
-import { ProductLimitType, ProductTypeName, ShopCateName, ShopItemType } from '@/constant/astrark';
+import { ProductTypeName, ShopCateName, ShopItemType } from '@/constant/astrark';
 import { queryShopInfoAPI } from '@/http/services/astrark';
 import { useAAUserContext } from '@/store/AstrarkUser';
 import { AstrArk } from '@/types/astrark';
