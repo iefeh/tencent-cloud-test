@@ -101,5 +101,5 @@ export async function getGameMaxDiscount() {
     if (!results || results.length === 0) {
       return null;
     }
-    return results[0];
+    return results[0].max_discount;
 }
