@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCurrentBalance, getCurrentNetwork, getCurrentAccount } from "@/utils/wallet";
 import { Eip1193Provider } from 'ethers';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 interface WalletInfo {
   walletAddress: string | undefined;
@@ -14,6 +15,7 @@ interface WalletInfoProps {
 
 const useWalletInfo = (props: WalletInfoProps) => {
   const { provider } = props;
+  const { isConnected } = useWeb3ModalAccount();
 
   const [walletInfo, setWalletInfo] = useState<WalletInfo>({
     walletAddress: undefined,
@@ -67,6 +69,12 @@ const useWalletInfo = (props: WalletInfoProps) => {
   useEffect(() => {
     getInfo()
   }, [])
+
+  useEffect(() => {
+    if (isConnected) {
+      getInfo()
+    }
+  }, [isConnected])
 
   return { walletInfo, getInfo };
 }

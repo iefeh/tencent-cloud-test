@@ -11,19 +11,18 @@ import Web3 from "web3";
 
 interface ModalProps {
   disclosure: Disclosure;
-  outModalClose: () => void;
   itemInfo: AstrArk.PriceToken | undefined;
 }
 
 const WalletModal: FC<ModalProps> = (props) => {
-  const { disclosure, outModalClose, itemInfo } = props;
+  const { disclosure, itemInfo } = props;
   const { walletProvider } = useWeb3ModalProvider();
 
   const { isOpen, onClose } = disclosure || {};
   const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>([undefined, "wait"]);
   const { beReadyForBuyTicket, onButtonClick } = useBuyTicket()
 
-  const { walletInfo, getInfo } = useWalletInfo({
+  const { walletInfo } = useWalletInfo({
     provider: walletProvider
   });
 
@@ -56,7 +55,6 @@ const WalletModal: FC<ModalProps> = (props) => {
     if (res) {
       setBtnStsList(["disabled", undefined])
     }
-    await getInfo()
   }
 
   const toPurchase = async () => {
@@ -67,9 +65,6 @@ const WalletModal: FC<ModalProps> = (props) => {
       token_id,
       product_id,
     })
-
-    onClose()
-    outModalClose()
   }
 
   const formatString = (str: string | undefined, startLength: number = 6, endLength: number = 4) => {
@@ -86,6 +81,7 @@ const WalletModal: FC<ModalProps> = (props) => {
   return (
     <Modal
       {...disclosure}
+      isDismissable={false}
       hideCloseButton
       isOpen={isOpen}
       onClose={onClose}
