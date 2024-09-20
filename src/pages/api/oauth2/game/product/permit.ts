@@ -8,9 +8,12 @@ import {
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import Contract, { ContractCategory, IContract } from '@/lib/models/Contract';
 import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
-import GameProductPurchaseRequest, { IGameProductPurchaseRequest, getUserProductPurchase } from '@/lib/models/GameProductPurchaseRequest';
+import GameProductPurchaseRequest, {
+    getUserProductPurchase
+} from '@/lib/models/GameProductPurchaseRequest';
 import GameProductToken from '@/lib/models/GameProductToken';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
+import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import { responseOnOauthError } from '@/lib/oauth2/response';
 import OAuth2Server from '@/lib/oauth2/server';
 import { redis } from '@/lib/redis/client';
@@ -56,21 +59,29 @@ router.use(dynamicCors).get(async (req, res) => {
         }
         const permit = await generatePurchasePermit(purchaseRequest, paymentContract);
         // 保存购买请求
-        const productPurchaseRequest = new GameProductPurchaseRequest({
-            request_id: purchaseRequest.request_id,
-            user_id: purchaseRequest.user_id,
-            game_id: purchaseRequest.game_id,
-            token_id: purchaseRequest.token_id,
-            product_id: purchaseRequest.product_id,
-            product_price_in_usd: purchaseRequest.product_price_in_usd,
-            request_time: purchaseRequest.request_time,
-            request_period: purchaseRequest.request_period,
-            request_expire_time: purchaseRequest.request_expire_time,
-            payment_token_address: purchaseRequest.payment_token_address,
-            payment_token_amount: purchaseRequest.payment_token_amount,
-            payment_token_price_in_usd: purchaseRequest.payment_token_price_in_usd,
-        });
-        await productPurchaseRequest.save();
+        try {
+            const productPurchaseRequest = new GameProductPurchaseRequest({
+                request_id: purchaseRequest.request_id,
+                user_id: purchaseRequest.user_id,
+                game_id: purchaseRequest.game_id,
+                token_id: purchaseRequest.token_id,
+                product_id: purchaseRequest.product_id,
+                product_price_in_usd: purchaseRequest.product_price_in_usd,
+                request_time: purchaseRequest.request_time,
+                request_period: purchaseRequest.request_period,
+                request_expire_time: purchaseRequest.request_expire_time,
+                payment_token_address: purchaseRequest.payment_token_address,
+                payment_token_amount: purchaseRequest.payment_token_amount,
+                payment_token_price_in_usd: purchaseRequest.payment_token_price_in_usd,
+            });
+            await productPurchaseRequest.save();
+        }
+        catch (error) {
+            console.log(error);
+            if (!isDuplicateKeyError(error)) {
+                throw error;
+            }
+        }
         return res.json(response.success({
             chain_id: paymentContract.chain_id,
             contract_address: paymentContract.address,
@@ -91,19 +102,19 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
     if (!gameProduct) {
         return null;
     }
-    const gamePurchase = await getUserProductPurchase(userId, gameId, productId);
     const currentWeek = getISOYearWeekString(new Date());
     const currentMonthDay = getISOMonthDayTimeString(new Date());
     const currentDate = getISOFullDateTimeString(new Date());
+    let currentPurchasePeriod = currentDate;
+    if (gameProduct.limit.type === ProductLimitType.Weekly) {
+        currentPurchasePeriod = currentWeek;
+    } else if (gameProduct.limit.type === ProductLimitType.Monthly) {
+        currentPurchasePeriod = currentMonthDay;
+    }
+    const gamePurchase = await getUserProductPurchase(userId, gameId, [ currentPurchasePeriod ], productId);
     let soldAmount = 0;
-    for (let purchase of gamePurchase) {
-        // 根据产品限量周期和购买周期计算已售出数量
-        if (gameProduct.limit.type === ProductLimitType.Daily && purchase.period === currentDate ||
-            gameProduct.limit.type === ProductLimitType.Weekly && purchase.period === currentWeek ||
-            gameProduct.limit.type === ProductLimitType.Monthly && purchase.period === currentMonthDay) {
-            soldAmount = purchase.count;
-            break;
-        }
+    if (gamePurchase.length > 0) {
+        soldAmount = gamePurchase[0].count;
     }
     if (gameProduct.limit.amount <= soldAmount) {
         return null;
@@ -116,14 +127,8 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
     let tokenAmount = (gameProduct.price_in_usdc/token.price_in_usdc)*(1 - token.product_discount);
     const now = Date.now();
     // 3. 构建PurchaseRequest
-    let currentPurchasePeriod = currentDate;
-    if (gameProduct.limit.type === ProductLimitType.Weekly) {
-        currentPurchasePeriod = currentWeek;
-    } else if (gameProduct.limit.type === ProductLimitType.Monthly) {
-        currentPurchasePeriod = currentMonthDay;
-    }
     let request: PurchaseRequest = {
-        request_id: ethers.id(`productPermit:${gameId}:${productId}:${userId}:${now}`),
+        request_id: ethers.id(`productPermit:${gameId}:${productId}:${userId}:${currentPurchasePeriod}:${soldAmount+1}`),
         user_id: userId,
         game_id: gameId,
         token_id: tokenId,

@@ -1,6 +1,7 @@
-import {Document, Schema, models, model} from 'mongoose';
+import { Document, model, models, PipelineStage, Schema } from 'mongoose';
+
 import { ProductLimitType } from '@/lib/models/GameProduct';
-import connectToMongoDbDev from "@/lib/mongodb/client";
+import connectToMongoDbDev from '@/lib/mongodb/client';
 
 export type ProductTypeItem = {
     // 产品包id
@@ -51,3 +52,30 @@ GameProductClassificationSchema.index({ game_id: 1, order: 1 }, { unique: true }
 const connection = connectToMongoDbDev();
 const GameProductClassification = models.GameProductClassification || connection.model<IGameProductClassification>('GameProductClassification', GameProductClassificationSchema, 'game_product_classifications');
 export default GameProductClassification;
+
+export async function getProductClasses(gameId: string) {
+    const aggregateQuery: PipelineStage[] = [
+      {
+        $match: {
+          game_id: gameId, active: true
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          active: 0,
+          game_id: 0,
+          id: 0,
+          "product_types._id": 0
+        },
+      },
+      {
+        $sort: {
+          order: 1,
+        },
+      }
+    ];
+    const results = await GameProductClassification.aggregate(aggregateQuery);
+    return results;
+}
