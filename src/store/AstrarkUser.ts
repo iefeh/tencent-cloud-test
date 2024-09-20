@@ -30,6 +30,8 @@ class UserStore {
     makeAutoObservable(this);
   }
 
+  getLocalToken = () => localStorage.getItem(KEY_AUTHORIZATION_AA) || '';
+
   setToken = (val?: string) => {
     this.token = val || '';
     if (val) {
@@ -40,7 +42,7 @@ class UserStore {
   };
 
   init = () => {
-    this.token = localStorage.getItem(KEY_AUTHORIZATION_AA) || '';
+    this.token = this.getLocalToken();
     this.inited = true;
     return this.token;
   };

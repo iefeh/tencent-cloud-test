@@ -11,8 +11,15 @@ export const enum ShopItemType {
   RESOURCES_DIAMOND = 'resources_diamond',
 }
 
-export const enum ProductLimitType {
-  Daily = "daily",
-  Weekly = "weekly",
-  Monthly = "monthly",
+export const enum ShopCateName {
+  BENEFITS = 'Benefits',
+  STORE = 'Store',
+  RESOURCES = 'Resources',
+}
+
+export const enum ProductTypeName {
+  BENEFITS_DAILY = 'Daily Gift pack',
+  BENEFITS_WEEKLY = 'Weekly Gift pack',
+  BENEFITS_MONTHLY = 'Monthly Card',
+  RESOURCES_DIAMOND = 'Diamond Top-up',
 }

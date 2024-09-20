@@ -1,4 +1,4 @@
-import { ProductLimitType, ShopItemType } from '@/constant/astrark';
+import { ProductTypeName, ShopCateName, ShopItemType } from '@/constant/astrark';
 import { queryShopInfoAPI } from '@/http/services/astrark';
 import { useAAUserContext } from '@/store/AstrarkUser';
 import { AstrArk } from '@/types/astrark';
@@ -24,43 +24,69 @@ export default function useShopInfo() {
     return {
       label: item.name,
       key: item.name,
-      children: (item.product_types || []).map((child) => productTypeToCateTab(child)),
+      children: (item.product_types || []).map((child) => productTypeToCateTab(item, child)),
     };
   }
 
-  function productTypeToCateTab(item: AstrArk.ProductType): AstrArk.CateTab {
+  function productTypeToCateTab(cate: AstrArk.ShopCate, item: AstrArk.ProductType): AstrArk.CateTab {
     const data: AstrArk.CateTab = {
       label: item.name,
       key: item.name,
       endTime: item.refresh_time,
-      items: (item.products || []).map((product) => getProduct(item, product)),
+      items: (item.products || []).map((product) => getProduct(cate, item, product)),
     };
 
-    switch (item.limit_type) {
-      case ProductLimitType.Daily:
-        data.type = ShopCateType.BENEFITS_DAILY;
+    switch (cate.name) {
+      case ShopCateName.BENEFITS:
+        switch (item.name) {
+          case ProductTypeName.BENEFITS_DAILY:
+            data.type = ShopCateType.BENEFITS_DAILY;
+            break;
+          case ProductTypeName.BENEFITS_WEEKLY:
+            data.type = ShopCateType.BENEFITS_WEEKLY;
+            break;
+          case ProductTypeName.BENEFITS_MONTHLY:
+            data.type = ShopCateType.BENEFITS_MONTHLY;
+            break;
+        }
         break;
-      case ProductLimitType.Weekly:
-        data.type = ShopCateType.BENEFITS_WEEKLY;
+      case ShopCateName.STORE:
         break;
-      case ProductLimitType.Monthly:
-        data.type = ShopCateType.BENEFITS_MONTHLY;
+      case ShopCateName.RESOURCES:
+        switch (item.name) {
+          case ProductTypeName.RESOURCES_DIAMOND:
+            data.type = ShopCateType.RESOURCES_DIAMOND;
+            break;
+        }
         break;
     }
 
     return data;
   }
 
-  function getProduct(type: AstrArk.ProductType, item: AstrArk.Product): AstrArk.Product {
-    switch (type.limit_type) {
-      case ProductLimitType.Daily:
-        item.type = ShopItemType.BENEFITS_DAILY;
+  function getProduct(cate: AstrArk.ShopCate, type: AstrArk.ProductType, item: AstrArk.Product): AstrArk.Product {
+    switch (cate.name) {
+      case ShopCateName.BENEFITS:
+        switch (type.name) {
+          case ProductTypeName.BENEFITS_DAILY:
+            item.type = ShopItemType.BENEFITS_DAILY;
+            break;
+          case ProductTypeName.BENEFITS_WEEKLY:
+            item.type = ShopItemType.BENEFITS_WEEKLY;
+            break;
+          case ProductTypeName.BENEFITS_MONTHLY:
+            item.type = ShopItemType.BENEFITS_MONTHLY;
+            break;
+        }
         break;
-      case ProductLimitType.Weekly:
-        item.type = ShopItemType.BENEFITS_WEEKLY;
+      case ShopCateName.STORE:
         break;
-      case ProductLimitType.Monthly:
-        item.type = ShopItemType.BENEFITS_MONTHLY;
+      case ShopCateName.RESOURCES:
+        switch (type.name) {
+          case ProductTypeName.RESOURCES_DIAMOND:
+            item.type = ShopItemType.RESOURCES_DIAMOND;
+            break;
+        }
         break;
     }
 
