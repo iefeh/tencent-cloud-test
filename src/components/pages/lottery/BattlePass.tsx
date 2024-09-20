@@ -61,8 +61,6 @@ const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, floa
             </div>
           );
 
-          if (item.actived) return passBody;
-
           return (
             <Popover key={index} placement="top">
               <PopoverTrigger>{passBody}</PopoverTrigger>
