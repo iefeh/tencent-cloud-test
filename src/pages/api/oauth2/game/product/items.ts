@@ -43,7 +43,8 @@ router.use(dynamicCors).get(async (req, res) => {
     const currentWeek = getISOYearWeekString(new Date());
     const currentMonthDay = getISOMonthDayTimeString(new Date());
     const currentDate = getISOFullDateTimeString(new Date());
-    const gamePurchase = await getUserProductPurchase(userId, gameId as string, [ currentDate, currentWeek, currentMonthDay ]);
+    const currentYear = String((new Date()).getFullYear());
+    const gamePurchase = await getUserProductPurchase(userId, gameId as string, [ currentDate, currentWeek, currentMonthDay, currentYear ]);
     gamePurchase.forEach(purchase => {
       const product = productMap.get(purchase.product_id);
       // 根据产品限量周期和购买周期计算已售出数量

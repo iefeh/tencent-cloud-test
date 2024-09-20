@@ -105,11 +105,14 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
     const currentWeek = getISOYearWeekString(new Date());
     const currentMonthDay = getISOMonthDayTimeString(new Date());
     const currentDate = getISOFullDateTimeString(new Date());
+    const currentYear = String((new Date()).getFullYear());
     let currentPurchasePeriod = currentDate;
     if (gameProduct.limit.type === ProductLimitType.Weekly) {
         currentPurchasePeriod = currentWeek;
     } else if (gameProduct.limit.type === ProductLimitType.Monthly) {
         currentPurchasePeriod = currentMonthDay;
+    } else if (gameProduct.limit.type === ProductLimitType.Yearly) {
+        currentPurchasePeriod = currentYear;
     }
     const gamePurchase = await getUserProductPurchase(userId, gameId, [ currentPurchasePeriod ], productId);
     let soldAmount = 0;

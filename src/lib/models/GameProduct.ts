@@ -6,6 +6,7 @@ export enum ProductLimitType {
     Daily = "daily",
     Weekly = "weekly",
     Monthly = "monthly",
+    Yearly = "yearly",
 }
 
 export interface IGameProduct extends Document {
