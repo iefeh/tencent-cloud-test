@@ -1,4 +1,4 @@
-import { Tooltip, cn } from '@nextui-org/react';
+import { Popover, PopoverContent, PopoverTrigger, Tooltip, cn } from '@nextui-org/react';
 import { FC, useRef } from 'react';
 import nftPassImg from 'img/loyalty/season/pass_nft.png';
 import badgePassImg from 'img/loyalty/season/pass_badge.png';
@@ -64,17 +64,16 @@ const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, floa
           if (item.actived) return passBody;
 
           return (
-            <Tooltip
-              key={index}
-              content={
+            <Popover key={index} placement="top">
+              <PopoverTrigger>{passBody}</PopoverTrigger>
+
+              <PopoverContent>
                 <div>
                   <div className="text-lg">You need to meet the following condition:</div>
                   <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
                 </div>
-              }
-            >
-              {passBody}
-            </Tooltip>
+              </PopoverContent>
+            </Popover>
           );
         })}
       </div>
