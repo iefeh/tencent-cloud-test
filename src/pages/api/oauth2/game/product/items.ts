@@ -68,7 +68,7 @@ router.use(dynamicCors).get(async (req, res) => {
         gameProduct.sold_out = false;
       }
       // 设置产品的最大折扣
-      gameProduct.maxDiscount = maxDiscount;
+      gameProduct.max_discount = maxDiscount;
       // 删除多余字段, 前端不需要展示
       delete gameProduct.limit.type;
       const targetArr = productTypeMap.get(gameProduct.product_type_id);
