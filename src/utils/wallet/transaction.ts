@@ -93,7 +93,8 @@ class TransactionProvider {
       return true;
     } catch (e: any) {
       let error = e?.error || e;
-      if (error?.code === -32603 || error?.code === 4902 || error?.code === 5000) {
+      const code = Math.abs(error?.code || 0);
+      if (code === 32603 || code === 4902 || code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await this.addNetwork(targetChainId);
         if (!res) return false;
