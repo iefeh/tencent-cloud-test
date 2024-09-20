@@ -127,7 +127,7 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
     if (!token) {
         return null;
     }
-    let tokenAmount = (gameProduct.price_in_usdc/token.price_in_usdc)*(1 - token.product_discount);
+    let tokenAmount = calculateTokenPaymentWithDiscount(gameProduct.price_in_usdc, token.price_in_usdc, token.product_discount, token.decimal);
     const now = Date.now();
     // 3. 构建PurchaseRequest
     let request: PurchaseRequest = {
@@ -143,7 +143,7 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
         request_expire_time: now + 10 * 60 * 1000,
         payment_chain_id: token.chain_id,
         payment_token_address: token.address,
-        payment_token_amount: String(tokenAmount*Math.pow(10, token.decimal)),
+        payment_token_amount: tokenAmount,
         payment_token_price_in_usd: token.price_in_usdc,
     };
     return request;
@@ -179,6 +179,19 @@ type PurchaseRequest = {
     payment_token_amount: string;
     // 代币价格
     payment_token_price_in_usd: number;
+}
+
+function calculateTokenPaymentWithDiscount(productPriceInUSD: number, tokenPriceInUSD: number, discount: number, decimals: number = 18): string {
+    // 应用折扣
+    const discountedPrice = productPriceInUSD * (1 - discount);
+
+    // 将折扣后的价格转换为高精度 BigInt（以 USD 的小数位扩大）
+    const priceInWei = BigInt(discountedPrice * Math.pow(10, decimals));  // 乘以 10^18, 转换为 wei
+    const tokenPriceInWei = BigInt(tokenPriceInUSD * Math.pow(10, decimals)); // 代币价格也乘以 10^18，保持相同的精度级别
+
+    // 计算需要支付的 token 数量（这里将 priceInWei * 10^decimals 来放大倍数，确保精度）
+    const tokenAmountInWei = (priceInWei * BigInt(Math.pow(10, decimals))) / tokenPriceInWei;
+    return tokenAmountInWei.toString();
 }
 
 async function generatePurchasePermit(request: PurchaseRequest, gamePaymentContract: IContract) {
