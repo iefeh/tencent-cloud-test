@@ -7,7 +7,7 @@ import { FC } from 'react';
 import dayjs from 'dayjs';
 import Duration from 'dayjs/plugin/duration';
 import Link from '@/components/link';
-import { Button, Tooltip } from '@nextui-org/react';
+import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@nextui-org/react';
 
 dayjs.extend(Duration);
 
@@ -161,21 +161,23 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             <LGButton className="w-[8.75rem]" label="Play" disabled={!canPlay} />
           </Link>
         ) : (
-          <Tooltip
-            content={
+          <Popover placement="top">
+            <PopoverTrigger>
+              <Button
+                className="w-[8.75rem] text-[#999] border-2 border-solid border-[#999] bg-transparent rounded-3xl h-auto px-6 py-1"
+                disabled
+              >
+                Play
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent>
               <div>
                 <div className="text-lg">You need to meet the following condition:</div>
                 <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
               </div>
-            }
-          >
-            <Button
-              className="w-[8.75rem] text-[#999] border-2 border-solid border-[#999] bg-transparent rounded-3xl h-auto px-6 py-1"
-              disabled
-            >
-              Play
-            </Button>
-          </Tooltip>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
     </div>
