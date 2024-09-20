@@ -85,7 +85,7 @@ const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.BENEFITS_DAILY]: BenefitsDailyItemCollection,
   [ShopCateType.BENEFITS_WEEKLY]: BenefitsWeeklyItemCollection,
   [ShopCateType.BENEFITS_MONTHLY]: BenefitsMonthlyItemCollection,
-  [ShopCateType.RESOURCES_DIAMOND_TOP_UP]: ResourcesDiamondItemCollection,
+  [ShopCateType.RESOURCES_DIAMOND]: ResourcesDiamondItemCollection,
 };
 
 const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrArk.Product) => void }> = ({ item, handleItemClick }) => {

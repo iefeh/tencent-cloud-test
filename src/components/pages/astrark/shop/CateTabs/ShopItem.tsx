@@ -85,7 +85,7 @@ const ResourcesDiamondItem: ShopItemCom = ({ item, onClick }) => {
       className="relative h-[12.625rem] max-h-full aspect-[274/202] flex flex-col justify-between cursor-pointer bg-transparent rounded-none shadow-none"
       onPress={() => item && onClick?.(item)}
     >
-      {icon_url && <S3Image className="object-cover" src={icon_url} fill />}
+      {icon_url && <S3Image className="object-contain" src={icon_url} fill />}
 
       <div className="flex-1 z-0"></div>
 
