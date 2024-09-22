@@ -185,12 +185,13 @@ function calculateTokenPaymentWithDiscount(productPriceInUSD: number, tokenPrice
     // 应用折扣
     const discountedPrice = productPriceInUSD * (1 - discount);
 
+    const pow = 10 ** decimals;
     // 将折扣后的价格转换为高精度 BigInt（以 USD 的小数位扩大）
-    const priceInWei = BigInt(discountedPrice * Math.pow(10, decimals));  // 乘以 10^18, 转换为 wei
-    const tokenPriceInWei = BigInt(tokenPriceInUSD * Math.pow(10, decimals)); // 代币价格也乘以 10^18，保持相同的精度级别
+    const priceInWei = BigInt(discountedPrice * pow);  // 乘以 10^18, 转换为 wei
+    const tokenPriceInWei = BigInt(tokenPriceInUSD * pow); // 代币价格也乘以 10^18，保持相同的精度级别
 
     // 计算需要支付的 token 数量（这里将 priceInWei * 10^decimals 来放大倍数，确保精度）
-    const tokenAmountInWei = (priceInWei * BigInt(Math.pow(10, decimals))) / tokenPriceInWei;
+    const tokenAmountInWei = (priceInWei * BigInt(pow)) / tokenPriceInWei;
     return tokenAmountInWei.toString();
 }
 

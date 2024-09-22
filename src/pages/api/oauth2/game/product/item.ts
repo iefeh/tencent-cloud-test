@@ -27,6 +27,7 @@ router.use(dynamicCors).get(async (req, res) => {
       return res.json(response.invalidParams({ message: "Invalid item id." }));
     }
     const tokens = await getGameTokens();
+    const pow = 10 ** 6; //显示保留6位小数
     gameProduct.price_in_tokens = [];
     gameProduct.price_updated_at = tokens[0].price_updated_at;
     for (let token of tokens) {
@@ -42,8 +43,8 @@ router.use(dynamicCors).get(async (req, res) => {
           icon_url: token.block_chain.icon_url,
         },
         product_price_discount: token.product_discount,
-        product_token_price_with_discount: Math.ceil(price*(1-token.product_discount)*Math.pow(10, 6))/Math.pow(10, 6),
-        product_usdc_price_with_discount: Math.ceil(gameProduct.price_in_usdc*(1-token.product_discount)*Math.pow(10, 6))/Math.pow(10, 6),
+        product_token_price_with_discount: Math.ceil(price*(1-token.product_discount)*pow)/pow,
+        product_usdc_price_with_discount: Math.ceil(gameProduct.price_in_usdc*(1-token.product_discount)*pow)/pow,
       });
     }
     res.json(response.success(gameProduct));
