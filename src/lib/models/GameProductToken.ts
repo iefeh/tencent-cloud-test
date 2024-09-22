@@ -1,5 +1,6 @@
-import {Document, Schema, models, model} from 'mongoose'
-import connectToMongoDbDev from "@/lib/mongodb/client";
+import { Document, model, models, PipelineStage, Schema } from 'mongoose';
+
+import connectToMongoDbDev from '@/lib/mongodb/client';
 
 export interface IGameProductToken extends Document {
     // 代币id
@@ -43,3 +44,62 @@ GameProductTokenSchema.index({ id: 1 }, { unique: true });
 const connection = connectToMongoDbDev();
 const GameProductToken = models.GameProductToken || connection.model<IGameProductToken>('GameProductToken', GameProductTokenSchema, 'game_product_tokens');
 export default GameProductToken;
+
+export async function getGameTokens(): Promise<any[]> {
+    const aggregateQuery: PipelineStage[] = [
+      {
+        $lookup: {
+          from: "block_chains",
+          localField: "chain_id",
+          foreignField: "chain_id",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                "name": 1,
+                "icon_url": 1,
+              }
+            }
+          ],
+          as: "block_chain",
+        }
+      },
+      {
+        $unwind: "$block_chain",
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+        },
+      }
+    ];
+    const results = await GameProductToken.aggregate(aggregateQuery);
+    return results;
+} 
+
+
+export async function getGameMaxDiscount() {
+    const aggregateQuery: PipelineStage[] = [
+        {
+            $project: {
+            _id: 0,
+            __v: 0,
+            },
+        },
+        {
+            $group: {
+                _id: "",
+                max_discount: {$max: "$product_discount"}
+            }
+        },
+        {
+            $project: { _id: 0, max_discount: 1 }
+        }
+    ];
+    const results = await GameProductToken.aggregate(aggregateQuery);
+    if (!results || results.length === 0) {
+      return null;
+    }
+    return results[0].max_discount;
+}

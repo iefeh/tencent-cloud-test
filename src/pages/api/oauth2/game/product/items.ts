@@ -1,5 +1,4 @@
 import type {NextApiResponse} from "next";
-import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
 import {
@@ -7,9 +6,10 @@ import {
     getISOMonthDayTimeString, getISOYearWeekString
 } from '@/lib/common/timeUtils';
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
-import GameProduct, { ProductLimitType } from '@/lib/models/GameProduct';
-import GameProductClassification from '@/lib/models/GameProductClassification';
+import { getGameProducts, ProductLimitType } from '@/lib/models/GameProduct';
+import { getProductClasses } from '@/lib/models/GameProductClassification';
 import { getUserProductPurchase } from '@/lib/models/GameProductPurchaseRequest';
+import { getGameMaxDiscount } from '@/lib/models/GameProductToken';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import { responseOnOauthError } from '@/lib/oauth2/response';
 import OAuth2Server from '@/lib/oauth2/server';
@@ -39,23 +39,25 @@ router.use(dynamicCors).get(async (req, res) => {
     let productMap = new Map<string, any>();
     gameProducts.forEach(gameProduct => {
       productMap.set(gameProduct.id, gameProduct);
-    })
-    const gamePurchase = await getUserProductPurchase(userId, gameId as string);
+    });
     const currentWeek = getISOYearWeekString(new Date());
     const currentMonthDay = getISOMonthDayTimeString(new Date());
     const currentDate = getISOFullDateTimeString(new Date());
+    const currentYear = String((new Date()).getFullYear());
+    const gamePurchase = await getUserProductPurchase(userId, gameId as string, [ currentDate, currentWeek, currentMonthDay, currentYear ]);
     gamePurchase.forEach(purchase => {
       const product = productMap.get(purchase.product_id);
       // 根据产品限量周期和购买周期计算已售出数量
       if (product) {
-        if (product.limit.type === ProductLimitType.Daily && purchase.period === currentDate ||
-          product.limit.type === ProductLimitType.Weekly && purchase.period === currentWeek ||
-          product.limit.type === ProductLimitType.Monthly && purchase.period === currentMonthDay
-        ) {
-          product.limit.sold_amount = purchase.count;
-        }
+        product.limit.sold_amount = purchase.count;
       }
     });
+    // 查询所有token最高折扣
+    let maxDiscount = 0;
+    let discount = await getGameMaxDiscount();
+    if (discount != null) {
+      maxDiscount = discount;
+    }
     gameProducts.forEach(gameProduct => {
       // 判断当前周期内产品是否已经售空
       if (gameProduct.limit.sold_amount === undefined) {
@@ -66,6 +68,8 @@ router.use(dynamicCors).get(async (req, res) => {
       } else {
         gameProduct.sold_out = false;
       }
+      // 设置产品的最大折扣
+      gameProduct.max_discount = maxDiscount;
       // 删除多余字段, 前端不需要展示
       delete gameProduct.limit.type;
       const targetArr = productTypeMap.get(gameProduct.product_type_id);
@@ -74,6 +78,7 @@ router.use(dynamicCors).get(async (req, res) => {
         targetArr.push(gameProduct);
       }
     });
+    
     const now = new Date();
     productClasses.forEach(productClass => {
       for (let productType of productClass.product_types) {
@@ -93,53 +98,6 @@ router.use(dynamicCors).get(async (req, res) => {
     return responseOnOauthError(res, error);
   }
 });
-
-async function getProductClasses(gameId: string) {
-  const aggregateQuery: PipelineStage[] = [
-    {
-      $match: {
-        game_id: gameId, active: true
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        __v: 0,
-        active: 0,
-        game_id: 0,
-        id: 0,
-        "product_types._id": 0
-      },
-    },
-    {
-      $sort: {
-        order: 1,
-      },
-    }
-  ];
-  const results = await GameProductClassification.aggregate(aggregateQuery);
-  return results;
-}
-
-async function getGameProducts(gameId: string) {
-  const aggregateQuery: PipelineStage[] = [
-    {
-      $match: {
-        game_id: gameId, active: true
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        __v: 0,
-        active: 0,
-        game_id: 0,
-      },
-    }
-  ];
-  const results = await GameProduct.aggregate(aggregateQuery);
-  return results;
-}
 
 // this will run if none of the above matches
 router.all((req, res) => {

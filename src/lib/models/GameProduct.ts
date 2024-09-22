@@ -1,10 +1,12 @@
-import {Document, Schema, models, model} from 'mongoose'
-import connectToMongoDbDev from "@/lib/mongodb/client";
+import { Document, model, models, PipelineStage, Schema } from 'mongoose';
+
+import connectToMongoDbDev from '@/lib/mongodb/client';
 
 export enum ProductLimitType {
     Daily = "daily",
     Weekly = "weekly",
     Monthly = "monthly",
+    Yearly = "yearly",
 }
 
 export interface IGameProduct extends Document {
@@ -55,3 +57,49 @@ GameProductSchema.index({ id: 1 }, { unique: true });
 const connection = connectToMongoDbDev();
 const GameProduct = models.GameProduct || connection.model<IGameProduct>('GameProduct', GameProductSchema, 'game_products');
 export default GameProduct;
+
+export async function getGameProduct(gameId: string, itemId: string): Promise<any> {
+    const aggregateQuery: PipelineStage[] = [
+      {
+        $match: {
+          id: itemId,
+          game_id: gameId, 
+          active: true
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          active: 0,
+          game_id: 0,
+        },
+      }
+    ];
+    const results = await GameProduct.aggregate(aggregateQuery);
+    if (!results || results.length === 0) {
+      return null;
+    }
+    // 产品详情只返回一个产品的信息
+    return results[0];
+} 
+
+export async function getGameProducts(gameId: string) {
+    const aggregateQuery: PipelineStage[] = [
+      {
+        $match: {
+          game_id: gameId, active: true
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+          active: 0,
+          game_id: 0,
+        },
+      }
+    ];
+    const results = await GameProduct.aggregate(aggregateQuery);
+    return results;
+}
