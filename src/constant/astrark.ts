@@ -23,3 +23,5 @@ export const enum ProductTypeName {
   BENEFITS_MONTHLY = 'Monthly Card',
   RESOURCES_DIAMOND = 'Diamond Top-up',
 }
+
+export const MAX_LIMIT_AMOUNT = 5000;

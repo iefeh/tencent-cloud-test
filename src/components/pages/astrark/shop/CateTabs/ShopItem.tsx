@@ -1,5 +1,5 @@
 import S3Image from '@/components/common/medias/S3Image';
-import { ShopItemType } from '@/constant/astrark';
+import { MAX_LIMIT_AMOUNT, ShopItemType } from '@/constant/astrark';
 import type { AstrArk } from '@/types/astrark';
 import { Button } from '@nextui-org/react';
 import { FC } from 'react';
@@ -30,7 +30,7 @@ const BenefitsDailyItem: ShopItemCom = ({ item, onClick }) => {
       <div className="flex-1 z-0"></div>
 
       <div className="h-[1.125rem] flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{amount}
+        Purchase Limit {sold_amount}/{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
       <div className="h-[2.75rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
@@ -73,7 +73,7 @@ const BenefitsWeeklyItem: ShopItemCom = ({ item, onClick }) => {
       <div className="flex-1 z-0"></div>
 
       <div className="h-3 flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{amount}
+        Purchase Limit {sold_amount}{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
       <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
@@ -106,7 +106,7 @@ const ResourcesDiamondItem: ShopItemCom = ({ item, onClick }) => {
       <div className="flex-1 z-0"></div>
 
       <div className="h-3 flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{amount}
+        Purchase Limit {sold_amount}/{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
       <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
