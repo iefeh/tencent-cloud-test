@@ -49,13 +49,14 @@ const WalletModal: FC<ModalProps> = (props) => {
   useEffect(() => {
     if (isAvailable) {
       isOrigin
-        ? setBtnStsList([undefined, undefined])
+        ? setBtnStsList(['disabled', undefined])
         : setBtnStsList([undefined, "wait"])
     } else {
       setBtnStsList(["disabled", "wait"])
     }
-  }, [isAvailable])
+  }, [isAvailable, balance])
 
+  // 关闭清空状态为禁用
   useEffect(() => {
     if (!isOpen) {
       setBtnStsList(["disabled", "wait"])
@@ -147,7 +148,7 @@ const WalletModal: FC<ModalProps> = (props) => {
               </div>
 
               <div className="flex">
-                {isOrigin && (
+                {!isOrigin && (
                   <>
                     <PayButton
                       btnStatus={btnStsList[0]}
