@@ -26,21 +26,25 @@ export interface LotteryWhitelistRequirementPropertyDTO {
 export interface LotteryBadgeRequirementDTO {
   type: 'badge';
   properties: LotteryBadgeRequirementPropertyDTO[];
+  description?: string;
 }
 
 export interface LotteryNFTRequirementDTO {
   type: 'nft';
   properties: LotteryNFTRequirementPropertyDTO[];
+  description?: string;
 }
 
 export interface LotteryMBRequirementDTO {
   type: 'moon_beam';
   properties: LotteryMBRequirementPropertyDTO[];
+  description?: string;
 }
 
 export interface LotteryWhitelistRequirementDTO {
   type: 'whitelist';
   properties: LotteryWhitelistRequirementPropertyDTO[];
+  description?: string;
 }
 
 export type LotteryRequirementDTO = LotteryBadgeRequirementDTO | LotteryNFTRequirementDTO | LotteryMBRequirementDTO | LotteryWhitelistRequirementDTO;

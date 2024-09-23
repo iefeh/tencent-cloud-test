@@ -1,11 +1,12 @@
 import { KEY_LOCALE, Locale } from '@/constant/locale';
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
+import { MediaType } from '@/constant/task';
 import { confirmSignUpAPI, connectByEmailAPI, getUserInfoAPI, loginByEmailAPI, logoutAPI } from '@/http/services/login';
 import { MobxContext } from '@/pages/_app';
+import type { EventTracking } from '@/types/ta';
 import { throttle } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import { useContext } from 'react';
-import { toast } from 'react-toastify';
 
 class UserStore {
   inited = false;
@@ -18,6 +19,7 @@ class UserStore {
   isConnect = false;
   newUserModalVisible = false;
   redeemModalVisible = false;
+  newUserTrackingDto: EventTracking.LoginTrackDTO | undefined = undefined;
 
   constructor() {
     makeAutoObservable(this);
@@ -56,6 +58,8 @@ class UserStore {
     this.userInfo = userInfo;
   };
 
+  setNewUserTrackingDto = (val?: EventTracking.LoginTrackDTO) => (this.newUserTrackingDto = val);
+
   loginByEmail = async (data: LoginByEmailBodyDto) => {
     const api = this.isConnect ? connectByEmailAPI : loginByEmailAPI;
     const res = await api(data);
@@ -67,18 +71,18 @@ class UserStore {
 
       if (res.signup_cred) {
         localStorage.setItem(KEY_SIGN_UP_CRED, res.signup_cred);
-        this.toggleNewUserModal(true);
+        this.toggleNewUserModal(true, { is_new_user: true, login_type: MediaType.EMAIL, wallet_type: '' });
         // 主动中断过程，不修改原有流程
         throw new Error('Is New User');
       }
 
-      this.initLoginInfo();
+      this.initLoginInfo({ is_new_user: false, login_type: MediaType.EMAIL, wallet_type: '' });
     } else {
       await this.getUserInfo();
     }
   };
 
-  initLoginInfo = async () => {
+  initLoginInfo = async (trackingData?: EventTracking.LoginTrackDTO) => {
     const res = await confirmSignUpAPI();
     if (res) {
       localStorage.setItem(KEY_AUTHORIZATION, res.token || '');
@@ -97,7 +101,7 @@ class UserStore {
       return;
     }
 
-    await this.getUserInfo();
+    await this.getUserInfo(trackingData);
     this.toggleNewUserModal(false);
   };
 
@@ -108,8 +112,16 @@ class UserStore {
     localStorage.removeItem(KEY_PARTICLE_TOKEN);
   };
 
-  getUserInfo = throttle(async () => {
+  getUserInfo = throttle(async (trackingData?: EventTracking.LoginTrackDTO) => {
     const res = await getUserInfoAPI();
+
+    if (trackingData) {
+      if (window.ta) {
+        window.ta.login(res.user_id);
+        window.ta.track('login', trackingData);
+      }
+    }
+
     this.setUserInfo(res);
     this.toggleLoginModal(false);
 
@@ -145,11 +157,17 @@ class UserStore {
     }
   };
 
-  toggleNewUserModal = (visible?: boolean) => {
+  toggleNewUserModal = (visible?: boolean, trackingData?: EventTracking.LoginTrackDTO) => {
     if (typeof visible === 'boolean') {
       this.newUserModalVisible = visible;
     } else {
       this.newUserModalVisible = !this.inviteModalVisible;
+    }
+
+    if (this.newUserModalVisible && trackingData) {
+      this.setNewUserTrackingDto(trackingData);
+    } else {
+      this.setNewUserTrackingDto();
     }
   };
 

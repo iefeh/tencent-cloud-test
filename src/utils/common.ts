@@ -48,3 +48,11 @@ export function to2Digit(val?: number | string) {
 export function sleep(time: number = 300) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+export function isHexZero(value: string) {
+  // 检查是否为字符串 "0x0" 或 "0x00" 等
+  if (typeof value === 'string') {
+    return /^0x0+$/.test(value.toLowerCase());
+  }
+  return false;
+}

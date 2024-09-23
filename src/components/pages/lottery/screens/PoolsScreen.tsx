@@ -30,11 +30,11 @@ const PoolsScreen: FC = () => {
   }, [userInfo]);
 
   return (
-    <section className="max-w-[87.5rem] mx-auto relative z-0">
+    <section className="max-w-[87.5rem] mx-auto relative z-0 px-8 md:px-0">
       <div className="flex justify-between items-center text-basic-yellow">
         <div className="font-semakin text-2xl leading-none">More and $MORE Lottery Pools</div>
 
-        <Link href="/lottery/list" target="_self" className="text-base leading-none hover:underline">
+        <Link href="/lottery/list" target="_self" className="text-base leading-none whitespace-nowrap hover:underline">
           More &gt;&gt;
         </Link>
       </div>
@@ -43,7 +43,7 @@ const PoolsScreen: FC = () => {
 
       {userInfo ? (
         <div
-          className={cn(['relative grid grid-cols-3 gap-6 mt-10 min-h-[12.5rem]', pools.length < 1 && 'min-h-[36rem]'])}
+          className={cn(['relative grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 min-h-[12.5rem]', pools.length < 1 && 'min-h-[36rem]'])}
         >
           {loading ? (
             <CircularLoading />

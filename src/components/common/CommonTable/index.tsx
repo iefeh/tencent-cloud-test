@@ -48,6 +48,7 @@ const CommonTable = <T extends {}>(props: CommonTableProps<T>) => {
           // th: 'bg-transparent text-[#2E1A0F] text-lg leading-none outline-none pt-3 pb-4 px-6 h-auto',
           // tr: '!rounded-lg',
         }}
+        aria-label='Common Table'
         {...nextTableProps}
       >
         <TableHeader columns={columns}>

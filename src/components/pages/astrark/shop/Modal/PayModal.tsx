@@ -8,11 +8,10 @@ import styles from './index.module.scss'
 import type { AstrArk } from '@/types/astrark';
 import { ShopItemType } from "@/constant/astrark";
 import ProductCard from "./ProductCard";
-import useCountdown from '@/hooks/useCountdown';
-import dayjs from 'dayjs';
 import WalletModal from './WalletModal'
 import useQuestInfo from "./useQuestInfo";
 import PayButton from "../Buttons";
+import useBuyTicket from "./useBuyTicket"
 
 export interface PayModalProps {
   disclosure: Disclosure;
@@ -85,8 +84,8 @@ const PayModal: FC<PayModalProps> = (props) => {
   const { shopItemProps, disclosure } = props;
   const { isOpen, onClose } = disclosure || {};
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<string>(["0"]));
-  const [cdText, setCdText] = useState<string>('00:00');
   const walletDisclosure = useDisclosure();
+  const { beReadyForBuyTicket, reqToCheckIsConnected } = useBuyTicket()
 
   useEffect(() => {
     if (isOpen) {
@@ -95,27 +94,16 @@ const PayModal: FC<PayModalProps> = (props) => {
     }
   }, [isOpen])
 
-  const { questInfo, getQuestInfo } = useQuestInfo()
+  const { questInfo, getQuestInfo, cdText } = useQuestInfo({ open: isOpen })
 
-  const timeRemaining = useMemo(() => {
-    const startTime = questInfo?.price_updated_at
-    if (!startTime) return 0
-    const now = Date.now().valueOf()
+  const toBuy = async () => {
+    const info = getCurSelectedKey()
+    const chain_id = info?.network.chain_id
+    if (!chain_id) return;
 
-    if (now - startTime > 10 * 60 * 1000) {
-      return 0
-    } else {
-      return now - startTime
-    }
-  }, [questInfo])
+    await beReadyForBuyTicket(chain_id)
 
-  useCountdown(timeRemaining, 0, (leftTime) => {
-    const du = dayjs.duration(leftTime);
-    setCdText(du.format('mm:ss'));
-  });
-
-  const toBuy = () => {
-    walletDisclosure.onOpen()
+    reqToCheckIsConnected(() => walletDisclosure.onOpen())
   }
 
   const getCurSelectedKey = (): AstrArk.PriceToken | undefined => {
@@ -138,9 +126,9 @@ const PayModal: FC<PayModalProps> = (props) => {
     const [minutes, seconds] = cdText.split(':').map(Number);
     const totalSeconds = (minutes * 60) + seconds;
 
-    if (totalSeconds <= 0) {
-      return true;
-    }
+    if (totalSeconds <= 0) return true;
+
+    if (!getCurSelectedKey()) return true;
 
     return false;
   }
@@ -199,6 +187,7 @@ const PayModal: FC<PayModalProps> = (props) => {
       <Modal
         {...disclosure}
         hideCloseButton
+        isDismissable={false}
         isOpen={isOpen}
         onClose={onClose}
         style={{
@@ -225,7 +214,7 @@ const PayModal: FC<PayModalProps> = (props) => {
                   <div className="mt-4 flex justify-center">
                     <PayButton
                       className="mr-4"
-                      // btnStatus={calcDisabled() ? "disabled" : undefined}
+                      btnStatus={calcDisabled() ? "disabled" : undefined}
                       onClick={toBuy}
                     >
                       Buy now
@@ -242,7 +231,7 @@ const PayModal: FC<PayModalProps> = (props) => {
         </ModalContent>
       </Modal >
 
-      <WalletModal outModalClose={onClose} disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
+      <WalletModal disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
     </>
   );
 }

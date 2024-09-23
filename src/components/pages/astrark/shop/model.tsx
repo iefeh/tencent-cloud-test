@@ -4,7 +4,7 @@ export const enum ShopCateType {
   BENEFITS_DAILY = 'benefits_daily',
   BENEFITS_WEEKLY = 'benefits_weekly',
   BENEFITS_MONTHLY = 'benefits_monthly',
-  RESOURCES_DIAMOND_TOP_UP = 'resources_diamond_top_up',
+  RESOURCES_DIAMOND = 'resources_diamond_top_up',
 }
 
 export interface CateTab {

@@ -48,7 +48,7 @@ function LGButton(props: Props) {
   const router = useRouter();
   const onLinkClick = () => {
     if (needAuth && !userInfo) {
-      toggleLoginModal(true);
+      toggleLoginModal(true, false);
       return;
     }
 

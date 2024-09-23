@@ -7,16 +7,26 @@ import { FC } from 'react';
 import dayjs from 'dayjs';
 import Duration from 'dayjs/plugin/duration';
 import Link from '@/components/link';
+import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@nextui-org/react';
 
 dayjs.extend(Duration);
 
 const DEFAULT_IMG = 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png';
 
 const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
-  const { icon_frame_level, icon_url } = item || {};
+  const {
+    icon_frame_level,
+    icon_url,
+    open_status,
+    user_meet_requirement = false,
+    requirement_description,
+  } = item || {};
   const border = LotteryBorders[(icon_frame_level || RewardQuality.COPPERY) as RewardQuality];
   const itemSize = '90%';
   const limitedTime = getLimitedTime();
+  const isInProgress = open_status === LotteryStatus.IN_PROGRESS;
+  const hasReachedRequirement = !!user_meet_requirement;
+  const canPlay = open_status === LotteryStatus.IN_PROGRESS && hasReachedRequirement;
 
   function getLimitedTime() {
     const du = dayjs.duration(Math.max((item?.end_time || 0) - Date.now(), 0));
@@ -146,13 +156,29 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
       <div className="flex justify-between items-center mt-16">
         <BattlePass item={item} />
 
-        <Link href={item && item.open_status === LotteryStatus.IN_PROGRESS ? `/lottery/${item?.lottery_pool_id}` : ''}>
-          <LGButton
-            className="w-[8.75rem]"
-            label="Play"
-            disabled={item?.open_status !== LotteryStatus.IN_PROGRESS || !item?.user_meet_requirement}
-          />
-        </Link>
+        {hasReachedRequirement ? (
+          <Link href={isInProgress ? `/lottery/${item?.lottery_pool_id}` : ''}>
+            <LGButton className="w-[8.75rem]" label="Play" disabled={!canPlay} />
+          </Link>
+        ) : (
+          <Popover placement="top">
+            <PopoverTrigger>
+              <Button
+                className="w-[8.75rem] text-[#999] border-2 border-solid border-[#999] bg-transparent rounded-3xl h-auto px-6 py-1"
+                disabled
+              >
+                Play
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent>
+              <div>
+                <div className="text-lg">You need to meet the following condition:</div>
+                <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </div>
   );

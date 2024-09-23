@@ -41,6 +41,7 @@ import MouseWheel from '@better-scroll/mouse-wheel';
 import useRouteLocale from '@/hooks/useRouteLocale';
 import { NextUIProvider } from '@nextui-org/react';
 import '@/styles/aa.scss';
+import useEventTracking from '@/hooks/useEventTracking';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -48,7 +49,7 @@ BetterScroll.use(Pullup);
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
+  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets', '/AstrArk/shop'];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
   const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop'];
@@ -86,6 +87,8 @@ export default function App({ Component, pageProps }: AppProps) {
       setScale((1 / ratio).toFixed(2));
     }
   }
+
+  useEventTracking();
 
   useEffect(() => {
     resetRem();
