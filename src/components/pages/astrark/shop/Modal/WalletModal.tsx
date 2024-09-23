@@ -8,6 +8,7 @@ import useBuyTicket from "./useBuyTicket"
 import { observer } from 'mobx-react-lite';
 import type { AstrArk } from '@/types/astrark';
 import Web3 from "web3";
+import { isHexZero } from "@/utils/common";
 
 interface ModalProps {
   disclosure: Disclosure;
@@ -16,14 +17,19 @@ interface ModalProps {
 
 const WalletModal: FC<ModalProps> = (props) => {
   const { disclosure, itemInfo } = props;
+  const contractAddress = itemInfo?.address || "";
   const { walletProvider } = useWeb3ModalProvider();
 
   const { isOpen, onClose } = disclosure || {};
   const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>([undefined, "wait"]);
-  const { beReadyForBuyTicket, onButtonClick } = useBuyTicket()
 
-  const { walletInfo } = useWalletInfo({
-    provider: walletProvider
+  const isOrigin = useMemo(() => isHexZero(contractAddress), [contractAddress])
+
+  const { onButtonClick } = useBuyTicket()
+  const { walletInfo, getInfo } = useWalletInfo({
+    provider: walletProvider,
+    contractAddress: contractAddress,
+    open: isOpen,
   });
 
   const balance = useMemo(() => {
@@ -48,13 +54,17 @@ const WalletModal: FC<ModalProps> = (props) => {
     }
   }, [isAvailable])
 
+  useEffect(() => {
+    if (!isOpen) {
+      setBtnStsList([undefined, "wait"])
+    }
+  }, [isOpen])
+
   const toApprove = async () => {
     if (!isAvailable) return;
-    const { network } = itemInfo || {};
-    const res = await beReadyForBuyTicket(network?.chain_id)
-    if (res) {
-      setBtnStsList(["disabled", undefined])
-    }
+    await getInfo()
+
+    setBtnStsList(["disabled", undefined])
   }
 
   const toPurchase = async () => {
@@ -113,13 +123,13 @@ const WalletModal: FC<ModalProps> = (props) => {
                   <span className="text-[#a6c5ed] ml-1">
                     {balance === null
                       ? '—'
-                      : balance + ' USDT'
+                      : `${balance} ${itemInfo?.symbol}`
                     }
                   </span>
                 </div>
                 <div>
-                  Current Price：
-                  <span className="text-[#f33f3f] ml-1">{itemInfo?.product_usdc_price_with_discount} USDT</span>
+                  Payment Amount：
+                  <span className="text-[#f33f3f] ml-1">{itemInfo?.product_token_price_with_discount} {itemInfo?.symbol}</span>
                 </div>
               </div>
 
@@ -144,7 +154,7 @@ const WalletModal: FC<ModalProps> = (props) => {
                     btnStsList[1] === undefined && "ml-[-0.5rem]"
                   ])}
                   btnStatus={btnStsList[1]}
-                  index={2}
+                  index={isOrigin ? 1 : 2}
                   onClick={toPurchase}
                 >
                   Purchase

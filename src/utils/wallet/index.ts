@@ -26,11 +26,10 @@ export async function getCurrentBalance(provider: Eip1193Provider) {
   return balance.toString();
 }
 
-export const getBalanceOf = async (provider: Eip1193Provider) => {
+export const getBalanceOf = async (provider: Eip1193Provider, contractAddress: string) => {
   try {
     const bp = new BrowserProvider(provider);
     const signer = await bp.getSigner();
-    const contractAddress = PoolProps[PoolType.USDT]?.contract || '';
     const contract = new Contract(contractAddress, erc20ABI, signer);
     const currentAccount = await getCurrentAccount(provider);
 

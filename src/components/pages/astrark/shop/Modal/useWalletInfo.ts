@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { getBalanceOf, getCurrentNetwork, getCurrentAccount } from "@/utils/wallet";
+import { getBalanceOf, getCurrentBalance, getCurrentNetwork, getCurrentAccount } from "@/utils/wallet";
 import { Eip1193Provider } from 'ethers';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { isHexZero } from "@/utils/common";
 
 interface WalletInfo {
   walletAddress: string | undefined;
@@ -11,10 +12,12 @@ interface WalletInfo {
 
 interface WalletInfoProps {
   provider: Eip1193Provider | undefined;
+  contractAddress?: string;
+  open?: boolean;
 }
 
 const useWalletInfo = (props: WalletInfoProps) => {
-  const { provider } = props;
+  const { provider, contractAddress, open } = props;
   const { isConnected } = useWeb3ModalAccount();
 
   const [walletInfo, setWalletInfo] = useState<WalletInfo>({
@@ -24,11 +27,15 @@ const useWalletInfo = (props: WalletInfoProps) => {
   });
 
   const getBalance = async () => {
-    if (!provider) return
+    if (!provider || !contractAddress) return
 
-    const balance = await getBalanceOf(provider)
-
-    console.log('balance-----', balance)
+    const useOrigin = isHexZero(contractAddress)
+    let balance: string = '0'
+    if (useOrigin) {
+      balance = await getCurrentBalance(provider)
+    } else {
+      balance = await getBalanceOf(provider, contractAddress)
+    }
     
     setWalletInfo(c => {
       return {
@@ -63,20 +70,26 @@ const useWalletInfo = (props: WalletInfoProps) => {
   }
 
   const getInfo =  async () => {
-    await getBalance()
     await getAddress()
+    await getBalance()
     await getNetwork()
   }
-
-  useEffect(() => {
-    getInfo()
-  }, [])
 
   useEffect(() => {
     if (isConnected) {
       getInfo()
     }
   }, [isConnected])
+
+  useEffect(() => {
+    if (!open) {
+      setWalletInfo({
+        walletAddress: undefined,
+        network: undefined,
+        balance: undefined,
+      })
+    }
+  }, [open])
 
   return { walletInfo, getInfo };
 }

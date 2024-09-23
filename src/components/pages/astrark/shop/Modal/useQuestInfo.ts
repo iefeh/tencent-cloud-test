@@ -72,6 +72,13 @@ const useQuestInfo = ({ open }: {
     }
   }, [open, cdText, questInfo])
 
+  useEffect(() => {
+    if (!open) {
+      setTimeRemaining(0)
+      setCdText('00:00')
+    }
+  }, [open])
+
   return {
     questInfo,
     getQuestInfo,
