@@ -11,6 +11,7 @@ import ProductCard from "./ProductCard";
 import WalletModal from './WalletModal'
 import useQuestInfo from "./useQuestInfo";
 import PayButton from "../Buttons";
+import useBuyTicket from "./useBuyTicket"
 
 export interface PayModalProps {
   disclosure: Disclosure;
@@ -84,6 +85,7 @@ const PayModal: FC<PayModalProps> = (props) => {
   const { isOpen, onClose } = disclosure || {};
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<string>(["0"]));
   const walletDisclosure = useDisclosure();
+  const { beReadyForBuyTicket, reqToCheckIsConnected } = useBuyTicket()
 
   useEffect(() => {
     if (isOpen) {
@@ -94,8 +96,14 @@ const PayModal: FC<PayModalProps> = (props) => {
 
   const { questInfo, getQuestInfo, cdText } = useQuestInfo({ open: isOpen })
 
-  const toBuy = () => {
-    walletDisclosure.onOpen()
+  const toBuy = async () => {
+    const info = getCurSelectedKey()
+    const chain_id = info?.network.chain_id
+    if (!chain_id) return;
+
+    await beReadyForBuyTicket(chain_id)
+
+    reqToCheckIsConnected(() => walletDisclosure.onOpen())
   }
 
   const getCurSelectedKey = (): AstrArk.PriceToken | undefined => {

@@ -38,9 +38,11 @@ declare namespace AstrArk {
     name: string;
     price_in_usdc: number;
     sold_out: boolean;
+    max_discount?: number;
   }
 
   interface PriceToken {
+    address: string;
     product_id?: string;
     token_id: string; 
     token_name: string; 

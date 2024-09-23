@@ -18,7 +18,7 @@ const BenefitsDailyItemCollection: ShopItemCollectionCom = ({ item, onClick }) =
   return (
     <div className="flex mt-9 mr-4 relative">
       <div ref={scrollRef} className="w-full relative overflow-hidden">
-        <div className="w-max flex">
+        <div className="w-max flex gap-6">
           {item?.items instanceof Array
             ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
             : item?.items}
@@ -34,9 +34,9 @@ const BenefitsWeeklyItemCollection: ShopItemCollectionCom = ({ item, onClick }) 
   const { scrollRef } = useBScroll({ scrollX: false, scrollY: true });
 
   return (
-    <div className="flex mt-9 ml-14 mr-12 h-full relative pb-16">
+    <div className="flex mt-9 ml-12 mr-10 h-full relative pb-16">
       <div ref={scrollRef} className="w-full h-full relative overflow-hidden">
-        <div className="w-full flex flex-wrap gap-x-1 gap-y-2">
+        <div className="w-full flex flex-wrap gap-x-2 gap-y-2">
           {item?.items instanceof Array
             ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
             : item?.items}
@@ -71,7 +71,7 @@ const ResourcesDiamondItemCollection: ShopItemCollectionCom = ({ item, onClick }
   return (
     <div className="flex mt-6 mx-[5.25rem] h-full relative pb-16">
       <div ref={scrollRef} className="w-full h-full relative overflow-hidden">
-        <div className="w-full flex flex-wrap gap-x-2 gap-y-1">
+        <div className="w-full flex flex-wrap gap-x-4 gap-y-4">
           {item?.items instanceof Array
             ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
             : item?.items}
@@ -88,11 +88,14 @@ const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.RESOURCES_DIAMOND]: ResourcesDiamondItemCollection,
 };
 
-const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrArk.Product) => void }> = ({ item, handleItemClick }) => {
+const ItemCollections: FC<ItemProps<CateTab> & { handleItemClick?: (item: AstrArk.Product) => void }> = ({
+  item,
+  handleItemClick,
+}) => {
   const CollectionCom = item?.type && ItemCollectionComs[item.type];
 
   function onItemClick(item: AstrArk.Product) {
-    if (item.sold_out) return
+    if (item.sold_out) return;
 
     handleItemClick && handleItemClick(item);
   }
