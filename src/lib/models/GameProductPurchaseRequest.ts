@@ -32,6 +32,8 @@ export interface IGameProductPurchaseRequest extends Document {
     payment_tx_hash: string;
     // 支付钱包地址
     payment_address: string;
+    // 交易上链时间
+    payment_tx_time: number;
     // 支付确认时间，经过一定区块数的确认.
     payment_confirm_time: number;
     // 支付通知已发送
@@ -53,6 +55,7 @@ const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>
     payment_token_price_in_usd: {type: Number},
     payment_tx_hash: {type: String},
     payment_address: {type: String},
+    payment_tx_time: {type: Number},
     payment_confirm_time: {type: Number},
     payment_notification_sent: {type: Boolean, required: true, default: false}
 });
@@ -66,15 +69,19 @@ const connection = connectToMongoDbDev();
 const GameProductPurchaseRequest = models.GameProductPurchaseRequest || connection.model<IGameProductPurchaseRequest>('GameProductPurchaseRequest', GameProductPurchaseRequestSchema, 'game_product_purchase_requests');
 export default GameProductPurchaseRequest;
 
-export async function getUserProductPurchase(userId: string, gameId: string, productId?: string) {
+export async function getUserProductPurchase(userId: string, gameId: string,  period?: string[], productId?: string) {
     let matchOpt: any = {
         $match: {
             game_id: gameId,
-            user_id: userId
+            user_id: userId,
+            payment_tx_hash: { $gt: "" },
         }
     };
     if (productId) {
-        matchOpt.$match.id = productId;
+        matchOpt.$match.product_id = productId;
+    }
+    if (period && period.length > 0) {
+        matchOpt.$match.request_period = { $in: period };
     }
     const aggregateQuery: PipelineStage[] = [
         matchOpt,
@@ -87,11 +94,11 @@ export async function getUserProductPurchase(userId: string, gameId: string, pro
         },
         {
             $group: {
-            _id: {
-                product_id: "$product_id",
-                request_period: "$request_period",
-            },
-            count: {$sum: 1}
+                _id: {
+                    product_id: "$product_id",
+                    request_period: "$request_period",
+                },
+                count: {$sum: 1}
             }
         },
         {
@@ -100,4 +107,4 @@ export async function getUserProductPurchase(userId: string, gameId: string, pro
     ];
     const results = await GameProductPurchaseRequest.aggregate(aggregateQuery);
     return results;
-  }
+}

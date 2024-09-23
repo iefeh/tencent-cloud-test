@@ -9,7 +9,7 @@ export function getWeekNumber(date: Date): number {
   if (tempDate.getDay() !== 4) {
       tempDate.setMonth(0, 1 + ((4 - tempDate.getDay()) + 7) % 7);
   }
-  return 1 + Math.ceil((firstThursday - tempDate.valueOf()) / 7 * 24 * 60 * 60 * 1000);
+  return 1 + Math.ceil((firstThursday - tempDate.valueOf()) / (7 * 24 * 60 * 60 * 1000));
 }
 
 export function getFirstDayOfNextWeek(date: Date): number {
