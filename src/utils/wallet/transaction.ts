@@ -134,7 +134,12 @@ class TransactionProvider {
       console.log('transaction method:', method);
       console.log('transaction params:', params);
       console.log('transaction options:', options);
-      const transaction = await contract[method](params, options);
+      let transaction: any;
+      if (params instanceof Array) {
+        transaction = await contract[method](...params, options);
+      } else {
+        transaction = await contract[method](params, options);
+      }
       const result = await transaction.wait();
       console.log('transaction result:', result);
       return result;

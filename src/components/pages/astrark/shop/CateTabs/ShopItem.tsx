@@ -38,13 +38,7 @@ const BenefitsDailyItem: ShopItemCom = ({ item, onClick }) => {
       </div>
 
       {max_discount && (
-        <div className="absolute top-1 left-4 z-0 leading-4">
-          Up to
-          <br />
-          {(max_discount * 100).toFixed(1) + '%'}
-          <br />
-          off
-        </div>
+        <div className="absolute top-[1.125rem] left-3 z-0 text-base leading-4">{(max_discount * 100).toFixed(1)}</div>
       )}
 
       {sold_out && (
@@ -73,7 +67,8 @@ const BenefitsWeeklyItem: ShopItemCom = ({ item, onClick }) => {
       <div className="flex-1 z-0"></div>
 
       <div className="h-3 flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
+        Purchase Limit {sold_amount}
+        {+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
       <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
@@ -104,10 +99,6 @@ const ResourcesDiamondItem: ShopItemCom = ({ item, onClick }) => {
       {icon_url && <S3Image className="object-contain" src={icon_url} fill />}
 
       <div className="flex-1 z-0"></div>
-
-      <div className="h-3 flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
-      </div>
 
       <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
         ${price_in_usdc || '-'}

@@ -9,6 +9,7 @@ import { observer } from 'mobx-react-lite';
 import type { AstrArk } from '@/types/astrark';
 import Web3 from "web3";
 import { isHexZero } from "@/utils/common";
+import { toast } from "react-toastify";
 
 interface ModalProps {
   disclosure: Disclosure;
@@ -20,12 +21,12 @@ const WalletModal: FC<ModalProps> = (props) => {
   const contractAddress = itemInfo?.address || "";
   const { walletProvider } = useWeb3ModalProvider();
 
-  const { isOpen, onClose } = disclosure || {};
+  const { isOpen, onOpenChange } = disclosure || {};
   const [btnStsList, setBtnStsList] = useState<ButtonStatusUnion[]>([undefined, "wait"]);
 
-  const isOrigin = useMemo(() => isHexZero(contractAddress), [contractAddress])
+  const isOrigin = isHexZero(contractAddress);
 
-  const { onButtonClick, errorMessage, loading, beReadyForBuyTicket } = useBuyTicket()
+  const { approveLoading, onApprove, onButtonClick, errorMessage, loading, beReadyForBuyTicket } = useBuyTicket();
   const { walletInfo } = useWalletInfo({
     provider: walletProvider,
     contractAddress: contractAddress,
@@ -38,13 +39,13 @@ const WalletModal: FC<ModalProps> = (props) => {
     return Number(Web3.utils.fromWei(walletInfo?.balance || '', 'ether')).toFixed(5)
   }, [walletInfo?.balance])
 
-  const isAvailable = useMemo(() => {
+  const isAvailable = (() => {
     if (itemInfo === undefined) return false;
     // 表示未获取到钱包余额，开放 approve 重新拉取钱包
     if (balance === null) return true;
 
     return Number(balance) >= itemInfo?.product_usdc_price_with_discount;
-  }, [walletInfo?.balance, itemInfo?.product_usdc_price_with_discount])
+  })();
 
   useEffect(() => {
     if (isAvailable) {
@@ -69,6 +70,9 @@ const WalletModal: FC<ModalProps> = (props) => {
     if (!chain_id) return
 
     await beReadyForBuyTicket(chain_id)
+    const approveRes = await onApprove(itemInfo!)
+    if (!approveRes) return;
+
     setBtnStsList(["disabled", undefined])
   }
 
@@ -76,10 +80,14 @@ const WalletModal: FC<ModalProps> = (props) => {
     const { token_id, product_id } = itemInfo || {};
     if (!token_id || !product_id) return
 
-    await onButtonClick({
+    const res = await onButtonClick({
       token_id,
       product_id,
     })
+    if (!res) return;
+
+    toast.success('Purchased successfully!');
+    disclosure.onClose();
   }
 
   const formatString = (str: string | undefined, startLength: number = 6, endLength: number = 4) => {
@@ -95,11 +103,10 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   return (
     <Modal
-      {...disclosure}
       isDismissable={false}
       hideCloseButton
       isOpen={isOpen}
-      onClose={onClose}
+      onOpenChange={onOpenChange}
       style={{
         overflow: "initial"
       }}
@@ -153,6 +160,7 @@ const WalletModal: FC<ModalProps> = (props) => {
                     <PayButton
                       btnStatus={btnStsList[0]}
                       index={1}
+                      isLoading={approveLoading}
                       onClick={toApprove}
                     >
                       Approve
