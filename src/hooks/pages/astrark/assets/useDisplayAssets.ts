@@ -29,6 +29,8 @@ export default function useDisplayAssets() {
 
   useEffect(() => {
     if (!token) return;
+    const queryToken = router.query.token as string;
+    if (!!queryToken && token !== queryToken) return;
     queryData();
   }, [token]);
 

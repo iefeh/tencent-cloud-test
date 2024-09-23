@@ -8,6 +8,7 @@ import CircularLoading from '@/pages/components/common/CircularLoading';
 import useScrollLoad from '@/hooks/useScrollLoad';
 import { observer } from 'mobx-react-lite';
 import { useAAUserContext } from '@/store/AstrarkUser';
+import { useRouter } from 'next/router';
 
 interface Props {
   displayItems: NFTItem[];
@@ -26,6 +27,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
       key: NFTCategory.TETRA_NFT,
     },
   ]);
+  const router = useRouter();
   const [selectedKey, setSelectedKey] = useState(NFTCategory.SBT);
   const {
     scrollRef,
@@ -59,6 +61,8 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
 
   useEffect(() => {
     if (!token) return;
+    const queryToken = router.query.token as string;
+    if (!!queryToken && token !== queryToken) return;
     queryData(true);
   }, [selectedKey, token]);
 
