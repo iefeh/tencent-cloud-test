@@ -15,6 +15,7 @@ export default function useTransaction({ abi, method }: Props) {
   const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
   const txProvider = useRef<TransactionProvider>();
+  const isConnectedRef = useRef<boolean>(isConnected);
 
   async function onTransaction(params: TransactionParams) {
     const { passLogin = false } = params;
@@ -52,6 +53,16 @@ export default function useTransaction({ abi, method }: Props) {
     }
   }
 
+  const reqToCheckIsConnected = async (cb: () => void, date = new Date().valueOf()) => {
+    if (isConnectedRef.current) return cb();
+
+    const maxWaitTime = 1 * 60 * 1000;
+    if (new Date().valueOf() - date > maxWaitTime) {
+      return 
+    }
+    requestAnimationFrame(() => reqToCheckIsConnected(cb))
+  }
+
   useEffect(() => {
     if (isConnected && walletProvider) {
       txProvider.current = new TransactionProvider({
@@ -66,5 +77,9 @@ export default function useTransaction({ abi, method }: Props) {
     }
   }, [walletProvider, isConnected]);
 
-  return { loading, onTransaction, beReady };
+  useEffect(() => {
+    isConnectedRef.current = isConnected;
+  }, [isConnected])
+
+  return { loading, onTransaction, beReady, reqToCheckIsConnected };
 }

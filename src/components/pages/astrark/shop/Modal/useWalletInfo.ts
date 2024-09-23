@@ -76,10 +76,10 @@ const useWalletInfo = (props: WalletInfoProps) => {
   }
 
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && open) {
       getInfo()
     }
-  }, [isConnected])
+  }, [isConnected, open])
 
   useEffect(() => {
     if (!open) {

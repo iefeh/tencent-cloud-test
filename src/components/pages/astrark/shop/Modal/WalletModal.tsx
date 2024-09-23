@@ -25,8 +25,8 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   const isOrigin = useMemo(() => isHexZero(contractAddress), [contractAddress])
 
-  const { onButtonClick } = useBuyTicket()
-  const { walletInfo, getInfo } = useWalletInfo({
+  const { onButtonClick, errorMessage, loading, beReadyForBuyTicket } = useBuyTicket()
+  const { walletInfo } = useWalletInfo({
     provider: walletProvider,
     contractAddress: contractAddress,
     open: isOpen,
@@ -48,7 +48,9 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   useEffect(() => {
     if (isAvailable) {
-      setBtnStsList([undefined, "wait"])
+      isOrigin
+        ? setBtnStsList([undefined, undefined])
+        : setBtnStsList([undefined, "wait"])
     } else {
       setBtnStsList(["disabled", "wait"])
     }
@@ -56,14 +58,16 @@ const WalletModal: FC<ModalProps> = (props) => {
 
   useEffect(() => {
     if (!isOpen) {
-      setBtnStsList([undefined, "wait"])
+      setBtnStsList(["disabled", "wait"])
     }
   }, [isOpen])
 
   const toApprove = async () => {
     if (!isAvailable) return;
-    await getInfo()
+    const { chain_id } = itemInfo?.network || {};
+    if (!chain_id) return
 
+    await beReadyForBuyTicket(chain_id)
     setBtnStsList(["disabled", undefined])
   }
 
@@ -134,21 +138,27 @@ const WalletModal: FC<ModalProps> = (props) => {
               </div>
 
               <div className="mt-8 mb-1 py-2 px-3 bg-[rgba(0,0,0,.4)] text-sm">
-                {isAvailable
-                  ? 'Please approve and continue your transaction in your wallet extension'
-                  : 'Insufficient balance. Please top up or switch wallets in your extension'
+                {errorMessage
+                  ? <span className="text-[#f33f3f]">{errorMessage}</span>
+                  : isAvailable
+                    ? 'Please approve and continue your transaction in your wallet extension'
+                    : 'Insufficient balance. Please top up or switch wallets in your extension'
                 }
               </div>
 
               <div className="flex">
-                <PayButton
-                  btnStatus={btnStsList[0]}
-                  index={1}
-                  onClick={toApprove}
-                >
-                  Approve
-                </PayButton>
-                <div className="h-[2px] w-[3.625rem] bg-[#686868] mt-[1.8125rem] z-[-1] ml-[-1rem] mr-[-0.3rem]"></div>
+                {isOrigin && (
+                  <>
+                    <PayButton
+                      btnStatus={btnStsList[0]}
+                      index={1}
+                      onClick={toApprove}
+                    >
+                      Approve
+                    </PayButton>
+                    <div className="h-[2px] w-[3.625rem] bg-[#686868] mt-[1.8125rem] z-[-1] ml-[-1rem] mr-[-0.3rem]"></div>
+                  </>
+                )}
                 <PayButton
                   className={cn([
                     btnStsList[1] === undefined && "ml-[-0.5rem]"
@@ -156,6 +166,7 @@ const WalletModal: FC<ModalProps> = (props) => {
                   btnStatus={btnStsList[1]}
                   index={isOrigin ? 1 : 2}
                   onClick={toPurchase}
+                  isLoading={loading}
                 >
                   Purchase
                 </PayButton>

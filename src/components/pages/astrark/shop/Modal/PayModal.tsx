@@ -85,7 +85,7 @@ const PayModal: FC<PayModalProps> = (props) => {
   const { isOpen, onClose } = disclosure || {};
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<string>(["0"]));
   const walletDisclosure = useDisclosure();
-  const { beReadyForBuyTicket } = useBuyTicket()
+  const { beReadyForBuyTicket, reqToCheckIsConnected } = useBuyTicket()
 
   useEffect(() => {
     if (isOpen) {
@@ -103,7 +103,7 @@ const PayModal: FC<PayModalProps> = (props) => {
 
     await beReadyForBuyTicket(chain_id)
 
-    walletDisclosure.onOpen()
+    reqToCheckIsConnected(() => walletDisclosure.onOpen())
   }
 
   const getCurSelectedKey = (): AstrArk.PriceToken | undefined => {
