@@ -6,8 +6,8 @@ import { queryMyNFTListAPI } from '@/http/services/astrark';
 import { AA_ASSETS_PAGE_SIZE, NFTCategory } from '@/constant/nft';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import useScrollLoad from '@/hooks/useScrollLoad';
-import { useUserContext } from '@/store/User';
 import { observer } from 'mobx-react-lite';
+import { useAAUserContext } from '@/store/AstrarkUser';
 
 interface Props {
   displayItems: NFTItem[];
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
-  const { token } = useUserContext();
+  const { token, init } = useAAUserContext();
   const [tabs, setTabs] = useState([
     {
       label: 'SBT',
@@ -62,8 +62,12 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
     queryData(true);
   }, [selectedKey, token]);
 
+  useEffect(() => {
+    init();
+  }, []);
+
   return (
-    <div className="w-[78.25rem] aspect-[1252/759] mt-5 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_assets_card.png')] bg-contain bg-no-repeat pl-5 pr-8 pt-16 flex flex-col font-fzdb">
+    <div className="w-[78.25rem] max-w-full aspect-[1252/759] mt-5 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_assets_card.png')] bg-contain bg-no-repeat pl-5 pr-8 pt-16 flex flex-col font-fzdb">
       <div className="font-fzsb text-[2.5rem] leading-[1.875rem] pl-11 text-transparent bg-gradient-to-t from-[#E4BA80] to-[#FDEFBC] bg-clip-text">
         My Asset<span className="text-3xl leading-none"> ( {total} )</span>
       </div>
@@ -96,7 +100,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
 
         {memoAssets}
 
-        {loading && <CircularLoading />}
+        {loading && <CircularLoading noBlur />}
       </div>
     </div>
   );

@@ -52,7 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
-  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/shop'];
+  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
@@ -79,7 +79,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
-    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 10 : 12);
+    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 8 : 12);
     document.documentElement.style.fontSize = `${fontSize}px`;
 
     const ratio = window.devicePixelRatio;
