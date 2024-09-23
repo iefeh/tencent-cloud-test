@@ -79,6 +79,8 @@ export interface ILotteryPool extends Document {
     limited_qty: number;
     // 支持的链id
     chain_id: string;
+    // 门槛说明
+    requirement_description: string;
     // 创建时间毫秒时间戳
     created_time: number;
     // 更新时间毫秒时间戳
@@ -104,6 +106,7 @@ const LotteryPoolSchema = new Schema<ILotteryPool>({
     type: { type: String, required: true },
     limited_qty: { type: Number, required: true },
     chain_id: { type: String},
+    requirement_description: { type: String },
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number, default: null }
