@@ -100,7 +100,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
 
         {memoAssets}
 
-        {loading && <CircularLoading />}
+        {loading && <CircularLoading noBlur />}
       </div>
     </div>
   );

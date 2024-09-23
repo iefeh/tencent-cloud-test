@@ -1,6 +1,6 @@
 import { NFTItem } from '@/http/services/mint';
 import NFT from './NFT';
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { useDisclosure } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -8,6 +8,8 @@ import Image from 'next/image';
 import AssetModal from './AssetModal';
 import { updateDisplayNFTListAPI } from '@/http/services/astrark';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import S3Image from '@/components/common/medias/S3Image';
+import { Navigation } from 'swiper/modules';
 
 interface Props {
   loading?: boolean;
@@ -18,6 +20,8 @@ interface Props {
 const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   const [currentItem, setCurrentItem] = useState<Partial<NFTItem> | null>(null);
   const disclosure = useDisclosure();
+  const navigationPrevRef = useRef(null);
+  const navigationNextRef = useRef(null);
 
   function onItemClick(item: Partial<NFTItem> | null) {
     if (!item) return;
@@ -63,7 +67,14 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         unoptimized
       />
 
-      <Swiper slidesPerView="auto">
+      <Swiper
+        modules={[Navigation]}
+        slidesPerView="auto"
+        navigation={{
+          prevEl: navigationPrevRef.current,
+          nextEl: navigationNextRef.current,
+        }}
+      >
         {items.map((item, index) => (
           <SwiperSlide
             key={index}
@@ -95,7 +106,21 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         ))}
       </Swiper>
 
-      {loading && <CircularLoading />}
+      <div
+        ref={navigationPrevRef}
+        className="absolute left-12 top-1/2 -translate-y-1/2 w-[4.375rem] aspect-[70/75] z-0"
+      >
+        <S3Image src="/astrark/assets/arrow_left.png" fill />
+      </div>
+
+      <div
+        ref={navigationNextRef}
+        className="absolute right-12 top-1/2 -translate-y-1/2 w-[4.375rem] aspect-[70/75] z-0"
+      >
+        <S3Image src="/astrark/assets/arrow_right.png" fill />
+      </div>
+
+      {loading && <CircularLoading noBlur />}
 
       {currentItem && <AssetModal item={currentItem} disclosure={disclosure} onSwitchDisplay={onSwitchDisplay} />}
     </div>
