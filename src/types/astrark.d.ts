@@ -38,6 +38,7 @@ declare namespace AstrArk {
     name: string;
     price_in_usdc: number;
     sold_out: boolean;
+    max_discount?: number;
   }
 
   interface PriceToken {
