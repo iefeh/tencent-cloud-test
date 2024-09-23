@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCurrentBalance, getCurrentNetwork, getCurrentAccount } from "@/utils/wallet";
+import { getBalanceOf, getCurrentNetwork, getCurrentAccount } from "@/utils/wallet";
 import { Eip1193Provider } from 'ethers';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
@@ -26,7 +26,9 @@ const useWalletInfo = (props: WalletInfoProps) => {
   const getBalance = async () => {
     if (!provider) return
 
-    const balance = await getCurrentBalance(provider)
+    const balance = await getBalanceOf(provider)
+
+    console.log('balance-----', balance)
     
     setWalletInfo(c => {
       return {

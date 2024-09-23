@@ -32,6 +32,10 @@ const useBuyTicket = () => {
           );
           return true;
         }
+        if (message && message.indexOf('duplicate product permit') > -1) {
+          toast.error('Your last purchase transaction is still confirming, please try again later.');
+        }
+        return true;
       },
     });
 

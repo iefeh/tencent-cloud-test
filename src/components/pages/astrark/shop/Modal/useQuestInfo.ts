@@ -3,9 +3,8 @@ import type { AstrArk } from '@/types/astrark';
 import { queryShopItemAPI } from "@/http/services/astrark";
 import useLoopCountdown from '@/hooks/useLoopCountDown';
 import dayjs from 'dayjs';
-import { sleep } from "@/utils/common";
 
-const sleepTime = 5000
+const sleepTime = 5000;
 
 const useQuestInfo = ({ open }: {
   open: boolean;
@@ -17,6 +16,7 @@ const useQuestInfo = ({ open }: {
   const [ loading, setLoading ] = useState<boolean>(false);
 
   const curIdRef = useRef<string>();
+  const timerRef = useRef<NodeJS.Timeout>();
 
   const calcTimeRemaining = (startTime: number | undefined) => {
     if (!startTime) return 0
@@ -46,15 +46,27 @@ const useQuestInfo = ({ open }: {
   const queryLoop = async () => {
     setLoading(true)
     if (!curIdRef.current) return;
-    await sleep(sleepTime)
-    await getQuestInfo(curIdRef.current)
+    timerRef.current = setTimeout(async() => {
+      await getQuestInfo(curIdRef.current)
+      setLoading(false)
+    }, sleepTime)
+  }
+
+  const clearTimer = () => {
+    if (!timerRef.current) return
+
+    clearTimeout(timerRef.current)
     setLoading(false)
   }
 
   useEffect(() => {
+    if (!open) {
+      clearTimer()
+      return
+    }
+
     if ((timeRemaining === 0 || cdText === '00:00') && open) {
       if (loading) return
-
       queryLoop()
       return
     }
