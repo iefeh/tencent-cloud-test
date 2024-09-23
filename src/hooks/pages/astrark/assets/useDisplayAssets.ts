@@ -1,7 +1,7 @@
 import { MAX_DISPLAY_ASSETS } from '@/constant/nft';
 import { queryDisplayNFTListAPI } from '@/http/services/astrark';
 import type { NFTItem } from '@/http/services/mint';
-import { useUserContext } from '@/store/User';
+import { useAAUserContext } from '@/store/AstrarkUser';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -9,7 +9,7 @@ export default function useDisplayAssets() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<NFTItem[]>(Array(MAX_DISPLAY_ASSETS).fill(null));
   const router = useRouter();
-  const { token, setToken } = useUserContext();
+  const { token, setToken } = useAAUserContext();
 
   async function queryData() {
     setLoading(true);
@@ -24,7 +24,7 @@ export default function useDisplayAssets() {
 
   useEffect(() => {
     if (!router.query.token) return;
-    setToken('Bearer ' + router.query.token);
+    setToken(router.query.token as string);
   }, [router.query.token]);
 
   useEffect(() => {
