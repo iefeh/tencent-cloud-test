@@ -101,7 +101,8 @@ const PayModal: FC<PayModalProps> = (props) => {
     const chain_id = info?.network.chain_id
     if (!chain_id) return;
 
-    await beReadyForBuyTicket(chain_id)
+    const res = await beReadyForBuyTicket(chain_id);
+    if (!res) return;
 
     walletDisclosure.onOpen();
   }

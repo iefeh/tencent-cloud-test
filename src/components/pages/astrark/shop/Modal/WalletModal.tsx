@@ -69,8 +69,10 @@ const WalletModal: FC<ModalProps> = (props) => {
     const { chain_id } = itemInfo?.network || {};
     if (!chain_id) return
 
-    await beReadyForBuyTicket(chain_id)
-    const approveRes = await onApprove(itemInfo!)
+    const res = await beReadyForBuyTicket(chain_id);
+    if (!res) return;
+
+    const approveRes = await onApprove(itemInfo!);
     if (!approveRes) return;
 
     setBtnStsList(["disabled", undefined])
