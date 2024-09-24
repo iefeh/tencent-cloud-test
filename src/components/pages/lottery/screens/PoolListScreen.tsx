@@ -78,7 +78,7 @@ const PoolListScreen: FC = () => {
               “More and $MORE”
             </span>
             <br />
-            <span>Lottery Pools</span>
+            <span>Draw Pools</span>
           </div>
         }
       />
