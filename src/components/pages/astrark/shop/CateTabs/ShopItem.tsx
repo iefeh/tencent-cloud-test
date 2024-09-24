@@ -67,8 +67,7 @@ const BenefitsWeeklyItem: ShopItemCom = ({ item, onClick }) => {
       <div className="flex-1 z-0"></div>
 
       <div className="h-3 flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}
-        {+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
+        Purchase Limit {sold_amount}/{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
       <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">

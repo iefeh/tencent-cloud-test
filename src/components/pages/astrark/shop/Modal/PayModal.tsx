@@ -11,7 +11,9 @@ import ProductCard from "./ProductCard";
 import WalletModal from './WalletModal'
 import useQuestInfo from "./useQuestInfo";
 import PayButton from "../Buttons";
-import useBuyTicket from "./useBuyTicket"
+import useBuyTicket, { queryPermit } from "./useBuyTicket"
+import { buyTicketPermitAPI } from "@/http/services/astrark";
+import { toast } from "react-toastify";
 
 export interface PayModalProps {
   disclosure: Disclosure;
@@ -85,7 +87,9 @@ const PayModal: FC<PayModalProps> = (props) => {
   const { isOpen, onOpenChange } = disclosure || {};
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<string>(["0"]));
   const walletDisclosure = useDisclosure();
-  const { beReadyForBuyTicket } = useBuyTicket();
+  const [permit, setPermit] = useState<AstrArk.PermitRespose | null>(null);
+  const { beReadyForBuyTicket } = useBuyTicket(permit, getPermit);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -96,15 +100,42 @@ const PayModal: FC<PayModalProps> = (props) => {
 
   const { questInfo, getQuestInfo, cdText } = useQuestInfo({ open: isOpen })
 
+  async function getPermit() {
+    const info = getCurSelectedKey();
+    if (!info) return null;
+
+    const { product_id = '', token_id } = info;
+    const res = await queryPermit({ product_id, token_id });
+    if (!!res?.reach_limit) {
+      toast.error('The current purchase quantity has reached the limit.');
+      return null;
+    }
+
+    if (!res?.chain_id) return null;
+
+    setPermit(res);
+    return res;
+  }
+
   const toBuy = async () => {
     const info = getCurSelectedKey()
     const chain_id = info?.network.chain_id
     if (!chain_id) return;
 
+    setLoading(true);
     const res = await beReadyForBuyTicket(chain_id);
-    if (!res) return;
+    if (!res) {
+      setLoading(false);
+      return;
+    }
 
-    walletDisclosure.onOpen();
+    const permitRes = await getPermit();
+    if (!permitRes) return;
+
+    setTimeout(() => {
+      setLoading(false);
+      walletDisclosure.onOpen();
+    }, 300)
   }
 
   const getCurSelectedKey = (): AstrArk.PriceToken | undefined => {
@@ -215,6 +246,7 @@ const PayModal: FC<PayModalProps> = (props) => {
                     <PayButton
                       className="mr-4"
                       btnStatus={calcDisabled() ? "disabled" : undefined}
+                      isLoading={loading}
                       onClick={toBuy}
                     >
                       Buy now
@@ -231,7 +263,7 @@ const PayModal: FC<PayModalProps> = (props) => {
         </ModalContent>
       </Modal >
 
-      <WalletModal key={getCurSelectedKey()?.token_id} disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
+      <WalletModal key={[getCurSelectedKey()?.token_id, permit ?? Math.random()].join('_')} disclosure={walletDisclosure} itemInfo={getCurSelectedKey()} permit={permit}></WalletModal>
     </>
   );
 }

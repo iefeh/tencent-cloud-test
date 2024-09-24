@@ -14,7 +14,7 @@ export interface TransactionParams {
   params: any;
   config?: Partial<TransactionConfig>;
   options?: TransactionRequest;
-  onError?: (code?: number, message?: string) => boolean | undefined;
+  onError?: (code?: number, message?: string) => Promise<boolean | undefined> | boolean | undefined;
 }
 
 export interface TransactionConfig {
@@ -152,7 +152,7 @@ class TransactionProvider {
 
       let showDefaultTips = !onError;
       if (onError) {
-        showDefaultTips = !onError(+code, message?.toString?.()?.toLowerCase());
+        showDefaultTips = !(await onError(+code, message?.toString?.()?.toLowerCase()));
       }
 
       if (showDefaultTips) {
