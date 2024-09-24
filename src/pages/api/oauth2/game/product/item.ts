@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 
 import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import { getGameProduct } from '@/lib/models/GameProduct';
-import { getGameTokens } from '@/lib/models/GameProductToken';
+import { StableTokenSymbols, getGameTokens } from '@/lib/models/GameProductToken';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import { responseOnOauthError } from '@/lib/oauth2/response';
 import OAuth2Server from '@/lib/oauth2/server';
@@ -29,8 +29,11 @@ router.use(dynamicCors).get(async (req, res) => {
     const tokens = await getGameTokens();
     const pow = 10 ** 6; //显示保留6位小数
     gameProduct.price_in_tokens = [];
-    gameProduct.price_updated_at = tokens[0].price_updated_at;
+    gameProduct.price_updated_at = Date.now();
     for (let token of tokens) {
+      if (token.symbol !== StableTokenSymbols.USDC && token.symbol !== StableTokenSymbols.USDT) {
+        gameProduct.price_updated_at = token.price_updated_at;
+      }
       let price = gameProduct.price_in_usdc/token.price_in_usdc;
       gameProduct.price_in_tokens.push({
         token_id: token.id,
