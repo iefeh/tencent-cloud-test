@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 export interface PayModalProps {
   disclosure: Disclosure;
   shopItemProps: ItemProps<AstrArk.Product>;
+  onUpdate?: () => void;
 }
 
 const columns = [
@@ -83,7 +84,7 @@ const columns = [
 ]
 
 const PayModal: FC<PayModalProps> = (props) => {
-  const { shopItemProps, disclosure } = props;
+  const { shopItemProps, disclosure, onUpdate } = props;
   const { isOpen, onOpenChange } = disclosure || {};
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<string>(["0"]));
   const walletDisclosure = useDisclosure();
@@ -107,6 +108,7 @@ const PayModal: FC<PayModalProps> = (props) => {
     const { product_id = '', token_id } = info;
     const res = await queryPermit({ product_id, token_id });
     if (!!res?.reach_purchase_limit) {
+      onUpdate?.();
       toast.error('The current purchase quantity has reached the limit.');
       return null;
     }
@@ -130,7 +132,10 @@ const PayModal: FC<PayModalProps> = (props) => {
     }
 
     const permitRes = await getPermit();
-    if (!permitRes) return;
+    if (!permitRes) {
+      setLoading(false);
+      return;
+    }
 
     setTimeout(() => {
       setLoading(false);

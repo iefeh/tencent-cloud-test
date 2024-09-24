@@ -18,7 +18,7 @@ const CateTabs: FC = () => {
 
   const { modalData, openModal } = useModalDataHook();
 
-  const { cates: tabs, loading } = useShopInfo();
+  const { cates: tabs, loading, queryShopInfo } = useShopInfo();
 
   function onSelectionChange(key: Key) {
     const newKey = key.toString();
@@ -137,7 +137,7 @@ const CateTabs: FC = () => {
 
       {loading && <CircularLoading noBlur />}
 
-      <PayModal {...modalData}></PayModal>
+      <PayModal {...modalData} onUpdate={queryShopInfo}></PayModal>
     </div>
   );
 };
