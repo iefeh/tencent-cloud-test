@@ -1,6 +1,6 @@
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { Button, Tab, Tabs, cn } from '@nextui-org/react';
-import { useState, type FC, type Key } from 'react';
+import { useState, type FC, type Key, useEffect } from 'react';
 import { type CateTab } from '../model';
 import S3Image from '@/components/common/medias/S3Image';
 import styles from './index.module.scss';
@@ -18,15 +18,15 @@ const CateTabs: FC = () => {
 
   const { modalData, openModal } = useModalDataHook();
 
-  const { cates: tabs, loading } = useShopInfo();
+  const { cates: tabs, loading, queryShopInfo } = useShopInfo();
 
-  function onSelectionChange(key: Key) {
+  function onSelectionChange(key: Key, listKey?: string) {
     const newKey = key.toString();
     setSelectedKey(newKey);
 
     const { children = [] } = tabs.find((item) => item.key === newKey) || {};
     setListTabs(children);
-    const listKey = children[0]?.key || '';
+    if (!listKey) listKey = children[0]?.key || '';
     setSelectedListKey(listKey);
     onListSelectionChange(listKey, children);
   }
@@ -38,6 +38,10 @@ const CateTabs: FC = () => {
     const tab = list.find((item) => item.key === newKey);
     setSelectedListTab(tab);
   }
+
+  useEffect(() => {
+    if (selectedKey) onSelectionChange(selectedKey, selectedListKey);
+  }, [tabs])
 
   return (
     <div className="flex-1 relative flex flex-nowrap gap-14 z-0 pr-12 overflow-hidden">
@@ -137,7 +141,7 @@ const CateTabs: FC = () => {
 
       {loading && <CircularLoading noBlur />}
 
-      <PayModal {...modalData}></PayModal>
+      <PayModal {...modalData} onUpdate={queryShopInfo}></PayModal>
     </div>
   );
 };
