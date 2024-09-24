@@ -38,5 +38,55 @@ declare namespace AstrArk {
     name: string;
     price_in_usdc: number;
     sold_out: boolean;
+    max_discount?: number;
+  }
+
+  interface PriceToken {
+    address: string;
+    product_id?: string;
+    token_id: string; 
+    token_name: string; 
+    icon_url: string; 
+    symbol: string; 
+    product_price_discount: number; 
+    product_token_price_with_discount: number; 
+    product_usdc_price_with_discount: number;
+    network: {
+      name: string;
+      icon_url: string;
+      chain_id: string;
+    }
+  }
+
+  interface ProductItem {
+    id: string;
+    name: string;
+    icon_url: string;
+    price_in_usdc: number;
+    limit: {
+     type: string;
+     amount: number;
+    };
+    price_in_tokens: PriceToken[];
+    product_type_id: string;
+    price_updated_at: number;
+  }
+
+  interface PermitProps {
+    product_id: string;
+    token_id: string;
+  }
+
+  interface PermitRespose {
+    chain_id: string;
+    contract_address: string;
+    permit: {
+      reqId: string;
+      expiration: number;
+      productId: string;
+      signature: string;
+      token: string;
+      tokenAmount: string;
+    }
   }
 }

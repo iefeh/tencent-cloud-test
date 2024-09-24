@@ -14,7 +14,7 @@ export interface IGameProductPurchaseRequest extends Document {
     // 产品id
     product_id: string;
     // 产品价格，用于当时价格
-    product_price_in_usd: string;
+    product_price_in_usd: number;
     // 请求时间，毫秒时间戳
     request_time: number;
     // 请求的周期
@@ -26,14 +26,18 @@ export interface IGameProductPurchaseRequest extends Document {
     // 支付代币数量
     payment_token_amount: string;
     // 代币价格
-    payment_token_price_in_usd: string;
+    payment_token_price_in_usd: number;
 
     // 支付交易哈希，仅在交易确认后再添加以下数据.
     payment_tx_hash: string;
     // 支付钱包地址
     payment_address: string;
+    // 交易上链时间
+    payment_tx_time: number;
     // 支付确认时间，经过一定区块数的确认.
     payment_confirm_time: number;
+    // 支付通知已发送
+    payment_notification_sent: boolean;
 }
 
 const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>({
@@ -42,14 +46,18 @@ const GameProductPurchaseRequestSchema = new Schema<IGameProductPurchaseRequest>
     game_id: {type: String, required: true},
     token_id: {type: String, required: true},
     product_id: {type: String, required: true},
+    product_price_in_usd: {type: Number, required: true},
     request_time: {type: Number},
     request_period: {type: String},
     request_expire_time: {type: Number},
-    payment_tx_hash: {type: String},
-    payment_address: {type: String},
     payment_token_address: {type: String},
     payment_token_amount: {type: String},
+    payment_token_price_in_usd: {type: Number},
+    payment_tx_hash: {type: String},
+    payment_address: {type: String},
+    payment_tx_time: {type: Number},
     payment_confirm_time: {type: Number},
+    payment_notification_sent: {type: Boolean, required: true, default: false}
 });
 
 GameProductPurchaseRequestSchema.index({request_id: 1}, {unique: true});
@@ -61,15 +69,19 @@ const connection = connectToMongoDbDev();
 const GameProductPurchaseRequest = models.GameProductPurchaseRequest || connection.model<IGameProductPurchaseRequest>('GameProductPurchaseRequest', GameProductPurchaseRequestSchema, 'game_product_purchase_requests');
 export default GameProductPurchaseRequest;
 
-export async function getUserProductPurchase(userId: string, gameId: string, productId?: string) {
+export async function getUserProductPurchase(userId: string, gameId: string,  period?: string[], productId?: string) {
     let matchOpt: any = {
         $match: {
             game_id: gameId,
-            user_id: userId
+            user_id: userId,
+            payment_tx_hash: { $gt: "" },
         }
     };
     if (productId) {
-        matchOpt.$match.id = productId;
+        matchOpt.$match.product_id = productId;
+    }
+    if (period && period.length > 0) {
+        matchOpt.$match.request_period = { $in: period };
     }
     const aggregateQuery: PipelineStage[] = [
         matchOpt,
@@ -82,11 +94,11 @@ export async function getUserProductPurchase(userId: string, gameId: string, pro
         },
         {
             $group: {
-            _id: {
-                product_id: "$product_id",
-                request_period: "$request_period",
-            },
-            count: {$sum: 1}
+                _id: {
+                    product_id: "$product_id",
+                    request_period: "$request_period",
+                },
+                count: {$sum: 1}
             }
         },
         {
@@ -95,4 +107,4 @@ export async function getUserProductPurchase(userId: string, gameId: string, pro
     ];
     const results = await GameProductPurchaseRequest.aggregate(aggregateQuery);
     return results;
-  }
+}

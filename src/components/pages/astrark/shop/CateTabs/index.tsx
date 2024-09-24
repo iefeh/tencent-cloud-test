@@ -5,8 +5,8 @@ import { type CateTab } from '../model';
 import S3Image from '@/components/common/medias/S3Image';
 import styles from './index.module.scss';
 import ItemCollections from './ItemCollections';
-import PayModal from "../Modal/PayModal"
-import useModalDataHook from "../Modal/useModalDataHook"
+import PayModal from '../Modal/PayModal';
+import useModalDataHook from '../Modal/useModalDataHook';
 import useShopInfo from './useShopInfo';
 import { observer } from 'mobx-react-lite';
 
@@ -16,7 +16,7 @@ const CateTabs: FC = () => {
   const [selectedListKey, setSelectedListKey] = useState<string>();
   const [selectedListTab, setSelectedListTab] = useState<CateTab | undefined>();
 
-  const { modalData, openModal } = useModalDataHook()
+  const { modalData, openModal } = useModalDataHook();
 
   const { cates: tabs, loading } = useShopInfo();
 
@@ -130,10 +130,12 @@ const CateTabs: FC = () => {
           ))}
         </Tabs>
 
-        {selectedListTab && <ItemCollections key={selectedListTab?.key || ''} item={selectedListTab} handleItemClick={openModal} />}
+        {selectedListTab && (
+          <ItemCollections key={selectedListTab?.key || ''} item={selectedListTab} handleItemClick={openModal} />
+        )}
       </div>
 
-      {loading && <CircularLoading />}
+      {loading && <CircularLoading noBlur />}
 
       <PayModal {...modalData}></PayModal>
     </div>

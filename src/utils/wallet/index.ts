@@ -1,7 +1,9 @@
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { parseChainIdToHex } from '@/hooks/utils';
-import { BrowserProvider, Eip1193Provider } from 'ethers';
+import { BrowserProvider, Eip1193Provider, Contract } from 'ethers';
 import { toast } from 'react-toastify';
+import erc20ABI from '@/http/abi/erc20.json';
+import { PoolProps, PoolType } from '@/constant/pledge';
 
 export async function getCurrentAccount(provider: Eip1193Provider) {
   try {
@@ -22,6 +24,22 @@ export async function getCurrentBalance(provider: Eip1193Provider) {
   const bp = new BrowserProvider(provider);
   const balance = await bp.getBalance(currentAccount);
   return balance.toString();
+}
+
+export const getBalanceOf = async (provider: Eip1193Provider, contractAddress: string) => {
+  try {
+    const bp = new BrowserProvider(provider);
+    const signer = await bp.getSigner();
+    const contract = new Contract(contractAddress, erc20ABI, signer);
+    const currentAccount = await getCurrentAccount(provider);
+
+    const res = await contract.balanceOf(currentAccount)
+
+    return res
+  } catch (error) {
+    console.error('getBalanceOf', error);
+    return 0;
+  }
 }
 
 async function addNetwork(provider: Eip1193Provider, targetChainId: number | string) {
@@ -77,4 +95,11 @@ export async function handleWalletExecutionError(error?: InformableError) {
   }
 
   toast.error(tips || 'Transaction failed, please try again later.');
+}
+
+export async function getCurrentNetwork(provider: Eip1193Provider) {
+  const currentChainId = await provider.request({ method: 'eth_chainId', params: []});
+  const network = WALLECT_NETWORKS[currentChainId!];
+
+  return network?.chainName || ''
 }

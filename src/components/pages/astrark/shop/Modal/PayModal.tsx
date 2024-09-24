@@ -1,37 +1,26 @@
-import React, { FC, useState } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, Button, Selection } from "@nextui-org/react";
+import React, { FC, useEffect, useState, useMemo } from "react";
+import { Modal, ModalContent, ModalHeader, ModalBody, Button, Selection, useDisclosure } from "@nextui-org/react";
 import S3Image from "@/components/common/medias/S3Image";
 import { cn } from "@nextui-org/react";
 import PayTable from "@/components/common/CommonTable";
-import ShopItem, { ClickProps } from "../CateTabs/ShopItem";
+import ShopItem from "../CateTabs/ShopItem";
 import styles from './index.module.scss'
 import type { AstrArk } from '@/types/astrark';
 import { ShopItemType } from "@/constant/astrark";
 import ProductCard from "./ProductCard";
-import useCountdown from '@/hooks/useCountdown';
-import dayjs from 'dayjs';
+import WalletModal from './WalletModal'
+import useQuestInfo from "./useQuestInfo";
+import PayButton from "../Buttons";
+import useBuyTicket from "./useBuyTicket"
 
 export interface PayModalProps {
   disclosure: Disclosure;
-  shopItemProps: ItemProps<AstrArk.Product> & ClickProps;
-}
-
-const TokenUrlEnum = {
-  More: '/astrark/shop/icons/icon_$more.png',
-}
-
-const NetUrlEnum = {
-  polygon: '/astrark/shop/icons/icon_polygon.png',
-  moonVeil: '/astrark/shop/icons/moonVeil.png'
-}
-
-const getUrl = (map: Dict<string>, key: string) => {
-  return map?.[key] || ''
+  shopItemProps: ItemProps<AstrArk.Product>;
 }
 
 const columns = [
   {
-    dataIndex: "name",
+    dataIndex: "product_usdc_price_with_discount",
     name: (
       <div>
         <div>Price</div>
@@ -42,13 +31,15 @@ const columns = [
       return (
         <div className="relative">
           <div>{text}</div>
-          <div className="text-[.8125rem] text-center w-[4.625rem] aspect-[74/26] absolute top-[-100%] right-8 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_off.png')] bg-no-repeat bg-contain">{record.discount || '85% OFF'}</div>
+          <div className="text-[.8125rem] text-center w-[4.625rem] aspect-[74/26] absolute top-[-100%] right-3 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_off.png')] bg-no-repeat bg-contain">
+            {record.product_price_discount * 100}% OFF
+          </div>
         </div>
       )
     }
   },
   {
-    dataIndex: 'qty',
+    dataIndex: 'product_token_price_with_discount',
     name: (
       <div>
         <div>QTY</div>
@@ -57,14 +48,13 @@ const columns = [
     )
   },
   {
-    dataIndex: 'token',
+    dataIndex: 'token_name',
     name: 'Token',
     render: (text: string, record: any) => {
-      const url = getUrl(TokenUrlEnum, record.net)
       return (
         <div className="flex items-center">
-          {url
-            ? <S3Image className="w-[1.625rem] h-[1.625rem] rounded-full mr-2" src={url}></S3Image >
+          {record.icon_url
+            ? <S3Image className="w-[1.625rem] h-[1.625rem] rounded-full mr-2" src={record.icon_url}></S3Image >
             : <div className="w-[1.625rem] h-[1.625rem] rounded-full bg-white mr-2"></div>
           }
           <div>{text}</div>
@@ -73,17 +63,17 @@ const columns = [
     }
   },
   {
-    dataIndex: 'net',
+    dataIndex: 'network',
     name: 'Network',
-    render: (text: string, record: any) => {
-      const url = getUrl(NetUrlEnum, text)
+    render: (text: string, record: AstrArk.PriceToken) => {
+      const { name, icon_url } = record.network
       return (
         <div className="flex items-center">
-          {url
-            ? <S3Image className="w-[1.625rem] h-[1.625rem] rounded-full mr-2" src={url}></S3Image >
+          {icon_url
+            ? <S3Image className="w-[1.625rem] h-[1.625rem] rounded-full mr-2" src={icon_url}></S3Image >
             : <div className="w-[1.625rem] h-[1.625rem] rounded-full bg-white mr-2"></div>
           }
-          <div>{text}</div>
+          <div>{name}</div>
         </div>
       )
     }
@@ -94,25 +84,37 @@ const PayModal: FC<PayModalProps> = (props) => {
   const { shopItemProps, disclosure } = props;
   const { isOpen, onClose } = disclosure || {};
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set<string>(["0"]));
-  const [cdText, setCdText] = useState<string>('00:00:00');
-  const [loading, setLoading] = useState<boolean>(false)
+  const walletDisclosure = useDisclosure();
+  const { beReadyForBuyTicket, reqToCheckIsConnected } = useBuyTicket()
 
-  useCountdown(5 * 60 * 1000 || 0, 0, (leftTime) => {
-    const du = dayjs.duration(leftTime);
-    setCdText(du.format('HH:mm:ss'));
+  useEffect(() => {
+    if (isOpen) {
+      const { id } = shopItemProps.item || {}
+      getQuestInfo(id)
+    }
+  }, [isOpen])
 
-  });
+  const { questInfo, getQuestInfo, cdText } = useQuestInfo({ open: isOpen })
 
-  const [dataList, setDataList] = useState([
-    { name: '$85', qty: 160, token: 'MOON', net: 'BSC' },
-    { name: '$85', qty: 160, token: 'MOON', net: 'BSC' },
-    { name: '$85', qty: 160, token: 'MOON', net: 'BSC' },
-    { name: '$85', qty: 160, token: 'MOON', net: 'BSC' },
-    { name: '$85', qty: 160, token: 'MOON', net: 'BSC' },
-  ])
+  const toBuy = async () => {
+    const info = getCurSelectedKey()
+    const chain_id = info?.network.chain_id
+    if (!chain_id) return;
 
-  const toBuy = () => {
-    setLoading(true)
+    await beReadyForBuyTicket(chain_id)
+
+    reqToCheckIsConnected(() => walletDisclosure.onOpen())
+  }
+
+  const getCurSelectedKey = (): AstrArk.PriceToken | undefined => {
+    const key = (selectedKeys as any)?.values()?.next()?.value
+    const item = questInfo?.price_in_tokens?.[key]
+    if (!item) return
+
+    return {
+      ...item,
+      product_id: questInfo?.id,
+    }
   }
 
   const compareIndex = (idx: number) => {
@@ -120,8 +122,19 @@ const PayModal: FC<PayModalProps> = (props) => {
     return idx === Number(key)
   }
 
+  const calcDisabled = () => {
+    const [minutes, seconds] = cdText.split(':').map(Number);
+    const totalSeconds = (minutes * 60) + seconds;
+
+    if (totalSeconds <= 0) return true;
+
+    if (!getCurSelectedKey()) return true;
+
+    return false;
+  }
+
   const renderTable = () => (
-    <PayTable
+    <PayTable<AstrArk.PriceToken>
       selectedKeys={selectedKeys}
       onSelectionChange={setSelectedKeys}
       selectionMode="single"
@@ -146,7 +159,7 @@ const PayModal: FC<PayModalProps> = (props) => {
         ])
       }}
       columns={columns}
-      dataList={dataList}
+      dataList={questInfo?.price_in_tokens || []}
     ></PayTable>
   )
 
@@ -164,7 +177,6 @@ const PayModal: FC<PayModalProps> = (props) => {
             Open must have a random avatar * 1, the generated random avatar consists of 3 random colors, accessories, and backgrounds.
           </ProductCard>
         )
-
       default:
         break;
     }
@@ -175,6 +187,7 @@ const PayModal: FC<PayModalProps> = (props) => {
       <Modal
         {...disclosure}
         hideCloseButton
+        isDismissable={false}
         isOpen={isOpen}
         onClose={onClose}
         style={{
@@ -199,18 +212,13 @@ const PayModal: FC<PayModalProps> = (props) => {
                 <div className="flex-1">
                   {renderTable()}
                   <div className="mt-4 flex justify-center">
-                    <Button
-                      isLoading={loading}
-                      className={cn([
-                        "text-[#5D3C13] text-[1.1875rem] rounded-none bg-transparent",
-                        "w-[10.1875rem] h-[3.625rem] bg-no-repeat bg-center bg-[length:100%_100%]",
-                        "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/btn_buy_now.png')]",
-                        "[text-shadow:0px_2px_0px_#FFE77F]"
-                      ])}
+                    <PayButton
+                      className="mr-4"
+                      btnStatus={calcDisabled() ? "disabled" : undefined}
                       onClick={toBuy}
                     >
                       Buy now
-                    </Button>
+                    </PayButton>
                     <div className="flex items-center justify-center mt-[.7rem] px-[.625rem] h-[2.2rem] bg-[rgba(0,0,0,.3)]">
                       <S3Image src="/astrark/shop/icons/icon_timeout.png" className="w-[1.125rem] h-[1.125rem] mr-2"></S3Image>
                       <div className="text-[.875rem] w-[12.125rem]">Price will update in {cdText}</div>
@@ -222,6 +230,8 @@ const PayModal: FC<PayModalProps> = (props) => {
           )}
         </ModalContent>
       </Modal >
+
+      <WalletModal disclosure={walletDisclosure} itemInfo={getCurSelectedKey()}></WalletModal>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import S3Image from '@/components/common/medias/S3Image';
-import { ShopItemType } from '@/constant/astrark';
+import { MAX_LIMIT_AMOUNT, ShopItemType } from '@/constant/astrark';
 import type { AstrArk } from '@/types/astrark';
 import { Button } from '@nextui-org/react';
 import { FC } from 'react';
@@ -11,7 +11,13 @@ export interface ClickProps {
 type ShopItemCom = FC<ItemProps<AstrArk.Product> & ClickProps>;
 
 const BenefitsDailyItem: ShopItemCom = ({ item, onClick }) => {
-  const { icon_url, price_in_usdc, limit: { amount = '-', sold_amount = '-' } = {}, sold_out } = item || {};
+  const {
+    icon_url,
+    price_in_usdc,
+    limit: { amount = '-', sold_amount = '-' } = {},
+    sold_out,
+    max_discount,
+  } = item || {};
 
   return (
     <Button
@@ -23,16 +29,26 @@ const BenefitsDailyItem: ShopItemCom = ({ item, onClick }) => {
 
       <div className="flex-1 z-0"></div>
 
-      <div className="h-[1.8125rem] flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{amount}
+      <div className="h-[1.125rem] flex-shrink-0 z-0 text-center">
+        Purchase Limit {sold_amount}/{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
-      <div className="h-[3.25rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
+      <div className="h-[2.75rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
         ${price_in_usdc || '-'}
       </div>
 
+      {max_discount && (
+        <div className="absolute top-1 left-4 z-0 leading-4">
+          Up to
+          <br />
+          {(max_discount * 100).toFixed(1) + '%'}
+          <br />
+          off
+        </div>
+      )}
+
       {sold_out && (
-        <div className="absolute inset-0 z-0 bg-black/50">
+        <div className="absolute inset-0 z-1 bg-black/50">
           <S3Image
             className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 w-[47.5%] aspect-[114/99] max-w-[7.125rem]"
             src="/astrark/shop/sold_out.png"
@@ -56,11 +72,11 @@ const BenefitsWeeklyItem: ShopItemCom = ({ item, onClick }) => {
 
       <div className="flex-1 z-0"></div>
 
-      <div className="h-[1.625rem] flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{amount}
+      <div className="h-3 flex-shrink-0 z-0 text-center">
+        Purchase Limit {sold_amount}{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
-      <div className="h-[2.875rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
+      <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
         ${price_in_usdc || '-'}
       </div>
 
@@ -85,15 +101,15 @@ const ResourcesDiamondItem: ShopItemCom = ({ item, onClick }) => {
       className="relative h-[12.625rem] max-h-full aspect-[274/202] flex flex-col justify-between cursor-pointer bg-transparent rounded-none shadow-none"
       onPress={() => item && onClick?.(item)}
     >
-      {icon_url && <S3Image className="object-cover" src={icon_url} fill />}
+      {icon_url && <S3Image className="object-contain" src={icon_url} fill />}
 
       <div className="flex-1 z-0"></div>
 
-      <div className="h-[1.625rem] flex-shrink-0 z-0 text-center">
-        Purchase Limit {sold_amount}/{amount}
+      <div className="h-3 flex-shrink-0 z-0 text-center">
+        Purchase Limit {sold_amount}/{+amount > MAX_LIMIT_AMOUNT ? '∞' : amount}
       </div>
 
-      <div className="h-[2.875rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
+      <div className="h-[2.5625rem] flex-shrink-0 z-0 text-center text-xl leading-none pt-ten text-[#513218]">
         ${price_in_usdc || '-'}
       </div>
 
