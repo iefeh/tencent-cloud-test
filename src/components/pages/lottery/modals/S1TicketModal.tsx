@@ -34,7 +34,7 @@ const S1TicketModal: FC<Props & ItemProps<Lottery.Pool>> = ({
     setLoading(false);
     if (!res) return;
 
-    toast.success('Congratulations on receiving 3 Silver Lottery Tickets.');
+    toast.success('Congratulations on receiving 3 Silver Draw Tickets.');
     onClose();
     onUpdate?.();
   }, 500);
@@ -63,9 +63,9 @@ const S1TicketModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
             <ModalBody>
               <div className="text-sm text-left">
-                Welcome to the &quot;More & $MORE Lottery&quot;! Please click to claim your exclusive reward—
-                <span className="text-basic-yellow">3 free Silver Lottery Tickets</span> for each pool. Enjoy the
-                lottery and good luck!
+                Welcome to the &quot;More & $MORE Draw&quot;! Please click to claim your exclusive reward—
+                <span className="text-basic-yellow">3 free Silver Draw Tickets</span> for each pool. Enjoy the
+                draw and good luck!
               </div>
 
               <div className="flex items-center mt-10">
