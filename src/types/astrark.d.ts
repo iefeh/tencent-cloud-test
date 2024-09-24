@@ -79,7 +79,7 @@ declare namespace AstrArk {
 
   interface PermitRespose {
     /** 是否已达到购买数量限制 */
-    reach_limit?: boolean;
+    reach_purchase_limit?: boolean;
     chain_id: string;
     contract_address: string;
     permit: {

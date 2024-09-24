@@ -106,7 +106,7 @@ const PayModal: FC<PayModalProps> = (props) => {
 
     const { product_id = '', token_id } = info;
     const res = await queryPermit({ product_id, token_id });
-    if (!!res?.reach_limit) {
+    if (!!res?.reach_purchase_limit) {
       toast.error('The current purchase quantity has reached the limit.');
       return null;
     }
