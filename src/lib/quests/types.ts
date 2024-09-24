@@ -85,12 +85,23 @@ export enum QuestRewardType {
   Range = 'range',
 }
 
+export enum TokenRewardDistributeType {
+  // 用户verify任务以后直接发奖
+  DirectDistribute = 'direct_distribute',
+  // 用户verify任务以后, 统一在指定时间发奖
+  AutoRaffle = 'auto_raffle',
+  // 用户verify任务以后, 统一手工发奖
+  ManualRaffle = 'manual_raffle',
+}
+
 export type TokenReward = {
   // 奖励的token id
   token_id: string;
-  // 是否自动抽取
-  auto_raffle: boolean;
-  // 抽取人数
+  // 发奖方式
+  distribute_type: TokenRewardDistributeType;
+  // Token奖励中间状态名称
+  distribute_mid_state_name: string;
+  // 自动发奖中奖人数
   auto_raffle_count: number;
   // 奖励代币数量
   token_amount_raw: number;
@@ -307,3 +318,12 @@ export enum ThinkingDataQuestType {
   // 范围奖励，奖励数量特定于任务进行动态分配
   Once = 'once',
 }
+
+export type GameTicketReward = {
+  // 游戏ID
+  game_id: string,
+  // 奖励的门票数量
+  amount: number,
+  // 门票过期时间
+  expired_at: number
+};

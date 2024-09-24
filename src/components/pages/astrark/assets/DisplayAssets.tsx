@@ -1,14 +1,15 @@
 import { NFTItem } from '@/http/services/mint';
 import NFT from './NFT';
-import { FC, useState } from 'react';
-import { cn, useDisclosure } from '@nextui-org/react';
+import { FC, useRef, useState } from 'react';
+import { useDisclosure } from '@nextui-org/react';
 import dayjs from 'dayjs';
-import { isMobile } from 'react-device-detect';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import AssetModal from './AssetModal';
 import { updateDisplayNFTListAPI } from '@/http/services/astrark';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import S3Image from '@/components/common/medias/S3Image';
+import { Navigation } from 'swiper/modules';
 
 interface Props {
   loading?: boolean;
@@ -19,6 +20,8 @@ interface Props {
 const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   const [currentItem, setCurrentItem] = useState<Partial<NFTItem> | null>(null);
   const disclosure = useDisclosure();
+  const navigationPrevRef = useRef(null);
+  const navigationNextRef = useRef(null);
 
   function onItemClick(item: Partial<NFTItem> | null) {
     if (!item) return;
@@ -54,7 +57,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   }
 
   return (
-    <div className="relative mt-[4.375rem] overflow-hidden w-[78.25rem] aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat font-fzdb">
+    <div className="relative mt-[4.375rem] w-[78.25rem] pt-[9.0625rem] px-[8.375rem] max-w-full aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat font-fzdb">
       <Image
         className="absolute top-[-4.375rem] left-1/2 -translate-x-1/2 w-[81.625rem] aspect-[1306/170] z-10"
         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/title_display.png"
@@ -64,13 +67,20 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         unoptimized
       />
 
-      <Swiper className="w-[calc(100%_-_16.75rem)] mt-[9.0375rem] !mx-[8.375rem]" slidesPerView="auto">
+      <Swiper
+        modules={[Navigation]}
+        slidesPerView="auto"
+        navigation={{
+          prevEl: navigationPrevRef.current,
+          nextEl: navigationNextRef.current,
+        }}
+      >
         {items.map((item, index) => (
           <SwiperSlide
             key={index}
-            className="!w-auto px-8 [&:first-child]:pl-0 [&:last-child]:pr-0 [&:not(:first-child)]:border-l-1 border-[#101F2C]"
+            className="!w-auto px-8 [&:first-child]:pl-0 [&:last-child]:pr-0 [&+.swiper-slide]:border-l-1 border-[#101F2C] aspect-[232/315]"
           >
-            <div className="relative w-[12.5rem]">
+            <div className="relative w-[12.5rem] flex flex-col">
               <NFT
                 className="w-full h-auto aspect-square"
                 name={item ? item.token_metadata?.name || '--' : '　'}
@@ -80,7 +90,7 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
                 onClick={() => onItemClick(item)}
               />
 
-              <div className="text-lg leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem]">
+              <div className="text-lg leading-none text-basic-yellow absolute left-[0.3125rem] top-[0.125rem] flex-1">
                 {item?.type || '　'}
               </div>
             </div>
@@ -96,7 +106,21 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
         ))}
       </Swiper>
 
-      {loading && <CircularLoading />}
+      <div
+        ref={navigationPrevRef}
+        className="absolute left-12 top-1/2 -translate-y-1/2 w-[4.375rem] aspect-[70/75] z-0"
+      >
+        <S3Image src="/astrark/assets/arrow_left.png" fill />
+      </div>
+
+      <div
+        ref={navigationNextRef}
+        className="absolute right-12 top-1/2 -translate-y-1/2 w-[4.375rem] aspect-[70/75] z-0"
+      >
+        <S3Image src="/astrark/assets/arrow_right.png" fill />
+      </div>
+
+      {loading && <CircularLoading noBlur />}
 
       {currentItem && <AssetModal item={currentItem} disclosure={disclosure} onSwitchDisplay={onSwitchDisplay} />}
     </div>

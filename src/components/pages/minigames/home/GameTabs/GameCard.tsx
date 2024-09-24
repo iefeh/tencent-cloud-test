@@ -4,6 +4,7 @@ import type { MiniGames } from '@/types/minigames';
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FC } from 'react';
 
 interface Props {
@@ -26,13 +27,25 @@ const StatusConfig: Dict<{ label: string; color: string }> = {
 };
 
 const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, status, icon_url, client_name } }) => {
+  const router = useRouter();
   const { label, color } = StatusConfig[status] || {};
   const canPlay = status === GameStatus.IN_PROGRESS;
 
   return (
     <div className="px-6 py-7 transition-colors bg-[#F7E9CC] group hover:bg-white border-2 border-basic-gray rounded-base">
-      <div className="relative w-[25rem] h-[11.25rem] rounded-base overflow-hidden">
-        <Image className="object-cover" src={img_url} alt="" fill sizes="100%" unoptimized priority />
+      <div
+        className="relative w-[25rem] h-[11.25rem] rounded-base overflow-hidden cursor-pointer"
+        onClick={() => router.push(`/minigames/details/${client_id}`)}
+      >
+        <Image
+          className="object-cover transition-transform origin-center hover:scale-105"
+          src={img_url}
+          alt=""
+          fill
+          sizes="100%"
+          unoptimized
+          priority
+        />
 
         <div
           className="absolute left-0 top-2 w-[7.625rem] h-9 bg-black/50 rounded-r-lg leading-9 text-center"
@@ -60,7 +73,7 @@ const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, 
             className={cn([
               'w-[12.75rem]',
               canPlay &&
-                "group-hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]",
+                "hover:!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue.png')]",
             ])}
             strokeType="yellow"
             strokeText="Play Now"

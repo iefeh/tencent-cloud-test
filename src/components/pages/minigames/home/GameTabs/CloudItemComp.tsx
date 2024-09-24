@@ -1,7 +1,10 @@
-import BgImageComp from "@/components/common/BgImage"
+/**
+ * 云 随滚动条移动的组件 ----（暂时留存一份，防止回档）
+*/
+import S3Image from '@/components/common/medias/S3Image';
 import { CSSProperties, useEffect, useRef, FC, useMemo } from "react"
 import { cn } from "@nextui-org/react";
-import { swiperSpeed } from "@/pages/minigames"
+import { aniSpeed } from "@/pages/minigames"
 
 export type CloudItemPosition = 'lt' | 'lb' | 'rt' | 'rb'
 interface CloudItemProps {
@@ -13,10 +16,10 @@ interface CloudItemProps {
 const CloudItemComp: FC<CloudItemProps> = (props) => {
   const { item, inAni } = props || {}
   const { url, classNames, style = {} } = item || {}
-  const itemRef = useRef<HTMLDivElement>(null)
+  const itemRef = useRef<HTMLImageElement>(null)
   const countRef = useRef<number>(1)
 
-  const step = swiperSpeed / 16.6
+  const step = aniSpeed / 16.6
 
   const getStepValue = (top: number = 1) => {
     if (!itemRef.current) return
@@ -112,10 +115,11 @@ const CloudItemComp: FC<CloudItemProps> = (props) => {
   }, [inAni])
 
   return (
-    <BgImageComp
-      refEl={itemRef}
+    <S3Image
+      ref={itemRef}
       src={url}
-      classNames={cn([
+      className={cn([
+        'absolute object-contain',
         'pointer-events-none',
         'z-10',
         classNames,

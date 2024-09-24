@@ -48,7 +48,7 @@ function LGButton(props: Props) {
   const router = useRouter();
   const onLinkClick = () => {
     if (needAuth && !userInfo) {
-      toggleLoginModal(true);
+      toggleLoginModal(true, false);
       return;
     }
 
@@ -103,7 +103,8 @@ function LGButton(props: Props) {
     <Button
       className={cn([
         'h-auto text-sm px-6 py-1 border-2 border-solid text-white transition-all duration-1000 font-poppins-medium bg-transparent cursor-pointer box-border',
-        'hover:border-none hover:px-[calc(1.5rem_+_2px)] hover:py-[calc(0.25rem_+_2px)] hover:text-black hover:bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
+        'hover:border-none hover:px-[calc(1.5rem_+_2px)] hover:py-[calc(0.25rem_+_2px)] hover:text-black',
+        linearDisabled || 'hover:bg-[linear-gradient(80deg,#D9A970,#EFEBC5)]',
         disabled
           ? '!text-[#999] !border-[#999] !opacity-100'
           : actived

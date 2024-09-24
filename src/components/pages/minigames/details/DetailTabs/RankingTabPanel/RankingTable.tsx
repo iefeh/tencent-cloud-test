@@ -1,8 +1,4 @@
-import EmptyContent from '@/components/common/EmptyContent';
-import { queryMiniGameLeaderboardAPI } from '@/http/services/minigames';
-import CircularLoading from '@/pages/components/common/CircularLoading';
-import { useMGDContext } from '@/store/MiniGameDetails';
-import { MiniGames } from '@/types/minigames';
+import type { MiniGames } from '@/types/minigames';
 import {
   Popover,
   PopoverContent,
@@ -15,49 +11,52 @@ import {
   TableRow,
   cn,
 } from '@nextui-org/react';
-import { observer } from 'mobx-react-lite';
+import dayjs from 'dayjs';
 import Image from 'next/image';
-import { useState, type CSSProperties, type FC, useEffect } from 'react';
+import type { CSSProperties, FC } from 'react';
+import { isMobile } from 'react-device-detect';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import S3Image from '@/components/common/medias/S3Image';
 
-const RankingTabPanel: FC = () => {
-  const { data } = useMGDContext();
-  const [ranking, setRanking] = useState<MiniGames.GameDetialLeaderboard | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { leaderboard, user_rank } = ranking || {};
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
+
+interface Props {
+  ranking?: MiniGames.GameDetialLeaderboardItem | null;
+}
+
+const RankingTable: FC<Props> = ({ ranking }) => {
+  const { lbInfos: leaderboard, user_rank, start_time } = ranking || {};
   const columns = ['Rank', 'Player', 'Score'];
   const varStyles = { '--stroke-color': '#7A0A08' } as CSSProperties;
 
-  async function queryLeaderboard() {
-    if (!data?.client_id) {
-      setRanking(null);
-      return;
-    }
-
-    setLoading(true);
-    const res = await queryMiniGameLeaderboardAPI({ client_id: data.client_id });
-    setRanking(res?.ranking || null);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    queryLeaderboard();
-  }, [data]);
-
   return (
-    <div className="pt-6 px-[1.875rem] pb-9 rounded-[1.25rem] bg-[#F7E9CC] relative" style={varStyles}>
-      {loading ? (
-        <CircularLoading />
-      ) : !ranking ? (
-        <EmptyContent />
-      ) : (
+    <div className="flex-1">
+      <div className="w-full h-6 flex justify-between items-center mb-6">
+        <div className="max-w-fit px-0 py-0 text-3xl leading-none">Leaderboard</div>
+
+        {start_time ? <div>{dayjs(start_time).tz(dayjs.tz.guess()).format('MMMM DD, YYYY, zzz')}</div> : '--'}
+      </div>
+
+      <div
+        className={cn([
+          'pt-6 px-[1.875rem] pb-9 rounded-[1.25rem] bg-[#F7E9CC] relative overflow-hidden flex flex-col flex-1',
+          !isMobile && !ranking && 'h-[33rem]',
+        ])}
+        style={varStyles}
+      >
         <Table
           aria-label="Events participated"
           classNames={{
+            base: 'flex-1',
             table: 'border-collapse',
             wrapper: 'bg-transparent shadow-none p-0 rounded-none',
             thead: '[&>tr:nth-child(2)]:hidden rounded-tl-[1.25rem]',
-            tbody: 'pl-[2.1875rem] pr-[1.1875rem] ',
-            tr: 'relative',
+            tbody: 'w-full max-h-[21.75rem] block overflow-auto has-scroll-bar',
+            tr: 'relative table table-fixed w-full rounded-base',
             th: 'bg-transparent text-white text-xl leading-none outline-none p-0 h-auto',
             td: '',
           }}
@@ -80,23 +79,22 @@ const RankingTabPanel: FC = () => {
           <TableBody emptyContent={'No history found.'}>
             {(leaderboard || []).map((row, index) => (
               <TableRow key={index} className="[&:nth-child(2n+1)]:bg-[#E4D4B2] h-[4.125rem]">
-                <TableCell className="rounded-l-base pl-5">
-                  <Image
-                    className="object-contain w-[2.0625rem] h-[2.0625rem]"
-                    src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${row.rank}.png`}
-                    alt=""
-                    width={66}
-                    height={66}
-                    unoptimized
-                    priority
-                  />
+                <TableCell className="rounded-l-base pl-5 w-[9.625rem]">
+                  {row.rank <= 5 ? (
+                    <S3Image
+                      className="object-contain w-[2.0625rem] h-[2.0625rem]"
+                      src={`/minigames/icons/icon_${row.rank}.png`}
+                    />
+                  ) : (
+                    <div className="text-brown text-2xl w-[2.0625rem] text-center">{row.rank || '-'}</div>
+                  )}
                 </TableCell>
 
-                <TableCell className="pl-5">
+                <TableCell className="pl-5 w-80">
                   <Popover placement="bottom" showArrow={true}>
                     <PopoverTrigger>
                       <div className="flex items-center">
-                        <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown">
+                        <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown flex-shrink-0">
                           <Image
                             className="object-contain"
                             src={
@@ -126,25 +124,28 @@ const RankingTabPanel: FC = () => {
             ))}
           </TableBody>
         </Table>
-      )}
 
-      <div className="flex items-center bg-[#E4D4B2] rounded-base border-1 border-dashed border-[#8F5535] h-20 mt-3 pl-6">
-        <span className="text-brown text-2xl">My Rank</span>
+        <div className="flex items-center bg-[#E4D4B2] rounded-base border-1 border-dashed border-[#8F5535] h-20 mt-3 pl-6">
+          <span className="text-brown text-2xl">My Rank</span>
 
-        <Image
-          className="object-contain w-[3.125rem] h-[3.125rem] ml-11"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_star.png"
-          alt=""
-          width={100}
-          height={100}
-          unoptimized
-          priority
-        />
+          <Image
+            className="object-contain w-[3.125rem] h-[3.125rem] ml-11"
+            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_star.png"
+            alt=""
+            width={100}
+            height={100}
+            unoptimized
+            priority
+          />
 
-        <span className="ml-[0.875rem] stroke-text-normal text-3xl text-[#FDC511]" data-text={user_rank || '-'}></span>
+          <span
+            className="ml-[0.875rem] stroke-text-normal text-3xl text-[#FDC511]"
+            data-text={user_rank || '-'}
+          ></span>
+        </div>
       </div>
     </div>
   );
 };
 
-export default observer(RankingTabPanel);
+export default RankingTable;

@@ -22,15 +22,21 @@ declare namespace MiniGames {
     thumb?: string;
   }
 
-  interface GameDetialLeaderboard {
-    game: string;
-    leaderboard: {
+  interface GameDetialLeaderboardItem {
+    lbInfos: {
       rank: number;
       player: string;
       score: number;
       avatar: string;
     }[];
     user_rank: string;
+    start_time: number;
+    end_time: number;
+  }
+
+  interface GameDetialLeaderboard {
+    latest: GameDetialLeaderboardItem;
+    previous: GameDetialLeaderboardItem;
   }
 
   interface GameDetailDTO {
@@ -66,6 +72,7 @@ declare namespace MiniGames {
     url: string;
     share: string;
     share_reward_claimed: boolean;
+    share_reward_ticket_amount: boolean;
     icon_url: string;
     image_url: string;
   }

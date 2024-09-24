@@ -20,6 +20,6 @@ const userBackpackSchema = new Schema<IUserBackpack>({
 
 
 const connection = connectToMongoDb2048();
-const UserBackpackModel: Model<IUserBackpack> = models.userBackpack || connection.model<IUserBackpack>("userBackpack", userBackpackSchema, 'userBackpack');
+const UserBackpackModel: Model<IUserBackpack> = models.UserBackpack || connection.model<IUserBackpack>("userBackpack", userBackpackSchema, 'userBackpack');
 export default UserBackpackModel;
 

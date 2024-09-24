@@ -113,3 +113,12 @@ export const AcceleratorProps = {
     title: 'Moonveil Badge holders can receive +5% to 100% based on your Badge level:',
   },
 };
+
+export const enum TokenRewardDistributeType {
+  // 用户verify任务以后直接发奖
+  DirectDistribute = 'direct_distribute',
+  // 用户verify任务以后, 统一在指定时间发奖
+  AutoRaffle = 'auto_raffle',
+  // 用户verify任务以后, 统一手工发奖
+  ManualRaffle = 'manual_raffle',
+}

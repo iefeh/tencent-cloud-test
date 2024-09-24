@@ -19,7 +19,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
         res.json(response.invalidParams());
         return
     }
-    let t: string | undefined; 
+    let t: string | undefined;
     if (tag) {
         t = String(tag);
     }
@@ -72,7 +72,7 @@ function enrichQuestNewTag(quests: any[]) {
             q.is_new = true;
         }
         // 移除任务的创建时间
-        delete q.created_time; 
+        delete q.created_time;
     }
 
 }
@@ -103,6 +103,7 @@ export async function paginationQuests(pageNum: number, pageSize: number, catego
             'category': category,
             //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,结束时间在赛季期间或开始时间结束时间横跨整个赛季。
             '$and': [{ '$or': [{ 'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'end_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'start_time': { $lte: currentSeason.start_time }, 'end_time': { $gte: currentSeason.end_time } }] }],
+            '$or': [{ "user_ids": { "$exists": false } }, { "user_ids": userId }]
         }
     };
 
@@ -146,6 +147,8 @@ export async function paginationQuests(pageNum: number, pageSize: number, catego
                 'active': 0,
                 'order': 0,
                 'reward.range_reward_ids': 0,
+                'reward.season_pass_progress': 0,
+                'user_ids': 0
             }
         },
         {

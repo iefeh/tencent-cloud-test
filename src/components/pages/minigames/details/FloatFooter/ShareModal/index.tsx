@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 
 const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   const { data, queryDetails } = useMGDContext();
-  const { share, share_reward_claimed } = data || {};
+  const { share, share_reward_claimed, share_reward_ticket_amount } = data || {};
   const { onConnect, loading: connectLoading } = useConnect(MediaType.TWITTER, onClaim);
   const [loading, setLoading] = useState(false);
   const disclosure = useDisclosure();
@@ -43,12 +43,15 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
     setLoading(false);
   }
 
+  const is2048 = data?.client_id === 'b3bde096-1ab6-4a5e-be03-eb08c0cb5856';
+
   return (
     <>
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         hideCloseButton
+        placement="center"
         classNames={{
           base: 'max-w-[42.5rem] text-brown rounded-none bg-transparent shadow-none',
           body: 'pl-0 pb-0 pt-5 pr-6',
@@ -60,12 +63,12 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
               <ModalBody>
                 <div className="bg-[#F7E9CC] border-2 border-basic-gray rounded-base overflow-hidden pt-[3.875rem] pl-[4.5rem] pr-[5.25rem] pb-[3.25rem] font-jcyt6">
                   <p>
-                    Welcome to Moonveil Mini Games! During each round, you can share content on Twitter to earn one free
-                    tickets. Please make sure to follow the required Tweet Template. After sent the post, you can verify
-                    to claim your rewards.
+                    Welcome to Moonveil Mini Games! During each round, you can share content on Twitter to earn{' '}
+                    {share_reward_ticket_amount || '-'} free tickets. Please make sure to follow the required Tweet
+                    Template. After sent the post, you can verify to claim your rewards.
                   </p>
 
-                  <div className="flex justify-center gap-x-[0.375rem] mt-12">
+                  <div className="flex flex-col md:flex-row justify-center items-center gap-x-[0.375rem] gap-y-4 mt-12">
                     <StrokeButton
                       className="w-60"
                       strokeType="brown"
