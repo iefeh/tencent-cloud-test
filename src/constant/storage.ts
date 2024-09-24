@@ -6,3 +6,4 @@ export const KEY_AUTHORIZATION_CONNECT = '__authorizations_connect__';
 export const KEY_AUTHORIZATION_AUTH = '__authorizations_auth__';
 export const KEY_INVITE_CODE = '__invite_code__';
 export const KEY_AUTHORIZATION_AA = '__authorization_aa__';
+export const KEY_AUTH_CODE_AA = '__authorization_auth_code_aa__';
