@@ -1,8 +1,6 @@
 import PageDesc from '@/components/common/PageDesc';
 import { Tab, Tabs, cn } from '@nextui-org/react';
-import Image from 'next/image';
 import { type FC, type Key, useState, useEffect, useRef } from 'react';
-import usePools from '../hooks/usePools';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import EmptyContent from '@/components/common/EmptyContent';
 import PoolCard from '../PoolCard';
