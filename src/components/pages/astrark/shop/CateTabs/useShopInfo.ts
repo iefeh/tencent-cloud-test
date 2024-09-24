@@ -101,5 +101,5 @@ export default function useShopInfo() {
     }
   }, [token]);
 
-  return { loading, cates };
+  return { loading, cates, queryShopInfo };
 }
