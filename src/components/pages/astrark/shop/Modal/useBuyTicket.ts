@@ -10,7 +10,7 @@ import { buyTicketPermitAPI } from '@/http/services/astrark';
 export async function queryPermit(permitProp: AstrArk.PermitProps) {
   const { product_id = '', token_id } = permitProp;
   const res = await buyTicketPermitAPI({ product_id, token_id });
-  if (!res?.chain_id) return null;
+  if (!res?.chain_id && !res?.reach_purchase_limit) return null;
 
   return res;
 }
