@@ -45,7 +45,7 @@ const WalletModal: FC<ModalProps> = (props) => {
     // 表示未获取到钱包余额，开放 approve 重新拉取钱包
     if (balance === null) return true;
 
-    return Number(balance) >= itemInfo?.product_usdc_price_with_discount;
+    return Number(balance) >= +(itemInfo?.product_token_price_with_discount || 0);
   })();
 
   useEffect(() => {
