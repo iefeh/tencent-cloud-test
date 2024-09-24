@@ -20,12 +20,6 @@ const useBuyTicket = () => {
   });
   const [errorMessage, setErrorMessage] = useState('');
 
-  const beReadyForBuyTicket = async (chain_id: string | undefined) => {
-    if (!chain_id) return;
-    const res = await beReady(chain_id);
-    return res;
-  };
-
   async function onApprove(itemInfo: AstrArk.PriceToken) {
     const {
       address: contractAddress,
@@ -75,7 +69,7 @@ const useBuyTicket = () => {
     return !!result;
   }
 
-  return { approveLoading, loading, errorMessage, onApprove, onButtonClick, beReadyForBuyTicket };
+  return { approveLoading, loading, errorMessage, onApprove, onButtonClick, beReadyForBuyTicket: beReady };
 };
 
 export default useBuyTicket;
