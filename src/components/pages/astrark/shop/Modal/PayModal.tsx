@@ -14,6 +14,7 @@ import PayButton from "../Buttons";
 import useBuyTicket, { queryPermit } from "./useBuyTicket"
 import { buyTicketPermitAPI } from "@/http/services/astrark";
 import { toast } from "react-toastify";
+import CircularLoading from "@/pages/components/common/CircularLoading";
 
 export interface PayModalProps {
   disclosure: Disclosure;
@@ -99,7 +100,7 @@ const PayModal: FC<PayModalProps> = (props) => {
     }
   }, [isOpen])
 
-  const { questInfo, getQuestInfo, cdText } = useQuestInfo({ open: isOpen })
+  const { questInfo, getQuestInfo, cdText, loading: questLoading } = useQuestInfo({ open: isOpen })
 
   async function getPermit() {
     const info = getCurSelectedKey();
@@ -245,7 +246,7 @@ const PayModal: FC<PayModalProps> = (props) => {
                   <ShopItem {...shopItemProps}></ShopItem>
                   {renderTips(shopItemProps.item?.type)}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 relative">
                   {renderTable()}
                   <div className="mt-4 flex justify-center">
                     <PayButton
@@ -261,6 +262,8 @@ const PayModal: FC<PayModalProps> = (props) => {
                       <div className="text-[.875rem] w-[12.125rem]">Price will update in {cdText}</div>
                     </div>
                   </div>
+
+                  {questLoading && <CircularLoading />}
                 </div>
               </ModalBody>
             </>
