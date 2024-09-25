@@ -1,5 +1,5 @@
 import { KEY_LOCALE, Locale } from '@/constant/locale';
-import { KEY_AUTHORIZATION_AA } from '@/constant/storage';
+import { KEY_AUTHORIZATION_AA, KEY_AUTH_CODE_AA } from '@/constant/storage';
 import { confirmSignUpAPI } from '@/http/services/login';
 import { makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
@@ -51,6 +51,11 @@ class UserStore {
     this.locale = val || Locale.EN;
     localStorage.setItem(KEY_LOCALE, this.locale);
   };
+
+  logout = () => {
+    localStorage.removeItem(KEY_AUTHORIZATION_AA);
+    localStorage.removeItem(KEY_AUTH_CODE_AA);
+  }
 }
 
 export default UserStore;

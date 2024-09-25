@@ -10,7 +10,7 @@ import useModalDataHook from '../Modal/useModalDataHook';
 import useShopInfo from './useShopInfo';
 import { observer } from 'mobx-react-lite';
 
-const CateTabs: FC = () => {
+const CateTabs: FC<{ onAuthFailed?: () => void }> = ({ onAuthFailed }) => {
   const [listTabs, setListTabs] = useState<CateTab[]>([]);
   const [selectedKey, setSelectedKey] = useState<string>();
   const [selectedListKey, setSelectedListKey] = useState<string>();
@@ -18,7 +18,7 @@ const CateTabs: FC = () => {
 
   const { modalData, openModal } = useModalDataHook();
 
-  const { cates: tabs, loading, queryShopInfo } = useShopInfo();
+  const { cates: tabs, loading, queryShopInfo } = useShopInfo({ onAuthFailed });
 
   function onSelectionChange(key: Key, listKey?: string) {
     const newKey = key.toString();
@@ -41,7 +41,7 @@ const CateTabs: FC = () => {
 
   useEffect(() => {
     if (selectedKey) onSelectionChange(selectedKey, selectedListKey);
-  }, [tabs])
+  }, [tabs]);
 
   return (
     <div className="flex-1 relative flex flex-nowrap gap-14 z-0 pr-12 overflow-hidden">
