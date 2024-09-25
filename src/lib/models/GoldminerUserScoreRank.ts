@@ -47,9 +47,13 @@ export async function getGoldminerLeaderboard(userId: string | undefined, lbId: 
     const userIdInfoMap: Map<string, any> = new Map<string, any>(infos.map(info => [info.user_id, info]));
     let rank: number = 0;
     for (let lb of lbInfos) {
+        const u = userIdInfoMap.get(lb.uid);
+        if (!u) {
+            continue;
+        }
         lb.rank = ++rank;
-        lb.player = userIdInfoMap.get(lb.uid).username;
-        lb.avatar = userIdInfoMap.get(lb.uid).avatar_url;
+        lb.player = u.username;
+        lb.avatar = u.avatar_url;
         lb.score = lb.sum_score;
         delete lb.sum_score;
         delete lb.uid;
