@@ -12,17 +12,22 @@ export default function useToken() {
 
   async function initToken() {
     const localToken = getLocalToken();
-    const localCode = localStorage.getItem(KEY_AUTH_CODE_AA);
+    const localCode = localStorage.getItem(KEY_AUTH_CODE_AA) || '';
     const sp = new URLSearchParams(router.asPath.match(/\?.*/)?.[0] || '');
-    const authorization_code = sp.get('authorization_code');
+    const authorization_code = sp.get('authorization_code') || '';
 
-    if (localToken && authorization_code && authorization_code === localCode) {
+    if (localToken && (!authorization_code || authorization_code === localCode)) {
       init();
       return;
     }
 
-    if (!authorization_code) return;
+    if (!authorization_code) {
+      authDisclosure.onOpen();
+      return;
+    }
 
+    setToken('');
+    localStorage.removeItem(KEY_AUTH_CODE_AA);
     const res = await exchangeAuthCodeAPI({ authorization_code: authorization_code as string });
     if (res?.access_token) {
       localStorage.setItem(KEY_AUTH_CODE_AA, authorization_code);
