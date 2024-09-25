@@ -43,7 +43,7 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
       ],
     },
     {
-      title: 'Jackpot Guarantee',
+      title: 'Guaranteed Reward',
       items: ['Each pool ensures that the first 3,000 draws collectively guarantee a $500 cash prize.'],
     },
     {
