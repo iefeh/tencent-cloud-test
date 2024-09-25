@@ -11,6 +11,7 @@ interface ContractProviderConfig {
 export interface TransactionParams {
   /** 跳过登录检测 */
   passLogin?: boolean;
+  noWait?: boolean;
   params: any;
   config?: Partial<TransactionConfig>;
   options?: TransactionRequest;
@@ -119,7 +120,7 @@ class TransactionProvider {
     return true;
   };
 
-  transaction = async ({ params, config = {}, options = {}, onError }: TransactionParams) => {
+  transaction = async ({ noWait, params, config = {}, options = {}, onError }: TransactionParams) => {
     const realConfig = Object.assign({}, this.config, config);
     const { abi, method, chainId, contractAddress } = realConfig;
     console.log('transaction config:', realConfig);
@@ -140,6 +141,7 @@ class TransactionProvider {
       } else {
         transaction = await contract[method](params, options);
       }
+      if (noWait) return transaction;
       const result = await transaction.wait();
       console.log('transaction result:', result);
       return result;
