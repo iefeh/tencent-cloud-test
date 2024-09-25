@@ -107,7 +107,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span>Close in {limitedTime}</span>
+            <span className='whitespace-nowrap'>Close in {limitedTime}</span>
           </div>
 
           <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
@@ -120,7 +120,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span>Limited Qty : {item?.limited_rewards?.length || 0}</span>
+            <span className='whitespace-nowrap'>Limited Reward Qty : {item?.limited_rewards?.length || 0}</span>
           </div>
         </div>
 
@@ -173,7 +173,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
 
             <PopoverContent>
               <div>
-                <div className="text-lg">You need to meet the following condition:</div>
+                <div className="text-lg">You need to meet the following requirement:</div>
                 <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
               </div>
             </PopoverContent>

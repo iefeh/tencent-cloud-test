@@ -9,6 +9,27 @@ export enum LotteryPoolRequirementType {
   WhiteList = 'whitelist'
 }
 
+export type NFTRequirement = {
+  contract_addr: string;
+  name: string;
+}
+
+export type BadgeRequirement = {
+  badge_id: string;
+  name: string;
+  lvl: number;
+}
+
+export type MBRequirementment = {
+  mb_amount: number;
+}
+
+export type WhitelistRequirement = {
+  whitelist_id: string;
+  whitelist_entity_type: string;
+  image_url: string;
+}
+
 export interface ILotteryPoolRequirement extends Document {
   id: string,
   lottery_pool_id: string,

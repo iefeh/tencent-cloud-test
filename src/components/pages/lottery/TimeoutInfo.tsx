@@ -23,7 +23,7 @@ const TimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
       />
 
       <p className="font-semakin text-xl bg-gradient-to-b from-[#E7D4A9] to-[#DBAC74] bg-clip-text text-transparent relative z-0 w-min whitespace-nowrap ml-auto">
-        The lottery pool will close in:
+        The draw pool will close in:
       </p>
 
       <div className="flex items-center w-min font-semakin text-xl relative z-0 ml-auto mt-3">
