@@ -82,7 +82,7 @@ const WalletModal: FC<ModalProps> = (props) => {
     const { token_id, product_id } = itemInfo || {};
     if (!token_id || !product_id) return;
 
-    const res = await onButtonClick({
+    const res = await onButtonClick(isOrigin, {
       token_id,
       product_id,
     });
