@@ -16,7 +16,7 @@ const useQuestInfo = ({ open }: {
   const [ loading, setLoading ] = useState<boolean>(false);
 
   const curIdRef = useRef<string>();
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<number>(0);
 
   const calcTimeRemaining = (startTime: number | undefined) => {
     if (!startTime) return 0;
@@ -36,7 +36,7 @@ const useQuestInfo = ({ open }: {
 
   const getQuestInfo = async (id: string | undefined) => {
     if (!id) return;
-    setLoading(true)
+    if (!timerRef.current) setLoading(true);
     curIdRef.current = id;
     let res = await queryShopItemAPI(id);
     setLoading(false)
@@ -47,7 +47,7 @@ const useQuestInfo = ({ open }: {
 
   const queryLoop = async () => {
     if (!curIdRef.current) return;
-    timerRef.current = setTimeout(async() => {
+    timerRef.current = window.setTimeout(async() => {
       await getQuestInfo(curIdRef.current)
     }, sleepTime)
   }
@@ -56,6 +56,7 @@ const useQuestInfo = ({ open }: {
     if (!timerRef.current) return
 
     clearTimeout(timerRef.current)
+    timerRef.current = 0
     setLoading(false)
   }
 
@@ -74,6 +75,7 @@ const useQuestInfo = ({ open }: {
 
   useEffect(() => {
     if (!open) {
+      clearTimer();
       setTimeRemaining(0)
       setCdText('00:00')
     }
