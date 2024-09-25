@@ -121,8 +121,6 @@ const PayModal: FC<PayModalProps> = (props) => {
   }
 
   const toBuy = async () => {
-    const info = getCurSelectedKey()
-
     setLoading(true);
 
     const permitRes = await getPermit();

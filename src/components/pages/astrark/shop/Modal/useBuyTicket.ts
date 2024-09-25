@@ -4,8 +4,9 @@ import erc20ABI from '@/http/abi/erc20.json';
 import { toast } from 'react-toastify';
 import type { AstrArk } from '@/types/astrark';
 import { useState } from 'react';
-import Web3 from 'web3';
 import { buyTicketPermitAPI } from '@/http/services/astrark';
+import { toWei } from '@/utils/wallet/calc';
+import { isHexZero } from '@/utils/common';
 
 export async function queryPermit(permitProp: AstrArk.PermitProps) {
   const { product_id = '', token_id } = permitProp;
@@ -39,21 +40,21 @@ const useBuyTicket = (
     } = itemInfo;
     const result = await onApproveTransaction({
       passLogin: true,
-      params: [permitContractAddress, Web3.utils.toWei(Math.ceil(product_token_price_with_discount) * 2, 'ether')],
+      params: [permitContractAddress, toWei(Math.ceil(product_token_price_with_discount) * 2, itemInfo.decimal).toString()],
       config: { chainId: chain_id, contractAddress },
     });
 
     return !!result;
   }
 
-  async function onButtonClick(permitProp: AstrArk.PermitProps, data = permitData) {
+  async function onButtonClick(isOriginal: boolean, permitProp: AstrArk.PermitProps, data = permitData) {
     const { contract_address, chain_id, permit } = data || {};
     let nextRes: any = null;
     const result = await onTransaction({
       passLogin: true,
       params: permit,
       config: { chainId: chain_id, contractAddress: contract_address },
-      options: { value: permit?.tokenAmount },
+      options: isOriginal ? { value: permit?.tokenAmount } : {},
       onError: async (code, message = '') => {
         if (message && message.indexOf('unexpected message sender') > -1) {
           toast.error(
@@ -86,7 +87,7 @@ const useBuyTicket = (
           const nextPermit = await expireCallback?.();
           if (!nextPermit) return true;
 
-          nextRes = await onButtonClick(permitProp, nextPermit);
+          nextRes = await onButtonClick(isOriginal, permitProp, nextPermit);
           return true;
         }
       },
