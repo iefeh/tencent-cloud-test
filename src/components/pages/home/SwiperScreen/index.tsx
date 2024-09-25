@@ -18,7 +18,7 @@ const slides = [
   LoyaltyProgramSlide,
   Game2048Slide,
   MinigamesSlide,
-  LotterySlide,
+  // LotterySlide,
   NFT2Slide,
   InviteNewSlide,
   RaceSlide,
