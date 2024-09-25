@@ -122,18 +122,17 @@ const PayModal: FC<PayModalProps> = (props) => {
 
   const toBuy = async () => {
     const info = getCurSelectedKey()
-    const chain_id = info?.network.chain_id
-    if (!chain_id) return;
 
     setLoading(true);
-    const res = await beReadyForBuyTicket(chain_id);
-    if (!res) {
+
+    const permitRes = await getPermit();
+    if (!permitRes) {
       setLoading(false);
       return;
     }
 
-    const permitRes = await getPermit();
-    if (!permitRes) {
+    const res = await beReadyForBuyTicket(permitRes.chain_id);
+    if (!res) {
       setLoading(false);
       return;
     }
