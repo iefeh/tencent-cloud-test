@@ -19,13 +19,13 @@ const useQuestInfo = ({ open }: {
   const timerRef = useRef<NodeJS.Timeout>();
 
   const calcTimeRemaining = (startTime: number | undefined) => {
-    if (!startTime) return 0
-    const now = Date.now().valueOf()
+    if (!startTime) return 0;
+    const now = Date.now().valueOf();
 
     if (now - startTime > 10 * 60 * 1000) {
-      return 0
+      return 0;
     } else {
-      return now - startTime + 10 * 60 * 1000
+      return 10 * 60 * 1000 - (now - startTime);
     }
   }
 
