@@ -47,7 +47,8 @@ declare namespace AstrArk {
     token_id: string; 
     token_name: string; 
     icon_url: string; 
-    symbol: string; 
+    symbol: string;
+    decimal: number;
     product_price_discount: number; 
     product_token_price_with_discount: number; 
     product_usdc_price_with_discount: number;
