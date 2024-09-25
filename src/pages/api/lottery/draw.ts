@@ -15,7 +15,7 @@ import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryDrawHistory, {
     IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
-import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
+import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
@@ -37,7 +37,7 @@ const drawOnce = {
   icon_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png",
   badge_id: "",
   first_three_draw_probability: 0,
-  next_six_draw_probability: 0,
+  next_seven_draw_probability: 0,
   inventory_amount: null,
   min_reward_draw_amount: 0,
   guaranteed_draw_count: [],
@@ -114,7 +114,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
   const lotteryPool: ILotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
   // 1-3抽和4-10抽奖池和中奖几率不同所以要分别计算
   let firstThreeDrawCumulativeProbabilities = 0;
-  let nextSixDrawCumulativeProbabilities = 0;
+  let nextSevenDrawCumulativeProbabilities = 0;
   let userRewards: IUserLotteryRewardItem[] = [];
   let availableRewards: ILotteryRewardItem[] = [];
   let guaranteedRewards: ILotteryRewardItem[] = [];
@@ -134,20 +134,23 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
     }
   }
   const firstThreeThresholds = availableRewards.map(reward => (firstThreeDrawCumulativeProbabilities += reward.first_three_draw_probability));
-  const nextSixThresholds = availableRewards.map(reward => (nextSixDrawCumulativeProbabilities += reward.next_six_draw_probability));
+  const nextSevenThresholds = availableRewards.map(reward => (nextSevenDrawCumulativeProbabilities += reward.next_seven_draw_probability));
   const totalUserDrawAmount = userLotteryPool? userLotteryPool.draw_amount % 10 : 0;
   let itemInventoryDeltaMap: Map<string, number> = new Map<string, number>();
   let rewardNeedVerify: boolean = false;
   // 执行抽奖, 每次抽奖单独判断概率
-  for (let i = 1; i<= drawCount; i++) {
+  for (let i = 1; i< drawCount; i++) {
     // 根据用户已抽取次数计算当前是第几抽
     let currentDrawNo = totalUserDrawAmount + i;
+    if (currentDrawNo > 10) {
+      currentDrawNo %= 10;
+    }
     let drawResult: { drawResult: IUserLotteryRewardItem, verifyNeeded: boolean};
     if (currentDrawNo <= 3) {
       drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     else {
-      drawResult = await getDrawResult(userId, nextSixDrawCumulativeProbabilities, nextSixThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
+      drawResult = await getDrawResult(userId, nextSevenDrawCumulativeProbabilities, nextSevenThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     userRewards.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
