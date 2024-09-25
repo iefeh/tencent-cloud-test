@@ -7,9 +7,10 @@ import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import useBuyTicket from './useBuyTicket';
 import { observer } from 'mobx-react-lite';
 import type { AstrArk } from '@/types/astrark';
-import Web3 from 'web3';
 import { isHexZero } from '@/utils/common';
 import { toast } from 'react-toastify';
+import BN from 'bignumber.js';
+import { fromWei, toWei } from '@/utils/wallet/calc';
 
 interface ModalProps {
   permit?: AstrArk.PermitRespose | null;
@@ -37,16 +38,16 @@ const WalletModal: FC<ModalProps> = (props) => {
   const balance = useMemo(() => {
     if (walletInfo.balance === undefined) return null;
 
-    return Number(Web3.utils.fromWei(walletInfo?.balance || '', 'ether')).toFixed(5);
+    return fromWei(walletInfo?.balance, itemInfo?.decimal, 5);
   }, [walletInfo?.balance]);
 
-  const isAvailable = (() => {
+  const isAvailable = useMemo(() => {
     if (itemInfo === undefined) return false;
     // 表示未获取到钱包余额，开放 approve 重新拉取钱包
     if (balance === null) return true;
 
-    return Number(balance) >= +(itemInfo?.product_token_price_with_discount || 0);
-  })();
+    return BN(walletInfo?.balance || 0).gte(toWei(itemInfo?.product_token_price_with_discount, itemInfo?.decimal));
+  }, [walletInfo?.balance, itemInfo]);
 
   useEffect(() => {
     if (isAvailable) {
