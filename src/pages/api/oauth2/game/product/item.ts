@@ -41,6 +41,7 @@ router.use(dynamicCors).get(async (req, res) => {
         icon_url: token.icon_url,
         symbol: token.symbol,
         address: token.address,
+        decimal: token.decimal,
         network: {
           chain_id: token.chain_id,
           name: token.block_chain.name,
