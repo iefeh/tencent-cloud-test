@@ -6,7 +6,8 @@ import type { AstrArk } from '@/types/astrark';
 import { useState } from 'react';
 import { buyTicketPermitAPI } from '@/http/services/astrark';
 import { toWei } from '@/utils/wallet/calc';
-import { isHexZero } from '@/utils/common';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import BN from 'bignumber.js';
 
 export async function queryPermit(permitProp: AstrArk.PermitProps) {
   const { product_id = '', token_id } = permitProp;
@@ -28,9 +29,14 @@ const useBuyTicket = (
     abi: erc20ABI,
     method: 'approve',
   });
+  const { loading: allowanceLoading, onTransaction: onAllowanceTransaction } = useTransaction({
+    abi: erc20ABI,
+    method: 'allowance',
+  });
   const [errorMessage, setErrorMessage] = useState('');
+  const { address } = useWeb3ModalAccount();
 
-  async function onApprove(itemInfo: AstrArk.PriceToken) {
+  async function onApprove(itemInfo: AstrArk.PriceToken, data: AstrArk.PermitRespose) {
     const permitContractAddress = permitData?.contract_address || '';
 
     const {
@@ -38,9 +44,29 @@ const useBuyTicket = (
       network: { chain_id },
       product_token_price_with_discount,
     } = itemInfo;
+
+    const allowanceRes = await onAllowanceTransaction({
+      passLogin: true,
+      noWait: true,
+      params: [address, permitContractAddress],
+      config: { chainId: chain_id, contractAddress },
+    });
+
+    console.log('approve allowance:', allowanceRes, data.permit.tokenAmount);
+    if (
+      allowanceRes !== undefined &&
+      allowanceRes !== null &&
+      BN(allowanceRes.toString()).gte(BN(data.permit.tokenAmount))
+    ) {
+      return true;
+    }
+
     const result = await onApproveTransaction({
       passLogin: true,
-      params: [permitContractAddress, toWei(Math.ceil(product_token_price_with_discount) * 2, itemInfo.decimal).toString()],
+      params: [
+        permitContractAddress,
+        toWei(Math.ceil(product_token_price_with_discount) * 2, itemInfo.decimal).toString(),
+      ],
       config: { chainId: chain_id, contractAddress },
     });
 
@@ -96,7 +122,14 @@ const useBuyTicket = (
     return !!result || !!nextRes;
   }
 
-  return { approveLoading, loading, errorMessage, onApprove, onButtonClick, beReadyForBuyTicket: beReady };
+  return {
+    approveLoading: approveLoading || allowanceLoading,
+    loading,
+    errorMessage,
+    onApprove,
+    onButtonClick,
+    beReadyForBuyTicket: beReady,
+  };
 };
 
 export default useBuyTicket;
