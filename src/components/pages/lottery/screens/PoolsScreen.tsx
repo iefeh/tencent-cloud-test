@@ -32,7 +32,7 @@ const PoolsScreen: FC = () => {
   return (
     <section className="max-w-[87.5rem] mx-auto relative z-0 px-8 md:px-0">
       <div className="flex justify-between items-center text-basic-yellow">
-        <div className="font-semakin text-2xl leading-none">More and $MORE Draw Pools</div>
+        <div className="font-semakin text-2xl leading-none">More and $MORE Draw Rewards</div>
 
         <Link href="/lottery/list" target="_self" className="text-base leading-none whitespace-nowrap hover:underline">
           More &gt;&gt;
