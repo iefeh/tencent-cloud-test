@@ -19,13 +19,13 @@ const useQuestInfo = ({ open }: {
   const timerRef = useRef<NodeJS.Timeout>();
 
   const calcTimeRemaining = (startTime: number | undefined) => {
-    if (!startTime) return 0
-    const now = Date.now().valueOf()
+    if (!startTime) return 0;
+    const now = Date.now().valueOf();
 
     if (now - startTime > 10 * 60 * 1000) {
-      return 0
+      return 0;
     } else {
-      return now - startTime + 10 * 60 * 1000
+      return 10 * 60 * 1000 - (now - startTime);
     }
   }
 
@@ -36,19 +36,19 @@ const useQuestInfo = ({ open }: {
 
   const getQuestInfo = async (id: string | undefined) => {
     if (!id) return;
+    setLoading(true)
     curIdRef.current = id;
     let res = await queryShopItemAPI(id);
+    setLoading(false)
     
     setTimeRemaining(calcTimeRemaining(res.price_updated_at))
     setQuestInfo(res);
   }
 
   const queryLoop = async () => {
-    setLoading(true)
     if (!curIdRef.current) return;
     timerRef.current = setTimeout(async() => {
       await getQuestInfo(curIdRef.current)
-      setLoading(false)
     }, sleepTime)
   }
 
@@ -80,6 +80,7 @@ const useQuestInfo = ({ open }: {
   }, [open])
 
   return {
+    loading,
     questInfo,
     getQuestInfo,
     cdText
