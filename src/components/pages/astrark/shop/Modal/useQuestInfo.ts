@@ -25,7 +25,7 @@ const useQuestInfo = ({ open }: {
     if (now - startTime > 10 * 60 * 1000) {
       return 0
     } else {
-      return now - startTime
+      return now - startTime + 10 * 60 * 1000
     }
   }
 
