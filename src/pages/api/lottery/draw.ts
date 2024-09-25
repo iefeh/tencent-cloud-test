@@ -139,7 +139,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
   let itemInventoryDeltaMap: Map<string, number> = new Map<string, number>();
   let rewardNeedVerify: boolean = false;
   // 执行抽奖, 每次抽奖单独判断概率
-  for (let i = 1; i< drawCount; i++) {
+  for (let i = 1; i<= drawCount; i++) {
     // 根据用户已抽取次数计算当前是第几抽
     let currentDrawNo = totalUserDrawAmount + i;
     if (currentDrawNo > 10) {
