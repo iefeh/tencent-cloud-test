@@ -70,12 +70,14 @@ export default function Video(props: Props) {
       player.autoplay(options.autoplay);
       player.src(options.sources);
 
-      if (!options.hasControlBar) {
-        const barEl = videoRef.current.querySelector(':scope .vjs-control-bar');
+      const barEl = videoRef.current.querySelector(':scope .vjs-control-bar');
 
+      if (!options.hasControlBar) {
         if (barEl) {
           barEl.parentElement?.removeChild(barEl);
         }
+      } else {
+        barEl?.classList.add('swiper-no-swiping');
       }
     }
   }, [options, videoRef]);
