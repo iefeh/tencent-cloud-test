@@ -4,6 +4,8 @@ import '@/styles/transition.scss';
 import '@/styles/table.css';
 import '@/styles/ani.scss';
 import '@/styles/scrollbar.scss';
+import '@/styles/swiper.scss';
+import '@/styles/video.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
@@ -49,7 +51,14 @@ BetterScroll.use(Pullup);
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets', '/AstrArk/shop'];
+  const whiteList = [
+    '/email/captcha/quickfill',
+    '/auth',
+    '/auth/connect',
+    '/oauth',
+    '/AstrArk/assets',
+    '/AstrArk/shop',
+  ];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
   const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
   const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop'];
