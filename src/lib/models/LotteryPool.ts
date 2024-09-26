@@ -28,7 +28,7 @@ export interface ILotteryRewardItem {
     // 前三抽中奖概率
     first_three_draw_probability: number,
     // 4-10抽中奖概率
-    next_six_draw_probability: number,
+    next_seven_draw_probability: number,
     // 奖励数量
     amount: number,
     // 徽章id，抽奖可能会奖励的徽章，这里只是为了展示用.
