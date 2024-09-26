@@ -1,7 +1,7 @@
 :root {
   --toastify-color-dark: #000;
-  --toastify-toast-min-height: 80px;
-  --toastify-toast-max-width: 431px;
+  --toastify-toast-min-height: 5rem;
+  --toastify-toast-max-width: 26.9375rem;
   /* --toastify-color-info: ; */
   --toastify-color-success: #4DDE6B;
   /* --toastify-color-warning: ; */
