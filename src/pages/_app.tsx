@@ -79,7 +79,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
-    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 10 : 12);
+    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 8 : 12);
     document.documentElement.style.fontSize = `${fontSize}px`;
 
     const ratio = window.devicePixelRatio;
