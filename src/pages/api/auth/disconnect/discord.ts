@@ -1,30 +1,28 @@
-import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
+import type { NextApiResponse } from "next";
+import { createRouter } from "next-connect";
 import * as response from "@/lib/response/response";
-import {mustAuthInterceptor, UserContextRequest} from "@/lib/middleware/auth";
-import {redis} from "@/lib/redis/client";
-import {AuthorizationType} from "@/lib/authorization/types";
+import { mustAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
+import { redis } from "@/lib/redis/client";
+import { AuthorizationType } from "@/lib/authorization/types";
 import UserDiscord from "@/lib/models/UserDiscord";
 import doTransaction from "@/lib/mongodb/transaction";
-import UserMetrics, { Metric,IUserMetrics } from "@/lib/models/UserMetrics";
+import UserMetrics, { Metric, IUserMetrics } from "@/lib/models/UserMetrics";
 import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
-    res.json(response.invalidParams('Disconnection is unavailable.'));
-        return;
     // 检查用户的绑定
-    const discord = await UserDiscord.findOne({user_id: req.userId!, deleted_time: null});
+    const discord = await UserDiscord.findOne({ user_id: req.userId!, deleted_time: null });
     if (!discord) {
         res.json(response.success());
         return;
     }
     await doTransaction(async (session) => {
-        const opts = {session};
-        await UserDiscord.updateOne({user_id: req.userId!, deleted_time: null}, {deleted_time: Date.now()}, opts);
+        const opts = { session };
+        await UserDiscord.updateOne({ user_id: req.userId!, deleted_time: null }, { deleted_time: Date.now() }, opts);
         // 更新用户授权指标
-        await UserMetrics.updateOne({user_id: req.userId},{[Metric.DiscordConnected]: 0},opts);
+        await UserMetrics.updateOne({ user_id: req.userId }, { [Metric.DiscordConnected]: 0 }, opts);
     });
     // 添加cd
     await redis.set(`reconnect_cd:${AuthorizationType.Discord}:${discord.discord_id}`, Date.now() + 12 * 60 * 60 * 1000, "EX", 12 * 60 * 60);
