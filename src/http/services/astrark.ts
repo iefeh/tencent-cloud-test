@@ -21,15 +21,15 @@ export function queryMyNFTListAPI(
   params: MyNFTQueryParams,
 ): Promise<PageResDTO<NFTItem> & { wallet_connected: boolean }> {
   params.category = params.category || NFTCategory.TETRA_NFT;
-  return http.get('/api/oauth2/nft/list', { params });
+  return http.get('/api/oauth2/nft/list', { params, isAA: true, withBearer: true });
 }
 
 export function queryDisplayNFTListAPI(): Promise<NFTItem[]> {
-  return http.get('/api/oauth2/nft/favourite');
+  return http.get('/api/oauth2/nft/favourite', { isAA: true, withBearer: true });
 }
 
 export function updateDisplayNFTListAPI(data: Partial<NFTItem>[]): Promise<null> {
-  return http.post('/api/oauth2/nft/favourite', JSON.stringify(data));
+  return http.post('/api/oauth2/nft/favourite', JSON.stringify(data), { isAA: true, withBearer: true });
 }
 
 export interface AccountStatusDTO {

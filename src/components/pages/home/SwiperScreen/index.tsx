@@ -16,10 +16,10 @@ import Game2048Slide from '../slides/Game2048Slide';
 
 const slides = [
   LoyaltyProgramSlide,
-  Game2048Slide,
+  // Game2048Slide,
   MinigamesSlide,
-  LotterySlide,
-  NFT2Slide,
+  // LotterySlide,
+  // NFT2Slide,
   InviteNewSlide,
   RaceSlide,
 ];
