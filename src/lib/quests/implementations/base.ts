@@ -208,15 +208,14 @@ export abstract class QuestBase {
                 }
 
                 if (nodeReward) {
-                    await UserNodeEligibility.insertMany([nodeReward.node], { session: session })
+                    await nodeReward.node.save(opts);
                     if (nodeReward.notification) {
-                        await UserNotifications.insertMany([nodeReward.notification], { session: session })
+                        await nodeReward.notification.save(opts);
                     }
                 }
             });
             return { done: true, duplicated: false }
         } catch (error) {
-            console.log(error);
             if (isDuplicateKeyError(error)) {
                 return { done: false, duplicated: true }
             }

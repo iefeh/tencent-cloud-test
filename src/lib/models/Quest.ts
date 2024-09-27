@@ -79,6 +79,7 @@ const QuestSchema = new Schema<IQuest>({
         season_pass_progress: { type: Number },
         token_reward: { type: Schema.Types.Mixed },
         game_ticket_reward: { type: Schema.Types.Mixed },
+        node_reward: { type: Schema.Types.Mixed },
     },
     active: { type: Boolean, default: false },
     order: { type: Number },
