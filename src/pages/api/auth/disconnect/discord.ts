@@ -12,6 +12,8 @@ import { sendBadgeCheckMessage } from "@/lib/kafka/client";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
+    res.json(response.invalidParams('Disconnection is unavailable.'));
+        return;
     // 检查用户的绑定
     const discord = await UserDiscord.findOne({user_id: req.userId!, deleted_time: null});
     if (!discord) {

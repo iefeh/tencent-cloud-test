@@ -10,6 +10,8 @@ import User from "@/lib/models/User";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
+    res.json(response.invalidParams('Disconnection is unavailable.'));
+    return;
     // 检查用户的绑定
     const user = await User.findOne({user_id: req.userId!, deleted_time: null}, {_id: 0, email: 1});
     if (!user || !user.email) {
