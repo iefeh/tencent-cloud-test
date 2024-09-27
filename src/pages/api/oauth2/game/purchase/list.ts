@@ -19,8 +19,18 @@ router.use(dynamicCors).get(async (req, res) => {
         if (!gameId) {
             return res.json(response.serverError());
         }
-        const userPurchases = await getUserPurchaseList(userId, gameId);
-        for (let purchase of userPurchases) {
+
+        const { page_num, page_size } = req.query;
+        if (!page_num || !page_size) {
+            return res.json(response.invalidParams());
+        }
+        const pageNum = Number(page_num);
+        const pageSize = Number(page_size);
+        if (pageNum < 0 || pageSize < 0) {
+            return res.json(response.invalidParams());
+        }
+        const pagination = await paginationUserPurchaseList(pageNum, pageSize, userId, gameId);
+        for (let purchase of pagination.data) {
             let digits = Number(purchase.payment_token_amount.substring(0, purchase.payment_token_amount.length - purchase.token.decimal + 6))/(10**6);
             purchase.token_amount_formatted = digits;
             purchase.payment_confirmed = purchase.payment_confirm_time ? true: false;
@@ -28,13 +38,19 @@ router.use(dynamicCors).get(async (req, res) => {
             delete purchase.product_id;
             delete purchase.payment_confirm_time;
         }
-        res.json(response.success(userPurchases));
+        res.json(response.success({
+            total: pagination.total,
+            page_num: pageNum,
+            page_size: pageSize,
+            data: pagination.data,
+          }));
     } catch (error: any) {
         return responseOnOauthError(res, error);
     }
 });
 
-async function getUserPurchaseList(userId: string, gameId: string) {
+async function paginationUserPurchaseList(pageNum: number, pageSize: number, userId: string, gameId: string): Promise<{ total: number; data: any[] }> {
+    const skip = (pageNum - 1) * pageSize;
     let matchOpt: any = {
         $match: {
             game_id: gameId,
@@ -94,10 +110,19 @@ async function getUserPurchaseList(userId: string, gameId: string) {
         },
         {
             $unwind: '$token'
-        }
+        },
+        {
+            $facet: {
+              metadata: [{ $count: "total" }],
+              data: [{ $skip: skip }, { $limit: pageSize }],
+            },
+        },
     ];
     const results = await GameProductPurchaseRequest.aggregate(aggregateQuery);
-    return results;
+    if (results[0].metadata.length == 0) {
+        return { total: 0, data: [] };
+    }
+    return { total: results[0].metadata[0].total, data: results[0].data };
 }
 
 
