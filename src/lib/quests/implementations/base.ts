@@ -177,7 +177,7 @@ export abstract class QuestBase {
             nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.node_reward.node_tier, node_amount: this.quest.reward.node_reward.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
             if (this.quest.reward.node_reward.notification_id) {
                 let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.node_reward.notification_id });
-                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.node_reward.node_tier), link: notification.link, created_time: Date.now() });
+                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.node_reward.node_tier).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
             }
         }
 
@@ -208,9 +208,9 @@ export abstract class QuestBase {
                 }
 
                 if (nodeReward) {
-                    await nodeReward.node.save(opts);
+                    await UserNodeEligibility.insertMany([nodeReward.node], { session: session })
                     if (nodeReward.notification) {
-                        await nodeReward.notification.save(opts);
+                        await UserNotifications.insertMany([nodeReward.notification], { session: session })
                     }
                 }
             });
