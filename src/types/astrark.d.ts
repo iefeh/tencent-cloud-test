@@ -1,6 +1,36 @@
 import { ShopItemType } from '@/constant/astrark';
 
 declare namespace AstrArk {
+  interface PurchaseRecordDTO {
+    /** 交易是否已确认, 未确认前端显示processing, 已确认显示done */
+    payment_confirmed: boolean;
+    /** 支付使用代币数量 */
+    payment_token_amount: string;
+    /** 产品信息 */
+    product: { name: string };
+    /** 购买时产品usd价格 */
+    product_price_in_usd: number;
+    /** 购买时间 */
+    request_time: number;
+    /** 代币信息 */
+    token: {
+      decimal: number;
+      icon_url: string;
+      symbol: string;
+    };
+    /** 使用小数位换算以后显示代币数量*/
+    token_amount_formatted: number;
+  }
+
+  interface PurchaseOverviewDTO {
+    /** 用户已确认的购买记录数量 */
+    confirmed_purchase_count: number;
+    /** 用户未确认的购买记录数量 */
+    pending_purchase_count: number;
+    /** 用户所有已购买产品的USDC价格 */
+    total_cost_in_usdc: number;
+  }
+
   interface ShopCate {
     name: string;
     order: number;
@@ -44,19 +74,19 @@ declare namespace AstrArk {
   interface PriceToken {
     address: string;
     product_id?: string;
-    token_id: string; 
-    token_name: string; 
-    icon_url: string; 
+    token_id: string;
+    token_name: string;
+    icon_url: string;
     symbol: string;
     decimal: number;
-    product_price_discount: number; 
-    product_token_price_with_discount: number; 
+    product_price_discount: number;
+    product_token_price_with_discount: number;
     product_usdc_price_with_discount: number;
     network: {
       name: string;
       icon_url: string;
       chain_id: string;
-    }
+    };
   }
 
   interface ProductItem {
@@ -65,8 +95,8 @@ declare namespace AstrArk {
     icon_url: string;
     price_in_usdc: number;
     limit: {
-     type: string;
-     amount: number;
+      type: string;
+      amount: number;
     };
     price_in_tokens: PriceToken[];
     product_type_id: string;
@@ -90,6 +120,6 @@ declare namespace AstrArk {
       signature: string;
       token: string;
       tokenAmount: string;
-    }
+    };
   }
 }
