@@ -327,3 +327,12 @@ export type GameTicketReward = {
   // 门票过期时间
   expired_at: number
 };
+
+export type NodeReward = {
+  // 节点等级
+  node_tier: string,
+  // 节点数量
+  node_amount: number,
+  // 领奖时的提醒
+  notification_id?: string,
+};
