@@ -143,7 +143,7 @@ export class LikeTweetQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `You have claimed ${rewardDelta} MB.` : "Server Internal Error",
+            tip: result.done ? `You have claimed ${rewardDelta} MB.` : result.tip ? result.tip : "Server Internal Error",
         }
     }
 }
