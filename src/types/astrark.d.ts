@@ -1,6 +1,15 @@
 import { ShopItemType } from '@/constant/astrark';
 
 declare namespace AstrArk {
+  interface PurchaseOverviewDTO {
+    /** 用户已确认的购买记录数量 */
+    confirmed_purchase_count: number;
+    /** 用户未确认的购买记录数量 */
+    pending_purchase_count: number;
+    /** 用户所有已购买产品的USDC价格 */
+    total_cost_in_usdc: number;
+  }
+
   interface ShopCate {
     name: string;
     order: number;
