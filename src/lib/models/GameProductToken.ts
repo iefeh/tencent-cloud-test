@@ -2,6 +2,11 @@ import { Document, model, models, PipelineStage, Schema } from 'mongoose';
 
 import connectToMongoDbDev from '@/lib/mongodb/client';
 
+export enum StableTokenSymbols {
+  USDC = "USDC",
+  USDT = "USDT"
+}
+
 export interface IGameProductToken extends Document {
     // 代币id
     id: string;

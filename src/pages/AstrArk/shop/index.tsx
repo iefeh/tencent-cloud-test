@@ -18,7 +18,7 @@ const DeleteAccountPage: NextPage & BasePage = () => {
 
         <ShopHeader />
 
-        <CateTabs />
+        <CateTabs onAuthFailed={authDisclosure.onOpen} />
 
         <AuthNoticeModal disclosure={authDisclosure} />
       </section>

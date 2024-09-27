@@ -29,7 +29,7 @@ const CoverScreen: FC = () => {
         }
         subtitle={
           <div className="text-lg font-decima mb-10 tracking-tighter max-w-[32rem] mx-auto text-center mt-4">
-            Join our &apos;More and $MORE!&apos; lottery!
+            Join our &apos;More and $MORE!&apos; draw!
             <br />
             Spend a little, win a lot!
             <br />

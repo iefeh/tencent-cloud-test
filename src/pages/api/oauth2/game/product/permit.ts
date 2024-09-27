@@ -45,10 +45,11 @@ router.use(dynamicCors).get(async (req, res) => {
             }));
         }
         // 检查购买请求
-        const purchaseRequest = await checkUserGameProductPurchaseRequest(userId, gameId, product_id as string, token_id as string);
-        if (!purchaseRequest) {
-            return res.json(response.invalidParams({message: "Invalid purchase request."}));
+        const verifyResult = await checkUserGameProductPurchaseRequest(userId, gameId, product_id as string, token_id as string);
+        if (!verifyResult.verified || !verifyResult.purchaseRequest) {
+            return res.json(response.invalidParams({ reach_purchase_limit: verifyResult.reach_purchase_limit, message: verifyResult.message }));
         }
+        const purchaseRequest = verifyResult.purchaseRequest;
         // 生成购买许可
         const paymentContract = await Contract.findOne({
             chain_id: purchaseRequest.payment_chain_id,
@@ -96,11 +97,11 @@ router.use(dynamicCors).get(async (req, res) => {
     }
 });
 
-async function checkUserGameProductPurchaseRequest(userId: string, gameId: string, productId: string, tokenId: string): Promise<PurchaseRequest | null> {
+async function checkUserGameProductPurchaseRequest(userId: string, gameId: string, productId: string, tokenId: string): Promise<{ verified: boolean, reach_purchase_limit: boolean, message: string, purchaseRequest: PurchaseRequest | null }> {
     // 1. 检查支付的产品存在，且用户当前依然有购买资格
     const gameProduct = await GameProduct.findOne({ id: productId, game_id: gameId, active: true });
     if (!gameProduct) {
-        return null;
+        return { verified: false, reach_purchase_limit: false, message: "Invalid product.", purchaseRequest: null };
     }
     const currentWeek = getISOYearWeekString(new Date());
     const currentMonthDay = getISOMonthDayTimeString(new Date());
@@ -120,12 +121,12 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
         soldAmount = gamePurchase[0].count;
     }
     if (gameProduct.limit.amount <= soldAmount) {
-        return null;
+        return { verified: false, reach_purchase_limit: true, message: "You have reached the maximum purchase limit for this product.", purchaseRequest: null };
     }
     // 2. 检查用户需要支付的代币数量
     const token = await GameProductToken.findOne({ id: tokenId });
     if (!token) {
-        return null;
+        return { verified: false, reach_purchase_limit: false, message: "Invalid token id", purchaseRequest: null };
     }
     let tokenAmount = calculateTokenPaymentWithDiscount(gameProduct.price_in_usdc, token.price_in_usdc, token.product_discount, token.decimal);
     const now = Date.now();
@@ -146,7 +147,7 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
         payment_token_amount: tokenAmount,
         payment_token_price_in_usd: token.price_in_usdc,
     };
-    return request;
+    return { verified: true, reach_purchase_limit: false, message: "", purchaseRequest: request };
 }
 
 type PurchaseRequest = {
@@ -190,7 +191,33 @@ function calculateTokenPaymentWithDiscount(productPriceInUSD: number, tokenPrice
     const tokenPriceInWei = BigInt(Math.round(tokenPriceInUSD * pow)); // 代币价格乘以 pow
     // 计算需要支付的 token 数量（这里将 priceInWei * 10^decimals 来放大倍数，确保精度）
     const tokenAmountInWei = (priceInWei * BigInt(pow)) / tokenPriceInWei;
-    return tokenAmountInWei.toString();
+    
+    //保留6位精度
+    let result = tokenAmountInWei.toString();
+    if (decimals > 6) {
+        const divisor = 10 ** (decimals - 6);
+        let tempAmoutInWei = tokenAmountInWei / BigInt(divisor);
+        if (needCeiling(result, decimals)) {
+            tempAmoutInWei += BigInt(1);
+        }
+        tempAmoutInWei = tempAmoutInWei * BigInt(divisor);
+        result = tempAmoutInWei.toString();
+    }
+    return result;
+}
+
+//从右向左找decimal - 6位, 出现非0则返回true
+function needCeiling(sourceBigInt: string, decimals: number): boolean {
+    if (decimals <= 6) {
+        return false;
+    }
+    const checkDecimals = decimals - 6; //需要检查的位数
+    for (let i = sourceBigInt.length - 1; i > sourceBigInt.length - checkDecimals - 1; i--) {
+        if (sourceBigInt.charAt(i) !== "0") {
+            return true;
+        }
+    }
+    return false;
 }
 
 async function generatePurchasePermit(request: PurchaseRequest, gamePaymentContract: IContract) {

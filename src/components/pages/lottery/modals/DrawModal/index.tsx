@@ -105,7 +105,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
               {isConfirming ? (
                 <>
                   <div className="text-sm text-left">
-                    You don’t have enough Lottery Tickets, please confirm you would like to spend{' '}
+                    You don’t have enough Draw Tickets, please confirm you would like to spend{' '}
                     <span className="text-basic-yellow">{needMbs}</span> Moon Beams to buy{' '}
                     <span className="text-basic-yellow">{ticketsForBuying} </span>
                     ticket(s).
@@ -123,7 +123,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
               ) : (
                 <>
                   <div className="text-sm text-left">
-                    Please confirm the tickets you want to use for the lottery draw, each Silver Lottery Ticket costs 25
+                    Please confirm the tickets you want to use for the draw, each Silver Draw Ticket costs 25
                     Moon Beams.
                   </div>
 

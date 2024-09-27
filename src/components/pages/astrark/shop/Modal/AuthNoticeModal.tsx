@@ -8,6 +8,7 @@ const AuthNoticeModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChan
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       isDismissable={false}
+      placement='center'
       classNames={{ header: 'p-0', body: 'py-8' }}
     >
       <ModalContent>

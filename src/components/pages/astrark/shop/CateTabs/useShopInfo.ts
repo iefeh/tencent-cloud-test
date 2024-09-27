@@ -5,7 +5,7 @@ import { AstrArk } from '@/types/astrark';
 import { useEffect, useState } from 'react';
 import { ShopCateType } from '../model';
 
-export default function useShopInfo() {
+export default function useShopInfo({ onAuthFailed }: { onAuthFailed?: () => void }) {
   const { token } = useAAUserContext();
   const [cates, setCates] = useState<AstrArk.CateTab[]>([]);
   const [loading, setLoading] = useState(false);
@@ -14,6 +14,7 @@ export default function useShopInfo() {
     setLoading(true);
 
     const res = await queryShopInfoAPI();
+    if (!res) onAuthFailed?.();
     const list = res || [];
     setCates(list.map((item) => shopCateToCateTab(item)));
 
@@ -101,5 +102,5 @@ export default function useShopInfo() {
     }
   }, [token]);
 
-  return { loading, cates };
+  return { loading, cates, queryShopInfo };
 }

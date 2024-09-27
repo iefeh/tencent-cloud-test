@@ -47,7 +47,8 @@ declare namespace AstrArk {
     token_id: string; 
     token_name: string; 
     icon_url: string; 
-    symbol: string; 
+    symbol: string;
+    decimal: number;
     product_price_discount: number; 
     product_token_price_with_discount: number; 
     product_usdc_price_with_discount: number;
@@ -78,6 +79,8 @@ declare namespace AstrArk {
   }
 
   interface PermitRespose {
+    /** 是否已达到购买数量限制 */
+    reach_purchase_limit?: boolean;
     chain_id: string;
     contract_address: string;
     permit: {
