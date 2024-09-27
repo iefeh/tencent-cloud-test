@@ -1,14 +1,18 @@
 import S3Image from '@/components/common/medias/S3Image';
 import { formatUserName } from '@/utils/common';
-import { Button } from '@nextui-org/react';
+import { Button, useDisclosure } from '@nextui-org/react';
 import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { FC } from 'react';
 import usePurchaseOverview from './CateTabs/usePurchaseOverview';
+import PurchaseListModal from './Modal/PurchaseListModal';
+import { useAAUserContext } from '@/store/AstrarkUser';
 
 const ShopHeader: FC = () => {
   const { open } = useWeb3Modal();
   const { address, isConnected } = useWeb3ModalAccount();
   const { data } = usePurchaseOverview();
+  const purchaseListDisclosure = useDisclosure();
+  const { token } = useAAUserContext();
 
   function onConnectWallet() {
     if (isConnected) return;
@@ -39,23 +43,33 @@ const ShopHeader: FC = () => {
         </span>
       </Button>
 
-      <div className="flex items-center bg-black/30 border-1 border-[#323A43] mb-1 ml-4 h-[2.125rem] px-4 pb-1">
-        <S3Image className="w-6 h-6" src="/astrark/shop/icons/checked.png" />
+      {token && (
+        <>
+          <div
+            className="flex items-center bg-black/30 border-1 border-[#323A43] mb-1 ml-4 h-[2.125rem] px-4 pb-1"
+            onClick={purchaseListDisclosure.onOpen}
+          >
+            <S3Image className="w-6 h-6" src="/astrark/shop/icons/checked.png" />
 
-        <div className="mt-1 ml-3 leading-none">
-          Confirmed Purchase :
-          <span className="text-[#FCD369] ml-3">{data ? data.confirmed_purchase_count || 0 : '--'}</span>
-        </div>
-      </div>
+            <div className="mt-1 ml-3 leading-none">
+              Confirmed Purchase :
+              <span className="text-[#FCD369] ml-3">{data ? data.confirmed_purchase_count || 0 : '--'}</span>
+            </div>
+          </div>
 
-      <div className="flex items-center bg-black/30 border-1 border-[#323A43] mb-1 ml-4 h-[2.125rem] px-4 pb-1">
-        <S3Image className="w-6 h-6" src="/astrark/shop/icons/processing.png" />
+          <div
+            className="flex items-center bg-black/30 border-1 border-[#323A43] mb-1 ml-4 h-[2.125rem] px-4 pb-1"
+            onClick={purchaseListDisclosure.onOpen}
+          >
+            <S3Image className="w-6 h-6" src="/astrark/shop/icons/processing.png" />
 
-        <div className="mt-1 ml-3 leading-none">
-          Pending Purchase :
-          <span className="text-[#31B73D] ml-3">{data ? data.pending_purchase_count || 0 : '--'}</span>
-        </div>
-      </div>
+            <div className="mt-1 ml-3 leading-none">
+              Pending Purchase :
+              <span className="text-[#31B73D] ml-3">{data ? data.pending_purchase_count || 0 : '--'}</span>
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="w-[16.8125rem] aspect-[269/134] absolute top-0 right-5 z-50">
         <S3Image className="object-contain mr-3" src="/astrark/shop/bg_ad.png" fill />
@@ -64,6 +78,8 @@ const ShopHeader: FC = () => {
           <S3Image className="object-contain animate-spin5 w-full h-full" src="/astrark/shop/circle_text.png" />
         </div>
       </div>
+
+      <PurchaseListModal disclosure={purchaseListDisclosure} />
     </div>
   );
 };
