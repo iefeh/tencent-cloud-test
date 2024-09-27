@@ -20,7 +20,7 @@ import GameTicket from '@/lib/models/GameTicket';
 import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
 import GlobalNotification from '@/lib/models/GlobalNotification';
 import UserNotifications from '@/lib/models/UserNotifications';
-import { randomUUID } from 'crypto';
+import UserWallet from '@/lib/models/UserWallet';
 
 interface IProjection {
     [key: string]: number;
@@ -141,7 +141,7 @@ export abstract class QuestBase {
     }
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
-    async saveUserReward<T>(userId: string, taint: string, rewardDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean }> {
+    async saveUserReward<T>(userId: string, taint: string, rewardDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean, tip?: string }> {
         const now = Date.now();
         const audit = new UserMoonBeamAudit({
             user_id: userId,
@@ -173,6 +173,11 @@ export abstract class QuestBase {
 
         let nodeReward: any;
         if (this.quest.reward.node_reward) {
+            // 检查用户是否已绑定钱包
+            const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+            if (!wallet) {
+                return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
+            }
             nodeReward = {};
             nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.node_reward.node_tier, node_amount: this.quest.reward.node_reward.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
             if (this.quest.reward.node_reward.notification_id) {
@@ -208,15 +213,14 @@ export abstract class QuestBase {
                 }
 
                 if (nodeReward) {
-                    await UserNodeEligibility.insertMany([nodeReward.node], { session: session })
+                    await nodeReward.node.save(opts);
                     if (nodeReward.notification) {
-                        await UserNotifications.insertMany([nodeReward.notification], { session: session })
+                        await nodeReward.notification.save(opts);
                     }
                 }
             });
             return { done: true, duplicated: false }
         } catch (error) {
-            console.log(error);
             if (isDuplicateKeyError(error)) {
                 return { done: false, duplicated: true }
             }
