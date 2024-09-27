@@ -10,7 +10,7 @@ export interface IGlobalNotification extends Document {
   link: string;
   //创建时间
   created_time: number;
-  //是否为通知模板，若该字段存在，则表示为
+  //是否为通知模板
   template_notification?: boolean;
 }
 
