@@ -54,14 +54,15 @@ const MediaItem: FC<Props> = ({ item, onDisconnectClick }) => {
 
       <div className="cursor-pointer">
         {item.connected ? (
-          <span className="relative group" onClick={() => onDisconnectClick?.(item)}>
-            <span className="group-hover:text-transparent transition-colors inline-block max-w-[16rem] overflow-hidden whitespace-nowrap text-ellipsis">
-              {(item.format ? item.format(item.connectedAccount) : item.connectedAccount) || 'Connected'}
-            </span>
-            <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-all !duration-500">
-              Disconnect
-            </span>
-          </span>
+          <></>
+          // <span className="relative group" onClick={() => onDisconnectClick?.(item)}>
+          //   <span className="group-hover:text-transparent transition-colors inline-block max-w-[16rem] overflow-hidden whitespace-nowrap text-ellipsis">
+          //     {(item.format ? item.format(item.connectedAccount) : item.connectedAccount) || 'Connected'}
+          //   </span>
+          //   <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-all !duration-500">
+          //     Disconnect
+          //   </span>
+          // </span>
         ) : (
           <Image className="w-[1.375rem] h-4" src={rightArrowIconImg} alt="" onClick={onConnect} />
         )}
