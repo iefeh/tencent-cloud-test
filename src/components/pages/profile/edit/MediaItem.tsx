@@ -4,9 +4,10 @@ import { useUserContext } from '@/store/User';
 import Image, { StaticImageData } from 'next/image';
 import { FC } from 'react';
 import rightArrowIconImg from 'img/profile/edit/icon_arrow_right.png';
-import { Tooltip } from '@nextui-org/react';
+import { Tooltip, useDisclosure } from '@nextui-org/react';
 import errorIconImg from 'img/icon/icon_error.png';
 import BindTipsModal from '@/components/common/modal/BindTipsModal';
+import NoticeModal from '@/components/common/modal/NoticeModal';
 
 export interface MAItem {
   title: string;
@@ -19,12 +20,14 @@ export interface MAItem {
 }
 
 interface Props {
+  undisconnectable?: boolean;
   item: MAItem;
   onDisconnectClick?: (item: MAItem) => void;
 }
 
-const MediaItem: FC<Props> = ({ item, onDisconnectClick }) => {
+const MediaItem: FC<Props> = ({ undisconnectable, item, onDisconnectClick }) => {
   const { getUserInfo } = useUserContext();
+  const noticeDisclosure = useDisclosure();
   const { onConnect, bindTipsDisclosure } = useConnect(item.type, () => {
     getUserInfo();
   });
@@ -54,21 +57,38 @@ const MediaItem: FC<Props> = ({ item, onDisconnectClick }) => {
 
       <div className="cursor-pointer">
         {item.connected ? (
-          <></>
-          // <span className="relative group" onClick={() => onDisconnectClick?.(item)}>
-          //   <span className="group-hover:text-transparent transition-colors inline-block max-w-[16rem] overflow-hidden whitespace-nowrap text-ellipsis">
-          //     {(item.format ? item.format(item.connectedAccount) : item.connectedAccount) || 'Connected'}
-          //   </span>
-          //   <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-all !duration-500">
-          //     Disconnect
-          //   </span>
-          // </span>
+          undisconnectable ? null : (
+            <span className="relative group" onClick={() => onDisconnectClick?.(item)}>
+              <span className="group-hover:text-transparent transition-colors inline-block max-w-[16rem] overflow-hidden whitespace-nowrap text-ellipsis">
+                {(item.format ? item.format(item.connectedAccount) : item.connectedAccount) || 'Connected'}
+              </span>
+              <span className="absolute right-0 z-0 text-transparent group-hover:bg-black group-hover:text-basic-yellow transition-all !duration-500">
+                Disconnect
+              </span>
+            </span>
+          )
         ) : (
-          <Image className="w-[1.375rem] h-4" src={rightArrowIconImg} alt="" onClick={onConnect} />
+          <Image
+            className="w-[1.375rem] h-4"
+            src={rightArrowIconImg}
+            alt=""
+            onClick={undisconnectable ? noticeDisclosure.onOpen : onConnect}
+          />
         )}
       </div>
 
       <BindTipsModal disclosure={bindTipsDisclosure} />
+
+      <NoticeModal
+        disclosure={{
+          ...noticeDisclosure,
+          onOpenChange(isOpen) {
+            if (isOpen) return;
+            noticeDisclosure.onClose();
+            onConnect();
+          },
+        }}
+      />
     </div>
   );
 };
