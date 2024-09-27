@@ -11,6 +11,8 @@ import UserMetrics, { Metric } from '@/lib/models/UserMetrics';
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(mustAuthInterceptor).post(async (req, res) => {
+  res.json(response.invalidParams('Disconnection is unavailable.'));
+  return;
   // 检查用户的绑定
   const telegram = await UserTelegram.findOne({ user_id: req.userId!, deleted_time: null });
   if (!telegram) {
