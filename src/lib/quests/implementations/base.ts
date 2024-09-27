@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-
+import { v4 as uuidv4 } from 'uuid';
 import { getUserFirstWhitelist } from '@/lib/common/user';
 import logger from '@/lib/logger/winstonLogger';
 import { IQuest } from '@/lib/models/Quest';
@@ -17,6 +17,10 @@ import {
 } from '@/lib/quests/types';
 import * as Sentry from '@sentry/nextjs';
 import GameTicket from '@/lib/models/GameTicket';
+import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
+import GlobalNotification from '@/lib/models/GlobalNotification';
+import UserNotifications from '@/lib/models/UserNotifications';
+import { randomUUID } from 'crypto';
 
 interface IProjection {
     [key: string]: number;
@@ -167,6 +171,16 @@ export abstract class QuestBase {
             }
         }
 
+        let nodeReward: any;
+        if (this.quest.reward.node_reward) {
+            nodeReward = {};
+            nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.node_reward.node_tier, node_amount: this.quest.reward.node_reward.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
+            if (this.quest.reward.node_reward.notification_id) {
+                let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.node_reward.notification_id });
+                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.node_reward.node_tier), link: notification.link, created_time: Date.now() });
+            }
+        }
+
         try {
             // 保存用户任务达成记录、任务奖励记录、用户MB奖励
             await doTransaction(async (session) => {
@@ -193,6 +207,12 @@ export abstract class QuestBase {
                     await GameTicket.insertMany(tickets, { session: session });
                 }
 
+                if (nodeReward) {
+                    await nodeReward.node.save(opts);
+                    if (nodeReward.notification) {
+                        await nodeReward.notification.save(opts);
+                    }
+                }
             });
             return { done: true, duplicated: false }
         } catch (error) {

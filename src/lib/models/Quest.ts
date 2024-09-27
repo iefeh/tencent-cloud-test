@@ -1,5 +1,5 @@
 import { Document, Schema, models, model } from 'mongoose'
-import { GameTicketReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
+import { GameTicketReward, NodeReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
@@ -40,6 +40,8 @@ export interface IQuest extends Document {
         token_reward: TokenReward,
         // 游戏门票奖励配置
         game_ticket_reward?: GameTicketReward,
+        // 节点奖励配置
+        node_reward?: NodeReward,
     },
     // 任务是否激活，不展示未激活
     active: boolean;
