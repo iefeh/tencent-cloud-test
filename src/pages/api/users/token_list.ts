@@ -22,13 +22,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
     let pagination: any;
     switch (source_type as string) {
-        default:
-        case UserTokenSourceType.Quest:
-            pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
-            break;
         case UserTokenSourceType.Node:
             pagination = await getUserNodes(userId);
             break;
+        default:
+            pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
     }
 
     if (pagination.total == 0 || pagination.tokens.length == 0) {
