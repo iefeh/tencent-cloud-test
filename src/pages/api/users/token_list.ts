@@ -22,6 +22,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
     let pagination: any;
     switch (source_type as string) {
+        default:
         case UserTokenSourceType.Quest:
             pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
             break;
