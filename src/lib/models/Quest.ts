@@ -40,8 +40,10 @@ export interface IQuest extends Document {
         token_reward: TokenReward,
         // 游戏门票奖励配置
         game_ticket_reward?: GameTicketReward,
-        // 节点奖励配置
-        node_reward?: NodeReward,
+        // 直接下发型节点奖励
+        distribute_node?: NodeReward,
+        // 抽奖型节点奖励
+        raffle_node?: NodeReward,
     },
     // 任务是否激活，不展示未激活
     active: boolean;
@@ -79,7 +81,8 @@ const QuestSchema = new Schema<IQuest>({
         season_pass_progress: { type: Number },
         token_reward: { type: Schema.Types.Mixed },
         game_ticket_reward: { type: Schema.Types.Mixed },
-        node_reward: { type: Schema.Types.Mixed },
+        distribute_node: { type: Schema.Types.Mixed },
+        raffle_node: { type: Schema.Types.Mixed },
     },
     active: { type: Boolean, default: false },
     order: { type: Number },
