@@ -16,7 +16,7 @@ import LotteryPool, { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/Lot
 import LotteryPoolRequirement, {
     LotteryPoolRequirementType
 } from '@/lib/models/LotteryPoolRequirements';
-import PurchaseNodeEvent from '@/lib/models/PurchaseNodeEvent';
+import { getUserNodePurchaseAmount } from '@/lib/models/PurchaseNodeEvent';
 import User from '@/lib/models/User';
 import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
@@ -436,8 +436,12 @@ async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): 
       for (let p of r.properties) {
         const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
         if (userWallet) {
-          const userNodePurchaseEvent = await PurchaseNodeEvent.findOne({ buyer_wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, deleted_time: null, transaction_status: 'confirmed' });
-          nodeSatisfied = !!userNodePurchaseEvent;
+          const userNodePurchaseAmount = await getUserNodePurchaseAmount(userWallet.wallet_addr, p.contract_addr);
+          let nodeAmountSatisfy = true;
+          if (p.node_amount > 0) {
+            nodeAmountSatisfy = userNodePurchaseAmount >= p.node_amount;
+          }
+          nodeSatisfied = nodeAmountSatisfy && !!userNodePurchaseAmount;
         } else {
           nodeSatisfied = false;
         }
