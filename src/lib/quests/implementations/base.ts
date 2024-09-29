@@ -172,17 +172,17 @@ export abstract class QuestBase {
         }
 
         let nodeReward: any;
-        if (this.quest.reward.node_reward) {
+        if (this.quest.reward.distribute_node) {
             // 检查用户是否已绑定钱包
             const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
             if (!wallet) {
                 return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
             }
             nodeReward = {};
-            nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.node_reward.node_tier, node_amount: this.quest.reward.node_reward.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
-            if (this.quest.reward.node_reward.notification_id) {
-                let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.node_reward.notification_id });
-                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.node_reward.node_tier).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
+            nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.distribute_node.node_tier, node_amount: this.quest.reward.distribute_node.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
+            if (this.quest.reward.distribute_node.notification_id) {
+                let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.distribute_node.notification_id });
+                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.distribute_node.node_tier).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
             }
         }
 
