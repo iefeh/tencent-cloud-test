@@ -184,6 +184,11 @@ export abstract class QuestBase {
                 let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.distribute_node.notification_id });
                 nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.distribute_node.node_tier).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
             }
+        } else if (this.quest.reward.raffle_node) {
+            const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+            if (!wallet) {
+                return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
+            }
         }
 
         try {
