@@ -5,6 +5,8 @@ import { createRouter } from 'next-connect';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import UserTokenReward, { UserTokenSourceType } from '@/lib/models/UserTokenReward';
 import * as response from '@/lib/response/response';
+import UserNodeEligibility, { NodeSourceType } from "@/lib/models/UserNodeEligibility";
+import Quest from "@/lib/models/Quest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -15,9 +17,19 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     }
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
-    let sourceTypes: string[] = [ UserTokenSourceType.Quest ];
+    let sourceTypes: string[] = [UserTokenSourceType.Quest, UserTokenSourceType.Node];
     const userId = req.userId!;
-    const pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
+
+    let pagination: any;
+    switch (source_type as string) {
+        case UserTokenSourceType.Quest:
+            pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
+            break;
+        case UserTokenSourceType.Node:
+            pagination = await getUserNodes(userId);
+            break;
+    }
+
     if (pagination.total == 0 || pagination.tokens.length == 0) {
         // 当前没有匹配的数据 
         return res.json(response.success({
@@ -71,7 +83,7 @@ async function paginationUserTokenHistory(pageNum: number, pageSize: number, use
                     $match: { $expr: { $and: [{ $eq: ['$token_id', '$$id'] }] } }
                 }]
             }
-        }, 
+        },
         {
             $unwind: '$token'
         },
@@ -105,6 +117,34 @@ async function paginationUserTokenHistory(pageNum: number, pageSize: number, use
         return { total: 0, tokens: [] }
     }
     return { total: results[0].metadata[0].total, tokens: results[0].data }
+}
+
+
+async function getUserNodes(userId: string): Promise<{ total: number, tokens: any[] }> {
+    // 查询出用户的节点
+    const pipeline: PipelineStage[] = [{ $match: { user_id: userId } }, { $sort: { created_time: -1 } }, { $project: { _id: 0, __v: 0 } }];
+    const nodes: any[] = await UserNodeEligibility.aggregate(pipeline);
+
+    const sourceIds: string[] = nodes.filter(n => n.source_type == NodeSourceType.Quest).map(n => n.source_id);
+    let questNameMap: Map<string, string> | undefined;
+
+    if (sourceIds.length > 0) {
+        const quests: any[] = await Quest.find({ id: { $in: sourceIds } }, { _id: 0, id: 1, name: 1 });
+        questNameMap = new Map<string, string>(quests.map(q => [q.id, q.name]));
+    }
+
+    for (let n of nodes) {
+        if (n.source_type == NodeSourceType.Quest && questNameMap) {
+            n.source = questNameMap.get(n.source_id);
+        } else {
+            n.source = n.source_id;
+        }
+        delete n.user_id;
+        delete n.source_id;
+        delete n.source_type;
+    }
+
+    return { total: nodes.length, tokens: nodes };
 }
 
 // this will run if none of the above matches
