@@ -335,4 +335,10 @@ export type NodeReward = {
   node_amount: number,
   // 领奖时的提醒
   notification_id?: string,
+  // 中奖人数
+  number_of_winners?: number,
+  // 预估抽奖时间
+  estimated_raffle_time?: number,
+  // 实际抽奖时间
+  actual_raffle_time?: number,
 };
