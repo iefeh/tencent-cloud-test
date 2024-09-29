@@ -16,6 +16,7 @@ import LotteryPool, { ILotteryPool, LotteryTwitterTopic } from '@/lib/models/Lot
 import LotteryPoolRequirement, {
     LotteryPoolRequirementType
 } from '@/lib/models/LotteryPoolRequirements';
+import PurchaseNodeEvent from '@/lib/models/PurchaseNodeEvent';
 import User from '@/lib/models/User';
 import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryPool, { IUserLotteryPool } from '@/lib/models/UserLotteryPool';
@@ -226,6 +227,10 @@ export async function lotteryRequirementSatisfy(userId: string, lotteryPoolId: s
       result = await lotterySatisfyByNFT(userId, requirements);
     }
     if (!result.meet_requirement) {
+      //判断node是否满足要求
+      result = await lotterySatisfyByNodeHolder(userId, requirements);
+    }
+    if (!result.meet_requirement) {
       //判断MB是否满足要求
       result = await lotterySatisfyMB(userId, requirements);
     }
@@ -420,6 +425,33 @@ async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise
     }
   }
   return { requirement_type: LotteryPoolRequirementType.NFT, meet_requirement: false };
+}
+
+async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+  let nodeSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为Node类要求
+    if (r.type === LotteryPoolRequirementType.Node) {
+      //判断所有的Node要求
+      for (let p of r.properties) {
+        const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+        if (userWallet) {
+          const userNodePurchaseEvent = await PurchaseNodeEvent.findOne({ buyer_wallet_addr: userWallet.wallet_addr, contract_address: p.contract_addr, deleted_time: null, transaction_status: 'confirmed' });
+          nodeSatisfied = !!userNodePurchaseEvent;
+        } else {
+          nodeSatisfied = false;
+        }
+        //当有多个node持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要node之间是或的关系，则可以配置成单个的要求。
+        if (!nodeSatisfied) {
+          break;
+        }
+      }
+      if (nodeSatisfied) {
+        return { requirement_type: LotteryPoolRequirementType.Node, meet_requirement: true };
+      }
+    }
+  }
+  return { requirement_type: LotteryPoolRequirementType.Node, meet_requirement: false };
 }
 
 async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
