@@ -1,13 +1,13 @@
 import { TokenRewardStatus } from '@/constant/token';
-import { type MyTokensRecord } from '@/http/services/token';
+import { QuestTokensRecord } from '@/http/services/token';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import { FC, useState } from 'react';
 
 interface Props {
-  item: MyTokensRecord;
-  onClaim?: (item: MyTokensRecord) => Promise<void>;
+  item: QuestTokensRecord;
+  onClaim?: (item: QuestTokensRecord) => Promise<void>;
 }
 
 const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
