@@ -184,14 +184,14 @@ export async function verifyLotteryQualification(lotteryPoolId: string, drawCoun
     }
   }
 
-  //Todo check lottery pool requirements before drawing
-  const canEnterlottery = await lotteryRequirementSatisfy(userId, lotteryPoolId);
-  if (!canEnterlottery.meet_requirement) {
+  const requirementSatisfy = await lotteryPoolRequirementSatisfy(userId, lotteryPoolId);
+  if (!requirementSatisfy.meet_requirement) {
     return {
       verified: false,
       message: "Sorry you don't meet the draw requirement of this lottery pool."
     };
   }
+  
   return {
     verified: true,
     message: ""
@@ -212,7 +212,7 @@ export function constructMoonBeamAudit(userId: string, lotteryPoolId: string, re
 }
 
 //判断用户是否有抽奖资格
-export async function lotteryRequirementSatisfy(userId: string, lotteryPoolId: string): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+export async function lotteryPoolRequirementSatisfy(userId: string, lotteryPoolId: string): Promise<{ requirement_type: string, meet_requirement: boolean }> {
   //先判断徽章是否达到要求
   const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
   let result = { requirement_type: "", meet_requirement: true };
