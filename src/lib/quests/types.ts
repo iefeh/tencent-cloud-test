@@ -335,4 +335,6 @@ export type NodeReward = {
   node_amount: number,
   // 领奖时的提醒
   notification_id?: string,
+  // 中奖人数
+  number_of_winners?: number,
 };
