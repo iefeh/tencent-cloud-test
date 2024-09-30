@@ -144,6 +144,10 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
                 {task.reward.amount_formatted} Moon Beams
               </span>
+
+              {nodeIconUrl && (
+                <Image className="w-8 h-8" src={nodeIconUrl} alt="" unoptimized width={64} height={64} priority />
+              )}
             </div>
 
             {task.user_token_reward && (
@@ -161,10 +165,6 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                 <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
                   {task.user_token_reward.token_amount_formatted} {task.user_token_reward.token.symbol}
                 </span>
-
-                {nodeIconUrl && (
-                  <Image className="w-8 h-8 ml-4" src={nodeIconUrl} alt="" unoptimized width={64} height={64} priority />
-                )}
               </div>
             )}
           </div>
