@@ -8,6 +8,7 @@ import MyNFT from './components/MyNFT';
 // import EventsParticipated from './components/EventsParticipated';
 import BattlePassCard from '@/components/card/BattlePassCard';
 import MyTokens from '@/components/profile/MyTokens';
+import MyNodeWhitelist from '@/components/profile/MyTokens/MyNodeWhitelist';
 
 export default function ProfilePage() {
   return (
@@ -39,6 +40,8 @@ export default function ProfilePage() {
       {/* <EventsParticipated /> */}
       
       <MyTokens />
+
+      <MyNodeWhitelist />
     </section>
   );
 }
