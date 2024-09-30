@@ -189,7 +189,23 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               </ModalHeader>
 
               <ModalBody>
-                {hasShareAndConfirmRewards && !hasCDK && claimed ? (
+                {claimed && hasNode ? (
+                  <>
+                    <div className="text-2xl">Reward Claimed</div>
+
+                    <div className="text-sm mt-6">
+                      Congratulations again, please ensure that you have filled out the form to secure your{' '}
+                      <span className="text-basic-yellow">Free Node</span> or
+                      <span className="text-basic-yellow">Whitelist</span> spot. And please pay attention to our
+                      announcement in Official X account and{' '}
+                      <span className="text-basic-yellow">Discord Community Server.</span>
+                    </div>
+
+                    <div className="flex items-center gap-x-[5.5rem] mt-5">
+                      <LGButton className="w-[18.5rem]" label="Confirm" actived onClick={onClose} />
+                    </div>
+                  </>
+                ) : hasShareAndConfirmRewards && !hasCDK && claimed ? (
                   <>
                     <div className="text-2xl">Reward Claimed</div>
 
@@ -205,11 +221,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                   </>
                 ) : (
                   <>
-                    <div className="text-2xl">
-                      {hasNode
-                        ? 'Please click [Fill out form] to claim your rewards'
-                        : 'Congratulations on winning the following rewards!'}
-                    </div>
+                    <div className="text-2xl">Congratulations on winning the following rewards!</div>
 
                     <div className="flex items-center mt-[1.875rem] gap-x-16">
                       {(item?.rewards || []).map((reward, index) => (
@@ -218,7 +230,24 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasGiftCard ? (
+                      {hasNode ? (
+                        <>
+                          Please click [Fill out form] to claim your rewards
+                          <br />
+                          {claimed && (
+                            <>
+                              View Whitelist history in{' '}
+                              <Link
+                                className="text-basic-yellow hover:underline"
+                                href="/Profile"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                User Center
+                              </Link>
+                            </>
+                          )}
+                        </>
+                      ) : hasGiftCard ? (
                         <>
                           Please contact Moonveil staff and claim your Gift Card.
                           <br />
@@ -247,27 +276,10 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                         </>
                       ) : (
                         <>
-                          {hasNode && claimed ? (
-                            <>
-                              View Whitelist history in{' '}
-                              <Link
-                                className="text-basic-yellow hover:underline"
-                                href="/Profile"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                User Center
-                              </Link>
-                            </>
-                          ) : (
-                            'Click to claim rewards now.'
-                          )}
-                          {hasNode || (
-                            <>
-                              <br />
-                              Bonus: Share to Twitter for an additional{' '}
-                              <span className="text-basic-yellow">+20 Moon Beams</span>! (first-time shares only)
-                            </>
-                          )}
+                          Click to claim rewards now.
+                          <br />
+                          Bonus: Share to Twitter for an additional{' '}
+                          <span className="text-basic-yellow">+20 Moon Beams</span>! (first-time shares only)
                         </>
                       )}
                     </div>
