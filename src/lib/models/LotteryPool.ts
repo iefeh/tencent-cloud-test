@@ -36,7 +36,7 @@ export interface ILotteryRewardItem {
     // 奖励cdk
     cdk?: string,
     // 奖励node tier
-    node_tier?: number,
+    node_tier?: string,
     // 奖池中该库存个数, 不写则表示无限
     inventory_amount?: number | null
 }
