@@ -19,6 +19,8 @@ export interface IUserLotteryRewardItem {
     badge_id?: string,
     // 奖励cdk
     cdk?: string,
+    // 奖励node tier
+    node_tier?: number,
     // 图标链接
     icon_url: string, 
     // 奖励等级

@@ -17,6 +17,7 @@ import UserLotteryDrawHistory, {
 } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
+import UserNodeEligibility from '@/lib/models/UserNodeEligibility';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
@@ -259,12 +260,24 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
             }
           }
         } else if (reward.reward_type === LotteryRewardType.CDK) {
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.cdk": reward.cdk });
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.item_id": reward.item_id });
           if (userDrawHistory) {
             reward = drawOnce;
           }
           for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.cdk === reward.cdk) {
+            if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.item_id === reward.item_id) {
+              reward = drawOnce;
+              break;
+            }
+          }
+        } else if (reward.reward_type === LotteryRewardType.Node) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.item_id": reward.item_id });
+          const userNodeEligibility = await UserNodeEligibility.findOne({ user_id: userId, source_id: reward.item_id });
+          if (userNodeEligibility || userDrawHistory) {
+            reward = drawOnce;
+          }
+          for (let drawResult of allDrawResults) {
+            if (drawResult.reward_type === LotteryRewardType.Node && drawResult.item_id === reward.item_id) {
               reward = drawOnce;
               break;
             }
