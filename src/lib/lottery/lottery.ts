@@ -217,25 +217,18 @@ export async function lotteryPoolRequirementSatisfy(userId: string, lotteryPoolI
   const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
   let result = { requirement_type: "", meet_requirement: true };
   if (requirements && requirements.length > 0) {
-    result = await lotterySatisfyByBadge(userId, requirements);
-    if (!result.meet_requirement) {
-      //判断白名单是否满足要求
-      result = await lotterySatisfyByWhiteList(userId, requirements);
-    }
-    if (!result.meet_requirement) {
-      //判断NFT是否满足要求
-      result = await lotterySatisfyByNFT(userId, requirements);
-    }
-    if (!result.meet_requirement) {
-      //判断node是否满足要求
-      result = await lotterySatisfyByNodeHolder(userId, requirements);
-    }
-    if (!result.meet_requirement) {
-      //判断MB是否满足要求
-      result = await lotterySatisfyMB(userId, requirements);
-    }
+    // 判断徽章是否满足要求
+    result = await lotterySatisfyByBadge(userId, requirements) || result;
+    //判断白名单是否满足要求
+    result = await lotterySatisfyByWhiteList(userId, requirements) || result;
+    //判断NFT是否满足要求
+    result = await lotterySatisfyByNFT(userId, requirements) || result;
+    //判断node是否满足要求
+    result = await lotterySatisfyByNodeHolder(userId, requirements) || result;
+    //判断MB是否满足要求
+    result = await lotterySatisfyMB(userId, requirements) || result;
   }
-  return { requirement_type: result.requirement_type, meet_requirement: result.meet_requirement };
+  return result;
 }
 
 export async function enrichRequirementsInfo(requirements: any[]): Promise<any> {
@@ -286,8 +279,9 @@ export async function enrichRequirementsInfo(requirements: any[]): Promise<any> 
 }
 
 //判断徽章获得情况，判断是否满足高阶条件
-async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
   //取出徽章ID用于查询
+  let requirementExists = false;
   let badgeIds: string[] = [];
   for (let r of requirements) {
     if (r.type === LotteryPoolRequirementType.Badge) {
@@ -321,6 +315,7 @@ async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promi
   for (let r of requirements) {
     //是否为徽章类要求
     if (r.type === LotteryPoolRequirementType.Badge) {
+      requirementExists = true;
       for (let p of r.properties) {
         targetBadge = badgeInfos.get(p.badge_id)
         if (targetBadge) {
@@ -349,16 +344,21 @@ async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promi
       }
     }
   }
-
-  return { requirement_type: LotteryPoolRequirementType.Badge, meet_requirement: false };
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.Badge, meet_requirement: false };
+  } else {
+    return null
+  }
 }
 
-async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
+  let requirementExists = false;
   let whitelistSatisfied: boolean = false;
   let userWhitelist: any;
   for (let r of requirements) {
     //是否为白名单类要求
     if (r.type === LotteryPoolRequirementType.WhiteList) {
+      requirementExists = true;
       //判断所有的白名单要求
       for (let p of r.properties) {
         switch (p.whitelist_entity_type) {
@@ -396,15 +396,21 @@ async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): P
       }
     }
   }
-  return { requirement_type: LotteryPoolRequirementType.WhiteList, meet_requirement: false };
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.WhiteList, meet_requirement: false };
+  } else {
+    return null
+  }
 }
 
 //判断NFT获得情况，判断是否满足高阶条件
-async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
+  let requirementExists = false;
   let nftSatisfied: boolean = false;
   for (let r of requirements) {
     //是否为NFT类要求
     if (r.type === LotteryPoolRequirementType.NFT) {
+      requirementExists = true;
       //判断所有的NFT要求
       for (let p of r.properties) {
         const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
@@ -424,14 +430,20 @@ async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise
       }
     }
   }
-  return { requirement_type: LotteryPoolRequirementType.NFT, meet_requirement: false };
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.NFT, meet_requirement: false };
+  } else {
+    return null
+  }
 }
 
-async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
+  let requirementExists = false;
   let nodeSatisfied: boolean = false;
   for (let r of requirements) {
     //是否为Node类要求
     if (r.type === LotteryPoolRequirementType.Node) {
+      requirementExists = true;
       //判断所有的Node要求
       for (let p of r.properties) {
         const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
@@ -455,14 +467,20 @@ async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): 
       }
     }
   }
-  return { requirement_type: LotteryPoolRequirementType.Node, meet_requirement: false };
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.Node, meet_requirement: false };
+  } else {
+    return null
+  }
 }
 
-async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean }> {
+async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
+  let requirementExists = false;
   let mbSatisfied: boolean = false;
   for (let r of requirements) {
     //是否为NFT类要求
     if (r.type === LotteryPoolRequirementType.Moonbeam) {
+      requirementExists = true;
       const user = await User.findOne({ user_id: userId });
       const mb = user.moon_beam;
       //判断所有的NFT要求
@@ -482,5 +500,9 @@ async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{
       }
     }
   }
-  return { requirement_type: LotteryPoolRequirementType.Moonbeam, meet_requirement: false };
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.Moonbeam, meet_requirement: false };
+  } else {
+    return null
+  }
 }
