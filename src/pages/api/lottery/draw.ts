@@ -156,6 +156,13 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
     userRewards.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
   }
+  // 如果奖励内容中包含node就不需要做twitter验证
+  for (let reward of userRewards) {
+    if (reward.reward_type === LotteryRewardType.Node) {
+      rewardNeedVerify = false;
+      break;
+    }
+  }
   try {
     // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
     const drawId = uuidv4();
