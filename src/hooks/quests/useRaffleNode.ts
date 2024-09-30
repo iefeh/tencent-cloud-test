@@ -1,7 +1,12 @@
 import { TaskListItem } from '@/http/services/task';
 
 export default function useRaffleNode(task: TaskListItem) {
-  const { reward: { raffle_node: nodeReward, verify_end_time } = {}, user_node_reward, end_time = 0 } = task;
+  const {
+    reward: { raffle_node: nodeReward, distribute_node, verify_end_time } = {},
+    user_node_reward,
+    end_time = 0,
+  } = task;
+  const { icon_url } = nodeReward || distribute_node || {};
   const { win_reward } = user_node_reward || {};
   const isRaffleNode = !!nodeReward;
   const { estimated_raffle_time, actual_raffle_time } = nodeReward || {};
@@ -29,5 +34,6 @@ export default function useRaffleNode(task: TaskListItem) {
     isRaffleNode,
     hasWinReward: !!win_reward,
     isRaffleState: status >= 2,
+    nodeIconUrl: icon_url,
   };
 }
