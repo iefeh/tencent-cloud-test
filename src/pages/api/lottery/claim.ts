@@ -15,6 +15,7 @@ import UserBadges from '@/lib/models/UserBadges';
 import UserLotteryDrawHistory, {
     IUserLotteryDrawHistory, IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
+import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
@@ -103,6 +104,9 @@ async function performClaimLotteryReward(reward: IUserLotteryRewardItem, lottery
     case LotteryRewardType.Badge:
       await claimBadgeReward(userId, drawId, reward);
       break;
+    case LotteryRewardType.Node:
+      await claimNodeReward(userId, drawId, reward);
+      break;
     default:
       await updateLotteryDrawHistory(drawId, reward.reward_id, now);
       break;
@@ -141,6 +145,31 @@ async function claimBadgeReward(userId: string, drawId: string, reward: IUserLot
           updated_time: now,
           order: 1,
           display_order: 1,
+        },
+      ],
+      { session: session },
+    );
+    await updateLotteryDrawHistory(drawId, reward.reward_id, now, session);
+  });
+}
+
+async function claimNodeReward(userId: string, drawId: string, reward: IUserLotteryRewardItem) {
+  const now = Date.now();
+  const userNodeEligibility = await UserNodeEligibility.findOne({ user_id: userId, source_id: reward.item_id });
+  if (userNodeEligibility) {
+    await updateLotteryDrawHistory(drawId, reward.reward_id, now);
+    return;
+  }
+  await doTransaction( async (session) => {
+    await UserNodeEligibility.insertMany(
+      [
+        {
+          user_id: userId,
+          node_tier: reward.node_tier,
+          node_amount: reward.amount,
+          source_type: NodeSourceType.LuckyDraw,
+          source_id: reward.item_id,
+          created_time: now
         },
       ],
       { session: session },

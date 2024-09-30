@@ -2,7 +2,8 @@ import { Document, Schema, models } from 'mongoose';
 import connectToMongoDbDev from '@/lib/mongodb/client';
 
 export enum NodeSourceType {
-  Quest = 'quest'
+  Quest = 'quest',
+  LuckyDraw = 'luckydraw',
 }
 
 //用户节点资格
