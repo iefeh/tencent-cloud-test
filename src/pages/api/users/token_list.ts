@@ -140,7 +140,7 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
         }
         delete n.user_id;
         delete n.source_id;
-        delete n.source_type;
+        //delete n.source_type;
     }
 
     return { total: nodes.length, tokens: nodes };
