@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { cn } from '@nextui-org/react';
+import { observer } from 'mobx-react-lite';
 import TokenRewardProgressCountdown from '@/components/common/task/TokenRewardProgressCountdown';
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
   endTime?: number;
 }
 
-function NodeRewardProgress({ status, endTime }: Props) {
+function TokenRewardProgress({ status, endTime }: Props) {
   const progressData = [
     {
       label: 'Questing',
@@ -38,7 +39,7 @@ function NodeRewardProgress({ status, endTime }: Props) {
               <div
                 className={cn([
                   'w-28 lg:w-[10.5625rem] h-1px bg-current',
-                  item.checked ? 'text-basic-yellow' : 'text-white',
+                  item.checked ? 'text-brown' : 'text-basic-yellow',
                 ])}
               ></div>
             )}
@@ -46,7 +47,7 @@ function NodeRewardProgress({ status, endTime }: Props) {
             <div
               className={cn([
                 'w-2 h-2 rounded-full relative shrink-0 bg-current',
-                item.checked ? 'text-basic-yellow' : 'text-white',
+                item.checked ? 'text-brown' : 'text-basic-yellow',
               ])}
             >
               <div
@@ -55,12 +56,7 @@ function NodeRewardProgress({ status, endTime }: Props) {
                 ])}
               ></div>
 
-              <div
-                className={cn([
-                  'absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none capitalize',
-                  item.checked || 'text-[#999]',
-                ])}
-              >
+              <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-max text-sm leading-none capitalize">
                 {item.label}
               </div>
             </div>
@@ -68,9 +64,9 @@ function NodeRewardProgress({ status, endTime }: Props) {
         ))}
       </div>
 
-      <TokenRewardProgressCountdown label={getProgressLabel(status)} endTime={endTime} />
+      <TokenRewardProgressCountdown isBrown label={getProgressLabel(status)} endTime={endTime}  />
     </>
   );
 }
 
-export default NodeRewardProgress;
+export default observer(TokenRewardProgress);
