@@ -23,6 +23,7 @@ const REQUIREMENT_ICONS: Dict<StaticImageData | string> = {
     'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
   [LotteryRequirementType.MB]:
     'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png',
+  [LotteryRequirementType.NODE]: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/node.png',
 };
 
 const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, float, visible, onRuleClick }) => {
