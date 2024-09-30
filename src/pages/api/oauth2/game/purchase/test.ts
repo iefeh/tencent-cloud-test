@@ -20,14 +20,15 @@ router.use(dynamicCors).post(async (req, res) => {
         const userId = token.user.user_id;
         const gameId = token.client.id;
 
-        const {product_id, token_id} = req.body;
-        if (!product_id || !token_id) {
+        const { product_id } = req.body;
+        if (!product_id) {
             return res.json(response.invalidParams());
         }
         const gameProduct = await GameProduct.findOne({ id: product_id, game_id: gameId, active: true });
         if (!gameProduct) {
           return res.json(response.invalidParams({ message: "Invalid product id."}));
         }
+        console.log(gameProduct);
         // 保存购买请求
         try {
             const now = Date.now();
@@ -37,7 +38,7 @@ router.use(dynamicCors).post(async (req, res) => {
                 game_id: gameId,
                 token_id: "test",
                 product_id: product_id,
-                product_price_in_usd: gameProduct.product_price_in_usd,
+                product_price_in_usd: gameProduct.price_in_usdc,
                 request_time: now,
                 payment_confirm_time: now
             });
