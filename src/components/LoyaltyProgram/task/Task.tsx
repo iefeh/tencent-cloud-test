@@ -146,7 +146,15 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
               </span>
 
               {nodeIconUrl && (
-                <Image className="w-8 h-8" src={nodeIconUrl} alt="" unoptimized width={64} height={64} priority />
+                <Image
+                  className="w-12 h-12 ml-4"
+                  src={nodeIconUrl}
+                  alt=""
+                  unoptimized
+                  width={64}
+                  height={64}
+                  priority
+                />
               )}
             </div>
 
