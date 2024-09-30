@@ -306,6 +306,7 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
     reward_id: uuidv4(),
     badge_id: reward.badge_id,
     cdk: reward.cdk,
+    node_tier: reward.node_tier,
     reward_type: reward.reward_type,
     reward_name: reward.reward_name, 
     icon_url: reward.icon_url, 
