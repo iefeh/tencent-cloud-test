@@ -10,6 +10,11 @@ import teamsImg from 'img/loyalty/task/teams.png';
 import QuestTable from './QuestTable';
 import NodeTable from './NodeTable';
 
+const TabNames: Dict<string> = {
+  quest: 'Quest',
+  node: 'My Node Whitelist',
+};
+
 const MyTokens: FC = () => {
   const { userInfo } = useUserContext();
   const router = useRouter();
@@ -108,7 +113,7 @@ const MyTokens: FC = () => {
                 key={tab}
                 title={
                   <div className="flex items-center space-x-2">
-                    <span>{tab}</span>
+                    <span>{TabNames[tab] || tab}</span>
                   </div>
                 }
               >
