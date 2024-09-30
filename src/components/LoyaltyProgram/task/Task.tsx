@@ -11,6 +11,8 @@ import TokenRewardProgress from './TokenRewardProgress';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
 import { taskDetailsAPI } from '@/http/services/task';
+import useRaffleNode from '@/hooks/quests/useRaffleNode';
+import NodeRewardProgress from './NodeRewardProgress';
 
 interface Props {
   task: TaskItem;
@@ -38,6 +40,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
   const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressStatus = getProgressStatus();
+  const { raffleStatus, raffleEndTime, isRaffleNode } = useRaffleNode(task);
 
   function getProgressStatus() {
     const { verified, reward } = task;
@@ -80,7 +83,11 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         classNames?.task,
       ])}
     >
-      <TokenRewardProgress task={task} status={progressStatus} />
+      {isRaffleNode ? (
+        <NodeRewardProgress status={raffleStatus} endTime={raffleEndTime} />
+      ) : (
+        <TokenRewardProgress task={task} status={progressStatus} />
+      )}
 
       <div className="task-name text-xl flex justify-between items-center mt-4">
         <div>{task.name}</div>
