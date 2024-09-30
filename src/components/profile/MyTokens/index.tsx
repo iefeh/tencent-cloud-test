@@ -45,7 +45,8 @@ const MyTokens: FC = () => {
       const { items, total, source_types } = res;
 
       if (!selectedKey) {
-        setTabs(source_types || []);
+        const list = source_types || [];
+        setTabs(list.filter((item) => item !== 'node'));
       }
 
       Object.assign(pagiInfo.current, pagi);
