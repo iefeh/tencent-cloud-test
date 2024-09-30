@@ -40,7 +40,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
   const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressStatus = getProgressStatus();
-  const { isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } = useRaffleNode(task);
+  const { nodeIconUrl, isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } = useRaffleNode(task);
 
   function getProgressStatus() {
     const { verified, reward } = task;
@@ -161,6 +161,10 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                 <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
                   {task.user_token_reward.token_amount_formatted} {task.user_token_reward.token.symbol}
                 </span>
+
+                {nodeIconUrl && (
+                  <Image className="w-8 h-8 ml-4" src={nodeIconUrl} alt="" unoptimized width={64} height={64} priority />
+                )}
               </div>
             )}
           </div>

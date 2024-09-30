@@ -29,7 +29,15 @@ export interface TaskReward {
     distribute_type?: TokenRewardDistributeType;
     distribute_mid_state_name?: string;
   } & RaffleReward;
+  distribute_node?: {
+    icon_url?: string;
+    node_tier: string;
+    node_amount: number;
+    notification_id: string;
+    number_of_winners: number;
+  } & RaffleReward;
   raffle_node?: {
+    icon_url?: string;
     node_tier: string;
     node_amount: number;
     notification_id: string;
