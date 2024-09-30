@@ -11,6 +11,7 @@ import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
 import CDKClaimedModal from './CDKClaimedModal';
+import Link from 'next/link';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -93,9 +94,6 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
         cdkClaimedDisclosure.onOpen();
         return;
       }
-    }
-
-    if (hasNode) {
     }
 
     setLoading(true);
@@ -249,7 +247,20 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                         </>
                       ) : (
                         <>
-                          Click to claim rewards now.
+                          {hasNode && claimed ? (
+                            <>
+                              View Whitelist history in{' '}
+                              <Link
+                                className="text-basic-yellow hover:underline"
+                                href="/Profile"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                User Center
+                              </Link>
+                            </>
+                          ) : (
+                            'Click to claim rewards now.'
+                          )}
                           {hasNode || (
                             <>
                               <br />
