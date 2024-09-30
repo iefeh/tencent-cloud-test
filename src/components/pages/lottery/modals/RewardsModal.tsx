@@ -125,7 +125,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       return;
     }
     setLoading(false);
-    const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    const needClose =
+      !hasNode && (hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified));
     onClaimed?.(needClose);
   }
 
@@ -195,7 +196,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
 
                     <div className="text-sm mt-6">
                       Congratulations again, please ensure that you have filled out the form to secure your{' '}
-                      <span className="text-basic-yellow">Free Node</span> or
+                      <span className="text-basic-yellow">Free Node</span> or{' '}
                       <span className="text-basic-yellow">Whitelist</span> spot. And please pay attention to our
                       announcement in Official X account and{' '}
                       <span className="text-basic-yellow">Discord Community Server.</span>
