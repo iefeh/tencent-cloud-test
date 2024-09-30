@@ -46,12 +46,19 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const shareClaimMBLabel = 'Claim 20 MBs';
   const hasGiftCard = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.GIFT_CARD);
   const hasCDK = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.CDK);
+  const hasNode = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.NODE);
   const cdks = (item?.rewards || []).reduce((p, c) => {
     if (c.cdk) p.push(c.cdk);
     return p;
   }, [] as string[]);
 
   async function onShare() {
+    if (hasNode) {
+      window.open('https://docs.google.com/forms/d/1Z83IlGz7gsUH9RqREEPRNZr800p5x-hSX-iiaa3Q9T4/edit');
+      setHasClaimCD(true);
+      return;
+    }
+
     if (shareLabel === shareClaimMBLabel) {
       toast.success('Reward Claimed');
       setShareLabel('Claimed 20 MBs');
@@ -88,6 +95,9 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       }
     }
 
+    if (hasNode) {
+    }
+
     setLoading(true);
 
     const data = {
@@ -122,7 +132,11 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   }
 
   function initStatus() {
-    if (!hasForceShareRewards) {
+    if (hasNode) {
+      setClaimDisabled(true);
+      setShareDisabled(false);
+      setShareLabel('Fill out form');
+    } else if (!hasForceShareRewards) {
       setClaimDisabled(claimed);
       setShareDisabled(!claimed || !!poolInfo?.first_twitter_topic_verified);
       if (poolInfo?.first_twitter_topic_verified) setShareLabel('Claimed 20 MBs');
@@ -193,7 +207,11 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                   </>
                 ) : (
                   <>
-                    <div className="text-2xl">Congratulations on winning the following rewards!</div>
+                    <div className="text-2xl">
+                      {hasNode
+                        ? 'Please click [Fill out form] to claim your rewards'
+                        : 'Congratulations on winning the following rewards!'}
+                    </div>
 
                     <div className="flex items-center mt-[1.875rem] gap-x-16">
                       {(item?.rewards || []).map((reward, index) => (
@@ -232,9 +250,13 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                       ) : (
                         <>
                           Click to claim rewards now.
-                          <br />
-                          Bonus: Share to Twitter for an additional{' '}
-                          <span className="text-basic-yellow">+20 Moon Beams</span>! (first-time shares only)
+                          {hasNode || (
+                            <>
+                              <br />
+                              Bonus: Share to Twitter for an additional{' '}
+                              <span className="text-basic-yellow">+20 Moon Beams</span>! (first-time shares only)
+                            </>
+                          )}
                         </>
                       )}
                     </div>

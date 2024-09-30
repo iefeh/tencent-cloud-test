@@ -17,6 +17,8 @@ import RewardText from '../RewardText';
 import CirclePagination from '@/components/common/CirclePagination';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import EmptyContent from '@/components/common/EmptyContent';
+import { LotteryRewardType } from '@/constant/lottery';
+import Link from '@/components/link';
 
 interface Props {
   disclosure: {
@@ -112,37 +114,64 @@ const DrawHistoryModal: ForwardRefRenderFunction<DrawHisoryModalRef, Props & Ite
               <div ref={scrollRef} className="w-full h-[31.875rem] overflow-hidden relative">
                 {data.length > 0 && (
                   <ul>
-                    {data.map((item, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between border-white [&+li]:border-t-1 py-3 pl-6 pr-5 cursor-pointer"
-                        onClick={() => onRecordClick?.(item)}
-                      >
-                        <div className="text-left">
-                          <div className="text-lg font-semibold">DRAW {item?.rewards?.length || '--'} TIMES</div>
-                          <div className="text-sm text-[#666666]">
-                            {item.draw_time ? dayjs(item.draw_time).format('YYYY-MM-DD') : '--'}
-                          </div>
-                        </div>
+                    {data.map((item, index) => {
+                      const claimed = !!item?.rewards?.[0]?.claimed;
+                      const hasNode = (item?.rewards || []).some(
+                        (reward) => reward.reward_type === LotteryRewardType.NODE,
+                      );
 
-                        <div className="text-sm leading-none font-semibold text-right uppercase">
-                          {item.rewards.length < 1 ? (
-                            <div className="text-[#64523E]">No Prize This Time,Give It Another Shot!</div>
-                          ) : (
-                            <>
-                              {item.rewards.map((reward, ri) => (
-                                <RewardText
-                                  key={ri}
-                                  className="mt-3"
-                                  text={reward.reward_name}
-                                  quality={reward.reward_level}
-                                />
-                              ))}
-                            </>
-                          )}
-                        </div>
-                      </li>
-                    ))}
+                      return (
+                        <li
+                          key={index}
+                          className="flex justify-between border-white [&+li]:border-t-1 py-3 pl-6 pr-5 cursor-pointer"
+                          onClick={() => onRecordClick?.(item)}
+                        >
+                          <div className="text-left">
+                            <div className="text-lg font-semibold">DRAW {item?.rewards?.length || '--'} TIMES</div>
+                            <div className="text-sm text-[#666666]">
+                              {item.draw_time ? dayjs(item.draw_time).format('YYYY-MM-DD') : '--'}
+                            </div>
+
+                            {hasNode && (
+                              <div>
+                                {claimed ? (
+                                  <>
+                                    View Whitelist history in{' '}
+                                    <Link
+                                      className="text-basic-yellow hover:underline"
+                                      href="/Profile"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      User Center
+                                    </Link>
+                                    .
+                                  </>
+                                ) : (
+                                  'Prize claimg stage will be open soon and please stay tuned to our announcement.'
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="text-sm leading-none font-semibold text-right uppercase">
+                            {item.rewards.length < 1 ? (
+                              <div className="text-[#64523E]">No Prize This Time,Give It Another Shot!</div>
+                            ) : (
+                              <>
+                                {item.rewards.map((reward, ri) => (
+                                  <RewardText
+                                    key={ri}
+                                    className="mt-3"
+                                    text={reward.reward_name}
+                                    quality={reward.reward_level}
+                                  />
+                                ))}
+                              </>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
 
