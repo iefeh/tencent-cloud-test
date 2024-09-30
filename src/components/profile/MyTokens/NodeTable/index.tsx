@@ -22,9 +22,10 @@ const NodeTable: FC<Props> = ({ loading, items }) => {
   return (
     <>
       <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-10 gap-4">
-        <li className="flex-[360]">Source</li>
-        <li className="flex-[264]">Level</li>
-        <li className="flex-[224]">Amount</li>
+        <li className="flex-[264]">Whitelist Tier</li>
+        <li className="flex-[224]">Quantity</li>
+        <li className="flex-[360]">Item</li>
+        <li className="flex-[180]">Reward Type</li>
         <li className="w-40 shrink-0 text-right">Claim Time</li>
       </ul>
 

@@ -25,6 +25,7 @@ export interface NodeTokensRecord {
   node_amount: number;
   created_time: number;
   source: string;
+  source_type: string;
 }
 
 export type MyTokensRecord = QuestTokensRecord | NodeTokensRecord;
