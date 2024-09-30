@@ -1,6 +1,5 @@
 import { Fragment } from 'react';
 import { cn } from '@nextui-org/react';
-import { observer } from 'mobx-react-lite';
 import TokenRewardProgressCountdown from '@/components/common/task/TokenRewardProgressCountdown';
 
 interface Props {
@@ -9,6 +8,7 @@ interface Props {
 }
 
 function NodeRewardProgress({ status, endTime }: Props) {
+  console.log(111111, status, endTime)
   const progressData = [
     {
       label: 'Questing',
@@ -74,4 +74,4 @@ function NodeRewardProgress({ status, endTime }: Props) {
   );
 }
 
-export default observer(NodeRewardProgress);
+export default NodeRewardProgress;

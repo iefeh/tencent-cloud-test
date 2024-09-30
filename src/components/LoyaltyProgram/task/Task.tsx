@@ -40,7 +40,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
   const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressStatus = getProgressStatus();
-  const { raffleStatus, raffleEndTime, isRaffleNode } = useRaffleNode(task);
+  const { isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } = useRaffleNode(task);
 
   function getProgressStatus() {
     const { verified, reward } = task;
@@ -136,7 +136,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
           )}
         </div>
 
-        <div className="footer relative">
+        <div className="footer relative mt-2">
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             <div className="flex items-center">
               <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
@@ -165,10 +165,20 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
             )}
           </div>
 
-          {(task.verified &&
-            hasTokenReward &&
-            (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
-          isExpired ? (
+          {isRaffleNode && isRaffleState ? (
+            <LGButton
+              className={cn(['mt-5 whitespace-normal text-left', hasWinReward && '!text-basic-yellow'])}
+              label={
+                hasWinReward
+                  ? 'Congrats, you’ve secured a Free Node Whitelist spot!'
+                  : 'Sorry, you didn’t win this time.'
+              }
+              disabled
+            />
+          ) : (task.verified &&
+              hasTokenReward &&
+              (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
+            isExpired ? (
             <>
               <LGButton
                 className="mt-5"
