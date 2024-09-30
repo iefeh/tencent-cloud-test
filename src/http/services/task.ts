@@ -9,6 +9,11 @@ export interface TaskProperties {
   can_reverify_after?: number;
 }
 
+export interface RaffleReward {
+  estimated_raffle_time: number | null;
+  actual_raffle_time: number | null;
+}
+
 export interface TaskReward {
   type: string;
   amount: number;
@@ -21,11 +26,15 @@ export interface TaskReward {
     token_address: string;
     token_claim_status?: string;
     whitelist_id: string[];
-    estimated_raffle_time: number | null;
-    actual_raffle_time: number | null;
     distribute_type?: TokenRewardDistributeType;
     distribute_mid_state_name?: string;
-  };
+  } & RaffleReward;
+  raffle_node?: {
+    node_tier: string;
+    node_amount: number;
+    notification_id: string;
+    number_of_winners: number;
+  } & RaffleReward;
 }
 
 export interface TaskListItem {
@@ -50,6 +59,7 @@ export interface TaskListItem {
   user_token_reward?: QuestTokensRecord;
   participant_end_time?: number;
   end_time?: number;
+  user_node_reward?: { win_reward?: boolean };
 }
 
 export interface TaskListResDto {
