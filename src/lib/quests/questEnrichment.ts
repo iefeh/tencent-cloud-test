@@ -261,16 +261,9 @@ async function enrichQuestNodeRewardStatus(userId: string, quests: any[]) {
         // 任务存在raffle node奖励, 查询用户中奖状态
         if (quest.reward.raffle_node && quest.reward.raffle_node.actual_raffle_time && quest.verified) {
             const userNodeEligibility = await UserNodeEligibility.findOne({ source_id: quest.id, user_id: userId});
-            if (userNodeEligibility) {
-                quest.user_node_reward = {
-                    win_reward: true,
-                    node_tier: userNodeEligibility.node_tier
-                }
-            } else {
-                quest.user_node_reward = {
-                    win_reward: false
-                }
-            }
+            quest.user_node_reward = {
+                win_reward: !!userNodeEligibility
+            };
         }
     }));
 }
