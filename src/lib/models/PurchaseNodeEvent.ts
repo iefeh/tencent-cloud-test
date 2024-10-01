@@ -52,11 +52,10 @@ const connection = connectToMongoDbDev();
 const PurchaseNodeEvent = models.PurchaseNodeEvent || connection.model<IPurchaseNodeEvent>('PurchaseNodeEvent', PurchaseNodeEventSchema, 'purchase_node_events');
 export default PurchaseNodeEvent;
 
-export async function getUserNodePurchaseAmount(userWalletAddr: string, contractAddr: string) {
+export async function getUserNodePurchaseAmount(userWalletAddr: string) {
     let matchOpt: any = {
         $match: {
             buyer_wallet_addr: userWalletAddr,
-            contract_address: contractAddr,
             transaction_status: 'confirmed',
             deleted_time: null, 
         }
