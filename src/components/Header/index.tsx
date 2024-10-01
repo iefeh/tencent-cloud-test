@@ -83,7 +83,7 @@ export const routeText: RouteMenu[] = [
       },
       {
         name: 'More & $MORE Draw',
-        route: '/lottery',
+        route: '/draw',
       },
     ],
   },

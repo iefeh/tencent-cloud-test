@@ -157,7 +157,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
         <BattlePass item={item} />
 
         {hasReachedRequirement ? (
-          <Link href={isInProgress ? `/lottery/${item?.lottery_pool_id}` : ''}>
+          <Link href={isInProgress ? `/draw/${item?.lottery_pool_id}` : ''}>
             <LGButton className="w-[8.75rem]" label="Play" disabled={!canPlay} />
           </Link>
         ) : (
