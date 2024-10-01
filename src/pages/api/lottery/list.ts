@@ -2,7 +2,7 @@ import type {NextApiResponse} from "next";
 import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
-import { enrichRequirementsInfo, lotteryRequirementSatisfy } from '@/lib/lottery/lottery';
+import { enrichRequirementsInfo, lotteryPoolRequirementSatisfy } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import LotteryPool, { LotteryPoolType } from '@/lib/models/LotteryPool';
@@ -34,7 +34,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   let result: any[] = [];
   for (let pool of pagination.data) {
     const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: pool.lottery_pool_id }, { type: 1, description: 1, properties: 1, _id: 0 });
-    const requirementSatisfy = await lotteryRequirementSatisfy(userId, pool.lottery_pool_id);
+    const requirementSatisfy = await lotteryPoolRequirementSatisfy(userId, pool.lottery_pool_id);
     await enrichRequirementsInfo(requirements);
     let openStatus = LotteryPoolOpenStatus.ALL;
     if (pool.start_time > now) {

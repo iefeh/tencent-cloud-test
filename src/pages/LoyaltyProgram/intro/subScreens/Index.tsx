@@ -46,7 +46,7 @@ export default function IndexScreen() {
         button={
           <div className="flex items-center gap-2">
             <BasicButton label="Earn Moon Beams" link="/LoyaltyProgram/earn" />
-            <BasicButton label="Join Lottery" link="/lottery" />
+            <BasicButton label="Join Draw" link="/draw" />
           </div>
         }
       />

@@ -4,6 +4,7 @@ import connectToMongoDbDev from '@/lib/mongodb/client';
 //用户高阶通证获得类型
 export enum LotteryPoolRequirementType {
   NFT = 'nft',
+  Node = 'node',
   Badge = 'badge',
   Moonbeam = 'moon_beam',
   WhiteList = 'whitelist'

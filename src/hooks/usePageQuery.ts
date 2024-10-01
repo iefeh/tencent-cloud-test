@@ -2,6 +2,7 @@ import { ASSETS_PAGE_SIZE } from '@/constant/nft';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props<T, P> {
+  autoload?: boolean;
   key: string;
   notFill?: boolean;
   pageSize?: number;
@@ -10,6 +11,7 @@ interface Props<T, P> {
 }
 
 export default function usePageQuery<T, P = PageQueryDto>({
+  autoload,
   key,
   notFill,
   pageSize = ASSETS_PAGE_SIZE,
@@ -49,7 +51,7 @@ export default function usePageQuery<T, P = PageQueryDto>({
   }
 
   useEffect(() => {
-    queryData();
+    if (autoload !== false) queryData();
   }, []);
 
   return { loading, data, total, pagi, onPageChange, queryData, setData };

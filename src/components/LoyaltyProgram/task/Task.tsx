@@ -11,6 +11,8 @@ import TokenRewardProgress from './TokenRewardProgress';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
 import { taskDetailsAPI } from '@/http/services/task';
+import useRaffleNode from '@/hooks/quests/useRaffleNode';
+import NodeRewardProgress from './NodeRewardProgress';
 
 interface Props {
   task: TaskItem;
@@ -38,6 +40,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
   const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressStatus = getProgressStatus();
+  const { nodeIconUrl, isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } = useRaffleNode(task);
 
   function getProgressStatus() {
     const { verified, reward } = task;
@@ -80,7 +83,11 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
         classNames?.task,
       ])}
     >
-      <TokenRewardProgress task={task} status={progressStatus} />
+      {isRaffleNode ? (
+        <NodeRewardProgress status={raffleStatus} endTime={raffleEndTime} />
+      ) : (
+        <TokenRewardProgress task={task} status={progressStatus} />
+      )}
 
       <div className="task-name text-xl flex justify-between items-center mt-4">
         <div>{task.name}</div>
@@ -129,7 +136,7 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
           )}
         </div>
 
-        <div className="footer relative">
+        <div className="footer relative mt-2">
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             <div className="flex items-center">
               <Image className="w-8 h-8" src={mbImg} alt="" unoptimized />
@@ -137,6 +144,18 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
               <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">
                 {task.reward.amount_formatted} Moon Beams
               </span>
+
+              {nodeIconUrl && (
+                <Image
+                  className="w-12 h-12 ml-4"
+                  src={nodeIconUrl}
+                  alt=""
+                  unoptimized
+                  width={64}
+                  height={64}
+                  priority
+                />
+              )}
             </div>
 
             {task.user_token_reward && (
@@ -158,10 +177,20 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
             )}
           </div>
 
-          {(task.verified &&
-            hasTokenReward &&
-            (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
-          isExpired ? (
+          {isRaffleNode && isRaffleState ? (
+            <LGButton
+              className={cn(['mt-5 whitespace-normal text-left', hasWinReward && '!text-basic-yellow'])}
+              label={
+                hasWinReward
+                  ? 'Congrats, you’ve secured a Free Node Whitelist spot!'
+                  : 'Sorry, you didn’t win this time.'
+              }
+              disabled
+            />
+          ) : (task.verified &&
+              hasTokenReward &&
+              (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
+            isExpired ? (
             <>
               <LGButton
                 className="mt-5"

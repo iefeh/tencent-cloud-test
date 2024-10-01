@@ -135,6 +135,8 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
     for (let n of nodes) {
         if (n.source_type == NodeSourceType.Quest && questNameMap) {
             n.source = questNameMap.get(n.source_id.substring(0,36));
+        } else if (n.source_type == NodeSourceType.LuckyDraw) {
+            n.source = "Lucky Draw";
         } else {
             n.source = n.source_id;
         }

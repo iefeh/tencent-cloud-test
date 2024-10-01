@@ -77,8 +77,6 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     }));
 }
 
-
-// TODO：检查是否具有抽奖资格
 async function checkLotteryQualification(res: any, userId: string, lottery_pool_id: string, draw_count: number, lottery_ticket_cost: number, mb_cost: number): Promise<{
     passed: boolean,
     message: string

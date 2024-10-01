@@ -72,3 +72,11 @@ export function queryShopItemAPI(item_id: string): Promise<AstrArk.ProductItem> 
 export function buyTicketPermitAPI(data: AstrArk.PermitProps): Promise<AstrArk.PermitRespose> {
   return http.get('/api/oauth2/game/product/permit', { params: data, withBearer: true, isAA: true });
 }
+
+export function queryPurchaseOverviewAPI(): Promise<AstrArk.PurchaseOverviewDTO> {
+  return http.get('/api/oauth2/game/purchase/overview', { withBearer: true, isAA: true });
+}
+
+export function queryPurchaseRecordsAPI(params: PageQueryDto): Promise<PageResDTO<AstrArk.PurchaseRecordDTO>> {
+  return http.get('/api/oauth2/game/purchase/list', { params, withBearer: true, isAA: true });
+}

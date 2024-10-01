@@ -61,8 +61,8 @@ const BenefitsMonthlyItemCollection: ShopItemCollectionCom = ({ item, onClick })
         >
           <S3Image className="object-contain" src={icon_url} fill />
 
-          <div className="absolute left-5 top-[18.75rem] text-[#10538A] leading-6">
-            剩余可领取：<span className="text-[#F17A08]">99</span>天
+          <div className="absolute left-3 top-[18.75rem] text-[0.75rem] text-[#10538A] leading-6">
+            Exclusive Deal, Unlock Extra Perks!
           </div>
 
           <div className="absolute left-[29.5rem] top-[22.5625rem] text-[#513218] leading-6">

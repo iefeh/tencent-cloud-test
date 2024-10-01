@@ -11,6 +11,7 @@ import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
 import CDKClaimedModal from './CDKClaimedModal';
+import Link from 'next/link';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -46,12 +47,19 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const shareClaimMBLabel = 'Claim 20 MBs';
   const hasGiftCard = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.GIFT_CARD);
   const hasCDK = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.CDK);
+  const hasNode = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.NODE);
   const cdks = (item?.rewards || []).reduce((p, c) => {
     if (c.cdk) p.push(c.cdk);
     return p;
   }, [] as string[]);
 
   async function onShare() {
+    if (hasNode) {
+      window.open('https://docs.google.com/forms/d/1Z83IlGz7gsUH9RqREEPRNZr800p5x-hSX-iiaa3Q9T4/edit');
+      setHasClaimCD(true);
+      return;
+    }
+
     if (shareLabel === shareClaimMBLabel) {
       toast.success('Reward Claimed');
       setShareLabel('Claimed 20 MBs');
@@ -117,12 +125,17 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       return;
     }
     setLoading(false);
-    const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    const needClose =
+      !hasNode && (hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified));
     onClaimed?.(needClose);
   }
 
   function initStatus() {
-    if (!hasForceShareRewards) {
+    if (hasNode) {
+      setClaimDisabled(true);
+      setShareDisabled(false);
+      setShareLabel('Fill out form');
+    } else if (!hasForceShareRewards) {
       setClaimDisabled(claimed);
       setShareDisabled(!claimed || !!poolInfo?.first_twitter_topic_verified);
       if (poolInfo?.first_twitter_topic_verified) setShareLabel('Claimed 20 MBs');
@@ -177,7 +190,23 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               </ModalHeader>
 
               <ModalBody>
-                {hasShareAndConfirmRewards && !hasCDK && claimed ? (
+                {claimed && hasNode ? (
+                  <>
+                    <div className="text-2xl">Reward Claimed</div>
+
+                    <div className="text-sm mt-6">
+                      Congratulations again, please ensure that you have filled out the form to secure your{' '}
+                      <span className="text-basic-yellow">Free Node</span> or{' '}
+                      <span className="text-basic-yellow">Whitelist</span> spot. And please pay attention to our
+                      announcement in Official X account and{' '}
+                      <span className="text-basic-yellow">Discord Community Server.</span>
+                    </div>
+
+                    <div className="flex items-center gap-x-[5.5rem] mt-5">
+                      <LGButton className="w-[18.5rem]" label="Confirm" actived onClick={onClose} />
+                    </div>
+                  </>
+                ) : hasShareAndConfirmRewards && !hasCDK && claimed ? (
                   <>
                     <div className="text-2xl">Reward Claimed</div>
 
@@ -202,7 +231,24 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasGiftCard ? (
+                      {hasNode ? (
+                        <>
+                          Please click [Fill out form] to claim your rewards
+                          <br />
+                          {claimed && (
+                            <>
+                              View Whitelist history in{' '}
+                              <Link
+                                className="text-basic-yellow hover:underline"
+                                href="/Profile"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                User Center
+                              </Link>
+                            </>
+                          )}
+                        </>
+                      ) : hasGiftCard ? (
                         <>
                           Please contact Moonveil staff and claim your Gift Card.
                           <br />

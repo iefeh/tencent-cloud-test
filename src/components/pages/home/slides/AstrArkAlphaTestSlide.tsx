@@ -10,7 +10,7 @@ export default function AstrArkAlphaTestSlide(props: Props) {
   const router = useRouter();
 
   function onExplore() {
-    router.push(`/lottery`);
+    router.push(`/draw`);
   }
 
   return (

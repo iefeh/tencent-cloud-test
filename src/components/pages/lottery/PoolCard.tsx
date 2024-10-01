@@ -110,7 +110,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             <span className='whitespace-nowrap'>Close in {limitedTime}</span>
           </div>
 
-          <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
+          {/* <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
             <Image
               className="w-6 h-6 object-contain mr-[0.375rem]"
               src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/icons/icon_qty.png"
@@ -121,7 +121,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             />
 
             <span className='whitespace-nowrap'>Limited Reward Qty : {item?.limited_rewards?.length || 0}</span>
-          </div>
+          </div> */}
         </div>
 
         <div className="absolute top-[13%] left-[3.5%]">
@@ -153,11 +153,11 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
         ))}
       </div>
 
-      <div className="flex justify-between items-center mt-16">
+      <div className="flex justify-between items-center mt-6">
         <BattlePass item={item} />
 
         {hasReachedRequirement ? (
-          <Link href={isInProgress ? `/lottery/${item?.lottery_pool_id}` : ''}>
+          <Link href={isInProgress ? `/draw/${item?.lottery_pool_id}` : ''}>
             <LGButton className="w-[8.75rem]" label="Play" disabled={!canPlay} />
           </Link>
         ) : (
