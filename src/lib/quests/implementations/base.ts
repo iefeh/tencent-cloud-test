@@ -142,6 +142,10 @@ export abstract class QuestBase {
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
     async saveUserReward<T>(userId: string, taint: string, rewardDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean, tip?: string }> {
+        if (this.quest.visible_user_ids && this.quest.visible_user_ids.length > 0 && !(this.quest.visible_user_ids.includes(userId))) {
+            return { done: false, duplicated: false }
+        }
+
         const now = Date.now();
         const audit = new UserMoonBeamAudit({
             user_id: userId,
@@ -226,6 +230,7 @@ export abstract class QuestBase {
             });
             return { done: true, duplicated: false, tip: tip }
         } catch (error) {
+            console.log(error);
             if (isDuplicateKeyError(error)) {
                 return { done: false, duplicated: true }
             }
