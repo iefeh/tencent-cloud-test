@@ -448,7 +448,7 @@ async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): 
       for (let p of r.properties) {
         const userWallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
         if (userWallet) {
-          const userNodePurchaseAmount = await getUserNodePurchaseAmount(userWallet.wallet_addr, p.contract_addr);
+          const userNodePurchaseAmount = await getUserNodePurchaseAmount(userWallet.wallet_addr);
           let nodeAmountSatisfy = true;
           if (p.node_amount > 0) {
             nodeAmountSatisfy = userNodePurchaseAmount >= p.node_amount;
