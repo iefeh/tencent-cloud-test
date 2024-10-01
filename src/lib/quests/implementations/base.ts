@@ -230,7 +230,6 @@ export abstract class QuestBase {
             });
             return { done: true, duplicated: false, tip: tip }
         } catch (error) {
-            console.log(error);
             if (isDuplicateKeyError(error)) {
                 return { done: false, duplicated: true }
             }
