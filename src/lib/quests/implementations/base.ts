@@ -171,6 +171,7 @@ export abstract class QuestBase {
             }
         }
 
+        let tip = undefined;
         let nodeReward: any;
         if (this.quest.reward.distribute_node) {
             // 检查用户是否已绑定钱包
@@ -182,7 +183,9 @@ export abstract class QuestBase {
             nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.distribute_node.node_tier, node_amount: this.quest.reward.distribute_node.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
             if (this.quest.reward.distribute_node.notification_id) {
                 let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.distribute_node.notification_id });
-                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.distribute_node.node_tier).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
+                const tier = Number(this.quest.reward.distribute_node.node_tier);
+                // nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', tier > 0 ? `Tier ${tier}` : `FREE`).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
+                tip = notification.content.replace('{tier}', tier > 0 ? `Tier ${tier}` : `FREE`).replace('{task}', this.quest.name);
             }
         } else if (this.quest.reward.raffle_node) {
             const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
@@ -219,12 +222,9 @@ export abstract class QuestBase {
 
                 if (nodeReward) {
                     await nodeReward.node.save(opts);
-                    if (nodeReward.notification) {
-                        await nodeReward.notification.save(opts);
-                    }
                 }
             });
-            return { done: true, duplicated: false }
+            return { done: true, duplicated: false, tip: tip }
         } catch (error) {
             if (isDuplicateKeyError(error)) {
                 return { done: false, duplicated: true }
