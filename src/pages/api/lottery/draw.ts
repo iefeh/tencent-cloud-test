@@ -148,10 +148,10 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
     }
     let drawResult: { drawResult: IUserLotteryRewardItem, verifyNeeded: boolean};
     if (currentDrawNo <= 3) {
-      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
+      drawResult = await getDrawResult(userId, lotteryPoolId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     else {
-      drawResult = await getDrawResult(userId, nextSevenDrawCumulativeProbabilities, nextSevenThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
+      drawResult = await getDrawResult(userId, lotteryPoolId, nextSevenDrawCumulativeProbabilities, nextSevenThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     userRewards.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
@@ -236,7 +236,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
 }
 
 // 抽奖结果计算, 并返回抽到的奖品是否需要验证
-async function getDrawResult(userId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
+async function getDrawResult(userId: string, lotteryPoolId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
   guaranteedRewards: ILotteryRewardItem[], 
   availableRewards: ILotteryRewardItem[], 
   itemInventoryDeltaMap: Map<string, number>,
@@ -285,6 +285,17 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
           }
           for (let drawResult of allDrawResults) {
             if (drawResult.reward_type === LotteryRewardType.Node && drawResult.item_id === reward.item_id) {
+              reward = drawOnce;
+              break;
+            }
+          }
+        } else if (reward.reward_type === LotteryRewardType.USDT) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, "rewards.reward_type": LotteryRewardType.USDT });
+          if (userDrawHistory) {
+            reward = drawOnce;
+          }
+          for (let drawResult of allDrawResults) {
+            if (drawResult.reward_type === LotteryRewardType.USDT) {
               reward = drawOnce;
               break;
             }
