@@ -344,3 +344,15 @@ export type NodeReward = {
   // 实际抽奖时间
   actual_raffle_time?: number,
 };
+
+export type NodeMultiplier = {
+  chain_id: string,
+  contract_address: string,
+  notification_id:string,
+  per_nft_node: [
+    {
+      tier: number,
+      amount: number
+    }
+  ]
+}
