@@ -61,6 +61,8 @@ export interface IQuest extends Document {
     updated_time: number,
     // 删除时间
     deleted_time: number,
+    // 指定用户数组,仅数组内用户可见
+    visible_user_ids?: string[]
 }
 
 const QuestSchema = new Schema<IQuest>({
@@ -92,6 +94,7 @@ const QuestSchema = new Schema<IQuest>({
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number },
+    visible_user_ids: { type: [String] }
 });
 // 任务唯一索引
 QuestSchema.index({ id: 1 }, { unique: true });
