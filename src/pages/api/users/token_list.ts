@@ -124,7 +124,7 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
     const pipeline: PipelineStage[] = [{ $match: { user_id: userId } }, { $sort: { created_time: -1 } }, { $project: { _id: 0, __v: 0 } }];
     const nodes: any[] = await UserNodeEligibility.aggregate(pipeline);
 
-    const sourceIds: string[] = nodes.filter(n => n.source_type == NodeSourceType.Quest).map(n => (n.source_id as string).substring(0,36));
+    const sourceIds: string[] = nodes.filter(n => n.source_type == NodeSourceType.Quest).map(n => (n.source_id as string).substring(0, 36));
     let questNameMap: Map<string, string> | undefined;
 
     if (sourceIds.length > 0) {
@@ -133,10 +133,12 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
     }
 
     for (let n of nodes) {
+        n.node_tier = n.node_tier.replace('0', 'free');
         if (n.source_type == NodeSourceType.Quest && questNameMap) {
-            n.source = questNameMap.get(n.source_id.substring(0,36));
+            n.source = questNameMap.get(n.source_id.substring(0, 36));
         } else if (n.source_type == NodeSourceType.LuckyDraw) {
             n.source = "Lucky Draw";
+            n.source_type='lucky draw'
         } else {
             n.source = n.source_id;
         }
