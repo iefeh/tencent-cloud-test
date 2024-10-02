@@ -41,7 +41,7 @@ export default function useMint({
   });
   const currentChainIdHex = '0x' + parseInt(chainId).toString(16);
 
-  const provider = useRef(new BrowserProvider(walletProvider!));
+  const provider = useRef(walletProvider && new BrowserProvider(walletProvider!));
   const signer = useRef<JsonRpcSigner | null>(null);
   const contract = useRef<Contract | null>(null);
 
@@ -99,8 +99,8 @@ export default function useMint({
 
   async function checkNetwork() {
     try {
-      const network = await provider.current.getNetwork();
-      const isNetCorrected = network.chainId.toString() === chainId;
+      const network = await provider.current?.getNetwork();
+      const isNetCorrected = network?.chainId?.toString() === chainId;
       toggleIsNetCorrected(isNetCorrected);
       console.log('current mint network chainId:', chainId);
       return isNetCorrected;
