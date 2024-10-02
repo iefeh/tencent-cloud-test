@@ -3,10 +3,11 @@ import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import LotteryPool from '@/lib/models/LotteryPool';
+import Quest from '@/lib/models/Quest';
+import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
 import UserTokenReward, { UserTokenSourceType } from '@/lib/models/UserTokenReward';
 import * as response from '@/lib/response/response';
-import UserNodeEligibility, { NodeSourceType } from "@/lib/models/UserNodeEligibility";
-import Quest from "@/lib/models/Quest";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -134,11 +135,24 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
         questNameMap = new Map<string, string>(quests.map(q => [q.id, q.name]));
     }
 
+    const lotteryRewardIds = nodes.filter(n => n.source_type == NodeSourceType.LuckyDraw).map(n => n.source_id);
+    let lotteryRewardMap: Map<string, string> | undefined;
+    if (lotteryRewardIds.length > 0) {
+        const lotteryPools: any[] = await LotteryPool.find({ "rewards.item_id": { $in: lotteryRewardIds } }, { _id: 0, name: 1, rewards: 1 });
+        lotteryRewardMap = new Map<string, string>();
+        for (let lp of lotteryPools) {
+            for (let r of lp.rewards) {
+                lotteryRewardMap.set(r.item_id, lp.name);
+            }
+        }
+    }
+
     for (let n of nodes) {
         if (n.source_type == NodeSourceType.Quest && questNameMap) {
-            n.source = questNameMap.get(n.source_id);
-        } else if (n.source_type == NodeSourceType.LuckyDraw) {
-            n.source = "Lucky Draw";
+            n.source = questNameMap.get(n.source_id.substring(0, 36));
+        } else if (n.source_type == NodeSourceType.LuckyDraw && lotteryRewardMap) {
+            n.source_type='lucky draw'
+            n.source = lotteryRewardMap.get(n.source_id);
         } else {
             n.source = n.source_id;
         }
