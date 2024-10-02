@@ -21,6 +21,7 @@ import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligib
 import GlobalNotification from '@/lib/models/GlobalNotification';
 import UserNotifications from '@/lib/models/UserNotifications';
 import UserWallet from '@/lib/models/UserWallet';
+import ContractNFT from '@/lib/models/ContractNFT';
 
 interface IProjection {
     [key: string]: number;
@@ -142,6 +143,10 @@ export abstract class QuestBase {
 
     // 保存用户的奖励，可选回调参数extraTxOps，用于添加额外的事务操作
     async saveUserReward<T>(userId: string, taint: string, rewardDelta: number, extra_info: string | null, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<{ done: boolean, duplicated: boolean, tip?: string }> {
+        if (this.quest.visible_user_ids && this.quest.visible_user_ids.length > 0 && !(this.quest.visible_user_ids.includes(userId))) {
+            return { done: false, duplicated: false }
+        }
+
         const now = Date.now();
         const audit = new UserMoonBeamAudit({
             user_id: userId,
@@ -171,18 +176,54 @@ export abstract class QuestBase {
             }
         }
 
+        let tip = undefined;
         let nodeReward: any;
-        if (this.quest.reward.node_reward) {
+        if (this.quest.reward.distribute_node) {
             // 检查用户是否已绑定钱包
             const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
             if (!wallet) {
                 return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
             }
             nodeReward = {};
-            nodeReward.node = new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.node_reward.node_tier, node_amount: this.quest.reward.node_reward.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() });
-            if (this.quest.reward.node_reward.notification_id) {
-                let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.node_reward.notification_id });
-                nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', this.quest.reward.node_reward.node_tier).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
+            nodeReward.nodes = [new UserNodeEligibility({ user_id: userId, node_tier: this.quest.reward.distribute_node.node_tier, node_amount: this.quest.reward.distribute_node.node_amount, source_type: NodeSourceType.Quest, source_id: this.quest.id, created_time: Date.now() })];
+            if (this.quest.reward.distribute_node.notification_id) {
+                let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.distribute_node.notification_id });
+                const tier = Number(this.quest.reward.distribute_node.node_tier);
+                // nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', tier > 0 ? `Tier ${tier}` : `FREE`).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
+                tip = notification.content.replace('{tier}', tier > 0 ? `Tier ${tier}` : `FREE`).replace('{task}', this.quest.name);
+            }
+        } else if (this.quest.reward.raffle_node) {
+            const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+            if (!wallet) {
+                return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
+            }
+        } else if (this.quest.reward.node_multiplier) {
+            const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+            if (!wallet) {
+                return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
+            }
+            const multiplier = this.quest.reward.node_multiplier;
+            const holdAmount = await ContractNFT.count({ wallet_addr: wallet.wallet_addr, chain_id: multiplier.chain_id, contract_address: multiplier.contract_address, transaction_status: 'confirmed' });
+            let temp: string = '';
+            if (holdAmount) {
+                nodeReward = {};
+                nodeReward.nodes = [];
+                for (let n of multiplier.per_nft_node) {
+                    const node = new UserNodeEligibility({ user_id: userId, node_tier: n.tier, node_amount: holdAmount * n.amount, source_type: NodeSourceType.Quest, source_id: `${this.quest.id},tier:${n.tier}`, created_time: Date.now() });
+                    nodeReward.nodes.push(node);
+                    if (temp.length == 0) {
+                        temp = `${holdAmount * n.amount} Tier ${n.tier}`
+                    } else {
+                        temp = `${temp} and ${holdAmount * n.amount} Tier ${n.tier}`
+                    }
+                }
+            }
+
+            if (this.quest.reward.node_multiplier.notification_id) {
+                let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.node_multiplier.notification_id });
+                // const tier = Number(this.quest.reward.node_multiplier.node_tier);
+                // nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', tier > 0 ? `Tier ${tier}` : `FREE`).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
+                tip = notification.content.replace('{tier}', temp.replace(`Tier 0`, 'free')).replace('{task}', this.quest.name);
             }
         }
 
@@ -213,13 +254,10 @@ export abstract class QuestBase {
                 }
 
                 if (nodeReward) {
-                    await nodeReward.node.save(opts);
-                    if (nodeReward.notification) {
-                        await nodeReward.notification.save(opts);
-                    }
+                    await UserNodeEligibility.insertMany(nodeReward.nodes, { session: session })
                 }
             });
-            return { done: true, duplicated: false }
+            return { done: true, duplicated: false, tip: tip }
         } catch (error) {
             if (isDuplicateKeyError(error)) {
                 return { done: false, duplicated: true }

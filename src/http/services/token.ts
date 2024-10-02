@@ -1,7 +1,7 @@
 import http from '../index';
 import type { TokenRewardStatus } from '@/constant/token';
 
-export interface MyTokensRecord {
+export interface QuestTokensRecord {
   source_type: string;
   reward_id: string;
   token_amount_raw: string;
@@ -19,6 +19,16 @@ export interface MyTokensRecord {
     name: string;
   };
 }
+
+export interface NodeTokensRecord {
+  node_tier: string;
+  node_amount: number;
+  created_time: number;
+  source: string;
+  source_type: string;
+}
+
+export type MyTokensRecord = QuestTokensRecord | NodeTokensRecord;
 
 export function queryMyTokensListAPI(
   params: PageQueryDto & { source_type?: string },

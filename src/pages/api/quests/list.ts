@@ -10,7 +10,7 @@ import { getMaxLevelBadge } from "@/pages/api/badges/display";
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(maybeAuthInterceptor).get(async (req, res) => {
-    const {page_num, page_size} = req.query;
+    return;const {page_num, page_size} = req.query;
     if (!page_num || !page_size) {
         res.json(response.invalidParams());
         return

@@ -23,13 +23,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
 
     let pagination: any;
     switch (source_type as string) {
-        default:
-        case UserTokenSourceType.Quest:
-            pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
-            break;
         case UserTokenSourceType.Node:
             pagination = await getUserNodes(userId);
             break;
+        default:
+            pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
     }
 
     if (pagination.total == 0 || pagination.tokens.length == 0) {
@@ -127,7 +125,7 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
     const pipeline: PipelineStage[] = [{ $match: { user_id: userId } }, { $sort: { created_time: -1 } }, { $project: { _id: 0, __v: 0 } }];
     const nodes: any[] = await UserNodeEligibility.aggregate(pipeline);
 
-    const sourceIds: string[] = nodes.filter(n => n.source_type == NodeSourceType.Quest).map(n => n.source_id);
+    const sourceIds: string[] = nodes.filter(n => n.source_type == NodeSourceType.Quest).map(n => (n.source_id as string).substring(0, 36));
     let questNameMap: Map<string, string> | undefined;
 
     if (sourceIds.length > 0) {
@@ -148,6 +146,7 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
     }
 
     for (let n of nodes) {
+        n.node_tier = n.node_tier.replace('0', 'free node');
         if (n.source_type == NodeSourceType.Quest && questNameMap) {
             n.source = questNameMap.get(n.source_id.substring(0, 36));
         } else if (n.source_type == NodeSourceType.LuckyDraw && lotteryRewardMap) {
@@ -158,7 +157,7 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
         }
         delete n.user_id;
         delete n.source_id;
-        delete n.source_type;
+        //delete n.source_type;
     }
 
     return { total: nodes.length, tokens: nodes };

@@ -1,6 +1,6 @@
 import { AcceleratorType, EVENT_REWARD_TYPE, EventStatus, QuestType, TokenRewardDistributeType } from '@/constant/task';
 import http from '../index';
-import { MyTokensRecord } from './token';
+import { QuestTokensRecord } from './token';
 
 export interface TaskProperties {
   url?: string;
@@ -64,7 +64,7 @@ export interface TaskListItem {
   is_new?: boolean;
   current_progress?: number;
   target_progress?: number;
-  user_token_reward?: MyTokensRecord;
+  user_token_reward?: QuestTokensRecord;
   participant_end_time?: number;
   end_time?: number;
   user_node_reward?: { win_reward?: boolean };

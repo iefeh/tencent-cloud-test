@@ -331,8 +331,28 @@ export type GameTicketReward = {
 export type NodeReward = {
   // 节点等级
   node_tier: string,
+  // 节点图标
+  icon_url: string,
   // 节点数量
   node_amount: number,
   // 领奖时的提醒
   notification_id?: string,
+  // 中奖人数
+  number_of_winners?: number,
+  // 预估抽奖时间
+  estimated_raffle_time?: number,
+  // 实际抽奖时间
+  actual_raffle_time?: number,
 };
+
+export type NodeMultiplier = {
+  chain_id: string,
+  contract_address: string,
+  notification_id:string,
+  per_nft_node: [
+    {
+      tier: number,
+      amount: number
+    }
+  ]
+}

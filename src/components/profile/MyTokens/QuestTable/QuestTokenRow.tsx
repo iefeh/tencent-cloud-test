@@ -1,5 +1,5 @@
 import { TokenRewardStatus } from '@/constant/token';
-import { QuestTokensRecord } from '@/http/services/token';
+import type { QuestTokensRecord } from '@/http/services/token';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import dayjs from 'dayjs';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ interface Props {
   onClaim?: (item: QuestTokensRecord) => Promise<void>;
 }
 
-const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
+const QuestTokenRow: FC<Props> = ({ item, onClaim }) => {
   const [loading, setLoading] = useState(false);
   const isClaimed = item.status === TokenRewardStatus.CLAIMED;
   const isClaiming = item.status === TokenRewardStatus.CLAIMING;
@@ -32,7 +32,7 @@ const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
         await onClaim?.(item);
         setLoading(false);
 
-        return
+        return;
       default:
         break;
     }
@@ -57,23 +57,17 @@ const MyTokenRow: FC<Props> = ({ item, onClaim }) => {
         <div className="flex-[156]">{item.claimed_time ? formatTime(item.claimed_time) : '--'}</div>
 
         <div className="w-40 shrink-0 flex justify-end">
-          <Link
+          <LGButton
             className="w-4/5"
-            href={isClaimed ? 'http://moonveil.gg/' : 'javascript:;'}
-            target={isClaimed ? '_blank' : '_self'}
-          >
-            <LGButton
-              className="w-full"
-              label={claimBtnText}
-              disabled={claimDisabled}
-              loading={loading}
-              onClick={onClaimClick}
-            />
-          </Link>
+            label={claimBtnText}
+            disabled={claimDisabled}
+            loading={loading}
+            onClick={onClaimClick}
+          />
         </div>
       </li>
     </ul>
   );
 };
 
-export default MyTokenRow;
+export default QuestTokenRow;
