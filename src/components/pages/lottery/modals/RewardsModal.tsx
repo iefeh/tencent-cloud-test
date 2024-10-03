@@ -195,11 +195,14 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     <div className="text-2xl">Reward Claimed</div>
 
                     <div className="text-sm mt-6">
-                      Congratulations again, please ensure that you have filled out the form to secure your{' '}
-                      <span className="text-basic-yellow">Free Node</span> or{' '}
-                      <span className="text-basic-yellow">Whitelist</span> spot. And please pay attention to our
-                      announcement in Official X account and{' '}
-                      <span className="text-basic-yellow">Discord Community Server.</span>
+                      Congratulations again, please stay tuned to our announcement to know when to claim the cash
+                      rewards via{' '}
+                      <Link
+                        className="text-basic-yellow hover:underline"
+                        href={`/LoyaltyProgram/earn?tabKey=Moonveil+Node`}
+                      >
+                        Quest
+                      </Link>
                     </div>
 
                     <div className="flex items-center gap-x-[5.5rem] mt-5">
@@ -267,8 +270,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                           verify your post. Please note you will need to wait about 5 minutes before finishing the
                           verification process.
                           <br />
-                          2. We will contact you within 3 business days. If you do not receive a message, please contact
-                          us through our Discord community Ticket.
+                          2. Please <span className="text-basic-yellow">Verify the claiming task</span> to get your
+                          rewards.
                         </>
                       ) : hasShareAndClaimRewards ? (
                         <>
