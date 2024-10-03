@@ -195,11 +195,14 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     <div className="text-2xl">Reward Claimed</div>
 
                     <div className="text-sm mt-6">
-                      Congratulations again, please ensure that you have filled out the form to secure your{' '}
-                      <span className="text-basic-yellow">Free Node</span> or{' '}
-                      <span className="text-basic-yellow">Whitelist</span> spot. And please pay attention to our
-                      announcement in Official X account and{' '}
-                      <span className="text-basic-yellow">Discord Community Server.</span>
+                      Congratulations again, please stay tuned to our announcement to know when to claim the cash
+                      rewards via{' '}
+                      <Link
+                        className="text-basic-yellow hover:underline"
+                        href={`/LoyaltyProgram/earn?tabKey=Moonveil+Node`}
+                      >
+                        Quest
+                      </Link>
                     </div>
 
                     <div className="flex items-center gap-x-[5.5rem] mt-5">
