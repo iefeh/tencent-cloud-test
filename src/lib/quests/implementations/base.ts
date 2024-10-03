@@ -212,9 +212,9 @@ export abstract class QuestBase {
                     const node = new UserNodeEligibility({ user_id: userId, node_tier: n.tier, node_amount: holdAmount * n.amount, source_type: NodeSourceType.Quest, source_id: `${this.quest.id},tier:${n.tier}`, created_time: Date.now() });
                     nodeReward.nodes.push(node);
                     if (temp.length == 0) {
-                        temp = `${holdAmount * n.amount} Tier ${n.tier}`
+                        temp = `${holdAmount * n.amount} Tier ${n.tier} Node`
                     } else {
-                        temp = `${temp} and ${holdAmount * n.amount} Tier ${n.tier}`
+                        temp = `${temp} and ${holdAmount * n.amount} Tier ${n.tier} Node`
                     }
                 }
             }
