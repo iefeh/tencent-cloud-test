@@ -267,8 +267,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                           verify your post. Please note you will need to wait about 5 minutes before finishing the
                           verification process.
                           <br />
-                          2. We will contact you within 3 business days. If you do not receive a message, please contact
-                          us through our Discord community Ticket.
+                          2. Please <span className="text-basic-yellow">Verify the claiming task</span> to get your
+                          rewards.
                         </>
                       ) : hasShareAndClaimRewards ? (
                         <>
