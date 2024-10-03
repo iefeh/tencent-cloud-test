@@ -27,6 +27,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
   const isInProgress = open_status === LotteryStatus.IN_PROGRESS;
   const hasReachedRequirement = !!user_meet_requirement;
   const canPlay = open_status === LotteryStatus.IN_PROGRESS && hasReachedRequirement;
+  const showStatus = open_status !== LotteryStatus.IN_PROGRESS && open_status !== LotteryStatus.ENDED;
 
   function getLimitedTime() {
     const du = dayjs.duration(Math.max((item?.end_time || 0) - Date.now(), 0));
@@ -107,7 +108,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span className='whitespace-nowrap'>Close in {limitedTime}</span>
+            <span className="whitespace-nowrap">Close in {limitedTime}</span>
           </div>
 
           {/* <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
@@ -124,13 +125,15 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
           </div> */}
         </div>
 
-        <div className="absolute top-[13%] left-[3.5%]">
-          <div className="flex items-center px-[1.125rem] py-2 bg-white/20 rounded-five text-sm leading-none">
-            <span className="text-basic-yellow">
-              {item?.open_status ? LotteryStatusConfig[item.open_status].label || '--' : '--'}
-            </span>
+        {showStatus && (
+          <div className="absolute top-[13%] left-[3.5%]">
+            <div className="flex items-center px-[1.125rem] py-2 bg-white/20 rounded-five text-sm leading-none">
+              <span className="text-basic-yellow">
+                {item?.open_status ? LotteryStatusConfig[item.open_status].label || '--' : '--'}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="mt-5 text-white text-xl leading-6">{item?.name || '--'}</div>
@@ -167,13 +170,13 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
                 className="w-[8.75rem] text-[#999] border-2 border-solid border-[#999] bg-transparent rounded-3xl h-auto px-6 py-1"
                 disabled
               >
-                Play
+                Draw
               </Button>
             </PopoverTrigger>
 
             <PopoverContent>
               <div>
-                <div className="text-lg">You need to meet the following requirement:</div>
+                <div className="text-lg">Please make sure you meet the following requirement(s) to enter:</div>
                 <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
               </div>
             </PopoverContent>
