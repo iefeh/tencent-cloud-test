@@ -66,6 +66,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
   const is2048 = task.type === QuestType.Claim2048Ticket;
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
   const isConnectExpired = !!task.participant_end_time && Date.now() > task.participant_end_time;
+  const verifyBtnText = verified ? task.button_info?.verified : task.button_info?.verify;
 
   const connectType = task.type === QuestType.ConnectWallet ? MediaType.METAMASK : task.authorization || '';
   const {
@@ -195,7 +196,10 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           !verifiable && 'grayscale opacity-50',
           classNames?.verifyBtn,
         ])}
-        label={verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify'}
+        label={
+          verifyBtnText ||
+          (verified ? (is2048 ? 'Claimed' : canReverify ? 'Reverify' : 'Verified') : is2048 ? 'Claim' : 'Verify')
+        }
         loading={verifyLoading || mediaLoading}
         disabled={!verifiable || isExpired}
         hasCD={hasVerifyCD}

@@ -68,6 +68,12 @@ export interface TaskListItem {
   participant_end_time?: number;
   end_time?: number;
   user_node_reward?: { win_reward?: boolean };
+  button_info?: {
+    connect?: string;
+    connected?: string;
+    verify?: string;
+    verified?: string;
+  };
 }
 
 export interface TaskListResDto {
