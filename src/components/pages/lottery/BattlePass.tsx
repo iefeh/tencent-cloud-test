@@ -68,7 +68,7 @@ const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, floa
 
               <PopoverContent>
                 <div>
-                  <div className="text-lg">You need to meet the following requirement:</div>
+                  <div className="text-lg">Please make sure you meet the following requirement(s) to enter:</div>
                   <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
                 </div>
               </PopoverContent>
