@@ -119,22 +119,28 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
 
       {/* 操作层 */}
       <div className="absolute inset-0 z-20 flex justify-center items-center">
+        {poolInfo?.name && (
+          <div className="absolute left-4 -top-1 lg:left-16 lg:top-36 text-basic-yellow font-semakin text-3xl">
+            {poolInfo.name}
+          </div>
+        )}
+
         <MBInfo
-          className="!absolute left-4 -top-1 lg:left-16 lg:top-32"
+          className="!absolute left-4 top-9 lg:left-16 lg:top-48"
           onShowHistory={onShowHistory}
           item={poolInfo}
         />
 
-        <TicketsInfo className="!absolute left-4 lg:left-16 top-[16.375rem] lg:top-[16.5625rem]" item={poolInfo} />
+        <TicketsInfo className="!absolute left-4 lg:left-16 top-[19.375rem] lg:top-[20.5625rem]" item={poolInfo} />
 
         <TimeoutInfo
-          className="!absolute left-4 lg:left-[unset] lg:right-16 top-32"
+          className="!absolute left-4 lg:left-[unset] lg:right-16 top-44 lg:top-48"
           key={poolInfo?.end_time}
           item={poolInfo}
         />
 
         <DrawLimitsInfo
-          className="!absolute top-[21.75rem] left-4 lg:left-[unset] lg:right-16 lg:top-[17.125rem]"
+          className="!absolute top-[24.75rem] left-4 lg:left-[unset] lg:right-16 lg:top-[21.125rem]"
           item={poolInfo}
         />
 
