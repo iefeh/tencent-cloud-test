@@ -83,6 +83,10 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       } else {
         setShareLabel(shareClaimMBLabel);
       }
+    } else {
+      if (!hasForceShareRewards && !poolInfo?.first_twitter_topic_verified) {
+        setShareLabel(shareClaimMBLabel);
+      }
     }
 
     setShareLoading(false);
