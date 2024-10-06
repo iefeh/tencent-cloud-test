@@ -278,13 +278,12 @@ async function getDrawResult(userId: string, lotteryPoolId: string, drawCumulati
             }
           }
         } else if (reward.reward_type === LotteryRewardType.Node) {
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.item_id": reward.item_id });
-          const userNodeEligibility = await UserNodeEligibility.findOne({ user_id: userId, source_id: reward.item_id });
-          if (userNodeEligibility || userDrawHistory) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, "rewards.reward_type": LotteryRewardType.Node });
+          if (userDrawHistory) {
             reward = drawOnce;
           }
           for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.Node && drawResult.item_id === reward.item_id) {
+            if (drawResult.reward_type === LotteryRewardType.Node) {
               reward = drawOnce;
               break;
             }
