@@ -39,7 +39,8 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
   const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
   const progressStatus = getProgressStatus();
-  const { nodeIconUrl, isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } = useRaffleNode(task);
+  const { nodeIconUrl, nodeText, isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } =
+    useRaffleNode(task);
 
   function getProgressStatus() {
     const { verified, reward } = task;
@@ -149,15 +150,19 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
               </span>
 
               {nodeIconUrl && (
-                <Image
-                  className="w-12 h-12 ml-4"
-                  src={nodeIconUrl}
-                  alt=""
-                  unoptimized
-                  width={64}
-                  height={64}
-                  priority
-                />
+                <>
+                  <Image
+                    className="w-12 h-12 ml-4"
+                    src={nodeIconUrl}
+                    alt=""
+                    unoptimized
+                    width={64}
+                    height={64}
+                    priority
+                  />
+
+                  <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{nodeText}</span>
+                </>
               )}
             </div>
 
