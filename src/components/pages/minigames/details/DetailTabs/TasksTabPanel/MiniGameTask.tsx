@@ -105,7 +105,9 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
 
       <div className="mt-3 flex flex-col justify-between relative">
         <div className="text-sm font-jcyt4">
-          <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
+          <Tooltip
+            content={<div className="max-w-[25rem]" dangerouslySetInnerHTML={{ __html: task.description }}></div>}
+          >
             <div className="line-clamp-2 task-description" dangerouslySetInnerHTML={{ __html: task.description }}></div>
           </Tooltip>
 
