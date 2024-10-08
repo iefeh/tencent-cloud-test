@@ -21,12 +21,12 @@ const NodeTable: FC<Props> = ({ loading, items }) => {
 
   return (
     <>
-      <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-10 gap-4">
-        <li className="flex-[264]">Whitelist Tier</li>
-        <li className="flex-[224]">Quantity</li>
+      <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-0 md:px-10 gap-4">
+        <li className="flex-[120]">Whitelist Tier</li>
+        <li className="flex-[120]">Quantity</li>
         <li className="flex-[360]">Item</li>
         <li className="flex-[180]">Reward Type</li>
-        <li className="w-40 shrink-0 text-right">Claim Time</li>
+        <li className="w-16 md:w-40 shrink-0 text-right">Claim Time</li>
       </ul>
 
       <ScrollShadow className="w-full h-[31.375rem] font-poppins-medium relative">

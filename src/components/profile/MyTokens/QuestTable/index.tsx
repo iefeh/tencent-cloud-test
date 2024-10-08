@@ -26,13 +26,13 @@ const QuestTable: FC<Props> = ({ pagiTotal = 1, loading, items, onPagiChange }) 
 
   return (
     <>
-      <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-10 gap-4">
+      <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-0 md:px-10 gap-4">
         <li className="flex-[360]">Token</li>
         <li className="flex-[264]">Quantity</li>
         <li className="flex-[224]">Network</li>
         <li className="flex-[156]">Status</li>
         <li className="flex-[156]">Claim Time</li>
-        <li className="w-40 shrink-0 text-right">View Tx</li>
+        <li className="w-16 md:w-40 shrink-0 text-right">View Tx</li>
       </ul>
 
       <ScrollShadow className="w-full h-[31.375rem] font-poppins-medium relative">
