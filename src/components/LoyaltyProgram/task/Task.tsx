@@ -106,7 +106,9 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
 
       <div className="mt-3 flex flex-col justify-between relative">
         <div className="text-sm">
-          <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
+          <Tooltip
+            content={<div className="max-w-[25rem]" dangerouslySetInnerHTML={{ __html: task.description }}></div>}
+          >
             <div
               className="text-[#999] line-clamp-2 task-description"
               dangerouslySetInnerHTML={{ __html: task.description }}
