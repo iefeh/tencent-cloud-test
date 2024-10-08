@@ -331,6 +331,8 @@ export type GameTicketReward = {
 export type NodeReward = {
   // 节点等级
   node_tier: string,
+  // 节点名称
+  node_name: string,
   // 节点图标
   icon_url: string,
   // 节点数量

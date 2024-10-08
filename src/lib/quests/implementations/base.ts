@@ -203,7 +203,7 @@ export abstract class QuestBase {
                 return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
             }
             const multiplier = this.quest.reward.node_multiplier;
-            const holdAmount = await ContractNFT.count({ wallet_addr: wallet.wallet_addr, chain_id: multiplier.chain_id, contract_address: multiplier.contract_address, transaction_status: 'confirmed' });
+            const holdAmount = await ContractNFT.count({ wallet_addr: wallet.wallet_addr, chain_id: multiplier.chain_id, contract_address: multiplier.contract_address, transaction_status: 'confirmed', deleted_time: null });
             let temp: string = '';
             if (holdAmount) {
                 nodeReward = {};
