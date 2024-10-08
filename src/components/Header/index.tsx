@@ -1,6 +1,6 @@
 'use client';
 
-import React, { CSSProperties, useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import Image from 'next/image';
 import logo from 'img/header/logo.png';
 import Discord from 'img/header/discord.svg';
@@ -21,10 +21,9 @@ import UserInfo from '@/pages/components/common/UserInfo';
 import Link from '../link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
-import styles from './index.module.scss';
-import BasicButton from '@/pages/components/common/BasicButton';
 import S3Image from '../common/medias/S3Image';
-import { isMobile } from 'react-device-detect'
+import { isMobile } from 'react-device-detect';
+import LGButton from '@/pages/components/common/buttons/LGButton';
 
 export const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -293,16 +292,17 @@ const Header = () => {
       <div className="font-semakin flex items-center max-lg:hidden">{DropMenu}</div>
 
       <div className="flex items-center flex-1 justify-end">
-        <Link href={process.env.NEXT_PUBLIC_URL_NODE_SALE!} target='_blank'>
-          {isMobile ? (
-            <S3Image className="w-8 h-8 mr-4 rounded-full" src="/header/node_128x128.gif" />
-          ) : (
-            <BasicButton
-              className="flex items-center flex-nowrap mr-4"
-              label="Node Sale"
-              prefix={<S3Image className="w-6 h-6 mr-2" src="/header/node_128x128.gif" />}
-            />
-          )}
+        <Link
+          className={cn([isMobile && 'absolute right-0 top-28 z-0', listOpen && 'hidden'])}
+          href={process.env.NEXT_PUBLIC_URL_NODE_SALE!}
+          target="_blank"
+        >
+          <LGButton
+            className="flex items-center flex-nowrap mr-4 animate-breathShadow"
+            label="Node Sale"
+            actived
+            prefix={<S3Image className="w-6 h-6 mr-2" src="/header/node_128x128.gif" />}
+          />
         </Link>
 
         <div className="max-lg:hidden flex items-center mr-4">
