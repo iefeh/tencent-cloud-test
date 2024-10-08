@@ -30,6 +30,7 @@ export interface TaskReward {
     distribute_mid_state_name?: string;
   } & RaffleReward;
   distribute_node?: {
+    node_name?: string;
     icon_url?: string;
     node_tier: string;
     node_amount: number;
@@ -37,6 +38,7 @@ export interface TaskReward {
     number_of_winners: number;
   } & RaffleReward;
   raffle_node?: {
+    node_name?: string;
     icon_url?: string;
     node_tier: string;
     node_amount: number;

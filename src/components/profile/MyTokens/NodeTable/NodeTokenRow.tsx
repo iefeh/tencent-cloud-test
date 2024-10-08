@@ -1,4 +1,5 @@
 import type { NodeTokensRecord } from '@/http/services/token';
+import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 import dayjs from 'dayjs';
 import { FC } from 'react';
 
@@ -22,7 +23,14 @@ const NodeTokenRow: FC<Props> = ({ item }) => {
 
         <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">{item.node_amount || '--'}</div>
 
-        <div className="flex-[360] whitespace-nowrap text-ellipsis overflow-hidden">{item.source || '--'}</div>
+        <Popover placement="bottom">
+          <PopoverTrigger>
+            <div className="flex-[360] whitespace-nowrap text-ellipsis overflow-hidden">{item.source || '--'}</div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="w-[24.25rem] p-7 rounded-base font-poppins text-sm leading-6">{item.source || '--'}</div>
+          </PopoverContent>
+        </Popover>
 
         <div className="flex-[180] whitespace-nowrap text-ellipsis overflow-hidden">{item.source_type || '--'}</div>
 
