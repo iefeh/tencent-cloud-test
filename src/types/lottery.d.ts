@@ -95,3 +95,7 @@ declare namespace Lottery {
     };
   }
 }
+
+interface HomeSlide {
+  hasVideo?: boolean;
+}

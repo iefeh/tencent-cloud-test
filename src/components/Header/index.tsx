@@ -18,10 +18,13 @@ import moreIconActiveImg from 'img/header/more_active.png';
 import { ControlledMenu, MenuItem, useHover, useMenuState } from '@szhsin/react-menu';
 import { cn } from '@nextui-org/react';
 import UserInfo from '@/pages/components/common/UserInfo';
-import Link from 'next/link';
+import Link from '../link';
 import Notification from './Notification';
 import RedeemModal from '@/components/common/modal/RedeemModal';
 import styles from './index.module.scss';
+import BasicButton from '@/pages/components/common/BasicButton';
+import S3Image from '../common/medias/S3Image';
+import { isMobile } from 'react-device-detect'
 
 export const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
@@ -92,7 +95,7 @@ export const routeText: RouteMenu[] = [
     children: [
       {
         name: 'AstrArk',
-        icon: "/header/icons/astrark.png",
+        icon: '/header/icons/astrark.png',
         route: '/AstrArk',
         children: [
           // {
@@ -116,7 +119,7 @@ export const routeText: RouteMenu[] = [
       {
         name: 'Bushwhack',
         route: '/Bushwhack',
-        icon: "/header/icons/bushwhack.png",
+        icon: '/header/icons/bushwhack.png',
       },
       // {
       //   name: 'Gyoza',
@@ -130,7 +133,7 @@ export const routeText: RouteMenu[] = [
         children: [
           {
             name: '2048',
-            icon: "/header/icons/2048.png",
+            icon: '/header/icons/2048.png',
             route: '/minigames/details/b3bde096-1ab6-4a5e-be03-eb08c0cb5856',
             // disabled: true,
           },
@@ -289,7 +292,19 @@ const Header = () => {
 
       <div className="font-semakin flex items-center max-lg:hidden">{DropMenu}</div>
 
-      <div className="flex items-center flex-[1] justify-end">
+      <div className="flex items-center flex-1 justify-end">
+        <Link href={process.env.NEXT_PUBLIC_URL_NODE_SALE!} target='_blank'>
+          {isMobile ? (
+            <S3Image className="w-8 h-8 mr-4 rounded-full" src="/header/node_128x128.gif" />
+          ) : (
+            <BasicButton
+              className="flex items-center flex-nowrap mr-4"
+              label="Node Sale"
+              prefix={<S3Image className="w-6 h-6 mr-2" src="/header/node_128x128.gif" />}
+            />
+          )}
+        </Link>
+
         <div className="max-lg:hidden flex items-center mr-4">
           {mediaIcon.map((value, index) => {
             const Component = value.img;
