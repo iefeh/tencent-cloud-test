@@ -77,6 +77,11 @@ export const routeText: RouteMenu[] = [
             name: 'More Tasks',
             route: '/LoyaltyProgram/earn/group/c8af9477-fd48-4265-90d7-20bc4a200ff3',
           },
+          {
+            name: 'Special task-win a FREE node',
+            route: '/LoyaltyProgram/earn?tabKey=Moonveil+Node',
+            actived: true,
+          },
         ],
       },
       {
@@ -250,7 +255,7 @@ const MoreLinks = () => {
           return (
             <MenuItem key={ci}>
               <Link className="link-menu [&+.link-menu]:ml-4" href={child.link} target="_blank">
-                <Component className="hover:fill-[#F6C799] hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-7 h-7" />
+                <Component className="hover:fill-basic-yellow hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-7 h-7" />
               </Link>
             </MenuItem>
           );
