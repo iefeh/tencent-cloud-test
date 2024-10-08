@@ -21,6 +21,8 @@ export interface TaskReward {
   min_amount: number;
   amount_formatted: string;
   verify_end_time?: number;
+  node_name?: string;
+  icon_url?: string;
   token_reward?: {
     chain_id: string;
     token_address: string;
