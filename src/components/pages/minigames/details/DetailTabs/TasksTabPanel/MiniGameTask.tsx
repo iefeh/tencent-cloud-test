@@ -161,7 +161,7 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
                     priority
                   />
 
-                  <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{nodeText}</span>
+                  <span className="font-semakin text-base ml-[0.4375rem]">{nodeText}</span>
                 </>
               )}
             </div>
