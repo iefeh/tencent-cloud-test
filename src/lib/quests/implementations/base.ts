@@ -207,7 +207,7 @@ export abstract class QuestBase {
             let temp: string = '';
             if (holdAmount) {
                 nodeReward = {};
-                nodeReward.nodes = [];
+                nodeReward.nodes = []; 
                 for (let n of multiplier.per_nft_node) {
                     const node = new UserNodeEligibility({ user_id: userId, node_tier: n.tier, node_amount: holdAmount * n.amount, source_type: NodeSourceType.Quest, source_id: `${this.quest.id},tier:${n.tier}`, created_time: Date.now() });
                     nodeReward.nodes.push(node);
