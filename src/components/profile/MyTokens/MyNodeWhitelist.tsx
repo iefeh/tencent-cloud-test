@@ -53,7 +53,7 @@ const MyNodeWhitelist: FC = () => {
   }, [userInfo]);
 
   const emptyContent = (
-    <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
+    <div className="relative backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
       <p>No history found.</p>
       <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
     </div>
@@ -63,7 +63,7 @@ const MyNodeWhitelist: FC = () => {
     <>
       <div className="mt-16 font-semakin text-2xl text-basic-yellow">My Node Whitelist</div>
 
-      <div className="mt-4 min-h-[32rem] w-full relative">
+      <div className="mt-4 min-h-[16rem] w-full relative">
         {tabs.length > 0 && <NodeTable items={items as NodeTokensRecord[]} loading={loading} />}
 
         {loading && <CircularLoading />}

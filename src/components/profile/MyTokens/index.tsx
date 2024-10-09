@@ -92,7 +92,7 @@ const MyTokens: FC = () => {
     <>
       <div className="mt-16 font-semakin text-2xl text-basic-yellow">My Tokens</div>
 
-      <div className="mt-4 min-h-[32rem] w-full relative">
+      <div className="mt-4 min-h-[16rem] w-full relative">
         {tabs.length > 0 && (
           <Tabs
             aria-label="Options"

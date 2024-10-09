@@ -13,7 +13,7 @@ interface Props {
 
 const NodeTable: FC<Props> = ({ loading, items }) => {
   const emptyContent = (
-    <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
+    <div className="relative backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
       <p>No history found.</p>
       <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
     </div>
@@ -29,8 +29,8 @@ const NodeTable: FC<Props> = ({ loading, items }) => {
         <li className="w-16 md:w-40 shrink-0 text-right">Claim Time</li>
       </ul>
 
-      <ScrollShadow className="w-full h-[31.375rem] font-poppins-medium relative">
-        <Listbox items={items} classNames={{ base: 'p-0 bg-black' }} label="Moon Beams History">
+      <ScrollShadow className="w-full min-h-[8rem] max-h-[31.375rem] font-poppins-medium relative">
+        <Listbox items={items} classNames={{ base: 'p-0 bg-black' }} label="Moon Beams History" emptyContent={emptyContent}>
           {(item) => (
             <ListboxItem
               key={Math.random().toString()}
@@ -43,8 +43,6 @@ const NodeTable: FC<Props> = ({ loading, items }) => {
         </Listbox>
 
         {loading && <CircularLoading />}
-
-        {!loading && items.length < 1 && emptyContent}
       </ScrollShadow>
     </>
   );
