@@ -38,7 +38,7 @@ const LotteryCard = function () {
             Exchange your Moon Beams for $Moonrise Tokens, in-game rewards, and more various premium perks.
           </p>
 
-          <LGButton className="uppercase" label="Exchange Now" actived link="/lottery" />
+          <LGButton className="uppercase" label="Exchange Now" actived link="/draw" />
         </div>
       </div>
     </div>

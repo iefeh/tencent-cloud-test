@@ -23,6 +23,7 @@ const REQUIREMENT_ICONS: Dict<StaticImageData | string> = {
     'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
   [LotteryRequirementType.MB]:
     'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png',
+  [LotteryRequirementType.NODE]: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/node.png',
 };
 
 const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, float, visible, onRuleClick }) => {
@@ -67,8 +68,11 @@ const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, floa
 
               <PopoverContent>
                 <div>
-                  <div className="text-lg">You need to meet the following requirement:</div>
-                  <div className="indent-6 mt-2">· {requirement_description || '--'}</div>
+                  <div className="text-lg">Please make sure you meet the following requirement(s) to enter:</div>
+                  <div
+                    className="ml-4 mt-2"
+                    dangerouslySetInnerHTML={{ __html: requirement_description || '--' }}
+                  ></div>
                 </div>
               </PopoverContent>
             </Popover>

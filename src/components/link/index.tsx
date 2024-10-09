@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { AnchorHTMLAttributes } from 'react';
 import NextLink, { LinkProps } from 'next/link';
 
 interface Props extends LinkProps {
@@ -9,7 +9,7 @@ interface Props extends LinkProps {
   onMouseDown?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
-const Link: React.FC<Props> = (props) => {
+const Link: React.FC<Props & AnchorHTMLAttributes<HTMLAnchorElement>> = (props) => {
   const { refEl, className, disabled, children, ...LinkProps } = props;
 
   const eventProps = {

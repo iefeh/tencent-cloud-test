@@ -11,6 +11,8 @@ import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
 import CDKClaimedModal from './CDKClaimedModal';
+import Link from '@/components/link';
+import { MediaLinks } from '@/constant/common';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -46,12 +48,19 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
   const shareClaimMBLabel = 'Claim 20 MBs';
   const hasGiftCard = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.GIFT_CARD);
   const hasCDK = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.CDK);
+  const hasNode = (item?.rewards || []).some((reward) => reward.reward_type === LotteryRewardType.NODE);
   const cdks = (item?.rewards || []).reduce((p, c) => {
     if (c.cdk) p.push(c.cdk);
     return p;
   }, [] as string[]);
 
   async function onShare() {
+    if (hasNode) {
+      window.open('https://docs.google.com/forms/d/1Z83IlGz7gsUH9RqREEPRNZr800p5x-hSX-iiaa3Q9T4/edit');
+      setHasClaimCD(true);
+      return;
+    }
+
     if (shareLabel === shareClaimMBLabel) {
       toast.success('Reward Claimed');
       setShareLabel('Claimed 20 MBs');
@@ -73,6 +82,10 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       if (hasForceShareRewards) {
         setHasClaimCD(true);
       } else {
+        setShareLabel(shareClaimMBLabel);
+      }
+    } else {
+      if (!hasForceShareRewards && !poolInfo?.first_twitter_topic_verified) {
         setShareLabel(shareClaimMBLabel);
       }
     }
@@ -117,12 +130,17 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
       return;
     }
     setLoading(false);
-    const needClose = hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified);
+    const needClose =
+      !hasNode && (hasShareAndClaimRewards || (!hasForceShareRewards && !!poolInfo?.first_twitter_topic_verified));
     onClaimed?.(needClose);
   }
 
   function initStatus() {
-    if (!hasForceShareRewards) {
+    if (hasNode) {
+      setClaimDisabled(true);
+      setShareDisabled(false);
+      setShareLabel('Fill out form');
+    } else if (!hasForceShareRewards) {
       setClaimDisabled(claimed);
       setShareDisabled(!claimed || !!poolInfo?.first_twitter_topic_verified);
       if (poolInfo?.first_twitter_topic_verified) setShareLabel('Claimed 20 MBs');
@@ -177,14 +195,46 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
               </ModalHeader>
 
               <ModalBody>
-                {hasShareAndConfirmRewards && !hasCDK && claimed ? (
+                {claimed && hasNode ? (
                   <>
                     <div className="text-2xl">Reward Claimed</div>
 
                     <div className="text-sm mt-6">
-                      Congratulations again, we will contact you within{' '}
-                      <span className="text-basic-yellow">3 business days</span>. If you do not hear from us, please
-                      contact us through our <span className="text-basic-yellow">Discord community Ticket</span>.
+                      Congratulations again, please stay tuned to our announcement to know when to claim the cash
+                      rewards via{' '}
+                      <Link
+                        className="text-basic-yellow hover:underline"
+                        href={`/LoyaltyProgram/earn?tabKey=Moonveil+Node`}
+                      >
+                        Quest
+                      </Link>
+                    </div>
+
+                    <div className="flex items-center gap-x-[5.5rem] mt-5">
+                      <LGButton className="w-[18.5rem]" label="Confirm" actived onClick={onClose} />
+                    </div>
+                  </>
+                ) : hasShareAndConfirmRewards && !hasCDK && claimed ? (
+                  <>
+                    <div className="text-2xl">Reward Claimed</div>
+
+                    <div className="text-sm mt-6">
+                      Congratulations again, please stay tuned to our{' '}
+                      <Link className="text-basic-yellow hover:underline" href={MediaLinks.TWITTER} target="_blank">
+                        Official X Account
+                      </Link>{' '}
+                      and{' '}
+                      <Link className="text-basic-yellow hover:underline" href={MediaLinks.DISCORD} target="_blank">
+                        Discord Server
+                      </Link>{' '}
+                      for further announcement to{' '}
+                      <Link
+                        className="text-basic-yellow hover:underline"
+                        href="/LoyaltyProgram/earn?tabKey=Moonveil+Node"
+                      >
+                        claim your rewards
+                      </Link>
+                      !
                     </div>
 
                     <div className="flex items-center gap-x-[5.5rem] mt-5">
@@ -202,7 +252,24 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     </div>
 
                     <div className="text-sm mt-6">
-                      {hasGiftCard ? (
+                      {hasNode ? (
+                        <>
+                          Please click [Fill out form] to claim your rewards
+                          <br />
+                          {claimed && (
+                            <>
+                              View Whitelist history in{' '}
+                              <Link
+                                className="text-basic-yellow hover:underline"
+                                href="/Profile"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                User Center
+                              </Link>
+                            </>
+                          )}
+                        </>
+                      ) : hasGiftCard ? (
                         <>
                           Please contact Moonveil staff and claim your Gift Card.
                           <br />
@@ -221,8 +288,8 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                           verify your post. Please note you will need to wait about 5 minutes before finishing the
                           verification process.
                           <br />
-                          2. We will contact you within 3 business days. If you do not receive a message, please contact
-                          us through our Discord community Ticket.
+                          2. Please <span className="text-basic-yellow">Verify the claiming task</span> to get your
+                          rewards.
                         </>
                       ) : hasShareAndClaimRewards ? (
                         <>

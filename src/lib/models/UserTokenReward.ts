@@ -8,7 +8,8 @@ export enum UserTokenAuditStatus {
 }
 
 export enum UserTokenSourceType {
-    Quest = "quest"
+    Quest = "quest",
+    Node = "node"
 }
 
 export interface IUserTokenReward extends Document {

@@ -1,5 +1,5 @@
 import { Document, Schema, models, model } from 'mongoose'
-import { GameTicketReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
+import { GameTicketReward, NodeMultiplier, NodeReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
@@ -40,6 +40,12 @@ export interface IQuest extends Document {
         token_reward: TokenReward,
         // 游戏门票奖励配置
         game_ticket_reward?: GameTicketReward,
+        // 直接下发型节点奖励
+        distribute_node?: NodeReward,
+        // 抽奖型节点奖励
+        raffle_node?: NodeReward,
+        // NFT倍数级NODE奖励
+        node_multiplier?: NodeMultiplier
     },
     // 任务是否激活，不展示未激活
     active: boolean;
@@ -57,6 +63,8 @@ export interface IQuest extends Document {
     updated_time: number,
     // 删除时间
     deleted_time: number,
+    // 指定用户数组,仅数组内用户可见
+    visible_user_ids?: string[]
 }
 
 const QuestSchema = new Schema<IQuest>({
@@ -77,6 +85,9 @@ const QuestSchema = new Schema<IQuest>({
         season_pass_progress: { type: Number },
         token_reward: { type: Schema.Types.Mixed },
         game_ticket_reward: { type: Schema.Types.Mixed },
+        distribute_node: { type: Schema.Types.Mixed },
+        raffle_node: { type: Schema.Types.Mixed },
+        node_multiplier: { type: Schema.Types.Mixed }
     },
     active: { type: Boolean, default: false },
     order: { type: Number },
@@ -86,6 +97,7 @@ const QuestSchema = new Schema<IQuest>({
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number },
+    visible_user_ids: { type: [String] }
 });
 // 任务唯一索引
 QuestSchema.index({ id: 1 }, { unique: true });

@@ -2,7 +2,7 @@ import type {NextApiResponse} from "next";
 import { PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
-import { enrichRequirementsInfo, lotteryRequirementSatisfy } from '@/lib/lottery/lottery';
+import { enrichRequirementsInfo, lotteryPoolRequirementSatisfy } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
 import LotteryPool, { LotteryPoolType } from '@/lib/models/LotteryPool';
@@ -34,7 +34,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   let result: any[] = [];
   for (let pool of pagination.data) {
     const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: pool.lottery_pool_id }, { type: 1, description: 1, properties: 1, _id: 0 });
-    const requirementSatisfy = await lotteryRequirementSatisfy(userId, pool.lottery_pool_id);
+    const requirementSatisfy = await lotteryPoolRequirementSatisfy(userId, pool.lottery_pool_id);
     await enrichRequirementsInfo(requirements);
     let openStatus = LotteryPoolOpenStatus.ALL;
     if (pool.start_time > now) {
@@ -45,12 +45,12 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       openStatus = LotteryPoolOpenStatus.ENDED;
     }
     let rewards: any[] = [];
-    for (let reward of pool.rewards) {
-      if (reward.reward_level >= 5 && rewards.length < 3) {
+    for (let i = pool.rewards.length - 1; i >= 0; i--) {
+      if (pool.rewards[i].reward_level >= 5 && rewards.length < 3) {
         rewards.push({
-          reward_name: reward.reward_name,
-          reward_level: reward.reward_level,
-          icon_url: reward.icon_url
+          reward_name: pool.rewards[i].reward_name,
+          reward_level: pool.rewards[i].reward_level,
+          icon_url: pool.rewards[i].icon_url
         });
       }
     }

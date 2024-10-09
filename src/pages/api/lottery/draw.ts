@@ -17,6 +17,7 @@ import UserLotteryDrawHistory, {
 } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
+import UserNodeEligibility from '@/lib/models/UserNodeEligibility';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
@@ -147,13 +148,20 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
     }
     let drawResult: { drawResult: IUserLotteryRewardItem, verifyNeeded: boolean};
     if (currentDrawNo <= 3) {
-      drawResult = await getDrawResult(userId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
+      drawResult = await getDrawResult(userId, lotteryPoolId, firstThreeDrawCumulativeProbabilities, firstThreeThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     else {
-      drawResult = await getDrawResult(userId, nextSevenDrawCumulativeProbabilities, nextSevenThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
+      drawResult = await getDrawResult(userId, lotteryPoolId, nextSevenDrawCumulativeProbabilities, nextSevenThresholds, guaranteedRewards, availableRewards, itemInventoryDeltaMap, userRewards);
     }
     userRewards.push(drawResult.drawResult);
     rewardNeedVerify = rewardNeedVerify || drawResult.verifyNeeded;
+  }
+  // 如果奖励内容中包含node就不需要做twitter验证
+  for (let reward of userRewards) {
+    if (reward.reward_type === LotteryRewardType.Node) {
+      rewardNeedVerify = false;
+      break;
+    }
   }
   try {
     // 扣减抽奖资源, 并从奖池中扣除奖励数量, 写入用户抽奖历史和中奖历史
@@ -228,7 +236,7 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
 }
 
 // 抽奖结果计算, 并返回抽到的奖品是否需要验证
-async function getDrawResult(userId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
+async function getDrawResult(userId: string, lotteryPoolId: string, drawCumulativeProbabilities: number, drawThresholds: number[], 
   guaranteedRewards: ILotteryRewardItem[], 
   availableRewards: ILotteryRewardItem[], 
   itemInventoryDeltaMap: Map<string, number>,
@@ -259,12 +267,34 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
             }
           }
         } else if (reward.reward_type === LotteryRewardType.CDK) {
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.cdk": reward.cdk });
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.item_id": reward.item_id });
           if (userDrawHistory) {
             reward = drawOnce;
           }
           for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.cdk === reward.cdk) {
+            if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.item_id === reward.item_id) {
+              reward = drawOnce;
+              break;
+            }
+          }
+        } else if (reward.reward_type === LotteryRewardType.Node) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, "rewards.reward_type": LotteryRewardType.Node });
+          if (userDrawHistory) {
+            reward = drawOnce;
+          }
+          for (let drawResult of allDrawResults) {
+            if (drawResult.reward_type === LotteryRewardType.Node) {
+              reward = drawOnce;
+              break;
+            }
+          }
+        } else if (reward.reward_type === LotteryRewardType.USDT) {
+          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, "rewards.reward_type": LotteryRewardType.USDT });
+          if (userDrawHistory) {
+            reward = drawOnce;
+          }
+          for (let drawResult of allDrawResults) {
+            if (drawResult.reward_type === LotteryRewardType.USDT) {
               reward = drawOnce;
               break;
             }
@@ -293,6 +323,7 @@ async function getDrawResult(userId: string, drawCumulativeProbabilities: number
     reward_id: uuidv4(),
     badge_id: reward.badge_id,
     cdk: reward.cdk,
+    node_tier: reward.node_tier,
     reward_type: reward.reward_type,
     reward_name: reward.reward_name, 
     icon_url: reward.icon_url, 

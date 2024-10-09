@@ -5,9 +5,10 @@ import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { TaskCategory } from '@/http/services/battlepass';
-import Game2048Content from './Game2048Content';
-import GameMinerContent from './GameMinerContent';
+// import Game2048Content from './Game2048Content';
+// import GameMinerContent from './GameMinerContent';
 import S3Image from '@/components/common/medias/S3Image';
+import NodeContent from './NodeContent';
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
@@ -15,8 +16,9 @@ interface Props {
 export default function TaskTabs({ defaultCategory }: Props) {
   const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, [defaultCategory]);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
-  const gameContent = useMemo(() => <Game2048Content />, []);
-  const minerContent = useMemo(() => <GameMinerContent />, []);
+  // const gameContent = useMemo(() => <Game2048Content />, []);
+  // const minerContent = useMemo(() => <GameMinerContent />, []);
+  const nodeContent = useMemo(() => <NodeContent />, []);
 
   const tabs = [
     {
@@ -27,34 +29,45 @@ export default function TaskTabs({ defaultCategory }: Props) {
       key: 'Events',
       content: seasonalCampaignsContent,
     },
+    // {
+    //   key: '2048 Mini Game',
+    //   render: (label: string) => (
+    //     <div className="flex items-center">
+    //       <Image
+    //         className="object-contain w-8 h-7 mr-1 rounded-md"
+    //         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/2048LOGO.png"
+    //         alt=""
+    //         width={95}
+    //         height={83}
+    //         unoptimized
+    //       />
+
+    //       {label}
+    //     </div>
+    //   ),
+    //   content: gameContent,
+    // },
+    // {
+    //   key: 'Puffy Miner',
+    //   render: (label: string) => (
+    //     <div className="flex items-center">
+    //       <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/minigames/icons/icon_miner.png" />
+
+    //       {label}
+    //     </div>
+    //   ),
+    //   content: minerContent,
+    // },
     {
-      key: '2048 Mini Game',
+      key: 'Moonveil Node',
       render: (label: string) => (
         <div className="flex items-center">
-          <Image
-            className="object-contain w-8 h-7 mr-1 rounded-md"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/2048LOGO.png"
-            alt=""
-            width={95}
-            height={83}
-            unoptimized
-          />
+          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
 
           {label}
         </div>
       ),
-      content: gameContent,
-    },
-    {
-      key: 'Puffy Miner',
-      render: (label: string) => (
-        <div className="flex items-center">
-          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/minigames/icons/icon_miner.png" />
-
-          {label}
-        </div>
-      ),
-      content: minerContent,
+      content: nodeContent,
     },
   ];
   const router = useRouter();

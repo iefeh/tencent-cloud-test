@@ -9,7 +9,7 @@ export default function LotterySlide(props: Props) {
   const router = useRouter();
 
   function onExplore() {
-    router.push(`/lottery`);
+    router.push(`/draw`);
   }
 
   return (

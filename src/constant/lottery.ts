@@ -60,6 +60,7 @@ export const enum LotteryRewardType {
   GIFT_CARD = 'gift_card',
   CDK = 'cdk',
   BADGE = 'badge',
+  NODE = 'node',
 }
 
 export const LotteryRewardSizes = {
@@ -136,4 +137,5 @@ export const enum LotteryRequirementType {
   BADGE = 'badge',
   MB = 'moon_beam',
   WHITELIST = 'whitelist',
+  NODE = 'node',
 }

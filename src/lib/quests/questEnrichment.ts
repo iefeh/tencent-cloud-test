@@ -19,6 +19,7 @@ import { QuestType } from '@/lib/quests/types';
 import TwitterTopicTweet from '../models/TwitterTopicTweet';
 import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
+import UserNodeEligibility from '../models/UserNodeEligibility';
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -30,6 +31,8 @@ export async function enrichUserQuests(userId: string, quests: any[]) {
     await enrichQuestAuthorization(userId, quests);
     // 为任务添加user_token_reward字段
     await enrichQuestTokenClaimStatus(userId, quests);
+    // 为任务添加user_node_reward字段
+    await enrichQuestNodeRewardStatus(userId, quests);
     // 丰富任务进度
     await enrichTasksProgress(userId, quests);
     // 丰富任务属性
@@ -249,6 +252,18 @@ async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
                     };
                 }
             }
+        }
+    }));
+}
+
+async function enrichQuestNodeRewardStatus(userId: string, quests: any[]) {
+    await Promise.all(quests.map(async (quest) => {
+        // 任务存在raffle node奖励, 查询用户中奖状态
+        if (quest.reward.raffle_node && quest.reward.raffle_node.actual_raffle_time && quest.verified) {
+            const userNodeEligibility = await UserNodeEligibility.findOne({ source_id: quest.id, user_id: userId});
+            quest.user_node_reward = {
+                win_reward: !!userNodeEligibility
+            };
         }
     }));
 }

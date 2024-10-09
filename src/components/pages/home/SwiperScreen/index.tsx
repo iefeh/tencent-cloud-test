@@ -5,7 +5,7 @@ import EntertainmentSlide from '../slides/EntertainmentSlide';
 import LoyaltyProgramSlide from '../slides/LoyaltyProgramSlide';
 import InviteNewSlide from '../slides/InviteNewSlide';
 import YellowCircle from '@/components/common/YellowCircle';
-import { useState, useRef, memo } from 'react';
+import { useState, useRef, memo, FC, useMemo } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 import BadgeSlide from '../slides/BadgeSlide';
@@ -13,8 +13,12 @@ import NFT2Slide from '../slides/NFT2Slide';
 import LotterySlide from '../slides/LotterySlide';
 import MinigamesSlide from '../slides/MinigamesSlide';
 import Game2048Slide from '../slides/Game2048Slide';
+import NodeSlide from '../slides/NodeSlide';
+import type { HomeSlide } from '@/types/lottery';
+import { AutoplayOptions } from 'swiper/types';
 
-const slides = [
+const slides: (FC<{ needAni?: boolean }> & HomeSlide)[] = [
+  NodeSlide,
   LoyaltyProgramSlide,
   // Game2048Slide,
   MinigamesSlide,
@@ -30,11 +34,17 @@ const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAn
 });
 
 export default function SwiperScreen() {
-  const [activeIndex, setActiveIndex] = useState(0);
   const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length).fill(false)]);
 
   const navigationPrevRef = useRef(null);
   const navigationNextRef = useRef(null);
+
+  function calcDelay(index: number) {
+    const realIndex = (index + slides.length) % slides.length;
+    const delay = slides[realIndex].hasVideo ? 15000 : 5000;
+    console.log('calcDelay', index, realIndex, delay);
+    return delay;
+  }
 
   return (
     <div className="swiper-screen w-full h-screen overflow-hidden z-20 relative ">
@@ -42,19 +52,20 @@ export default function SwiperScreen() {
         modules={[Pagination, Autoplay, Navigation]}
         className="w-full h-full"
         loop
-        // 视频10s自动切换，图片5s自动切换
-        autoplay={{ delay: [1, 3].includes(activeIndex) ? 10000 : 5000, disableOnInteraction: false }}
+        // 视频15s自动切换，图片5s自动切换
+        autoplay={{ delay: 15000, disableOnInteraction: false }}
         speed={2000}
         slidesPerView={1}
         onSlideChangeTransitionStart={(swiper) => {
           const list = [...needAnis];
           list[swiper.realIndex] = true;
+          // 使用useState记录会因为更新导致实际的delay不匹配
+          (swiper.params.autoplay as AutoplayOptions).delay = calcDelay(swiper.realIndex);
           setNeedAnis(list);
         }}
         onSlideChangeTransitionEnd={(swiper) => {
           const list = needAnis.map((_, i) => i === swiper.realIndex);
           setNeedAnis(list);
-          setActiveIndex(swiper.realIndex);
         }}
         navigation={{
           prevEl: navigationPrevRef.current,

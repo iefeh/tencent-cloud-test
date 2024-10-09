@@ -2,7 +2,7 @@ import { MobxContext } from '@/pages/_app';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { useContext, useEffect, useState } from 'react';
-import metamaskIconImg from 'img/profile/edit/icon_metamask.png'
+import metamaskIconImg from 'img/profile/edit/icon_metamask.png';
 import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -16,7 +16,7 @@ const ConnectWallet = function () {
   const { userInfo, getUserInfo } = useContext(MobxContext);
   const accounts: MAItem[] = [
     {
-      title: 'MetaMask',
+      title: 'Wallet',
       icon: metamaskIconImg,
       type: MediaType.METAMASK,
       connected: !!userInfo?.wallet,
@@ -59,7 +59,7 @@ const ConnectWallet = function () {
 
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
         {accounts.map((item, index) => (
-          <MediaItem key={index} item={item} onDisconnectClick={onDisconnectClick} />
+          <MediaItem key={index} item={item} undisconnectable onDisconnectClick={onDisconnectClick} />
         ))}
       </div>
 

@@ -13,6 +13,8 @@ export enum LotteryRewardType {
   Badge = 'badge',
   // cdk
   CDK = 'cdk',
+  // node
+  Node = 'node',
   // No prize
   NoPrize = 'no_prize'
 }

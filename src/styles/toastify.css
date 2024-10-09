@@ -3,9 +3,9 @@
   --toastify-toast-min-height: 5rem;
   --toastify-toast-max-width: 26.9375rem;
   /* --toastify-color-info: ; */
-  --toastify-color-success: #4DDE6B;
+  --toastify-color-success: #4dde6b;
   /* --toastify-color-warning: ; */
-  --toastify-color-error: #FF4848;
+  --toastify-color-error: #ff4848;
 }
 
 .Toastify__toast-container {
@@ -66,4 +66,10 @@
 
 .Toastify__toast:is(.Toastify__toast--success, .Toastify__toast--error) .Toastify__toast-icon > svg {
   display: none;
+}
+
+@media (min-width: 960px) {
+  :root {
+    --toastify-toast-max-width: 36rem;
+  }
 }
