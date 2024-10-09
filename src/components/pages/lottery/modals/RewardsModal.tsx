@@ -11,7 +11,8 @@ import { MediaType } from '@/constant/task';
 import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import { LotteryRewardType } from '@/constant/lottery';
 import CDKClaimedModal from './CDKClaimedModal';
-import Link from 'next/link';
+import Link from '@/components/link';
+import { MediaLinks } from '@/constant/common';
 
 type DrawDTO = ItemProps<Lottery.RewardResDTO>;
 
@@ -218,9 +219,22 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     <div className="text-2xl">Reward Claimed</div>
 
                     <div className="text-sm mt-6">
-                      Congratulations again, we will contact you within{' '}
-                      <span className="text-basic-yellow">3 business days</span>. If you do not hear from us, please
-                      contact us through our <span className="text-basic-yellow">Discord community Ticket</span>.
+                      Congratulations again, please stay tuned to our{' '}
+                      <Link className="text-basic-yellow hover:underline" href={MediaLinks.TWITTER} target="_blank">
+                        Official X Account
+                      </Link>{' '}
+                      and{' '}
+                      <Link className="text-basic-yellow hover:underline" href={MediaLinks.DISCORD} target="_blank">
+                        Discord Server
+                      </Link>{' '}
+                      for further announcement to{' '}
+                      <Link
+                        className="text-basic-yellow hover:underline"
+                        href="/LoyaltyProgram/earn?tabKey=Moonveil+Node"
+                      >
+                        claim your rewards
+                      </Link>
+                      !
                     </div>
 
                     <div className="flex items-center gap-x-[5.5rem] mt-5">
