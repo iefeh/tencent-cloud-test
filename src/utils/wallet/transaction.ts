@@ -150,7 +150,8 @@ class TransactionProvider {
       console.dir(error);
 
       const code = error?.info?.error?.code || error?.error?.code || error?.code;
-      const message = error?.message || error?.error?.message || error?.info?.error?.message;
+      const message =
+        error?.info?.error?.data?.message || error?.message || error?.error?.message || error?.info?.error?.message;
 
       let showDefaultTips = !onError;
       if (onError) {
