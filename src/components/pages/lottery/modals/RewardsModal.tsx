@@ -80,7 +80,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
 
     if (!claimed) {
       if (hasForceShareRewards) {
-        setHasClaimCD(true);
+        if (claimDisabled) setHasClaimCD(true);
       } else {
         setShareLabel(shareClaimMBLabel);
       }
