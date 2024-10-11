@@ -47,6 +47,17 @@ export interface TaskReward {
     notification_id: string;
     number_of_winners: number;
   } & RaffleReward;
+  node_multiplier?: {
+    chain_id: string;
+    contract_address: string;
+    notification_id: string;
+    per_nft_node?: TaskRewardNode[];
+  };
+}
+
+export interface TaskRewardNode {
+  tier: number;
+  amount: number;
 }
 
 export interface TaskListItem {
