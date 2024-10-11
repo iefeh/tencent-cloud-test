@@ -116,7 +116,7 @@ export const MBsPerDraw = 25;
 
 export const enum LotteryStatus {
   IN_PROGRESS = 'in_progress',
-  COMING = 'coming',
+  COMING = 'comming_soon',
   ENDED = 'ended',
 }
 
