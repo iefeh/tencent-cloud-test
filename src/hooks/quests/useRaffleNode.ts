@@ -6,7 +6,7 @@ export default function useRaffleNode(task: TaskListItem) {
     user_node_reward,
     end_time = 0,
   } = task;
-  const { icon_url, node_name } = task.reward || nodeReward || distribute_node;
+  const { icon_url, node_name } = nodeReward || distribute_node || task.reward;
   const { win_reward } = user_node_reward || {};
   const isRaffleNode = !!nodeReward;
   const { estimated_raffle_time, actual_raffle_time } = nodeReward || {};
