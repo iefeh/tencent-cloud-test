@@ -1,0 +1,25 @@
+.smBtn {
+  width: 12.5rem;
+  aspect-ratio: 200/95;
+  background-size: 88% auto;
+  background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_sm.png');
+
+  &:hover {
+    background-size: 100% auto;
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_sm_active.png');
+  }
+}
+
+.mdBtn {
+  width: 20.8125rem;
+  aspect-ratio: 333/78;
+  background-size: 100%;
+  background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_md.png');
+}
+
+.lgBtn {
+  width: 22.0625rem;
+  aspect-ratio: 353/78;
+  background-size: 100%;
+  background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_lg.png');
+}
