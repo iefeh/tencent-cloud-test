@@ -45,7 +45,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       openStatus = LotteryPoolOpenStatus.ENDED;
     }
     let rewards: any[] = [];
-    for (let i = pool.rewards.length - 1; i >= 0; i--) {
+    for (let i = 0; i < pool.rewards.length; i++) {
       if (pool.rewards[i].reward_level >= 5 && rewards.length < 3) {
         rewards.push({
           reward_name: pool.rewards[i].reward_name,
