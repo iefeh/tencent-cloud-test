@@ -2,21 +2,11 @@ import { TaskListItem } from '@/http/services/task';
 
 export default function useRaffleNode(task: TaskListItem) {
   const {
-    reward: { raffle_node: nodeReward, distribute_node, verify_end_time, node_multiplier } = {},
+    reward: { raffle_node: nodeReward, distribute_node, verify_end_time } = {},
     user_node_reward,
     end_time = 0,
   } = task;
-  let nodeIconUrl = '';
-  let nodeText = '';
-  if (node_multiplier) {
-    nodeIconUrl = task.reward.icon_url || '';
-    nodeText = task.reward.node_name || '';
-  } else {
-    const { icon_url, node_name, node_amount } = nodeReward || distribute_node || {};
-    nodeIconUrl = icon_url || '';
-    nodeText = node_amount + ' ' + (node_name || '');
-  }
-
+  const { icon_url, node_name } = task.reward || nodeReward || distribute_node;
   const { win_reward } = user_node_reward || {};
   const isRaffleNode = !!nodeReward;
   const { estimated_raffle_time, actual_raffle_time } = nodeReward || {};
@@ -44,7 +34,7 @@ export default function useRaffleNode(task: TaskListItem) {
     isRaffleNode,
     hasWinReward: !!win_reward,
     isRaffleState: status >= 2,
-    nodeIconUrl,
-    nodeText,
+    nodeIconUrl: icon_url,
+    nodeText: node_name || '-',
   };
 }
