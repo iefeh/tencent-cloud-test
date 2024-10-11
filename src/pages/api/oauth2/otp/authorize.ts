@@ -2,12 +2,11 @@ import type {NextApiResponse} from "next";
 import { createRouter } from 'next-connect';
 import { v4 as uuidV4 } from 'uuid';
 
-import { UserContextRequest, dynamicCors } from "@/lib/middleware/auth";
+import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
 import OAuth2ExchangeCode from '@/lib/models/OAuth2ExchangeCode';
 import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import { responseOnOauthError } from '@/lib/oauth2/response';
 import OAuth2Server from '@/lib/oauth2/server';
-import { redis } from '@/lib/redis/client';
 import * as response from '@/lib/response/response';
 import { Request, Response } from '@node-oauth/oauth2-server';
 
@@ -16,11 +15,6 @@ router.use(dynamicCors).post(async (req, res) => {
     try {
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo });
         const userId = token.user.user_id;
-        const lockKey = `exchangeCode,${userId}`;
-        const locked = await redis.set(lockKey, Date.now(), "EX", 10, "NX");
-        if (!locked) {
-            return res.json(response.tooManyRequests());
-        }
         await OAuth2ExchangeCode.deleteOne({ user_id: userId, client_id: token.client.id });
         const exchangeCode = new OAuth2ExchangeCode({
             user_id: userId,
