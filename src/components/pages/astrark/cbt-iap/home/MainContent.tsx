@@ -1,8 +1,12 @@
 import S3Image from '@/components/common/medias/S3Image';
 import { FC } from 'react';
 import ShineButton from './ShineButton';
+import RulesModal from './RulesModal';
+import { useDisclosure } from '@nextui-org/react';
 
 const MainContent: FC = () => {
+  const rulesDisclosure = useDisclosure();
+
   return (
     <div className="relative translate-y-[10%] translate-x-[12%]">
       <div className="w-[58.25rem] aspect-[932/421] relative">
@@ -13,6 +17,7 @@ const MainContent: FC = () => {
         <ShineButton
           size="lg"
           startContent={<S3Image className="w-9 aspect-square" src="/astrark/cbt-iap/icons/question.png" />}
+          onPress={rulesDisclosure.onOpen}
         >
           Rules Explanation
         </ShineButton>
@@ -31,6 +36,8 @@ const MainContent: FC = () => {
           FAQ
         </ShineButton>
       </div>
+
+      <RulesModal disclosure={rulesDisclosure} />
     </div>
   );
 };
