@@ -21,6 +21,7 @@ const FlamingHome: FC = () => {
     <div>
       {videoUrls.map((video, index) => (
         <video
+          key={index}
           className={'absolute object-contain' + video.classNames}
           autoPlay
           playsInline
