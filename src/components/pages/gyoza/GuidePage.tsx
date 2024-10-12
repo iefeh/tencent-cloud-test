@@ -39,11 +39,11 @@ const GuidePage: FC<GuidePageProps> = (props) => {
   const { sliders } = useMemo(() => {
     return {
       sliders: [
-        <FlamingHome></FlamingHome>,
-        <GyozaPVP toPrev={toSkipSlide} toNext={toNextSlide}></GyozaPVP>,
-        <GyozaCastle toPrev={toPrevSlide} toNext={toNextSlide}></GyozaCastle>,
-        <GyozaAttack toPrev={toPrevSlide} toNext={toNextSlide}></GyozaAttack>,
-        <GyozaPlay toPrev={toSkipSlide} ></GyozaPlay>
+        <FlamingHome key={0} ></FlamingHome>,
+        <GyozaPVP key={1} toPrev={toSkipSlide} toNext={toNextSlide}></GyozaPVP>,
+        <GyozaCastle key={2} toPrev={toPrevSlide} toNext={toNextSlide}></GyozaCastle>,
+        <GyozaAttack key={3} toPrev={toPrevSlide} toNext={toNextSlide}></GyozaAttack>,
+        <GyozaPlay key={4} toPrev={toSkipSlide} ></GyozaPlay>
       ]
     }
   }, [])
