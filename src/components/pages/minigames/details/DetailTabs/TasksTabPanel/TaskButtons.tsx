@@ -169,7 +169,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           className={cn([
             'uppercase !border-solid border-2 border-[#BB683D] from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 text-white',
             !(achieved || verified || isExpired) &&
-              'bg-gradient-to-t group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
+            'bg-gradient-to-t group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
             classNames?.connectBtn,
           ])}
           prefix={
