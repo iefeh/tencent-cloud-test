@@ -33,6 +33,7 @@ export enum ResponseCode {
     ERROR_USER_SELF_DESTRUCTED = -23,
     ERROR_TRANSACTION_NOT_RECONGNIZED = -24,
     ERROR_INSUFFICIENT_TICKETS = -25,
+    ERROR_AUTHORIZATION_CODE_EXPIRED = -26,
     // 添加对应的响应码
 }
 
@@ -48,6 +49,8 @@ const ResponseMessages = {
     [ResponseCode.ERROR_CAPTCHA_MISMATCH]: 'Captcha Mismatch',
     // 授权拒绝，常见于Oauth2授权
     [ResponseCode.ERROR_AUTHORIZATION_DENIED]: 'Authorization Denied',
+    // 授权码过期，常见于Oauth2授权
+    [ResponseCode.ERROR_AUTHORIZATION_CODE_EXPIRED]: 'Authorization Code Expired',
     // 不允许发送验证码，间隔不对或者IP受限
     [ResponseCode.ERROR_SEND_CAPTCHA_DISALLOWED]: 'Sending Captcha Temporarily Disallowed',
     // 社媒重复绑定，当前社媒已经绑定到其他账号
@@ -124,3 +127,4 @@ export const walletNotConnected = build(ResponseCode.ERROR_WALLET_NOT_CONNECTED)
 export const insufficientTickets = build(ResponseCode.ERROR_INSUFFICIENT_TICKETS);
 export const userSelfDestructed = build(ResponseCode.ERROR_USER_SELF_DESTRUCTED);
 export const transactionNotRecongnized = build(ResponseCode.ERROR_USER_SELF_DESTRUCTED);
+export const authorizationCodeExpired = build(ResponseCode.ERROR_AUTHORIZATION_CODE_EXPIRED);

@@ -118,6 +118,7 @@ export default function Sidebar({ visible, onClose }: Props) {
                               return (
                                 <div
                                   key={i}
+                                  className={cn([item.actived && 'text-basic-yellow'])}
                                   onClick={() => onLinkClick(item)}
                                 >
                                   {renderIcon(item.icon)}

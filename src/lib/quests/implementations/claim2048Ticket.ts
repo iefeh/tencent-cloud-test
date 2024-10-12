@@ -45,7 +45,7 @@ export class Claim2048TicketQuest extends QuestBase {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? `You have claimed ${rewardDelta} MB and ${this.quest.properties.tickets} tickets for 2048 Game.` : "Server Internal Error",
+            tip: result.done ? result.tip ? result.tip : `You have claimed ${rewardDelta} MB and ${this.quest.properties.tickets} tickets for 2048 Game.` : result.tip ? result.tip : "Server Internal Error",
         }
     }
 }

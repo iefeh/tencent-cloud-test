@@ -28,13 +28,15 @@ export interface ILotteryRewardItem {
     // 前三抽中奖概率
     first_three_draw_probability: number,
     // 4-10抽中奖概率
-    next_six_draw_probability: number,
+    next_seven_draw_probability: number,
     // 奖励数量
     amount: number,
     // 徽章id，抽奖可能会奖励的徽章，这里只是为了展示用.
     badge_id?: string,
     // 奖励cdk
     cdk?: string,
+    // 奖励node tier
+    node_tier?: string,
     // 奖池中该库存个数, 不写则表示无限
     inventory_amount?: number | null
 }
@@ -79,6 +81,8 @@ export interface ILotteryPool extends Document {
     limited_qty: number;
     // 支持的链id
     chain_id: string;
+    // 门槛说明
+    requirement_description: string;
     // 创建时间毫秒时间戳
     created_time: number;
     // 更新时间毫秒时间戳
@@ -104,6 +108,7 @@ const LotteryPoolSchema = new Schema<ILotteryPool>({
     type: { type: String, required: true },
     limited_qty: { type: Number, required: true },
     chain_id: { type: String},
+    requirement_description: { type: String },
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number, default: null }

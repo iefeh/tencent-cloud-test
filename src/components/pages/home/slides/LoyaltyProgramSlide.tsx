@@ -1,10 +1,12 @@
+import { HomeSlide } from '@/types/lottery';
 import { useRouter } from 'next/router';
+import { FC } from 'react';
 
 interface Props {
   needAni?: boolean;
 }
 
-export default function LoyaltyProgramSlide(props: Props) {
+const LoyaltyProgramSlide: FC & HomeSlide = (props: Props) => {
   const router = useRouter();
   function onExplore() {
     router.push('/LoyaltyProgram/season/foresight');
@@ -27,4 +29,8 @@ export default function LoyaltyProgramSlide(props: Props) {
       </video>
     </div>
   );
-}
+};
+
+LoyaltyProgramSlide.hasVideo = true;
+
+export default LoyaltyProgramSlide;

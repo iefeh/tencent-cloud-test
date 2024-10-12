@@ -4,6 +4,8 @@ import '@/styles/transition.scss';
 import '@/styles/table.css';
 import '@/styles/ani.scss';
 import '@/styles/scrollbar.scss';
+import '@/styles/swiper.scss';
+import '@/styles/video.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
@@ -41,6 +43,7 @@ import MouseWheel from '@better-scroll/mouse-wheel';
 import useRouteLocale from '@/hooks/useRouteLocale';
 import { NextUIProvider } from '@nextui-org/react';
 import '@/styles/aa.scss';
+import useEventTracking from '@/hooks/useEventTracking';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -48,13 +51,22 @@ BetterScroll.use(Pullup);
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
+  const whiteList = [
+    '/email/captcha/quickfill',
+    '/auth',
+    '/auth/connect',
+    '/oauth',
+    '/AstrArk/assets',
+    '/AstrArk/shop',
+  ];
   const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets'];
-  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets'];
+  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
+  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
   const noNeedInit = noInitList.includes(router.route);
+  const isAAMobile = aaMobileList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
   const [scale, setScale] = useState('1');
   const store = useStore();
@@ -76,7 +88,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   function resetRem() {
     const width = document.documentElement.clientWidth;
-    const fontSize = Math.max((16 * width) / 1920, 12);
+    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 8 : 12);
     document.documentElement.style.fontSize = `${fontSize}px`;
 
     const ratio = window.devicePixelRatio;
@@ -84,6 +96,8 @@ export default function App({ Component, pageProps }: AppProps) {
       setScale((1 / ratio).toFixed(2));
     }
   }
+
+  useEventTracking();
 
   useEffect(() => {
     resetRem();

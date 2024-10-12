@@ -48,3 +48,7 @@ export function to2Digit(val?: number | string) {
 export function sleep(time: number = 300) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
+
+export function isHexZero(value: string) {
+  return parseInt(value, 16) === 0;
+}

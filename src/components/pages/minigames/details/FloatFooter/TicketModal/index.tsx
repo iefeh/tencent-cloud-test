@@ -1,6 +1,5 @@
 import {
   Button,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -19,23 +18,24 @@ import Image from 'next/image';
 import TicketCountdown from '../../TicketCountdown';
 import RulesModal from '../RulesModal';
 import IntegerInput from '@/components/common/inputs/IntegerInput';
-import useBuyTickets from './useBuyTickets';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { observer } from 'mobx-react-lite';
 import { isMobile } from 'react-device-detect';
+import TicketConfirmModal from '../TicketConfirmModal';
 
 const enum TicketChannel {
-  MATIC = 'matic',
+  MATIC = 'POL',
   MORE = 'more',
 }
 
 const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
-  const { data, queryTickets } = useMGDContext();
+  const { data } = useMGDContext();
   const rulesDisclosure = useDisclosure();
+  const confirmDisclosure = useDisclosure();
   const radioOptions = [
     {
       key: TicketChannel.MATIC,
-      label: 'Buy with $Matic',
+      label: `Buy with $${TicketChannel.MATIC}`,
       isDisabled: false,
     },
     // {
@@ -46,22 +46,11 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
   ];
   const [channel, setChannel] = useState<string>(radioOptions[0].key);
   const [ticketAmount, setTicketAmount] = useState('1');
-  const [buyLoading, setBuyLoading] = useState(false);
-  const { onBuyTickets } = useBuyTickets();
 
   const tpf = +(data?.ticket_price_formatted || 0);
-  const digit = tpf ? Math.ceil(-Math.log10(tpf % 1)) : 0;
+  const tpfMod = tpf % 1;
+  const digit = tpfMod ? Math.ceil(-Math.log10(tpfMod)) : 0;
   const totalPrice = (+(data?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
-
-  async function onBuyTicketsClick() {
-    if (!data) return;
-
-    setBuyLoading(true);
-    const res = await onBuyTickets(data, +ticketAmount);
-    if (res) await queryTickets();
-
-    setBuyLoading(false);
-  }
 
   return (
     <>
@@ -148,7 +137,9 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                     <div className="w-full h-0 border-t-1 border-brown/20 md: border-dashed mt-7 mb-[1.125rem]"></div>
 
                     <div className="flex items-center">
-                      <div>{data?.ticket_price_formatted || '-'} Matic/Ticket</div>
+                      <div>
+                        {data?.ticket_price_formatted || '-'} {channel}/Ticket
+                      </div>
 
                       <div className="flex-1 flex justify-end items-center mr-7">
                         <IntegerInput value={ticketAmount} min={1} max={10} onValueChange={setTicketAmount} />
@@ -192,7 +183,9 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <p className="font-jcyt4 text-sm leading-none mt-4">Total Price</p>
 
-                    <p className="text-2xl leading-none mt-[0.375rem]">{totalPrice} Matic</p>
+                    <p className="text-2xl leading-none mt-[0.375rem]">
+                      {totalPrice} {channel}
+                    </p>
 
                     <div className="w-full h-0 border-t-1 border-brown/20 md:border-brown border-dashed mt-6 mb-5"></div>
 
@@ -215,7 +208,6 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                         strokeType="blue"
                         strokeText="Buy Tickets"
                         isDisabled={+ticketAmount < 1 || +ticketAmount > 10}
-                        isLoading={buyLoading}
                         style={
                           isMobile
                             ? {
@@ -224,7 +216,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                               }
                             : {}
                         }
-                        onPress={onBuyTicketsClick}
+                        onPress={confirmDisclosure.onOpen}
                       />
 
                       {isMobile || (
@@ -266,6 +258,8 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
       </Modal>
 
       <RulesModal disclosure={rulesDisclosure} />
+
+      <TicketConfirmModal disclosure={confirmDisclosure} ticketAmount={ticketAmount} />
     </>
   );
 };

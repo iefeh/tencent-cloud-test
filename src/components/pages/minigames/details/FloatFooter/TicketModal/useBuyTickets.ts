@@ -43,6 +43,7 @@ export default function useBuyTickets() {
       return false;
     }
 
+    window.ta.track('buy_ticket');
     toast.success(`You have successfully purchased ${amount} ticket(s).`);
     setLoading(false);
     return true;

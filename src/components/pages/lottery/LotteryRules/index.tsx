@@ -23,17 +23,17 @@ interface Props {
 const LotteryRules: FC<Props> = ({ milestone }) => {
   const rules: Rule[] = [
     {
-      title: 'Lottery Tickets',
+      title: 'Draw Tickets',
       items: [
         {
-          label: 'There are 2 types of lottery tickets:',
+          label: 'There are 2 types of draw tickets:',
           children: [
             'Silver Ticket: Exchange 25 Moon Beams for 1 Silver Ticket. It is valid only in the current pool.',
             'Golden S1 Ticket: Earned through special rewards. Can be used in all pools during Season 1.',
           ],
         },
-        'Each draw costs 1 lottery ticket.',
-        'Premium Pass Holders receive 3 bonus Silver Tickets per lottery pool.',
+        'Each draw costs 1 draw ticket.',
+        'Premium Pass Holders receive 3 bonus Silver Tickets per draw pool.',
       ],
     },
     {
@@ -43,7 +43,7 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
       ],
     },
     {
-      title: 'Jackpot Guarantee',
+      title: 'Guaranteed Reward',
       items: ['Each pool ensures that the first 3,000 draws collectively guarantee a $500 cash prize.'],
     },
     {
@@ -53,7 +53,7 @@ const LotteryRules: FC<Props> = ({ milestone }) => {
     {
       title: 'The Lucky Draw Master Badge',
       items: [
-        'You can unlock the Lucky Draw Master Badge by accumulating draw counts, with the badge level increasing as you make more draws. *Surprise bonus: Achieving a Lv2 Lucky Draw Master Badge in Season 1 will grant you an S1 Premium Pass for free!',
+        'You can unlock the Lucky Draw Master Badge by accumulating draw counts, with the badge level increasing as you make more draws. *Surprise bonus: Achieving a Lv4 Lucky Draw Master Badge in Season 1 will grant you an S1 Premium Pass for free!',
       ],
     },
     {

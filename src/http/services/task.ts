@@ -1,12 +1,17 @@
-import { AcceleratorType, EVENT_REWARD_TYPE, EventStatus, QuestType } from '@/constant/task';
+import { AcceleratorType, EVENT_REWARD_TYPE, EventStatus, QuestType, TokenRewardDistributeType } from '@/constant/task';
 import http from '../index';
-import { MyTokensRecord } from './token';
+import { QuestTokensRecord } from './token';
 
 export interface TaskProperties {
   url?: string;
   is_prepared?: boolean;
   last_verified_time?: number;
   can_reverify_after?: number;
+}
+
+export interface RaffleReward {
+  estimated_raffle_time: number | null;
+  actual_raffle_time: number | null;
 }
 
 export interface TaskReward {
@@ -16,14 +21,43 @@ export interface TaskReward {
   min_amount: number;
   amount_formatted: string;
   verify_end_time?: number;
+  node_name?: string;
+  icon_url?: string;
   token_reward?: {
     chain_id: string;
     token_address: string;
     token_claim_status?: string;
     whitelist_id: string[];
-    estimated_raffle_time: number | null;
-    actual_raffle_time: number | null;
+    distribute_type?: TokenRewardDistributeType;
+    distribute_mid_state_name?: string;
+  } & RaffleReward;
+  distribute_node?: {
+    node_name?: string;
+    icon_url?: string;
+    node_tier: string;
+    node_amount: number;
+    notification_id: string;
+    number_of_winners: number;
+  } & RaffleReward;
+  raffle_node?: {
+    node_name?: string;
+    icon_url?: string;
+    node_tier: string;
+    node_amount: number;
+    notification_id: string;
+    number_of_winners: number;
+  } & RaffleReward;
+  node_multiplier?: {
+    chain_id: string;
+    contract_address: string;
+    notification_id: string;
+    per_nft_node?: TaskRewardNode[];
   };
+}
+
+export interface TaskRewardNode {
+  tier: number;
+  amount: number;
 }
 
 export interface TaskListItem {
@@ -45,7 +79,16 @@ export interface TaskListItem {
   is_new?: boolean;
   current_progress?: number;
   target_progress?: number;
-  user_token_reward?: MyTokensRecord;
+  user_token_reward?: QuestTokensRecord;
+  participant_end_time?: number;
+  end_time?: number;
+  user_node_reward?: { win_reward?: boolean };
+  button_info?: {
+    connect?: string;
+    connected?: string;
+    verify?: string;
+    verified?: string;
+  };
 }
 
 export interface TaskListResDto {

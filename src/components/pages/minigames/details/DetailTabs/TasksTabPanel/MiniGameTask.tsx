@@ -4,12 +4,14 @@ import Image from 'next/image';
 import closeImg from 'img/loyalty/earn/close.png';
 import { FC, useLayoutEffect, useRef, useState } from 'react';
 import TaskButtons from './TaskButtons';
-import { QuestType } from '@/constant/task';
+import { QuestType, TokenRewardDistributeType } from '@/constant/task';
 import ReverifyCountdown from './ReverifyCountdown';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
 import { taskDetailsAPI } from '@/http/services/task';
 import TokenRewardProgress from './TokenRewardProgress';
+import useRaffleNode from '@/hooks/quests/useRaffleNode';
+import NodeRewardProgress from './NodeRewardProgress';
 
 interface Props {
   task: TaskItem;
@@ -34,14 +36,25 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
       return onTaskUpdate?.(res.quest);
     },
   });
-  const progressStatus = getProgressStatus();
   const isExpired = !!task.reward.verify_end_time && Date.now() > task.reward.verify_end_time;
+  const isDirectTokenReward = task.reward.token_reward?.distribute_type === TokenRewardDistributeType.DirectDistribute;
+  const progressStatus = getProgressStatus();
+  const { nodeIconUrl, nodeText, isRaffleState, raffleStatus, raffleEndTime, isRaffleNode, hasWinReward } =
+    useRaffleNode(task);
 
   function getProgressStatus() {
-    const { actual_raffle_time, estimated_raffle_time } = task.reward.token_reward || {};
-    if (!!actual_raffle_time) return 2;
-
+    const { verified, reward } = task;
+    const { verify_end_time, token_reward } = reward || {};
+    const { actual_raffle_time, estimated_raffle_time } = token_reward || {};
     const now = Date.now();
+
+    if (isDirectTokenReward) {
+      if (!!verified || (verify_end_time && now > verify_end_time)) return 3;
+      return 0;
+    }
+
+    if (!!actual_raffle_time) return now > actual_raffle_time ? 3 : 2;
+
     if (estimated_raffle_time && now > +estimated_raffle_time) return 1;
 
     return 0;
@@ -66,14 +79,17 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
   return (
     <div
       className={cn([
-        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] pb-[2.5rem] flex flex-col bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
-        hasTokenReward ? 'pt-[1.25rem]' : 'pt-[2.5rem]',
+        'task-item col-span-1 overflow-hidden border-2 border-basic-gray rounded-[1.25rem] min-h-[17.5rem] px-[2.375rem] py-12 flex flex-col justify-center bg-light-yellow-1 hover:bg-white transition-colors duration-500 relative text-brown font-jcyt6 group',
         classNames?.task,
       ])}
     >
-      {hasTokenReward && <TokenRewardProgress status={progressStatus} />}
+      {isRaffleNode ? (
+        <NodeRewardProgress status={raffleStatus} endTime={raffleEndTime} />
+      ) : (
+        <TokenRewardProgress task={task} status={progressStatus} />
+      )}
 
-      <div className={cn(['task-name text-xl flex justify-between items-center', hasTokenReward && 'mt-12'])}>
+      <div className="task-name text-xl flex justify-between items-center mt-4">
         <div>{task.name}</div>
 
         {task.current_progress !== undefined && task.target_progress !== undefined && (
@@ -87,9 +103,11 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
         )}
       </div>
 
-      <div className="mt-3 flex-1 flex flex-col justify-between relative">
+      <div className="mt-3 flex flex-col justify-between relative">
         <div className="text-sm font-jcyt4">
-          <Tooltip content={<div className="max-w-[25rem]">{task.description}</div>}>
+          <Tooltip
+            content={<div className="max-w-[25rem]" dangerouslySetInnerHTML={{ __html: task.description }}></div>}
+          >
             <div className="line-clamp-2 task-description" dangerouslySetInnerHTML={{ __html: task.description }}></div>
           </Tooltip>
 
@@ -132,6 +150,25 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
               <span className="font-semakin text-base text-brown ml-[0.4375rem]">
                 {task.reward.amount_formatted} Moon Beams
               </span>
+
+              {nodeIconUrl && (
+                <>
+                  <Image
+                    className="w-12 h-12 ml-4"
+                    src={nodeIconUrl}
+                    alt=""
+                    unoptimized
+                    width={64}
+                    height={64}
+                    priority
+                  />
+
+                  <span
+                    className="font-semakin text-base ml-[0.4375rem]"
+                    dangerouslySetInnerHTML={{ __html: nodeText || '' }}
+                  ></span>
+                </>
+              )}
             </div>
 
             {task.user_token_reward && (
@@ -153,12 +190,27 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
             )}
           </div>
 
-          {(task.verified && hasTokenReward && !!task.reward.token_reward?.actual_raffle_time) || isExpired ? (
+          {isRaffleNode && isRaffleState ? (
+            <LGButton
+              className={cn(['mt-5 whitespace-normal text-left', hasWinReward && '!text-brown'])}
+              label={
+                hasWinReward
+                  ? 'Congrats, you’ve secured a Free Node Whitelist spot!'
+                  : 'Sorry, you didn’t win this time.'
+              }
+              disabled
+            />
+          ) : (task.verified &&
+              hasTokenReward &&
+              (isDirectTokenReward || !!task.reward.token_reward?.actual_raffle_time)) ||
+            isExpired ? (
             <>
               <LGButton
                 className="mt-5"
                 label={
-                  isExpired && !task.verified
+                  isDirectTokenReward && !!task.verified && !task.user_token_reward
+                    ? 'Loading'
+                    : isExpired && !task.verified
                     ? 'Task incomplete, not eligible for the raffle.'
                     : task.user_token_reward?.status === 'claimed'
                     ? 'Claimed'
@@ -169,7 +221,11 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
                     : 'Sorry, you didn’t win this time.'
                 }
                 actived
-                disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}
+                disabled={
+                  (isDirectTokenReward && !!task.verified && !task.user_token_reward) ||
+                  (!isDirectTokenReward && !task.reward.token_reward?.actual_raffle_time) ||
+                  task.user_token_reward?.status !== 'pending'
+                }
                 loading={loading}
                 onClick={() => task.user_token_reward && onClaim(task.user_token_reward)}
               />

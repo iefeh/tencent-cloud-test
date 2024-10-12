@@ -6,7 +6,7 @@ import type { FC } from 'react';
 
 const DetailsInfo: FC = () => {
   const { data } = useMGDContext();
-  const { name, keywords, platform, description, icon_url } = data || {};
+  const { name, keywords, platform, description, icon_url, status } = data || {};
 
   return (
     <div className="flex-1 bg-[#F7E9CC] p-[2.375rem] rounded-[1.25rem] text-brown">
@@ -32,7 +32,11 @@ const DetailsInfo: FC = () => {
             <span className="uppercase text-sm leading-none mr-6">platform</span>
 
             {(platform || []).map((p, i) => (
-              <Link key={i} href={p.url || 'javascript:;'} target={p.url ? '_blank' : '_self'}>
+              <Link
+                key={i}
+                href={(status === 'in_progress' && p.url) || 'javascript:;'}
+                target={(status === 'in_progress' && p.url) ? '_blank' : '_self'}
+              >
                 <Image
                   className="w-6 h-6 object-contain mr-2"
                   src={p.icon}

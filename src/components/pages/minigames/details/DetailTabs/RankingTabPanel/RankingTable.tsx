@@ -18,11 +18,11 @@ import { isMobile } from 'react-device-detect';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import S3Image from '@/components/common/medias/S3Image';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advancedFormat);
-
 
 interface Props {
   ranking?: MiniGames.GameDetialLeaderboardItem | null;
@@ -55,8 +55,8 @@ const RankingTable: FC<Props> = ({ ranking }) => {
             table: 'border-collapse',
             wrapper: 'bg-transparent shadow-none p-0 rounded-none',
             thead: '[&>tr:nth-child(2)]:hidden rounded-tl-[1.25rem]',
-            tbody: 'pl-[2.1875rem] pr-[1.1875rem] ',
-            tr: 'relative',
+            tbody: 'w-full max-h-[21.75rem] block overflow-auto has-scroll-bar',
+            tr: 'relative table table-fixed w-full rounded-base',
             th: 'bg-transparent text-white text-xl leading-none outline-none p-0 h-auto',
             td: '',
           }}
@@ -79,23 +79,22 @@ const RankingTable: FC<Props> = ({ ranking }) => {
           <TableBody emptyContent={'No history found.'}>
             {(leaderboard || []).map((row, index) => (
               <TableRow key={index} className="[&:nth-child(2n+1)]:bg-[#E4D4B2] h-[4.125rem]">
-                <TableCell className="rounded-l-base pl-5">
-                  <Image
-                    className="object-contain w-[2.0625rem] h-[2.0625rem]"
-                    src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${row.rank}.png`}
-                    alt=""
-                    width={66}
-                    height={66}
-                    unoptimized
-                    priority
-                  />
+                <TableCell className="rounded-l-base pl-5 w-[9.625rem]">
+                  {row.rank <= 5 ? (
+                    <S3Image
+                      className="object-contain w-[2.0625rem] h-[2.0625rem]"
+                      src={`/minigames/icons/icon_${row.rank}.png`}
+                    />
+                  ) : (
+                    <div className="text-brown text-2xl w-[2.0625rem] text-center">{row.rank || '-'}</div>
+                  )}
                 </TableCell>
 
-                <TableCell className="pl-5">
+                <TableCell className="pl-5 w-80">
                   <Popover placement="bottom" showArrow={true}>
                     <PopoverTrigger>
                       <div className="flex items-center">
-                        <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown">
+                        <div className="w-12 h-12 relative rounded-full overflow-hidden bg-[#8F5535] border-1 border-brown flex-shrink-0">
                           <Image
                             className="object-contain"
                             src={

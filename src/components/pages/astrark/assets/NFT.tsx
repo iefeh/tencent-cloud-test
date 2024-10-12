@@ -71,7 +71,7 @@ export default function NFT(props: NFTProps) {
 
   return (
     <div className="relative font-fzdb" onClick={onNFTClick}>
-      <div className={cn(['relative w-[16.5rem] h-[16.5rem] flex justify-center items-center', className])}>
+      <div className={cn(['relative w-full aspect-square flex justify-center items-center', className])}>
         {hideBorder || (
           <Image
             src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_border_display.png"

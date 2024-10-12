@@ -1,10 +1,12 @@
 import PageDesc from '@/components/common/PageDesc';
+import { HomeSlide } from '@/types/lottery';
+import { FC } from 'react';
 
 interface Props {
   needAni?: boolean;
 }
 
-export default function NFT2Slide(props: Props) {
+const NFT2Slide: FC & HomeSlide = (props: Props) => {
   return (
     <div className="bg-video w-full h-screen relative flex justify-center items-center">
       <div className="video-container absolute inset-0 z-0">
@@ -31,4 +33,8 @@ export default function NFT2Slide(props: Props) {
       />
     </div>
   );
-}
+};
+
+NFT2Slide.hasVideo = true;
+
+export default NFT2Slide;

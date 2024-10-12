@@ -8,7 +8,8 @@ export enum UserTokenAuditStatus {
 }
 
 export enum UserTokenSourceType {
-    Quest = "quest"
+    Quest = "quest",
+    Node = "node"
 }
 
 export interface IUserTokenReward extends Document {
@@ -33,7 +34,9 @@ export interface IUserTokenReward extends Document {
     // 开始领取时间，毫秒时间戳
     start_claim_time: number,
     // 领取成功时间，毫秒时间戳
-    claimed_time: number
+    claimed_time: number,
+    // 奖励过期时间, 毫秒时间戳
+    expire_time: number,
 }
 
 const UserTokenRewardSchema = new Schema<IUserTokenReward>({
@@ -48,7 +51,8 @@ const UserTokenRewardSchema = new Schema<IUserTokenReward>({
     status: {type: String},
     created_time: {type: Number, required: true},
     start_claim_time: {type: Number, default: null},
-    claimed_time: {type: Number}
+    claimed_time: {type: Number},
+    expire_time: {type: Number},
 });
 // 唯一索引，同一个任务不允许多次完成
 UserTokenRewardSchema.index({reward_id: 1}, {unique: true});

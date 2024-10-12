@@ -17,7 +17,9 @@ export default function useTransaction({ abi, method }: Props) {
   const txProvider = useRef<TransactionProvider>();
 
   async function onTransaction(params: TransactionParams) {
-    if (!userInfo) {
+    const { passLogin = false } = params;
+    
+    if (!userInfo && !passLogin) {
       toggleLoginModal(true);
       return;
     }
@@ -35,6 +37,21 @@ export default function useTransaction({ abi, method }: Props) {
     return res;
   }
 
+  const beReady = async (chain_id: string) => {
+    if (!isConnected) {
+      open();
+      return;
+    }
+
+    try {
+      const res = await txProvider.current?.beReady(chain_id);
+      return res;
+    } catch (error) {
+      console.log('useTransaction beReady', error);
+      return false
+    }
+  }
+
   useEffect(() => {
     if (isConnected && walletProvider) {
       txProvider.current = new TransactionProvider({
@@ -49,5 +66,5 @@ export default function useTransaction({ abi, method }: Props) {
     }
   }, [walletProvider, isConnected]);
 
-  return { loading, onTransaction };
+  return { loading, onTransaction, beReady };
 }

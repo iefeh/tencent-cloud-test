@@ -1,5 +1,5 @@
 import useTransaction from '@/hooks/wallet/useTransaction';
-import { queryTokenPermitAPI, postTokenTxAPI, type MyTokensRecord } from '@/http/services/token';
+import { queryTokenPermitAPI, postTokenTxAPI, type QuestTokensRecord } from '@/http/services/token';
 import tokenRewardABI from '@/http/abi/tokenReward.json';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -13,7 +13,7 @@ export default function useClaimToken(pramas: ClaimTokenParams) {
   const [loading, setLoading] = useState(false);
   const { loading: transactionLoading, onTransaction } = useTransaction({ abi: tokenRewardABI, method: 'claimTokens' });
 
-  async function onClaim(item: MyTokensRecord) {
+  async function onClaim(item: QuestTokensRecord) {
     setLoading(true);
     try {
       const permitRes = await queryTokenPermitAPI({ reward_ids: item.reward_id });

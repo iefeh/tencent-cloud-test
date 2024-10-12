@@ -1,15 +1,19 @@
-import PaginationRenderItem from '@/components/LoyaltyProgram/task/PaginationRenderItem';
-import { type MyTokensRecord, queryMyTokensListAPI } from '@/http/services/token';
+import { type MyTokensRecord, queryMyTokensListAPI, QuestTokensRecord, NodeTokensRecord } from '@/http/services/token';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { useUserContext } from '@/store/User';
-import { Listbox, ListboxItem, Pagination, ScrollShadow, Tab, Tabs } from '@nextui-org/react';
+import { Tab, Tabs } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { FC, Key, useEffect, useRef, useState } from 'react';
 import teamsImg from 'img/loyalty/task/teams.png';
-import useClaimToken from '@/hooks/pages/profile/myTokens/useClaimToken';
-import MyTokenRow from './MyTokenRow';
+import QuestTable from './QuestTable';
+import NodeTable from './NodeTable';
+
+const TabNames: Dict<string> = {
+  quest: 'Quest',
+  node: 'My Node Whitelist',
+};
 
 const MyTokens: FC = () => {
   const { userInfo } = useUserContext();
@@ -22,7 +26,6 @@ const MyTokens: FC = () => {
   const pagiInfo = useRef<PagiInfo>({ pageIndex: 1, pageSize: 10 });
   const [pagiTotal, setPagiTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { onClaim } = useClaimToken({ updateList: queryItems });
 
   function onSelectionChange(key: Key) {
     const str = key.toString();
@@ -42,7 +45,8 @@ const MyTokens: FC = () => {
       const { items, total, source_types } = res;
 
       if (!selectedKey) {
-        setTabs(source_types || []);
+        const list = source_types || [];
+        setTabs(list.filter((item) => item !== 'node'));
       }
 
       Object.assign(pagiInfo.current, pagi);
@@ -88,7 +92,7 @@ const MyTokens: FC = () => {
     <>
       <div className="mt-16 font-semakin text-2xl text-basic-yellow">My Tokens</div>
 
-      <div className="mt-4 min-h-[32rem] w-full relative">
+      <div className="mt-4 min-h-[16rem] w-full relative">
         {tabs.length > 0 && (
           <Tabs
             aria-label="Options"
@@ -110,54 +114,20 @@ const MyTokens: FC = () => {
                 key={tab}
                 title={
                   <div className="flex items-center space-x-2">
-                    <span>{tab}</span>
+                    <span>{TabNames[tab] || tab}</span>
                   </div>
                 }
               >
-                <ul className="w-full flex justify-between items-center h-16 bg-[#111111] text-[#999] px-10 gap-4">
-                  <li className="flex-[360]">Token</li>
-                  <li className="flex-[264]">Quantity</li>
-                  <li className="flex-[224]">Network</li>
-                  <li className="flex-[156]">Status</li>
-                  <li className="flex-[156]">Claim Time</li>
-                  <li className="w-40 shrink-0 text-right">View Tx</li>
-                </ul>
-
-                <ScrollShadow className="w-full h-[31.375rem] font-poppins-medium relative">
-                  <Listbox items={items} classNames={{ base: 'p-0 bg-black' }} label="Moon Beams History">
-                    {(item) => (
-                      <ListboxItem
-                        key={Math.random().toString()}
-                        className="rounded-none p-0 !bg-transparent"
-                        textValue={item.source_type}
-                      >
-                        <MyTokenRow item={item} onClaim={onClaim} />
-                      </ListboxItem>
-                    )}
-                  </Listbox>
-
-                  {loading && !!selectedKey && <CircularLoading />}
-
-                  {!loading && items.length < 1 && emptyContent}
-                </ScrollShadow>
-
-                {items.length > 0 && (
-                  <Pagination
-                    className="flex justify-center mt-8"
-                    showControls
-                    total={pagiTotal}
-                    initialPage={1}
-                    renderItem={PaginationRenderItem}
-                    classNames={{
-                      wrapper: 'gap-3',
-                      item: 'w-12 h-12 font-poppins-medium text-base text-white',
-                    }}
-                    disableCursorAnimation
-                    radius="full"
-                    variant="light"
-                    onChange={onPagiChange}
+                {tab === 'quest' ? (
+                  <QuestTable
+                    loading={loading}
+                    items={items as QuestTokensRecord[]}
+                    pagiTotal={pagiTotal}
+                    onPagiChange={onPagiChange}
                   />
-                )}
+                ) : tab === 'node' ? (
+                  <NodeTable items={items as NodeTokensRecord[]} loading={loading} />
+                ) : null}
               </Tab>
             ))}
           </Tabs>

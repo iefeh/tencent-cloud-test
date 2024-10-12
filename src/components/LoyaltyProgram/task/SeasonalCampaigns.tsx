@@ -84,6 +84,7 @@ export default function SeasonalCampaigns() {
                   alt=""
                   width={400}
                   height={180}
+                  unoptimized
                 />
 
                 <div
@@ -110,7 +111,7 @@ export default function SeasonalCampaigns() {
                     return (
                       <div key={ri} className="flex items-center">
                         <div className="w-8 h-8 relative">
-                          <Image className="object-contain" src={reward.image_small} alt="" fill sizes="100%" />
+                          <Image className="object-contain" src={reward.image_small} alt="" fill sizes="100%" unoptimized />
                         </div>
                         <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{reward.amount}</span>
                       </div>

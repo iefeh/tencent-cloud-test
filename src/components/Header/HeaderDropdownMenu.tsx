@@ -31,7 +31,11 @@ export const menuItemComp = (child: RouteMenu) => {
   return (
     <MenuItem key={child.name} disabled={child.disabled}>
       <Link
-        className={cn(['font-poppins', child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow'])}
+        className={cn([
+          'font-poppins',
+          child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
+          child.actived && 'text-basic-yellow',
+        ])}
         href={(!child.disabled && url) || ''}
         onClick={() => onTextClick(child)}
       >
@@ -59,8 +63,8 @@ export default function HeaderDropdownMenu(props: Props) {
       {item.render?.(item.name) || (
         <div
           className={cn([
-            'transition-all duration-300 border-b-2 border-transparent hover:border-[#F6C799] hover:text-[#F6C799]',
-            isActive && 'text-[#F6C799] border-[#F6C799]',
+            'transition-all duration-300 border-b-2 border-transparent hover:border-basic-yellow hover:text-basic-yellow',
+            isActive && 'text-basic-yellow border-basic-yellow',
           ])}
         >
           {item.name}

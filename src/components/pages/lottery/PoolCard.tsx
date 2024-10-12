@@ -7,16 +7,27 @@ import { FC } from 'react';
 import dayjs from 'dayjs';
 import Duration from 'dayjs/plugin/duration';
 import Link from '@/components/link';
+import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@nextui-org/react';
 
 dayjs.extend(Duration);
 
 const DEFAULT_IMG = 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png';
 
 const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
-  const { icon_frame_level, icon_url } = item || {};
+  const {
+    icon_frame_level,
+    icon_url,
+    open_status,
+    user_meet_requirement = false,
+    requirement_description,
+  } = item || {};
   const border = LotteryBorders[(icon_frame_level || RewardQuality.COPPERY) as RewardQuality];
   const itemSize = '90%';
   const limitedTime = getLimitedTime();
+  const isInProgress = open_status === LotteryStatus.IN_PROGRESS;
+  const hasReachedRequirement = !!user_meet_requirement;
+  const canPlay = open_status === LotteryStatus.IN_PROGRESS && hasReachedRequirement;
+  const showStatus = open_status !== LotteryStatus.IN_PROGRESS && open_status !== LotteryStatus.ENDED;
 
   function getLimitedTime() {
     const du = dayjs.duration(Math.max((item?.end_time || 0) - Date.now(), 0));
@@ -97,10 +108,10 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span>Close in {limitedTime}</span>
+            <span className="whitespace-nowrap">Close in {limitedTime}</span>
           </div>
 
-          <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
+          {/* <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
             <Image
               className="w-6 h-6 object-contain mr-[0.375rem]"
               src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/icons/icon_qty.png"
@@ -110,17 +121,19 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               unoptimized
             />
 
-            <span>Limited Qty : {item?.limited_rewards?.length || 0}</span>
-          </div>
+            <span className='whitespace-nowrap'>Limited Reward Qty : {item?.limited_rewards?.length || 0}</span>
+          </div> */}
         </div>
 
-        <div className="absolute top-[13%] left-[3.5%]">
-          <div className="flex items-center px-[1.125rem] py-2 bg-white/20 rounded-five text-sm leading-none">
-            <span className="text-basic-yellow">
-              {item?.open_status ? LotteryStatusConfig[item.open_status].label || '--' : '--'}
-            </span>
+        {showStatus && (
+          <div className="absolute top-[13%] left-[3.5%]">
+            <div className="flex items-center px-[1.125rem] py-2 bg-white/20 rounded-five text-sm leading-none">
+              <span className="text-basic-yellow">
+                {item?.open_status ? LotteryStatusConfig[item.open_status].label || '--' : '--'}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="mt-5 text-white text-xl leading-6">{item?.name || '--'}</div>
@@ -143,16 +156,35 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
         ))}
       </div>
 
-      <div className="flex justify-between items-center mt-16">
+      <div className="flex justify-between items-center mt-6">
         <BattlePass item={item} />
 
-        <Link href={item && item.open_status === LotteryStatus.IN_PROGRESS ? `/lottery/${item?.lottery_pool_id}` : ''}>
-          <LGButton
-            className="w-[8.75rem]"
-            label="Play"
-            disabled={item?.open_status !== LotteryStatus.IN_PROGRESS || !item?.user_meet_requirement}
-          />
-        </Link>
+        {hasReachedRequirement ? (
+          <Link href={isInProgress ? `/draw/${item?.lottery_pool_id}` : ''}>
+            <LGButton className="w-[8.75rem]" label="Draw" disabled={!canPlay} />
+          </Link>
+        ) : (
+          <Popover placement="top">
+            <PopoverTrigger>
+              <Button
+                className="w-[8.75rem] text-[#999] border-2 border-solid border-[#999] bg-transparent rounded-3xl h-auto px-6 py-1"
+                disabled
+              >
+                Draw
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent>
+              <div>
+                <div className="text-lg">Please make sure you meet the following requirement(s) to enter:</div>
+                <div
+                  className="ml-4 mt-2"
+                  dangerouslySetInnerHTML={{ __html: requirement_description || '--' }}
+                ></div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </div>
   );

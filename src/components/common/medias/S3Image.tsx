@@ -1,17 +1,21 @@
 import Image, { type ImageProps } from 'next/image';
-import { FC } from 'react';
+import { forwardRef } from 'react';
 
-type Props = Override<ImageProps, {
-  src: string;
-  alt?: string;
-  refEl?: React.RefObject<HTMLImageElement>;
-}>;
+type Props = Override<ImageProps, { src: string; alt?: string }>;
 
-const S3Image: FC<Props> = ({ src, alt, unoptimized = true, width, height, fill, refEl, ...props }) => {
+const S3Image = forwardRef<HTMLImageElement, Props>(function S3Image(
+  { src, alt, unoptimized = true, width, height, fill, ...props },
+  ref,
+) {
+
+  const url = src.startsWith('http')
+    ? src
+    : `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/${src.replace(/^\/+/, '')}`;
+
   return (
     <Image
-      ref={refEl}
-      src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/${src.replace(/^\/+/, '')}`}
+      ref={ref}
+      src={url}
       alt={alt || ''}
       unoptimized={unoptimized}
       width={fill ? undefined : width || 1}
@@ -20,6 +24,6 @@ const S3Image: FC<Props> = ({ src, alt, unoptimized = true, width, height, fill,
       {...props}
     />
   );
-};
+});
 
 export default S3Image;

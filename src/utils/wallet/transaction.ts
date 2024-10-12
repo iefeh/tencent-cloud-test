@@ -9,10 +9,13 @@ interface ContractProviderConfig {
 }
 
 export interface TransactionParams {
+  /** 跳过登录检测 */
+  passLogin?: boolean;
+  noWait?: boolean;
   params: any;
   config?: Partial<TransactionConfig>;
   options?: TransactionRequest;
-  onError?: (code?: number, message?: string) => boolean | undefined;
+  onError?: (code?: number, message?: string) => Promise<boolean | undefined> | boolean | undefined;
 }
 
 export interface TransactionConfig {
@@ -91,7 +94,8 @@ class TransactionProvider {
       return true;
     } catch (e: any) {
       let error = e?.error || e;
-      if (error?.code === -32603 || error?.code === 4902 || error?.code === 5000) {
+      const code = Math.abs(error?.code || 0);
+      if (code === 32603 || code === 4902 || code === 5000) {
         // 未添加此网络，添加后自动唤起切换
         const res = await this.addNetwork(targetChainId);
         if (!res) return false;
@@ -116,7 +120,7 @@ class TransactionProvider {
     return true;
   };
 
-  transaction = async ({ params, config = {}, options = {}, onError }: TransactionParams) => {
+  transaction = async ({ noWait, params, config = {}, options = {}, onError }: TransactionParams) => {
     const realConfig = Object.assign({}, this.config, config);
     const { abi, method, chainId, contractAddress } = realConfig;
     console.log('transaction config:', realConfig);
@@ -131,7 +135,13 @@ class TransactionProvider {
       console.log('transaction method:', method);
       console.log('transaction params:', params);
       console.log('transaction options:', options);
-      const transaction = await contract[method](params, options);
+      let transaction: any;
+      if (params instanceof Array) {
+        transaction = await contract[method](...params, options);
+      } else {
+        transaction = await contract[method](params, options);
+      }
+      if (noWait) return transaction;
       const result = await transaction.wait();
       console.log('transaction result:', result);
       return result;
@@ -144,7 +154,7 @@ class TransactionProvider {
 
       let showDefaultTips = !onError;
       if (onError) {
-        showDefaultTips = !onError(+code, message?.toString?.()?.toLowerCase());
+        showDefaultTips = !(await onError(+code, message?.toString?.()?.toLowerCase()));
       }
 
       if (showDefaultTips) {

@@ -26,7 +26,7 @@ const LotteryPage: FC = () => {
         id="luxy"
       >
         <Head>
-          <title>Lottery | Moonveil Entertainment</title>
+          <title>Draw | Moonveil Entertainment</title>
         </Head>
 
         <ShineBackground />

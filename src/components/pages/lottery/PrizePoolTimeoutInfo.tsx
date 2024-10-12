@@ -27,7 +27,7 @@ const PrizePoolTimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ cl
         unoptimized
       />
 
-      <p className="text-xl font-bold relative z-0 w-min whitespace-nowrap uppercase">The lottery pool will close in</p>
+      <p className="text-xl font-bold relative z-0 w-min whitespace-nowrap uppercase">The draw pool will close in</p>
 
       <div className="flex items-center w-min font-semakin text-xl relative z-0 ml-auto">
         {times.map((item, index) => (

@@ -85,12 +85,23 @@ export enum QuestRewardType {
   Range = 'range',
 }
 
+export enum TokenRewardDistributeType {
+  // 用户verify任务以后直接发奖
+  DirectDistribute = 'direct_distribute',
+  // 用户verify任务以后, 统一在指定时间发奖
+  AutoRaffle = 'auto_raffle',
+  // 用户verify任务以后, 统一手工发奖
+  ManualRaffle = 'manual_raffle',
+}
+
 export type TokenReward = {
   // 奖励的token id
   token_id: string;
-  // 是否自动抽取
-  auto_raffle: boolean;
-  // 抽取人数
+  // 发奖方式
+  distribute_type: TokenRewardDistributeType;
+  // Token奖励中间状态名称
+  distribute_mid_state_name: string;
+  // 自动发奖中奖人数
   auto_raffle_count: number;
   // 奖励代币数量
   token_amount_raw: number;
@@ -316,3 +327,34 @@ export type GameTicketReward = {
   // 门票过期时间
   expired_at: number
 };
+
+export type NodeReward = {
+  // 节点等级
+  node_tier: string,
+  // 节点名称
+  node_name: string,
+  // 节点图标
+  icon_url: string,
+  // 节点数量
+  node_amount: number,
+  // 领奖时的提醒
+  notification_id?: string,
+  // 中奖人数
+  number_of_winners?: number,
+  // 预估抽奖时间
+  estimated_raffle_time?: number,
+  // 实际抽奖时间
+  actual_raffle_time?: number,
+};
+
+export type NodeMultiplier = {
+  chain_id: string,
+  contract_address: string,
+  notification_id:string,
+  per_nft_node: [
+    {
+      tier: number,
+      amount: number
+    }
+  ]
+}

@@ -4,9 +4,31 @@ import connectToMongoDbDev from '@/lib/mongodb/client';
 //用户高阶通证获得类型
 export enum LotteryPoolRequirementType {
   NFT = 'nft',
+  Node = 'node',
   Badge = 'badge',
   Moonbeam = 'moon_beam',
   WhiteList = 'whitelist'
+}
+
+export type NFTRequirement = {
+  contract_addr: string;
+  name: string;
+}
+
+export type BadgeRequirement = {
+  badge_id: string;
+  name: string;
+  lvl: number;
+}
+
+export type MBRequirementment = {
+  mb_amount: number;
+}
+
+export type WhitelistRequirement = {
+  whitelist_id: string;
+  whitelist_entity_type: string;
+  image_url: string;
 }
 
 export interface ILotteryPoolRequirement extends Document {

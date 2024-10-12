@@ -66,6 +66,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
               'end_time': { $gt: now },
               //开始时间需要和当前赛季有一定关联，即开始时间在赛季期间,结束时间在赛季期间或开始时间结束时间横跨整个赛季。
               '$and': [{ '$or': [{ 'start_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'end_time': { $gte: currentSeason.start_time, $lte: currentSeason.end_time } }, { 'start_time': { $lte: currentSeason.start_time }, 'end_time': { $gte: currentSeason.end_time } }] }],
+              '$or': [{ "visible_user_ids": { "$exists": false } }, { "visible_user_ids": userId }],
               $expr: { $and: [{ $eq: ['$category', '$$category'] }] }
             },
           },
@@ -75,7 +76,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
               let: { quest_id: '$id' },
               pipeline: [
                 {
-                  $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(),'yyyy-MM-dd')}`] }] }, { $eq: ['$quest_id', '$$quest_id'] }] }] } },
+                  $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM-dd')}`] }] }, { $eq: ['$quest_id', '$$quest_id'] }] }] } },
                 },
                 {
                   $project: {

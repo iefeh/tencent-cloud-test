@@ -72,6 +72,7 @@ declare namespace MiniGames {
     url: string;
     share: string;
     share_reward_claimed: boolean;
+    share_reward_ticket_amount: boolean;
     icon_url: string;
     image_url: string;
   }

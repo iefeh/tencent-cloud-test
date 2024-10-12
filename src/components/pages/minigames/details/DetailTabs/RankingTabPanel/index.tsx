@@ -3,31 +3,17 @@ import { queryMiniGameLeaderboardAPI } from '@/http/services/minigames';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { useMGDContext } from '@/store/MiniGameDetails';
 import { MiniGames } from '@/types/minigames';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  cn,
-} from '@nextui-org/react';
+import { cn } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
-import Image from 'next/image';
 import { useState, type CSSProperties, type FC, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import RankingTable from './RankingTable';
 
 const RankingTabPanel: FC = () => {
   const { data } = useMGDContext();
-  const [isLatest, setIsLatest] = useState(true);
   const [ranking, setRanking] = useState<MiniGames.GameDetialLeaderboard | null>(null);
   const [loading, setLoading] = useState(false);
   const { latest, previous } = ranking || {};
-  const { lbInfos: leaderboard, user_rank } = (isLatest ? latest : previous) || {};
   const varStyles = { '--stroke-color': '#7A0A08' } as CSSProperties;
 
   async function queryLeaderboard() {
@@ -62,7 +48,7 @@ const RankingTabPanel: FC = () => {
         <>
           <RankingTable ranking={latest} />
 
-          <RankingTable />
+          <RankingTable ranking={previous} />
         </>
       )}
     </div>

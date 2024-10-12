@@ -1,8 +1,6 @@
 import PageDesc from '@/components/common/PageDesc';
 import { Tab, Tabs, cn } from '@nextui-org/react';
-import Image from 'next/image';
 import { type FC, type Key, useState, useEffect, useRef } from 'react';
-import usePools from '../hooks/usePools';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import EmptyContent from '@/components/common/EmptyContent';
 import PoolCard from '../PoolCard';
@@ -67,7 +65,7 @@ const PoolListScreen: FC = () => {
   }, [userInfo]);
 
   return (
-    <div className="relative w-screen pt-[19.5rem] mb-[6.5625rem] flex flex-col justify-center items-center bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png')] bg-[length:100%_auto] bg-no-repeat z-10">
+    <div className="relative w-screen pt-[19.5rem] mb-[6.5625rem] flex flex-col justify-center items-center bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png')] bg-[length:100%_auto] bg-no-repeat z-10 px-8 md:px-0">
       <PageDesc
         className="relative z-0"
         needAni
@@ -78,7 +76,7 @@ const PoolListScreen: FC = () => {
               “More and $MORE”
             </span>
             <br />
-            <span>Lottery Pools</span>
+            <span>Prize Pool</span>
           </div>
         }
       />
@@ -113,7 +111,7 @@ const PoolListScreen: FC = () => {
 
       {userInfo ? (
         <div className="w-[87.5rem] max-w-full min-h-[37.5rem] mt-[3.375rem] relative flex flex-col items-center">
-          <div className="w-full grid grid-cols-3 gap-x-6 gap-y-8">
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
             {pools.length > 0 ? (
               pools.map((pool, index) => <PoolCard key={index} item={pool} />)
             ) : (

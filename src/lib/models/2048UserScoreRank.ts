@@ -35,20 +35,24 @@ export async function get2048Leaderboard(userId: string | undefined, lbId: strin
             $sort: { sum_score: -1 }
         },
         {
-            $limit: 5
+            $limit: 20
         }];
         
     let lbInfos: any[] = await Puffy2048UserScoreRank.aggregate(pipeline);
-    let userIds = lbInfos.map(r => r.uid);
+    let userIds = lbInfos.map(r => r.uid); 
 
     // 查询用户昵称信息
     const infos: any[] = await User.find({ user_id: { $in: userIds } }, { user_id: 1, username: 1, avatar_url: 1, _id: 0 });
     const userIdInfoMap: Map<string, any> = new Map<string, any>(infos.map(info => [info.user_id, info]));
     let rank: number = 0;
     for (let lb of lbInfos) {
+        const u = userIdInfoMap.get(lb.uid);
+        if (!u) {
+            continue;
+        }
         lb.rank = ++rank;
-        lb.player = userIdInfoMap.get(lb.uid).username;
-        lb.avatar = userIdInfoMap.get(lb.uid).avatar_url;
+        lb.player = u.username;
+        lb.avatar = u.avatar_url;
         lb.score = lb.sum_score;
         delete lb.sum_score;
         delete lb.uid;

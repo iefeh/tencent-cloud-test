@@ -32,6 +32,8 @@ type CampaignReward = {
     season_pass_progress: number,
     //包含CDK的全局通知ID
     cdk_notification_id: string,
+    //不增加任务权重
+    invalid_pass_progress: boolean,
 }
 
 export enum CampaignStatus {

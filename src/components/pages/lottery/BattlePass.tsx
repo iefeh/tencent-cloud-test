@@ -1,4 +1,4 @@
-import { cn } from '@nextui-org/react';
+import { Popover, PopoverContent, PopoverTrigger, Tooltip, cn } from '@nextui-org/react';
 import { FC, useRef } from 'react';
 import nftPassImg from 'img/loyalty/season/pass_nft.png';
 import badgePassImg from 'img/loyalty/season/pass_badge.png';
@@ -16,27 +16,28 @@ interface Props {
   onRuleClick?: () => void;
 }
 
+const REQUIREMENT_ICONS: Dict<StaticImageData | string> = {
+  [LotteryRequirementType.NFT]: nftPassImg,
+  [LotteryRequirementType.BADGE]: badgePassImg,
+  [LotteryRequirementType.WHITELIST]:
+    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
+  [LotteryRequirementType.MB]:
+    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png',
+  [LotteryRequirementType.NODE]: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/node.png',
+};
+
 const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, float, visible, onRuleClick }) => {
-  const { user_meet_requirement = false, user_meet_requirement_type } = item || {};
+  const { user_meet_requirement = false, user_meet_requirement_type, requirement_description } = item || {};
   const nodeRef = useRef<HTMLDivElement>(null);
-  const passList: { actived: boolean; img: StaticImageData | string }[] = [
-    {
-      actived: !!user_meet_requirement && user_meet_requirement_type === LotteryRequirementType.NFT,
-      img: nftPassImg,
-    },
-    {
-      actived: !!user_meet_requirement && user_meet_requirement_type === LotteryRequirementType.BADGE,
-      img: badgePassImg,
-    },
-    {
-      actived: !!user_meet_requirement && user_meet_requirement_type === LotteryRequirementType.WHITELIST,
-      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
-    },
-    {
-      actived: !!user_meet_requirement && user_meet_requirement_type === LotteryRequirementType.MB,
-      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png',
-    },
-  ];
+  const passList: { actived: boolean; img: StaticImageData | string }[] = [];
+
+  const icon = REQUIREMENT_ICONS[user_meet_requirement_type || ''];
+  if (icon) {
+    passList.push({
+      actived: !!user_meet_requirement,
+      img: icon,
+    });
+  }
 
   const content = (
     <div ref={nodeRef} className={cn(['flex flex-col items-center', className])}>
@@ -61,7 +62,21 @@ const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, floa
             </div>
           );
 
-          return passBody;
+          return (
+            <Popover key={index} placement="top">
+              <PopoverTrigger>{passBody}</PopoverTrigger>
+
+              <PopoverContent>
+                <div>
+                  <div className="text-lg">Please make sure you meet the following requirement(s) to enter:</div>
+                  <div
+                    className="ml-4 mt-2"
+                    dangerouslySetInnerHTML={{ __html: requirement_description || '--' }}
+                  ></div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          );
         })}
       </div>
     </div>

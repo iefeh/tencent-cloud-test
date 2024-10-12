@@ -3,7 +3,7 @@ import { createRouter } from 'next-connect';
 
 import {
     canClaimPremiumBenifits, enrichRequirementsInfo, getActiveLotteryPoolById,
-    lotteryRequirementSatisfy
+    lotteryPoolRequirementSatisfy
 } from '@/lib/lottery/lottery';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
@@ -39,7 +39,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   const userFreeLotteryTicketAmount = userLotteryPool ? userLotteryPool.free_lottery_ticket_amount : 0;
   const firstTwitterTopicVerified = userLotteryPool? userLotteryPool.first_twitter_topic_verified: false;
-  const requirementSatisfy = await lotteryRequirementSatisfy(userId, lotteryPoolId); 
+  const requirementSatisfy = await lotteryPoolRequirementSatisfy(userId, lotteryPoolId); 
   let rewards: any[] = [];
   for (let reward of lotteryPool.rewards) {
     rewards.push({
