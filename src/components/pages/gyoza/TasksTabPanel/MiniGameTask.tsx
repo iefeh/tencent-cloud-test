@@ -161,12 +161,12 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
                   isExpired && !task.verified
                     ? 'Task incomplete, not eligible for the raffle.'
                     : task.user_token_reward?.status === 'claimed'
-                    ? 'Claimed'
-                    : task.user_token_reward?.status === 'claiming'
-                    ? 'Claiming'
-                    : task.user_token_reward
-                    ? 'Claim'
-                    : 'Sorry, you didn’t win this time.'
+                      ? 'Claimed'
+                      : task.user_token_reward?.status === 'claiming'
+                        ? 'Claiming'
+                        : task.user_token_reward
+                          ? 'Claim'
+                          : 'Sorry, you didn’t win this time.'
                 }
                 actived
                 disabled={!task.reward.token_reward?.actual_raffle_time || task.user_token_reward?.status !== 'pending'}

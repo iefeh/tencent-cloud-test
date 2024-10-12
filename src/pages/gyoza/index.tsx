@@ -20,7 +20,7 @@ const GyozaPage: FC & BasePage = () => {
   const [showGuide, setShowGuide] = useState(true)
 
   return (
-    <section className=" font-jcyt6 w-screen h-screen">
+    <section className="font-jcyt6 w-screen h-screen">
       <Head>
         <link
           rel="preload"

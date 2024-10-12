@@ -10,6 +10,8 @@ import { MediaLinks } from '@/constant/common';
 import { BaseButton } from './Buttons/gostButton';
 import BadgePanel from './TabsItem/BadgesPanel';
 import TasksTabPanel from './TasksTabPanel'
+import { cn } from '@nextui-org/react';
+
 interface TabContentsProps {
   tabKey: GyozaTabsEnum;
 }
@@ -72,7 +74,6 @@ const TabContents: FC<TabContentsProps> = (props) => {
           ))
         }
       </div>
-
     )
   }
 
@@ -88,7 +89,24 @@ const TabContents: FC<TabContentsProps> = (props) => {
     }
 
     return (
-      <CommonTable<Dict<string>>
+      // FIXME: 结构展示未知
+      <CommonTable<any>
+        warpperClassNames='bg-[#e5c9b1] rounded-[1.25rem] px-[1.875rem] py-6'
+        classNames={{
+          table: 'border-collapse',
+          wrapper: 'bg-transparent shadow-none p-0',
+          thead: '[&>tr:nth-child(2)]:hidden bg-transparent rounded-t-[1.25rem] rounded-b-[.625rem] shadow-[0px_5px_13px_0px_rgba(182,136,103,0.92)_inset]',
+          th: 'bg-transparent text-[#2E1A0F] text-lg leading-none outline-none pt-3 pb-4 px-6 h-auto',
+          tr: '!rounded-lg',
+        }}
+        calcHeaderItemClassNames={(index: number) => cn([
+          'bg-[rgba(210,168,138,.6)]',
+          index === 0 && '!rounded-tl-[1.25rem]',
+          index === columns.length - 1 && '!rounded-tr-[1.25rem]',
+        ])}
+        calcRowClassNames={(rowIdx: number) => cn([
+          rowIdx % 2 === 0 ? 'bg-[#F3DCC8]' : 'bg-[#e5c9b1]',
+        ])}
         columns={columns}
         dataList={rankingList}
         renderComp={{

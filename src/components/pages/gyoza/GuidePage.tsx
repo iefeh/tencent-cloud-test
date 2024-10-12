@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import FlamingHome from './sliders/FlamingHome'
@@ -21,6 +21,8 @@ const scrollImgUrl = '/minigames/miner/icon_scroll_down.png'
 const GuidePage: FC<GuidePageProps> = (props) => {
   const { toSkip } = props
   let swiperRef = useRef<SwiperEl | null>(null);
+
+  const [swiperIndex, setSwiperIndex] = useState(0)
 
   const toNextSlide = () => {
     swiperRef.current?.slideNext()
@@ -50,10 +52,19 @@ const GuidePage: FC<GuidePageProps> = (props) => {
     <Swiper
       className="relative h-full w-full"
       direction="vertical"
+      speed={1500}
       slidesPerView={1}
       mousewheel={true}
       modules={[Mousewheel, FreeMode]}
       onSwiper={(swiper) => swiperRef.current = swiper}
+      onSlideChangeTransitionStart={(swiper) => {
+        console.log('onSlideChangeTransitionStart', swiper);
+        setSwiperIndex(swiper.realIndex)
+      }}
+      onSlideChangeTransitionEnd={(swiper) => {
+        console.log('onSlideChangeTransitionEnd', swiper);
+        setSwiperIndex(swiper.realIndex)
+      }}
     >
       {sliders.map((SliderComp, index) => (
         <SwiperSlide key={index}>
