@@ -3,9 +3,11 @@ import { FC } from 'react';
 import ShineButton from './ShineButton';
 import RulesModal from './RulesModal';
 import { useDisclosure } from '@nextui-org/react';
+import QueryModal from './QueryModal';
 
 const MainContent: FC = () => {
   const rulesDisclosure = useDisclosure();
+  const queryDisclosure = useDisclosure();
 
   return (
     <div className="relative translate-y-[10%] translate-x-[12%]">
@@ -25,6 +27,7 @@ const MainContent: FC = () => {
         <ShineButton
           size="md"
           startContent={<S3Image className="w-9 aspect-square" src="/astrark/cbt-iap/icons/arrow_right.png" />}
+          onPress={queryDisclosure.onOpen}
         >
           IAP Return Query
         </ShineButton>
@@ -38,6 +41,8 @@ const MainContent: FC = () => {
       </div>
 
       <RulesModal disclosure={rulesDisclosure} />
+
+      <QueryModal disclosure={queryDisclosure} />
     </div>
   );
 };
