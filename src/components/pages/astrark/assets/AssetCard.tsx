@@ -9,11 +9,12 @@ interface Props {
   inModal?: boolean;
   item: Partial<NFTItem> | null;
   isDisplayed?: boolean;
+  disabled?: boolean;
   loading?: boolean;
   onSwitchDisplay?: (item?: Partial<NFTItem>) => void;
 }
 
-const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, onSwitchDisplay }) => {
+const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, disabled, onSwitchDisplay }) => {
   const [loading, setLoading] = useState(false);
 
   async function onDisplayClick() {
@@ -25,13 +26,13 @@ const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, onSwitchDisplay }) =
   }
 
   return (
-    <div className={cn(['shrink-0 flex font-fzdb', inModal || 'w-[28rem]'])}>
+    <div className={cn(['shrink-0 flex font-fzdb'])}>
       <NFT
         className={cn([
           'h-auto aspect-square',
           inModal
-            ? "w-[15.875rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_shadow_modal.png')] bg-contain bg-no-repeat"
-            : 'w-[23.625rem] bg-black',
+            ? "!w-[15.875rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_shadow_modal.png')] bg-contain bg-no-repeat"
+            : '!w-[23.625rem] bg-black',
         ])}
         src={
           item?.token_metadata?.animation_url ||
@@ -62,7 +63,7 @@ const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, onSwitchDisplay }) =
             className="!p-0 bg-transparent !bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_btn_display.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 !text-[#5D3C13] !border-none data-[disabled=true]:grayscale font-fzdb text-2xl leading-none"
             label={isDisplayed ? 'Remove' : 'Display'}
             actived
-            disabled={!item || isDisplayed === undefined}
+            disabled={!item || isDisplayed === undefined || disabled}
             loading={loading}
             onClick={onDisplayClick}
           />

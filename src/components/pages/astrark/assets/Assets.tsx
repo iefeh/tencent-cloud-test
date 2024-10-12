@@ -54,10 +54,11 @@ const Assets: FC<Props & ClassNameProps> = ({ scrollRef, items, displayItems, cl
       <AssetCard
         item={selectedNFT}
         isDisplayed={
-          selectedNFT && validDisplayItems.length < MAX_DISPLAY_ASSETS
+          selectedNFT && validDisplayItems.length > 0
             ? validDisplayItems.some((item) => item?.token_id === selectedNFT.token_id)
             : undefined
         }
+        disabled={!selectedNFT || validDisplayItems.length >= MAX_DISPLAY_ASSETS}
         onSwitchDisplay={onDisplayClick}
       />
 
@@ -83,7 +84,7 @@ const Assets: FC<Props & ClassNameProps> = ({ scrollRef, items, displayItems, cl
                 onClick={() => item && setSelectedNFT(item)}
               >
                 <NFT
-                  className="w-[7.5rem] h-[7.5rem]"
+                  className="w-[7.5rem] h-[7.5rem] relative"
                   src={item?.token_metadata?.animation_url || item?.token_metadata?.image}
                   isSrcImage={!item?.token_metadata?.animation_url}
                   status={item?.transaction_status}
