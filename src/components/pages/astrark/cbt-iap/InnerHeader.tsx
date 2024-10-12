@@ -1,28 +1,15 @@
 import S3Image from '@/components/common/medias/S3Image';
 import BasicButton from '@/pages/components/common/BasicButton';
-import { useUserContext } from '@/store/User';
 import { cn } from '@nextui-org/react';
-import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 
-const CbtIapHeader: FC<ClassNameProps> = ({ className }) => {
-  const { userInfo, toggleLoginModal } = useUserContext();
-
+const CbtIapInnerHeader: FC<ClassNameProps> = ({ className }) => {
   return (
     <div className={cn(['flex justify-between items-center relative z-0 pl-9 pr-[3.75rem]', className])}>
       <S3Image className="w-[8.4375rem] aspect-[135/80] mr-8" src="/logo/moonveil_white.png" />
       <S3Image className="w-[4.5625rem] aspect-[73/70]" src="/logo/astrark.png" />
 
       <div className="flex-1"></div>
-
-      {userInfo ? null : (
-        <BasicButton
-          className="text-base py-2 hover:text-white hover:border-white hover:shadow-none"
-          label="LOGIN"
-          prefix={<S3Image className="w-5 aspect-square inline-block mr-3" src="/astrark/cbt-iap/icons/user.png" />}
-          onClick={() => toggleLoginModal(true)}
-        />
-      )}
 
       <BasicButton
         className="text-base py-2 ml-3 hover:text-white hover:border-white hover:shadow-none"
@@ -33,4 +20,4 @@ const CbtIapHeader: FC<ClassNameProps> = ({ className }) => {
   );
 };
 
-export default observer(CbtIapHeader);
+export default CbtIapInnerHeader;
