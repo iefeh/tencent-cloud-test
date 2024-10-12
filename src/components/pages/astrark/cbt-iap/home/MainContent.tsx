@@ -4,10 +4,12 @@ import ShineButton from './ShineButton';
 import RulesModal from './RulesModal';
 import { useDisclosure } from '@nextui-org/react';
 import QueryModal from './QueryModal';
+import FAQModal from './FAQModal';
 
 const MainContent: FC = () => {
   const rulesDisclosure = useDisclosure();
   const queryDisclosure = useDisclosure();
+  const faqDisclosure = useDisclosure();
 
   return (
     <div className="relative translate-y-[10%] translate-x-[12%]">
@@ -35,6 +37,7 @@ const MainContent: FC = () => {
         <ShineButton
           size="sm"
           startContent={<S3Image className="w-9 aspect-square" src="/astrark/cbt-iap/icons/question.png" />}
+          onPress={faqDisclosure.onOpen}
         >
           FAQ
         </ShineButton>
@@ -43,6 +46,8 @@ const MainContent: FC = () => {
       <RulesModal disclosure={rulesDisclosure} />
 
       <QueryModal disclosure={queryDisclosure} />
+
+      <FAQModal disclosure={faqDisclosure} />
     </div>
   );
 };
