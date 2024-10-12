@@ -18,27 +18,15 @@ const MainContent: FC = () => {
       </div>
 
       <div className="flex justify-center items-center w-[66.25rem] h-[10.75rem]">
-        <ShineButton
-          size="lg"
-          startContent={<S3Image className="w-9 aspect-square" src="/astrark/cbt-iap/icons/question.png" />}
-          onPress={rulesDisclosure.onOpen}
-        >
+        <ShineButton size="lg" iconName="question" onPress={rulesDisclosure.onOpen}>
           Rules Explanation
         </ShineButton>
 
-        <ShineButton
-          size="md"
-          startContent={<S3Image className="w-9 aspect-square" src="/astrark/cbt-iap/icons/arrow_right.png" />}
-          onPress={queryDisclosure.onOpen}
-        >
+        <ShineButton size="md" iconName="arrow_right" onPress={queryDisclosure.onOpen}>
           IAP Return Query
         </ShineButton>
 
-        <ShineButton
-          size="sm"
-          startContent={<S3Image className="w-9 aspect-square" src="/astrark/cbt-iap/icons/question.png" />}
-          onPress={faqDisclosure.onOpen}
-        >
+        <ShineButton size="sm" iconName="question" onPress={faqDisclosure.onOpen}>
           FAQ
         </ShineButton>
       </div>

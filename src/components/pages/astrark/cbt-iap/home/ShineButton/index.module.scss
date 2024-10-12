@@ -4,7 +4,8 @@
   background-size: 91.3% auto;
   background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_sm.png');
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     background-size: 100% auto;
     background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_sm_active.png');
   }
@@ -16,7 +17,8 @@
   background-size: 95% auto;
   background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_md.png');
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     background-size: 100% auto;
     background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_md_active.png');
   }
@@ -28,8 +30,29 @@
   background-size: 95.2% auto;
   background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_lg.png');
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     background-size: 100% auto;
     background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_lg_active.png');
+  }
+}
+
+.btn {
+  :global(.start-content.question) {
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/question.png');
+  }
+
+  :global(.start-content.arrow_right) {
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/arrow_right.png');
+  }
+
+  &:hover {
+    :global(.start-content.question) {
+      background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/question_active.png');
+    }
+
+    :global(.start-content.arrow_right) {
+      background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/arrow_right_active.png');
+    }
   }
 }
