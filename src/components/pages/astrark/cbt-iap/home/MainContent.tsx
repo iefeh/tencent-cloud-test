@@ -4,7 +4,7 @@ import ShineButton from './ShineButton';
 
 const MainContent: FC = () => {
   return (
-    <div>
+    <div className="relative translate-y-[10%] translate-x-[12%]">
       <div className="w-[58.25rem] aspect-[932/421] relative">
         <S3Image className="object-contain" src="/astrark/cbt-iap/slogan.png" fill />
       </div>

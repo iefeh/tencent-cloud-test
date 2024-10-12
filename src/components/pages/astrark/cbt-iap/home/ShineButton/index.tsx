@@ -11,7 +11,7 @@ const ShineButton: FC<Props> = ({ size, className, ...props }) => {
     <Button
       {...props}
       className={cn([
-        'bg-transparent bg-center bg-no-repeat p-0 h-auto font-semakin text-xl leading-6',
+        'bg-transparent bg-center bg-no-repeat p-0 h-auto font-semakin text-xl leading-6 !transition-none',
         styles[`${size}Btn`],
         className,
       ])}

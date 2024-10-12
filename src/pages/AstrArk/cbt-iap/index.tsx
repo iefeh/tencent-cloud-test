@@ -5,10 +5,10 @@ import { NextPage } from 'next';
 
 const CbtIapPage: NextPage = () => {
   return (
-    <section className="w-screen h-screen relative">
+    <section className="w-screen h-screen relative flex items-center">
       <S3Image className="object-cover" src="/astrark/cbt-iap/bg.png" fill />
 
-      <CbtIapHeader className="absolute left-0 top-8 w-full" />
+      <CbtIapHeader className="!absolute left-0 top-8 w-full" />
 
       <MainContent />
     </section>
