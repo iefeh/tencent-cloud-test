@@ -48,6 +48,7 @@ const TicketsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
         return (
           <Tooltip
             key={index}
+            placement='bottom'
             content={
               <div className="max-w-[25rem]">
                 <span className="text-basic-yellow">S1 Ticket</span> is a long-term valid ticket that can be used in multiple
