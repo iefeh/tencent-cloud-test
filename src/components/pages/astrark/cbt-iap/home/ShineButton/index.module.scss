@@ -1,0 +1,58 @@
+.smBtn {
+  width: 12.5rem;
+  aspect-ratio: 200/95;
+  background-size: 91.3% auto;
+  background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_sm.png');
+
+  &:hover,
+  &:active {
+    background-size: 100% auto;
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_sm_active.png');
+  }
+}
+
+.mdBtn {
+  width: 20.8125rem;
+  aspect-ratio: 333/78;
+  background-size: 95% auto;
+  background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_md.png');
+
+  &:hover,
+  &:active {
+    background-size: 100% auto;
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_md_active.png');
+  }
+}
+
+.lgBtn {
+  width: 23.125rem;
+  aspect-ratio: 370/95;
+  background-size: 95.2% auto;
+  background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_lg.png');
+
+  &:hover,
+  &:active {
+    background-size: 100% auto;
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/btn_lg_active.png');
+  }
+}
+
+.btn {
+  :global(.start-content.question) {
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/question.png');
+  }
+
+  :global(.start-content.arrow_right) {
+    background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/arrow_right.png');
+  }
+
+  &:hover {
+    :global(.start-content.question) {
+      background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/question_active.png');
+    }
+
+    :global(.start-content.arrow_right) {
+      background-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/icons/arrow_right_active.png');
+    }
+  }
+}
