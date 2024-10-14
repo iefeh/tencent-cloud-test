@@ -144,7 +144,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
           item={poolInfo}
         />
 
-        <DrawFooter className="!absolute bottom-[7.5rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
+        <DrawFooter className="!absolute bottom-[5.75rem] left-1/2 -translate-x-1/2" item={poolInfo} onDraw={onDraw} />
 
         <DrawScreenMainContent item={poolInfo} onShowPrizePool={onShowPrizePool} />
       </div>

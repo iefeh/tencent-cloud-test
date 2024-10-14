@@ -10,29 +10,46 @@ interface Props extends ClassNameProps {
 }
 
 const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, item: poolInfo }) => {
-  const buttons = [
-    {
-      icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
-      label: '1 Free Ticket',
-      buttonLabel: 'Draw Once',
-      times: 1,
-    },
-    {
-      icon: mbImg,
-      label: '75MBs',
-      buttonLabel: 'Draw 3 Times',
-      times: 3,
-    },
-    {
-      icon: mbImg,
-      label: '125MBs',
-      buttonLabel: 'Draw 5 Times',
-      times: 5,
-    },
-  ];
+  const buttons = getButtons();
+
+  function getButtons() {
+    const maxDrawTimes = poolInfo?.draw_limits || 0;
+    const list = [];
+
+    if (maxDrawTimes >= 1) {
+      list.push({
+        icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
+        label: '1 Free Ticket',
+        buttonLabel: 'Draw Once',
+        times: 1,
+      });
+    }
+
+    if (maxDrawTimes >= 3) {
+      list.push({
+        icon: mbImg,
+        label: '75MBs',
+        buttonLabel: 'Draw 3 Times',
+        times: 3,
+      });
+    }
+
+    if (maxDrawTimes >= 5) {
+      list.push({
+        icon: mbImg,
+        label: '125MBs',
+        buttonLabel: 'Draw 5 Times',
+        times: 5,
+      });
+    }
+
+    return list;
+  }
 
   return (
     <div className={cn(['flex flex-col items-center', className])}>
+      <div className="text-basic-yellow text-lg mb-1">Your remaining Draw: {poolInfo?.rest_draw_amount || 0}</div>
+
       <div className="w-[28rem] h-[4.6875rem] lg:w-[42.6875rem] lg:h-[7.125rem] relative">
         <Image
           className={cn([
