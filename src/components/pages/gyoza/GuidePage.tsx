@@ -18,11 +18,30 @@ interface GuidePageProps {
 
 const scrollImgUrl = '/minigames/miner/icon_scroll_down.png'
 
+// const slides: (FC<{ needAni?: boolean }> & HomeSlide)[] = [
+//   NodeSlide,
+//   LoyaltyProgramSlide,
+//   // Game2048Slide,
+//   MinigamesSlide,
+//   // LotterySlide,
+//   // NFT2Slide,
+//   InviteNewSlide,
+//   RaceSlide,
+// ];
+
+// const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAni: boolean }) {
+//   const Comp = slides[idx];
+//   return <Comp needAni={needAni}></Comp>;
+// });
+
 const GuidePage: FC<GuidePageProps> = (props) => {
   const { toSkip } = props
   let swiperRef = useRef<SwiperEl | null>(null);
 
-  const [swiperIndex, setSwiperIndex] = useState(0)
+  const [swiperInfo, setSwiperInfo] = useState({
+    swiperIndex: 0,
+    prevSwiperIndex: 0
+  })
 
   const toNextSlide = () => {
     swiperRef.current?.slideNext()
@@ -36,17 +55,25 @@ const GuidePage: FC<GuidePageProps> = (props) => {
     toSkip()
   }
 
+
   const { sliders } = useMemo(() => {
+    const { swiperIndex, prevSwiperIndex } = swiperInfo;
+
     return {
       sliders: [
-        <FlamingHome key={0} ></FlamingHome>,
+        <FlamingHome
+          key={0}
+          aimIndex={swiperIndex}
+          prevIndex={prevSwiperIndex}
+          sliderIndex={0}
+        ></FlamingHome>,
         <GyozaPVP key={1} toPrev={toSkipSlide} toNext={toNextSlide}></GyozaPVP>,
         <GyozaCastle key={2} toPrev={toPrevSlide} toNext={toNextSlide}></GyozaCastle>,
         <GyozaAttack key={3} toPrev={toPrevSlide} toNext={toNextSlide}></GyozaAttack>,
         <GyozaPlay key={4} toPrev={toSkipSlide} ></GyozaPlay>
       ]
     }
-  }, [])
+  }, [swiperInfo])
 
   return (
     <Swiper
@@ -59,11 +86,17 @@ const GuidePage: FC<GuidePageProps> = (props) => {
       onSwiper={(swiper) => swiperRef.current = swiper}
       onSlideChangeTransitionStart={(swiper) => {
         console.log('onSlideChangeTransitionStart', swiper);
-        setSwiperIndex(swiper.realIndex)
+        setSwiperInfo({
+          swiperIndex: swiper.realIndex,
+          prevSwiperIndex: swiper.previousIndex,
+        })
       }}
       onSlideChangeTransitionEnd={(swiper) => {
         console.log('onSlideChangeTransitionEnd', swiper);
-        setSwiperIndex(swiper.realIndex)
+        setSwiperInfo({
+          swiperIndex: swiper.realIndex,
+          prevSwiperIndex: swiper.previousIndex,
+        })
       }}
     >
       {sliders.map((SliderComp, index) => (
