@@ -15,8 +15,8 @@ router.use(dynamicCors).get(async (req, res) => {
     try {
         const token = await OAuth2Server.authenticate(new Request(req), new Response(res), { scope: OAuth2Scopes.UserInfo });
         const userId = token.user.user_id;
-        const [total, rebate] = await queryTotalRecharge(userId);
-        res.json(response.success({ total: total, reabte: rebate }));
+        const [total, rebate, wallet] = await queryTotalRecharge(userId);
+        res.json(response.success({ total: total, reabte: rebate, wallet: wallet }));
     } catch (error: any) {
         return responseOnOauthError(res, error);
     }
