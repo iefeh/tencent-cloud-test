@@ -17,9 +17,10 @@ const PoolsScreen: FC = () => {
     loading,
     data: pools,
     queryData,
+    total,
   } = usePageQuery({
     key: 'lottery_pools',
-    pageSize: 3,
+    pageSize: 6,
     fn: queryPoolsListAPI,
     notFill: true,
     // paramsFn: (pagi) => ({ ...pagi, open_status: LotteryStatus.IN_PROGRESS }),
@@ -30,29 +31,40 @@ const PoolsScreen: FC = () => {
   }, [userInfo]);
 
   return (
-    <section className="max-w-[87.5rem] mx-auto relative z-0 px-8 md:px-0">
-      <div className="flex justify-between items-center text-basic-yellow">
-        <div className="font-semakin text-2xl leading-none">More and $MORE Draw Rewards</div>
+    <section className="max-w-[87.5rem] mx-auto relative z-0 px-8 md:px-0 flex flex-col items-center">
+      <div className="w-full flex justify-between items-center text-basic-yellow">
+        <div className="font-semakin text-xl md:text-2xl leading-none w-full">More and $MORE Draw Rewards</div>
 
-        <Link href="/draw/list" target="_self" className="text-base leading-none whitespace-nowrap hover:underline">
+        {/* <Link href="/draw/list" target="_self" className="text-base leading-none whitespace-nowrap hover:underline">
           More &gt;&gt;
-        </Link>
+        </Link> */}
       </div>
 
       <div className="w-full h-0 border-t-1 border-basic-gray mt-5"></div>
 
       {userInfo ? (
-        <div
-          className={cn(['relative grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 min-h-[12.5rem]', pools.length < 1 && 'min-h-[36rem]'])}
-        >
-          {loading ? (
-            <CircularLoading />
-          ) : pools.length < 1 ? (
-            <EmptyContent content="Coming soon, please stay tuned." />
-          ) : (
-            pools.map((pool, index) => <PoolCard key={index} item={pool} />)
+        <>
+          <div
+            className={cn([
+              'w-full relative grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 min-h-[12.5rem]',
+              pools.length < 1 && 'min-h-[36rem]',
+            ])}
+          >
+            {loading ? (
+              <CircularLoading />
+            ) : pools.length < 1 ? (
+              <EmptyContent content="Coming soon, please stay tuned." />
+            ) : (
+              pools.map((pool, index) => <PoolCard key={index} item={pool} />)
+            )}
+          </div>
+
+          {total > 6 && (
+            <Link href="/draw/list" target="_self" className="text-base leading-none whitespace-nowrap hover:underline">
+              <LGButton className="mt-8 animate-breathShadow" label="More Lottery" actived />
+            </Link>
           )}
-        </div>
+        </>
       ) : (
         <div className="w-full min-h-[12.5rem] flex flex-col justify-center items-center mt-10">
           <LGButton label="Please sign-in to continue" actived needAuth />
