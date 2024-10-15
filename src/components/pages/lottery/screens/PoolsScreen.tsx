@@ -61,7 +61,7 @@ const PoolsScreen: FC = () => {
 
           {total > 6 && (
             <Link href="/draw/list" target="_self" className="text-base leading-none whitespace-nowrap hover:underline">
-              <LGButton className="mt-8 animate-breathShadow" label="More Lottery" actived />
+              <LGButton className="mt-8 animate-breathShadow leading-8 text-xl w-48" label="More Luck Draw" actived />
             </Link>
           )}
         </>
