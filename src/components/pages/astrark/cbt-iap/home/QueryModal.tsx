@@ -1,4 +1,3 @@
-import type { RechargeDTO } from '@/http/services/astrark';
 import S3Image from '@/components/common/medias/S3Image';
 import Link from '@/components/link';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
@@ -8,8 +7,8 @@ import { observer } from 'mobx-react-lite';
 import { formatUserName } from '@/utils/common';
 import { useUserContext } from '@/store/User';
 
-const QueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclosure: { isOpen, onOpenChange } }) => {
-  const { userInfo, logout, toggleLoginModal } = useUserContext();
+const QueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
+  const { logout, toggleLoginModal } = useUserContext();
   const { info } = useQuery();
 
   return (
@@ -42,11 +41,11 @@ const QueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclo
               <div className="flex flex-col gap-y-4">
                 <div className="flex items-center">
                   <div>
-                    Moonveil ID :<span className="text-basic-yellow ml-3">{formatUserName(userInfo?.wallet)}</span>
+                    Moonveil ID :<span className="text-basic-yellow ml-3">{formatUserName(info?.wallet)}</span>
                   </div>
 
                   <Link
-                    className="text-white/20 underline ml-9"
+                    className="text-white/20 underline ml-9 cursor-pointer"
                     href=""
                     onClick={async (e) => {
                       e.preventDefault();

@@ -84,6 +84,7 @@ export function queryPurchaseRecordsAPI(params: PageQueryDto): Promise<PageResDT
 export interface RechargeDTO {
   total: number;
   reabte: number;
+  wallet: string;
 }
 
 export function queryTestRechargeAPI(): Promise<RechargeDTO> {
@@ -91,5 +92,5 @@ export function queryTestRechargeAPI(): Promise<RechargeDTO> {
 }
 
 export function queryTestRechargeInnerAPI(): Promise<RechargeDTO> {
-  return http.get('/api/oauth2/query/recharge/astrark');
+  return http.get('/api/oauth2/query/recharge/astrark', { withBearer: true, isAA: true });
 }

@@ -7,6 +7,8 @@ import QueryModal from './QueryModal';
 import FAQModal from './FAQModal';
 import { useRouter } from 'next/router';
 import InnerQueryModal from './InnerQueryModal';
+import { useUserContext } from '@/store/User';
+import { observer } from 'mobx-react-lite';
 
 const MainContent: FC = () => {
   const rulesDisclosure = useDisclosure();
@@ -14,6 +16,7 @@ const MainContent: FC = () => {
   const faqDisclosure = useDisclosure();
   const [isInner, setIsInner] = useState<boolean | null>(null);
   const route = useRouter();
+  const { userInfo, toggleLoginModal } = useUserContext();
 
   function checkIsInner() {
     setIsInner(route.pathname === '/AstrArk/cbt-iap/inner');
@@ -36,9 +39,17 @@ const MainContent: FC = () => {
           Rules Explanation
         </ShineButton>
 
-        <ShineButton size="md" iconName="arrow_right" onPress={() => {
-          queryDisclosure.onOpen();
-        }}>
+        <ShineButton
+          size="md"
+          iconName="arrow_right"
+          onPress={() => {
+            if (!isInner && !userInfo) {
+              toggleLoginModal(true);
+              return;
+            }
+            queryDisclosure.onOpen();
+          }}
+        >
           IAP Return Query
         </ShineButton>
 
@@ -56,4 +67,4 @@ const MainContent: FC = () => {
   );
 };
 
-export default MainContent;
+export default observer(MainContent);

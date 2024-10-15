@@ -1,10 +1,12 @@
-import type { RechargeDTO } from '@/http/services/astrark';
 import S3Image from '@/components/common/medias/S3Image';
-import Link from '@/components/link';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { FC } from 'react';
+import useQuery from './hooks/useQueryInner';
+import { formatUserName } from '@/utils/common';
 
-const InnerQueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclosure: { isOpen, onOpenChange } }) => {
+const InnerQueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
+  const { info } = useQuery();
+
   return (
     <Modal
       placement="center"
@@ -35,23 +37,21 @@ const InnerQueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, d
               <div className="flex flex-col gap-y-4">
                 <div className="flex items-center">
                   <div>
-                    Moonveil ID :<span className="text-basic-yellow ml-3">0xe7....9fd3</span>
-                  </div>
-
-                  <Link className="text-white/20 underline ml-9" href="/">
-                    Log out
-                  </Link>
-                </div>
-
-                <div className="flex items-center">
-                  <div>
-                    The IAP Amount :<span className="text-basic-yellow ml-3">$ 200</span>
+                    Moonveil ID :<span className="text-basic-yellow ml-3">{formatUserName(info?.wallet)}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center">
                   <div>
-                    Current Rebate Tier:<span className="text-basic-yellow ml-3">150%</span>
+                    The IAP Amount :
+                    <span className="text-basic-yellow ml-3">$ {info ? info.total.toFixed(2) : '--'}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div>
+                    Current Rebate Tier:
+                    <span className="text-basic-yellow ml-3">{info ? (info.reabte * 100).toFixed(0) : '--'}%</span>
                   </div>
                 </div>
               </div>
@@ -61,7 +61,9 @@ const InnerQueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, d
                 <div className="relative w-[29.5625rem] aspect-[473/86] flex justify-center items-center mt-6">
                   <S3Image className="object-contain" src="/astrark/cbt-iap/bg_result.png" fill />
 
-                  <div className="text-[#93E6F8] text-[2.5rem]">300 Perth Shards</div>
+                  <div className="text-[#93E6F8] text-[2.5rem]">
+                    {info ? (info.total * info.reabte).toFixed(2) : '--'} Perth Shards
+                  </div>
                 </div>
               </div>
 
