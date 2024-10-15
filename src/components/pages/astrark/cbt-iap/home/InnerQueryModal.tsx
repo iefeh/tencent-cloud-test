@@ -3,15 +3,8 @@ import S3Image from '@/components/common/medias/S3Image';
 import Link from '@/components/link';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { FC } from 'react';
-import useQuery from './hooks/useQuery';
-import { observer } from 'mobx-react-lite';
-import { formatUserName } from '@/utils/common';
-import { useUserContext } from '@/store/User';
 
-const QueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclosure: { isOpen, onOpenChange } }) => {
-  const { userInfo, logout, toggleLoginModal } = useUserContext();
-  const { info } = useQuery();
-
+const InnerQueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclosure: { isOpen, onOpenChange } }) => {
   return (
     <Modal
       placement="center"
@@ -42,34 +35,23 @@ const QueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclo
               <div className="flex flex-col gap-y-4">
                 <div className="flex items-center">
                   <div>
-                    Moonveil ID :<span className="text-basic-yellow ml-3">{formatUserName(userInfo?.wallet)}</span>
+                    Moonveil ID :<span className="text-basic-yellow ml-3">0xe7....9fd3</span>
                   </div>
 
-                  <Link
-                    className="text-white/20 underline ml-9"
-                    href=""
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      await logout();
-                      onClose();
-                      toggleLoginModal(true);
-                    }}
-                  >
+                  <Link className="text-white/20 underline ml-9" href="/">
                     Log out
                   </Link>
                 </div>
 
                 <div className="flex items-center">
                   <div>
-                    The IAP Amount :
-                    <span className="text-basic-yellow ml-3">$ {info ? info.total.toFixed(2) : '--'}</span>
+                    The IAP Amount :<span className="text-basic-yellow ml-3">$ 200</span>
                   </div>
                 </div>
 
                 <div className="flex items-center">
                   <div>
-                    Current Rebate Tier:
-                    <span className="text-basic-yellow ml-3">{info ? (info.reabte * 100).toFixed(0) : '--'}%</span>
+                    Current Rebate Tier:<span className="text-basic-yellow ml-3">150%</span>
                   </div>
                 </div>
               </div>
@@ -79,9 +61,7 @@ const QueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclo
                 <div className="relative w-[29.5625rem] aspect-[473/86] flex justify-center items-center mt-6">
                   <S3Image className="object-contain" src="/astrark/cbt-iap/bg_result.png" fill />
 
-                  <div className="text-[#93E6F8] text-[2.5rem]">
-                    {info ? (info.total * info.reabte).toFixed(2) : '--'} Perth Shards
-                  </div>
+                  <div className="text-[#93E6F8] text-[2.5rem]">300 Perth Shards</div>
                 </div>
               </div>
 
@@ -98,4 +78,4 @@ const QueryModal: FC<DisclosureProps & ItemProps<RechargeDTO>> = ({ item, disclo
   );
 };
 
-export default observer(QueryModal);
+export default InnerQueryModal;

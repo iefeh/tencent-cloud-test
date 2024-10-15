@@ -1,15 +1,29 @@
 import S3Image from '@/components/common/medias/S3Image';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import ShineButton from './ShineButton';
 import RulesModal from './RulesModal';
 import { useDisclosure } from '@nextui-org/react';
 import QueryModal from './QueryModal';
 import FAQModal from './FAQModal';
+import { useRouter } from 'next/router';
+import InnerQueryModal from './InnerQueryModal';
 
 const MainContent: FC = () => {
   const rulesDisclosure = useDisclosure();
   const queryDisclosure = useDisclosure();
   const faqDisclosure = useDisclosure();
+  const [isInner, setIsInner] = useState<boolean | null>(null);
+  const route = useRouter();
+
+  function checkIsInner() {
+    setIsInner(route.pathname === '/AstrArk/cbt-iap/inner');
+  }
+
+  useEffect(() => {
+    checkIsInner();
+  }, []);
+
+  const QMCom = isInner ? InnerQueryModal : QueryModal;
 
   return (
     <div className="relative translate-y-[10%] translate-x-[12%]">
@@ -22,7 +36,9 @@ const MainContent: FC = () => {
           Rules Explanation
         </ShineButton>
 
-        <ShineButton size="md" iconName="arrow_right" onPress={queryDisclosure.onOpen}>
+        <ShineButton size="md" iconName="arrow_right" onPress={() => {
+          queryDisclosure.onOpen();
+        }}>
           IAP Return Query
         </ShineButton>
 
@@ -33,7 +49,7 @@ const MainContent: FC = () => {
 
       <RulesModal disclosure={rulesDisclosure} />
 
-      <QueryModal disclosure={queryDisclosure} />
+      {isInner !== null && <QMCom disclosure={queryDisclosure} />}
 
       <FAQModal disclosure={faqDisclosure} />
     </div>
