@@ -203,18 +203,18 @@ export abstract class QuestBase {
                 return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming Node rewards.' };
             }
             const multiplier = this.quest.reward.node_multiplier;
-            const holdAmount = await ContractNFT.count({ wallet_addr: wallet.wallet_addr, chain_id: multiplier.chain_id, contract_address: multiplier.contract_address, transaction_status: 'confirmed' });
+            const holdAmount = await ContractNFT.count({ wallet_addr: wallet.wallet_addr, chain_id: multiplier.chain_id, contract_address: multiplier.contract_address, transaction_status: 'confirmed', deleted_time: null });
             let temp: string = '';
             if (holdAmount) {
                 nodeReward = {};
-                nodeReward.nodes = [];
+                nodeReward.nodes = []; 
                 for (let n of multiplier.per_nft_node) {
                     const node = new UserNodeEligibility({ user_id: userId, node_tier: n.tier, node_amount: holdAmount * n.amount, source_type: NodeSourceType.Quest, source_id: `${this.quest.id},tier:${n.tier}`, created_time: Date.now() });
                     nodeReward.nodes.push(node);
                     if (temp.length == 0) {
-                        temp = `${holdAmount * n.amount} Tier ${n.tier}`
+                        temp = `${holdAmount * n.amount} Tier ${n.tier} Node`
                     } else {
-                        temp = `${temp} and ${holdAmount * n.amount} Tier ${n.tier}`
+                        temp = `${temp} and ${holdAmount * n.amount} Tier ${n.tier} Node`
                     }
                 }
             }
@@ -223,7 +223,7 @@ export abstract class QuestBase {
                 let notification = await GlobalNotification.findOne({ notification_id: this.quest.reward.node_multiplier.notification_id });
                 // const tier = Number(this.quest.reward.node_multiplier.node_tier);
                 // nodeReward.notification = new UserNotifications({ user_id: userId, notification_id: uuidv4(), content: notification.content.replace('{tier}', tier > 0 ? `Tier ${tier}` : `FREE`).replace('{task}', this.quest.name), link: notification.link, created_time: Date.now() });
-                tip = notification.content.replace('{tier}', temp.replace(`Tier 0`, 'free')).replace('{task}', this.quest.name);
+                tip = notification.content.replace('{tier}', temp.replace(`1 Tier`, 'a Tier').replace(`Tier 0`, 'free')).replace('{task}', this.quest.name);
             }
         }
 

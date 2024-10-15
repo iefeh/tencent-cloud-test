@@ -35,6 +35,6 @@ export default function useRaffleNode(task: TaskListItem) {
     hasWinReward: !!win_reward,
     isRaffleState: status >= 2,
     nodeIconUrl: icon_url,
-    nodeText: node_name,
+    nodeText: node_name || '-',
   };
 }
