@@ -60,9 +60,16 @@ export default function App({ Component, pageProps }: AppProps) {
     '/AstrArk/shop',
     '/AstrArk/cbt-iap/inner',
   ];
-  const noHeaderList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/oauth', '/AstrArk/assets', '/AstrArk/cbt-iap'];
+  const noHeaderList = [
+    '/email/captcha/quickfill',
+    '/auth',
+    '/auth/connect',
+    '/oauth',
+    '/AstrArk/assets',
+    '/AstrArk/cbt-iap',
+  ];
   const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
-  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop'];
+  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop', '/AstrArk/cbt-iap/inner'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);

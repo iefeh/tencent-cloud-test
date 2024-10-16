@@ -1,14 +1,10 @@
 import S3Image from '@/components/common/medias/S3Image';
-import Link from '@/components/link';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { FC } from 'react';
-import useQuery from './hooks/useQuery';
-import { observer } from 'mobx-react-lite';
+import useQuery from './hooks/useQueryInner';
 import { formatUserName } from '@/utils/common';
-import { useUserContext } from '@/store/User';
 
-const QueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
-  const { logout, toggleLoginModal } = useUserContext();
+const InnerQueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } }) => {
   const { info } = useQuery();
 
   return (
@@ -43,19 +39,6 @@ const QueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                   <div>
                     Moonveil ID :<span className="text-basic-yellow ml-3">{formatUserName(info?.wallet)}</span>
                   </div>
-
-                  <Link
-                    className="text-white/20 underline ml-9 cursor-pointer"
-                    href=""
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      await logout();
-                      onClose();
-                      toggleLoginModal(true);
-                    }}
-                  >
-                    Log out
-                  </Link>
                 </div>
 
                 <div className="flex items-center">
@@ -97,4 +80,4 @@ const QueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
   );
 };
 
-export default observer(QueryModal);
+export default InnerQueryModal;

@@ -80,3 +80,17 @@ export function queryPurchaseOverviewAPI(): Promise<AstrArk.PurchaseOverviewDTO>
 export function queryPurchaseRecordsAPI(params: PageQueryDto): Promise<PageResDTO<AstrArk.PurchaseRecordDTO>> {
   return http.get('/api/oauth2/game/purchase/list', { params, withBearer: true, isAA: true });
 }
+
+export interface RechargeDTO {
+  total: number;
+  reabte: number;
+  wallet: string;
+}
+
+export function queryTestRechargeAPI(): Promise<RechargeDTO> {
+  return http.get('/api/games/astrark/recharge/query');
+}
+
+export function queryTestRechargeInnerAPI(): Promise<RechargeDTO> {
+  return http.get('/api/oauth2/query/recharge/astrark', { withBearer: true, isAA: true });
+}
