@@ -34,7 +34,7 @@ const ShopHeader: FC = () => {
       <Button
         className="bg-black/30 border-1 border-[#323A43]/30 rounded-none px-5 py-2 -mt-[0.375rem] h-auto"
         disableRipple
-        onPress={onConnectWallet}
+        onClick={onConnectWallet}
       >
         <S3Image className="w-[1.3125rem] h-[1.125rem] object-contain" src="/astrark/shop/icons/icon_wallet.png" />
 

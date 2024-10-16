@@ -1,7 +1,7 @@
+import { Web3ModalProvider } from '@/store/Web3Modal';
 import Head from 'next/head';
-import type { ReactNode } from 'react';
 
-export default function AstrArkLayout(page: ReactNode) {
+export default function AstrArkLayout(page: JSX.Element) {
   const fonts = ['FZXinGHJW-DB.TTF', 'FZXinGHJW-SB.TTF'];
 
   return (
@@ -18,7 +18,7 @@ export default function AstrArkLayout(page: ReactNode) {
         ))}
       </Head>
 
-      {page}
+      <Web3ModalProvider>{page}</Web3ModalProvider>
     </>
   );
 }
