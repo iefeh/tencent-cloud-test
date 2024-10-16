@@ -1,15 +1,32 @@
 import S3Image from '@/components/common/medias/S3Image';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import ShineButton from './ShineButton';
 import RulesModal from './RulesModal';
 import { useDisclosure } from '@nextui-org/react';
 import QueryModal from './QueryModal';
 import FAQModal from './FAQModal';
+import { useRouter } from 'next/router';
+import InnerQueryModal from './InnerQueryModal';
+import { useUserContext } from '@/store/User';
+import { observer } from 'mobx-react-lite';
 
 const MainContent: FC = () => {
   const rulesDisclosure = useDisclosure();
   const queryDisclosure = useDisclosure();
   const faqDisclosure = useDisclosure();
+  const [isInner, setIsInner] = useState<boolean | null>(null);
+  const route = useRouter();
+  const { userInfo, toggleLoginModal } = useUserContext();
+
+  function checkIsInner() {
+    setIsInner(route.pathname === '/AstrArk/cbt-iap/inner');
+  }
+
+  useEffect(() => {
+    checkIsInner();
+  }, []);
+
+  const QMCom = isInner ? InnerQueryModal : QueryModal;
 
   return (
     <div className="relative translate-y-[10%] translate-x-[12%]">
@@ -18,26 +35,36 @@ const MainContent: FC = () => {
       </div>
 
       <div className="flex justify-center items-center w-[66.25rem] h-[10.75rem]">
-        <ShineButton size="lg" iconName="question" onPress={rulesDisclosure.onOpen}>
+        <ShineButton size="lg" iconName="question" onClick={rulesDisclosure.onOpen}>
           Rules Explanation
         </ShineButton>
 
-        <ShineButton size="md" iconName="arrow_right" onPress={queryDisclosure.onOpen}>
+        <ShineButton
+          size="md"
+          iconName="arrow_right"
+          onClick={() => {
+            if (!isInner && !userInfo) {
+              toggleLoginModal(true);
+              return;
+            }
+            queryDisclosure.onOpen();
+          }}
+        >
           IAP Return Query
         </ShineButton>
 
-        <ShineButton size="sm" iconName="question" onPress={faqDisclosure.onOpen}>
+        <ShineButton size="sm" iconName="question" onClick={faqDisclosure.onOpen}>
           FAQ
         </ShineButton>
       </div>
 
       <RulesModal disclosure={rulesDisclosure} />
 
-      <QueryModal disclosure={queryDisclosure} />
+      {isInner !== null && <QMCom disclosure={queryDisclosure} />}
 
       <FAQModal disclosure={faqDisclosure} />
     </div>
   );
 };
 
-export default MainContent;
+export default observer(MainContent);
