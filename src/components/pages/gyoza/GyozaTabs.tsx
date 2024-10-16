@@ -9,7 +9,6 @@ export enum GyozaTabsEnum {
 }
 
 interface IProps {
-  value?: string;
   onSelectionChange?: (key: string) => void;
 }
 
@@ -21,13 +20,14 @@ const tabs = [
 ]
 
 const GyozaTabs: FC<IProps> = (props) => {
-  const { value, onSelectionChange } = props
+  const { onSelectionChange } = props
 
   return (
     <Tabs
       aria-label="Options"
       color="primary"
       variant="underlined"
+      className="mt-2"
       classNames={{
         base: "w-full",
         tabList: "gap-[3.75rem] w-full relative rounded-none p-0 border-b border-divider",

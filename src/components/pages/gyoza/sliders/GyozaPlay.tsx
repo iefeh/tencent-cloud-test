@@ -1,15 +1,32 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import S3Image from '@/components/common/medias/S3Image';
 import { Button, cn } from '@nextui-org/react';
+import useSwiperIndex, { type SwiperIndexProps, SliderAnimationType } from "../hooks/useSwiperIndex";
 
-interface IProps {
+interface IProps extends SwiperIndexProps {
   toPrev: () => void;
+  setShowMask: (show: boolean) => void;
 }
 
 const titleImgUrl = '/minigames/miner/title_play_now.png'
 
 const GyozaPlay: FC<IProps> = (props) => {
-  const { toPrev } = props;
+  const { toPrev, setShowMask, aimIndex, prevIndex, sliderIndex } = props;
+
+  const { aniSts } = useSwiperIndex({
+    aimIndex,
+    prevIndex,
+    sliderIndex,
+  })
+
+  useEffect(() => {
+    let sts = true
+    if (SliderAnimationType.FADE_IN === aniSts) {
+      sts = false
+    }
+    setShowMask(sts)
+
+  }, [aniSts])
 
   return (
     <div className="absolute h-[18.75rem] top-[14.375rem] right-[50%] translate-x-1/2">
