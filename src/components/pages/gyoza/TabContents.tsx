@@ -119,19 +119,15 @@ const TabContents: FC<TabContentsProps> = (props) => {
   const renderTabContent = () => {
     switch (tabKey) {
       case GyozaTabsEnum.Overview:
-
         return renderOverview();
 
       case GyozaTabsEnum.Tasks:
-
         return <TasksTabPanel></TasksTabPanel>
 
       case GyozaTabsEnum.Ranking:
-
         return renderRanking()
 
       case GyozaTabsEnum.BadgesAndSBTs:
-
         return <BadgePanel></BadgePanel>
 
       default:
@@ -140,8 +136,7 @@ const TabContents: FC<TabContentsProps> = (props) => {
   }
 
   return (
-    <div
-      className='h-[calc(100vh-10.5625rem)] overflow-y-auto'>
+    <div className='mb-12'>
       <div className='text-white text-3xl pt-14 pb-9'>{titleMap[tabKey]}</div>
       {renderTabContent()}
       <FollowUs

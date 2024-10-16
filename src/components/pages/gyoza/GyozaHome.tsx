@@ -6,7 +6,6 @@ interface GyozaHomeProps {
   showMask?: boolean;
 }
 
-
 const GyozaHome: FC<GyozaHomeProps> = (props) => {
   const { showMask = false } = props;
   return (
@@ -17,6 +16,7 @@ const GyozaHome: FC<GyozaHomeProps> = (props) => {
     >
       <div className={cn([
         'w-full h-full',
+        'transition-all delay-500',
         showMask && 'backdrop-blur-sm bg-black/10'
       ])}>
         {props.children}
