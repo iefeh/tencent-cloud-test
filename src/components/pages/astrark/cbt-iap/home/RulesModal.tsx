@@ -13,7 +13,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
       classNames={{
         wrapper: 'justify-start',
         base: 'w-1/2 max-w-[50%] h-screen !m-0 rounded-none bg-black overflow-visible',
-        body: 'px-24 flex flex-col justify-center',
+        body: 'px-24 py-24 h-screen overflow-y-auto',
         closeButton:
           "[&>svg]:hidden w-[4.875rem] aspect-square !bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/modal_fold.png')] bg-contain top-1/2 right-0 translate-x-1/2 -translate-y-1/2",
       }}
@@ -53,22 +53,22 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                 src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/table.png"
               />
 
-              <p className="mt-12">
+              <div className="mt-12">
                 <p className="font-semakin text-2xl text-basic-yellow">Dear MoonWalkers,</p>
                 <p className="font-poppins-medium text-base leading-[1.875rem] mt-4">
                   Thank you for participating in the AstrArk Paid Closed Beta Test (CBT) with Data Wipe. During this
                   test, your total IAP will be returned to your MOONVEIL account after the official game launch,
                   following the IAP Return Rules.
                 </p>
-              </p>
+              </div>
 
-              <p className="mt-[3.75rem]">
+              <div className="mt-[3.75rem]">
                 <p className="font-semakin text-2xl text-basic-yellow">IAP Return Rules:</p>
                 <p className="font-poppins-medium text-base leading-[1.875rem] mt-4">
                   The MOONVEIL team will track the IAP amounts made through each player&apos;s MOONVEIL account and,
                   upon meeting the incentive criteria, distribute the equivalent value in Pluse Fragment accordingly.
                 </p>
-              </p>
+              </div>
             </ModalBody>
           </>
         )}
