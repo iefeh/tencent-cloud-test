@@ -35,7 +35,7 @@ const columns = [
       return (
         <div className="relative">
           <div>{text}</div>
-          <div className="text-[.8125rem] text-center w-[4.625rem] aspect-[74/26] absolute top-[-100%] right-3 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_off.png')] bg-no-repeat bg-contain">
+          <div className="text-[.8125rem] text-center w-[4.625rem] aspect-[74/26] absolute top-[-100%] right-3 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_off.png')] bg-no-repeat bg-contain whitespace-nowrap">
             {record.product_price_discount * 100}% OFF
           </div>
         </div>
@@ -255,7 +255,7 @@ const PayModal: FC<PayModalProps> = (props) => {
                     </PayButton>
                     <div className="flex items-center justify-center mt-[.7rem] px-[.625rem] h-[2.2rem] bg-[rgba(0,0,0,.3)]">
                       <S3Image src="/astrark/shop/icons/icon_timeout.png" className="w-[1.125rem] h-[1.125rem] mr-2"></S3Image>
-                      <div className="text-[.875rem] w-[12.125rem]">Price will update in {cdText}</div>
+                      <div className="text-[.875rem] w-[14rem]">Price will update in {cdText}</div>
                     </div>
                   </div>
 
