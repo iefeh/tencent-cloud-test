@@ -29,6 +29,7 @@ export const routeText: RouteMenu[] = [
   { name: 'Home', route: '/' },
   {
     name: 'Loyalty Program',
+    isNew: true,
     children: [
       {
         name: 'Introduction',
@@ -91,6 +92,8 @@ export const routeText: RouteMenu[] = [
       {
         name: 'More & $MORE Draw',
         route: '/draw',
+        actived: true,
+        isNew: true,
       },
     ],
   },
