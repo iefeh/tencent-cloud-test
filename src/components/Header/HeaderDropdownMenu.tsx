@@ -32,7 +32,7 @@ export const menuItemComp = (child: RouteMenu) => {
     <MenuItem key={child.name} disabled={child.disabled}>
       <Link
         className={cn([
-          'font-poppins',
+          'font-poppins relative',
           child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
           child.actived && 'text-basic-yellow',
         ])}
@@ -41,6 +41,12 @@ export const menuItemComp = (child: RouteMenu) => {
       >
         {child.icon && <S3Image className={cn(['object-contain', styles.itemIcon])} src={child.icon} />}
         {child.name}
+
+        {child.isNew && (
+          <div className="font-semakin text-sm text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute -right-10 -top-4 p-2 z-10 task-new">
+            NEW
+          </div>
+        )}
       </Link>
     </MenuItem>
   );
@@ -63,11 +69,17 @@ export default function HeaderDropdownMenu(props: Props) {
       {item.render?.(item.name) || (
         <div
           className={cn([
-            'transition-all duration-300 border-b-2 border-transparent hover:border-basic-yellow hover:text-basic-yellow',
+            'transition-all duration-300 border-b-2 border-transparent hover:border-basic-yellow hover:text-basic-yellow relative',
             isActive && 'text-basic-yellow border-basic-yellow',
           ])}
         >
           {item.name}
+
+          {item.isNew && (
+            <div className="font-semakin text-sm text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute -right-10 -top-4 p-2 z-10 task-new">
+              NEW
+            </div>
+          )}
         </div>
       )}
     </Link>
