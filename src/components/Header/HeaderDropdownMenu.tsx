@@ -76,7 +76,7 @@ export default function HeaderDropdownMenu(props: Props) {
           {item.name}
 
           {item.isNew && (
-            <div className="font-semakin text-sm text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute -right-10 -top-4 p-2 z-10 task-new">
+            <div className="font-semakin text-sm text-transparent bg-clip-text bg-[linear-gradient(270deg,#EDE0B9_0%,#CAA67E_100%)] absolute -right-10 -top-5 p-2 z-10 task-new">
               NEW
             </div>
           )}
