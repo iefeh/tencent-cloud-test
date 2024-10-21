@@ -4,12 +4,22 @@ import dayjs from 'dayjs';
 import { FC, Fragment, useState } from 'react';
 
 interface Props {
+  taskId?: string;
   isBrown?: boolean;
   label: string;
   endTime?: number | null;
 }
 
-const TokenRewardProgressCountdown: FC<Props> = ({ isBrown, label, endTime }) => {
+const TokenRewardProgressCountdown: FC<Props> = ({ taskId, isBrown, label, endTime }) => {
+  const nodeTaskIds = [
+    '1c142228-3048-483c-b896-7e215c22bc9c',
+    'bb2eeb94-a53c-4c63-a1a6-5689732548c9',
+    '831853ca-65c8-49c4-8e51-dda991bff62c',
+    'e7818cc9-0d12-4a2e-b60d-a83fc5ebae69',
+    'fae252f5-d8b3-4324-9403-816353801c8c',
+    '2cc40dd7-9672-403d-ad8c-bd04f761f349',
+  ];
+  const isNodeTask = !!taskId && nodeTaskIds.includes(taskId);
   const [cdNumbers, setCDNumbers] = useState(Array(4).fill('00'));
   // 注意du.days()会返回对30的模
   useCountdown(endTime || dayjs().valueOf(), dayjs().valueOf(), (time) => {
@@ -23,7 +33,9 @@ const TokenRewardProgressCountdown: FC<Props> = ({ isBrown, label, endTime }) =>
   return (
     <>
       <div className="h-[1.625rem] flex items-center">
-        <span className="mr-2 text-sm">{label} will end in</span>
+        <span className="mr-2 text-sm">
+          {isNodeTask && label === 'Questing' ? 'Claiming will start in' : `${label} will end in`}
+        </span>
 
         {cdNumbers.map((no, index) => (
           <Fragment key={index}>
