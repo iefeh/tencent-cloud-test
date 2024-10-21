@@ -12,7 +12,7 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const userId = String(req.userId);
-  const lotteryPools = await getOpenLotteryPools();
+  const lotteryPools = await getOpenLotteryPools(userId);
   let hasNewEligiblePool = false;
   for (let pool of lotteryPools) {
     const requirementSatisfy = await lotteryPoolRequirementSatisfy(userId, pool.lottery_pool_id);
@@ -24,7 +24,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   return res.json(response.success({ new_eligible_pool_exists: hasNewEligiblePool }));
 });
 
-async function getOpenLotteryPools() {
+async function getOpenLotteryPools(userId: string) {
   const now = Date.now();
   const pipeline: PipelineStage[] = [{
     $match: {
@@ -36,8 +36,10 @@ async function getOpenLotteryPools() {
   {
     $lookup: {
       from: "user_lottery_pool",
-      localField: "lottery_pool_id",
-      foreignField: "lottery_pool_id",
+      let: { lottery_pool_id: '$lottery_pool_id' },
+      pipeline: [{
+        $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $eq: ['$lottery_pool_id', '$$lottery_pool_id'] }] } },
+      }],
       as: "user_lottery_pool"
     }
   }]
