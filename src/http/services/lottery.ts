@@ -47,7 +47,11 @@ export interface LotteryWhitelistRequirementDTO {
   description?: string;
 }
 
-export type LotteryRequirementDTO = LotteryBadgeRequirementDTO | LotteryNFTRequirementDTO | LotteryMBRequirementDTO | LotteryWhitelistRequirementDTO;
+export type LotteryRequirementDTO =
+  | LotteryBadgeRequirementDTO
+  | LotteryNFTRequirementDTO
+  | LotteryMBRequirementDTO
+  | LotteryWhitelistRequirementDTO;
 
 export function queryPrizePoolListAPI(): Promise<{ lottery_pool_ids: string[] | null }> {
   return http.get('/api/lottery/list');
@@ -87,4 +91,8 @@ export function getTwitterURLAPI(params: { lottery_pool_id: string; draw_id: str
 
 export function claimPremiumTicketsAPI(data: { lottery_pool_id: string }): Promise<null> {
   return http.post('/api/lottery/premium/claim_benifits', JSON.stringify(data));
+}
+
+export function queryHasNewPoolAPI(): Promise<{ new_eligible_pool_exists: boolean }> {
+  return http.get('/api/users/new_eligible_lotterypool');
 }
