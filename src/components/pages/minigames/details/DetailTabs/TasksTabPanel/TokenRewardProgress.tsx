@@ -78,6 +78,7 @@ function TokenRewardProgress({ task, status }: Props) {
       {hasTokenReward ? (
         isDirectTokenReward ? (
           <TokenRewardProgressCountdown
+            taskId={task.id}
             isBrown
             label={getProgressLabel(status)}
             endTime={status < 2 ? task.participant_end_time : task.end_time}
@@ -85,6 +86,7 @@ function TokenRewardProgress({ task, status }: Props) {
         ) : (
           status !== 1 && (
             <TokenRewardProgressCountdown
+              taskId={task.id}
               isBrown
               label={getProgressLabel(status)}
               endTime={status === 0 ? item?.estimated_raffle_time : task.end_time}
@@ -92,7 +94,12 @@ function TokenRewardProgress({ task, status }: Props) {
           )
         )
       ) : (
-        <TokenRewardProgressCountdown isBrown label={getProgressLabel(status)} endTime={task.end_time} />
+        <TokenRewardProgressCountdown
+          taskId={task.id}
+          isBrown
+          label={getProgressLabel(status)}
+          endTime={task.end_time}
+        />
       )}
     </>
   );
