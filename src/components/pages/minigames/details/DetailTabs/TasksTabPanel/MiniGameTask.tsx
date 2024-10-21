@@ -163,7 +163,10 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
                     priority
                   />
 
-                  <span className="font-semakin text-base ml-[0.4375rem]">{nodeText}</span>
+                  <span
+                    className="font-semakin text-base ml-[0.4375rem]"
+                    dangerouslySetInnerHTML={{ __html: nodeText || '' }}
+                  ></span>
                 </>
               )}
             </div>

@@ -42,7 +42,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
     queryKey: 'nfts',
     paramsFn: () => ({ category: selectedKey }),
     pullupLoad: true,
-    bsOptions: { scrollX: true, scrollY: false, pullUpLoad: true },
+    bsOptions: { click: true, scrollX: true, scrollY: false, pullUpLoad: true },
   });
   const items =
     data.length < AA_ASSETS_PAGE_SIZE ? [...data, ...Array(AA_ASSETS_PAGE_SIZE - data.length).fill(null)] : data;

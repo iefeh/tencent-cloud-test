@@ -160,7 +160,10 @@ const Task: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDFinished 
                     priority
                   />
 
-                  <span className="font-semakin text-base text-basic-yellow ml-[0.4375rem]">{nodeText}</span>
+                  <span
+                    className="font-semakin text-sm text-basic-yellow ml-[0.4375rem]"
+                    dangerouslySetInnerHTML={{ __html: nodeText || '' }}
+                  ></span>
                 </>
               )}
             </div>

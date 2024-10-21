@@ -1,0 +1,16 @@
+@keyframes ani_scroll_down_arrow {
+  0% {
+    transform: translate3d(-50%, -0.5rem, 0);
+  }
+  50% {
+    transform: translate3d(-50%, 0.5rem, 0);
+  }
+  100% {
+    transform: translate3d(-50%, -0.5rem, 0);
+  }
+}
+
+.arrowAni {
+  transform: translate3d(-50%, -0.5rem, 0);
+  animation: ani_scroll_down_arrow 3s ease-in-out infinite;
+}

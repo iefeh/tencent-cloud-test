@@ -64,7 +64,7 @@ const ShareModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                 <div className="bg-[#F7E9CC] border-2 border-basic-gray rounded-base overflow-hidden pt-[3.875rem] pl-[4.5rem] pr-[5.25rem] pb-[3.25rem] font-jcyt6">
                   <p>
                     Welcome to Moonveil Mini Games! During each round, you can share content on Twitter to earn{' '}
-                    {share_reward_ticket_amount || '-'} free tickets. Please make sure to follow the required Tweet
+                    {share_reward_ticket_amount || '-'} free ticket(s). Please make sure to follow the required Tweet
                     Template. After sent the post, you can verify to claim your rewards.
                   </p>
 

@@ -171,3 +171,39 @@
   transform-origin: center center;
   animation: rockFall 4s ease-in-out infinite;
 }
+
+.ani-fade-in {
+  --translate-x: 100%;
+  --translate-y: -100%;
+  --duration-time: 2s;
+  animation: fade-in var(--duration-time) ease-in-out forwards;
+
+  @keyframes fade-in {
+    0% {
+      transform: translate(var(--translate-x), var(--translate-y));
+      opacity: 0;
+    }
+    100% {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+  }
+}
+
+.ani-fade-out {
+  --translate-x: 100%;
+  --translate-y: -100%;
+  --duration-time: 2s;
+  animation: fade-out var(--duration-time) ease-in-out forwards;
+
+  @keyframes fade-out {
+    0% {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--translate-x), var(--translate-y));
+      opacity: 0;
+    }
+  }
+}

@@ -24,10 +24,14 @@ export default function useBuyTickets() {
       config: { contractAddress: contract_address, chainId: chain_id },
       options: { value: permit.tokenAmount },
       onError: (code, message) => {
-        if (message && message.indexOf('unexpected message sender') > -1) {
+        if (!message) return;
+        if (message.indexOf('unexpected message sender') > -1) {
           toast.error(
             'Please make sure to connect to a wallet that corresponds to the address associated with the currently logged-in account.',
           );
+          return true;
+        } else if (message.indexOf('insufficient funds') > -1) {
+          toast.error('Insufficient balance. Please top up or switch wallets in your extension');
           return true;
         }
       },

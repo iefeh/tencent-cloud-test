@@ -48,7 +48,8 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
   const [ticketAmount, setTicketAmount] = useState('1');
 
   const tpf = +(data?.ticket_price_formatted || 0);
-  const digit = tpf ? Math.ceil(-Math.log10(tpf % 1)) : 0;
+  const tpfMod = tpf % 1;
+  const digit = tpfMod ? Math.ceil(-Math.log10(tpfMod)) : 0;
   const totalPrice = (+(data?.ticket_price_formatted || 0) * +ticketAmount).toFixed(digit);
 
   return (
@@ -136,7 +137,9 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                     <div className="w-full h-0 border-t-1 border-brown/20 md: border-dashed mt-7 mb-[1.125rem]"></div>
 
                     <div className="flex items-center">
-                      <div>{data?.ticket_price_formatted || '-'} {channel}/Ticket</div>
+                      <div>
+                        {data?.ticket_price_formatted || '-'} {channel}/Ticket
+                      </div>
 
                       <div className="flex-1 flex justify-end items-center mr-7">
                         <IntegerInput value={ticketAmount} min={1} max={10} onValueChange={setTicketAmount} />
@@ -180,7 +183,9 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
 
                     <p className="font-jcyt4 text-sm leading-none mt-4">Total Price</p>
 
-                    <p className="text-2xl leading-none mt-[0.375rem]">{totalPrice} {channel}</p>
+                    <p className="text-2xl leading-none mt-[0.375rem]">
+                      {totalPrice} {channel}
+                    </p>
 
                     <div className="w-full h-0 border-t-1 border-brown/20 md:border-brown border-dashed mt-6 mb-5"></div>
 
