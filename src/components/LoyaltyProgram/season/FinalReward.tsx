@@ -1,8 +1,8 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import Image from 'next/image';
 import { observer } from 'mobx-react-lite';
 import { useBattlePassContext } from '@/store/BattlePass';
-import { BattlePassBadgeRewardDTO, BattlePassLevelDTO } from '@/http/services/battlepass';
+import { BattlePassBadgeRewardDTO, BattlePassLevelDTO, claimBattleRewardAPI } from '@/http/services/battlepass';
 import { cn } from '@nextui-org/react';
 import lockedYellowBg from 'img/loyalty/season/bg_reward_yellow_locked.png';
 import acheivedYellowBg from 'img/loyalty/season/bg_reward_yellow_achevied.png';
@@ -14,6 +14,8 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import lockedIcon from 'img/loyalty/season/icon_locked.png';
 import claimedIcon from 'img/loyalty/season/icon_claimed.png';
 import RewardTooltip from './Ladder/RewardTooltip';
+import { throttle } from 'lodash';
+import { toast } from 'react-toastify';
 
 interface Props {
   className?: string;
@@ -26,7 +28,7 @@ const bgImgs = [
 ];
 
 const FinalReward: FC<Props> = ({ className, onItemClick }) => {
-  const { finalPass } = useBattlePassContext();
+  const { finalPass, init } = useBattlePassContext();
   const { lv, reward_type, satisfied_time, claimed_time, rewards = [] } = finalPass || {};
   const isPremium = reward_type === 'premium';
   const locked = !satisfied_time;
@@ -34,6 +36,19 @@ const FinalReward: FC<Props> = ({ className, onItemClick }) => {
   const claimed = !!claimed_time;
   const bgImg = bgImgs[isPremium ? 0 : 1]?.[claimed ? 2 : acheived ? 1 : 0];
   const badgeReward = (rewards || []).find((re) => re.type === 'badge') as BattlePassBadgeRewardDTO | undefined;
+  const [loading, setLoading] = useState(false);
+
+  const onClaim = throttle(async () => {
+    setLoading(true);
+    const data = { reward_type: reward_type!, lv: +(lv || 0) };
+    const res = await claimBattleRewardAPI(data);
+    if (res.result) {
+      toast.success(res.result);
+    }
+    await init(true);
+    setLoading(false);
+  }, 500);
+
 
   return (
     <RewardTooltip items={rewards}>
@@ -43,9 +58,17 @@ const FinalReward: FC<Props> = ({ className, onItemClick }) => {
 
           {badgeReward && (
             <div className="relative z-0 w-60 h-60 overflow-hidden rounded-full flex items-end">
-              <Image className="object-cover" src={badgeReward.properties.image_url} alt="" fill sizes="100%" />
+              <Image className="object-cover" src={badgeReward.properties.image_url} alt="" fill sizes="100%" unoptimized />
 
-              {acheived && !claimed && <LGButton className="w-full h-[2.5rem] rounded-none" label="Claim" actived />}
+              {acheived && !claimed && (
+                <LGButton
+                  className="w-full h-[2.5rem] rounded-none"
+                  label="Claim"
+                  actived
+                  loading={loading}
+                  onClick={onClaim}
+                />
+              )}
             </div>
           )}
 

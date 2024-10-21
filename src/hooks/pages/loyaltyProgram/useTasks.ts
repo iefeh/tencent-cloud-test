@@ -41,6 +41,12 @@ export default function useTasks(id?: string) {
 
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
+      const bi = item.button_info;
+      if (bi?.connect) {
+        item.connectTexts = { label: bi?.connect!, finishedLable: bi?.connected! };
+        return;
+      }
+
       switch (item.type) {
         case QuestType.RetweetTweet:
           item.connectTexts = {
