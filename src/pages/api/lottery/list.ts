@@ -129,13 +129,13 @@ async function paginationLotteryPools(pageNum: number, pageSize: number, open_st
       data: [{ $skip: skip }, { $limit: pageSize }]
     }
   }]
-  const history: any = await LotteryPool.aggregate(pipeline);
+  const lotteryPools: any = await LotteryPool.aggregate(pipeline);
 
-  if (history[0].metadata.length == 0) {
+  if (lotteryPools[0].metadata.length == 0) {
     return { total: 0, data: [] }
   }
 
-  return { total: history[0].metadata[0].total, data: history[0].data };
+  return { total: lotteryPools[0].metadata[0].total, data: lotteryPools[0].data };
 }
 
 // this will run if none of the above matches
