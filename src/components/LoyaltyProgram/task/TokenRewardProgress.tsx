@@ -83,19 +83,21 @@ function TokenRewardProgress({ task, status }: Props) {
       {hasTokenReward ? (
         isDirectTokenReward ? (
           <TokenRewardProgressCountdown
+            taskId={task.id}
             label={getProgressLabel(status)}
             endTime={status < 2 ? task.participant_end_time : task.end_time}
           />
         ) : (
           status !== 1 && (
             <TokenRewardProgressCountdown
+              taskId={task.id}
               label={getProgressLabel(status)}
               endTime={status === 0 ? item?.estimated_raffle_time : task.end_time}
             />
           )
         )
       ) : (
-        <TokenRewardProgressCountdown label={getProgressLabel(status)} endTime={task.end_time} />
+        <TokenRewardProgressCountdown taskId={task.id} label={getProgressLabel(status)} endTime={task.end_time} />
       )}
     </>
   );

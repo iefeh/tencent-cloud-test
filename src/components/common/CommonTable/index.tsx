@@ -37,17 +37,9 @@ const CommonTable = <T extends {}>(props: CommonTableProps<T>) => {
 
   return (
     <div className={cn([
-      // 'bg-[#e5c9b1] rounded-[1.25rem] px-[1.875rem] py-6',
       warpperClassNames
     ])}>
       <Table
-        classNames={{
-          // table: 'border-collapse',
-          // wrapper: 'bg-transparent shadow-none p-0',
-          // thead: '[&>tr:nth-child(2)]:hidden bg-transparent rounded-t-[1.25rem] rounded-b-[.625rem] shadow-[0px_5px_13px_0px_rgba(182,136,103,0.92)_inset]',
-          // th: 'bg-transparent text-[#2E1A0F] text-lg leading-none outline-none pt-3 pb-4 px-6 h-auto',
-          // tr: '!rounded-lg',
-        }}
         aria-label='Common Table'
         {...nextTableProps}
       >
@@ -56,9 +48,7 @@ const CommonTable = <T extends {}>(props: CommonTableProps<T>) => {
             <TableColumn
               key={column.dataIndex || index}
               className={cn([
-                // 'bg-[rgba(210,168,138,.6)]',
-                // index === 0 && '!rounded-tl-[1.25rem]',
-                // index === columns.length - 1 && '!rounded-tr-[1.25rem]',
+
                 calcHeaderItemClassNames && calcHeaderItemClassNames(index)
               ])}
               style={{ width: column.width || 'auto' }}
@@ -71,12 +61,8 @@ const CommonTable = <T extends {}>(props: CommonTableProps<T>) => {
           {dataList.map((item, rowIdx) => (
             <TableRow
               className={cn([
-                // rowIdx % 2 === 0 ? 'bg-[#F3DCC8]' : 'bg-[#e5c9b1]',
                 calcRowClassNames && calcRowClassNames(rowIdx)
               ])}
-              style={{
-
-              }}
               key={rowIdx}
             >
               {columns.map((column, index) => (

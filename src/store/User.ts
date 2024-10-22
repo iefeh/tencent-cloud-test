@@ -2,6 +2,7 @@ import { KEY_LOCALE, Locale } from '@/constant/locale';
 import { KEY_AUTHORIZATION, KEY_INVITE_CODE, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { MediaType } from '@/constant/task';
 import { confirmSignUpAPI, connectByEmailAPI, getUserInfoAPI, loginByEmailAPI, logoutAPI } from '@/http/services/login';
+import { queryHasNewPoolAPI } from '@/http/services/lottery';
 import { MobxContext } from '@/pages/_app';
 import type { EventTracking } from '@/types/ta';
 import { throttle } from 'lodash';
@@ -20,6 +21,7 @@ class UserStore {
   newUserModalVisible = false;
   redeemModalVisible = false;
   newUserTrackingDto: EventTracking.LoginTrackDTO | undefined = undefined;
+  hasNewPool = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -113,6 +115,7 @@ class UserStore {
   };
 
   getUserInfo = throttle(async (trackingData?: EventTracking.LoginTrackDTO) => {
+    this.queryHasNewPool();
     const res = await getUserInfoAPI();
 
     if (trackingData) {
@@ -178,6 +181,11 @@ class UserStore {
       this.redeemModalVisible = !this.redeemModalVisible;
     }
   };
+
+  queryHasNewPool = async () => {
+    const res = await queryHasNewPoolAPI();
+    this.hasNewPool = !!res?.new_eligible_pool_exists;
+  }
 }
 
 export default UserStore;

@@ -2,11 +2,11 @@ import { createPortal } from 'react-dom';
 import { useRouter } from 'next/router';
 import MediaIconBar from '@/components/common/MediaIconBar';
 import styles from './index.module.scss';
-import { routeText } from '../Header'
 import { cn } from '@nextui-org/react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionItem } from '@nextui-org/react';
+import useNavMenus from '../Header/useNavMenus';
 
 interface Props {
   visible?: boolean;
@@ -15,6 +15,7 @@ interface Props {
 
 export default function Sidebar({ visible, onClose }: Props) {
   const router = useRouter();
+  const { menus } = useNavMenus();
 
   function onLinkClick(value: RouteMenu) {
     const { route } = value || {}
@@ -76,7 +77,7 @@ export default function Sidebar({ visible, onClose }: Props) {
         "content flex-1 flex flex-col font-semakin padding"
       ])}>
 
-        {routeText.map((value, index) => (
+        {menus.map((value, index) => (
           <AccordionItem
             hideIndicator={!(value.children && value.children.length > 0)}
             key={index}
