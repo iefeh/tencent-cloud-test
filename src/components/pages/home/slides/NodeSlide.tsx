@@ -14,12 +14,14 @@ interface Props {
 
 const NodeSlide: FC & HomeSlide = (props: Props) => {
   const [cdNumbers, setCDNumbers] = useState(Array(4).fill('00'));
+  const [showCD, setShowCD] = useState(false);
   useCountdown(+(process.env.NEXT_PUBLIC_PUCLIC_SALE_TIME || 0) || dayjs().valueOf(), dayjs().valueOf(), (time) => {
     const du = dayjs.duration(time);
     let hours: number | string = ~~du.asHours();
     if (hours > 99) hours = '99+';
     const nos = [hours, du.minutes(), du.seconds()].map((n) => n.toString().padStart(2, '0'));
     setCDNumbers(nos);
+    setShowCD(time > 0);
   });
 
   return (
@@ -43,7 +45,7 @@ const NodeSlide: FC & HomeSlide = (props: Props) => {
           </video>
         )}
 
-        {process.env.NEXT_PUBLIC_PUCLIC_SALE_TIME && (
+        {process.env.NEXT_PUBLIC_PUCLIC_SALE_TIME && showCD && (
           <div
             className={cn([
               'absolute h-[2.5rem] flex justify-center items-center gap-y-4',
