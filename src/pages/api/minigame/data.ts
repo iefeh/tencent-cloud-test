@@ -15,8 +15,14 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
   //   res.json(response.invalidParams());
   //   return;
   // }
-
-  res.json(response.success({ task_category: detail.task_category, current_gold_pool: 32454, top1_gold: 12546, online_player: 5856, unoccupied_castles: 15 }));
+  const data: any = {};
+  data.task_category = detail.task_category;
+  data.game_data = [];
+  data.game_data.push({ name: "Current Gold Pool", value: 32454 })
+  data.game_data.push({ name: "Top 1 Player Gold", value: 12546 })
+  data.game_data.push({ name: "Current Online Players", value: 5856 })
+  data.game_data.push({ name: "Unoccupied Castles", value: 15 })
+  res.json(response.success(data));
 
   return;
 });
