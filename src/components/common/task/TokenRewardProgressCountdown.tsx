@@ -6,11 +6,12 @@ import { FC, Fragment, useState } from 'react';
 interface Props {
   taskId?: string;
   isBrown?: boolean;
+  fullLabel?: string;
   label: string;
   endTime?: number | null;
 }
 
-const TokenRewardProgressCountdown: FC<Props> = ({ taskId, isBrown, label, endTime }) => {
+const TokenRewardProgressCountdown: FC<Props> = ({ taskId, isBrown, fullLabel, label, endTime }) => {
   const nodeTaskIds = [
     '1c142228-3048-483c-b896-7e215c22bc9c',
     'bb2eeb94-a53c-4c63-a1a6-5689732548c9',
@@ -34,7 +35,7 @@ const TokenRewardProgressCountdown: FC<Props> = ({ taskId, isBrown, label, endTi
     <>
       <div className="h-[1.625rem] flex items-center">
         <span className="mr-2 text-sm">
-          {isNodeTask && label === 'Questing' ? 'Claiming will start in' : `${label} will end in`}
+          {fullLabel || (isNodeTask && label === 'Questing' ? 'Claiming will start in' : `${label} will end in`)}
         </span>
 
         {cdNumbers.map((no, index) => (
