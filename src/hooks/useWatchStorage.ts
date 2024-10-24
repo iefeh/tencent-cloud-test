@@ -22,6 +22,7 @@ export default function useWatchStorage({ key, enableOnPC, callback }: Props) {
   }
 
   function startWatch() {
+    stopWatch();
     checkStorage();
 
     timer.current = window.setInterval(checkStorage, 300);
