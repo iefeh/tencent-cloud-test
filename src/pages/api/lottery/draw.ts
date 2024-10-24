@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthorizationType } from '@/lib/authorization/types';
 import { promiseSleep } from '@/lib/common/sleep';
 import logger from '@/lib/logger/winstonLogger';
+import { constructLotteryReward } from '@/lib/lottery/constructor';
 import { getActiveLotteryPoolById, verifyLotteryQualification } from '@/lib/lottery/lottery';
 import { LotteryRewardType } from '@/lib/lottery/types';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
@@ -17,7 +18,6 @@ import UserLotteryDrawHistory, {
 } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
-import UserNodeEligibility from '@/lib/models/UserNodeEligibility';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import { redis } from '@/lib/redis/client';
@@ -92,7 +92,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).post(async (req, res) => {
 
 export async function draw(userId: string, lotteryPoolId: string, drawCount: number, lotteryTicketCost: number, mbCost: number, chainRequestId?: string): Promise<DrawResult> {
   const lockKey = `claim_draw_lock:${lotteryPoolId}`;
-  // 锁定奖池1秒
+  // 锁定奖池2秒
   let interval: number = 2;
   let retry: number = 0;
   let locked = await redis.set(lockKey, Date.now(), "EX", interval, "NX");
@@ -253,55 +253,13 @@ async function getDrawResult(userId: string, lotteryPoolId: string, drawCumulati
     for (let j = 0; j < drawThresholds.length; j++) {
       if (random <= drawThresholds[j]) {
         reward = availableRewards[j];
-        // 如果奖品是徽章, 则检查用户徽章获取情况, 如果徽章已经领取, 则奖品替换为没中奖
-        if (reward.reward_type === LotteryRewardType.Badge) {
-          const userBadge = await UserBadges.findOne({ user_id: userId, badge_id: reward.badge_id });
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.badge_id": reward.badge_id });
-          if (userBadge || userDrawHistory) {
-            reward = drawOnce;
-          }
-          for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.Badge && drawResult.badge_id === reward.badge_id) {
-              reward = drawOnce;
-              break;
-            }
-          }
-        } else if (reward.reward_type === LotteryRewardType.CDK) {
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, "rewards.item_id": reward.item_id });
-          if (userDrawHistory) {
-            reward = drawOnce;
-          }
-          for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.CDK && drawResult.item_id === reward.item_id) {
-              reward = drawOnce;
-              break;
-            }
-          }
-        } else if (reward.reward_type === LotteryRewardType.Node) {
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, "rewards.reward_type": LotteryRewardType.Node });
-          if (userDrawHistory) {
-            reward = drawOnce;
-          }
-          for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.Node) {
-              reward = drawOnce;
-              break;
-            }
-          }
-        } else if (reward.reward_type === LotteryRewardType.USDT) {
-          const userDrawHistory = await UserLotteryDrawHistory.findOne({ user_id: userId, lottery_pool_id: lotteryPoolId, "rewards.reward_type": LotteryRewardType.USDT });
-          if (userDrawHistory) {
-            reward = drawOnce;
-          }
-          for (let drawResult of allDrawResults) {
-            if (drawResult.reward_type === LotteryRewardType.USDT) {
-              reward = drawOnce;
-              break;
-            }
-          }
+        const rewardImpl = constructLotteryReward(lotteryPoolId, reward);
+        // 如果奖品类型排他, 则替换奖品为保底奖品
+        if (!(await rewardImpl.checkRewardDrawable(userId, allDrawResults))) {
+          reward = drawOnce;
         }
         // 计算库存扣减数量, 如果奖品库存为0则替换奖品为没中奖。 注意: 保底奖品不考虑库存
-        if (reward.inventory_amount) {
+        if (reward.inventory_amount !== null && reward.inventory_amount !== undefined) {
           const cost = itemInventoryDeltaMap.has(reward.item_id)? itemInventoryDeltaMap.get(reward.item_id) as number + 1 : 1;
           if (cost > reward.inventory_amount) {
             reward = drawOnce;
