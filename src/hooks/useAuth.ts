@@ -1,30 +1,20 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import {
-  loginByMediaAPI,
-  loginByWalletAPI,
-  loginByTelegramAPI,
-  loginTelegramAuthAPI,
-  getTelegramAuthData,
-} from '@/http/services/login';
+import { loginByMediaAPI, loginByTelegramAPI, loginTelegramAuthAPI, getTelegramAuthData } from '@/http/services/login';
 import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
-import { useWalletInfo, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { BrowserProvider } from 'ethers';
 import { MobxContext } from '@/pages/_app';
 import useWatchStorage from './useWatchStorage';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
+import useWalletAuth from './useWalletAuth';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
   const store = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
-  const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
-  const { address, isConnected } = useWeb3ModalAccount();
-  const { walletProvider } = useWeb3ModalProvider();
-  const { walletInfo } = useWalletInfo();
+  const { loading: waLoading, onWalletAuth } = useWalletAuth({ callback });
 
   const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_AUTH) || {};
@@ -64,53 +54,6 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
         dialogWindowRef.current = null;
       });
     }, 0);
-  }
-
-  async function onConnectWallet() {
-    setLoading(true);
-    const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
-    const provider = new BrowserProvider(walletProvider!);
-
-    let res: TokenDto | null = null;
-    try {
-      const signer = await provider.getSigner();
-      const signature = await signer?.signMessage(message);
-
-      const data = {
-        address: address as `0x${string}`,
-        message,
-        signature,
-        signup_mode: 'enabled',
-      };
-      res = await loginByWalletAPI(data);
-    } catch (error: any) {
-      console.log(error);
-    }
-
-    if (!res) throw new Error('Login Failed');
-
-    const { token, particle_jwt, signup_cred } = res || {};
-    localStorage.setItem(KEY_AUTHORIZATION, token);
-    localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
-    if (signup_cred) {
-      store.toggleNewUserModal(true, {
-        is_new_user: true,
-        login_type: MediaType.METAMASK,
-        wallet_type: walletInfo?.name || '',
-      });
-      localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
-      throw new Error('Is New User');
-    } else {
-      try {
-        await store.initLoginInfo({
-          is_new_user: false,
-          login_type: MediaType.METAMASK,
-          wallet_type: walletInfo?.name || '',
-        });
-      } catch (error) {}
-    }
-
-    setLoading(false);
   }
 
   function openTelegramAuthWindow(res: TelegramAuthDto) {
@@ -227,18 +170,8 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     }
 
     if (type === MediaType.METAMASK) {
-      if (isConnected) {
-        try {
-          await onConnectWallet();
-          callback?.();
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        open();
-        startWatch();
-      }
-
+      startWatch();
+      await onWalletAuth();
       return;
     }
 
@@ -275,5 +208,5 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     };
   }, []);
 
-  return { onConnect, loading };
+  return { onConnect, loading: loading || waLoading };
 }

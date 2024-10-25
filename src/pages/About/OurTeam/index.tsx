@@ -219,7 +219,7 @@ const OurTeamPage = () => {
           scroll
           <Image
             className="absolute -left-4 w-[0.4375rem] h-[0.75rem]"
-            src="img/about/arrow_2.png"
+            src="/img/about/arrow_2.png"
             alt="left"
             width={7}
             height={12}
@@ -228,7 +228,7 @@ const OurTeamPage = () => {
           />
           <Image
             className="absolute -right-4 w-[0.4375rem] h-[0.75rem]"
-            src="img/about/arrow_1.png"
+            src="/img/about/arrow_1.png"
             alt="right"
             width={7}
             height={12}

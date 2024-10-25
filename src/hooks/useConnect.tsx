@@ -4,29 +4,26 @@ import { MediaType } from '@/constant/task';
 import {
   connectMediaAPI,
   connectTelegramAuthAPI,
-  connectWalletAPI,
   connectTelegramAPI,
   getTelegramAuthData,
 } from '@/http/services/login';
-import { TelegramLoginData, TelegramAuthData } from '@/http/services/login';
+import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION_CONNECT } from '@/constant/storage';
-import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { BrowserProvider } from 'ethers';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { MobxContext } from '@/pages/_app';
-import { Modal, ModalContent, ModalBody, useDisclosure } from '@nextui-org/react';
-import LGButton from '@/pages/components/common/buttons/LGButton';
+import { useDisclosure } from '@nextui-org/react';
 import useWatchStorage from './useWatchStorage';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
+import useWalletAuth from './useWalletAuth';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
-  const { open } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
   const { address, isConnected } = useWeb3ModalAccount();
-  const { walletProvider } = useWeb3ModalProvider();
   const bindTipsDisclosure = useDisclosure();
+  const { loading: waLoading, onWalletAuth } = useWalletAuth({ isConnect: true, callback });
 
   const authConnect = throttle(function () {
     const tokens = localStorage.read<Dict<Dict<string>>>(KEY_AUTHORIZATION_CONNECT) || {};
@@ -60,30 +57,6 @@ export default function useConnect(type: string, callback?: (args?: any) => void
       );
       dialogWindowRef.current = dialog;
     }, 0);
-  }
-
-  async function onConnectWallet() {
-    setLoading(true);
-    const message = `Please confirm that you are the owner of this wallet by signing this message.\nSigning this message is safe and will NOT trigger any blockchain transactions or incur any fees.\nTimestamp: ${Date.now()}`;
-    const provider = new BrowserProvider(walletProvider!);
-
-    try {
-      const signer = await provider.getSigner();
-      if (userInfo?.wallet) return;
-
-      const signature = await signer?.signMessage(message);
-
-      const data = {
-        address: address as `0x${string}`,
-        message,
-        signature,
-      };
-      await connectWalletAPI(data);
-    } catch (error: any) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
   }
 
   function openTelegramAuthWindow(res: TelegramAuthDto) {
@@ -193,13 +166,8 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     }
 
     if (type === MediaType.METAMASK) {
-      if (isConnected) {
-        await onConnectWallet();
-        callback?.();
-      } else {
-        open();
-        startWatch();
-      }
+      startWatch();
+      await onWalletAuth();
 
       return;
     }
@@ -234,5 +202,5 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     };
   }, []);
 
-  return { isConnected, address, onConnect, loading, bindTipsDisclosure };
+  return { isConnected, address, onConnect, loading: loading || waLoading, bindTipsDisclosure };
 }
