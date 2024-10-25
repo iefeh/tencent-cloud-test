@@ -52,7 +52,7 @@ const connection = connectToMongoDbDev();
 const PurchaseNodeEvent = models.PurchaseNodeEvent || connection.model<IPurchaseNodeEvent>('PurchaseNodeEvent', PurchaseNodeEventSchema, 'purchase_node_events');
 export default PurchaseNodeEvent;
 
-export async function getUserNodePurchaseAmount(userWalletAddr: string) {
+export async function getUserNodePurchaseAmount(userWalletAddr: string, purchaseTime?: number): Promise<number> {
     let matchOpt: any = {
         $match: {
             buyer_wallet_addr: userWalletAddr,
@@ -60,6 +60,10 @@ export async function getUserNodePurchaseAmount(userWalletAddr: string) {
             deleted_time: null, 
         }
     };
+    // 如果传递了购买时间, 则只查询该时间以后的购买记录
+    if (purchaseTime) {
+        matchOpt.$match.confirmed_time = { $gte: purchaseTime };
+    }
     const aggregateQuery: PipelineStage[] = [
         matchOpt,
         {
@@ -80,7 +84,7 @@ export async function getUserNodePurchaseAmount(userWalletAddr: string) {
     ];
     const results = await PurchaseNodeEvent.aggregate(aggregateQuery);
     if (!results || results.length === 0) {
-      return null;
+        return 0;
     }
     return results[0].amount;
 }
