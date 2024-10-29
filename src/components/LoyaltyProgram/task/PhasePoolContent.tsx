@@ -5,7 +5,7 @@ import { TaskCategory } from '@/http/services/battlepass';
 const PhasePoolContent: FC = () => {
   const [currentCategory, setCurrentCategory] = useState<TaskCategory>({
     id: 'phase9b3-d40b-41d5-872b-d26890188d1b',
-    name: '50K POOL #1',
+    name: 'Phase Pool',
     quest_count: 0,
     achieve_count: 0,
     image_url: '',

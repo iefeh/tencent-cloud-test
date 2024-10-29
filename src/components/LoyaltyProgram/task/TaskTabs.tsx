@@ -79,7 +79,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
         <div className="flex items-center">
           <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
 
-          {label}
+          50K POOL #1
         </div>
       ),
       content: phasePoolContent,
@@ -90,7 +90,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
         <div className="flex items-center">
           <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
 
-          {label}
+          50K Pool #2
         </div>
       ),
       content: multiPoolContent,
