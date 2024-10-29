@@ -13,6 +13,7 @@ import { useStore } from '@/store';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
 import { MobxContext } from './_app';
 import { AuthCoreContextProvider } from '@particle-network/auth-core-modal';
+import NiceModal from '@ebay/nice-modal-react';
 
 export default function RootLayout({
   children,
@@ -55,11 +56,13 @@ export default function RootLayout({
       <Web3ModalProvider>
         <MobxContext.Provider value={store}>
           <BattlePassContext.Provider value={bpStore}>
-            <React.Fragment>
-              <LineBorder />
+            <NiceModal.Provider>
+              <React.Fragment>
+                <LineBorder />
 
-              {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
-            </React.Fragment>
+                {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
+              </React.Fragment>
+            </NiceModal.Provider>
           </BattlePassContext.Provider>
         </MobxContext.Provider>
       </Web3ModalProvider>
