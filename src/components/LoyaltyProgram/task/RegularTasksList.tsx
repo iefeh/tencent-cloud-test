@@ -6,6 +6,9 @@ import PaginationRenderItem from './PaginationRenderItem';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import useTasks from '@/hooks/pages/loyaltyProgram/useTasks';
 import Task from './Task';
+import { observer } from 'mobx-react-lite';
+import EmptyContent from '@/components/common/EmptyContent';
+import { useUserContext } from '@/store/User';
 
 interface Props extends ClassNameProps {
   hideHeader?: boolean;
@@ -20,6 +23,7 @@ interface Props extends ClassNameProps {
 }
 
 function RegularTasksList({ categoryItem, hideHeader, hidePagi, className, classNames, onBack }: Props) {
+  const { userInfo } = useUserContext();
   const {
     tasks,
     pagiInfo,
@@ -72,6 +76,16 @@ function RegularTasksList({ categoryItem, hideHeader, hidePagi, className, class
         ))}
 
         {taskListLoading && <CircularLoading />}
+
+        {!taskListLoading && pagiTotal < 1 && (
+          <EmptyContent
+            content={
+              userInfo
+                ? 'More exciting tasks coming soon.<br/>Stay tuned!'
+                : 'Please log in and claim your season pass first to unlock tasks & events.'
+            }
+          />
+        )}
       </div>
 
       {!hidePagi && pagiTotal > 0 && (
@@ -95,4 +109,4 @@ function RegularTasksList({ categoryItem, hideHeader, hidePagi, className, class
   );
 }
 
-export default RegularTasksList;
+export default observer(RegularTasksList);

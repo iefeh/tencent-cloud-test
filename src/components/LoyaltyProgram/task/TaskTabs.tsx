@@ -9,6 +9,8 @@ import { TaskCategory } from '@/http/services/battlepass';
 // import GameMinerContent from './GameMinerContent';
 import S3Image from '@/components/common/medias/S3Image';
 import NodeContent from './NodeContent';
+import PhasePoolContent from './PhasePoolContent';
+import MultiPoolContent from './MultiPoolContent';
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
@@ -19,6 +21,8 @@ export default function TaskTabs({ defaultCategory }: Props) {
   // const gameContent = useMemo(() => <Game2048Content />, []);
   // const minerContent = useMemo(() => <GameMinerContent />, []);
   const nodeContent = useMemo(() => <NodeContent />, []);
+  const phasePoolContent = useMemo(() => <PhasePoolContent />, []);
+  const multiPoolContent = useMemo(() => <MultiPoolContent />, []);
 
   const tabs = [
     {
@@ -59,7 +63,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
     //   content: minerContent,
     // },
     {
-      key: 'Moonveil Node',
+      key: '100K Pool',
       render: (label: string) => (
         <div className="flex items-center">
           <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
@@ -68,6 +72,28 @@ export default function TaskTabs({ defaultCategory }: Props) {
         </div>
       ),
       content: nodeContent,
+    },
+    {
+      key: 'Phase Pool',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
+
+          {label}
+        </div>
+      ),
+      content: phasePoolContent,
+    },
+    {
+      key: 'Multi Pool',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
+
+          {label}
+        </div>
+      ),
+      content: multiPoolContent,
     },
   ];
   const router = useRouter();

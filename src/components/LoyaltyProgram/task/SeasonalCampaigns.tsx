@@ -60,7 +60,7 @@ export default function SeasonalCampaigns() {
 
   useEffect(() => {
     queryTasks();
-  }, []);
+  }, [userInfo]);
 
   return (
     <div className="mt-7 flex flex-col items-center relative">

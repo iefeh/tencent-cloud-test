@@ -30,6 +30,18 @@ interface Props {
   poolInfo?: Lottery.Pool | null;
 }
 
+const specialPools: Dict<{ tabName: string }> = {
+  '936b8f13-0afd-4e2c-b184-428779caea0e': {
+    tabName: '100K Pool',
+  },
+  '3821cd31-cf4e-41fd-8947-0d937c37f2d9': {
+    tabName: 'Phase Pool',
+  },
+  '6a3c8809-7c17-4c80-a8ff-35373bc3107b': {
+    tabName: 'Multi Pool',
+  },
+};
+
 const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange }, item, poolInfo, onClaimed }) => {
   const hasShareAndConfirmRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 3);
   const hasShareAndClaimRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 2);
@@ -53,7 +65,7 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     if (c.cdk) p.push(c.cdk);
     return p;
   }, [] as string[]);
-  const isSpecialPool = poolInfo?.lottery_pool_id === '936b8f13-0afd-4e2c-b184-428779caea0e';
+  const isSpecialPool = !!poolInfo?.lottery_pool_id && !!specialPools[poolInfo.lottery_pool_id];
 
   async function onShare() {
     if (hasNode) {
@@ -228,7 +240,9 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                           Click{' '}
                           <Link
                             className="text-basic-yellow hover:underline"
-                            href="/LoyaltyProgram/earn?tabKey=Moonveil+Node"
+                            href={`/LoyaltyProgram/earn?tabKey=${specialPools[
+                              poolInfo!.lottery_pool_id
+                            ].tabName.replace(/ /g, '+')}`}
                           >
                             here
                           </Link>{' '}
