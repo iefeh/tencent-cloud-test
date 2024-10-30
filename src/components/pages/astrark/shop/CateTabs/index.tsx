@@ -39,6 +39,10 @@ const CateTabs: FC<{ onAuthFailed?: () => void }> = ({ onAuthFailed }) => {
     setSelectedListTab(tab);
   }
 
+  function onBack() {
+    location.href = process.env.NEXT_PUBLIC_SCHEMA_URL_AA_BACK!;
+  }
+
   useEffect(() => {
     if (selectedKey) onSelectionChange(selectedKey, selectedListKey);
   }, [tabs]);
@@ -80,7 +84,7 @@ const CateTabs: FC<{ onAuthFailed?: () => void }> = ({ onAuthFailed }) => {
         </Tabs>
 
         <Button
-          className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.8125rem] flex-shrink-0 ml-2 rounded-none"
+          className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.8125rem] flex-shrink-0 ml-2 rounded-none hidden"
           disableRipple
         >
           <S3Image className="object-contain" src="/astrark/shop/btn_process.png" fill />
@@ -97,6 +101,7 @@ const CateTabs: FC<{ onAuthFailed?: () => void }> = ({ onAuthFailed }) => {
         <Button
           className="w-[10.75rem] h-[5.75rem] bg-transparent pt-[0.1875rem] flex-shrink-0 -mt-ten mb-4 ml-2 rounded-none"
           disableRipple
+          onClick={onBack}
         >
           <S3Image className="object-contain" src="/astrark/shop/btn_back.png" fill />
 
