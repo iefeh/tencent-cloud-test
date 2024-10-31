@@ -25,6 +25,7 @@ export default function useClaimToken(pramas: ClaimTokenParams) {
 
       const res = await onTransaction({
         params: permits,
+        noFlatParams: true,
         config: { contractAddress: contract_address, chainId: chain_id },
       });
       console.log('claim result:', res);
