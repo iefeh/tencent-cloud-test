@@ -12,6 +12,7 @@ export interface TransactionParams {
   /** 跳过登录检测 */
   passLogin?: boolean;
   noWait?: boolean;
+  noFlatParams?: boolean;
   params: any;
   config?: Partial<TransactionConfig>;
   options?: TransactionRequest;
@@ -120,7 +121,7 @@ class TransactionProvider {
     return true;
   };
 
-  transaction = async ({ noWait, params, config = {}, options = {}, onError }: TransactionParams) => {
+  transaction = async ({ noWait, params, noFlatParams, config = {}, options = {}, onError }: TransactionParams) => {
     const realConfig = Object.assign({}, this.config, config);
     const { abi, method, chainId, contractAddress } = realConfig;
     console.log('transaction config:', realConfig);
@@ -136,7 +137,7 @@ class TransactionProvider {
       console.log('transaction params:', params);
       console.log('transaction options:', options);
       let transaction: any;
-      if (params instanceof Array) {
+      if (!noFlatParams && params instanceof Array) {
         transaction = await contract[method](...params, options);
       } else {
         transaction = await contract[method](params, options);
