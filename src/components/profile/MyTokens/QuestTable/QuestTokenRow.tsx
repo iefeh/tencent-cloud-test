@@ -53,7 +53,9 @@ const QuestTokenRow: FC<Props> = ({ item, onClaim }) => {
           {item.token_amount_formatted || '--'}
         </div>
 
-        <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">{item.token.network || '--'}</div>
+        <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">
+          {item.token.network || WALLECT_NETWORKS[item.token.chain_id || '']?.chainName || '--'}
+        </div>
 
         <div className="flex-[156]">{statusText}</div>
 
