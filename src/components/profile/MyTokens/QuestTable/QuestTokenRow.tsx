@@ -1,3 +1,4 @@
+import { WALLECT_NETWORKS } from '@/constant/mint';
 import { TokenRewardStatus } from '@/constant/token';
 import type { QuestTokensRecord } from '@/http/services/token';
 import LGButton from '@/pages/components/common/buttons/LGButton';
@@ -25,7 +26,9 @@ const QuestTokenRow: FC<Props> = ({ item, onClaim }) => {
   async function onClaimClick() {
     switch (claimBtnText) {
       case 'View':
-        window.open(`https://amoy.polygonscan.com/tx/${item.tx_hash}`, '_blank');
+        const url = new URL(WALLECT_NETWORKS[item.token.chain_id].blockExplorerUrls[0]);
+        url.pathname = url.pathname.replace(/\/+$/, '') + '/tx/' + item.tx_hash;
+        window.open(url.href, '_blank');
         return;
       case 'Claim':
         setLoading(true);
