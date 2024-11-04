@@ -10,39 +10,48 @@ import { useState } from 'react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import AlphaTestGuidelinesModal from '@/components/pages/astrark/download/AlphaTestGuidelinesModal';
 
+interface DownloadURL {
+  title?: string;
+  img?: string;
+  url: string;
+  isAppStore?: boolean;
+  className?: string;
+  label?: string;
+}
+
 export default function DownloadPage() {
   const disclosure = useDisclosure();
   const guidelinesDisclosure = useDisclosure();
   const [appStoreURL, setAppStoreURL] = useState('');
-  const urls = [
+  const urls: DownloadURL[] = [
+    // {
+    //   title: 'English Version',
+    //   img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
+    //   url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
+    //   isAppStore: true,
+    // },
+    // {
+    //   title: '日本語版',
+    //   img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
+    //   url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_JP_URL!,
+    //   isAppStore: true,
+    // },
+    // {
+    //   title: 'English Version',
+    //   img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_google_play.png',
+    //   url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!,
+    // },
+    // {
+    //   title: 'Android 日本語版',
+    //   className: styles.downloadBtn,
+    //   label: 'ダウンロード',
+    //   url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_JP_URL!,
+    // },
     {
-      title: 'English Version',
-      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
-      url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
-      isAppStore: true,
-    },
-    {
-      title: '日本語版',
-      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
-      url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_JP_URL!,
-      isAppStore: true,
-    },
-    {
-      title: 'English Version',
-      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_google_play.png',
-      url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!,
-    },
-    {
-      title: 'Android 日本語版',
-      className: styles.downloadBtn,
-      label: 'ダウンロード',
-      url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_JP_URL!,
-    },
-    {
-      title: 'English Version',
+      // title: 'English Version',
       className: styles.downloadBtn,
       label: 'Download',
-      url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/apk/0624_awsonline_release_en_01.apk',
+      url: process.env.NEXT_PUBLIC_AA_DOWNLOAD_URL!,
     },
   ];
 
@@ -73,7 +82,7 @@ export default function DownloadPage() {
         <Image className="object-cover z-10 opacity-100" src={maskBg} alt="" fill unoptimized />
       </div>
 
-      <div className=" absolute left-1/2 -translate-x-1/2 bottom-[10%] flex flex-col items-center">
+      <div className=" absolute left-1/2 -translate-x-1/2 bottom-[10%] flex flex-col items-center mb-6">
         <div className="flex flex-col md:flex-row items-center gap-[0.625rem]">
           {urls.map((item, index) => {
             let button = (
@@ -100,7 +109,7 @@ export default function DownloadPage() {
 
             return (
               <div key={index} className="flex flex-col items-center">
-                <p className="text-xl mb-2">{item.title}</p>
+                {item.title && <p className="text-xl mb-2">{item.title}</p>}
 
                 {button}
               </div>
@@ -108,7 +117,7 @@ export default function DownloadPage() {
           })}
         </div>
 
-        <LGButton className="h-12 mt-6" label="Alpha Test Guidelines" onClick={guidelinesDisclosure.onOpen} />
+        {/* <LGButton className="h-12 mt-6" label="Alpha Test Guidelines" onClick={guidelinesDisclosure.onOpen} /> */}
       </div>
 
       <FloatRegisterButton />

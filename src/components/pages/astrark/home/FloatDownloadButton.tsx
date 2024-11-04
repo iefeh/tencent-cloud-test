@@ -25,7 +25,7 @@ export default function FloatDownloadButton() {
         <br />
         Game Lore
       </span> */}
-      Alpha Test
+      Tech Test
       <br />
       Download
     </Button>,
