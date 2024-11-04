@@ -1,3 +1,4 @@
+import Link from '@/components/link';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/react';
 import { FC } from 'react';
@@ -8,7 +9,7 @@ const AuthNoticeModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChan
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       isDismissable={false}
-      placement='center'
+      placement="center"
       classNames={{ header: 'p-0', body: 'py-8' }}
     >
       <ModalContent>
@@ -26,7 +27,9 @@ const AuthNoticeModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChan
               <div className="w-full flex justify-center items-center gap-x-4 uppercase mt-4">
                 <LGButton label="Cancel" onClick={onClose} />
 
-                <LGButton label="Download Game" actived />
+                <Link href={process.env.NEXT_PUBLIC_AA_DOWNLOAD_URL!}>
+                  <LGButton label="Download Game" actived />
+                </Link>
               </div>
             </ModalBody>
           </>
