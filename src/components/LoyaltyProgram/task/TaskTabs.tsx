@@ -9,6 +9,7 @@ import { TaskCategory } from '@/http/services/battlepass';
 // import GameMinerContent from './GameMinerContent';
 import S3Image from '@/components/common/medias/S3Image';
 import NodeContent from './NodeContent';
+import AstrArkContent from './AstrArkContent';
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
@@ -19,6 +20,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
   // const gameContent = useMemo(() => <Game2048Content />, []);
   // const minerContent = useMemo(() => <GameMinerContent />, []);
   const nodeContent = useMemo(() => <NodeContent />, []);
+  const aaContent = useMemo(() => <AstrArkContent />, []);
 
   const tabs = [
     {
@@ -28,6 +30,17 @@ export default function TaskTabs({ defaultCategory }: Props) {
     {
       key: 'Events',
       content: seasonalCampaignsContent,
+    },
+    {
+      key: 'AstrArk',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <S3Image className="object-contain w-6 h-6 mr-2 rounded-md" src="/icons/icon_astrark_ultra.png" />
+
+          {label}
+        </div>
+      ),
+      content: aaContent,
     },
     // {
     //   key: '2048 Mini Game',
