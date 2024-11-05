@@ -1,12 +1,14 @@
 import S3Image from '@/components/common/medias/S3Image';
 import BasicButton from '@/pages/components/common/BasicButton';
 import { useUserContext } from '@/store/User';
-import { cn } from '@nextui-org/react';
+import { cn, useDisclosure } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
+import ShareModal from './home/ShareModal';
 
 const CbtIapHeader: FC<ClassNameProps> = ({ className }) => {
   const { userInfo, toggleLoginModal } = useUserContext();
+  const shareDisclosure = useDisclosure();
 
   return (
     <div className={cn(['flex justify-between items-center relative z-0 pl-9 pr-[3.75rem]', className])}>
@@ -28,7 +30,10 @@ const CbtIapHeader: FC<ClassNameProps> = ({ className }) => {
         className="text-base py-2 ml-3 hover:text-white hover:border-white hover:shadow-none"
         label="SHARE"
         prefix={<S3Image className="w-4 aspect-[17/21] inline-block mr-3" src="/astrark/cbt-iap/icons/share.png" />}
+        onClick={shareDisclosure.onOpen}
       />
+
+      <ShareModal disclosure={shareDisclosure} />
     </div>
   );
 };

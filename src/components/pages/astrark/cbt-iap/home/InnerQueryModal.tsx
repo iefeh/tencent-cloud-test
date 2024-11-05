@@ -61,8 +61,8 @@ const InnerQueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChan
                 <div className="relative w-[29.5625rem] aspect-[473/86] flex justify-center items-center mt-6">
                   <S3Image className="object-contain" src="/astrark/cbt-iap/bg_result.png" fill />
 
-                  <div className="text-[#93E6F8] text-[2.5rem]">
-                    {info ? (info.total * info.reabte).toFixed(2) : '--'} Perth Shards
+                  <div className="text-[#93E6F8] text-[2.5rem] whitespace-nowrap">
+                    {info ? Math.floor(info.total * info.reabte * 60) : '--'} Perth Shards
                   </div>
                 </div>
               </div>
