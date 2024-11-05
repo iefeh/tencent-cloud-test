@@ -6,6 +6,7 @@ import { BadgeItem } from '@/http/services/badges';
 import lockIcon from 'img/profile/badges/icon_lock.png';
 import { forwardRef, useState } from 'react';
 import { BadgeMintStatus } from '@/constant/badge';
+import S3Image from '@/components/common/medias/S3Image';
 
 interface BasicBadgeProps {
   item?: BadgeItem | null;
@@ -122,12 +123,10 @@ export default forwardRef<HTMLLIElement, BasicBadgeProps>(function BasicBadge(pr
         onClick={() => onView?.(item)}
       >
         <div className={cn(['relative', !item && forDisplay ? 'w-[1.5625rem] h-[1.5625rem]' : 'w-full h-full'])}>
-          <Image
+          <S3Image
             className={cn(['object-contain', image_url || 'grayscale'])}
             src={image_url || (forDisplay ? plusImg : helpIcon)}
-            alt=""
             fill
-            sizes="100%"
           />
         </div>
 

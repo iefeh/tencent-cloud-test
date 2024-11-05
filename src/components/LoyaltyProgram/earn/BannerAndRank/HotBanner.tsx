@@ -1,10 +1,10 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import banner01Img from 'img/loyalty/earn/banner_01.jpg';
-import Image from 'next/image';
 import { Autoplay, Pagination } from 'swiper/modules';
 import { TaskAdItem, taskAdListAPI } from '@/http/services/task';
 import { useEffect, useState } from 'react';
 import CircularLoading from '@/pages/components/common/CircularLoading';
+import S3Image from '@/components/common/medias/S3Image';
 
 export default function HotBanner() {
   const [banners, setBanners] = useState<TaskAdItem[]>([]);
@@ -53,7 +53,7 @@ export default function HotBanner() {
       >
         {banners.map((item, index) => (
           <SwiperSlide key={index} className="relative cursor-pointer" onClick={() => onSlideClick(item)}>
-            <Image className='object-cover' src={item.image_url} alt="" fill sizes='100%' />
+            <S3Image className='object-cover' src={item.image_url} fill />
 
             {item.title && (
               <div className="absolute top-[4.1875rem] left-[3.5625rem] border-l-4 border-basic-yellow z-10 bg-gradient-to-r from-[rgba(0,0,0,0.6)] to-transparent pt-[1.9375rem] pr-[0.875rem] pb-8 pl-[2.5625rem]">

@@ -1,13 +1,18 @@
-import Image, { type ImageProps } from 'next/image';
+import Image, { StaticImageData, type ImageProps } from 'next/image';
 import { forwardRef } from 'react';
 
-type Props = Override<ImageProps, { src: string; alt?: string }>;
+type Props = Override<ImageProps, { src: string | StaticImageData; alt?: string }>;
 
 const S3Image = forwardRef<HTMLImageElement, Props>(function S3Image(
-  { src, alt, unoptimized = true, width, height, fill, sizes, priority, ...props },
+  { src, alt, unoptimized = typeof src === 'string', width, height, fill, sizes, priority, ...props },
   ref,
 ) {
-  const url = src.startsWith('http') ? src : `https://d3dhz6pjw7pz9d.cloudfront.net/${src.replace(/^\/+/, '')}`;
+  const url =
+    typeof src === 'string'
+      ? src.startsWith('http')
+        ? src
+        : `https://d3dhz6pjw7pz9d.cloudfront.net/${src.replace(/^\/+/, '')}`
+      : src;
 
   return (
     <Image

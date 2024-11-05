@@ -13,6 +13,7 @@ import RuleButton from '../LoyaltyProgram/season/RuleButton';
 import RuleModal from '../LoyaltyProgram/season/RuleModal';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { isMobile } from 'react-device-detect';
+import S3Image from '../common/medias/S3Image';
 
 interface Props {}
 
@@ -37,7 +38,7 @@ const TaskPassCard: FC<Props> = ({}) => {
       ])}
     >
       <div className="relative w-[6.25rem] h-[6.25rem] border-1 border-basic-yellow rounded-full overflow-hidden shrink-0">
-        {userInfo?.avatar_url && <Image className="object-cover" src={userInfo.avatar_url} alt="" fill sizes="100%" />}
+        {userInfo?.avatar_url && <S3Image className="object-cover" src={userInfo.avatar_url} fill />}
       </div>
 
       <div className={cn(['flex flex-col gap-5 relative z-0 ml-6 -mt-7', isMobile ? 'w-full mt-8' : 'w-[36.625rem]'])}>
