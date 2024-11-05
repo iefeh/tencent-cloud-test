@@ -5,6 +5,7 @@ import { cn, useDisclosure } from '@nextui-org/react';
 import { observer } from 'mobx-react-lite';
 import { FC } from 'react';
 import ShareModal from './home/ShareModal';
+import Link from '@/components/link';
 
 const CbtIapHeader: FC<ClassNameProps> = ({ className }) => {
   const { userInfo, toggleLoginModal } = useUserContext();
@@ -12,7 +13,9 @@ const CbtIapHeader: FC<ClassNameProps> = ({ className }) => {
 
   return (
     <div className={cn(['flex justify-between items-center relative z-0 pl-9 pr-[3.75rem]', className])}>
-      <S3Image className="w-[8.4375rem] aspect-[135/80] mr-8" src="/logo/moonveil_white.png" />
+      <Link href="/">
+        <S3Image className="w-[8.4375rem] aspect-[135/80] mr-8" src="/logo/moonveil_white.png" />
+      </Link>
       <S3Image className="w-[4.5625rem] aspect-[73/70]" src="/logo/astrark.png" />
 
       <div className="flex-1"></div>
