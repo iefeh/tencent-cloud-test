@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { copyText } from '@/utils/common';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { shareCallbackAPI, shareCallbackInnerAPI } from '@/http/services/astrark';
+import Link from '@/components/link';
 
 const ShareModal: FC<DisclosureProps & { isInner?: boolean }> = ({ isInner, disclosure: { isOpen, onOpenChange } }) => {
   function onShare() {
@@ -41,7 +42,11 @@ const ShareModal: FC<DisclosureProps & { isInner?: boolean }> = ({ isInner, disc
                 <div>
                   Commander, thank you for participating in the AstrArk{' '}
                   <span className="text-basic-yellow">&lt;Marching Test&gt;</span>. Please share this page to claim your
-                  rewards.
+                  rewards in{' '}
+                  <Link className="text-basic-yellow hover:underline" href="/">
+                    moonveil.gg
+                  </Link>
+                  .
                 </div>
 
                 <div className="text-basic-yellow font-bold italic">* Only the first share is valid.</div>
