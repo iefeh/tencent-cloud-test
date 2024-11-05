@@ -24,7 +24,7 @@ const TicketCountdown: FC<Props> = ({ endTime, isBrown, isSmall }) => {
     <div className="h-[2.125rem] flex items-center">
       <Image
         className="object-contain w-[0.875rem] h-4 mr-2"
-        src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_${
+        src={`https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_${
           isBrown ? 'date_brown' : 'date'
         }.png`}
         alt=""

@@ -26,19 +26,19 @@ export default function DownloadPage() {
   const urls: DownloadURL[] = [
     // {
     //   title: 'English Version',
-    //   img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
+    //   img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_app_store.png',
     //   url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
     //   isAppStore: true,
     // },
     // {
     //   title: '日本語版',
-    //   img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_app_store.png',
+    //   img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_app_store.png',
     //   url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_JP_URL!,
     //   isAppStore: true,
     // },
     // {
     //   title: 'English Version',
-    //   img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/download/btn_google_play.png',
+    //   img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_google_play.png',
     //   url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!,
     // },
     // {

@@ -248,7 +248,7 @@ export default function About() {
             bigPlayButton: false,
             sources: [
               {
-                src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/ECOSYSTEM+LOOP.webm',
+                src: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/ECOSYSTEM+LOOP.webm',
                 type: 'video/webm',
               },
             ],

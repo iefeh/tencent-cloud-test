@@ -39,7 +39,7 @@ const NodeSlide: FC & HomeSlide = (props: Props) => {
             preload="auto"
           >
             <source
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/home/Moonveil+Public+Round+Start+video.webm"
+              src="https://d3dhz6pjw7pz9d.cloudfront.net/home/Moonveil+Public+Round+Start+video.webm"
               type="video/webm"
             />
           </video>

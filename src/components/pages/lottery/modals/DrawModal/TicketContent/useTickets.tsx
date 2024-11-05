@@ -52,7 +52,7 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
     {
       label: 'Default Use',
       ticketLabel: 'Free TICKETS',
-      iconURL: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
+      iconURL: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_free.png',
       count: freeCount,
       maxCount: freeMaxCount,
       minusDisabled: freeCount <= freeInitCount,
@@ -64,7 +64,7 @@ export function useTickets({ times, poolInfo, onFreeTicketChange, onS1TicketChan
     {
       label: 'Optional Use',
       ticketLabel: 'S1 TICKETS',
-      iconURL: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png',
+      iconURL: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_s1.png',
       count: s1Count,
       maxCount: s1MaxCount,
       minusDisabled: s1Count <= 0,

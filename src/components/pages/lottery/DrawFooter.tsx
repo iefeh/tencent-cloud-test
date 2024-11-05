@@ -18,7 +18,7 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
 
     if (maxDrawTimes >= 1) {
       list.push({
-        icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
+        icon: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_free.png',
         label: '1 Free Ticket',
         buttonLabel: 'Draw Once',
         times: 1,
@@ -56,7 +56,7 @@ const DrawFooter: FC<Props & ItemProps<Lottery.Pool>> = ({ className, onDraw, it
             'object-contain rounded-xl shadow-[0_0_0.75rem_0.125rem_#f6c799]',
             ((poolInfo?.draw_limits || 0) - (poolInfo?.rest_draw_amount || 0) || 0) >= 3 && 'hidden',
           ])}
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/card_discount.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/card_discount.png"
           alt=""
           fill
           sizes="100%"

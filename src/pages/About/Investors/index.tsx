@@ -2,16 +2,16 @@ import Image from 'next/image';
 import styles from './index.module.scss';
 
 const sponsorArray = [
-  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/spartan.png',
+  'https://d3dhz6pjw7pz9d.cloudfront.net/about/investors/spartan.png',
   '/img/about/1.png',
-  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/animoca.png',
+  'https://d3dhz6pjw7pz9d.cloudfront.net/about/investors/animoca.png',
   '/img/about/3.png',
-  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hashkey.png',
+  'https://d3dhz6pjw7pz9d.cloudfront.net/about/investors/hashkey.png',
 
-  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/hivemind.png',
+  'https://d3dhz6pjw7pz9d.cloudfront.net/about/investors/hivemind.png',
   '/img/about/5.png',
   '/img/about/6.png',
-  'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/investors/mask.png',
+  'https://d3dhz6pjw7pz9d.cloudfront.net/about/investors/mask.png',
   '/svg/investors/ventures.svg',
   // '/img/about/2.png',
 

@@ -33,7 +33,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         const s3Key = `avatar/${req.userId}/${uuidv4()}.webp`
         await upload2public("moonveil-public", s3Key, buffer, "image/webp");
         return res.json(response.success({
-            avatar_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/${s3Key}`,
+            avatar_url: `https://d3dhz6pjw7pz9d.cloudfront.net/${s3Key}`,
         }));
     } catch (error) {
         console.error(error)

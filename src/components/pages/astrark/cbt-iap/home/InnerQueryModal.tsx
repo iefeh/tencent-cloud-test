@@ -16,7 +16,7 @@ const InnerQueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChan
       classNames={{
         base: 'max-w-[62.5rem] rounded-base bg-black',
         header:
-          "h-[6.25rem] flex items-center relative bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/bg_modal_header.png')] bg-contain bg-left bg-no-repeat",
+          "h-[6.25rem] flex items-center relative bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/cbt-iap/bg_modal_header.png')] bg-contain bg-left bg-no-repeat",
         body: 'px-24 pt-12 pb-28 flex flex-col justify-center relative',
         closeButton: 'z-10 text-lg',
       }}

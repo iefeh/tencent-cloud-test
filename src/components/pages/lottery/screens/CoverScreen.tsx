@@ -8,7 +8,7 @@ const CoverScreen: FC = () => {
     <div className="relative w-screen h-screen flex justify-center items-center">
       <Image
         className="object-cover"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_cover.png"
         alt=""
         fill
         unoptimized

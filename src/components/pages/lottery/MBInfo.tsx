@@ -19,7 +19,7 @@ const MBInfo: FC<ClassNameProps & Props & ItemProps<Lottery.Pool>> = ({ classNam
       ])}
     >
       <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_mb_info.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_mb_info.png"
         alt=""
         fill
         sizes="100%"

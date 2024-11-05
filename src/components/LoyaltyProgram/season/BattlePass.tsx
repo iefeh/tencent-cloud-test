@@ -43,7 +43,7 @@ const BattlePass: FC<Props> = ({ className, float, visible, hideTitle, onRuleCli
   if (is_premium && premium_type === 'whitelist') {
     passList.push({
       actived: true,
-      img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
+      img: 'https://d3dhz6pjw7pz9d.cloudfront.net/pass/qualification/whitelist.png',
     });
   }
 

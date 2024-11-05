@@ -29,7 +29,7 @@ const ValueItem: FC<Props> = ({ icon, label, value, labelTips }) => {
             <Tooltip content={<div className="max-w-[25rem]">{labelTips}</div>}>
               <Image
                 className="w-[1.0625rem] h-[1.0625rem] object-contain relative -top-1px"
-                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
+                src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icons/icon_info_small.png"
                 alt=""
                 width={17}
                 height={17}

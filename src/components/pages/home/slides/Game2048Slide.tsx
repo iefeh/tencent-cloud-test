@@ -21,7 +21,7 @@ export default function Game2048Slide(props: Props) {
     >
       <Image
         className="object-cover"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/1000U.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/game/2048/1000U.png"
         alt=""
         fill
         sizes="100%"

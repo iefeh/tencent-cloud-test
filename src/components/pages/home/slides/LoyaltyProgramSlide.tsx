@@ -25,7 +25,7 @@ const LoyaltyProgramSlide: FC & HomeSlide = (props: Props) => {
         loop
         preload="auto"
       >
-        <source src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/home/loyalty_program.webm" />
+        <source src="https://d3dhz6pjw7pz9d.cloudfront.net/home/loyalty_program.webm" />
       </video>
     </div>
   );

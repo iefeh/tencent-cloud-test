@@ -11,10 +11,10 @@ export default function Document() {
         />
         <link rel="icon" href="/img/favicon.png" type="image/x-icon"></link>
         <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon"></link>
-        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Semakin.ttf" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Decima-Mono-W01-Regular.ttf" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Regular.ttf" crossOrigin="anonymous"></link>
-        <link rel="preload" as="font" href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Medium.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Semakin.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Decima-Mono-W01-Regular.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Poppins-Regular.ttf" crossOrigin="anonymous"></link>
+        <link rel="preload" as="font" href="https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Poppins-Medium.ttf" crossOrigin="anonymous"></link>
       </Head>
       <body className="dark">
         <Main />

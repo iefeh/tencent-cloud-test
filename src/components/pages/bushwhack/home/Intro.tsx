@@ -34,7 +34,7 @@ export default function IntroScreen() {
       name: 'Lewis',
       cover: doctorImg,
       model: {
-        source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/lewis_walk.fbx',
+        source: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/hero/lewis_walk.fbx',
         texture: '/models/textures/Lewis.png',
         offsetPower: {
           y: -0.9,
@@ -50,7 +50,7 @@ export default function IntroScreen() {
       name: 'Rhea',
       cover: rheaImg,
       model: {
-        source: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/hero/rhea_walk.fbx',
+        source: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/hero/rhea_walk.fbx',
         texture: '/models/textures/T_Rhea.png',
         offsetPower: {
           y: -0.9,

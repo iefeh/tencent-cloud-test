@@ -19,7 +19,7 @@ export default function LotterySlide(props: Props) {
     >
       <Image
         className="object-cover"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/banner_lottery.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/banner_lottery.png"
         alt=""
         fill
         sizes="100%"

@@ -22,7 +22,7 @@ const HistoryTabPanel: FC = () => {
         classNames={{
           wrapper: 'bg-black p-0 rounded-none font-poppins-medium',
           thead:
-            "[&>tr:last-child]:hidden [&>tr]:border-non border-none bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_table_head.png')] bg-contain bg-no-repeat",
+            "[&>tr:last-child]:hidden [&>tr]:border-non border-none bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_table_head.png')] bg-contain bg-no-repeat",
           tbody: 'pl-[2.1875rem] pr-[1.1875rem] ',
           tr: cn([
             'relative h-[3.0625rem]',

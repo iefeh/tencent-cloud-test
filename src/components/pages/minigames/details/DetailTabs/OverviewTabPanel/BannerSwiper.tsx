@@ -92,7 +92,7 @@ const BannerSwiper: FC = () => {
                         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10">
                           <Image
                             className="object-contain"
-                            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_paly_small.png"
+                            src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_paly_small.png"
                             alt=""
                             fill
                             sizes="100%"
@@ -110,7 +110,7 @@ const BannerSwiper: FC = () => {
           <div className="navi navi-prev absolute left-[0.5625rem] top-1/2 -translate-y-1/2 w-10 h-12 cursor-pointer transition-transform [&:active]:scale-90">
             <Image
               className="object-contain"
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_previou.png"
+              src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_previou.png"
               alt=""
               fill
               sizes="100%"
@@ -121,7 +121,7 @@ const BannerSwiper: FC = () => {
           <div className="navi navi-next absolute right-[0.5625rem] top-1/2 -translate-y-1/2 w-10 h-12 cursor-pointer transition-transform [&:active]:scale-90">
             <Image
               className="object-contain"
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_next.png"
+              src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_next.png"
               alt=""
               fill
               sizes="100%"

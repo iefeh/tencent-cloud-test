@@ -79,7 +79,7 @@ const PoolTabs: FC = () => {
 
       <Image
         className="absolute right-0 top-2 w-[2.125rem] h-[2.125rem] cursor-pointer"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_big.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icons/icon_info_big.png"
         alt=""
         width={34}
         height={34}

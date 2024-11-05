@@ -180,7 +180,7 @@ const GameTitle: FC<Props> = (props) => {
       <div className={cn(['stroke-content relative text-5xl text-center z-10 w-full text-white', ''])}>
         <Image
           className="object-contain w-full"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/home/bg_banner.png"
           alt=""
           width={3840}
           height={2426}
@@ -197,7 +197,7 @@ const GameTitle: FC<Props> = (props) => {
       style={
         {
           backgroundImage:
-            "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_banner_base.png'), url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/home/bg_base.png')",
+            "url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/home/bg_banner_base.png'), url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/home/bg_base.png')",
           backgroundRepeat: 'no-repeat, repeat',
         } as CSSProperties
       }

@@ -87,7 +87,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
 
                 <div className="w-[9.625rem] h-14 relative flex items-center">
                   <Image
-                    src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_draw_button.png"
+                    src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_draw_button.png"
                     alt=""
                     fill
                     sizes="100%"

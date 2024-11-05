@@ -65,7 +65,7 @@ const PoolListScreen: FC = () => {
   }, [userInfo]);
 
   return (
-    <div className="relative w-screen pt-[19.5rem] mb-[6.5625rem] flex flex-col justify-center items-center bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_cover.png')] bg-[length:100%_auto] bg-no-repeat z-10 px-8 md:px-0">
+    <div className="relative w-screen pt-[19.5rem] mb-[6.5625rem] flex flex-col justify-center items-center bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_cover.png')] bg-[length:100%_auto] bg-no-repeat z-10 px-8 md:px-0">
       <PageDesc
         className="relative z-0"
         needAni

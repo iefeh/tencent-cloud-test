@@ -40,7 +40,7 @@ const FloatFooter: FC<Props> = ({ onCompleteTasks }) => {
       {isMobile || (
         <Image
           className="object-cover"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_float.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/bg_float.png"
           alt=""
           fill
           sizes="100%"
@@ -73,7 +73,7 @@ const FloatFooter: FC<Props> = ({ onCompleteTasks }) => {
               isMobile || (
                 <Image
                   className={cn(['w-[1.125rem] h-[1.125rem]', (!data || !!share_reward_claimed) && 'grayscale'])}
-                  src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/share_stroke.png"
+                  src="https://d3dhz6pjw7pz9d.cloudfront.net/icons/share_stroke.png"
                   alt=""
                   width={22}
                   height={22}

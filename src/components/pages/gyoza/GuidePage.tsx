@@ -120,7 +120,7 @@ const GuidePage: FC<GuidePageProps> = (props) => {
         </div>
 
         <div className={cn([
-          "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/miner/bg_float.png')] bg-[length:100%_auto] bg-no-repeat",
+          "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/miner/bg_float.png')] bg-[length:100%_auto] bg-no-repeat",
           'absolute bottom-0 left-0 w-full h-[9.3125rem] z-20 pointer-events-none'
         ])}>
           <div className="pointer-events-auto inline-block absolute bottom-4 right-[23.75rem]">

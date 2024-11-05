@@ -70,7 +70,7 @@ const FollowUs: FC<FollowUsProps> = (props) => {
           >
             <Image
               className="w-20 h-20 object-contain"
-              src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com${media.name}`}
+              src={`https://d3dhz6pjw7pz9d.cloudfront.net${media.name}`}
               alt=""
               width={160}
               height={160}

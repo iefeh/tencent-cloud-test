@@ -17,7 +17,7 @@ const BadgeDesc: FC<Props> = ({ milestone }) => {
       <div className="w-80 h-[18.0625rem] lg:w-[24.5rem] lg:h-[22.125rem] relative origin-center animate-shaking">
         <Image
           className="object-contain"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/badge_master.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/badge_master.png"
           alt=""
           fill
           sizes="100%"
@@ -27,7 +27,7 @@ const BadgeDesc: FC<Props> = ({ milestone }) => {
 
       <div className={cn(['w-[24rem] h-auto lg:w-[43.0625rem] lg:h-[19.9375rem] relative', styles.badgeDesc])}>
         {/* <Image
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_badge_desc.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_badge_desc.png"
           alt=""
           fill
           sizes="100%"

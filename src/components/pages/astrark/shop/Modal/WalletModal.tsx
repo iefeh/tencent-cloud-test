@@ -113,7 +113,7 @@ const WalletModal: FC<ModalProps> = (props) => {
         overflow: 'initial',
       }}
       classNames={{
-        base: "rounded-none bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_modal.png')] bg-no-repeat bg-contain !max-w-[49.125rem] !w-[49.125rem] aspect-[57.25/30]",
+        base: "rounded-none bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/bg_modal.png')] bg-no-repeat bg-contain !max-w-[49.125rem] !w-[49.125rem] aspect-[57.25/30]",
       }}
     >
       <ModalContent>

@@ -122,7 +122,7 @@ const CateTabs: FC<{ onAuthFailed?: () => void }> = ({ onAuthFailed }) => {
           classNames={{
             tabList: cn(['flex-1 bg-transparent p-0 rounded-none relative', styles.listTabs]),
             cursor: 'w-full bg-transparent',
-            tab: "data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_list_tab_repeat.png')] bg-[length:auto_100%] bg-no-repeat bg-repeat-x px-6 pt-0 pb-2 h-[3.125rem] rounded-none w-auto",
+            tab: "data-[selected=true]:bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/bg_list_tab_repeat.png')] bg-[length:auto_100%] bg-no-repeat bg-repeat-x px-6 pt-0 pb-2 h-[3.125rem] rounded-none w-auto",
             tabContent: 'text-[#8BA4BE] text-lg group-data-[selected=true]:text-white',
           }}
           onSelectionChange={onListSelectionChange}

@@ -22,7 +22,7 @@ interface Figure {
 
 const figureArray: Figure[] = [
   {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_mj.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/team/team_mj.png',
     width: 1153,
     height: 1200,
     name: 'M.J',
@@ -39,7 +39,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_jw.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/team/team_jw.png',
     name: 'Jason',
     width: 1135,
     height: 900,
@@ -53,7 +53,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_chris.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/team/team_chris.png',
     name: 'Chris',
     width: 492,
     height: 505,
@@ -66,7 +66,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_mason.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/team/team_mason.png',
     name: 'Mason Z',
     width: 1127,
     height: 1118,
@@ -80,7 +80,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_robin.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/team/team_robin.png',
     name: 'Robin Z',
     width: 989,
     height: 1042,
@@ -95,7 +95,7 @@ const figureArray: Figure[] = [
 </div>`,
   },
   {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/about/team/team_puff.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/about/team/team_puff.png',
     name: 'Puff Z',
     width: 1034,
     height: 1024,

@@ -250,7 +250,7 @@ export default function FogMainContent() {
           controls: false,
           sources: [
             {
-              src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/misty.webm',
+              src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/misty.webm',
               type: 'video/webm',
             },
           ],

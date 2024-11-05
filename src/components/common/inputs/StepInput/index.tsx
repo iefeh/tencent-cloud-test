@@ -70,7 +70,7 @@ const StepInput: FC<Props> = ({
       </div>
 
       <Input
-        className="w-full mt-5 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_input_add.png')] bg-[length:100%_100%] bg-no-repeat"
+        className="w-full mt-5 bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_input_add.png')] bg-[length:100%_100%] bg-no-repeat"
         classNames={{
           input: 'bg-transparent h-[4.625rem] text-[2.5rem] !text-[#FFFFFF96]',
           innerWrapper: 'bg-transparent',

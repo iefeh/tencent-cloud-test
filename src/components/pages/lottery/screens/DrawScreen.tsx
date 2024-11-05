@@ -101,7 +101,7 @@ const DrawScreen: FC<Props & BasePage & ItemProps<Lottery.Pool>> = ({ ended, ite
       <div className="absolute inset-0 z-0">
         <div className="w-[106.3125rem] h-[31.6875rem] absolute bottom-0 left-1/2 -translate-x-1/2">
           <Image
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/draw_bottom_planet.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/draw_bottom_planet.png"
             alt=""
             fill
             sizes="100%"

@@ -64,7 +64,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
       classNames={{
         base: 'max-w-[42.5rem] text-brown font-jcyt6 rounded-none bg-transparent shadow-none',
         header: cn([
-          "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_rules_header.png')] bg-contain bg-left bg-no-repeat bg-[#F7E9CC]",
+          "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/bg_rules_header.png')] bg-contain bg-left bg-no-repeat bg-[#F7E9CC]",
           'h-[6.25rem] mt-5 mr-6',
           'rounded-tl-base rounded-tr-base',
           'border-basic-gray border-t-2 border-l-2 border-r-2',
@@ -84,7 +84,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
             <ModalHeader>
               <Image
                 className="object-contain w-[2.6875rem] aspect-square"
-                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_help.png"
+                src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_help.png"
                 alt=""
                 width={86}
                 height={86}
@@ -113,7 +113,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
               ))}
 
               <Button
-                className="bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_close.png')] bg-contain bg-no-repeat w-[3.625rem] h-[3.75rem] absolute top-0 right-0 p-0 min-w-0"
+                className="bg-transparent bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_close.png')] bg-contain bg-no-repeat w-[3.625rem] h-[3.75rem] absolute top-0 right-0 p-0 min-w-0"
                 onPress={onClose}
               />
             </ModalBody>

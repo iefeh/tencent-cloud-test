@@ -11,8 +11,8 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
   const { canvasRef, width, height } = useFrameAni({
     width: 1920,
     height: 1076,
-    url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/planet_ani.zip',
-    cover: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/planet_ani_cover.png',
+    url: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/planet_ani.zip',
+    cover: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/planet_ani_cover.png',
     count: 288,
     nameFn: (i) => `planet_${i.toString().padStart(5, '0')}.png`,
   });
@@ -56,7 +56,7 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
               >
                 <Image
                   className="object-contain"
-                  src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_prize.png"
+                  src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_prize.png"
                   alt=""
                   fill
                   sizes="100%"
@@ -80,7 +80,7 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
       {/* <div className="absolute left-1/2 top-1/2 -translate-x-[calc(50%_+_21.5625rem)] -translate-y-[calc(50%_+_3.3125rem)] flex flex-col items-center">
         <Image
           className="object-contain w-[11.4375rem] h-[3.4375rem]"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/still_in_prize_pool.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/still_in_prize_pool.png"
           alt=""
           width={183}
           height={55}
@@ -89,7 +89,7 @@ const PlanetAni: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
 
         <Image
           className="object-contain w-[12.8125rem] h-[10.4375rem]"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/special_prize.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/special_prize.png"
           alt=""
           width={205}
           height={167}

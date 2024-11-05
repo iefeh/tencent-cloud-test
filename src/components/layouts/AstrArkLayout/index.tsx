@@ -12,7 +12,7 @@ export default function AstrArkLayout(page: JSX.Element) {
             key={index}
             rel="preload"
             as="font"
-            href={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/${font}`}
+            href={`https://d3dhz6pjw7pz9d.cloudfront.net/fonts/${font}`}
             crossOrigin="anonymous"
           ></link>
         ))}

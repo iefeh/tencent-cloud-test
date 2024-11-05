@@ -58,7 +58,7 @@ const ShortButton: FC<Props> = ({
           backgroundImage:
             !!backgroundImage && !isDisabled
               ? backgroundImage
-              : `url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_${strokeType}_short.png')`,
+              : `url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_${strokeType}_short.png')`,
           ...restStyle,
         } as CSSProperties
       }

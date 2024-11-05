@@ -35,7 +35,7 @@ const drawOnce = {
   reward_name: "Golden S1 Ticket x1",
   reward_claim_type: 1,
   reward_level: 2,
-  icon_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png",
+  icon_url: "https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_s1.png",
   badge_id: "",
   first_three_draw_probability: 0,
   next_seven_draw_probability: 0,

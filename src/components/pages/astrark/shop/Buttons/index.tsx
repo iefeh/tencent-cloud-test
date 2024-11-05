@@ -16,7 +16,7 @@ interface Props extends ButtonProps {
 
 
 const disabledBg = `
-  bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/btn_disable_bg.png')] 
+  bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/btn_disable_bg.png')] 
   w-[9rem] h-[2.625rem] mt-2
   `
 const PayButton: React.FC<Props> = (props) => {
@@ -27,7 +27,7 @@ const PayButton: React.FC<Props> = (props) => {
       className={cn([
         "text-[#5D3C13] text-[1.1875rem] rounded-none bg-transparent",
         "w-[10.1875rem] h-[3.625rem] bg-no-repeat bg-center bg-[length:100%_100%]",
-        "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/btn_buy_now.png')]",
+        "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/btn_buy_now.png')]",
         "[text-shadow:0px_2px_0px_#FFE77F]",
         className,
         [ButtonStatus.DISABLED, ButtonStatus.WAIT].includes(btnStatus as any) && `${disabledBg} [text-shadow:none] pointer-events-none text-white`,

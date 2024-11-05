@@ -13,7 +13,7 @@ const DrawLimitsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ classNam
       ])}
     >
       <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_draw_limits_info.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_draw_limits_info.png"
         alt=""
         fill
         sizes="100%"

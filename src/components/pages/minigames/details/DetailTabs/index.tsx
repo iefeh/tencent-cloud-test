@@ -129,7 +129,7 @@ const DetailTabs: ForwardRefRenderFunction<DetailTabsRef, Props> = ({}, ref) => 
         >
           <Image
             className="w-5 h-[1.0625rem]"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_arrow_white.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/common/icon_arrow_white.png"
             alt=""
             width={26}
             height={22}

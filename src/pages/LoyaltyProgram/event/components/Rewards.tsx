@@ -196,7 +196,7 @@ export default function Rewards(props: Props) {
                     <Tooltip key={index} content={tooltipContent}>
                       <Image
                         className="object-contain -mt-1 ml-2"
-                        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
+                        src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icons/icon_info_small.png"
                         alt=""
                         width={17}
                         height={17}

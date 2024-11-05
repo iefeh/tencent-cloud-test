@@ -12,7 +12,7 @@ const NFT2Slide: FC & HomeSlide = (props: Props) => {
       <div className="video-container absolute inset-0 z-0">
         <video
           className="w-full h-full block object-cover"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/nft/nftbg2.webm"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/nft/nftbg2.webm"
           autoPlay
           muted
           loop
