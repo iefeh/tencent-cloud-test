@@ -19,6 +19,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
+        hostname: 'd3dhz6pjw7pz9d.cloudfront.net',
+      },
+      {
         hostname: 'moonveil-public.s3.ap-southeast-2.amazonaws.com',
       },
       {
