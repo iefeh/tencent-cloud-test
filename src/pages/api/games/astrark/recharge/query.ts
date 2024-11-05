@@ -39,7 +39,7 @@ export async function queryTotalRecharge(userId: string): Promise<[number, numbe
 
 
 
-    return [Math.floor(total * 60), rebate, wallet ? wallet.wallet_addr : '-'];
+    return [total, rebate, wallet ? wallet.wallet_addr : '-'];
 }
 
 // this will run if none of the above matches
