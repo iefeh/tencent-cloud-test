@@ -94,3 +94,11 @@ export function queryTestRechargeAPI(): Promise<RechargeDTO> {
 export function queryTestRechargeInnerAPI(): Promise<RechargeDTO> {
   return http.get('/api/oauth2/query/recharge/astrark', { withBearer: true, isAA: true });
 }
+
+export function shareCallbackAPI(): Promise<null> {
+  return http.get('/api/games/astrark/share');
+}
+
+export function shareCallbackInnerAPI(): Promise<null> {
+  return http.get('/api/oauth2/game/share/astrark', { withBearer: true, isAA: true });
+}
