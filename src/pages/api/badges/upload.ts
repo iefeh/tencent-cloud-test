@@ -41,8 +41,8 @@ router.post(async (req, res) => {
     //         await upload2public("moonveil-public", `badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`, buffer, "image/webp");
     //         series.set(badgeLevel, {
     //             description: "Unlock this badge by successfully invite 1 new user.",
-    //             icon_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`,
-    //             image_url: `https://moonveil-public.s3.ap-southeast-2.amazonaws.com/badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`,
+    //             icon_url: `https://d3dhz6pjw7pz9d.cloudfront.net/badges/${s3BadgeName}/lvl${badgeLevel}/icon.webp`,
+    //             image_url: `https://d3dhz6pjw7pz9d.cloudfront.net/badges/${s3BadgeName}/lvl${badgeLevel}/img.webp`,
     //             // 初始化requirements
     //             requirements: [
     //                 {

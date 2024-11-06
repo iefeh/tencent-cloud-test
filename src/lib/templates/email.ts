@@ -49,7 +49,7 @@ export function generateCaptchaEmailHTML(captcha: number, quickFillURL: string):
 </head>
 <body>
 <div class="container">
-    <img class="logo" src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/logo/logo.png" alt="Moonveil Logo">
+    <img class="logo" src="https://d3dhz6pjw7pz9d.cloudfront.net/logo/logo.png" alt="Moonveil Logo">
     <p class="gray">Welcome to Moonveil Entertainment! 🚀</p>
     <p class="gray">Here's your verification code to kickoff your journey</p>
     <div class="code">${captcha}</div>

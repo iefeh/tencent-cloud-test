@@ -48,7 +48,7 @@ const UserAvatar = () => {
     },
     {
       title: 'My Assets',
-      icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/nft/img_4+revised.png',
+      icon: 'https://d3dhz6pjw7pz9d.cloudfront.net/nft/img_4+revised.png',
       path: '/Profile/MyAssets',
     },
     // {

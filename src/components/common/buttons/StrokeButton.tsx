@@ -57,7 +57,7 @@ const StrokeButton: FC<Props> = ({
           backgroundImage:
             !!backgroundImage && !isDisabled
               ? backgroundImage
-              : `url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_${strokeType}.png')`,
+              : `url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_${strokeType}.png')`,
           ...restStyle,
         } as CSSProperties
       }

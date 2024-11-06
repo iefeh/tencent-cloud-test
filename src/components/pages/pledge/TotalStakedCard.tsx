@@ -22,7 +22,7 @@ const StakeItem: FC<StakeItemProps & ClassNameProps> = ({ className, locked, val
     >
       <Image
         className="object-contain"
-        src={`https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_${
+        src={`https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icons/icon_${
           locked ? 'lock' : 'unlock'
         }.png`}
         alt=""
@@ -54,7 +54,7 @@ const TotalStakedCard: FC<Props> = ({ poolKey }) => {
     <div className="w-full aspect-[1408/121] relative mt-6 flex items-center py-ten pl-[2.375rem] pr-[1.125rem]">
       <Image
         className="object-contain"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_total_staked.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_total_staked.png"
         alt=""
         fill
         sizes="100%"

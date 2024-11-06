@@ -116,13 +116,13 @@ const MiniGamesPage: FC & BasePage = () => {
         <link
           rel="preload"
           as="font"
-          href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti600W.ttf"
+          href="https://d3dhz6pjw7pz9d.cloudfront.net/fonts/jiangchengyuanti600W.ttf"
           crossOrigin="anonymous"
         ></link>
         <link
           rel="preload"
           as="font"
-          href="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti400W.ttf"
+          href="https://d3dhz6pjw7pz9d.cloudfront.net/fonts/jiangchengyuanti400W.ttf"
           crossOrigin="anonymous"
         ></link>
       </Head>

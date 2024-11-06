@@ -72,7 +72,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                   {isMobile || (
                     <Image
                       className="object-cover"
-                      src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/bg_modal_ticket.png"
+                      src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/bg_modal_ticket.png"
                       alt=""
                       fill
                       sizes="100%"
@@ -88,7 +88,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                       <div className="relative w-[26rem] aspect-square rounded-md overflow-hidden">
                         <Image
                           className="object-contain"
-                          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/img_ticket.png"
+                          src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/img_ticket.png"
                           alt=""
                           fill
                           sizes="100%"
@@ -120,8 +120,8 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                           classNames={{
                             label: 'text-inherit',
                             wrapper: cn([
-                              "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_circle.png')] bg-contain bg-no-repeat",
-                              "group-data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_circle_active.png')]",
+                              "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_circle.png')] bg-contain bg-no-repeat",
+                              "group-data-[selected=true]:bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_circle_active.png')]",
                               'border-none !bg-transparent',
                             ]),
                             control: 'group-data-[selected=true]:hidden',
@@ -162,7 +162,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                           <PopoverTrigger>
                             <Image
                               className="object-contain w-8 h-8"
-                              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_question.png"
+                              src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_question.png"
                               alt=""
                               width={64}
                               height={64}
@@ -212,7 +212,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                           isMobile
                             ? {
                                 backgroundImage:
-                                  "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_blue_longest.png')",
+                                  "url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_blue_longest.png')",
                               }
                             : {}
                         }
@@ -226,7 +226,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                               className={cn([
                                 'w-full md:w-56',
                                 isMobile &&
-                                  "!bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_gray_longest.png')]",
+                                  "!bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_gray_longest.png')]",
                               ])}
                               strokeType="yellow"
                               strokeText="Exchange Tickets"
@@ -236,7 +236,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                                   ? {}
                                   : {
                                       backgroundImage:
-                                        "url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/btn_yellow_long.png')",
+                                        "url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_yellow_long.png')",
                                     }
                               }
                             />
@@ -248,7 +248,7 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                 </div>
 
                 <Button
-                  className="bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_close.png')] bg-contain bg-no-repeat w-[3.625rem] h-[3.75rem] absolute top-0 right-0 p-0 min-w-0"
+                  className="bg-transparent bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_close.png')] bg-contain bg-no-repeat w-[3.625rem] h-[3.75rem] absolute top-0 right-0 p-0 min-w-0"
                   onPress={onClose}
                 />
               </ModalBody>

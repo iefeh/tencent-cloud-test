@@ -20,7 +20,7 @@ const PrizePoolTimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ cl
       ])}
     >
       <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_prize_pool_timeout.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_prize_pool_timeout.png"
         alt=""
         fill
         sizes="100%"

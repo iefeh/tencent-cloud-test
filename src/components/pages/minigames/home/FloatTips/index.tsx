@@ -34,7 +34,7 @@ const FloatTips: FC = () => {
         >
           <Image
             className="w-8 h-8 object-contain"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_big.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icons/icon_info_big.png"
             alt=""
             width={64}
             height={64}

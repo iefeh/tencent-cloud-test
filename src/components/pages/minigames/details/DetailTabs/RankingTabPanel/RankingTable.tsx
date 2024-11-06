@@ -98,7 +98,7 @@ const RankingTable: FC<Props> = ({ ranking }) => {
                           <Image
                             className="object-contain"
                             src={
-                              row.avatar || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/avatar/default.png'
+                              row.avatar || 'https://d3dhz6pjw7pz9d.cloudfront.net/avatar/default.png'
                             }
                             alt=""
                             fill
@@ -130,7 +130,7 @@ const RankingTable: FC<Props> = ({ ranking }) => {
 
           <Image
             className="object-contain w-[3.125rem] h-[3.125rem] ml-11"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_star.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_star.png"
             alt=""
             width={100}
             height={100}

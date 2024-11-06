@@ -48,7 +48,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
     //     <div className="flex items-center">
     //       <Image
     //         className="object-contain w-8 h-7 mr-1 rounded-md"
-    //         src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/2048LOGO.png"
+    //         src="https://d3dhz6pjw7pz9d.cloudfront.net/game/2048/2048LOGO.png"
     //         alt=""
     //         width={95}
     //         height={83}

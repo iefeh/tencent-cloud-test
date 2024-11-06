@@ -72,7 +72,7 @@ const S1TicketModal: FC<Props & ItemProps<Lottery.Pool>> = ({
                 <div className="w-24 aspect-[3507/4960] relative">
                   <Image
                     className="object-contain"
-                    src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png"
+                    src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_free.png"
                     alt=""
                     fill
                     sizes="100%"

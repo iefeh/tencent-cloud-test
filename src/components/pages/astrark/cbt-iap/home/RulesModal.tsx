@@ -15,7 +15,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
         base: 'w-1/2 max-w-[50%] h-screen !m-0 rounded-none bg-black overflow-visible',
         body: 'px-24 py-24 h-screen overflow-y-auto',
         closeButton:
-          "[&>svg]:hidden w-[4.875rem] aspect-square !bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/icons/modal_fold.png')] bg-contain top-1/2 right-0 translate-x-1/2 -translate-y-1/2",
+          "[&>svg]:hidden w-[4.875rem] aspect-square !bg-transparent bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/icons/modal_fold.png')] bg-contain top-1/2 right-0 translate-x-1/2 -translate-y-1/2",
       }}
       motionProps={{
         variants: {
@@ -50,7 +50,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
 
               <S3Image
                 className="w-full h-auto mt-10"
-                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/cbt-iap/table.png"
+                src="https://d3dhz6pjw7pz9d.cloudfront.net/astrark/cbt-iap/table.png"
               />
 
               <div className="mt-12">

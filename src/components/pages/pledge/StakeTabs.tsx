@@ -37,7 +37,7 @@ const StakeTabs: FC<Props> = ({ poolKey }) => {
   return (
     <div className="relative z-0 w-full aspect-[1408/742]">
       <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_stake.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_stake.png"
         alt=""
         fill
         sizes="100%"

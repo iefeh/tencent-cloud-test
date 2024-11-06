@@ -95,7 +95,7 @@ const BadgeMilestone: FC<Props> = ({ className, milestone, onUpdate }) => {
     <div className={cn(['w-[63.5625rem] h-[6.8125rem] relative hidden lg:block', className])}>
       <Image
         className="object-contain"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_milestone.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_milestone.png"
         alt=""
         fill
         sizes="100%"
@@ -127,7 +127,7 @@ const BadgeMilestone: FC<Props> = ({ className, milestone, onUpdate }) => {
       <div className="absolute left-0 bottom-0 z-0 w-full h-2 rounded-lg">
         <Image
           className="object-cover h-full rounded-lg"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/progress_milestone.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/progress_milestone.png"
           alt=""
           style={{ width: currentDrawsProgress }}
           width={1017}

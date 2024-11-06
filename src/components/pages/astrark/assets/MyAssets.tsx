@@ -71,7 +71,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
   }, []);
 
   return (
-    <div className="w-[78.25rem] max-w-full aspect-[1252/759] mt-5 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_assets_card.png')] bg-contain bg-no-repeat pl-5 pr-8 pt-16 flex flex-col font-fzdb">
+    <div className="w-[78.25rem] max-w-full aspect-[1252/759] mt-5 bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_assets_card.png')] bg-contain bg-no-repeat pl-5 pr-8 pt-16 flex flex-col font-fzdb">
       <div className="font-fzsb text-[2.5rem] leading-[1.875rem] pl-11 text-transparent bg-gradient-to-t from-[#E4BA80] to-[#FDEFBC] bg-clip-text">
         My Asset<span className="text-3xl leading-none"> ( {total} )</span>
       </div>
@@ -85,7 +85,7 @@ const MyAssets: FC<Props> = ({ displayItems, onUpdate }) => {
             base: 'w-[13.9375rem] shrink-0',
             tabList: 'gap-5 flex-col w-full relative rounded-none p-0 bg-transparent',
             cursor: 'w-full bg-transparent',
-            tab: "px-0 w-full h-[5.125rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_tab_unselected.png')] bg-no-repeat bg-contain data-[selected=true]:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_tab_selected.png')]",
+            tab: "px-0 w-full h-[5.125rem] bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_tab_unselected.png')] bg-no-repeat bg-contain data-[selected=true]:bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_tab_selected.png')]",
             tabContent: 'text-white text-xl group-data-[selected=true]:text-basic-yellow',
           }}
           onSelectionChange={onSelectionChange}

@@ -74,7 +74,7 @@ export default function NFT(props: NFTProps) {
       <div className={cn(['relative w-full aspect-square flex justify-center items-center', className])}>
         {hideBorder || (
           <Image
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_border_display.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_asset_border_display.png"
             alt=""
             fill
             unoptimized
@@ -115,7 +115,7 @@ export default function NFT(props: NFTProps) {
         ) : (
           <Image
             className="relative z-0 w-full aspect-square"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_null.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_asset_null.png"
             alt=""
             width={240}
             height={240}

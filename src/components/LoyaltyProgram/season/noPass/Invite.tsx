@@ -43,7 +43,7 @@ const Invite = function ({ className, inProfie, isReferral }: Props) {
         src={
           isReferral
             ? referralBgImg
-            : 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/loyalty_program/bg_card_invite.png'
+            : 'https://d3dhz6pjw7pz9d.cloudfront.net/loyalty_program/bg_card_invite.png'
         }
         alt=""
         fill

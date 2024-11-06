@@ -11,7 +11,7 @@ import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@nextu
 
 dayjs.extend(Duration);
 
-const DEFAULT_IMG = 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png';
+const DEFAULT_IMG = 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/img_pool_test.png';
 
 const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
   const {
@@ -87,7 +87,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             <div className="relative z-0" style={{ width: itemSize, height: itemSize }}>
               <Image
                 className="object-contain "
-                src={icon_url || 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/img_pool_test.png'}
+                src={icon_url || 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/img_pool_test.png'}
                 alt=""
                 fill
                 sizes="100%"
@@ -101,7 +101,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
           <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
             <Image
               className="w-6 h-6 object-contain mr-[0.375rem]"
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/icons/icon_time.png"
+              src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/icons/icon_time.png"
               alt=""
               width={48}
               height={48}
@@ -114,7 +114,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
           {/* <div className="flex items-center pl-ten pr-4 pt-1 pb-[0.1875rem] bg-white/20 rounded-five text-sm leading-none">
             <Image
               className="w-6 h-6 object-contain mr-[0.375rem]"
-              src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/icons/icon_qty.png"
+              src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/icons/icon_qty.png"
               alt=""
               width={48}
               height={48}

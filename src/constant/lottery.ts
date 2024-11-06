@@ -81,31 +81,31 @@ export const enum RewardQuality {
 
 export const LotteryBorders = {
   [RewardQuality.COPPERY]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/coppery.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/border/coppery.png',
     width: 154,
     height: 154,
     color: '#64523E',
   },
   [RewardQuality.SILVER]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/silver.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/border/silver.png',
     width: 154,
     height: 154,
     color: '#C2C2C2',
   },
   [RewardQuality.BLUE]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/blue.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/border/blue.png',
     width: 154,
     height: 154,
     color: '#7DC8C6',
   },
   [RewardQuality.PURPLE]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/purple.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/border/purple.png',
     width: 200,
     height: 189,
     color: '#835CBF',
   },
   [RewardQuality.GOLDEN]: {
-    img: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/border/golden.png',
+    img: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/border/golden.png',
     width: 222,
     height: 208,
     color: 'linear-gradient(to right, #D9A970, #EFEBC5)',

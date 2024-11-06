@@ -140,7 +140,7 @@ const MiniGameTask: FC<Props> = ({ task, classNames, onTaskUpdate, onReverifyCDF
             <div className="flex items-center">
               <Image
                 className="w-8 h-8"
-                src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png"
+                src="https://d3dhz6pjw7pz9d.cloudfront.net/campaign/reward/moonbeam/small-bg.png"
                 alt=""
                 width={64}
                 height={64}

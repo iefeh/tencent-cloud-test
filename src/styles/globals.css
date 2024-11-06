@@ -31,32 +31,32 @@ body {
 
 @font-face {
   font-family: semakin;
-  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Semakin.ttf');
+  src: url('https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Semakin.ttf');
 }
 
 @font-face {
   font-family: decima;
-  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Decima-Mono-W01-Regular.ttf');
+  src: url('https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Decima-Mono-W01-Regular.ttf');
 }
 
 @font-face {
   font-family: poppins;
-  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Regular.ttf');
+  src: url('https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Poppins-Regular.ttf');
 }
 
 @font-face {
   font-family: poppins-medium;
-  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/Poppins-Medium.ttf');
+  src: url('https://d3dhz6pjw7pz9d.cloudfront.net/fonts/Poppins-Medium.ttf');
 }
 
 @font-face {
   font-family: jcyt6;
-  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti600W.ttf');
+  src: url('https://d3dhz6pjw7pz9d.cloudfront.net/fonts/jiangchengyuanti600W.ttf');
 }
 
 @font-face {
   font-family: jcyt4;
-  src: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/fonts/jiangchengyuanti400W.ttf');
+  src: url('https://d3dhz6pjw7pz9d.cloudfront.net/fonts/jiangchengyuanti400W.ttf');
 }
 
 .szh-menu-container {

@@ -6,22 +6,22 @@ import { FC } from 'react';
 const Entry2048: FC = () => {
   const chars = [
     {
-      url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/2.png',
+      url: 'https://d3dhz6pjw7pz9d.cloudfront.net/common/2048/2.png',
       width: 186,
       height: 211,
     },
     {
-      url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/0.png',
+      url: 'https://d3dhz6pjw7pz9d.cloudfront.net/common/2048/0.png',
       width: 187,
       height: 211,
     },
     {
-      url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/4.png',
+      url: 'https://d3dhz6pjw7pz9d.cloudfront.net/common/2048/4.png',
       width: 186,
       height: 209,
     },
     {
-      url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/8.png',
+      url: 'https://d3dhz6pjw7pz9d.cloudfront.net/common/2048/8.png',
       width: 190,
       height: 210,
     },
@@ -41,7 +41,7 @@ const Entry2048: FC = () => {
       <div className="relative w-[3.375rem] h-[3.6875rem] mr-6 cursor-pointer hidden xl:block" onClick={onGetTicket}>
         <Image
           className="object-contain"
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/ticket.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/common/2048/ticket.png"
           alt=""
           fill
           sizes="100%"
@@ -53,7 +53,7 @@ const Entry2048: FC = () => {
         <div className="relative w-[7.0625rem] h-[2.875rem]">
           <Image
             className="object-contain"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/2048/puffy.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/common/2048/puffy.png"
             alt=""
             fill
             sizes="100%"

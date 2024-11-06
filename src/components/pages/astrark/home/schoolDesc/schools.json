@@ -3,24 +3,24 @@
     "name": "genetic",
     "fullname": "Livielt",
     "homeplanet": "zenith",
-    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/genetic.mp4"
+    "video": "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/hero/genetic.mp4"
   },
   {
     "name": "mechanoid",
     "fullname": "Mechanical Technician",
     "homeplanet": "hyperborea",
-    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/mechanoid.mp4"
+    "video": "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/hero/mechanoid.mp4"
   },
   {
     "name": "spiritual",
     "fullname": "God Whisperer",
     "homeplanet": "aeon",
-    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/spiritual.mp4"
+    "video": "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/hero/spiritual.mp4"
   },
   {
     "name": "natural",
     "fullname": "Strangler",
     "homeplanet": "aurora",
-    "video": "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/hero/natural.mp4"
+    "video": "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/hero/natural.mp4"
   }
 ]

@@ -57,10 +57,10 @@ const DisplayAssets: FC<Props> = ({ loading, items, onUpdate }) => {
   }
 
   return (
-    <div className="relative mt-[4.375rem] w-[78.25rem] pt-[9.0625rem] px-[8.375rem] max-w-full aspect-[1252/561] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat font-fzdb">
+    <div className="relative mt-[4.375rem] w-[78.25rem] pt-[9.0625rem] px-[8.375rem] max-w-full aspect-[1252/561] bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_display_card.png')] bg-contain bg-no-repeat font-fzdb">
       <Image
         className="absolute top-[-4.375rem] left-1/2 -translate-x-1/2 w-[81.625rem] aspect-[1306/170] z-10"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/title_display.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/title_display.png"
         alt=""
         width={2612}
         height={340}

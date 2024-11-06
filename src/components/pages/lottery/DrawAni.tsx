@@ -12,7 +12,7 @@ const DrawAni: FC<Props> = ({ visible, onFinished }) => {
     width: 1280,
     height: 1920,
     count: 23,
-    url: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/reward_ani.zip',
+    url: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/reward_ani.zip',
     fit: 'cover',
     frames: 18,
     infinite: false,

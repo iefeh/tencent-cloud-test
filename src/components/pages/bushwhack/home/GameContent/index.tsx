@@ -13,27 +13,27 @@ export default function GameContent() {
   const videos = [
     {
       thumb: '/bushwhack/background/thumbs/Bushwhack+Teaser.png',
-      src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/teaser.mp4',
+      src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/teaser.mp4',
       type: 'video/mp4',
     },
     {
       thumb: '/bushwhack/background/thumbs/Character+Showcase.png',
-      src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/Character+Showcase.mp4',
+      src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/Character+Showcase.mp4',
       type: 'video/mp4',
     },
     {
       thumb: '/bushwhack/background/thumbs/Different+Items+utility.png',
-      src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/Different+Items+utility.mp4',
+      src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/Different+Items+utility.mp4',
       type: 'video/mp4',
     },
     {
       thumb: '/bushwhack/background/thumbs/HOW+TO+USE+KAYA+WIN.png',
-      src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/HOW+TO+USE+KAYA+WIN.mp4',
+      src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/HOW+TO+USE+KAYA+WIN.mp4',
       type: 'video/mp4',
     },
     {
       thumb: '/bushwhack/background/thumbs/Risk+Attention.png',
-      src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/Risk+Attention.mp4',
+      src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/Risk+Attention.mp4',
       type: 'video/mp4',
     },
   ];

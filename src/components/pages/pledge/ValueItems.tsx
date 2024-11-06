@@ -10,14 +10,14 @@ const ValueItems: FC = () => {
     <div className="flex justify-center items-center mt-5 gap-[6.5rem]">
       {stakeInfo.length > 0 && (
         <ValueItem
-          icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_locked_value.png"
+          icon="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icon_locked_value.png"
           label="My Staking Points"
           value={Number(totalStakingPoints).toLocaleString('en') || '-'}
         />
       )}
 
       <ValueItem
-        icon="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icon_locked_value.png"
+        icon="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icon_locked_value.png"
         label="Total Staked Value"
         value={`$${poolsTotalValue || '-'}`}
         labelTips="This is the current total staked value of all staking pools."

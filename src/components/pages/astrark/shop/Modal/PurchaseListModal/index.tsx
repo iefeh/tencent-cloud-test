@@ -37,11 +37,11 @@ const PurchaseListModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenCh
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       classNames={{
-        base: "rounded-none bg-transparent bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_modal.png')] bg-no-repeat bg-contain !max-w-full !w-[57.25rem] aspect-[57.25/30] overflow-visible font-fzdb",
+        base: "rounded-none bg-transparent bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/bg_modal.png')] bg-no-repeat bg-contain !max-w-full !w-[57.25rem] aspect-[57.25/30] overflow-visible font-fzdb",
         header: '',
         body: 'items-center gap-0',
         closeButton:
-          "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/btn_close.png')] bg-contain bg-no-repeat !bg-transparent w-[6.9375rem] h-[4.75rem] object-contain top-[-1.3rem] right-[-1.625rem] [&>svg]:hidden",
+          "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/btn_close.png')] bg-contain bg-no-repeat !bg-transparent w-[6.9375rem] h-[4.75rem] object-contain top-[-1.3rem] right-[-1.625rem] [&>svg]:hidden",
       }}
     >
       <ModalContent>

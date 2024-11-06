@@ -10,7 +10,7 @@ const Reward: FC<ClassNameProps & ItemProps<Lottery.RewardItem>> = ({ className,
 
   const iconURL =
     reward_type === LotteryRewardType.NoPrize
-      ? 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/thx.gif'
+      ? 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/thx.gif'
       : icon_url;
   const itemSize = reward_type ? LotteryRewardSizes[reward_type as keyof typeof LotteryRewardSizes] || '90%' : '90%';
 

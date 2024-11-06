@@ -46,9 +46,9 @@ const EVENT_ICON_DICT: Dict<string> = {
   [QuestType.SEND_DISCORD_MESSAGE]: 'discord_colored',
   [QuestType.HoldNFT]: 'nft_colored',
   [QuestType.ThinkingDataQuery]:
-    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png',
+    'https://d3dhz6pjw7pz9d.cloudfront.net/game/2048/%E5%9B%BE%E5%B1%82+47.png',
   [QuestType.Claim2048Ticket]:
-    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/game/2048/%E5%9B%BE%E5%B1%82+47.png',
+    'https://d3dhz6pjw7pz9d.cloudfront.net/game/2048/%E5%9B%BE%E5%B1%82+47.png',
 };
 
 function EventTasks(props: EventTaskProps) {

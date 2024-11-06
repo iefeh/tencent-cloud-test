@@ -39,47 +39,47 @@ router.use(maybeAuthInterceptor).get(async (req, res) => {
 
 const astrarkHeroURLs = [
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/BattleBear.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/BattleBear.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/EternalCaptain.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/EternalCaptain.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/FlameApe.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/FlameApe.webp",
         probability: 0.008,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/General.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/General.webp",
         probability: 0.008,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/GodWhisperer.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/GodWhisperer.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/GrandCannonUncle.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/GrandCannonUncle.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/Livielt.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/Livielt.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/MechanicalTechnician.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/MechanicalTechnician.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/SilentNinja.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/SilentNinja.webp",
         probability: 0.122,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/SphericElectricity.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/SphericElectricity.webp",
         probability: 0.008,
     },
     {
-        hero_url: "https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/share/Strangler.webp",
+        hero_url: "https://d3dhz6pjw7pz9d.cloudfront.net/astrark/share/Strangler.webp",
         probability: 0.122,
     },
 ]

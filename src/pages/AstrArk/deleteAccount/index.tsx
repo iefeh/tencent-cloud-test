@@ -30,14 +30,14 @@ const DeleteAccountPage: NextPage & BasePage = () => {
         'relative w-screen h-screen',
         'flex flex-col justify-between items-center',
         'pt-6 pb-9',
-        "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/bg.png')] bg-cover bg-center bg-no-repeat font-fzdb",
+        "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/deleteAccount/bg.png')] bg-cover bg-center bg-no-repeat font-fzdb",
       ])}
     >
       <div className="flex-1 flex justify-center items-center">
         <div className="relative w-[78.75rem] h-[37.1875rem] pt-16 pl-[4.5rem] pr-[3.125rem] pb-[5.0625rem] flex flex-col">
           <Image
             className="object-contain"
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/bg_card.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/astrark/deleteAccount/bg_card.png"
             alt=""
             fill
             sizes="100%"
@@ -79,7 +79,7 @@ const DeleteAccountPage: NextPage & BasePage = () => {
           <div className="flex justify-center items-center relative z-0 mt-[3.375rem]">
             {status === 2 ? (
               <Button
-                className="w-[19.375rem] h-[7.375rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/btn_yellow.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none -ml-[1.375rem]"
+                className="w-[19.375rem] h-[7.375rem] bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/deleteAccount/btn_yellow.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none -ml-[1.375rem]"
                 isLoading={loading}
                 onPress={onContinue}
               >
@@ -87,7 +87,7 @@ const DeleteAccountPage: NextPage & BasePage = () => {
               </Button>
             ) : (
               <Button
-                className="w-[19.375rem] h-[7.375rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/deleteAccount/btn_gray.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none"
+                className="w-[19.375rem] h-[7.375rem] bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/deleteAccount/btn_gray.png')] bg-contain bg-transparent bg-no-repeat text-2xl leading-none"
                 isLoading={loading}
                 disabled={status < 0}
                 onPress={onContinue}

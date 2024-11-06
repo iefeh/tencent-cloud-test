@@ -9,7 +9,7 @@ const LotteryListPage: FC = () => {
   return (
     <>
       <section
-        className="w-full bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg.png')] bg-[length:100%_auto] bg-no-repeat relative"
+        className="w-full bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg.png')] bg-[length:100%_auto] bg-no-repeat relative"
         id="luxy"
       >
         <Head>

@@ -6,7 +6,7 @@ import Head from 'next/head';
 
 export default function PledgePage() {
   return (
-    <section className="pb-24 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_page.png')] bg-contain bg-top bg-no-repeat">
+    <section className="pb-24 bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_page.png')] bg-contain bg-top bg-no-repeat">
       <Head>
         <title>Moonveil Entertainment</title>
       </Head>

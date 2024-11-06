@@ -46,7 +46,7 @@ const IntegerInput: FC<Props> = ({ value, min = 0, max = 0, classNames, onValueC
             'object-contain w-[1.125rem] aspect-square cursor-pointer',
             Number(value) <= min && 'grayscale cursor-not-allowed',
           ])}
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_minus.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_minus.png"
           alt=""
           width={36}
           height={36}
@@ -61,7 +61,7 @@ const IntegerInput: FC<Props> = ({ value, min = 0, max = 0, classNames, onValueC
             'object-contain w-[1.125rem] aspect-square cursor-pointer',
             Number(value) >= max && 'grayscale, cursor-not-allowed',
           ])}
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/minigames/icons/icon_plus.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/icons/icon_plus.png"
           alt=""
           width={36}
           height={36}

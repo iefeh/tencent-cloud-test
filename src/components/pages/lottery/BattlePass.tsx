@@ -20,10 +20,10 @@ const REQUIREMENT_ICONS: Dict<StaticImageData | string> = {
   [LotteryRequirementType.NFT]: nftPassImg,
   [LotteryRequirementType.BADGE]: badgePassImg,
   [LotteryRequirementType.WHITELIST]:
-    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/whitelist.png',
+    'https://d3dhz6pjw7pz9d.cloudfront.net/pass/qualification/whitelist.png',
   [LotteryRequirementType.MB]:
-    'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/campaign/reward/moonbeam/small-bg.png',
-  [LotteryRequirementType.NODE]: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pass/qualification/node.png',
+    'https://d3dhz6pjw7pz9d.cloudfront.net/campaign/reward/moonbeam/small-bg.png',
+  [LotteryRequirementType.NODE]: 'https://d3dhz6pjw7pz9d.cloudfront.net/pass/qualification/node.png',
 };
 
 const BattlePass: FC<Props & ItemProps<Lottery.Pool>> = ({ className, item, float, visible, onRuleClick }) => {

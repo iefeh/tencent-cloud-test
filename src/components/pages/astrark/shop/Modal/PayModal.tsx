@@ -35,7 +35,7 @@ const columns = [
       return (
         <div className="relative">
           <div>{text}</div>
-          <div className="text-[.8125rem] text-center w-[4.625rem] aspect-[74/26] absolute top-[-100%] right-3 bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_off.png')] bg-no-repeat bg-contain whitespace-nowrap">
+          <div className="text-[.8125rem] text-center w-[4.625rem] aspect-[74/26] absolute top-[-100%] right-3 bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/bg_off.png')] bg-no-repeat bg-contain whitespace-nowrap">
             {record.product_price_discount * 100}% OFF
           </div>
         </div>
@@ -227,7 +227,7 @@ const PayModal: FC<PayModalProps> = (props) => {
           overflow: "initial"
         }}
         classNames={{
-          base: "rounded-none bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/shop/bg_modal.png')] bg-no-repeat bg-contain !max-w-[57.25rem] !w-[57.25rem] aspect-[57.25/30]"
+          base: "rounded-none bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/shop/bg_modal.png')] bg-no-repeat bg-contain !max-w-[57.25rem] !w-[57.25rem] aspect-[57.25/30]"
         }}
       >
         <ModalContent>

@@ -35,7 +35,7 @@ const TicketContent: FC<Props> = ({
 
       <div className="w-[29.6875rem] h-[5.875rem] relative flex items-center justify-between pl-2 pr-4">
         <Image
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_mb_info.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_mb_info.png"
           alt=""
           fill
           sizes="100%"
@@ -58,7 +58,7 @@ const TicketContent: FC<Props> = ({
             'w-[1.125rem] h-[1.125rem] object-contain mr-3 relative z-0',
             disabled || minusDisabled ? 'cursor-not-allowed grayscale' : 'cursor-pointer',
           ])}
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_minus_basic_yellow.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/common/icon_minus_basic_yellow.png"
           alt=""
           width={38}
           height={6}
@@ -68,7 +68,7 @@ const TicketContent: FC<Props> = ({
 
         <div className="w-24 h-[2.1875rem] lg:w-[9.625rem] lg:h-14 relative flex justify-center items-center z-0">
           <Image
-            src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_draw_button.png"
+            src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_draw_button.png"
             alt=""
             fill
             sizes="100%"
@@ -85,7 +85,7 @@ const TicketContent: FC<Props> = ({
             'w-[1.125rem] h-[1.125rem] object-contain ml-3 relative z-0',
             disabled || plusDisabled ? 'cursor-not-allowed grayscale' : 'cursor-pointer',
           ])}
-          src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/icon_plus_basic_yellow.png"
+          src="https://d3dhz6pjw7pz9d.cloudfront.net/common/icon_plus_basic_yellow.png"
           alt=""
           width={38}
           height={6}

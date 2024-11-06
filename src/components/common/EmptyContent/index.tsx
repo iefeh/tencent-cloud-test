@@ -18,7 +18,7 @@ const EmptyContent: FC<Props> = ({ className, content = 'No history found.' }) =
 
       <Image
         className="w-4/5 h-auto"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/common/teams.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/common/teams.png"
         alt=""
         width={3928}
         height={1898}

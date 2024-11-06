@@ -13,7 +13,7 @@ const InfoCardItem: FC<Props> = ({ label, value, unit, append }) => {
     <div className="flex justify-between items-center flex-nowrap gap-2 relative w-[42.8125rem] aspect-[694/131] pl-8">
       <Image
         className="object-contain"
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_card_item.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_card_item.png"
         alt=""
         fill
         sizes="100%"

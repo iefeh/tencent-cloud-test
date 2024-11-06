@@ -62,7 +62,7 @@ const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
             className={cn([
               'relative flex justify-between items-center',
               'w-[31.25rem] h-[2.5625rem] pl-3 pr-5',
-              "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/bg_reward.png')] bg-no-repeat bg-contain",
+              "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/pledge/bg_reward.png')] bg-no-repeat bg-contain",
               'text-black font-semibold text-xl',
             ])}
           >
@@ -70,7 +70,7 @@ const StakingRewards: FC<Props> = ({ stakeValue, duration }) => {
               <Tooltip content={<div className="max-w-[25rem] py-1 px-2">{reward.tips}</div>}>
                 <Image
                   className="w-[1.0625rem] h-[1.0625rem] object-contain mr-3"
-                  src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/pledge/icons/icon_info_small.png"
+                  src="https://d3dhz6pjw7pz9d.cloudfront.net/pledge/icons/icon_info_small.png"
                   alt=""
                   width={17}
                   height={17}

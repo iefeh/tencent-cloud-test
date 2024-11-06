@@ -14,7 +14,7 @@ export default function AstrArkSchool() {
         preload="auto"
         poster="/img/astrark/school/bg.jpg"
       >
-        <source src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/background/bg1.mp4" />
+        <source src="https://d3dhz6pjw7pz9d.cloudfront.net/astrark/background/bg1.mp4" />
       </video>
 
       <PageDesc

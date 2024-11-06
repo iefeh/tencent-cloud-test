@@ -31,13 +31,13 @@ const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, disabled, onSwitchDi
         className={cn([
           'h-auto aspect-square',
           inModal
-            ? "!w-[15.875rem] bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_shadow_modal.png')] bg-contain bg-no-repeat"
+            ? "!w-[15.875rem] bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_asset_shadow_modal.png')] bg-contain bg-no-repeat"
             : '!w-[23.625rem] bg-black',
         ])}
         src={
           item?.token_metadata?.animation_url ||
           item?.token_metadata?.image ||
-          'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_null.png'
+          'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_asset_null.png'
         }
         nftClassName={inModal ? 'bg-black' : ''}
         isSrcImage={!item?.token_metadata?.animation_url}
@@ -60,7 +60,7 @@ const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, disabled, onSwitchDi
 
         <div className="mt-9 flex justify-between items-center gap-x-4">
           <LGButton
-            className="!p-0 bg-transparent !bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_btn_display.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 !text-[#5D3C13] !border-none data-[disabled=true]:grayscale font-fzdb text-2xl leading-none"
+            className="!p-0 bg-transparent !bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_btn_display.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 !text-[#5D3C13] !border-none data-[disabled=true]:grayscale font-fzdb text-2xl leading-none"
             label={isDisplayed ? 'Remove' : 'Display'}
             actived
             disabled={!item || isDisplayed === undefined || disabled}
@@ -69,7 +69,7 @@ const AssetCard: FC<Props> = ({ inModal, item, isDisplayed, disabled, onSwitchDi
           />
 
           <LGButton
-            className="!p-0 bg-transparent !bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_btn_use_now.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 border-none !text-white font-fzdb text-2xl leading-none"
+            className="!p-0 bg-transparent !bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_btn_use_now.png')] rounded-none bg-contain bg-no-repeat w-[12.875rem] h-20 border-none !text-white font-fzdb text-2xl leading-none"
             label="Use Now"
             disabled={!item?.expolorer_url}
             link={item?.expolorer_url}

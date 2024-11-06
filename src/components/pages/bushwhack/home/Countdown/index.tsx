@@ -31,7 +31,7 @@ export default function CountdownScreen() {
           fluid: true,
           sources: [
             {
-              src: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/bushwhack/background/BUSHWHACK_TEASER.webm',
+              src: 'https://d3dhz6pjw7pz9d.cloudfront.net/bushwhack/background/BUSHWHACK_TEASER.webm',
               type: 'video/webm',
             },
           ],

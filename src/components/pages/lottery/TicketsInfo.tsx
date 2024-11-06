@@ -6,12 +6,12 @@ import { FC } from 'react';
 const TicketsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
   const tickets = [
     {
-      icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_free.png',
+      icon: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_free.png',
       label: 'Free Tickets',
       value: item?.user_free_lottery_ticket_amount || 0,
     },
     {
-      icon: 'https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/ticket_s1.png',
+      icon: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/ticket_s1.png',
       label: 'S1 Tickets',
       value: item?.user_s1_lottery_ticket_amount || 0,
     },
@@ -22,7 +22,7 @@ const TicketsInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, 
       className={cn(['w-[22.125rem] h-[4.5625rem] pl-2 pr-6', 'relative flex justify-between items-center', className])}
     >
       <Image
-        src="https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/bg_tickets_info.png"
+        src="https://d3dhz6pjw7pz9d.cloudfront.net/lottery/bg_tickets_info.png"
         alt=""
         fill
         sizes="100%"

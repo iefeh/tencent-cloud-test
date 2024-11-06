@@ -76,9 +76,9 @@ const Assets: FC<Props & ClassNameProps> = ({ scrollRef, items, displayItems, cl
                   'relative bg-contain bg-no-repeat',
                   'shrink-0 flex justify-center items-center',
                   item &&
-                    "hover:bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_shadow.png')]",
+                    "hover:bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_asset_shadow.png')]",
                   selected &&
-                    "bg-[url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/astrark/assets/bg_asset_shadow.png')]",
+                    "bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/astrark/assets/bg_asset_shadow.png')]",
                   item ? 'cursor-pointer' : 'cursor-not-allowed',
                 ])}
                 onClick={() => item && setSelectedNFT(item)}

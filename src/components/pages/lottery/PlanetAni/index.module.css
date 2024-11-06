@@ -1,5 +1,5 @@
 .prizeContianer {
-  mask-image: url('https://moonveil-public.s3.ap-southeast-2.amazonaws.com/lottery/planet_mask.png');
+  mask-image: url('https://d3dhz6pjw7pz9d.cloudfront.net/lottery/planet_mask.png');
   mask-repeat: no-repeat;
   mask-size: contain;
 }
