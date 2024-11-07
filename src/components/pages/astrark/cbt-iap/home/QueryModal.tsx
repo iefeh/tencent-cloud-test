@@ -34,7 +34,7 @@ const QueryModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
                 src="/astrark/cbt-iap/icons/question_active.png"
               />
 
-              <div className="font-semakin text-basic-yellow text-2xl leading-none">AstrArk CBT IAP Return Query</div>
+              <div className="font-semakin text-basic-yellow text-2xl leading-none">AstrArk IAP Return Query</div>
             </ModalHeader>
 
             <ModalBody>
