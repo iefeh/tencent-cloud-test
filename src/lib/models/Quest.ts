@@ -28,7 +28,7 @@ export interface IQuest extends Document {
         // 固定奖励时的任务奖励数量
         amount: number,
         // 格式化的奖励，用于定制化的展示任务奖励
-        amount_formatted: number,
+        amount_formatted: string,
         // 当奖励类型为range时，任务关联的动态奖励ids，关联UserMetricReward
         // 注意，当任务类型为whitelist时，会检查range_reward_ids，最后尝试根据白名单的奖励进行下发.
         range_reward_ids: string[],

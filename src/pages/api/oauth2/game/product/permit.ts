@@ -130,6 +130,8 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
     }
     let tokenAmount = calculateTokenPaymentWithDiscount(gameProduct.price_in_usdc, token.price_in_usdc, token.product_discount, token.decimal);
     const now = Date.now();
+    const pow = 10 ** 4; //价格保留4位小数
+    const price =  Math.ceil(gameProduct.price_in_usdc*(1-token.product_discount)*pow)/pow;
     // 3. 构建PurchaseRequest
     let request: PurchaseRequest = {
         request_id: ethers.id(`productPermit:${gameId}:${productId}:${userId}:${currentPurchasePeriod}:${soldAmount+1}`),
@@ -138,7 +140,7 @@ async function checkUserGameProductPurchaseRequest(userId: string, gameId: strin
         token_id: tokenId,
         product_id: productId,
         product_id_hash: gameProduct.id_hash,
-        product_price_in_usd: (gameProduct.price_in_usdc)*(1 - token.product_discount),
+        product_price_in_usd: price,
         request_time: now,
         request_period: currentPurchasePeriod,
         request_expire_time: now + 10 * 60 * 1000,
