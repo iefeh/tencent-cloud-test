@@ -39,7 +39,7 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
   }
   if (twitterTopic.twitter_topic_text) {
     // 把文本的\n替换为%0a
-    const text = twitterTopic.twitter_topic_text.replace(/\n/g, "%0a");
+    const text = encodeURIComponent(twitterTopic.twitter_topic_text);
     postUrl += `&text=${text}%20`;
   }
   if (twitterTopic.twitter_topic_urls && twitterTopic.twitter_topic_urls.length > 0) {
