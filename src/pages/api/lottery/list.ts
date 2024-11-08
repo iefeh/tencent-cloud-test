@@ -46,13 +46,11 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     }
     let rewards: any[] = [];
     for (let i = 0; i < pool.rewards.length; i++) {
-      if (pool.rewards[i].reward_level >= 5 && rewards.length < 3) {
-        rewards.push({
-          reward_name: pool.rewards[i].reward_name,
-          reward_level: pool.rewards[i].reward_level,
-          icon_url: pool.rewards[i].icon_url
-        });
-      }
+      rewards.push({
+        reward_name: pool.rewards[i].reward_name,
+        reward_level: pool.rewards[i].reward_level,
+        icon_url: pool.rewards[i].icon_url
+      });
     }
     result.push({
       lottery_pool_id: pool.lottery_pool_id,
@@ -67,7 +65,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       start_time: pool.start_time,
       end_time: pool.end_time,
       open_status: openStatus,
-      limited_rewards: rewards
+      rewards: rewards
     });
   }
   return res.json(response.success({
