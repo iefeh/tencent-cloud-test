@@ -49,6 +49,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
       rewards.push({
         reward_name: pool.rewards[i].reward_name,
         reward_level: pool.rewards[i].reward_level,
+        reward_type: pool.rewards[i].reward_type,
         icon_url: pool.rewards[i].icon_url
       });
     }
