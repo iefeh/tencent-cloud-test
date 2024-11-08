@@ -217,16 +217,27 @@ export async function lotteryPoolRequirementSatisfy(userId: string, lotteryPoolI
   const requirements = await LotteryPoolRequirement.find({ lottery_pool_id: lotteryPoolId });
   let result = { requirement_type: "", meet_requirement: true };
   if (requirements && requirements.length > 0) {
+    let currentResult = null;
     // 判断徽章是否满足要求
-    result = await lotterySatisfyByBadge(userId, requirements) || result;
-    //判断白名单是否满足要求
-    result = await lotterySatisfyByWhiteList(userId, requirements) || result;
-    //判断NFT是否满足要求
-    result = await lotterySatisfyByNFT(userId, requirements) || result;
-    //判断node是否满足要求
-    result = await lotterySatisfyByNodeHolder(userId, requirements) || result;
-    //判断MB是否满足要求
-    result = await lotterySatisfyMB(userId, requirements) || result;
+    currentResult = await lotterySatisfyByBadge(userId, requirements);
+    if (currentResult === null || !currentResult.meet_requirement) {
+      //判断白名单是否满足要求
+      currentResult = await lotterySatisfyByWhiteList(userId, requirements) || currentResult;
+    }
+    if (currentResult === null || !currentResult.meet_requirement) {
+      //判断白名单是否满足要求
+      currentResult = await lotterySatisfyByNFT(userId, requirements) || currentResult;
+    }
+    if (currentResult === null || !currentResult.meet_requirement) {
+      //判断白名单是否满足要求
+      currentResult = await lotterySatisfyByNodeHolder(userId, requirements) || currentResult; 
+    }
+    if (currentResult === null || !currentResult.meet_requirement) {
+      //判断白名单是否满足要求
+      currentResult = await lotterySatisfyMB(userId, requirements) || currentResult;
+    }
+    // 如果没有配置任何白名单, 则返回默认值
+    result = currentResult || result;
   }
   return result;
 }
