@@ -113,7 +113,7 @@ export default function usePrizeAni({ item }: ItemProps<Lottery.Pool>) {
       (item?.rewards || []).forEach((r) => {
         if (r.reward_type === LotteryRewardType.NoPrize) return;
 
-        map.set(r.reward_type, r);
+        map.set(r.reward_type, r as Lottery.RewardItem);
       });
 
       const list = Array.from(map.values());

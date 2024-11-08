@@ -79,7 +79,7 @@ export const enum RewardQuality {
   GOLDEN,
 }
 
-export const LotteryBorders = {
+export const LotteryBorders: Dict<{ img: string; width: number; height: number; color: string }> = {
   [RewardQuality.COPPERY]: {
     img: 'https://d3dhz6pjw7pz9d.cloudfront.net/lottery/border/coppery.png',
     width: 154,

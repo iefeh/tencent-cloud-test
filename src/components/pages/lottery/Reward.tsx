@@ -4,9 +4,9 @@ import { Tooltip, cn } from '@nextui-org/react';
 import Image from 'next/image';
 import { FC } from 'react';
 
-const Reward: FC<ClassNameProps & ItemProps<Lottery.RewardItem>> = ({ className, item }) => {
-  const { icon_url, reward_type, reward_level, reward_name, amount } = item || {};
-  const border = LotteryBorders[reward_level || RewardQuality.BLUE];
+const Reward: FC<ClassNameProps & ItemProps<Lottery.LimitedReward>> = ({ className, item }) => {
+  const { icon_url, reward_type, reward_level, reward_name } = item || {};
+  const border = LotteryBorders[(reward_level || RewardQuality.BLUE)];
 
   const iconURL =
     reward_type === LotteryRewardType.NoPrize
