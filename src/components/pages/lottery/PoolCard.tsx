@@ -159,8 +159,8 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
           ))}
         </div>
 
-        <div className="shrink-0 text-basic-yellow cursor-pointer hover:underline" onClick={prizePoolDisclosure.onOpen}>
-          More
+        <div className="shrink-0 text-basic-yellow cursor-pointer underline" onClick={prizePoolDisclosure.onOpen}>
+          View All
         </div>
       </div>
 
