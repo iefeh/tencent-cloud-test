@@ -4,7 +4,7 @@ import type { LotteryRequirementType, LotteryRewardType, LotteryStatus, RewardQu
 import type { LotteryRequirementDTO } from '@/http/services/lottery';
 
 declare namespace Lottery {
-  interface Pool {
+  interface Pool<T = RewardItem> {
     lottery_pool_id: string;
     start_time: number;
     end_time: number;
@@ -16,13 +16,12 @@ declare namespace Lottery {
     user_mb_amount: number;
     can_claim_premium_benifits: boolean;
     first_twitter_topic_verified?: boolean;
-    rewards: RewardItem[];
+    rewards: RewardItem[] | LimitedReward[];
     need_verify_twitter?: boolean;
     title: string;
     name?: string;
     icon_url?: string;
     icon_frame_level?: number;
-    limited_rewards?: LimitedReward[];
     open_status?: LotteryStatus;
     user_meet_requirement?: boolean;
     user_meet_requirement_type?: LotteryRequirementType;
@@ -34,6 +33,7 @@ declare namespace Lottery {
     reward_name: string;
     reward_level: number;
     icon_url: string;
+    reward_type: LotteryRewardType;
   }
 
   interface RewardItem {

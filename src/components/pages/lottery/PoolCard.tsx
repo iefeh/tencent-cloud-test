@@ -7,7 +7,8 @@ import { FC } from 'react';
 import dayjs from 'dayjs';
 import Duration from 'dayjs/plugin/duration';
 import Link from '@/components/link';
-import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip } from '@nextui-org/react';
+import { Button, Popover, PopoverContent, PopoverTrigger, Tooltip, useDisclosure } from '@nextui-org/react';
+import PrizePoolModal from './modals/PrizePoolModal';
 
 dayjs.extend(Duration);
 
@@ -28,6 +29,7 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
   const hasReachedRequirement = !!user_meet_requirement;
   const canPlay = open_status === LotteryStatus.IN_PROGRESS && hasReachedRequirement;
   const showStatus = open_status !== LotteryStatus.IN_PROGRESS && open_status !== LotteryStatus.ENDED;
+  const prizePoolDisclosure = useDisclosure();
 
   function getLimitedTime() {
     const du = dayjs.duration(Math.max((item?.end_time || 0) - Date.now(), 0));
@@ -138,22 +140,28 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
 
       <div className="mt-5 text-white text-xl leading-6">{item?.name || '--'}</div>
 
-      <div className="grid auto-cols-max place-content-start gap-x-4 gap-y-5 mt-6 flex-1">
-        {(item?.limited_rewards || []).map((reward, index) => (
-          <div key={index} className="flex items-center h-min">
-            <Image
-              className="w-8 h-8 object-contain"
-              src={reward.icon_url}
-              alt=""
-              width={64}
-              height={64}
-              unoptimized
-              priority
-            />
+      <div className="flex flex-nowrap mt-6">
+        <div className="grid auto-cols-max place-content-start gap-x-4 gap-y-5 flex-1">
+          {(item?.rewards || []).slice(0, 3).map((reward, index) => (
+            <div key={index} className="flex items-center h-min">
+              <Image
+                className="w-8 h-8 object-contain"
+                src={reward.icon_url}
+                alt=""
+                width={64}
+                height={64}
+                unoptimized
+                priority
+              />
 
-            <span className="ml-2 font-semakin text-base text-basic-yellow">{reward.reward_name || '--'}</span>
-          </div>
-        ))}
+              <span className="ml-2 font-semakin text-base text-basic-yellow">{reward.reward_name || '--'}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="shrink-0 text-basic-yellow cursor-pointer hover:underline" onClick={prizePoolDisclosure.onOpen}>
+          More
+        </div>
       </div>
 
       <div className="flex justify-between items-center mt-6">
@@ -177,15 +185,14 @@ const PoolCard: FC<ItemProps<Lottery.Pool>> = ({ item }) => {
             <PopoverContent>
               <div>
                 <div className="text-lg">Please make sure you meet the following requirement(s) to enter:</div>
-                <div
-                  className="ml-4 mt-2"
-                  dangerouslySetInnerHTML={{ __html: requirement_description || '--' }}
-                ></div>
+                <div className="ml-4 mt-2" dangerouslySetInnerHTML={{ __html: requirement_description || '--' }}></div>
               </div>
             </PopoverContent>
           </Popover>
         )}
       </div>
+
+      <PrizePoolModal disclosure={prizePoolDisclosure} item={item} />
     </div>
   );
 };

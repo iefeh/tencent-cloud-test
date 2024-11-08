@@ -7,10 +7,17 @@ import { FC, Fragment, useState } from 'react';
 
 const PrizePoolTimeoutInfo: FC<ClassNameProps & ItemProps<Lottery.Pool>> = ({ className, item }) => {
   const [times, setTimes] = useState(['00', '00', '00', '00']);
+  const [isEnd, setIsEnd] = useState(false);
   useCountdown(item?.end_time || dayjs().valueOf(), dayjs().valueOf(), (leftTime) => {
+    if (leftTime <= 0) {
+      if (!isEnd) setIsEnd(true);
+      return;
+    }
     const duration = dayjs.duration(leftTime);
     setTimes(duration.format('DD:HH:mm:ss').split(':'));
   });
+
+  if (isEnd) return null;
 
   return (
     <div
