@@ -49,7 +49,7 @@ const FAQModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } })
                 title={<div className="font-semakin text-5xl text-basic-yellow">FAQ</div>}
                 subtitle={
                   <div className="text-2xl mt-4 text-[#EDEDED]">
-                    Paid Closed Beta Test (CBT) with Data Wipe & IAP FAQ
+                    Paid Closed Beta Test (Marching Test) with Data Wipe & IAP FAQ
                   </div>
                 }
               />
