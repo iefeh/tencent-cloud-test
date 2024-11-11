@@ -1,9 +1,10 @@
 import { KEY_LOCALE, Locale } from '@/constant/locale';
-import UserStore from '@/store/User';
+import { useStore } from '@/store';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-export default function useRouteLocale(store: UserStore) {
+export default function useRouteLocale() {
+  const store = useStore();
   const router = useRouter();
   const { asPath } = router;
 

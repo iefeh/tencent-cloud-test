@@ -28,7 +28,6 @@ import './TetraNFT/components/PrivilegeScreen/index.scss';
 import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
 import 'video.js/dist/video-js.css';
 import Head from 'next/head';
-import { LUXY_OPTIONS } from '@/constant/luxy';
 import Script from 'next/script';
 import usePostMessage from '@/hooks/usePostMessage';
 import { useStore } from '@/store';
@@ -44,6 +43,8 @@ import useRouteLocale from '@/hooks/useRouteLocale';
 import { NextUIProvider } from '@nextui-org/react';
 import '@/styles/aa.scss';
 import useEventTracking from '@/hooks/useEventTracking';
+import useRootLuxy from '@/hooks/common/useRootLuxy';
+import useRem from '@/hooks/common/useRem';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -69,14 +70,11 @@ export default function App({ Component, pageProps }: AppProps) {
     '/AstrArk/cbt-iap',
   ];
   const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
-  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop', '/AstrArk/cbt-iap/inner'];
   const router = useRouter();
   const isInWhiteList = whiteList.includes(router.route);
   const hasNoHeader = noHeaderList.includes(router.route);
   const noNeedInit = noInitList.includes(router.route);
-  const isAAMobile = aaMobileList.includes(router.route);
   const [loading, setLoading] = useState(!isInWhiteList);
-  const [scale, setScale] = useState('1');
   const store = useStore();
   const getLayout =
     (Component as BasePage).getLayout ||
@@ -94,78 +92,20 @@ export default function App({ Component, pageProps }: AppProps) {
     localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
   }
 
-  function resetRem() {
-    const width = document.documentElement.clientWidth;
-    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 8 : 12);
-    document.documentElement.style.fontSize = `${fontSize}px`;
-
-    const ratio = window.devicePixelRatio;
-    if (/windows|win32|win64|wow32|wow64/g.test(navigator.userAgent.toLowerCase())) {
-      setScale((1 / ratio).toFixed(2));
-    }
-  }
+  const { scale } = useRem();
 
   useEventTracking();
 
-  useEffect(() => {
-    resetRem();
-    const resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
-
-    window.addEventListener(resizeEvt, resetRem);
-    return () => window.removeEventListener(resizeEvt, resetRem);
-  }, []);
-
-  useEffect(() => {
-    const luxy = document.getElementById('luxy');
-    if (!luxy) return;
-
-    import('luxy.js').then((res) => {
-      if (!res.default) return;
-
-      window.luxy = res.default;
-      window.luxy.getWrapperTranslateY = function () {
-        if (!this.wrapper) return;
-        try {
-          const { transform } = this.wrapper.style;
-          const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
-          return -y || 0;
-        } catch (error) {
-          return 0;
-        }
-      };
-      window.luxy.disable = function () {
-        const { resizeId, scrollId } = this;
-        cancelAnimationFrame(resizeId);
-        cancelAnimationFrame(scrollId);
-        this.disabled = true;
-      };
-      window.luxy.enable = function () {
-        this.wapperOffset = this.getWrapperTranslateY();
-        try {
-          this.init(LUXY_OPTIONS);
-        } catch (error) {
-          console.log(error);
-        }
-        this.disabled = false;
-      };
-      window.luxy.disable();
-
-      try {
-        res.default.init(LUXY_OPTIONS);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  });
+  useRootLuxy();
 
   usePostMessage();
+
+  useRouteLocale();
 
   useEffect(() => {
     if (noNeedInit) return;
     store.init();
   }, []);
-
-  useRouteLocale(store);
 
   return (
     <>
