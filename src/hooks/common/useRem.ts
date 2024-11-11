@@ -1,11 +1,8 @@
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-
-const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop', '/AstrArk/cbt-iap/inner'];
+import useCheckRouter from './useCheckRouter';
 
 export default function useRem() {
-  const router = useRouter();
-  const isAAMobile = aaMobileList.includes(router.route);
+  const { isAAMobile } = useCheckRouter();
   const [scale, setScale] = useState('1');
 
   function resetRem() {

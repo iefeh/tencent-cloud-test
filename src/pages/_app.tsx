@@ -8,7 +8,7 @@ import '@/styles/swiper.scss';
 import '@/styles/video.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import RootLayout from './layout';
 import Loading from './components/common/Loading';
 import './page.scss';
@@ -30,12 +30,10 @@ import 'video.js/dist/video-js.css';
 import Head from 'next/head';
 import Script from 'next/script';
 import usePostMessage from '@/hooks/usePostMessage';
-import { useStore } from '@/store';
 import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/toastify.css';
-import { KEY_INVITE_CODE } from '@/constant/storage';
 import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
@@ -45,6 +43,9 @@ import '@/styles/aa.scss';
 import useEventTracking from '@/hooks/useEventTracking';
 import useRootLuxy from '@/hooks/common/useRootLuxy';
 import useRem from '@/hooks/common/useRem';
+import useCheckRouter from '@/hooks/common/useCheckRouter';
+import useRouterInviteCode from '@/hooks/common/useRouterInviteCode';
+import useUserInit from '@/hooks/common/useUserInit';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -52,30 +53,9 @@ BetterScroll.use(Pullup);
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = [
-    '/email/captcha/quickfill',
-    '/auth',
-    '/auth/connect',
-    '/oauth',
-    '/AstrArk/assets',
-    '/AstrArk/shop',
-    '/AstrArk/cbt-iap/inner',
-  ];
-  const noHeaderList = [
-    '/email/captcha/quickfill',
-    '/auth',
-    '/auth/connect',
-    '/oauth',
-    '/AstrArk/assets',
-    '/AstrArk/cbt-iap',
-  ];
-  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
   const router = useRouter();
-  const isInWhiteList = whiteList.includes(router.route);
-  const hasNoHeader = noHeaderList.includes(router.route);
-  const noNeedInit = noInitList.includes(router.route);
+  const { isInWhiteList, hasNoHeader, noNeedInit } = useCheckRouter();
   const [loading, setLoading] = useState(!isInWhiteList);
-  const store = useStore();
   const getLayout =
     (Component as BasePage).getLayout ||
     ((page) => (
@@ -88,11 +68,9 @@ export default function App({ Component, pageProps }: AppProps) {
       </RootLayout>
     ));
 
-  if (router.query.invite_code) {
-    localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
-  }
-
   const { scale } = useRem();
+
+  useRouterInviteCode();
 
   useEventTracking();
 
@@ -102,10 +80,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useRouteLocale();
 
-  useEffect(() => {
-    if (noNeedInit) return;
-    store.init();
-  }, []);
+  useUserInit();
 
   return (
     <>
