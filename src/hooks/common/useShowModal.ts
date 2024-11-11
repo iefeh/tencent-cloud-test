@@ -13,7 +13,10 @@ export default function usePluginModal<T = boolean>() {
       modal.hide();
       modal.resolve(res);
     },
-    onCancel: modal.reject,
+    onCancel: (res?: T) => {
+      modal.hide();
+      modal.reject(res);
+    },
   };
 }
 
@@ -22,7 +25,7 @@ export const showModal = async <T = boolean>(content: FC, args?: ComponentProps<
 
   try {
     // show方法传入FC类型且显式定义类型时，需要全部覆盖所有类型，且不便于声明args的类型
-    const res = await NiceModal.show(Modal, args) as T;
+    const res = (await NiceModal.show(Modal, args)) as T;
     return res ?? true;
   } catch (error) {
     return false;
