@@ -54,7 +54,7 @@ export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const { isInWhiteList, hasNoHeader, noNeedInit } = useCheckRouter();
+  const { isInWhiteList, hasNoHeader } = useCheckRouter();
   const [loading, setLoading] = useState(!isInWhiteList);
   const getLayout =
     (Component as BasePage).getLayout ||
@@ -68,19 +68,19 @@ export default function App({ Component, pageProps }: AppProps) {
       </RootLayout>
     ));
 
-  const { scale } = useRem();
+  const { scale } = useRem(); // rem页面布局响应逻辑
 
-  useRouterInviteCode();
+  useRouterInviteCode(); // 检测路由的邀请码参数
 
-  useEventTracking();
+  useEventTracking(); // 埋点初始化
 
-  useRootLuxy();
+  useRootLuxy(); // 初始化luxy滚动效果
 
   usePostMessage();
 
-  useRouteLocale();
+  useRouteLocale(); // 多语言路由功能逻辑
 
-  useUserInit();
+  useUserInit(); // 用户数据初始化
 
   return (
     <>
