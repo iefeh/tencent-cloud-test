@@ -56,7 +56,7 @@ const RulesModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange } 
               <div className="mt-12">
                 <p className="font-semakin text-2xl text-basic-yellow">Dear MoonWalkers,</p>
                 <p className="font-poppins-medium text-base leading-[1.875rem] mt-4">
-                  Thank you for participating in the AstrArk Paid Closed Beta Test (Marching Test) with Data Wipe. During this
+                  Thank you for participating in the AstrArk Paid Marching Test with Data Wipe. During this
                   test, your total IAP will be returned to your MOONVEIL account after the official game launch,
                   following the IAP Return Rules.
                 </p>
