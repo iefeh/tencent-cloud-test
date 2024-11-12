@@ -12,6 +12,7 @@
     "@aws-sdk/client-s3": "^3.484.0",
     "@aws-sdk/client-ses": "^3.433.0",
     "@covalenthq/client-sdk": "^0.7.0",
+    "@ebay/nice-modal-react": "^1.2.13",
     "@gsap/react": "^2.1.1",
     "@koshnic/ratelimit": "^1.0.3",
     "@moralisweb3/common-evm-utils": "^2.23.2",

@@ -26,6 +26,7 @@ import { isMobile } from 'react-device-detect';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { observer } from 'mobx-react-lite';
 import useNavMenus from './useNavMenus';
+import useCheckNoviceBadge from '@/hooks/events/useCheckNoviceBadge';
 
 const mediaIcon = [
   { img: X, link: 'https://twitter.com/Moonveil_Studio' },
@@ -85,6 +86,9 @@ const Header = () => {
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
   const { menus } = useNavMenus();
+
+  // 带header的页面都要有且需要observer
+  useCheckNoviceBadge(); // Novice Notch活动提示
 
   const DropMenu = useMemo(() => {
     return (

@@ -8,7 +8,7 @@ import '@/styles/swiper.scss';
 import '@/styles/video.scss';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import RootLayout from './layout';
 import Loading from './components/common/Loading';
 import './page.scss';
@@ -28,15 +28,12 @@ import './TetraNFT/components/PrivilegeScreen/index.scss';
 import './TetraNFT/components/IndexScreen/MainTitle/index.scss';
 import 'video.js/dist/video-js.css';
 import Head from 'next/head';
-import { LUXY_OPTIONS } from '@/constant/luxy';
 import Script from 'next/script';
 import usePostMessage from '@/hooks/usePostMessage';
-import { useStore } from '@/store';
 import UserStore from '@/store/User';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/styles/toastify.css';
-import { KEY_INVITE_CODE } from '@/constant/storage';
 import BetterScroll from 'better-scroll';
 import Pullup from '@better-scroll/pull-up';
 import MouseWheel from '@better-scroll/mouse-wheel';
@@ -44,6 +41,12 @@ import useRouteLocale from '@/hooks/useRouteLocale';
 import { NextUIProvider } from '@nextui-org/react';
 import '@/styles/aa.scss';
 import useEventTracking from '@/hooks/useEventTracking';
+import useRootLuxy from '@/hooks/common/useRootLuxy';
+import useRem from '@/hooks/common/useRem';
+import useCheckRouter from '@/hooks/common/useCheckRouter';
+import useRouterInviteCode from '@/hooks/common/useRouterInviteCode';
+import useUserInit from '@/hooks/common/useUserInit';
+import NiceModal from '@ebay/nice-modal-react';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -51,33 +54,9 @@ BetterScroll.use(Pullup);
 export const MobxContext = createContext<UserStore>(new UserStore());
 
 export default function App({ Component, pageProps }: AppProps) {
-  const whiteList = [
-    '/email/captcha/quickfill',
-    '/auth',
-    '/auth/connect',
-    '/oauth',
-    '/AstrArk/assets',
-    '/AstrArk/shop',
-    '/AstrArk/cbt-iap/inner',
-  ];
-  const noHeaderList = [
-    '/email/captcha/quickfill',
-    '/auth',
-    '/auth/connect',
-    '/oauth',
-    '/AstrArk/assets',
-    '/AstrArk/cbt-iap',
-  ];
-  const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
-  const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop', '/AstrArk/cbt-iap/inner'];
   const router = useRouter();
-  const isInWhiteList = whiteList.includes(router.route);
-  const hasNoHeader = noHeaderList.includes(router.route);
-  const noNeedInit = noInitList.includes(router.route);
-  const isAAMobile = aaMobileList.includes(router.route);
+  const { isInWhiteList, hasNoHeader } = useCheckRouter();
   const [loading, setLoading] = useState(!isInWhiteList);
-  const [scale, setScale] = useState('1');
-  const store = useStore();
   const getLayout =
     (Component as BasePage).getLayout ||
     ((page) => (
@@ -90,82 +69,19 @@ export default function App({ Component, pageProps }: AppProps) {
       </RootLayout>
     ));
 
-  if (router.query.invite_code) {
-    localStorage.setItem(KEY_INVITE_CODE, (router.query?.invite_code as string) || '');
-  }
+  const { scale } = useRem(); // rem页面布局响应逻辑
 
-  function resetRem() {
-    const width = document.documentElement.clientWidth;
-    const fontSize = Math.max((16 * width) / 1920, isAAMobile ? 8 : 12);
-    document.documentElement.style.fontSize = `${fontSize}px`;
+  useRouterInviteCode(); // 检测路由的邀请码参数
 
-    const ratio = window.devicePixelRatio;
-    if (/windows|win32|win64|wow32|wow64/g.test(navigator.userAgent.toLowerCase())) {
-      setScale((1 / ratio).toFixed(2));
-    }
-  }
+  useEventTracking(); // 埋点初始化
 
-  useEventTracking();
-
-  useEffect(() => {
-    resetRem();
-    const resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
-
-    window.addEventListener(resizeEvt, resetRem);
-    return () => window.removeEventListener(resizeEvt, resetRem);
-  }, []);
-
-  useEffect(() => {
-    const luxy = document.getElementById('luxy');
-    if (!luxy) return;
-
-    import('luxy.js').then((res) => {
-      if (!res.default) return;
-
-      window.luxy = res.default;
-      window.luxy.getWrapperTranslateY = function () {
-        if (!this.wrapper) return;
-        try {
-          const { transform } = this.wrapper.style;
-          const y = transform?.match(/^translate3d\([^,]+,\s*([\d-]+)[^,]*,\s*[^,]+\)$/)?.[1] || '';
-          return -y || 0;
-        } catch (error) {
-          return 0;
-        }
-      };
-      window.luxy.disable = function () {
-        const { resizeId, scrollId } = this;
-        cancelAnimationFrame(resizeId);
-        cancelAnimationFrame(scrollId);
-        this.disabled = true;
-      };
-      window.luxy.enable = function () {
-        this.wapperOffset = this.getWrapperTranslateY();
-        try {
-          this.init(LUXY_OPTIONS);
-        } catch (error) {
-          console.log(error);
-        }
-        this.disabled = false;
-      };
-      window.luxy.disable();
-
-      try {
-        res.default.init(LUXY_OPTIONS);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  });
+  useRootLuxy(); // 初始化luxy滚动效果
 
   usePostMessage();
 
-  useEffect(() => {
-    if (noNeedInit) return;
-    store.init();
-  }, []);
+  useRouteLocale(); // 多语言路由功能逻辑
 
-  useRouteLocale(store);
+  useUserInit(); // 用户数据初始化
 
   return (
     <>
@@ -194,13 +110,15 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="preload" as="image" href="/img/loading/bg_moon.png" crossOrigin="anonymous"></link>
       </Head>
 
-      <NextUIProvider navigate={router.push}>
-        {!isInWhiteList && loading ? (
-          <Loading onLoaded={() => setLoading(false)} />
-        ) : (
-          getLayout(<Component {...pageProps} />)
-        )}
-      </NextUIProvider>
+      <NiceModal.Provider>
+        <NextUIProvider navigate={router.push}>
+          {!isInWhiteList && loading ? (
+            <Loading onLoaded={() => setLoading(false)} />
+          ) : (
+            getLayout(<Component {...pageProps} />)
+          )}
+        </NextUIProvider>
+      </NiceModal.Provider>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 
