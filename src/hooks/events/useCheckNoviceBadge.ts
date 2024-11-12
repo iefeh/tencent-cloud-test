@@ -7,7 +7,7 @@ import { throttle } from 'lodash';
 
 const checkNovice = throttle(async () => {
   const res = await checkNoviceNotchAPI({});
-  if (!res) return;
+  if (!res?.is_alert) return;
 
   showNoviceNoticeModal();
 }, 300);

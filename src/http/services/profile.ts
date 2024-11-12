@@ -34,7 +34,7 @@ export function updateUserInfoAPI(data: UpdateUserInfoDto): Promise<boolean | nu
   return http.post('/api/users/profile', JSON.stringify(data));
 }
 
-export function checkNoviceNotchAPI(data: { period?: number }): Promise<boolean | null> {
+export function checkNoviceNotchAPI(data: { period?: number }): Promise<{ is_alert: boolean }> {
   return http.post('/api/users/kyc', JSON.stringify(data));
 }
 
