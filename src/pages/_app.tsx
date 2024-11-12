@@ -46,6 +46,7 @@ import useRem from '@/hooks/common/useRem';
 import useCheckRouter from '@/hooks/common/useCheckRouter';
 import useRouterInviteCode from '@/hooks/common/useRouterInviteCode';
 import useUserInit from '@/hooks/common/useUserInit';
+import NiceModal from '@ebay/nice-modal-react';
 
 BetterScroll.use(MouseWheel);
 BetterScroll.use(Pullup);
@@ -109,13 +110,15 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="preload" as="image" href="/img/loading/bg_moon.png" crossOrigin="anonymous"></link>
       </Head>
 
-      <NextUIProvider navigate={router.push}>
-        {!isInWhiteList && loading ? (
-          <Loading onLoaded={() => setLoading(false)} />
-        ) : (
-          getLayout(<Component {...pageProps} />)
-        )}
-      </NextUIProvider>
+      <NiceModal.Provider>
+        <NextUIProvider navigate={router.push}>
+          {!isInWhiteList && loading ? (
+            <Loading onLoaded={() => setLoading(false)} />
+          ) : (
+            getLayout(<Component {...pageProps} />)
+          )}
+        </NextUIProvider>
+      </NiceModal.Provider>
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick theme="dark" />
 

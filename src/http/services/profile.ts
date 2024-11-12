@@ -34,6 +34,10 @@ export function updateUserInfoAPI(data: UpdateUserInfoDto): Promise<boolean | nu
   return http.post('/api/users/profile', JSON.stringify(data));
 }
 
+export function checkNoviceNotchAPI(data: { period?: number }): Promise<boolean | null> {
+  return http.post('/api/users/kyc', JSON.stringify(data));
+}
+
 export interface Invitee {
   avatar: string;
   nickname: string;

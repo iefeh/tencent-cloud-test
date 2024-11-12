@@ -13,7 +13,7 @@ import { useStore } from '@/store';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
 import { MobxContext } from './_app';
 import { AuthCoreContextProvider } from '@particle-network/auth-core-modal';
-import NiceModal from '@ebay/nice-modal-react';
+import useCheckNoviceBadge from '@/hooks/events/useCheckNoviceBadge';
 
 export default function RootLayout({
   children,
@@ -38,6 +38,8 @@ export default function RootLayout({
     </>
   );
 
+  useCheckNoviceBadge(); // Novice Notch活动提示
+
   return (
     <AuthCoreContextProvider
       options={{
@@ -56,13 +58,11 @@ export default function RootLayout({
       <Web3ModalProvider>
         <MobxContext.Provider value={store}>
           <BattlePassContext.Provider value={bpStore}>
-            <NiceModal.Provider>
-              <React.Fragment>
-                <LineBorder />
+            <React.Fragment>
+              <LineBorder />
 
-                {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
-              </React.Fragment>
-            </NiceModal.Provider>
+              {isInWhiteList ? content : <Suspense fallback={<Loading />}>{content}</Suspense>}
+            </React.Fragment>
           </BattlePassContext.Provider>
         </MobxContext.Provider>
       </Web3ModalProvider>
