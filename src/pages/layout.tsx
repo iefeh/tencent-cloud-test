@@ -13,7 +13,6 @@ import { useStore } from '@/store';
 import { BattlePassContext, useBattlePassStore } from '@/store/BattlePass';
 import { MobxContext } from './_app';
 import { AuthCoreContextProvider } from '@particle-network/auth-core-modal';
-import useCheckNoviceBadge from '@/hooks/events/useCheckNoviceBadge';
 
 export default function RootLayout({
   children,
@@ -37,8 +36,6 @@ export default function RootLayout({
       <LoginModal hideCloseButton={hideLoginCloseButton} />
     </>
   );
-
-  useCheckNoviceBadge(); // Novice Notch活动提示
 
   return (
     <AuthCoreContextProvider
