@@ -54,10 +54,6 @@ export default function DownloadPage() {
       className: styles.downloadBtn,
       label: 'Download',
       url: process.env.NEXT_PUBLIC_AA_DOWNLOAD_URL!,
-      isAppStore: true,
-      onClick: function () {
-        downloadFile(this.url, 'AstrArk.apk');
-      },
     },
   ];
 
@@ -99,7 +95,7 @@ export default function DownloadPage() {
                 ])}
                 style={item.img ? { backgroundImage: `url('${item.img}')` } : {}}
                 disableRipple
-                onClick={item.isAppStore ? () => (item.onClick ? item.onClick() : onAppStore(item.url)) : undefined}
+                onClick={item.isAppStore ? () => onAppStore(item.url) : undefined}
               >
                 <span className="relative z-10">{item.label}</span>
               </Button>
