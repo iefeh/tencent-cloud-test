@@ -24,7 +24,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
         return res.json(response.success(data));
     }
 
-    const userMetric = await UserMetrics.findOne({ user_id: userId });
+    const userMetric = await UserMetrics.findOne({ user_id: userId }); 
     if (userMetric && (userMetric.twitter_followed_astrark == 1)
         && userMetric.twitter_followed_moonveil == 1
         && userMetric.discord_joined_moonveil == 1
