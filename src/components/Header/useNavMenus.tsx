@@ -86,10 +86,6 @@ export default function useNavMenus() {
             icon: '/header/icons/astrark.png',
             route: '/AstrArk',
             children: [
-              // {
-              //   name: 'Game Download',
-              //   route: '/AstrArk/Download',
-              // },
               {
                 name: 'Pre-Registration',
                 route: '/AstrArk/PreRegistration',
@@ -101,6 +97,10 @@ export default function useNavMenus() {
               {
                 name: 'Alpha Test Tasks',
                 route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk',
+              },
+              {
+                name: 'Marching Test',
+                route: '/AstrArk/Download',
               },
             ],
           },

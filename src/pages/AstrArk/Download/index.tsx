@@ -4,11 +4,12 @@ import styles from './index.module.scss';
 import { Button, cn, useDisclosure } from '@nextui-org/react';
 import Head from 'next/head';
 import FloatRegisterButton from '@/components/pages/astrark/home/FloatRegisterButton';
-import Link from 'next/link';
 import AppStoreTipsModal from '@/components/pages/astrark/download/AppStoreTipsModal';
 import { useState } from 'react';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import AlphaTestGuidelinesModal from '@/components/pages/astrark/download/AlphaTestGuidelinesModal';
+import Link from '@/components/link';
+import { downloadFile } from '@/hooks/utils';
 
 interface DownloadURL {
   title?: string;
@@ -17,6 +18,7 @@ interface DownloadURL {
   isAppStore?: boolean;
   className?: string;
   label?: string;
+  onClick?: () => void;
 }
 
 export default function DownloadPage() {
@@ -24,23 +26,23 @@ export default function DownloadPage() {
   const guidelinesDisclosure = useDisclosure();
   const [appStoreURL, setAppStoreURL] = useState('');
   const urls: DownloadURL[] = [
-    // {
-    //   title: 'English Version',
-    //   img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_app_store.png',
-    //   url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
-    //   isAppStore: true,
-    // },
+    {
+      // title: 'English Version',
+      img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_app_store.png',
+      url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_URL!,
+      isAppStore: true,
+    },
     // {
     //   title: '日本語版',
     //   img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_app_store.png',
     //   url: process.env.NEXT_PUBLIC_ASTRARK_APP_STORE_JP_URL!,
     //   isAppStore: true,
     // },
-    // {
-    //   title: 'English Version',
-    //   img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_google_play.png',
-    //   url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!,
-    // },
+    {
+      // title: 'English Version',
+      img: 'https://d3dhz6pjw7pz9d.cloudfront.net/astrark/download/btn_google_play.png',
+      url: process.env.NEXT_PUBLIC_ASTRARK_GOOGLE_PLAY_URL!,
+    },
     // {
     //   title: 'Android 日本語版',
     //   className: styles.downloadBtn,
@@ -52,6 +54,10 @@ export default function DownloadPage() {
       className: styles.downloadBtn,
       label: 'Download',
       url: process.env.NEXT_PUBLIC_AA_DOWNLOAD_URL!,
+      isAppStore: true,
+      onClick: function () {
+        downloadFile(this.url, 'AstrArk.apk');
+      },
     },
   ];
 
@@ -93,7 +99,7 @@ export default function DownloadPage() {
                 ])}
                 style={item.img ? { backgroundImage: `url('${item.img}')` } : {}}
                 disableRipple
-                onPress={item.isAppStore ? () => onAppStore(item.url) : undefined}
+                onClick={item.isAppStore ? () => (item.onClick ? item.onClick() : onAppStore(item.url)) : undefined}
               >
                 <span className="relative z-10">{item.label}</span>
               </Button>
