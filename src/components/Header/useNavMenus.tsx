@@ -102,6 +102,10 @@ export default function useNavMenus() {
                 name: 'Marching Test',
                 route: '/AstrArk/Download',
               },
+              {
+                name: 'IAP Return Query',
+                route: '/AstrArk/cbt-iap',
+              },
             ],
           },
           {
