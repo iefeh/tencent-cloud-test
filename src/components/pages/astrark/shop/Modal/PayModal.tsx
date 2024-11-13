@@ -197,17 +197,17 @@ const PayModal: FC<PayModalProps> = (props) => {
     ></PayTable>
   )
 
-  const renderTips = (type: ShopItemType | undefined) => {
-    if (!type) return null;
+  const renderTips = (item?: AstrArk.Product | null) => {
+    if (!item) return null;
 
-    switch (type) {
+    switch (item.type) {
       case ShopItemType.BENEFITS_WEEKLY:
-        return <ProductCard>
+        return <ProductCard item={item}>
           Open must have a random avatar * 1, the generated random avatar consists of 3 random colors, accessories, and backgrounds.
         </ProductCard>
       case ShopItemType.RESOURCES_DIAMOND:
         return (
-          <ProductCard>
+          <ProductCard item={item}>
             Open must have a random avatar * 1, the generated random avatar consists of 3 random colors, accessories, and backgrounds.
           </ProductCard>
         )
@@ -240,7 +240,7 @@ const PayModal: FC<PayModalProps> = (props) => {
               <ModalBody className="flex flex-row">
                 <div>
                   <ShopItem {...shopItemProps}></ShopItem>
-                  {renderTips(shopItemProps.item?.type)}
+                  {renderTips(shopItemProps.item)}
                 </div>
                 <div className="flex-1 relative">
                   {renderTable()}

@@ -65,6 +65,7 @@ router.use(dynamicCors).get(async (req, res) => {
       }
       if (gameProduct.limit.sold_amount >= gameProduct.limit.amount) {
         gameProduct.sold_out = true;
+        gameProduct.display_order = 999;
       } else {
         gameProduct.sold_out = false;
       }
@@ -76,10 +77,11 @@ router.use(dynamicCors).get(async (req, res) => {
       if (targetArr) {
         delete gameProduct.product_type_id;
         targetArr.push(gameProduct);
+        targetArr.sort((a, b) => a.display_order - b.display_order);
       }
     });
-    
     const now = new Date();
+    // 设置每个产品分类的库存刷新时间
     productClasses.forEach(productClass => {
       for (let productType of productClass.product_types) {
         productType.products = productTypeMap.get(productType.id);

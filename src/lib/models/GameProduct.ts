@@ -24,6 +24,8 @@ export interface IGameProduct extends Document {
     price_in_usdc: number;
     // 产品分类id, 对应GameProductClassification.product_types.id, 用来提供分类显示
     product_type_id: string;
+    // 产品展示顺序, 从小到大排序
+    display_order: number;
     // 购买限制
     limit: {
         // 购买限制周期
@@ -43,6 +45,7 @@ const GameProductSchema = new Schema<IGameProduct>({
     icon_url: { type: String, required: true },
     price_in_usdc: { type: Number, required: true },
     product_type_id: { type: String, required: true },
+    display_order: { type: Number, required: true },
     limit: { 
         type: { type: String },
         amount: { type: Number },
