@@ -350,7 +350,7 @@ export type NodeReward = {
 export type NodeMultiplier = {
   chain_id: string,
   contract_address: string,
-  notification_id:string,
+  notification_id: string,
   per_nft_node: [
     {
       tier: number,
@@ -358,3 +358,11 @@ export type NodeMultiplier = {
     }
   ]
 }
+
+
+export type BadgeReward = {
+  // 奖励的徽章ID，！！！！注意仅允许配置不需要taint_dependency的徽章
+  badge_id: string,
+  // 奖励的徽章等级
+  lv?: number,
+};

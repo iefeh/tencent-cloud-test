@@ -1,5 +1,5 @@
 import { Document, Schema, models, model } from 'mongoose'
-import { GameTicketReward, NodeMultiplier, NodeReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
+import { BadgeReward, GameTicketReward, NodeMultiplier, NodeReward, QuestRewardType, QuestType, TokenReward } from "@/lib/quests/types";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 
 
@@ -45,7 +45,9 @@ export interface IQuest extends Document {
         // 抽奖型节点奖励
         raffle_node?: NodeReward,
         // NFT倍数级NODE奖励
-        node_multiplier?: NodeMultiplier
+        node_multiplier?: NodeMultiplier,
+        // 奖励的徽章
+        badge_reward?:BadgeReward
     },
     // 任务是否激活，不展示未激活
     active: boolean;
@@ -87,7 +89,8 @@ const QuestSchema = new Schema<IQuest>({
         game_ticket_reward: { type: Schema.Types.Mixed },
         distribute_node: { type: Schema.Types.Mixed },
         raffle_node: { type: Schema.Types.Mixed },
-        node_multiplier: { type: Schema.Types.Mixed }
+        node_multiplier: { type: Schema.Types.Mixed },
+        badge_reward: { type: Schema.Types.Mixed }
     },
     active: { type: Boolean, default: false },
     order: { type: Number },
