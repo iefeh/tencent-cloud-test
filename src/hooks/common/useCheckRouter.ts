@@ -26,7 +26,13 @@ const noHeaderList = [
 const noInitList = ['/email/captcha/quickfill', '/auth', '/auth/connect', '/AstrArk/assets', '/AstrArk/shop'];
 
 // 是否AA游戏布局-主要用于rem响应计算
-const aaMobileList = ['/AstrArk/deleteAccount', '/AstrArk/assets', '/AstrArk/shop', '/AstrArk/cbt-iap/inner'];
+const aaMobileList = [
+  '/AstrArk/deleteAccount',
+  '/AstrArk/assets',
+  '/AstrArk/shop',
+  '/AstrArk/cbt-iap',
+  '/AstrArk/cbt-iap/inner',
+];
 
 export default function useCheckRouter() {
   const router = useRouter();
