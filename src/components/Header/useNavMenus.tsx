@@ -95,7 +95,7 @@ export default function useNavMenus() {
                 route: '/AstrArk',
               },
               {
-                name: 'Alpha Test Tasks',
+                name: 'Marching Test Tasks',
                 route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk',
               },
               {
