@@ -2,10 +2,10 @@ import { FC, useState } from 'react';
 import RegularTasksList from './RegularTasksList';
 import { TaskCategory } from '@/http/services/battlepass';
 
-const NodeContent: FC = () => {
+const PhasePoolContent: FC = () => {
   const [currentCategory, setCurrentCategory] = useState<TaskCategory>({
-    id: 'node0fa5-e136-4507-ad2f-2e5365c35fc7',
-    name: '100K Pool',
+    id: 'phase9b3-d40b-41d5-872b-d26890188d1b',
+    name: 'Phase Pool',
     quest_count: 0,
     achieve_count: 0,
     image_url: '',
@@ -14,4 +14,4 @@ const NodeContent: FC = () => {
   return <RegularTasksList categoryItem={currentCategory} hideHeader />;
 };
 
-export default NodeContent;
+export default PhasePoolContent;

@@ -1,11 +1,13 @@
 import { QuestType } from '@/constant/task';
 import { queryTasksAPI } from '@/http/services/battlepass';
 import { TaskListItem } from '@/http/services/task';
+import { useUserContext } from '@/store/User';
 import type { TaskItem } from '@/types/quest';
 import { debounce } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
 export default function useTasks(id?: string) {
+  const { userInfo } = useUserContext();
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(false);
   const pagiInfo = useRef<PagiInfo>({
@@ -102,7 +104,7 @@ export default function useTasks(id?: string) {
     if (!id) return;
 
     queryTasks();
-  }, [id]);
+  }, [id, userInfo]);
 
   return { pagiInfo, pagiTotal, loading, tasks, queryTasks, updateTaskById };
 }
