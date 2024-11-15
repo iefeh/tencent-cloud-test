@@ -61,7 +61,7 @@ export default function useNavMenus() {
               },
               {
                 name: 'Special Task-Win A FREE Node',
-                route: '/LoyaltyProgram/earn?tabKey=Moonveil+Node',
+                route: '/LoyaltyProgram/earn?tabKey=100K+Pool',
                 actived: true,
               },
             ],

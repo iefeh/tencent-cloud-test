@@ -31,7 +31,7 @@ const RegularTaskCategories: FC<Props> = ({ className, onCategoryClick }) => {
 
   useEffect(() => {
     queryCategories();
-  }, []);
+  }, [userInfo]);
 
   return (
     <div className={className}>
