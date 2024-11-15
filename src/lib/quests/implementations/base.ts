@@ -22,6 +22,7 @@ import GlobalNotification from '@/lib/models/GlobalNotification';
 import UserNotifications from '@/lib/models/UserNotifications';
 import UserWallet from '@/lib/models/UserWallet';
 import ContractNFT from '@/lib/models/ContractNFT';
+import UserBadges from '@/lib/models/UserBadges';
 
 interface IProjection {
     [key: string]: number;
@@ -255,6 +256,26 @@ export abstract class QuestBase {
 
                 if (nodeReward) {
                     await UserNodeEligibility.insertMany(nodeReward.nodes, { session: session })
+                }
+
+                if (this.quest.reward.badge_reward) {
+                    const badgeId = this.quest.reward.badge_reward.badge_id;
+                    const lv = this.quest.reward.badge_reward.lv ? this.quest.reward.badge_reward.lv : 1;// 默认奖励1级徽章
+                    
+                    const badegLv: any = {};
+                    badegLv[`series.${lv}.obtained_time`] = now;
+                    badegLv[`updated_time`] = now;
+                    await UserBadges.updateOne({ user_id: userId, badge_id: badgeId },
+                        {
+                            $set: badegLv,
+                            $setOnInsert: {
+                                badge_taints: [`badge:${badgeId},user:${userId}`],
+                                created_time: now,
+                                order: 1,
+                                display_order: 1,
+                            },
+                        },
+                        { session: session, upsert: true })
                 }
             });
             return { done: true, duplicated: false, tip: tip }

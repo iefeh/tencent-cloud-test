@@ -59,7 +59,12 @@ const ConnectWallet = function () {
 
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-[1.875rem] relative mt-[2.0625rem]">
         {accounts.map((item, index) => (
-          <MediaItem key={index} item={item} onDisconnectClick={onDisconnectClick} />
+          <MediaItem
+            key={index}
+            item={item}
+            undisconnectable={process.env.NEXT_PUBLIC_WALLET_UNDISCONNECTABLE === '1'}
+            onDisconnectClick={onDisconnectClick}
+          />
         ))}
       </div>
 
