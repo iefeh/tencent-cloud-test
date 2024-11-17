@@ -24,7 +24,9 @@ import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonB
 import UserWallet from '@/lib/models/UserWallet';
 import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
 import { redis } from '@/lib/redis/client';
+import { queryTotalRecharge } from '@/pages/api/games/astrark/recharge/query';
 
+import QuestAchievement from '../models/QuestAchievement';
 import { WhitelistEntityType } from '../quests/types';
 
 export async function getActiveLotteryPoolById(lotteryPoolId: string): Promise<ILotteryPool | null> {
@@ -225,18 +227,26 @@ export async function lotteryPoolRequirementSatisfy(userId: string, lotteryPoolI
       currentResult = await lotterySatisfyByWhiteList(userId, requirements) || currentResult;
     }
     if (currentResult === null || !currentResult.meet_requirement) {
-      //判断白名单是否满足要求
+      //判断NFT是否满足要求
       currentResult = await lotterySatisfyByNFT(userId, requirements) || currentResult;
     }
     if (currentResult === null || !currentResult.meet_requirement) {
-      //判断白名单是否满足要求
+      //判断Node是否满足要求
       currentResult = await lotterySatisfyByNodeHolder(userId, requirements) || currentResult; 
     }
     if (currentResult === null || !currentResult.meet_requirement) {
-      //判断白名单是否满足要求
+      //判断MB是否满足要求
       currentResult = await lotterySatisfyMB(userId, requirements) || currentResult;
     }
-    // 如果没有配置任何白名单, 则返回默认值
+    if (currentResult === null || !currentResult.meet_requirement) {
+      //判断任务完成是否满足要求
+      currentResult = await lotterySatisfyQuest(userId, requirements) || currentResult;
+    }
+    if (currentResult === null || !currentResult.meet_requirement) {
+      //判断充值量是否满足要求
+      currentResult = await lotterySatisfyRecharge(userId, requirements) || currentResult;
+    }
+    // 如果没有配置任何门槛, 则返回默认值
     result = currentResult || result;
   }
   return result;
@@ -289,7 +299,6 @@ export async function enrichRequirementsInfo(requirements: any[]): Promise<any> 
   }
 }
 
-//判断徽章获得情况，判断是否满足高阶条件
 async function lotterySatisfyByBadge(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
   //取出徽章ID用于查询
   let requirementExists = false;
@@ -414,7 +423,6 @@ async function lotterySatisfyByWhiteList(userId: string, requirements: any[]): P
   }
 }
 
-//判断NFT获得情况，判断是否满足高阶条件
 async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
   let requirementExists = false;
   let nftSatisfied: boolean = false;
@@ -431,7 +439,6 @@ async function lotterySatisfyByNFT(userId: string, requirements: any[]): Promise
         } else {
           nftSatisfied = false;
         }
-        //当有多个NFT持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要NFT之间是或的关系，则可以配置成单个的要求。
         if (!nftSatisfied) {
           break;
         }
@@ -464,7 +471,6 @@ async function lotterySatisfyByNodeHolder(userId: string, requirements: any[]): 
         } else {
           nodeSatisfied = false;
         }
-        //当有多个node持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要node之间是或的关系，则可以配置成单个的要求。
         if (!nodeSatisfied) {
           break;
         }
@@ -497,7 +503,6 @@ async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{
         } else {
           mbSatisfied = false;
         }
-        //当有多个NFT持有要求时，出现一个不满足即退出不再进行判断，即多NFT要求之间是且的关系。若需要NFT之间是或的关系，则可以配置成单个的要求。
         if (!mbSatisfied) {
           break;
         }
@@ -509,6 +514,60 @@ async function lotterySatisfyMB(userId: string,  requirements: any[]): Promise<{
   }
   if (requirementExists) {
     return { requirement_type: LotteryPoolRequirementType.Moonbeam, meet_requirement: false };
+  } else {
+    return null
+  }
+}
+
+async function lotterySatisfyQuest(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
+  let requirementExists = false;
+  let questSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为任务类要求
+    if (r.type === LotteryPoolRequirementType.Quest) {
+      requirementExists = true;
+      //判断所有的任务要求
+      for (let p of r.properties) {
+        const questAchievement = await QuestAchievement.findOne({ quest_id: p.quest_id, user_id: userId });
+        questSatisfied = !!questAchievement;
+        if (!questSatisfied) {
+          break;
+        }
+      }
+      if (questSatisfied) {
+        return { requirement_type: LotteryPoolRequirementType.Quest, meet_requirement: true };
+      }
+    }
+  }
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.Quest, meet_requirement: false };
+  } else {
+    return null
+  }
+}
+
+async function lotterySatisfyRecharge(userId: string, requirements: any[]): Promise<{ requirement_type: string, meet_requirement: boolean } | null> {
+  let requirementExists = false;
+  let rechargeSatisfied: boolean = false;
+  for (let r of requirements) {
+    //是否为充值类要求
+    if (r.type === LotteryPoolRequirementType.Recharge) {
+      requirementExists = true;
+      //判断所有的充值要求
+      for (let p of r.properties) {
+        const [total, rebate, wallet] = await queryTotalRecharge(userId);
+        rechargeSatisfied = (total >= p.recharge_amount);
+        if (!rechargeSatisfied) {
+          break;
+        }
+      }
+      if (rechargeSatisfied) {
+        return { requirement_type: LotteryPoolRequirementType.Recharge, meet_requirement: true };
+      }
+    }
+  }
+  if (requirementExists) {
+    return { requirement_type: LotteryPoolRequirementType.Recharge, meet_requirement: false };
   } else {
     return null
   }
