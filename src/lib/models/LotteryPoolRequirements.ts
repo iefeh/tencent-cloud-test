@@ -7,7 +7,9 @@ export enum LotteryPoolRequirementType {
   Node = 'node',
   Badge = 'badge',
   Moonbeam = 'moon_beam',
-  WhiteList = 'whitelist'
+  WhiteList = 'whitelist',
+  Quest = 'quest',
+  Recharge = 'recharge'
 }
 
 export type NFTRequirement = {

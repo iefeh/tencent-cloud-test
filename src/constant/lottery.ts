@@ -138,4 +138,6 @@ export const enum LotteryRequirementType {
   MB = 'moon_beam',
   WHITELIST = 'whitelist',
   NODE = 'node',
+  QUEST = 'quest',
+  RECHARGE = 'recharge'
 }
