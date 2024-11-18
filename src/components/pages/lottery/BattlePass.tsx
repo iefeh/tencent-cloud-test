@@ -17,6 +17,8 @@ interface Props {
 }
 
 const REQUIREMENT_ICONS: Dict<StaticImageData | string> = {
+  [LotteryRequirementType.QUEST]: 'https://d3dhz6pjw7pz9d.cloudfront.net/pass/qualification/quest.png',
+  [LotteryRequirementType.RECHARGE]: 'https://d3dhz6pjw7pz9d.cloudfront.net/pass/qualification/recharge.png',
   [LotteryRequirementType.NFT]: nftPassImg,
   [LotteryRequirementType.BADGE]: badgePassImg,
   [LotteryRequirementType.WHITELIST]:
