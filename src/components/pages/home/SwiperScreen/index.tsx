@@ -16,8 +16,10 @@ import Game2048Slide from '../slides/Game2048Slide';
 import NodeSlide from '../slides/NodeSlide';
 import type { HomeSlide } from '@/types/lottery';
 import { AutoplayOptions } from 'swiper/types';
+import AstrArkMarchingTestSlide from '../slides/AstrArkMarchingTestSlide';
 
 const slides: (FC<{ needAni?: boolean }> & HomeSlide)[] = [
+  AstrArkMarchingTestSlide,
   NodeSlide,
   LoyaltyProgramSlide,
   // Game2048Slide,
@@ -25,7 +27,7 @@ const slides: (FC<{ needAni?: boolean }> & HomeSlide)[] = [
   // LotterySlide,
   // NFT2Slide,
   InviteNewSlide,
-  RaceSlide,
+  // RaceSlide,
 ];
 
 const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAni: boolean }) {
