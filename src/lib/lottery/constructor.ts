@@ -6,6 +6,7 @@ import { LotteryTicketReward } from '@/lib/lottery/rewards/lotteryTicketReward';
 import { MoonbeamReward } from '@/lib/lottery/rewards/moonbeamReward';
 import { NFTReward } from '@/lib/lottery/rewards/nftReward';
 import { NodeReward } from '@/lib/lottery/rewards/nodeReward';
+import { NoPrizeReward } from '@/lib/lottery/rewards/noprizeReward';
 import { USDTReward } from '@/lib/lottery/rewards/usdtReward';
 import { LotteryRewardType } from '@/lib/lottery/types';
 import { ILotteryRewardItem } from '@/lib/models/LotteryPool';
@@ -31,6 +32,8 @@ export function constructLotteryReward(lotteryPoolId: string, reward: ILotteryRe
       return new NodeReward(lotteryPoolId, reward);
     case LotteryRewardType.USDT:
       return new USDTReward(lotteryPoolId, reward);
+    case LotteryRewardType.NoPrize:
+      return new NoPrizeReward(lotteryPoolId, reward);
     default:
       throw new Error(`reward ${reward.item_id} type ${reward.reward_type} not implemented`);
   }
