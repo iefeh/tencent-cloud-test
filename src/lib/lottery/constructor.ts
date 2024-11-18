@@ -28,8 +28,6 @@ export function constructLotteryReward(lotteryPoolId: string, reward: ILotteryRe
       return new MoonbeamReward(lotteryPoolId, reward);
     case LotteryRewardType.NFT:
       return new NFTReward(lotteryPoolId, reward);
-    case LotteryRewardType.Node:
-      return new NodeReward(lotteryPoolId, reward);
     case LotteryRewardType.USDT:
       return new USDTReward(lotteryPoolId, reward);
     case LotteryRewardType.NoPrize:
