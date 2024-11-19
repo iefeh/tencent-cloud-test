@@ -58,6 +58,7 @@ export default function SwiperScreen() {
         autoplay={{ delay: 15000, disableOnInteraction: false }}
         speed={2000}
         slidesPerView={1}
+        observer={true}
         onSlideChangeTransitionStart={(swiper) => {
           const list = [...needAnis];
           list[swiper.realIndex] = true;
