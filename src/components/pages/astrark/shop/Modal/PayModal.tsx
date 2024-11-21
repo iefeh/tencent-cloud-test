@@ -124,12 +124,14 @@ const PayModal: FC<PayModalProps> = (props) => {
 
     const permitRes = await getPermit();
     if (!permitRes) {
+      toast.error('Network error, please try again later.');
       setLoading(false);
       return;
     }
 
     const res = await beReadyForBuyTicket(permitRes.chain_id);
     if (!res) {
+      toast.error('Please switch to the correct network.');
       setLoading(false);
       return;
     }
