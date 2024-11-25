@@ -43,8 +43,16 @@ export type BadgeSeries = {
   open_for_mint: boolean;
   // 元信息的哈希
   metadata_ipfs_hash: string;
+  // 元信息
+  metadata: TokenMetadata;
 };
 
+export type TokenMetadata = {
+  name: string,
+  description: string,
+  image: string,
+  attributes: any[]
+}
 // 要求类型
 export enum RequirementType {
   // 用户指标
