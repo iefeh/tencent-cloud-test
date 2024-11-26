@@ -49,18 +49,19 @@ async function getBadgeSeriesMetadataHash(badge_id: string, level: string) {
         return series.metadata_ipfs_hash;
     }
     // 如果不存在，则构建metadata
-    const metadata = {
-        "name": badge.name,
-        "description": badge.description,
-        "image": series.image_url,
-        "attributes": [{
-            "trait_type": "Level",
-            "value": level
-        },
-            {
-                "value": "Moonveil SBT"
-            }],
-    };
+    // const metadata = {
+    //     "name": badge.name,
+    //     "description": badge.description,
+    //     "image": series.image_url,
+    //     "attributes": [{
+    //         "trait_type": "Level",
+    //         "value": level
+    //     },
+    //         {
+    //             "value": "Moonveil SBT"
+    //         }],
+    // };
+    const metadata = series.metadata;
     // 上传metadata
     const options = {
         pinataMetadata: {
