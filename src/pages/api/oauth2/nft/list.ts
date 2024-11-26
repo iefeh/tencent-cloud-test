@@ -10,9 +10,10 @@ import { PipelineStage } from "mongoose";
 import ContractTokenMetadata from "@/lib/models/ContractTokenMetadata";
 import ContractNFT from "@/lib/models/ContractNFT";
 import logger from "@/lib/logger/winstonLogger";
-import Contract, { IContract } from "@/lib/models/Contract";
+import Contract, { ContractCategory, IContract } from "@/lib/models/Contract";
 import OAuth2Server from '@/lib/oauth2/server';
 import { Request, Response } from '@node-oauth/oauth2-server';
+import { enrichSBTMetadata } from "../../users/nft/list";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -34,7 +35,7 @@ router.use(dynamicCors).get(async (req, res) => {
             res.json(response.invalidParams());
             return
         }
-    
+
         // 检查用户当前绑定的钱包
         const user = token.user;
         const wallet = await UserWallet.findOne({ user_id: user.user_id, deleted_time: null }, { _id: 0, wallet_addr: 1 });
@@ -52,7 +53,11 @@ router.use(dynamicCors).get(async (req, res) => {
             }));
         }
         const nfts = pagination.nfts;
-        await enrichNFTMetadata(contracts, nfts);
+        if (category == ContractCategory.SBT) {
+            await enrichSBTMetadata(contracts, nfts);
+        } else {
+            await enrichNFTMetadata(contracts, nfts);
+        }
         return res.json(response.success({
             wallet_connected: true,
             total: pagination.total,
