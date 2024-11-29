@@ -118,7 +118,7 @@ const Header = () => {
       <div className="font-semakin flex items-center max-lg:hidden">{DropMenu}</div>
 
       <div className="flex items-center flex-1 justify-end">
-        <Link
+        {/* <Link
           className={cn([isMobile && 'absolute right-0 top-28 z-0', listOpen && 'hidden'])}
           href={process.env.NEXT_PUBLIC_URL_NODE_SALE!}
           target="_blank"
@@ -129,7 +129,7 @@ const Header = () => {
             actived
             prefix={<S3Image className="w-6 h-6 mr-2" src="/header/node_128x128.gif" />}
           />
-        </Link>
+        </Link> */}
 
         <div className="max-lg:hidden flex items-center mr-4">
           {mediaIcon.map((value, index) => {

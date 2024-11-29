@@ -13,14 +13,14 @@ import NFT2Slide from '../slides/NFT2Slide';
 import LotterySlide from '../slides/LotterySlide';
 import MinigamesSlide from '../slides/MinigamesSlide';
 import Game2048Slide from '../slides/Game2048Slide';
-import NodeSlide from '../slides/NodeSlide';
+// import NodeSlide from '../slides/NodeSlide';
 import type { HomeSlide } from '@/types/lottery';
 import { AutoplayOptions } from 'swiper/types';
 import AstrArkMarchingTestSlide from '../slides/AstrArkMarchingTestSlide';
 
 const slides: (FC<{ needAni?: boolean }> & HomeSlide)[] = [
   AstrArkMarchingTestSlide,
-  NodeSlide,
+  // NodeSlide,
   LoyaltyProgramSlide,
   // Game2048Slide,
   MinigamesSlide,
