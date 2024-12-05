@@ -8,10 +8,7 @@ import { TaskCategory } from '@/http/services/battlepass';
 // import Game2048Content from './Game2048Content';
 // import GameMinerContent from './GameMinerContent';
 import S3Image from '@/components/common/medias/S3Image';
-import NodeContent from './NodeContent';
 import AstrArkContent from './AstrArkContent';
-import PhasePoolContent from './PhasePoolContent';
-import MultiPoolContent from './MultiPoolContent';
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
@@ -21,10 +18,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
   // const gameContent = useMemo(() => <Game2048Content />, []);
   // const minerContent = useMemo(() => <GameMinerContent />, []);
-  const nodeContent = useMemo(() => <NodeContent />, []);
   const aaContent = useMemo(() => <AstrArkContent />, []);
-  const phasePoolContent = useMemo(() => <PhasePoolContent />, []);
-  const multiPoolContent = useMemo(() => <MultiPoolContent />, []);
 
   const tabs = [
     {
@@ -75,39 +69,6 @@ export default function TaskTabs({ defaultCategory }: Props) {
     //   ),
     //   content: minerContent,
     // },
-    {
-      key: '100K Pool',
-      render: (label: string) => (
-        <div className="flex items-center">
-          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
-
-          {label}
-        </div>
-      ),
-      content: nodeContent,
-    },
-    {
-      key: 'Phase Pool',
-      render: (label: string) => (
-        <div className="flex items-center">
-          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
-
-          50K POOL #1
-        </div>
-      ),
-      content: phasePoolContent,
-    },
-    {
-      key: 'Multi Pool',
-      render: (label: string) => (
-        <div className="flex items-center">
-          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/pass/qualification/node.png" />
-
-          50K Pool #2
-        </div>
-      ),
-      content: multiPoolContent,
-    },
   ];
   const router = useRouter();
   const [selectedKey, setSelectedKey] = useState((router.query?.tabKey as string) || tabs[0].key);
