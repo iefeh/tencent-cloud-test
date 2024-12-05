@@ -59,11 +59,6 @@ export default function useNavMenus() {
                 name: 'More Tasks',
                 route: '/LoyaltyProgram/earn/group/c8af9477-fd48-4265-90d7-20bc4a200ff3',
               },
-              {
-                name: 'Special Task-Win A FREE Node',
-                route: '/LoyaltyProgram/earn?tabKey=100K+Pool',
-                actived: true,
-              },
             ],
           },
           {

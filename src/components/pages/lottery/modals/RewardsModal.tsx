@@ -30,18 +30,6 @@ interface Props {
   poolInfo?: Lottery.Pool | null;
 }
 
-const specialPools: Dict<{ tabName: string }> = {
-  '936b8f13-0afd-4e2c-b184-428779caea0e': {
-    tabName: '100K Pool',
-  },
-  '3821cd31-cf4e-41fd-8947-0d937c37f2d9': {
-    tabName: 'Phase Pool',
-  },
-  '6a3c8809-7c17-4c80-a8ff-35373bc3107b': {
-    tabName: 'Multi Pool',
-  },
-};
-
 const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange }, item, poolInfo, onClaimed }) => {
   const hasShareAndConfirmRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 3);
   const hasShareAndClaimRewards = (item?.rewards || []).some((r) => r.reward_claim_type === 2);
@@ -65,7 +53,6 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
     if (c.cdk) p.push(c.cdk);
     return p;
   }, [] as string[]);
-  const isSpecialPool = !!poolInfo?.lottery_pool_id && !!specialPools[poolInfo.lottery_pool_id];
 
   async function onShare() {
     if (hasNode) {
@@ -232,42 +219,22 @@ const RewardsModal: FC<Props & DrawDTO> = ({ disclosure: { isOpen, onOpenChange 
                     <div className="text-2xl">Reward Claimed</div>
 
                     <div className="text-sm mt-6">
-                      {isSpecialPool ? (
-                        <>
-                          Congratulations on winning an excellent cash prize! Reward will be available to claim from{' '}
-                          <span className="text-basic-yellow font-bold">Nov 5, 12 AM EST to Nov 12, 12 AM EST</span>.
-                          <br />
-                          Click{' '}
-                          <Link
-                            className="text-basic-yellow hover:underline"
-                            href={`/LoyaltyProgram/earn?tabKey=${specialPools[
-                              poolInfo!.lottery_pool_id
-                            ].tabName.replace(/ /g, '+')}`}
-                          >
-                            here
-                          </Link>{' '}
-                          to claim now!
-                        </>
-                      ) : (
-                        <>
-                          Congratulations again, please stay tuned to our{' '}
-                          <Link className="text-basic-yellow hover:underline" href={MediaLinks.TWITTER} target="_blank">
-                            Official X Account
-                          </Link>{' '}
-                          and{' '}
-                          <Link className="text-basic-yellow hover:underline" href={MediaLinks.DISCORD} target="_blank">
-                            Discord Server
-                          </Link>{' '}
-                          for further announcement to{' '}
-                          <Link
-                            className="text-basic-yellow hover:underline"
-                            href="/LoyaltyProgram/earn?tabKey=Moonveil+Node"
-                          >
-                            claim your rewards
-                          </Link>
-                          !
-                        </>
-                      )}
+                      Congratulations again, please stay tuned to our{' '}
+                      <Link className="text-basic-yellow hover:underline" href={MediaLinks.TWITTER} target="_blank">
+                        Official X Account
+                      </Link>{' '}
+                      and{' '}
+                      <Link className="text-basic-yellow hover:underline" href={MediaLinks.DISCORD} target="_blank">
+                        Discord Server
+                      </Link>{' '}
+                      for further announcement to{' '}
+                      <Link
+                        className="text-basic-yellow hover:underline"
+                        href="/LoyaltyProgram/earn?tabKey=Moonveil+Node"
+                      >
+                        claim your rewards
+                      </Link>
+                      !
                     </div>
 
                     <div className="flex items-center gap-x-[5.5rem] mt-5">
