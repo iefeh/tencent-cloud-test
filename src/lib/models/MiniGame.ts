@@ -10,7 +10,8 @@ export enum MiniGameStatus {
 // 可用小游戏
 export enum MiniGames {
     Puffy2048 = 'puffy2048',
-    Goldminer = 'goldminer'
+    Goldminer = 'goldminer',
+    BubblePop = 'bubblepop'
 }
 
 export interface IMiniGame extends Document {
