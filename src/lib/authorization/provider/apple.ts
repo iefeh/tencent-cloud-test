@@ -104,7 +104,10 @@ export class AppleAuthFlow extends AuthFlowBase {
     if (!user && !!authToken.id_token) {
       // 用户非首次登录，jwt decode id token
       try {
-        user = await appleSignin.verifyIdToken(authToken.id_token);
+        user = await appleSignin.verifyIdToken(authToken.id_token, {
+          audience: process.env.APPLE_CLIENT_ID,
+          ignoreExpiration: true,
+        });
       } catch (error) {
         throw error;
       }
