@@ -12,6 +12,7 @@ import UserGoogle from '@/lib/models/UserGoogle';
 import UserSteam from '@/lib/models/UserSteam';
 import UserTwitter from '@/lib/models/UserTwitter';
 import UserTelegram from '@/lib/models/UserTelegram';
+import UserApple from '@/lib/models/UserApple';
 import UserWallet from '@/lib/models/UserWallet';
 import { generateUserSession } from '@/lib/middleware/session';
 import { genLoginJWT } from '@/lib/particle.network/auth';
@@ -63,6 +64,9 @@ router.use(errorInterceptor(), timeoutInterceptor()).post(async (req, res) => {
             break;
           case AuthorizationType.Telegram:
             userConnection = new UserTelegram(payload.third_party_user);
+            break;
+          case AuthorizationType.Apple:
+            userConnection = new UserApple(payload.third_party_user);
             break;
           case AuthorizationType.Wallet:
             userConnection = new UserWallet(payload.third_party_user);

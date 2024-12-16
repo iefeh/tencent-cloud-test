@@ -21,7 +21,7 @@ interface ParticleUserInfo {
 
 interface BaseMediaInfo {
   username: string;
-  avatar_url: string;
+  avatar_url?: string;
 }
 
 interface UserInfo {
@@ -31,6 +31,7 @@ interface UserInfo {
   email: string;
   created_time: number;
   google?: BaseMediaInfo;
+  apple?: BaseMediaInfo;
   particle?: ParticleUserInfo;
   moon_beam: number;
   steam?: BaseMediaInfo;
