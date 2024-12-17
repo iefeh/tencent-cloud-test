@@ -1,12 +1,14 @@
 import type {NextApiResponse} from "next";
-import {createRouter} from "next-connect";
-import * as response from "@/lib/response/response";
-import OAuth2Server from '@/lib/oauth2/server'
-import {UserContextRequest, dynamicCors} from "@/lib/middleware/auth";
+import { createRouter } from 'next-connect';
+
+import logger from '@/lib/logger/winstonLogger';
+import { dynamicCors, UserContextRequest } from '@/lib/middleware/auth';
+import { OAuth2Scopes } from '@/lib/models/OAuth2Scopes';
 import UserWallet from '@/lib/models/UserWallet';
-import {OAuth2Scopes} from '@/lib/models/OAuth2Scopes';
-import {responseOnOauthError} from "@/lib/oauth2/response";
-import {Request, Response} from '@node-oauth/oauth2-server';
+import { responseOnOauthError } from '@/lib/oauth2/response';
+import OAuth2Server from '@/lib/oauth2/server';
+import * as response from '@/lib/response/response';
+import { Request, Response } from '@node-oauth/oauth2-server';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(dynamicCors).get(async (req, res) => {
@@ -35,6 +37,7 @@ router.use(dynamicCors).get(async (req, res) => {
             }
         }));
     } catch (error: any) {
+        logger.info(`[oauth2/userinfo] request authorization header ${req.headers.authorization}`);
         return responseOnOauthError(res, error);
     }
 });
