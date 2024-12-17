@@ -148,9 +148,7 @@ export class AppleAuthFlow extends AuthFlowBase {
     return new UserApple({
       user_id: userId,
       apple_id: authParty.email,
-      username: !!authParty.name
-        ? authParty.name.firstName + ' ' + authParty.name.lastName
-        : authParty.email.split('@')[0],
+      username: !!authParty.name ? authParty.name.firstName + ' ' + authParty.name.lastName : authParty.email,
       first_name: authParty.name?.firstName,
       last_name: authParty.name?.lastName,
       created_time: Date.now(),
@@ -160,9 +158,7 @@ export class AppleAuthFlow extends AuthFlowBase {
   constructNewUser(authParty: any): any {
     return new User({
       user_id: uuidv4(),
-      username: !!authParty.name
-        ? authParty.name.firstName + ' ' + authParty.name.lastName
-        : authParty.email.split('@')[0],
+      username: !!authParty.name ? authParty.name.firstName + ' ' + authParty.name.lastName : authParty.email,
       avatar_url: process.env.DEFAULT_AVATAR_URL,
       created_time: Date.now(),
     });
