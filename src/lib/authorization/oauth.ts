@@ -52,9 +52,17 @@ export class OAuthProvider {
       ...headers,
       'Content-type': 'application/x-www-form-urlencoded',
     };
-    const response = await axios.post<AuthToken>(tokenEndpoint, params, { headers });
-    console.log('auth response: ', inspect(response));
-    console.log('auth response data: ', JSON.stringify(response.data));
+    const response = await axios.post<AuthToken>(tokenEndpoint, params, { headers }).catch((error) => {
+      console.log('auth error response: ', inspect(error.response));
+      console.log('auth error response status: ', error.response.status);
+      console.log('auth error response data: ', error.response.data);
+      if (error.response) {
+        return error.response;
+      } else {
+        console.error('Request failed:', error.message);
+        return undefined;
+      }
+    });
     const data = response.data;
     return data as AuthToken;
   }
