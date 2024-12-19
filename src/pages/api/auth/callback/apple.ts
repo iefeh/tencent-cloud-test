@@ -10,6 +10,10 @@ router.post(async (req, res) => {
   await handleAuthCallback(new AppleAuthFlow(), req, res);
 });
 
+router.get(async (req, res) => {
+  await handleAuthCallback(new AppleAuthFlow(), req, res);
+});
+
 // this will run if none of the above matches
 router.all((req, res) => {
   res.status(405).json({

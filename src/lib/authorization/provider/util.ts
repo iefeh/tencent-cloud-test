@@ -40,9 +40,8 @@ export async function validateCallbackState(
   authType: AuthorizationType,
   req: any,
   res: any,
-  isMethodPost: boolean = false,
 ): Promise<{ passed: boolean; authPayload?: AuthorizationPayload }> {
-  const { state, error, code } = isMethodPost ? req.body : req.query;
+  const { state, error, code } = req.method === 'POST' ? req.body : req.query;
   if (!state) {
     console.log('callback state not found');
     res.json(response.notFound());
@@ -138,4 +137,3 @@ export function isDiscordRateLimitError(error: any): { is: boolean; resetAfter?:
   const resetAfter = error.response.headers['x-ratelimit-reset-after'];
   return { is: true, resetAfter: resetAfter };
 }
-

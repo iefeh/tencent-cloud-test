@@ -91,12 +91,11 @@ export class AppleAuthFlow extends AuthFlowBase {
   }
 
   async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
-    return validateCallbackState(AuthorizationType.Apple, req, res, true);
+    return validateCallbackState(AuthorizationType.Apple, req, res);
   }
 
   async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
-    const code = req.body.code;
-    let user = req.body.user;
+    let { code, user } = req.method === 'POST' ? req.body : req.query;
     const authToken = await appleOAuthProvider.authenticate({
       code: code as string,
     });
