@@ -96,6 +96,13 @@ export class AppleAuthFlow extends AuthFlowBase {
   async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
     let { code, user } = req.method === 'POST' ? req.body : req.query;
     try {
+      appleOAuthProvider.options.clientSecret = appleSignin.getClientSecret({
+        clientID: process.env.APPLE_CLIENT_ID!, // Apple Service ID
+        teamID: process.env.APPLE_TEAM_ID!,
+        privateKey: process.env.APPLE_PRIVATE_KEY!,
+        keyIdentifier: process.env.APPLE_PRIVATE_KEY_IDENTIFIER!,
+      });
+
       const authToken = await appleOAuthProvider.authenticate({
         code: code as string,
       });
