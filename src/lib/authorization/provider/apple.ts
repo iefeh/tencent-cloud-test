@@ -24,15 +24,14 @@ const appleOAuthOps: OAuthOptions = {
   clientSecret: appleSignin.getClientSecret({
     clientID: process.env.APPLE_CLIENT_ID!, // Apple Service ID
     teamID: process.env.APPLE_TEAM_ID!,
-    privateKey: process.env.APPLE_PRIVATE_KEY,
-    // privateKeyPath: process.cwd() + '/src/' + process.env.APPLE_PRIVATE_KEY_PATH!,
+    privateKey: process.env.APPLE_PRIVATE_KEY!,
     keyIdentifier: process.env.APPLE_PRIVATE_KEY_IDENTIFIER!,
   }),
   scope: process.env.APPLE_AUTH_SCOPE!,
   redirectURI: process.env.APPLE_REDIRECT_URL!,
   authEndpoint: process.env.APPLE_AUTH_URL!,
   tokenEndpoint: process.env.APPLE_TOKEN_URL!,
-  enableBasicAuth: true,
+  enableBasicAuth: false,
   onAccessTokenRefreshed: async (authToken) => {
     logger.debug('apple access token refreshed:', authToken);
     await saveRotateAuthToken(authToken);
@@ -96,42 +95,43 @@ export class AppleAuthFlow extends AuthFlowBase {
 
   async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
     let { code, user } = req.method === 'POST' ? req.body : req.query;
-    const authToken = await appleOAuthProvider.authenticate({
-      code: code as string,
-    });
+    try {
+      const authToken = await appleOAuthProvider.authenticate({
+        code: code as string,
+      });
 
-    if (!user && !!authToken.id_token) {
-      // 用户非首次登录，jwt decode id token
-      try {
+      if (!user && !!authToken.id_token) {
+        // 用户非首次登录，jwt decode id token
         user = await appleSignin.verifyIdToken(authToken.id_token, {
           audience: process.env.APPLE_CLIENT_ID,
           ignoreExpiration: true,
         });
-      } catch (error) {
-        throw error;
       }
+
+      // 保存用户授权token
+      const now = Date.now();
+      const userTokenUpdates = {
+        token_type: authToken.token_type,
+        access_token: authToken.access_token,
+        refresh_token: authToken.refresh_token,
+        expires_in: authToken.expires_in,
+        expire_time: now + authToken.expires_in! * 1000,
+        created_time: now,
+        updated_time: now,
+      };
+      await OAuthToken.findOneAndUpdate(
+        {
+          platform: AuthorizationType.Apple,
+          platform_id: user.email,
+          deleted_time: null,
+        },
+        { $set: userTokenUpdates },
+        { upsert: true },
+      );
+    } catch (error) {
+      throw error;
     }
 
-    // 保存用户授权token
-    const now = Date.now();
-    const userTokenUpdates = {
-      token_type: authToken.token_type,
-      access_token: authToken.access_token,
-      refresh_token: authToken.refresh_token,
-      expires_in: authToken.expires_in,
-      expire_time: now + authToken.expires_in! * 1000,
-      created_time: now,
-      updated_time: now,
-    };
-    await OAuthToken.findOneAndUpdate(
-      {
-        platform: AuthorizationType.Apple,
-        platform_id: user.email,
-        deleted_time: null,
-      },
-      { $set: userTokenUpdates },
-      { upsert: true },
-    );
     return user;
   }
 

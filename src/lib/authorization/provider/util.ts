@@ -54,7 +54,7 @@ export async function validateCallbackState(
   }
   const authPayload = JSON.parse(stateVal) as AuthorizationPayload;
   if (error) {
-    if (error.includes('access_denied')) {
+    if (error.includes('access_denied') || error.includes('user_cancelled_authorize')) {
       const landing_url = appendQueryParamsToUrl(authPayload.landing_url, response.authorizationDenied());
       res.redirect(landing_url);
       return { passed: false, authPayload: authPayload };
