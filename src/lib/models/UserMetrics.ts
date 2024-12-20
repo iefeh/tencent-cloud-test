@@ -42,6 +42,7 @@ export enum Metric {
   SteamConnected = 'steam_connected',
   WalletConnected = 'wallet_connected',
   GoogleConnected = 'google_connected',
+  AppleConnected = 'apple_connected',
   DiscordJoinedMoonveil = 'discord_joined_moonveil',
   TwitterFollowedMoonveil = 'twitter_followed_moonveil',
   TwitterFollowedAstrArk = 'twitter_followed_astrark',

@@ -12,6 +12,8 @@ export enum QuestType {
   ConnectTelegram = 'connect_telegram',
   // 绑定steam
   ConnectSteam = 'connect_steam',
+  // 绑定apple
+  ConnectApple = 'connect_apple',
   // twitter关注
   FollowOnTwitter = 'follow_on_twitter',
   // 转推
@@ -74,6 +76,7 @@ export enum WhitelistEntityType {
   GoogleId = 'google_id',
   SteamId = 'steam_id',
   TelegramId = 'telegram_id',
+  AppleId = 'apple_id',
   UserId = 'user_id',
   Email = 'email',
 }
@@ -321,48 +324,47 @@ export enum ThinkingDataQuestType {
 
 export type GameTicketReward = {
   // 游戏ID
-  game_id: string,
+  game_id: string;
   // 奖励的门票数量
-  amount: number,
+  amount: number;
   // 门票过期时间
-  expired_at: number
+  expired_at: number;
 };
 
 export type NodeReward = {
   // 节点等级
-  node_tier: string,
+  node_tier: string;
   // 节点名称
-  node_name: string,
+  node_name: string;
   // 节点图标
-  icon_url: string,
+  icon_url: string;
   // 节点数量
-  node_amount: number,
+  node_amount: number;
   // 领奖时的提醒
-  notification_id?: string,
+  notification_id?: string;
   // 中奖人数
-  number_of_winners?: number,
+  number_of_winners?: number;
   // 预估抽奖时间
-  estimated_raffle_time?: number,
+  estimated_raffle_time?: number;
   // 实际抽奖时间
-  actual_raffle_time?: number,
+  actual_raffle_time?: number;
 };
 
 export type NodeMultiplier = {
-  chain_id: string,
-  contract_address: string,
-  notification_id: string,
+  chain_id: string;
+  contract_address: string;
+  notification_id: string;
   per_nft_node: [
     {
-      tier: number,
-      amount: number
-    }
-  ]
-}
-
+      tier: number;
+      amount: number;
+    },
+  ];
+};
 
 export type BadgeReward = {
   // 奖励的徽章ID，！！！！注意仅允许配置不需要taint_dependency的徽章
-  badge_id: string,
+  badge_id: string;
   // 奖励的徽章等级
-  lv?: number,
+  lv?: number;
 };

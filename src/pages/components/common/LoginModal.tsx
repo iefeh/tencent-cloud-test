@@ -197,6 +197,11 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
           type: MediaType.TELEGRAM,
           icon: telegramIconImg,
         },
+        {
+          label: 'Apple',
+          type: MediaType.APPLE,
+          icon: appleIconImg,
+        },
         // {
         //   label: 'Facebook',
         //   type: MediaType.FACEBOOK,

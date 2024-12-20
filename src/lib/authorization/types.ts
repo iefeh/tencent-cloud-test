@@ -58,6 +58,7 @@ export enum AuthorizationType {
   Google = 'google',
   Steam = 'steam',
   Telegram = 'telegram',
+  Apple = 'apple',
   Email = 'email',
 }
 

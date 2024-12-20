@@ -7,6 +7,7 @@ import steamIconImg from 'img/profile/edit/icon_steam.png';
 import xIconImg from 'img/profile/edit/icon_x.png';
 import googleIconImg from 'img/profile/edit/icon_google.png';
 import telegramIconImg from 'img/profile/edit/icon_telegram.png';
+import appleIconImg from 'img/profile/edit/icon_apple.png';
 import emailIconImg from 'img/profile/edit/icon_email.png';
 import { MediaType } from '@/constant/task';
 import { Modal, ModalBody, ModalContent, ModalFooter, useDisclosure } from '@nextui-org/react';
@@ -65,6 +66,13 @@ const SocialMediaAccounts = function () {
       type: MediaType.GOOGLE,
       connected: !!userInfo?.google,
       connectedAccount: userInfo?.google?.username,
+    },
+    {
+      title: 'Apple',
+      icon: appleIconImg,
+      type: MediaType.APPLE,
+      connected: !!userInfo?.apple,
+      connectedAccount: userInfo?.apple?.username,
     },
   ];
   const [currentItem, setCurrentItem] = useState<MAItem | null>(null);
