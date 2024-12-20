@@ -5,8 +5,6 @@ import {
   connectMediaAPI,
   connectTelegramAuthAPI,
   connectTelegramAPI,
-  connectAppleAPI,
-  connectAppleAuthAPI,
   getTelegramAuthData,
 } from '@/http/services/login';
 import { TelegramLoginData } from '@/http/services/login';
@@ -18,10 +16,8 @@ import { useDisclosure } from '@nextui-org/react';
 import useWatchStorage from './useWatchStorage';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
 import useWalletAuth from './useWalletAuth';
-import { useScript, appleAuthHelpers } from 'react-apple-signin-auth';
 
 export default function useConnect(type: string, callback?: (args?: any) => void) {
-  useScript(appleAuthHelpers.APPLE_SCRIPT_SRC);
   const { userInfo, toggleLoginModal } = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
   const [loading, setLoading] = useState(false);
@@ -156,57 +152,6 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     setTimeout(checkTelegramAuthWindowClose, 100, options);
   }
 
-  async function onAppleAuth() {
-    setLoading(true);
-    const res = await connectAppleAuthAPI();
-
-    if (!res?.client_id) {
-      toast.error('Get Apple client id failed!');
-      setLoading(false);
-      return;
-    }
-
-    if (!res?.scope) {
-      toast.error('Get Apple auth scope failed!');
-      setLoading(false);
-      return;
-    }
-
-    if (!res?.redirect_uri) {
-      toast.error('Get Apple redirect uri failed!');
-      setLoading(false);
-      return;
-    }
-
-    if (!res?.state) {
-      toast.error('Get Apple auth state failed!');
-      setLoading(false);
-      return;
-    }
-
-    const response = await appleAuthHelpers.signIn({
-      authOptions: {
-        clientId: res.client_id,
-        scope: res.scope,
-        redirectURI: res.redirect_uri,
-        state: res.state,
-        /** Uses popup auth instead of redirection */
-        // usePopup: true,
-      },
-      onError: (error: Error) => console.error(error),
-    });
-
-    if (response) {
-      console.log('Apple auth response: ', response);
-      await connectAppleAPI(response);
-      callback?.();
-    } else {
-      console.error('Error performing apple signin.');
-    }
-
-    setLoading(false);
-  }
-
   async function onConnect() {
     if (!userInfo) {
       console.log('connect no userInfo');
@@ -234,7 +179,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
     if (type === MediaType.APPLE) {
       startWatch();
-      await onAppleAuth();
+      openAuthWindow('/auth/apple?type=connect');
       return;
     }
 
