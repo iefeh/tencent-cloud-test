@@ -26,6 +26,9 @@ export async function getUserFirstWhitelist(userId: string, whitelistId: string)
   if (userAuth.telegram) {
     entities.push(userAuth.telegram.id);
   }
+  if (userAuth.apple) {
+    entities.push(userAuth.apple.id);
+  }
   if (userAuth.email) {
     entities.push(userAuth.email);
   }
@@ -142,6 +145,23 @@ export async function queryUserAuth(userId: string): Promise<any> {
             $project: {
               _id: 0,
               id: '$telegram_id',
+            },
+          },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: 'user_apples',
+        localField: 'user_id',
+        foreignField: 'user_id',
+        as: 'apple',
+        pipeline: [
+          { $match: { deleted_time: null } },
+          {
+            $project: {
+              _id: 0,
+              id: '$apple_id',
             },
           },
         ],
