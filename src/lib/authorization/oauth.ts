@@ -4,7 +4,7 @@ import logger from '@/lib/logger/winstonLogger';
 import { inspect } from 'util';
 
 export class OAuthProvider {
-  public options: OAuthOptions;
+  public readonly options: OAuthOptions;
 
   constructor(options: OAuthOptions) {
     this.options = options;
@@ -206,4 +206,3 @@ class OAuthRequest {
     }
   }
 }
-

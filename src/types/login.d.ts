@@ -28,6 +28,13 @@ declare interface TelegramAuthDto {
   redirect_url: string;
 }
 
+declare interface AppleAuthDto {
+  client_id: string;
+  scope: string;
+  redirect_uri: string;
+  state: string;
+}
+
 declare interface ParticleAuthDto {
   particle_auth_token: string;
   particle_user_id: string;
