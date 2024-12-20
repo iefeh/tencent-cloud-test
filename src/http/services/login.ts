@@ -2,6 +2,7 @@ import { MediaType, QuestType } from '@/constant/task';
 import http from '../index';
 import { KEY_INVITE_CODE, KEY_SIGN_UP_CRED } from '@/constant/storage';
 import { AuthorizationFlow } from '@/lib/models/authentication';
+import { AppleAuthResponse } from 'react-apple-signin-auth';
 
 function getAuthParams(path = '') {
   const { origin } = location;
@@ -69,6 +70,20 @@ export function loginTelegramAuthAPI(): Promise<TelegramAuthDto> {
   });
 }
 
+export function connectAppleAuthAPI(): Promise<AppleAuthDto> {
+  return http.get('/api/auth/apple/auth', { params: getAuthParams('/connect?type=apple') });
+}
+
+export function loginAppleAuthAPI(): Promise<AppleAuthDto> {
+  return http.get('/api/auth/apple/auth', {
+    params: {
+      ...getAuthParams('?type=apple'),
+      invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
+      signup_mode: 'enabled',
+    },
+  });
+}
+
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/signin/${type}`, {
     params: {
@@ -122,10 +137,46 @@ export function loginByTelegramAPI(data: TelegramLoginData): Promise<TokenDto | 
   });
 }
 
+export function loginByAppleAPI(data: AppleAuthResponse): Promise<TokenDto | null> {
+  return http.post(
+    '/api/auth/signin/apple',
+    JSON.stringify({
+      state: data.authorization.state,
+      code: data.authorization.code,
+      id_token: data.authorization.id_token,
+      user: data.user,
+    }),
+    {
+      params: {
+        ...getAuthParams(`?type=apple`),
+        invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
+        signup_mode: 'enabled',
+      },
+    },
+  );
+}
+
 export function connectTelegramAPI(data: TelegramLoginData | any): Promise<TokenDto | null> {
   return http.post('/api/auth/connect/telegram', JSON.stringify(data), {
     params: getAuthParams(`/connect?type=telegram`),
   });
+}
+
+export function connectAppleAPI(data: AppleAuthResponse): Promise<TokenDto | null> {
+  return http.post(
+    '/api/auth/connect/apple',
+    JSON.stringify({
+      state: data.authorization.state,
+      code: data.authorization.code,
+      id_token: data.authorization.id_token,
+      user: data.user,
+    }),
+    {
+      params: {
+        ...getAuthParams(`/connect?type=apple`),
+      },
+    },
+  );
 }
 
 export function disconnectMediaAPI(type: string): Promise<null> {
