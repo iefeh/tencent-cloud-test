@@ -40,11 +40,14 @@ export default function Footer(props: Props) {
         <div className="copyright mb-5">Copyright © {year} Moonveil Entertainment All rights reserved.</div>
 
         <div className="bottom w-[15.25rem] flex justify-between items-center text-[#4d4d4d]">
-          <Link className="hover:text-white transition-all duration-200 ease-in" href="/PrivacyPolicy">
+          <Link className="hover:text-white transition-all duration-200 ease-in whitespace-nowrap" href="/PrivacyPolicy">
             Privacy Policy
           </Link>
-          <Link className="hover:text-white transition-all duration-200 ease-in" href="/CookiesPolicy">
+          <Link className="hover:text-white ml-4 transition-all duration-200 ease-in whitespace-nowrap" href="/CookiesPolicy">
             Cookies Policy
+          </Link>
+          <Link className="hover:text-white ml-4 transition-all duration-200 ease-in whitespace-nowrap" href="/policy/GeneralTermsOfService">
+            General Terms of Service
           </Link>
         </div>
       </div>
