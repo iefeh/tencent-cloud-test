@@ -138,6 +138,7 @@ export function loginByTelegramAPI(data: TelegramLoginData): Promise<TokenDto | 
 }
 
 export function loginByAppleAPI(data: AppleAuthResponse): Promise<TokenDto | null> {
+  const { origin } = location;
   return http.post(
     '/api/auth/signin/apple',
     JSON.stringify({
@@ -148,7 +149,7 @@ export function loginByAppleAPI(data: AppleAuthResponse): Promise<TokenDto | nul
     }),
     {
       params: {
-        ...getAuthParams(`?type=apple`),
+        landing_url: `${origin}/auth?type=apple`,
         invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
         signup_mode: 'enabled',
       },
@@ -163,6 +164,7 @@ export function connectTelegramAPI(data: TelegramLoginData | any): Promise<Token
 }
 
 export function connectAppleAPI(data: AppleAuthResponse): Promise<TokenDto | null> {
+  const { origin } = location;
   return http.post(
     '/api/auth/connect/apple',
     JSON.stringify({
@@ -173,7 +175,7 @@ export function connectAppleAPI(data: AppleAuthResponse): Promise<TokenDto | nul
     }),
     {
       params: {
-        ...getAuthParams(`/connect?type=apple`),
+        landing_url: `${origin}/auth/connect?type=apple`,
       },
     },
   );

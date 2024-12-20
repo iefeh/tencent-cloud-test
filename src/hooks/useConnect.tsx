@@ -191,7 +191,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
         redirectURI: res.redirect_uri,
         state: res.state,
         /** Uses popup auth instead of redirection */
-        usePopup: true,
+        // usePopup: true,
       },
       onError: (error: Error) => console.error(error),
     });
