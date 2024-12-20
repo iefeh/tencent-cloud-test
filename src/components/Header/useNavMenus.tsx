@@ -182,10 +182,10 @@ export default function useNavMenus() {
               },
             ],
           },
-          // {
-          //   name: 'Node Sales',
-          //   route: '',
-          // },
+          {
+            name: 'Muse Node',
+            route: process.env.NEXT_PUBLIC_URL_NODE_SALE,
+          },
           // {
           //   name: 'Staking',
           //   route: '',
