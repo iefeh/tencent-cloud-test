@@ -1,12 +1,7 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import {
-  loginByMediaAPI,
-  loginByTelegramAPI,
-  loginTelegramAuthAPI,
-  getTelegramAuthData,
-} from '@/http/services/login';
+import { loginByMediaAPI, loginByTelegramAPI, loginTelegramAuthAPI, getTelegramAuthData } from '@/http/services/login';
 import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
@@ -191,7 +186,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
     if (type === MediaType.APPLE) {
       startWatch();
-      openAuthWindow('/auth/apple?type=auth');
+      openAuthWindow('/auth/appleAuth');
       return;
     }
 
@@ -217,7 +212,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     return () => {
       stopWatch();
     };
-  }, []);
+  }, [stopWatch]);
 
   return { onConnect, loading: loading || waLoading };
 }

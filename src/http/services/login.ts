@@ -84,6 +84,10 @@ export function loginAppleAuthAPI(): Promise<AppleAuthDto> {
   });
 }
 
+export function cancelAppleAuthAPI(redirectURI: string, state: string, error: Error) {
+  return http.post(redirectURI, { state: state, error: error });
+}
+
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/signin/${type}`, {
     params: {

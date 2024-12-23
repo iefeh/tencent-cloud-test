@@ -1,13 +1,11 @@
 import { MediaType } from '@/constant/task';
-import { connectAppleAuthAPI, loginAppleAuthAPI } from '@/http/services/login';
-import { useRouter } from 'next/router';
+import { loginAppleAuthAPI, cancelAppleAuthAPI } from '@/http/services/login';
 import { useEffect } from 'react';
 import { useScript, appleAuthHelpers } from 'react-apple-signin-auth';
 
-async function onAppleAuth(isAuth: boolean) {
+async function onAppleAuth() {
   let msg = '';
-  const api = isAuth ? loginAppleAuthAPI : connectAppleAuthAPI;
-  const res = await api();
+  const res = await loginAppleAuthAPI();
 
   if (!res?.client_id) {
     msg = 'Get Apple client id failed!';
@@ -30,7 +28,7 @@ async function onAppleAuth(isAuth: boolean) {
   }
 
   if (msg) {
-    window.location.href = `${location.origin}/${isAuth ? 'auth' : 'auth/connect'}?type=${MediaType.APPLE}`;
+    window.location.href = `${location.origin}/auth?type=${MediaType.APPLE}`;
     return;
   }
 
@@ -42,19 +40,20 @@ async function onAppleAuth(isAuth: boolean) {
       scope: res.scope,
       redirectURI: res.redirect_uri,
       state: res.state,
-      /** Uses popup auth instead of redirection */
       // usePopup: true,
     },
-    onError: (error: Error) => console.error(error),
+    onError: (error: Error) => {
+      console.error(error);
+      cancelAppleAuthAPI(res.redirect_uri, res.state, error);
+    },
   });
 }
 
 export default function AppleAuth() {
-  const router = useRouter();
   useScript(appleAuthHelpers.APPLE_SCRIPT_SRC);
 
   useEffect(() => {
-    onAppleAuth(router.query.type === 'auth');
+    onAppleAuth();
   }, []);
 
   return null;

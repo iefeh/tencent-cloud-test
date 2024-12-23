@@ -42,6 +42,8 @@ export async function validateCallbackState(
   res: any,
 ): Promise<{ passed: boolean; authPayload?: AuthorizationPayload }> {
   const { state, error, code } = req.method === 'POST' ? req.body : req.query;
+  console.log('validateCallbackState, state: ', state);
+  console.log('validateCallbackState, error: ', error);
   if (!state) {
     console.log('callback state not found');
     res.json(response.notFound());

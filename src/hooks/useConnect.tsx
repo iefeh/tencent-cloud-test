@@ -179,7 +179,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
 
     if (type === MediaType.APPLE) {
       startWatch();
-      openAuthWindow('/auth/apple?type=connect');
+      openAuthWindow('/auth/appleConnect');
       return;
     }
 
@@ -206,7 +206,7 @@ export default function useConnect(type: string, callback?: (args?: any) => void
     return () => {
       stopWatch();
     };
-  }, []);
+  }, [stopWatch]);
 
   return { isConnected, address, onConnect, loading: loading || waLoading, bindTipsDisclosure };
 }
