@@ -33,6 +33,9 @@ async function onAppleAuth() {
   }
 
   console.log('apple auth server info: ', JSON.stringify(res));
+  setTimeout(() => {
+    window.close();
+  }, 60000);
 
   appleAuthHelpers.signIn({
     authOptions: {
