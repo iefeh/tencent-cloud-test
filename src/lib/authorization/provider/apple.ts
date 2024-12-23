@@ -37,10 +37,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
     response.success({
       client_id: process.env.APPLE_CLIENT_ID!,
       scope: process.env.APPLE_AUTH_SCOPE!,
-      redirect_uri:
-        currFlow === AuthorizationFlow.CONNECT
-          ? process.env.APPLE_CONNECT_REDIRECT_URL!
-          : process.env.APPLE_SIGNIN_REDIRECT_URL,
+      redirect_uri: process.env.APPLE_REDIRECT_URL,
       state: state,
     }),
   );
@@ -76,8 +73,6 @@ export class AppleAuthFlow extends AuthFlowBase {
       // 用户首次登录，user信息是JSON字符串
       user = JSON.parse(user);
     } // 否则user是JSON Object
-
-    authPayload.authorization_user_id = req.userId;
 
     return Object.assign({}, authPayload, user);
   }

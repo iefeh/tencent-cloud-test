@@ -1,12 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createRouter } from 'next-connect';
 import * as response from '@/lib/response/response';
-import { generateAuthorizationURL } from '@/lib/authorization/provider/apple';
+import { queryUserAppleAuthorization } from '@/lib/quests/implementations/connectAppleQuest';
+import { AppleAuthFlow } from '@/lib/authorization/provider/apple';
+import { handleAuthCallback } from '@/lib/authorization/provider/authFlow';
+import { AuthorizationFlow } from '@/lib/models/authentication';
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
-router.get(async (req, res) => {
-  await generateAuthorizationURL(req, res);
+router.post(async (req, res) => {
+  await handleAuthCallback(new AppleAuthFlow(), req, res);
 });
 
 // this will run if none of the above matches
