@@ -71,11 +71,11 @@ export function loginTelegramAuthAPI(): Promise<TelegramAuthDto> {
 }
 
 export function connectAppleAuthAPI(): Promise<AppleAuthDto> {
-  return http.get('/api/auth/apple/auth', { params: getAuthParams('/connect?type=apple') });
+  return http.get('/api/auth/connect/apple', { params: getAuthParams('/connect?type=apple') });
 }
 
 export function loginAppleAuthAPI(): Promise<AppleAuthDto> {
-  return http.get('/api/auth/apple/auth', {
+  return http.get('/api/auth/signin/apple', {
     params: {
       ...getAuthParams('?type=apple'),
       invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
