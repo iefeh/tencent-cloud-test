@@ -1,7 +1,9 @@
 import { MediaType } from '@/constant/task';
-import { loginAppleAuthAPI, cancelAppleAuthAPI } from '@/http/services/login';
+import { loginAppleAuthAPI } from '@/http/services/login';
 import { useEffect } from 'react';
 import { useScript, appleAuthHelpers } from 'react-apple-signin-auth';
+import { appendQueryParamsToUrl } from '@/lib/common/url';
+import * as response from '@/lib/response/response';
 
 async function onAppleAuth() {
   let msg = '';
@@ -33,8 +35,11 @@ async function onAppleAuth() {
   }
 
   console.log('apple auth server info: ', JSON.stringify(res));
-  setTimeout(() => {
-    window.close();
+  setTimeout(async () => {
+    window.location.href = appendQueryParamsToUrl(
+      `${location.origin}/auth?type=${MediaType.APPLE}`,
+      response.siwaExpired(),
+    );
   }, 60000);
 
   appleAuthHelpers.signIn({
@@ -44,10 +49,6 @@ async function onAppleAuth() {
       redirectURI: res.redirect_uri,
       state: res.state,
       // usePopup: true,
-    },
-    onError: (error: Error) => {
-      console.error(error);
-      cancelAppleAuthAPI(res.redirect_uri, res.state, error);
     },
   });
 }
