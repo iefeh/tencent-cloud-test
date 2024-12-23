@@ -84,6 +84,10 @@ export function loginAppleAuthAPI(): Promise<AppleAuthDto> {
   });
 }
 
+export function cancelAppleAuthAPI(redirectURI: string, state: string, error: Error) {
+  return http.post(redirectURI, { state: state, error: error });
+}
+
 export function loginByMediaAPI(type: string): Promise<AuthDto> {
   return http.get(`/api/auth/signin/${type}`, {
     params: {
@@ -138,6 +142,7 @@ export function loginByTelegramAPI(data: TelegramLoginData): Promise<TokenDto | 
 }
 
 export function loginByAppleAPI(data: AppleAuthResponse): Promise<TokenDto | null> {
+  const { origin } = location;
   return http.post(
     '/api/auth/signin/apple',
     JSON.stringify({
@@ -148,7 +153,7 @@ export function loginByAppleAPI(data: AppleAuthResponse): Promise<TokenDto | nul
     }),
     {
       params: {
-        ...getAuthParams(`?type=apple`),
+        landing_url: `${origin}/auth?type=apple`,
         invite_code: localStorage.getItem(KEY_INVITE_CODE) || undefined,
         signup_mode: 'enabled',
       },
@@ -163,6 +168,7 @@ export function connectTelegramAPI(data: TelegramLoginData | any): Promise<Token
 }
 
 export function connectAppleAPI(data: AppleAuthResponse): Promise<TokenDto | null> {
+  const { origin } = location;
   return http.post(
     '/api/auth/connect/apple',
     JSON.stringify({
@@ -173,7 +179,7 @@ export function connectAppleAPI(data: AppleAuthResponse): Promise<TokenDto | nul
     }),
     {
       params: {
-        ...getAuthParams(`/connect?type=apple`),
+        landing_url: `${origin}/auth/connect?type=apple`,
       },
     },
   );

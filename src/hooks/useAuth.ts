@@ -1,14 +1,7 @@
 import { throttle } from 'lodash';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaType } from '@/constant/task';
-import {
-  loginByMediaAPI,
-  loginByTelegramAPI,
-  loginTelegramAuthAPI,
-  loginByAppleAPI,
-  loginAppleAuthAPI,
-  getTelegramAuthData,
-} from '@/http/services/login';
+import { loginByMediaAPI, loginByTelegramAPI, loginTelegramAuthAPI, getTelegramAuthData } from '@/http/services/login';
 import { TelegramLoginData } from '@/http/services/login';
 import { toast } from 'react-toastify';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AUTH, KEY_PARTICLE_TOKEN, KEY_SIGN_UP_CRED } from '@/constant/storage';
@@ -16,10 +9,8 @@ import { MobxContext } from '@/pages/_app';
 import useWatchStorage from './useWatchStorage';
 import { appendQueryParamsToUrl } from '@/lib/common/url';
 import useWalletAuth from './useWalletAuth';
-import { useScript, appleAuthHelpers } from 'react-apple-signin-auth';
 
 export default function useAuth(type: string, callback?: (args?: any) => void) {
-  useScript(appleAuthHelpers.APPLE_SCRIPT_SRC);
   const store = useContext(MobxContext);
   const dialogWindowRef = useRef<Window | null>(null);
   const [loading, setLoading] = useState(false);
@@ -173,76 +164,6 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     setTimeout(checkTelegramAuthWindowClose, 100, options);
   }
 
-  async function onAppleAuth() {
-    console.log('apple auth');
-    setLoading(true);
-    const res = await loginAppleAuthAPI();
-
-    if (!res?.client_id) {
-      toast.error('Get Apple client id failed!');
-      setLoading(false);
-      return;
-    }
-
-    if (!res?.scope) {
-      toast.error('Get Apple auth scope failed!');
-      setLoading(false);
-      return;
-    }
-
-    if (!res?.redirect_uri) {
-      toast.error('Get Apple redirect uri failed!');
-      setLoading(false);
-      return;
-    }
-
-    if (!res?.state) {
-      toast.error('Get Apple auth state failed!');
-      setLoading(false);
-      return;
-    }
-
-    console.log('apple auth server info: ', JSON.stringify(res));
-
-    const response = await appleAuthHelpers.signIn({
-      authOptions: {
-        clientId: res.client_id,
-        scope: res.scope,
-        redirectURI: res.redirect_uri,
-        state: res.state,
-        /** Uses popup auth instead of redirection */
-        usePopup: true,
-      },
-      onError: (error: Error) => console.error(error),
-    });
-
-    if (response) {
-      console.log('apple auth response', response);
-      try {
-        const res = await loginByAppleAPI(response);
-        if (!res) throw new Error('Login Failed');
-
-        const { token, particle_jwt, signup_cred } = res || {};
-        localStorage.setItem(KEY_AUTHORIZATION, token);
-        localStorage.setItem(KEY_PARTICLE_TOKEN, particle_jwt);
-        if (signup_cred) {
-          store.toggleNewUserModal(true, { is_new_user: true, login_type: MediaType.APPLE, wallet_type: '' });
-          localStorage.setItem(KEY_SIGN_UP_CRED, signup_cred || '');
-          throw new Error('Is New User');
-        } else {
-          await store.initLoginInfo({ is_new_user: false, login_type: MediaType.APPLE, wallet_type: '' });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-      callback?.();
-    } else {
-      console.error('Error performing apple signin.');
-    }
-
-    setLoading(false);
-  }
-
   async function onConnect() {
     if (type === MediaType.EMAIL) {
       return;
@@ -265,7 +186,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
 
     if (type === MediaType.APPLE) {
       startWatch();
-      await onAppleAuth();
+      openAuthWindow('/auth/appleAuth');
       return;
     }
 
@@ -291,7 +212,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     return () => {
       stopWatch();
     };
-  }, []);
+  }, [stopWatch]);
 
   return { onConnect, loading: loading || waLoading };
 }

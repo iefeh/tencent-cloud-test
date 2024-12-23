@@ -37,7 +37,10 @@ export async function generateAuthorizationURL(req: any, res: any) {
     response.success({
       client_id: process.env.APPLE_CLIENT_ID!,
       scope: process.env.APPLE_AUTH_SCOPE!,
-      redirect_uri: process.env.APPLE_REDIRECT_URL!,
+      redirect_uri:
+        currFlow === AuthorizationFlow.CONNECT
+          ? process.env.APPLE_CONNECT_REDIRECT_URL!
+          : process.env.APPLE_SIGNIN_REDIRECT_URL,
       state: state,
     }),
   );
@@ -45,7 +48,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
 
 export class AppleAuthFlow extends AuthFlowBase {
   get authReturnType(): AuthReturnType {
-    return AuthReturnType.JSON;
+    return AuthReturnType.REDIRECT;
   }
 
   authorizationType(): AuthorizationType {
@@ -57,17 +60,7 @@ export class AppleAuthFlow extends AuthFlowBase {
   }
 
   async validateCallbackState(req: any, res: NextApiResponse): Promise<ValidationResult> {
-    const checkResult = await checkGetAuthorizationURLPrerequisite(req, res);
-    if (!checkResult.passed) {
-      return { passed: false };
-    }
-
-    req.body.inviter_id = checkResult.inviter?.direct;
-    req.body.indirect_inviter_id = checkResult.inviter?.indirect;
-    req.body.virtual = checkResult.inviter?.virtual;
-
-    let result = { passed: true, authPayload: req.body };
-    return result;
+    return validateCallbackState(AuthorizationType.Apple, req, res);
   }
 
   async getAuthParty(req: any, authPayload: AuthorizationPayload): Promise<any> {
@@ -84,8 +77,6 @@ export class AppleAuthFlow extends AuthFlowBase {
       user = JSON.parse(user);
     } // 否则user是JSON Object
 
-    authPayload.landing_url = req.query.landing_url;
-    authPayload.signup_mode = req.query.signup_mode;
     authPayload.authorization_user_id = req.userId;
 
     return Object.assign({}, authPayload, user);
