@@ -8,7 +8,7 @@ import { redis } from "@/lib/redis/client";
 import * as Sentry from "@sentry/nextjs";
 import { errorInterceptor } from "@/lib/middleware/error";
 import { timeoutInterceptor } from "@/lib/middleware/timeout";
-import Campaign, { CampaignRewardType, ICampaign } from "@/lib/models/Campaign";
+import Campaign, { CampaignRewardType, CampainTaskFinishType, ICampaign } from "@/lib/models/Campaign";
 import QuestAchievement from "@/lib/models/QuestAchievement";
 import RewardAccelerator, { IRewardAccelerator } from "@/lib/models/RewardAccelerator";
 import { BadgeHolderReward, NftHolderReward, RewardAcceleratorType } from "@/lib/accelerator/types";
@@ -117,13 +117,47 @@ async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICamp
         _id: 0,
         quest_id: 1
     });
-    if (!questAchievements || questAchievements.length != taskIds.length) {
+    if (!questAchievements) {
         res.json(response.success({
             claimed: false,
             tip: "Please complete all tasks first.",
         }));
         return null;
+    } else if (questAchievements.length != taskIds.length) {
+        const mandatoryTasks: string[] = tasks.filter((t: any) => !t.finish_type).map((t: any) => t.id);
+        if (taskIds.length == mandatoryTasks.length) {
+            // 若全部TASK都需要完成，则直接返回结果
+            res.json(response.success({
+                claimed: false,
+                tip: "Please complete all tasks first.",
+            }));
+            return null;
+        }
+
+        const leastXTasks: string[] = tasks.filter((t: any) => t.finish_type == CampainTaskFinishType.Least).map((t: any) => t.id);;
+        const achievements: string[] = questAchievements.map((t: any) => t.quest_id);
+
+        const mandatoryFinishedAmount = achievements.filter((a: any) => mandatoryTasks.includes(a)).length;
+        if (mandatoryFinishedAmount != mandatoryTasks.length) {
+            // 强制需要完成的没有完成
+            res.json(response.success({
+                claimed: false,
+                tip: "Please complete needed tasks first.",
+            }));
+            return null;
+        }
+
+        const leastFinishedAmount = achievements.filter((a: any) => leastXTasks.includes(a)).length;
+        if (leastFinishedAmount < campaign.finish_config.complete_at_least) {
+            // 至少需要完成complete_at_least个没有完成
+            res.json(response.success({
+                claimed: false,
+                tip: "Please complete needed tasks first.",
+            }));
+            return null;
+        }
     }
+
     return campaign;
 }
 
