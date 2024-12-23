@@ -78,8 +78,6 @@ export class AppleAuthFlow extends AuthFlowBase {
     } // 否则user是JSON Object
 
     authPayload.authorization_user_id = req.userId;
-    console.log('auth payload: ', authPayload);
-    console.log('user: ', user);
 
     return Object.assign({}, authPayload, user);
   }
