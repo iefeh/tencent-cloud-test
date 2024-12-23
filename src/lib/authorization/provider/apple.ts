@@ -45,7 +45,7 @@ export async function generateAuthorizationURL(req: any, res: any) {
 
 export class AppleAuthFlow extends AuthFlowBase {
   get authReturnType(): AuthReturnType {
-    return AuthReturnType.REDIRECT;
+    return AuthReturnType.POST_REDIRECT;
   }
 
   authorizationType(): AuthorizationType {
