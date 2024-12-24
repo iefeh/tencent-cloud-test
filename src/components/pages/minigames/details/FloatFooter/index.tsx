@@ -110,6 +110,9 @@ const FloatFooter: FC<Props> = ({ onCompleteTasks }) => {
               isMobile ? 'text-[1.40625rem]' : 'pl-11 pt-[0.875rem]',
             ])}
             strokeType="ticket"
+            style={{
+              backgroundImage: data?.ticket_menu?.ticket_icon_url && `url('${data.ticket_menu.ticket_icon_url}')`,
+            }}
             strokeText={(ticket?.remain || 0).toString()}
             startContent={
               isMobile ? (

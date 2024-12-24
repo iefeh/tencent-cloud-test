@@ -15,6 +15,10 @@ declare namespace MiniGames {
     client_name: string;
     icon_url: string;
     description: string;
+    ticket_menu?: {
+      ticket_icon_url?: string;
+      ticket_bg_url?: string;
+    }
   }
 
   interface BannerMedia {
@@ -75,6 +79,10 @@ declare namespace MiniGames {
     share_reward_ticket_amount: boolean;
     icon_url: string;
     image_url: string;
+    ticket_menu?: {
+      ticket_icon_url?: string;
+      ticket_bg_url?: string;
+    }
   }
 
   interface BuyTicketPermit {

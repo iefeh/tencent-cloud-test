@@ -88,7 +88,10 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                       <div className="relative w-[26rem] aspect-square rounded-md overflow-hidden">
                         <Image
                           className="object-contain"
-                          src="https://d3dhz6pjw7pz9d.cloudfront.net/minigames/img_ticket.png"
+                          src={
+                            data?.ticket_menu?.ticket_bg_url ||
+                            'https://d3dhz6pjw7pz9d.cloudfront.net/minigames/img_ticket.png'
+                          }
                           alt=""
                           fill
                           sizes="100%"
@@ -195,6 +198,10 @@ const TicketModal: FC<DisclosureProps> = ({ disclosure: { isOpen, onOpenChange }
                       <StrokeButton
                         className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] order-2 md:order-1"
                         strokeType="ticket"
+                        style={{
+                          backgroundImage:
+                            data?.ticket_menu?.ticket_icon_url && `url('${data.ticket_menu.ticket_icon_url}')`,
+                        }}
                         strokeText={data?.ticket.remain.toString() || '--'}
                         startContent={
                           <span className="absolute top-0 right-[0.375rem] text-sm leading-none text-brown">

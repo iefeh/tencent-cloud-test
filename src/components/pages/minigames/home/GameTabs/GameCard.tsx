@@ -26,7 +26,18 @@ const StatusConfig: Dict<{ label: string; color: string }> = {
   },
 };
 
-const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, status, icon_url, client_name } }) => {
+const GameCard: FC<Props> = ({
+  item: {
+    description,
+    ticket,
+    img_url,
+    client_id,
+    status,
+    icon_url,
+    client_name,
+    ticket_menu: { ticket_icon_url } = {},
+  },
+}) => {
   const router = useRouter();
   const { label, color } = StatusConfig[status] || {};
   const canPlay = status === GameStatus.IN_PROGRESS;
@@ -72,8 +83,7 @@ const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, 
           <StrokeButton
             className={cn([
               'w-[12.75rem]',
-              canPlay &&
-                "hover:!bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_blue.png')]",
+              canPlay && "hover:!bg-[url('https://d3dhz6pjw7pz9d.cloudfront.net/minigames/btn_blue.png')]",
             ])}
             strokeType="yellow"
             strokeText="Play Now"
@@ -84,6 +94,7 @@ const GameCard: FC<Props> = ({ item: { description, ticket, img_url, client_id, 
         <StrokeButton
           className="w-[9.0625rem] text-yellow-1 p-0 pl-11 pt-[0.875rem] cursor-default"
           strokeType="ticket"
+          style={{ backgroundImage: ticket_icon_url && `url('${ticket_icon_url}')` }}
           strokeText={ticket?.remain?.toString() || '-'}
           startContent={
             <span className="absolute top-0 right-2 text-sm leading-none text-brown font-jcyt4">Your Tickets</span>
