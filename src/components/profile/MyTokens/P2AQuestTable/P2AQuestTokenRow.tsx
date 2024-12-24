@@ -24,7 +24,7 @@ const P2AQuestTokenRow: FC<Props> = ({ item }) => {
         </div>
 
         <div className="flex-[224] whitespace-nowrap text-ellipsis overflow-hidden">
-          {item.more_delta < 0 ? '- ' : '+ '} {Math.abs(item.more_delta || 0)} MORE
+          {item.more_delta < 0 ? '- ' : '+ '} {Math.abs(item.more_delta || 0)} $MORE
         </div>
 
         <div className="flex-[156] whitespace-normal text-right">{item.created_time ? formatTime(item.created_time) : '--'}</div>
