@@ -3,7 +3,7 @@ import { createRouter } from "next-connect";
 import connectToMongoDbDev from "@/lib/mongodb/client";
 import * as response from "@/lib/response/response";
 import { maybeAuthInterceptor, UserContextRequest } from "@/lib/middleware/auth";
-import Campaign, { CampaignClaimSettings, CampaignRewardType, CampaignStatus } from "@/lib/models/Campaign";
+import Campaign, { CampaignClaimSettings, CampaignRewardType, CampaignStatus, CampainTaskFinishType } from "@/lib/models/Campaign";
 import { enrichUserTasks } from "@/lib/quests/taskEnrichment";
 import CampaignAchievement from "@/lib/models/CampaignAchievement";
 import RewardAccelerator, { IRewardAccelerator } from "@/lib/models/RewardAccelerator";
@@ -60,7 +60,7 @@ async function handleCampaignRewards(campaign: any) {
         }
 
         if (c.type == "task") {
-           delete c.invalid_pass_progress;
+            delete c.invalid_pass_progress;
         }
     }
 }
@@ -81,14 +81,32 @@ async function enrichCampaignClaimable(userId: string, campaign: any) {
     // 检查当前是否可以领取活动任务奖励
     campaign.claimable = false;
     let tasksCompleted = true;
+    let mandatoryCount = 0;
+    let completeAtLeastCount = 0;
     for (const task of campaign.tasks) {
         if (!task.verified) {
             tasksCompleted = false;
-            break;
+        } else {
+            if (task.finish_type && task.finish_type == CampainTaskFinishType.Least) {
+                completeAtLeastCount++;
+            } else {
+                mandatoryCount++;
+            }
         }
     }
+
     if (tasksCompleted) {
         campaign.claimable = true;
+    } else {
+        const mandatoryTasksCount = campaign.tasks.filter((t: any) => !t.finish_type).length;
+        const completeAtLeastTasksCount = campaign.tasks.filter((t: any) => t.finish_type == CampainTaskFinishType.Least).length;
+        if (mandatoryCount == mandatoryTasksCount) {
+            if (completeAtLeastTasksCount == 0) {
+                campaign.claimable = true;
+            } else if (campaign.finish_config && completeAtLeastCount >= campaign.finish_config.complete_at_least) {
+                campaign.claimable = true;
+            }
+        }
     }
 }
 

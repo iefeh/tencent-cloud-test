@@ -148,7 +148,7 @@ async function checkClaimCampaignPrerequisite(req: any, res: any): Promise<ICamp
         }
 
         const leastFinishedAmount = achievements.filter((a: any) => leastXTasks.includes(a)).length;
-        if (leastFinishedAmount < campaign.finish_config.complete_at_least) {
+        if (leastXTasks.length > 0 && leastFinishedAmount < campaign.finish_config.complete_at_least) {
             // 至少需要完成complete_at_least个没有完成
             res.json(response.success({
                 claimed: false,
