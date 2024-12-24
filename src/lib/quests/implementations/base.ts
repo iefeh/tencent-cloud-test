@@ -246,6 +246,7 @@ export abstract class QuestBase {
                     corr_id: this.quest.id,
                     created_time: Date.now(),
                 });
+                tip = `You have claimed ${this.quest.reward.token_reward.token_amount_raw} $MORE and ${rewardDelta} MBs.`;
             }
         }
 
