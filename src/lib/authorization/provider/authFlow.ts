@@ -28,6 +28,7 @@ export interface ValidationResult {
 export enum AuthReturnType {
   REDIRECT = 1,
   JSON = 2,
+  POST_REDIRECT = 3, // 当callback的方法是POST时使用
 }
 
 export abstract class AuthFlowBase {
@@ -60,7 +61,10 @@ export abstract class AuthFlowBase {
 }
 
 export function onErrorResponse(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, res: any, err: any) {
-  if (authFlow.authReturnType == AuthReturnType.REDIRECT) {
+  if (authFlow.authReturnType == AuthReturnType.POST_REDIRECT) {
+    const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, err);
+    res.redirect(landing_url, { status: 303 });
+  } else if (authFlow.authReturnType == AuthReturnType.REDIRECT) {
     const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, err);
     res.redirect(landing_url);
   } else if (authFlow.authReturnType == AuthReturnType.JSON) {
@@ -76,7 +80,10 @@ export function onSuccessResponse(
   res: any,
   responseData: any,
 ) {
-  if (authFlow.authReturnType == AuthReturnType.REDIRECT) {
+  if (authFlow.authReturnType == AuthReturnType.POST_REDIRECT) {
+    const landing_url = appendQueryParamsToUrl(authPayload.landing_url, responseData);
+    res.redirect(landing_url, { status: 303 });
+  } else if (authFlow.authReturnType == AuthReturnType.REDIRECT) {
     const landing_url = appendQueryParamsToUrl(authPayload.landing_url, responseData);
     res.redirect(landing_url);
   } else if (authFlow.authReturnType == AuthReturnType.JSON) {
