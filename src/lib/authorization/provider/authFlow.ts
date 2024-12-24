@@ -63,7 +63,7 @@ export abstract class AuthFlowBase {
 export function onErrorResponse(authFlow: AuthFlowBase, authPayload: AuthorizationPayload, res: any, err: any) {
   if (authFlow.authReturnType == AuthReturnType.POST_REDIRECT) {
     const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, err);
-    res.redirect(landing_url, { status: 303 });
+    res.redirect(303, landing_url);
   } else if (authFlow.authReturnType == AuthReturnType.REDIRECT) {
     const landing_url = appendResponseToUrlQueryParams(authPayload.landing_url, err);
     res.redirect(landing_url);
@@ -82,7 +82,7 @@ export function onSuccessResponse(
 ) {
   if (authFlow.authReturnType == AuthReturnType.POST_REDIRECT) {
     const landing_url = appendQueryParamsToUrl(authPayload.landing_url, responseData);
-    res.redirect(landing_url, { status: 303 });
+    res.redirect(303, landing_url);
   } else if (authFlow.authReturnType == AuthReturnType.REDIRECT) {
     const landing_url = appendQueryParamsToUrl(authPayload.landing_url, responseData);
     res.redirect(landing_url);
