@@ -97,6 +97,8 @@ export enum TokenRewardDistributeType {
   ManualRaffle = 'manual_raffle',
 }
 
+export const CentralizedMoreTokenId = 'centralized_more';
+
 export type TokenReward = {
   // 奖励的token id
   token_id: string;

@@ -12,6 +12,10 @@ export interface IUser extends Document {
   email?: string;
   // MB数量
   moon_beam: number;
+  // More总数量
+  total_more:number;
+  // More可领取数量
+  available_more:number;
   // 通用抽奖券数量
   lottery_ticket_amount: number;
   // particle网络的属性
@@ -44,6 +48,8 @@ const UserSchema = new Schema<IUser>({
   avatar_url: { type: String },
   email: { type: String },
   moon_beam: { type: Number, default: 0 },
+  total_more: { type: Number, default: 0 },
+  available_more: { type: Number, default: 0 },
   lottery_ticket_amount: { type: Number, default: 0 },
   particle: {
     user_id: { type: String },
@@ -72,6 +78,11 @@ export default User;
 // 增加用户MB
 export async function increaseUserMoonBeam(user_id: string, delta: number, session: any) {
   return await User.updateOne({ user_id }, { $inc: { moon_beam: delta } }, { session });
+}
+
+// 增加用户MB
+export async function increaseUserMore(user_id: string, delta: number, session: any) {
+  return await User.updateOne({ user_id }, { $inc: { total_more: delta, available_more: delta } }, { session });
 }
 
 // 检查用户是否为虚拟用户

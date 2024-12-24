@@ -1,28 +1,30 @@
 import { ethers } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
+
 import { getUserFirstWhitelist } from '@/lib/common/user';
 import logger from '@/lib/logger/winstonLogger';
+import ContractNFT from '@/lib/models/ContractNFT';
+import GameTicket from '@/lib/models/GameTicket';
+import GlobalNotification from '@/lib/models/GlobalNotification';
 import { IQuest } from '@/lib/models/Quest';
 import QuestAchievement from '@/lib/models/QuestAchievement';
-import User from '@/lib/models/User';
+import User, { increaseUserMore } from '@/lib/models/User';
+import UserBadges from '@/lib/models/UserBadges';
 import UserMetricReward, {
     checkMetricReward, IUserMetricReward
 } from '@/lib/models/UserMetricReward';
 import UserMetrics from '@/lib/models/UserMetrics';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
+import UserMoreAudit, { UserMoreAuditType } from '@/lib/models/UserMoreAudit';
+import UserWallet from '@/lib/models/UserWallet';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import {
-    checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist
+    CentralizedMoreTokenId, checkClaimableResult, claimRewardResult, QuestRewardType, QuestType,
+    Whitelist
 } from '@/lib/quests/types';
 import * as Sentry from '@sentry/nextjs';
-import GameTicket from '@/lib/models/GameTicket';
-import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
-import GlobalNotification from '@/lib/models/GlobalNotification';
-import UserNotifications from '@/lib/models/UserNotifications';
-import UserWallet from '@/lib/models/UserWallet';
-import ContractNFT from '@/lib/models/ContractNFT';
-import UserBadges from '@/lib/models/UserBadges';
 
 interface IProjection {
     [key: string]: number;
@@ -228,6 +230,25 @@ export abstract class QuestBase {
             }
         }
 
+        let moreReward: any;
+        if (this.quest.reward.token_reward) {
+            if (this.quest.reward.token_reward.token_id === CentralizedMoreTokenId) {
+                // 检查用户是否已绑定钱包
+                const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
+                if (!wallet) {
+                    return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming token rewards.' };
+                }
+                moreReward = new UserMoreAudit({
+                    user_id: userId,
+                    source_type: UserMoreAuditType.P2AQuest,
+                    more_delta: this.quest.reward.token_reward.token_amount_raw,
+                    reward_taint: `${this.quest.id},${userId}`,
+                    corr_id: this.quest.id,
+                    created_time: Date.now(),
+                });
+            }
+        }
+
         try {
             // 保存用户任务达成记录、任务奖励记录、用户MB奖励
             await doTransaction(async (session) => {
@@ -256,6 +277,11 @@ export abstract class QuestBase {
 
                 if (nodeReward) {
                     await UserNodeEligibility.insertMany(nodeReward.nodes, { session: session })
+                }
+
+                if (moreReward) {
+                    await moreReward.save(opts);
+                    await increaseUserMore(userId, moreReward.more_delta, session);
                 }
 
                 if (this.quest.reward.badge_reward) {
