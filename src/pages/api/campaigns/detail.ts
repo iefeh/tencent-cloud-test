@@ -89,7 +89,7 @@ async function enrichCampaignClaimable(userId: string, campaign: any) {
         } else {
             if (task.finish_type && task.finish_type == CampainTaskFinishType.Least) {
                 completeAtLeastCount++;
-            } else {
+            } else if (!task.finish_type) {
                 mandatoryCount++;
             }
         }
