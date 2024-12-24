@@ -212,7 +212,7 @@ export default function useAuth(type: string, callback?: (args?: any) => void) {
     return () => {
       stopWatch();
     };
-  }, [stopWatch]);
+  }, []);
 
   return { onConnect, loading: loading || waLoading };
 }
