@@ -89,6 +89,7 @@ export interface TaskListItem {
     verify?: string;
     verified?: string;
   };
+  finish_type?: 'least';
 }
 
 export interface TaskListResDto {
@@ -199,6 +200,7 @@ export interface EventRewardAccelerator {
 export interface FullEventItem extends EventItem {
   description: string;
   claimable: boolean;
+  finish_config?: { complete_at_least?: number };
   tasks: TaskListItem[];
   claim_settings: {
     require_authorization: string;

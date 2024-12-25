@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import { throttle } from 'lodash';
 import { toast } from 'react-toastify';
 import { EventStatus } from '@/constant/task';
+import useTasksFinishInfo from './hooks/useTasksFinishInfo';
 
 interface Props {
   item?: FullEventItem;
@@ -19,6 +20,7 @@ function TaskReward(props: Props) {
   const { item, onRefresh } = props;
   const [isClaiming, setIsClaiming] = useState(false);
   const isInProcessing = item?.status === EventStatus.ONGOING;
+  const { totalFinished, totalMustFinishCount } = useTasksFinishInfo(item);
 
   const onClaim = throttle(async () => {
     if (!userInfo) {
@@ -63,7 +65,13 @@ function TaskReward(props: Props) {
           {isInProcessing && (
             <LGButton
               className="w-full h-12 mt-[1.6875rem] text-xl font-poppins"
-              label={item?.claimed ? 'Claimed' : 'Claim Rewards'}
+              label={
+                item?.claimed
+                  ? 'Claimed'
+                  : item.claimable
+                  ? 'Claim Rewards'
+                  : `(${totalFinished}/${totalMustFinishCount}) Completed`
+              }
               actived={!item?.claimed && item?.claimable}
               loading={isClaiming}
               disabled={!item?.claimable}

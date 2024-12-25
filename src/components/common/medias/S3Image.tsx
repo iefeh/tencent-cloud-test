@@ -3,16 +3,22 @@ import { forwardRef } from 'react';
 
 type Props = Override<ImageProps, { src: string | StaticImageData; alt?: string }>;
 
+const httpRE = /^https?:\/\//;
+const localRE = /^local:/;
+
+function calcSrc(url: string | StaticImageData) {
+  if (typeof url !== 'string') return url;
+  if (httpRE.test(url)) return url;
+  if (localRE.test(url)) return url.replace(localRE, '');
+
+  return `https://d3dhz6pjw7pz9d.cloudfront.net/${url.replace(/^\/+/, '')}`;
+}
+
 const S3Image = forwardRef<HTMLImageElement, Props>(function S3Image(
   { src, alt, unoptimized = typeof src === 'string', width, height, fill, sizes, priority, ...props },
   ref,
 ) {
-  const url =
-    typeof src === 'string'
-      ? src.startsWith('http')
-        ? src
-        : `https://d3dhz6pjw7pz9d.cloudfront.net/${src.replace(/^\/+/, '')}`
-      : src;
+  const url = calcSrc(src);
 
   return (
     <Image

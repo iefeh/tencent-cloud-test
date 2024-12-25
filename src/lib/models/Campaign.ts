@@ -55,6 +55,16 @@ export type CampaignClaimSettings = {
     reward_accelerators: string[],
 }
 
+// 活动领取奖励的设置
+export type FinishConfig = {
+    complete_at_least: number
+}
+
+// 活动任务配置，对应task中的finish_type字段；若无该字段，则任务必须完成才能领取活动奖励
+export enum CampainTaskFinishType {
+    Optional = 'optional',// 该类型的任务可做可不做
+    Least = 'least'// 该类型的任务需要至少完成几个，具体需要完成几个由finish_config中的complete_at_least值控制
+}
 // 活动
 export interface ICampaign extends Document {
     // 活动id
@@ -85,6 +95,8 @@ export interface ICampaign extends Document {
     updated_time: number,
     // 删除时间毫秒时间戳
     deleted_time: number | null,
+    // 活动完成配置
+    finish_config?: FinishConfig
 }
 
 const CampaignSchema = new Schema<ICampaign>({
@@ -101,6 +113,7 @@ const CampaignSchema = new Schema<ICampaign>({
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number },
+    finish_config: Schema.Types.Mixed,
 });
 
 // 活动唯一id

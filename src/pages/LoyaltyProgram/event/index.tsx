@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import TaskDetails from './TaskDetails';
-import TaskReward from './TaskReward';
+import TaskDetails from '@/components/LoyaltyProgram/event/TaskDetails';
+import TaskReward from '@/components/LoyaltyProgram/event/TaskReward';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { FullEventItem, queryEventDetailsAPI } from '@/http/services/task';
