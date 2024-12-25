@@ -35,6 +35,7 @@ export enum ResponseCode {
   ERROR_INSUFFICIENT_TICKETS = -25,
   ERROR_AUTHORIZATION_CODE_EXPIRED = -26,
   ERROR_SIWA_EXPIRED = -27,
+  ERROR_USER_BANNED = -28,
   // 添加对应的响应码
 }
 
@@ -91,6 +92,9 @@ const ResponseMessages = {
   [ResponseCode.ERROR_TRANSACTION_NOT_RECONGNIZED]: 'Transaction not recongnized.',
   // 苹果SIWA UI登录超时
   [ResponseCode.ERROR_SIWA_EXPIRED]: 'Sign In With Apple expired.',
+  // 用户被封禁
+  [ResponseCode.ERROR_USER_BANNED]:
+    'Your account has been suspended due to violation of game rules.\nWe have zero tolerance for cheating to maintain a fair gaming environment.\nPlease contact customer service if you wish to appeal.',
   // 添加响应码对应的msg
 };
 
@@ -133,3 +137,4 @@ export const userSelfDestructed = build(ResponseCode.ERROR_USER_SELF_DESTRUCTED)
 export const transactionNotRecongnized = build(ResponseCode.ERROR_USER_SELF_DESTRUCTED);
 export const authorizationCodeExpired = build(ResponseCode.ERROR_AUTHORIZATION_CODE_EXPIRED);
 export const siwaExpired = build(ResponseCode.ERROR_SIWA_EXPIRED);
+export const userBanned = build(ResponseCode.ERROR_USER_BANNED);
