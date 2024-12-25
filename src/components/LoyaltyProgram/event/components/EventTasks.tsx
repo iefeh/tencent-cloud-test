@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { EventStatus, QuestType } from '@/constant/task';
 import { observer } from 'mobx-react-lite';
 import EventTask from './EventTask';
+import useTasksFinishInfo from '../hooks/useTasksFinishInfo';
 
 interface VerifyTexts {
   label: string;
@@ -26,6 +27,11 @@ function EventTasks(props: EventTaskProps) {
   const { item, updateTasks } = props;
   const isInProcessing = item?.status === EventStatus.ONGOING;
   const [tasks, setTasks] = useState<TaskItem[]>([]);
+
+  const { compulsoryTasks, alternativeTasks, alternativeFinishedCount, alternativeMustFinishCount } = useTasksFinishInfo(
+    item,
+    tasks,
+  );
 
   function handleQuests(list: TaskItem[]) {
     list.forEach((item) => {
@@ -78,13 +84,9 @@ function EventTasks(props: EventTaskProps) {
     <div>
       <div className="flex justify-between items-center">
         <div className="font-semakin text-2xl">Tasks</div>
-
-        <div className="font-poppins-medium text-sm text-[#666]">
-          ({finishedCount}/{item?.tasks?.length || 0}) Completed
-        </div>
       </div>
 
-      {tasks.map((task, index) => (
+      {compulsoryTasks.map((task, index) => (
         <EventTask
           key={`${task.id}_${task.achieved}`}
           task={task}
@@ -93,6 +95,30 @@ function EventTasks(props: EventTaskProps) {
           updateTasks={updateTasks}
         />
       ))}
+
+      {alternativeTasks.length > 0 && (
+        <>
+          <div className="flex justify-between items-center mt-8">
+            <div className="text-lg text-[#666]">
+              Please complete at least {item?.finish_config?.complete_at_least || 0} of the following quests
+            </div>
+
+            <div className="font-poppins-medium text-sm text-[#666]">
+              ({alternativeFinishedCount}/{alternativeMustFinishCount}) Completed
+            </div>
+          </div>
+
+          {alternativeTasks.map((task, index) => (
+            <EventTask
+              key={`${task.id}_${task.achieved}`}
+              task={task}
+              item={item!}
+              isInProcessing={isInProcessing}
+              updateTasks={updateTasks}
+            />
+          ))}
+        </>
+      )}
     </div>
   );
 }
