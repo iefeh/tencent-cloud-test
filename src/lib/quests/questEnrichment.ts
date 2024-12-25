@@ -21,6 +21,7 @@ import TwitterTopicTweet from '../models/TwitterTopicTweet';
 import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
 import UserNodeEligibility from '../models/UserNodeEligibility';
+import UserMoreAudit from '../models/UserMoreAudit';
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -235,18 +236,21 @@ async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
         // 任务存在token奖励, 查询用户token奖励领取状态
         if (quest.reward.token_reward) {
             if (quest.reward.token_reward.token_id === CentralizedMoreTokenId) {
-                quest.user_token_reward = {
-                    status: "claimed",
-                    source_type: "p2a_quest",
-                    token_amount_raw: quest.reward.token_reward.token_amount_raw,
-                    token_amount_formatted: quest.reward.token_reward.token_amount_formatted,
-                    token: {
-                        icon: "https://d3dhz6pjw7pz9d.cloudfront.net/icons/tokens/more.png",
-                        name: "MORE",
-                        symbol: "MORE",
-                        decimal: 18
-                    }
-                };
+                const userMoreReward = await UserMoreAudit.findOne({ user_id: userId, corr_id: quest.id });
+                if (userMoreReward) {
+                    quest.user_token_reward = {
+                        status: "claimed",
+                        source_type: "p2a_quest",
+                        token_amount_raw: userMoreReward.more_delta,
+                        token_amount_formatted: userMoreReward.more_delta,
+                        token: {
+                            icon: "https://d3dhz6pjw7pz9d.cloudfront.net/icons/tokens/more.png",
+                            name: "MORE",
+                            symbol: "MORE",
+                            decimal: 18
+                        }
+                    };
+                }
             } else if (quest.verified) {
                 const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`)});
                 // 用户已验证token奖励, 创建token奖励属性

@@ -8,7 +8,7 @@ import GameTicket from '@/lib/models/GameTicket';
 import GlobalNotification from '@/lib/models/GlobalNotification';
 import { IQuest } from '@/lib/models/Quest';
 import QuestAchievement from '@/lib/models/QuestAchievement';
-import User, { increaseUserMore } from '@/lib/models/User';
+import User from '@/lib/models/User';
 import UserBadges from '@/lib/models/UserBadges';
 import UserMetricReward, {
     checkMetricReward, IUserMetricReward
@@ -16,13 +16,11 @@ import UserMetricReward, {
 import UserMetrics from '@/lib/models/UserMetrics';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
 import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
-import UserMoreAudit, { UserMoreAuditType } from '@/lib/models/UserMoreAudit';
 import UserWallet from '@/lib/models/UserWallet';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import {
-    CentralizedMoreTokenId, checkClaimableResult, claimRewardResult, QuestRewardType, QuestType,
-    Whitelist
+    checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist
 } from '@/lib/quests/types';
 import * as Sentry from '@sentry/nextjs';
 
@@ -230,26 +228,6 @@ export abstract class QuestBase {
             }
         }
 
-        let moreReward: any;
-        if (this.quest.reward.token_reward) {
-            if (this.quest.reward.token_reward.token_id === CentralizedMoreTokenId) {
-                // 检查用户是否已绑定钱包
-                const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null });
-                if (!wallet) {
-                    return { done: false, duplicated: false, tip: 'Binding wallet is required before claiming token rewards.' };
-                }
-                moreReward = new UserMoreAudit({
-                    user_id: userId,
-                    source_type: UserMoreAuditType.P2AQuest,
-                    more_delta: this.quest.reward.token_reward.token_amount_raw,
-                    reward_taint: `${this.quest.id},${userId}`,
-                    corr_id: this.quest.id,
-                    created_time: Date.now(),
-                });
-                tip = `You have claimed ${this.quest.reward.token_reward.token_amount_raw} $MORE and ${rewardDelta} MBs.`;
-            }
-        }
-
         try {
             // 保存用户任务达成记录、任务奖励记录、用户MB奖励
             await doTransaction(async (session) => {
@@ -278,11 +256,6 @@ export abstract class QuestBase {
 
                 if (nodeReward) {
                     await UserNodeEligibility.insertMany(nodeReward.nodes, { session: session })
-                }
-
-                if (moreReward) {
-                    await moreReward.save(opts);
-                    await increaseUserMore(userId, moreReward.more_delta, session);
                 }
 
                 if (this.quest.reward.badge_reward) {

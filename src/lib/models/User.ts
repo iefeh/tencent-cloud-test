@@ -80,7 +80,7 @@ export async function increaseUserMoonBeam(user_id: string, delta: number, sessi
   return await User.updateOne({ user_id }, { $inc: { moon_beam: delta } }, { session });
 }
 
-// 增加用户MB
+// 增加用户MORE
 export async function increaseUserMore(user_id: string, delta: number, session: any) {
   return await User.updateOne({ user_id }, { $inc: { total_more: delta, available_more: delta } }, { session });
 }
