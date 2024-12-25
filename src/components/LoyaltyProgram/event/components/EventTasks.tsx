@@ -104,7 +104,7 @@ function EventTasks(props: EventTaskProps) {
             </div>
 
             <div className="font-poppins-medium text-sm text-[#666]">
-              ({alternativeFinishedCount}/{alternativeMustFinishCount}) Completed
+              ({alternativeFinishedCount}/{alternativeMustFinishCount})
             </div>
           </div>
 
