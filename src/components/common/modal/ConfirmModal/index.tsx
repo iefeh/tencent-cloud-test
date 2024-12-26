@@ -5,6 +5,7 @@ import usePluginModal, { showModal } from '@/hooks/common/useShowModal';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 
 interface ConfirmModalProps {
+  title?: string;
   content: string | JSX.Element;
   confirmBtnLabel?: string;
   cancelBtnLabel?: string;
@@ -13,6 +14,7 @@ interface ConfirmModalProps {
 }
 
 const ConfirmModal: FC<ConfirmModalProps> = ({
+  title,
   content,
   confirmBtnLabel,
   cancelBtnLabel,
@@ -23,9 +25,15 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
 
   return (
     <Modal
-      classNames={{ header: 'p-0', closeButton: 'z-10', body: '26.25rem', footer: '!justify-center mb-4' }}
+      classNames={{
+        base: 'w-[42rem] max-w-[90vw]',
+        header: 'p-0',
+        closeButton: 'z-10',
+        footer: '!justify-center mb-4',
+      }}
       isDismissable={false}
       isKeyboardDismissDisabled
+      placement='center'
       {...disclosure}
     >
       <ModalContent>
@@ -33,7 +41,7 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
           <>
             <ModalHeader>
               <div className="relative w-full h-16 bg-no-repeat bg-[url('/img/invite/bg_rule_head.png')] bg-contain flex items-center gap-3 px-6">
-                <div className="font-semakin text-basic-yellow text-2xl">Attention Here</div>
+                <div className="font-semakin text-basic-yellow text-xl">{title || 'Attention Here'}</div>
               </div>
             </ModalHeader>
 
