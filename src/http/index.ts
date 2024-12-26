@@ -53,9 +53,11 @@ axios.interceptors.response.use(
             showCancelBtn: false,
             confirmBtnLabel: 'I Understand',
             content: `
-              <p class="mt-4">Your account has been suspended due to violation of game rules.</p>
-              <p class="mt-2">We have zero tolerance for cheating to maintain a fair gaming environment.</p>
-              <p class="mt-2">Please contact customer service if you wish to appeal.</p>
+              <div class="text-center">
+                <p class="mt-4">Your account has been suspended due to violation of game rules.</p>
+                <p class="mt-2">We have zero tolerance for cheating to maintain a fair gaming environment.</p>
+                <p class="mt-2">Please contact customer service if you wish to appeal.</p>
+              </div>
             `,
           });
         }
