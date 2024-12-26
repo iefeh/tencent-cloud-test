@@ -42,12 +42,6 @@ export async function mustAuthInterceptor(req: UserContextRequest, res: NextApiR
     return;
   }
 
-  const isBanned = await checkBannedAndRemoveAuth(authorization, userId);
-  if (isBanned) {
-    res.json(response.userBanned());
-    return;
-  }
-
   // 将用户数据添加到请求对象中
   req.userId = userId;
 
@@ -56,27 +50,5 @@ export async function mustAuthInterceptor(req: UserContextRequest, res: NextApiR
 
 // maybeAuthInterceptor 选择授权拦截器，如果用户有有效认证token则进行校验
 export async function maybeAuthInterceptor(req: UserContextRequest, res: NextApiResponse, next: () => void) {
-  const authorization = req.headers.authorization;
-  if (authorization) {
-    const userId = await redis.get(`user_session:${authorization}`);
-    if (userId) {
-      const isBanned = await checkBannedAndRemoveAuth(authorization, userId);
-      if (!isBanned) {
-        // 将用户数据添加到请求对象中
-        req.userId = userId;
-      }
-    }
-  }
   next();
 }
-
-async function checkBannedAndRemoveAuth(authorization: string, userId: string) {
-  // 判断用户是否被封禁
-  const user = await User.findOne({ user_id: userId }, { is_banned: 1 });
-  if (user.is_banned) {
-    await redis.del(`user_session:${authorization}`);
-  }
-
-  return !!user.is_banned;
-}
-
