@@ -1,28 +1,28 @@
 import { ethers } from 'ethers';
 import { v4 as uuidv4 } from 'uuid';
+
 import { getUserFirstWhitelist } from '@/lib/common/user';
 import logger from '@/lib/logger/winstonLogger';
+import ContractNFT from '@/lib/models/ContractNFT';
+import GameTicket from '@/lib/models/GameTicket';
+import GlobalNotification from '@/lib/models/GlobalNotification';
 import { IQuest } from '@/lib/models/Quest';
 import QuestAchievement from '@/lib/models/QuestAchievement';
 import User from '@/lib/models/User';
+import UserBadges from '@/lib/models/UserBadges';
 import UserMetricReward, {
     checkMetricReward, IUserMetricReward
 } from '@/lib/models/UserMetricReward';
 import UserMetrics from '@/lib/models/UserMetrics';
 import UserMoonBeamAudit, { UserMoonBeamAuditType } from '@/lib/models/UserMoonBeamAudit';
+import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
+import UserWallet from '@/lib/models/UserWallet';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
 import {
     checkClaimableResult, claimRewardResult, QuestRewardType, QuestType, Whitelist
 } from '@/lib/quests/types';
 import * as Sentry from '@sentry/nextjs';
-import GameTicket from '@/lib/models/GameTicket';
-import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
-import GlobalNotification from '@/lib/models/GlobalNotification';
-import UserNotifications from '@/lib/models/UserNotifications';
-import UserWallet from '@/lib/models/UserWallet';
-import ContractNFT from '@/lib/models/ContractNFT';
-import UserBadges from '@/lib/models/UserBadges';
 
 interface IProjection {
     [key: string]: number;

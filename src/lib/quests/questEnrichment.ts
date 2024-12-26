@@ -15,12 +15,13 @@ import { queryUserTelegramAuthorization } from '@/lib/quests/implementations/con
 import { queryUserAppleAuthorization } from '@/lib/quests/implementations/connectAppleQuest';
 import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
 import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
-import { QuestType } from '@/lib/quests/types';
+import { QuestType, CentralizedMoreTokenId } from '@/lib/quests/types';
 
 import TwitterTopicTweet from '../models/TwitterTopicTweet';
 import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
 import UserNodeEligibility from '../models/UserNodeEligibility';
+import UserMoreAudit from '../models/UserMoreAudit';
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -231,36 +232,53 @@ async function enrichQuestUserAuthorization(userId: string, quests: any[]) {
 
 // 为任务添加user_token_reward字段
 async function enrichQuestTokenClaimStatus(userId: string, quests: any[]) {
-  await Promise.all(
-    quests.map(async (quest) => {
-      // 任务存在token奖励, 查询用户token奖励领取状态
-      if (quest.reward.token_reward && quest.verified) {
-        const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`) });
-        // 用户已验证token奖励, 创建token奖励属性
-        if (userTokenReward) {
-          quest.user_token_reward = {
-            reward_id: userTokenReward.reward_id,
-            status: userTokenReward.status,
-            source_type: userTokenReward.source_type,
-            token_amount_raw: userTokenReward.token_amount_raw,
-            token_amount_formatted: userTokenReward.token_amount_formatted,
-            created_time: userTokenReward.created_time,
-          };
-          const token = await Token.findOne({ token_id: userTokenReward.token_id });
-          if (token) {
-            quest.user_token_reward.token = {
-              chain_id: token.chain_id,
-              address: token.address,
-              icon: token.icon,
-              name: token.name,
-              symbol: token.symbol,
-              decimal: token.decimal,
-            };
-          }
+    await Promise.all(quests.map(async (quest) => {
+        // 任务存在token奖励, 查询用户token奖励领取状态
+        if (quest.reward.token_reward) {
+            if (quest.reward.token_reward.token_id === CentralizedMoreTokenId) {
+                const userMoreReward = await UserMoreAudit.findOne({ user_id: userId, corr_id: quest.id });
+                if (userMoreReward) {
+                    quest.user_token_reward = {
+                        status: "claimed",
+                        source_type: "p2a_quest",
+                        token_amount_raw: userMoreReward.more_delta,
+                        token_amount_formatted: userMoreReward.more_delta,
+                        token: {
+                            icon: "https://d3dhz6pjw7pz9d.cloudfront.net/icons/tokens/more.png",
+                            name: "MORE",
+                            symbol: "MORE",
+                            decimal: 18
+                        }
+                    };
+                }
+            } else if (quest.verified) {
+                const userTokenReward = await UserTokenReward.findOne({ reward_id: ethers.id(`${userId},${quest.id}`)});
+                // 用户已验证token奖励, 创建token奖励属性
+                if (userTokenReward) {
+                    quest.user_token_reward = {
+                        reward_id: userTokenReward.reward_id,
+                        status: userTokenReward.status,
+                        source_type: userTokenReward.source_type,
+                        token_amount_raw: userTokenReward.token_amount_raw,
+                        token_amount_formatted: userTokenReward.token_amount_formatted,
+                        created_time: userTokenReward.created_time,
+                    };
+                    const token = await Token.findOne({ token_id: userTokenReward.token_id });
+                    if (token) {
+                        quest.user_token_reward.token = {
+                            chain_id: token.chain_id,
+                            address: token.address,
+                            icon: token.icon,
+                            name: token.name,
+                            symbol: token.symbol,
+                            decimal: token.decimal
+                        };
+                    }
+                }
+            }
         }
-      }
-    }),
-  );
+    })
+  )
 }
 
 async function enrichQuestNodeRewardStatus(userId: string, quests: any[]) {

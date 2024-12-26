@@ -28,7 +28,14 @@ export interface NodeTokensRecord {
   source_type: string;
 }
 
-export type MyTokensRecord = QuestTokensRecord | NodeTokensRecord;
+export interface P2AQuestTokensRecord {
+  created_time: number;
+  more_delta: number;
+  source: string;
+  source_type: string;
+}
+
+export type MyTokensRecord = QuestTokensRecord | NodeTokensRecord | P2AQuestTokensRecord;
 
 export function queryMyTokensListAPI(
   params: PageQueryDto & { source_type?: string },

@@ -24,6 +24,8 @@ type WhitelistReward = {
         amount: number;
         amount_formatted: string;
     };
+    // 奖励的more
+    more_amount: number;
 }
 
 const WhitelistSchema = new Schema<IWhitelist>({
