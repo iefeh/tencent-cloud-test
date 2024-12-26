@@ -1,20 +1,12 @@
-import { getUserFirstWhitelist } from '@/lib/common/user';
-import logger from '@/lib/logger/winstonLogger';
-import { IQuest } from '@/lib/models/Quest';
-import { increaseUserMore } from '@/lib/models/User';
-import UserMoreAudit, { UserMoreAuditType } from '@/lib/models/UserMoreAudit';
-import { ConnectTwitterQuest } from '@/lib/quests/implementations/connectTwitterQuest';
-import { checkClaimableResult, claimRewardResult, Whitelist } from '@/lib/quests/types';
+import {ConnectTwitterQuest} from "@/lib/quests/implementations/connectTwitterQuest";
+import {IQuest} from "@/lib/models/Quest";
+import {checkClaimableResult, claimRewardResult, Whitelist} from "@/lib/quests/types";
+import {getUserFirstWhitelist} from "@/lib/common/user";
+import logger from "@/lib/logger/winstonLogger";
 
 export class WhitelistQuest extends ConnectTwitterQuest {
     constructor(quest: IQuest) {
         super(quest);
-    }
-
-    private async checkUserMoreRewardDeltaFromWhitelist(userId: string): Promise<number> {
-        const whitelist = this.quest.properties as Whitelist;
-        const userWl = await getUserFirstWhitelist(userId, whitelist.whitelist_id);
-        return userWl?.reward?.more_amount || 0;
     }
 
     async checkClaimable(userId: string): Promise<checkClaimableResult> {
@@ -45,21 +37,7 @@ export class WhitelistQuest extends ConnectTwitterQuest {
                 tip: "No eligible conditions for rewards were found. Please retry with a different account.",
             }
         }
-        const moreRewardDelta = await this.checkUserMoreRewardDeltaFromWhitelist(userId);
-        const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
-            if (moreRewardDelta) {
-                let moreReward = new UserMoreAudit({
-                    user_id: userId,
-                    source_type: UserMoreAuditType.P2AQuest,
-                    more_delta: moreRewardDelta,
-                    reward_taint: `${this.quest.id},${userId}`,
-                    corr_id: this.quest.id,
-                    created_time: Date.now(),
-                });
-                await moreReward.save({session});
-                await increaseUserMore(userId, moreRewardDelta, session);
-            }
-        });
+        const result = await this.saveUserReward(userId, taint, rewardDelta, null);
         if (result.duplicated) {
             return {
                 verified: false,
@@ -69,9 +47,7 @@ export class WhitelistQuest extends ConnectTwitterQuest {
         return {
             verified: result.done,
             claimed_amount: result.done ? rewardDelta : undefined,
-            tip: result.done ? result.tip ? result.tip : 
-            moreRewardDelta? `You have claimed ${moreRewardDelta} $MORE and ${rewardDelta} MBs.` : 
-            `You have claimed ${rewardDelta} MB.` : result.tip ? result.tip : "Server Internal Error",
+            tip: result.done ?  result.tip ? result.tip : `You have claimed ${rewardDelta} MB.` : result.tip ? result.tip : "Server Internal Error",
         }
     }
 }
