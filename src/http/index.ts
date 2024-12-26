@@ -1,4 +1,6 @@
+import { showConfirmModal } from '@/components/common/modal/ConfirmModal';
 import { KEY_AUTHORIZATION, KEY_AUTHORIZATION_AA } from '@/constant/storage';
+import { ResponseCode } from '@/lib/response/response';
 import { useStore } from '@/store';
 import { Axios } from 'axios';
 import { toast } from 'react-toastify';
@@ -40,12 +42,22 @@ axios.interceptors.response.use(
     if (data.code === 1 && ~~(res.status / 100) === 2) return data.data;
 
     switch (data.code) {
-      // token expired
-      case -2: {
+      case ResponseCode.ERROR_UNAUTHORIZED:
+      case ResponseCode.ERROR_USER_BANNED:
         const store = useStore();
         store.logout(false);
+
+        if (data.code === ResponseCode.ERROR_USER_BANNED) {
+          showConfirmModal({
+            showCancelBtn: false,
+            content: `
+              <p class="mt-4">Your account has been <span class="text-pure-red">suspended</span> due to violation of game rules.</p>
+              <p class="mt-2">We have zero tolerance for cheating to maintain a fair gaming environment.</p>
+              <p class="mt-2">Please contact customer service if you wish to appeal.</p>
+            `,
+          });
+        }
         return null;
-      }
     }
 
     if (!hideErrorTips) {
