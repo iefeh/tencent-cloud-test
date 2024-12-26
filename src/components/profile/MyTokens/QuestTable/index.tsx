@@ -17,7 +17,7 @@ interface Props {
 
 const QuestTable: FC<Props> = ({ pagiTotal = 1, loading, items, onPagiChange }) => {
   const emptyContent = (
-    <div className="relative backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-0 flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
+    <div className="relative backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
       <p>No history found.</p>
       <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
     </div>

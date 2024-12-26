@@ -9,7 +9,6 @@ export enum UserTokenAuditStatus {
 
 export enum UserTokenSourceType {
     Quest = "quest",
-    P2AQuest = "p2a_quest",
     Node = "node"
 }
 

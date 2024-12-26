@@ -5,7 +5,6 @@ import { createRouter } from 'next-connect';
 import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
 import LotteryPool from '@/lib/models/LotteryPool';
 import Quest from '@/lib/models/Quest';
-import UserMoreAudit from '@/lib/models/UserMoreAudit';
 import UserNodeEligibility, { NodeSourceType } from '@/lib/models/UserNodeEligibility';
 import UserTokenReward, { UserTokenSourceType } from '@/lib/models/UserTokenReward';
 import * as response from '@/lib/response/response';
@@ -19,17 +18,13 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     }
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
-    let sourceTypes: string[] = [UserTokenSourceType.Quest, UserTokenSourceType.Node, UserTokenSourceType.P2AQuest];
+    let sourceTypes: string[] = [UserTokenSourceType.Quest, UserTokenSourceType.Node];
     const userId = req.userId!;
 
     let pagination: any;
     switch (source_type as string) {
         case UserTokenSourceType.Node:
             pagination = await getUserNodes(userId);
-            break;
-        case UserTokenSourceType.P2AQuest:
-            let userMoreAuditPagination = await paginationUserCentralizedMoreHistory(pageNum, pageSize, userId);
-            pagination = await enrichMoreRewardDetails(userMoreAuditPagination.mores);
             break;
         default:
             pagination = await paginationUserTokenHistory(pageNum, pageSize, userId, source_type as string);
@@ -124,6 +119,7 @@ async function paginationUserTokenHistory(pageNum: number, pageSize: number, use
     return { total: results[0].metadata[0].total, tokens: results[0].data }
 }
 
+
 async function getUserNodes(userId: string): Promise<{ total: number, tokens: any[] }> {
     // 查询出用户的节点
     const pipeline: PipelineStage[] = [{ $match: { user_id: userId } }, { $sort: { created_time: -1 } }, { $project: { _id: 0, __v: 0 } }];
@@ -165,62 +161,6 @@ async function getUserNodes(userId: string): Promise<{ total: number, tokens: an
     }
 
     return { total: nodes.length, tokens: nodes };
-}
-
-async function paginationUserCentralizedMoreHistory(pageNum: number, pageSize: number, userId: string): Promise<{ total: number, mores: any[] }> {
-    let matchOpts: any = {
-        user_id: userId,
-        deleted_time: null,
-    };
-    const skip = (pageNum - 1) * pageSize;
-
-    const aggregateQuery: PipelineStage[] = [
-        {
-            $match: matchOpts
-        },
-        {
-            $sort: {
-                created_time: -1
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                __v: 0,
-                reward_taint: 0,
-                reward_taints: 0,
-            }
-        },
-        {
-            $facet: {
-                metadata: [{ $count: "total" }],
-                data: [{ $skip: skip }, { $limit: pageSize }]
-            }
-        }
-    ];
-    const results = await UserMoreAudit.aggregate(aggregateQuery);
-    if (results[0].metadata.length == 0) {
-        return { total: 0, mores: [] }
-    }
-    return { total: results[0].metadata[0].total, mores: results[0].data }
-}
-
-async function enrichMoreRewardDetails(mores: any): Promise<{ total: number, tokens: any[] }> {
-    for (let more of mores) {
-        if (more.source_type == UserTokenSourceType.P2AQuest) {
-            let quest = await Quest.findOne({ id: more.corr_id }, { _id: 0, id: 1, name: 1 });
-            if (quest) {
-                more.source = quest.name;
-            } else {
-                more.source = more.corr_id;
-            }
-        } else {
-            more.source = more.source_id;
-        }
-        delete more.user_id;
-        delete more.corr_id;
-    }
-    return { total: mores.length, tokens: mores };
 }
 
 // this will run if none of the above matches

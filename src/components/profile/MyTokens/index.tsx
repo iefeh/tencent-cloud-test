@@ -1,4 +1,4 @@
-import { type MyTokensRecord, queryMyTokensListAPI, QuestTokensRecord, NodeTokensRecord, P2AQuestTokensRecord } from '@/http/services/token';
+import { type MyTokensRecord, queryMyTokensListAPI, QuestTokensRecord, NodeTokensRecord } from '@/http/services/token';
 import CircularLoading from '@/pages/components/common/CircularLoading';
 import { useUserContext } from '@/store/User';
 import { Tab, Tabs } from '@nextui-org/react';
@@ -9,12 +9,10 @@ import { FC, Key, useEffect, useRef, useState } from 'react';
 import teamsImg from 'img/loyalty/task/teams.png';
 import QuestTable from './QuestTable';
 import NodeTable from './NodeTable';
-import P2AQuestTable from './P2AQuestTable';
 
 const TabNames: Dict<string> = {
   quest: 'Quest',
   node: 'My Node Whitelist',
-  p2a_quest: 'P2A',
 };
 
 const MyTokens: FC = () => {
@@ -84,7 +82,7 @@ const MyTokens: FC = () => {
   }, [userInfo]);
 
   const emptyContent = (
-    <div className="!absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-0 flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
+    <div className="absolute inset-0 backdrop-saturate-150 backdrop-blur-md bg-overlay/30 z-[999] flex flex-col justify-center items-center font-poppins text-2xl pointer-events-none">
       <p>No history found.</p>
       <Image className="w-[54rem] h-auto" src={teamsImg} alt="" />
     </div>
@@ -129,13 +127,6 @@ const MyTokens: FC = () => {
                   />
                 ) : tab === 'node' ? (
                   <NodeTable items={items as NodeTokensRecord[]} loading={loading} />
-                ) : tab === 'p2a_quest' ? (
-                  <P2AQuestTable
-                    loading={loading}
-                    items={items as P2AQuestTokensRecord[]}
-                    pagiTotal={pagiTotal}
-                    onPagiChange={onPagiChange}
-                  />
                 ) : null}
               </Tab>
             ))}
