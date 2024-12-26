@@ -140,7 +140,7 @@ async function doUserLogin(res: any, inviter: inviteRelationship | null, user: I
     }
     // 判断用户是否已封禁
     if (user.is_banned) {
-      return res.json(response.unauthorized());
+      return res.json(response.userBanned());
     }
   }
   // 删除验证码
@@ -169,3 +169,4 @@ export default router.handler({
     res.status(500).json(response.serverError());
   },
 });
+

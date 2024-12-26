@@ -246,7 +246,8 @@ async function doUserLogin(
     }
     // 判断用户是否已封禁
     if (user.is_banned) {
-      return res.json(response.unauthorized());
+      onErrorResponse(authFlow, authPayload, res, response.userBanned());
+      return;
     }
   }
   // 执行用户登录

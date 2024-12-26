@@ -64,7 +64,7 @@ router.post(async (req, res) => {
     }
     // 判断用户是否已封禁
     if (user.is_banned) {
-      return res.json(response.unauthorized());
+      return res.json(response.userBanned());
     }
   }
   const token = await generateUserSession(userWallet.user_id);

@@ -68,6 +68,10 @@
   display: none;
 }
 
+.Toastify__toast-body {
+  white-space: pre-line;
+}
+
 @media (min-width: 960px) {
   :root {
     --toastify-toast-max-width: 36rem;

@@ -1,4 +1,5 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { debounce } from 'lodash';
 import { ComponentProps, FC } from 'react';
 
 export default function usePluginModal<T = boolean>() {
@@ -20,7 +21,7 @@ export default function usePluginModal<T = boolean>() {
   };
 }
 
-export const showModal = async <T = boolean>(content: FC, args?: ComponentProps<typeof content>) => {
+export const showModal = debounce(async <T = boolean>(content: FC<any>, args?: ComponentProps<typeof content>) => {
   const Modal = NiceModal.create(content);
 
   try {
@@ -30,4 +31,4 @@ export const showModal = async <T = boolean>(content: FC, args?: ComponentProps<
   } catch (error) {
     return false;
   }
-};
+}, 300);
