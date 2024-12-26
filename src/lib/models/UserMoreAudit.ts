@@ -3,7 +3,7 @@ import connectToMongoDbDev from "@/lib/mongodb/client";
 
 export enum UserMoreAuditType {
     // 任务
-    P2AQuest = "p2a_quest",
+    P2AQuest = "p2a_quest"
 }
 
 // 用户MB的审计记录, 用户的个人MB=sum(moon_beam_delta)
