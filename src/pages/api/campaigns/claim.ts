@@ -202,6 +202,7 @@ async function claimCampaignRewards(userId: string, campaign: ICampaign): Promis
     if (reward.type === CampaignRewardType.Badge && !!reward.badge_claim) {
       const badgeId = reward.badge_id;
       const lv = reward.claim_level ? reward.claim_level : 1; // 默认奖励1级徽章
+      const now = Date.now();
 
       const badegLv: any = {};
       badegLv[`series.${lv}.obtained_time`] = now;
