@@ -5,6 +5,8 @@ import { ConnectSteamQuest } from '@/lib/quests/implementations/connectSteamQues
 import { ConnectTwitterQuest } from '@/lib/quests/implementations/connectTwitterQuest';
 import { ConnectTelegramQuest } from '@/lib/quests/implementations/connectTelegramQuest';
 import { ConnectAppleQuest } from '@/lib/quests/implementations/connectAppleQuest';
+import { ConnectGoogleQuest } from './implementations/connectGoogleQuest';
+import { ConnectEmailQuest } from './implementations/connectEmailQuest';
 import { ConnectWalletQuest } from '@/lib/quests/implementations/connectWalletQuest';
 import { FollowOnTwitterQuest } from '@/lib/quests/implementations/followOnTwitterQuest';
 import { HoldDiscordRoleQuest } from '@/lib/quests/implementations/holdDiscordRoleQuest';
@@ -53,6 +55,10 @@ export function constructQuest(quest: IQuest): QuestBase {
       return new ConnectTelegramQuest(quest);
     case QuestType.ConnectApple:
       return new ConnectAppleQuest(quest);
+    case QuestType.ConnectGoogle:
+      return new ConnectGoogleQuest(quest);
+    case QuestType.ConnectEmail:
+      return new ConnectEmailQuest(quest);
     case QuestType.JoinDiscordServer:
       return new JoinDiscordServerQuest(quest);
     case QuestType.HoldDiscordRole:

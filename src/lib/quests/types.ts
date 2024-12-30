@@ -14,6 +14,10 @@ export enum QuestType {
   ConnectSteam = 'connect_steam',
   // 绑定apple
   ConnectApple = 'connect_apple',
+  // 绑定google
+  ConnectGoogle = 'connect_google',
+  // 绑定邮箱
+  ConnectEmail = 'connect_email',
   // twitter关注
   FollowOnTwitter = 'follow_on_twitter',
   // 转推
