@@ -74,6 +74,24 @@ const BenefitsMonthlyItemCollection: ShopItemCollectionCom = ({ item, onClick })
   );
 };
 
+const BenefitsBattlePassItemCollection: ShopItemCollectionCom = ({ item, onClick }) => {
+  const { scrollRef } = useBScroll({ scrollX: false, scrollY: true });
+
+  return (
+    <div className="flex mt-9 ml-12 mr-10 h-full relative pb-16">
+      <div ref={scrollRef} className="w-full h-full relative overflow-hidden">
+        <div className="w-full flex flex-wrap gap-x-2 gap-y-2">
+          {item?.items instanceof Array
+            ? item.items.map((shopItem) => <ShopItem key={shopItem.id} item={shopItem} onClick={onClick} />)
+            : item?.items}
+        </div>
+      </div>
+
+      <ItemsCountdown item={item} />
+    </div>
+  );
+};
+
 const ResourcesDiamondItemCollection: ShopItemCollectionCom = ({ item, onClick }) => {
   const { scrollRef } = useBScroll({ scrollX: false, scrollY: true });
 
@@ -94,6 +112,7 @@ const ItemCollectionComs: Dict<ShopItemCollectionCom> = {
   [ShopCateType.BENEFITS_DAILY]: BenefitsDailyItemCollection,
   [ShopCateType.BENEFITS_WEEKLY]: BenefitsWeeklyItemCollection,
   [ShopCateType.BENEFITS_MONTHLY]: BenefitsMonthlyItemCollection,
+  [ShopCateType.BATTLE_PASS]: BenefitsBattlePassItemCollection,
   [ShopCateType.RESOURCES_DIAMOND]: ResourcesDiamondItemCollection,
 };
 

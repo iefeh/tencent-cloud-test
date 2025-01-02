@@ -4,6 +4,7 @@ export const enum ShopCateType {
   BENEFITS_DAILY = 'benefits_daily',
   BENEFITS_WEEKLY = 'benefits_weekly',
   BENEFITS_MONTHLY = 'benefits_monthly',
+  BATTLE_PASS = 'benefits_battle_pass',
   RESOURCES_DIAMOND = 'resources_diamond_top_up',
 }
 
