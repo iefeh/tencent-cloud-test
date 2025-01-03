@@ -14,6 +14,8 @@ import { queryUserSteamAuthorization } from '@/lib/quests/implementations/connec
 import { queryUserTelegramAuthorization } from '@/lib/quests/implementations/connectTelegramQuest';
 import { queryUserAppleAuthorization } from '@/lib/quests/implementations/connectAppleQuest';
 import { queryUserTwitterAuthorization } from '@/lib/quests/implementations/connectTwitterQuest';
+import { queryUserGoogleAuthorization } from './implementations/connectGoogleQuest';
+import { queryUserEmailAuthorization } from './implementations/connectEmailQuest';
 import { queryUserWalletAuthorization } from '@/lib/quests/implementations/connectWalletQuest';
 import { QuestType } from '@/lib/quests/types';
 
@@ -202,6 +204,14 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
         const apple = await queryUserAppleAuthorization(userId);
         quest.achieved = !!apple;
         break;
+      case QuestType.ConnectGoogle:
+        const google = await queryUserGoogleAuthorization(userId);
+        quest.achieved = !!google;
+        break;
+      case QuestType.ConnectEmail:
+        const email = await queryUserEmailAuthorization(userId);
+        quest.achieved = !!email;
+        break;
       case QuestType.Whitelist:
         const userWl = await getUserFirstWhitelist(userId, quest.properties.whitelist_id);
         quest.achieved = !!userWl;
@@ -334,6 +344,14 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
         break;
       case QuestType.ConnectApple:
         quest.authorization = AuthorizationType.Apple;
+        quest.user_authorized = false;
+        break;
+      case QuestType.ConnectGoogle:
+        quest.authorization = AuthorizationType.Google;
+        quest.user_authorized = false;
+        break;
+      case QuestType.ConnectEmail:
+        quest.authorization = AuthorizationType.Email;
         quest.user_authorized = false;
         break;
       default:

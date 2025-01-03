@@ -36,6 +36,7 @@ export enum Metric {
   SteamAccountRating = 'steam_account_rating',
 
   // 初出茅庐徽章，其他的加入社区/关注某人，按照完成任务算.
+  EmailConnected = 'email_connected',
   TwitterConnected = 'twitter_connected',
   DiscordConnected = 'discord_connected',
   TelegramConnected = 'telegram_connected',

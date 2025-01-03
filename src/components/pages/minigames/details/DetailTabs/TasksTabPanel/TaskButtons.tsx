@@ -37,6 +37,14 @@ function getAccountText(task: TaskListItem) {
     text = 'Twitter account';
   } else if (task.type === QuestType.ConnectSteam || task.authorization === MediaType.STEAM) {
     text = 'Steam account';
+  } else if (task.type === QuestType.ConnectTelegram || task.authorization === MediaType.TELEGRAM) {
+    text = 'Telegram account';
+  } else if (task.type === QuestType.ConnectGoogle || task.authorization === MediaType.GOOGLE) {
+    text = 'Google account';
+  } else if (task.type === QuestType.ConnectApple || task.authorization === MediaType.APPLE) {
+    text = 'Apple account';
+  } else if (task.type === QuestType.ConnectEmail || task.authorization === MediaType.EMAIL) {
+    text = 'Email';
   }
 
   return text;
@@ -169,7 +177,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
           className={cn([
             'uppercase !border-solid border-2 border-[#BB683D] from-[#FC9B02] to-[#FBC905] stroke-content font-jcyt6 text-white',
             !(achieved || verified || isExpired) &&
-            'bg-gradient-to-t group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
+              'bg-gradient-to-t group-hover:from-[#027EFC] group-hover:to-[#05C4FB] group-hover:border-[#027FFC]',
             classNames?.connectBtn,
           ])}
           prefix={
