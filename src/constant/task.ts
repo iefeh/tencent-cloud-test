@@ -12,6 +12,9 @@ export const enum QuestType {
   ConnectDiscord = 'connect_discord',
   ConnectTelegram = 'connect_telegram',
   ConnectSteam = 'connect_steam',
+  ConnectGoogle = 'connect_google',
+  ConnectEmail = 'connect_email',
+  ConnectApple = 'connect_apple',
   FollowOnTwitter = 'follow_on_twitter',
   RetweetTweet = 'retweet_tweet',
   CommentTweet = 'comment_tweet',
@@ -28,7 +31,7 @@ export const enum QuestType {
   TwitterFollower = 'twitter_follower',
   ThinkingDataQuery = 'thinking_data_query',
   Claim2048Ticket = 'claim_2048_ticket',
-  ViewWebsite = "view_website",
+  ViewWebsite = 'view_website',
 }
 
 export const enum QuestRewardType {

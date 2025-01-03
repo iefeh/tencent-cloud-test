@@ -134,6 +134,12 @@ const EventTaskButtons = ({
       text = 'Steam account';
     } else if (task.type === QuestType.ConnectTelegram || task.authorization === MediaType.TELEGRAM) {
       text = 'Telegram account';
+    } else if (task.type === QuestType.ConnectGoogle || task.authorization === MediaType.GOOGLE) {
+      text = 'Google account';
+    } else if (task.type === QuestType.ConnectApple || task.authorization === MediaType.APPLE) {
+      text = 'Apple account';
+    } else if (task.type === QuestType.ConnectEmail || task.authorization === MediaType.EMAIL) {
+      text = 'Email';
     }
 
     return text;

@@ -346,6 +346,14 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
         quest.authorization = AuthorizationType.Apple;
         quest.user_authorized = false;
         break;
+      case QuestType.ConnectGoogle:
+        quest.authorization = AuthorizationType.Google;
+        quest.user_authorized = false;
+        break;
+      case QuestType.ConnectEmail:
+        quest.authorization = AuthorizationType.Email;
+        quest.user_authorized = false;
+        break;
       default:
         quest.authorization = null;
     }
