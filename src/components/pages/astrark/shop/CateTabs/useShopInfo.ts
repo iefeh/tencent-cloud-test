@@ -49,6 +49,9 @@ export default function useShopInfo({ onAuthFailed }: { onAuthFailed?: () => voi
           case ProductTypeName.BENEFITS_MONTHLY:
             data.type = ShopCateType.BENEFITS_MONTHLY;
             break;
+          case ProductTypeName.BENEFITS_BATTLE_PASS:
+            data.type = ShopCateType.BATTLE_PASS;
+            break;
         }
         break;
       case ShopCateName.STORE:
@@ -77,6 +80,9 @@ export default function useShopInfo({ onAuthFailed }: { onAuthFailed?: () => voi
             break;
           case ProductTypeName.BENEFITS_MONTHLY:
             item.type = ShopItemType.BENEFITS_MONTHLY;
+            break;
+          case ProductTypeName.BENEFITS_BATTLE_PASS:
+            item.type = ShopItemType.BENEFITS_BATTLE_PASS;
             break;
         }
         break;
