@@ -176,7 +176,7 @@ async function enrichMbsDetail(tab: string, seasonId: string, mbs: any[]): Promi
                     }
                 } else {
                     mb.type = "Community Rewards";
-                    mb.item = "-";
+                    mb.item = "MoonVeil Community Rewards";
                 }
             })
             break;
