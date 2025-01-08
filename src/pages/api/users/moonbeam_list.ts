@@ -75,7 +75,7 @@ async function paginationUserMoonbeamHistory(userId: string, tab: string, season
             matchOpts.type = UserMoonBeamAuditType.Badges;
             break;
         case "Special Reward":
-            types = [UserMoonBeamAuditType.CDK, UserMoonBeamAuditType.LuckyDraw];
+            types = [UserMoonBeamAuditType.CDK, UserMoonBeamAuditType.LuckyDraw, UserMoonBeamAuditType.CommunityRewards];
             matchOpts.type = { $in: types };
             break;
         default:
@@ -165,15 +165,18 @@ async function enrichMbsDetail(tab: string, seasonId: string, mbs: any[]): Promi
                 if (mb.type === UserMoonBeamAuditType.CDK) {
                     mb.type = "Redeem Code";
                     mb.item = `Redeem code ${mb.corr_id}`;
-                } else {
+                } else if (mb.type === UserMoonBeamAuditType.LuckyDraw) {
                     mb.type = "Lottery Prize";
                     if (mb.extra_info) {
-                        let drawTimeStr = mb.extra_info === "1"? "One" : mb.extra_info === "3"? "Three" : "Five";
-                        mb.item = `${drawTimeStr} lottery draw${mb.extra_info === "1"? "" : "s"}`;
+                        let drawTimeStr = mb.extra_info === "1" ? "One" : mb.extra_info === "3" ? "Three" : "Five";
+                        mb.item = `${drawTimeStr} lottery draw${mb.extra_info === "1" ? "" : "s"}`;
                     }
                     else {
                         mb.item = `Share Twitter Bonus`;
                     }
+                } else {
+                    mb.type = "Community Rewards";
+                    mb.item = "-";
                 }
             })
             break;
