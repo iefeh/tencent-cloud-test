@@ -3,13 +3,6 @@ import Image, { StaticImageData } from 'next/image';
 import logoImg from 'img/header/login/logo.png';
 import BasicButton from './BasicButton';
 import emailIconImg from 'img/login/btn_email.png';
-import googleIconImg from 'img/login/btn_google.png';
-import appleIconImg from 'img/login/btn_apple.png';
-import discordIconImg from 'img/login/btn_discord.png';
-import xIconImg from 'img/login/btn_x.png';
-import facebookIconImg from 'img/login/btn_facebook.png';
-import telegramIconImg from 'img/login/btn_telegram.png';
-import metamaskIconImg from 'img/login/btn_metamask.png';
 import LoginButton from './buttons/LoginButton';
 import { MediaType } from '@/constant/task';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -22,8 +15,9 @@ import { observer } from 'mobx-react-lite';
 import { toast } from 'react-toastify';
 import { throttle } from 'lodash';
 import useParticle from '@/hooks/useParticle';
+import useConnectList from './hooks/useConnectList';
 
-interface BtnGroup {
+export interface BtnGroup {
   title: string;
   btns: {
     label: string;
@@ -168,58 +162,8 @@ const LoginModal = function ({ hideCloseButton }: { hideCloseButton?: boolean })
   } = useContext(MobxContext);
   useParticle();
   const [emailLoginVisible, setEmailLoginVisible] = useState(isConnect);
-  const connectList: BtnGroup[] = [
-    {
-      title: 'Log in with social account',
-      btns: [
-        {
-          label: 'Google',
-          type: MediaType.GOOGLE,
-          icon: googleIconImg,
-        },
-        // {
-        //   label: 'Apple ID',
-        //   type: MediaType.APPLE,
-        //   icon: appleIconImg,
-        // },
-        {
-          label: 'Discord',
-          type: MediaType.DISCORD,
-          icon: discordIconImg,
-        },
-        {
-          label: 'Twitter',
-          type: MediaType.TWITTER,
-          icon: xIconImg,
-        },
-        {
-          label: 'Telegram',
-          type: MediaType.TELEGRAM,
-          icon: telegramIconImg,
-        },
-        {
-          label: 'Apple',
-          type: MediaType.APPLE,
-          icon: appleIconImg,
-        },
-        // {
-        //   label: 'Facebook',
-        //   type: MediaType.FACEBOOK,
-        //   icon: facebookIconImg,
-        // },
-      ],
-    },
-    {
-      title: 'Wallet',
-      btns: [
-        {
-          label: 'Wallet',
-          type: MediaType.METAMASK,
-          icon: metamaskIconImg,
-        },
-      ],
-    },
-  ];
+  const { connectList } = useConnectList()
+
   const {
     email,
     setEmail,
