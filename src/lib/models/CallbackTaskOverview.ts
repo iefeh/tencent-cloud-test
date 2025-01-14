@@ -2,10 +2,20 @@ import { Document, Schema, models } from 'mongoose';
 import connectToMongoDbDev from '@/lib/mongodb/client';
 
 export enum CallbackTaskType {
+  // Freyr平台
   // 是否获取到新手徽章
   FREYR_NOVICE_NOTCH = 'freyr_novice_notch',
   // 是否完成一局矿工小游戏
   FREYR_PLAY_MINER = 'freyr_play_miner',
+  // Forge平台
+  // 消消乐Plushie Sweeper任务
+  FORGE_MATCH_PLUSHIE_SWEEPER = 'forge_match_plushie_sweeper',
+  // 消消乐Time Booster任务
+  FORGE_MATCH_TIME_BOOSTER = 'forge_match_time_booster',
+  // 消消乐Shuffle任务
+  FORGE_MATCH_SHUFFLE = 'forge_match_shuffle',
+  // 消消乐玩游戏任务
+  FORGE_MATCH_PLAY = 'forge_match_play',
 }
 
 export interface ICallbackTaskOverview extends Document {
