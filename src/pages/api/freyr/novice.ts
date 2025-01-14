@@ -37,7 +37,7 @@ router.get(async (req, res) => {
   }
 
   try {
-    const userId = await queryUserId(email, address);
+    const userId = await queryUserId(email, '', '', address);
     if (userId === '') {
       res.json(
         response.success({
