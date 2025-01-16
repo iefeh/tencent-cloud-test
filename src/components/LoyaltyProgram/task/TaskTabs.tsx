@@ -3,9 +3,8 @@ import RegularTasks from './RegularTasks';
 import SeasonalCampaigns from './SeasonalCampaigns';
 import { Key, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { TaskCategory } from '@/http/services/battlepass';
-// import Game2048Content from './Game2048Content';
+import Game2048Content from './Game2048Content';
 import GameMinerContent from './GameMinerContent';
 import S3Image from '@/components/common/medias/S3Image';
 import AstrArkContent from './AstrArkContent';
@@ -18,7 +17,7 @@ interface Props {
 export default function TaskTabs({ defaultCategory }: Props) {
   const regularTaskContent = useMemo(() => <RegularTasks defaultCategory={defaultCategory} />, [defaultCategory]);
   const seasonalCampaignsContent = useMemo(() => <SeasonalCampaigns />, []);
-  // const gameContent = useMemo(() => <Game2048Content />, []);
+  const gameContent = useMemo(() => <Game2048Content />, []);
   const minerContent = useMemo(() => <GameMinerContent />, []);
   const aaContent = useMemo(() => <AstrArkContent />, []);
   const matchContent = useMemo(() => <GameMatchContent />, []);
@@ -33,7 +32,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
       content: seasonalCampaignsContent,
     },
     {
-      key: 'AstrArk',
+      key: 'P2A AstrArk',
       render: (label: string) => (
         <div className="flex items-center">
           <S3Image className="object-contain w-6 h-6 mr-2 rounded-md" src="/icons/icon_astrark_ultra.png" />
@@ -43,26 +42,8 @@ export default function TaskTabs({ defaultCategory }: Props) {
       ),
       content: aaContent,
     },
-    // {
-    //   key: '2048 Mini Game',
-    //   render: (label: string) => (
-    //     <div className="flex items-center">
-    //       <Image
-    //         className="object-contain w-8 h-7 mr-1 rounded-md"
-    //         src="https://d3dhz6pjw7pz9d.cloudfront.net/game/2048/2048LOGO.png"
-    //         alt=""
-    //         width={95}
-    //         height={83}
-    //         unoptimized
-    //       />
-
-    //       {label}
-    //     </div>
-    //   ),
-    //   content: gameContent,
-    // },
     {
-      key: 'Puffy Miner',
+      key: 'P2A Puffy Miner',
       render: (label: string) => (
         <div className="flex items-center">
           <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/minigames/icons/icon_miner.png" />
@@ -71,6 +52,22 @@ export default function TaskTabs({ defaultCategory }: Props) {
         </div>
       ),
       content: minerContent,
+    },
+    {
+      key: 'P2A Puffy 2048',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <S3Image
+            className="object-contain w-8 h-7 mr-1 rounded-md"
+            src="/game/2048/2048LOGO.png"
+            width={95}
+            height={83}
+          />
+
+          {label}
+        </div>
+      ),
+      content: gameContent,
     },
     {
       key: 'Puffy Match',
