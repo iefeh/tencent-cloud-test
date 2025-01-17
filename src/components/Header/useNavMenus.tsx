@@ -133,6 +133,11 @@ export default function useNavMenus() {
               //   name: 'TG小火箭',
               //   route: '',
               // }
+              {
+                name: 'Puffy Match',
+                icon: '/game/bubble_pop/icon.png',
+                route: '/minigames/details/732ec3be-4c6a-40f0-a5b0-63f81e3c073f',
+              },
             ],
           },
         ],
