@@ -190,9 +190,9 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: -2.3,
     offsetFY: 2.3,
     isSrcText: true,
-    src: 'Data & Operations',
+    src: 'AI-Powered Neural Network',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
+      <div className={cn(['!-right-[5.75rem] text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
     ),
   },
   /* OPS & Identity Layer */
@@ -206,11 +206,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Moonveil L2 Chain',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-14 text-3xl text-basic-yellow text-right', className])}>
-        AI-Powered
-        <br />
-        Neural Network
-      </div>
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow text-right', className])}>Infra Layer</div>
     ),
   },
 ];
