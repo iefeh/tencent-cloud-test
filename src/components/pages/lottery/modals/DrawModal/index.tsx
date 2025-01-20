@@ -42,7 +42,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   const ticketsForBuying = Math.max(times - s1TicketsCount - (item?.user_free_lottery_ticket_amount || 0), 0);
   const needMbs = ticketsForBuying * MBsPerDraw;
   const isMBNotEnough = needMbs > (item?.user_mb_amount || 0);
-  const { onTransaction } = useTransaction({ abi: lotteryABI, method: 'Draw' });
+  const { onTransaction } = useTransaction({ abi: lotteryABI, method: 'draw' });
 
   const onDraw = throttle(async () => {
     if (needMbs > 0 && !isConfirming) {
