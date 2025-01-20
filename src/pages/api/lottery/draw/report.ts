@@ -4,7 +4,7 @@ import { createRouter } from 'next-connect';
 
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import logger from '@/lib/logger/winstonLogger';
-import { mustAuthInterceptor, UserContextRequest } from '@/lib/middleware/auth';
+import { UserContextRequest } from '@/lib/middleware/auth';
 import UserLotteryDrawHistory from '@/lib/models/UserLotteryDrawHistory';
 import { incrementUserNonce } from '@/lib/models/UserLotteryNonce';
 import UserLotteryRequest from '@/lib/models/UserLotteryRequest';
@@ -15,8 +15,7 @@ import { sleep } from '@/utils/common';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(mustAuthInterceptor).post(async (req, res) => {
-  const userId = req.userId!;
+router.post(async (req, res) => {
   const { tx_hash, chain_id } = req.body;
   // - 检查tx_hash的有效性；
   if (!tx_hash || !chain_id) {
@@ -53,6 +52,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
       const history = await UserLotteryDrawHistory.findOne({ chain_request_id: reqId });
       return res.json(response.success(history));
     }
+    const userId = request.user_id;
     // - 执行抽奖(可以考虑抽奖那边也基于请求id添加唯一索引，避免发生对相同请求进行二次抽奖的情况)
     let drawResult = await draw(userId, request.lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost, reqId);
     if (drawResult.verified) {

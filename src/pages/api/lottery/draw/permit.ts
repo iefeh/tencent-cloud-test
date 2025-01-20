@@ -81,6 +81,13 @@ async function checkLotteryQualification(res: any, userId: string, lottery_pool_
     passed: boolean,
     message: string
 }> {
+    // 检查用户是否有足够的抽奖资格, 把所有未完成的抽奖请求加起来
+    const pendingRequests = await UserLotteryRequest.findOne({ user_id: userId, lottery_pool_id:lottery_pool_id, tx_hash: null });
+    for (let pendingRequest of pendingRequests) {
+        draw_count += pendingRequest.draw_count;
+        lottery_ticket_cost += pendingRequest.lottery_ticket_cost;
+        mb_cost += pendingRequest.mb_cost;
+    }
     const canDraw = await verifyLotteryQualification(lottery_pool_id, draw_count, lottery_ticket_cost, mb_cost, userId);
     if (canDraw.verified) {
         return {
