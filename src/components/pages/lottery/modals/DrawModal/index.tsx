@@ -6,7 +6,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import { MBsPerDraw } from '@/constant/lottery';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
-import { drawAPI, queryDrawPermitAPI } from '@/http/services/lottery';
+import { drawAPI, drawReportAPI, queryDrawPermitAPI } from '@/http/services/lottery';
 import { toast } from 'react-toastify';
 import { TicketContents } from './TicketContent';
 import useTransaction from '@/hooks/wallet/useTransaction';
@@ -78,7 +78,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
       return;
     }
 
-    const res = await drawAPI(data);
+    const res = await drawReportAPI({ tx_hash: txRes, chain_id: permitRes.chain_id });
     if (!!res?.verified) {
       toast.success(res.message);
       onDrawed?.(res);
