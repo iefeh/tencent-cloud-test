@@ -17,6 +17,7 @@ import UserLotteryDrawHistory, {
     IUserLotteryRewardItem
 } from '@/lib/models/UserLotteryDrawHistory';
 import UserLotteryPool from '@/lib/models/UserLotteryPool';
+import UserLotteryRequest from '@/lib/models/UserLotteryRequest';
 import { incrUserMetric, Metric } from '@/lib/models/UserMetrics';
 import { isDuplicateKeyError } from '@/lib/mongodb/client';
 import doTransaction from '@/lib/mongodb/transaction';
@@ -113,6 +114,24 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
   const freeLotteryTicketCost = drawCount - lotteryTicketCost - mbCost/25;
   // 重新查询保证查到的是最新的奖池状态
   const lotteryPool: ILotteryPool = await getActiveLotteryPoolById(lotteryPoolId) as ILotteryPool;
+  if (lotteryPool.chain_id) {
+    if (!chainRequestId) {
+      return {
+        verified: false,
+        duplicated: false,
+        message: "Please provide chain request id for lottery pool with chain verification."
+      };
+    } else {
+      const request = await UserLotteryRequest.findOne({ request_id: chainRequestId });
+      if (!request) {
+        return {
+          verified: false,
+          duplicated: false,
+          message: "Cannot find the lottery request."
+        };
+      }
+    }
+  }
   // 1-3抽和4-10抽奖池和中奖几率不同所以要分别计算
   let firstThreeDrawCumulativeProbabilities = 0;
   let nextSevenDrawCumulativeProbabilities = 0;

@@ -54,7 +54,7 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
       return res.json(response.success(history));
     }
     // - 执行抽奖(可以考虑抽奖那边也基于请求id添加唯一索引，避免发生对相同请求进行二次抽奖的情况)
-    let drawResult = await draw(userId, request.lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost. reqId);
+    let drawResult = await draw(userId, request.lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost, reqId);
     if (drawResult.verified) {
       doTransaction(async (session) => {
         await incrementUserNonce(userId, session);
