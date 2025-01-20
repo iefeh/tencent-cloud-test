@@ -4,6 +4,7 @@ import { FC } from 'react';
 
 export interface PlanetProps extends ClassNameProps {
   isSrcText?: boolean;
+  url?: string;
   src: string;
   label?: string;
   getLogo?: (fn: (val: number, base?: number) => string, className: string) => JSX.Element;
