@@ -6,7 +6,7 @@ import mbImg from 'img/loyalty/earn/mb.png';
 import { MBsPerDraw } from '@/constant/lottery';
 import LGButton from '@/pages/components/common/buttons/LGButton';
 import { throttle } from 'lodash';
-import { drawAPI, drawReportAPI, queryDrawPermitAPI } from '@/http/services/lottery';
+import { drawAPI, queryDrawPermitAPI } from '@/http/services/lottery';
 import { toast } from 'react-toastify';
 import { TicketContents } from './TicketContent';
 import useTransaction from '@/hooks/wallet/useTransaction';
@@ -42,7 +42,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
   const ticketsForBuying = Math.max(times - s1TicketsCount - (item?.user_free_lottery_ticket_amount || 0), 0);
   const needMbs = ticketsForBuying * MBsPerDraw;
   const isMBNotEnough = needMbs > (item?.user_mb_amount || 0);
-  const { onTransaction } = useTransaction({ abi: lotteryABI, method: 'draw' });
+  const { onTransaction } = useTransaction({ abi: lotteryABI, method: 'Draw' });
 
   const onDraw = throttle(async () => {
     if (needMbs > 0 && !isConfirming) {
@@ -59,33 +59,26 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
       mb_cost: needMbs,
     };
 
-    let res: any;
-
-    if (item?.chain_id) {
-      const permitRes = await queryDrawPermitAPI(data);
-      if (!permitRes) {
-        setLoading(false);
-        return;
-      }
-
-      const txRes = await onTransaction({
-        config: {
-          chainId: permitRes.chain_id,
-          contractAddress: permitRes.contract_address,
-        },
-        params: permitRes.permit,
-      });
-
-      if (!txRes) {
-        setLoading(false);
-        return;
-      }
-
-      res = await drawReportAPI({ tx_hash: txRes.blockHash, chain_id: permitRes.chain_id });
-    } else {
-      res = await drawAPI(data);
+    const permitRes = await queryDrawPermitAPI(data);
+    if (!permitRes) {
+      setLoading(false);
+      return;
     }
 
+    const txRes = await onTransaction({
+      config: {
+        chainId: permitRes.chain_id,
+        contractAddress: permitRes.contract_address,
+      },
+      params: [permitRes.permit],
+    });
+
+    if (!txRes) {
+      setLoading(false);
+      return;
+    }
+
+    const res = await drawAPI(data);
     if (!!res?.verified) {
       toast.success(res.message);
       onDrawed?.(res);

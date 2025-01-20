@@ -108,7 +108,3 @@ export interface DrawPermitResDTO {
 export function queryDrawPermitAPI(data: Partial<Lottery.DrawDTO>): Promise<DrawPermitResDTO> {
   return http.post('/api/lottery/draw/permit', JSON.stringify(data));
 }
-
-export function drawReportAPI(data: { tx_hash: string; chain_id: string }): Promise<Lottery.RewardResDTO> {
-  return http.post('/api/lottery/draw/report', JSON.stringify(data));
-}
