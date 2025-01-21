@@ -27,17 +27,17 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { observer } from 'mobx-react-lite';
 import useNavMenus from './useNavMenus';
 import useCheckNoviceBadge from '@/hooks/events/useCheckNoviceBadge';
+import { MediaLinks } from '@/constant/common';
 
 const mediaIcon = [
-  { img: X, link: 'https://twitter.com/Moonveil_Studio' },
-  { img: Discord, link: 'https://discord.gg/moonveil' },
-  { img: Telegram, link: 'https://t.me/+AeiqS8o2YmswYTgx' },
+  { img: X, link: MediaLinks.TWITTER },
+  { img: Discord, link: MediaLinks.DISCORD },
 ];
 
 const MoreLinks = () => {
   const moreMedias = [
-    { img: Medium, link: 'https://medium.com/@Moonveil_Studio' },
-    { img: Youtube, link: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A' },
+    { img: Medium, link: MediaLinks.MEDIUM },
+    { img: Youtube, link: MediaLinks.YOUTUBE },
   ];
 
   const menuRef = useRef(null);
@@ -82,6 +82,48 @@ const MoreLinks = () => {
   );
 };
 
+export const TGLinks = ({isInFooter}: {isInFooter?: boolean}) => {
+  const moreMedias = [
+    { img: Telegram, link: MediaLinks.TWITTER, label: 'English' },
+    { img: Telegram, link: MediaLinks.TG_KR, label: 'Korean' },
+    { img: Telegram, link: MediaLinks.TG_RN, label: 'Russian' },
+  ];
+
+  const menuRef = useRef(null);
+  const [menuState, toggle] = useMenuState({ transition: true });
+  const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
+
+  return (
+    <>
+      <div ref={menuRef} {...anchorProps} className={cn(["cursor-pointer relative", isInFooter ? 'gutter-default' : 'mx-2 px-2'])}>
+        <Telegram className={cn(["hover:fill-basic-yellow hover:cursor-pointer fill-white/30 transition-all aspect-square", isInFooter ? 'w-12' : 'w-7'])} />
+      </div>
+
+      <ControlledMenu
+        className="pt-[1.4375rem] px-[2.625rem] pb-7"
+        {...hoverProps}
+        {...menuState}
+        anchorRef={menuRef}
+        theming="dark"
+        onClose={() => toggle(false)}
+      >
+        {moreMedias.map((child, ci) => {
+          const Component = child.img;
+
+          return (
+            <MenuItem key={ci}>
+              <Link className="link-menu [&+.link-menu]:ml-4 flex items-center flex-nowrap hover:text-basic-yellow group hover:cursor-pointer text-white/30" href={child.link} target="_blank">
+                <Component className="group-hover:fill-basic-yellow fill-[rgba(255,255,255,.3)] transition-all w-7 h-7" />
+                <span className='ml-1'>{child.label}</span>
+              </Link>
+            </MenuItem>
+          )
+        })}
+      </ControlledMenu>
+    </>
+  );
+};
+
 const Header = () => {
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
@@ -108,7 +150,7 @@ const Header = () => {
   return (
     <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
       <div className="flex-[1]">
-        <Link href="/" className='inline-block'>
+        <Link href="/" className="inline-block">
           <Image className="w-[135px] h-[80px]" src={logo} alt="Logo" />
         </Link>
       </div>
@@ -145,6 +187,8 @@ const Header = () => {
               </Link>
             );
           })}
+
+          <TGLinks />
 
           <MoreLinks />
         </div>
