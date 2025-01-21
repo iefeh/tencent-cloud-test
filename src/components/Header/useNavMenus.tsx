@@ -90,11 +90,11 @@ export default function useNavMenus() {
                 route: '/AstrArk',
               },
               {
-                name: 'Marching Test Tasks',
+                name: 'Community Test Tasks',
                 route: '/LoyaltyProgram/earn?id=c8af9477-fd48-4265-90d7-20bc4a200ff3&tabKey=AstrArk',
               },
               {
-                name: 'Marching Test',
+                name: 'Community Test',
                 route: '/AstrArk/Download',
               },
               {
