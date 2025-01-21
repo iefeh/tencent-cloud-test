@@ -10,6 +10,8 @@ import { PipelineStage } from "mongoose";
 import { get2048Leaderboard } from "@/lib/models/2048UserScoreRank";
 import GoldminerScoreLeaderboardConfig from "@/lib/models/GoldminerScoreLeaderboardConfig";
 import { getGoldminerLeaderboard } from "@/lib/models/GoldminerUserScoreRank";
+import BubblepopScoreLeaderboardConfig from "@/lib/models/BubblepopScoreLeaderboardConfig";
+import { getBubblepopLeaderboard } from "@/lib/models/BubblepopUserScoreRank";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -92,6 +94,19 @@ async function enrichRanking(userId: string | undefined, detail: any) {
           }
         }
         break;
+        case MiniGames.BubblePop:
+          let bubblepopLbconfigs = await BubblepopScoreLeaderboardConfig.aggregate(pipeline);
+          if (bubblepopLbconfigs.length > 0) {
+            detail.leaderboard = {};
+            const latest = await getBubblepopLeaderboard(userId, bubblepopLbconfigs[0].lbid);
+            enrichLatest(detail, latest, bubblepopLbconfigs[0]);
+  
+            if (bubblepopLbconfigs.length > 1) {
+              const previous = await getBubblepopLeaderboard(userId, bubblepopLbconfigs[1].lbid);
+              enrichPrevious(detail, previous, bubblepopLbconfigs[1]);
+            }
+          }
+          break;
     }
     delete detail.ranking;
   }
