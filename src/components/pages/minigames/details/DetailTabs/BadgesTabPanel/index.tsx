@@ -92,11 +92,8 @@ const BadgesTabPanel: FC = () => {
               isMobile ? 'w-full' : 'w-max',
             ])}
           >
-            {Array(2)
-              .fill(badges || [])
-              .flat()
-              .map((badge, index) => (
-                <MiniGameBadge key={index} item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
+            {(badges || []).map((badge, index) => (
+                <MiniGameBadge key={index} className='flex flex-col items-center' item={badge} onView={onView} onClaim={onClaim} onMint={onMint} />
               ))}
           </ul>
         </div>
