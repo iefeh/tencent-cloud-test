@@ -114,13 +114,12 @@ async function constructLotteryPermit(request: IUserLotteryRequest, lotteryCtrt:
             {name: "expiredTime", type: "uint128"},
         ],
     };
-    const expiredTime = Math.floor(Date.now() / 1000 + 10 * 60 * 60);
     const lotteryPermit: any = {
         reqId: request.request_id,
-        claimer: claimer,
+        claimer: ethers.getAddress(claimer),
         nonce: nonce,
         seed: Date.now() + Math.floor(Math.random() * 1000000),
-        expiredTime: expiredTime,
+        expiredTime: Math.floor(Date.now() / 1000 + 10 * 60 * 60),
     };
     const signer = new ethers.Wallet(process.env.DEVELOPER_PRIVATE_KEY!, null);
     lotteryPermit.signature = await signer.signTypedData(domain, types, lotteryPermit);
