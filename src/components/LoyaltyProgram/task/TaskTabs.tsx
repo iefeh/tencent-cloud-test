@@ -9,6 +9,8 @@ import { TaskCategory } from '@/http/services/battlepass';
 import GameMinerContent from './GameMinerContent';
 import S3Image from '@/components/common/medias/S3Image';
 import AstrArkContent from './AstrArkContent';
+import GameMatchContent from './GameMatchContent';
+
 interface Props {
   defaultCategory?: Partial<TaskCategory> | null;
 }
@@ -19,6 +21,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
   // const gameContent = useMemo(() => <Game2048Content />, []);
   const minerContent = useMemo(() => <GameMinerContent />, []);
   const aaContent = useMemo(() => <AstrArkContent />, []);
+  const matchContent = useMemo(() => <GameMatchContent />, []);
 
   const tabs = [
     {
@@ -68,6 +71,17 @@ export default function TaskTabs({ defaultCategory }: Props) {
         </div>
       ),
       content: minerContent,
+    },
+    {
+      key: 'Puffy Match',
+      render: (label: string) => (
+        <div className="flex items-center">
+          <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/game/bubble_pop/icon.png" />
+
+          {label}
+        </div>
+      ),
+      content: matchContent,
     },
   ];
   const router = useRouter();
