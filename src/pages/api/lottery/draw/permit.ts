@@ -68,6 +68,7 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
         mb_cost: mb_cost,
         created_time: Date.now(),
     });
+
     await request.save();
     const permit = await constructLotteryPermit(request, lotteryCtrt, userWallet.wallet_addr);
     return res.json(response.success({
@@ -106,7 +107,7 @@ async function constructLotteryPermit(request: IUserLotteryRequest, lotteryCtrt:
     };
     // 构建并签名抽奖许可
     const types = {
-        MintPermit: [
+        DrawPermit: [
             {name: "reqId", type: "bytes32"},
             {name: "claimer", type: "address"},
             {name: "nonce", type: "uint256"},
