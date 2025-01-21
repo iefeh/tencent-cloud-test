@@ -78,7 +78,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
       return;
     }
 
-    const res = await drawReportAPI({ tx_hash: txRes, chain_id: permitRes.chain_id });
+    const res = await drawReportAPI({ tx_hash: txRes.blockHash, chain_id: permitRes.chain_id });
     if (!!res?.verified) {
       toast.success(res.message);
       onDrawed?.(res);
