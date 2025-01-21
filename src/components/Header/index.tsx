@@ -27,17 +27,17 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import { observer } from 'mobx-react-lite';
 import useNavMenus from './useNavMenus';
 import useCheckNoviceBadge from '@/hooks/events/useCheckNoviceBadge';
+import { MediaLinks } from '@/constant/common';
 
 const mediaIcon = [
-  { img: X, link: 'https://twitter.com/Moonveil_Studio' },
-  { img: Discord, link: 'https://discord.gg/moonveil' },
-  { img: Telegram, link: 'https://t.me/+AeiqS8o2YmswYTgx' },
+  { img: X, link: MediaLinks.TWITTER },
+  { img: Discord, link: MediaLinks.DISCORD },
 ];
 
 const MoreLinks = () => {
   const moreMedias = [
-    { img: Medium, link: 'https://medium.com/@Moonveil_Studio' },
-    { img: Youtube, link: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A' },
+    { img: Medium, link: MediaLinks.MEDIUM },
+    { img: Youtube, link: MediaLinks.YOUTUBE },
   ];
 
   const menuRef = useRef(null);
@@ -82,6 +82,46 @@ const MoreLinks = () => {
   );
 };
 
+const TGLinks = () => {
+  const moreMedias = [
+    { img: '/icons/tg_en.png', link: MediaLinks.TWITTER },
+    { img: '/icons/tg_kr.png', link: MediaLinks.TG_KR },
+    { img: '/icons/tg_rn.png', link: MediaLinks.TG_RN },
+  ];
+
+  const menuRef = useRef(null);
+  const [menuState, toggle] = useMenuState({ transition: true });
+  const { anchorProps, hoverProps } = useHover(menuState.state, toggle);
+
+  return (
+    <>
+      <div ref={menuRef} {...anchorProps} className="mx-2 px-2 cursor-pointer relative">
+        <Telegram className="hover:fill-basic-yellow hover:cursor-pointer fill-white/30 transition-all w-7 h-7" />
+      </div>
+
+      <ControlledMenu
+        className="pt-[1.4375rem] px-[2.625rem] pb-7"
+        {...hoverProps}
+        {...menuState}
+        anchorRef={menuRef}
+        theming="dark"
+        onClose={() => toggle(false)}
+      >
+        {moreMedias.map((child, ci) => (
+          <MenuItem key={ci}>
+            <Link className="link-menu [&+.link-menu]:ml-4" href={child.link} target="_blank">
+              <S3Image
+                className="hover:fill-basic-yellow hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-12 aspect-square"
+                src={child.img}
+              />
+            </Link>
+          </MenuItem>
+        ))}
+      </ControlledMenu>
+    </>
+  );
+};
+
 const Header = () => {
   const [listOpen, setListOpen] = useState(false);
   const router = useRouter();
@@ -108,7 +148,7 @@ const Header = () => {
   return (
     <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
       <div className="flex-[1]">
-        <Link href="/" className='inline-block'>
+        <Link href="/" className="inline-block">
           <Image className="w-[135px] h-[80px]" src={logo} alt="Logo" />
         </Link>
       </div>
@@ -145,6 +185,8 @@ const Header = () => {
               </Link>
             );
           })}
+
+          <TGLinks />
 
           <MoreLinks />
         </div>
