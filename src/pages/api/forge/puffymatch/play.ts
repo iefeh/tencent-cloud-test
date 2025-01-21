@@ -15,9 +15,9 @@ router.use(errorInterceptor()).post(async (req, res) => {
   const { email, twitter, start_time, end_time } = req.body;
 
   try {
-    const startDate = new Date(start_time).toISOString().slice(0, 10);
-    const endDate = new Date(end_time + 86400000).toISOString().slice(0, 10);
-    const userId = await queryUserId(email, twitter, '', '');
+    const startDate = new Date(Number(start_time)).toISOString().slice(0, 10);
+    const endDate = new Date(Number(end_time) + 86400000).toISOString().slice(0, 10);
+    const userId = await queryUserId(String(email), String(twitter), '', '');
     if (!userId) {
       return res.json(response.success({ error: response.notFound() }));
     }
