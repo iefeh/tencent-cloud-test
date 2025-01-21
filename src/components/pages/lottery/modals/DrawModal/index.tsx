@@ -70,7 +70,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
         chainId: permitRes.chain_id,
         contractAddress: permitRes.contract_address,
       },
-      params: { components: permitRes.permit },
+      params: permitRes.permit,
     });
 
     if (!txRes) {
