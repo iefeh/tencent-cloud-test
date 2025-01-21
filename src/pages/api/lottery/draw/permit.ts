@@ -100,7 +100,7 @@ async function constructLotteryPermit(request: IUserLotteryRequest, lotteryCtrt:
     // 获取用户抽奖随机数
     const nonce = await getUserNonce(request.user_id);
     const domain = {
-        name: "MoonveilLottery",
+        name: "Lottery",
         version: "1",
         chainId: Number(lotteryCtrt.chain_id),
         verifyingContract: ethers.getAddress(lotteryCtrt.address),
