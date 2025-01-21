@@ -82,11 +82,11 @@ const MoreLinks = () => {
   );
 };
 
-const TGLinks = () => {
+export const TGLinks = ({isInFooter}: {isInFooter?: boolean}) => {
   const moreMedias = [
-    { img: '/icons/tg_en.png', link: MediaLinks.TWITTER },
-    { img: '/icons/tg_kr.png', link: MediaLinks.TG_KR },
-    { img: '/icons/tg_rn.png', link: MediaLinks.TG_RN },
+    { img: Telegram, link: MediaLinks.TWITTER, label: 'English' },
+    { img: Telegram, link: MediaLinks.TG_KR, label: 'Korean' },
+    { img: Telegram, link: MediaLinks.TG_RN, label: 'Russian' },
   ];
 
   const menuRef = useRef(null);
@@ -95,8 +95,8 @@ const TGLinks = () => {
 
   return (
     <>
-      <div ref={menuRef} {...anchorProps} className="mx-2 px-2 cursor-pointer relative">
-        <Telegram className="hover:fill-basic-yellow hover:cursor-pointer fill-white/30 transition-all w-7 h-7" />
+      <div ref={menuRef} {...anchorProps} className={cn(["cursor-pointer relative", isInFooter ? 'gutter-default' : 'mx-2 px-2'])}>
+        <Telegram className={cn(["hover:fill-basic-yellow hover:cursor-pointer fill-white/30 transition-all aspect-square", isInFooter ? 'w-12' : 'w-7'])} />
       </div>
 
       <ControlledMenu
@@ -107,16 +107,18 @@ const TGLinks = () => {
         theming="dark"
         onClose={() => toggle(false)}
       >
-        {moreMedias.map((child, ci) => (
-          <MenuItem key={ci}>
-            <Link className="link-menu [&+.link-menu]:ml-4" href={child.link} target="_blank">
-              <S3Image
-                className="hover:fill-basic-yellow hover:cursor-pointer fill-[rgba(255,255,255,.3)] transition-all w-12 aspect-square"
-                src={child.img}
-              />
-            </Link>
-          </MenuItem>
-        ))}
+        {moreMedias.map((child, ci) => {
+          const Component = child.img;
+
+          return (
+            <MenuItem key={ci}>
+              <Link className="link-menu [&+.link-menu]:ml-4 flex items-center flex-nowrap hover:text-basic-yellow group hover:cursor-pointer text-white/30" href={child.link} target="_blank">
+                <Component className="group-hover:fill-basic-yellow fill-[rgba(255,255,255,.3)] transition-all w-7 h-7" />
+                <span className='ml-1'>{child.label}</span>
+              </Link>
+            </MenuItem>
+          )
+        })}
       </ControlledMenu>
     </>
   );
