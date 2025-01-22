@@ -5,6 +5,7 @@ import { cn } from '@nextui-org/react';
 import S3Image from '@/components/common/medias/S3Image';
 import Planet, { type PlanetProps } from '@/components/pages/about/Planet';
 import useShake from '@/hooks/useShake';
+import Link from '@/components/link';
 
 const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
   /* Bushwhack */
@@ -15,7 +16,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     height: 87,
     offsetFX: -1.5,
     offsetFY: 1.2,
-
+    url: '/Bushwhack',
     src: '/about/ecoanimations/planet_br.png',
     getLogo: (fn) => (
       <S3Image src="/about/ecoanimations/logo_br.png" style={{ width: fn(154, 96), aspectRatio: '154/37' }} />
@@ -29,6 +30,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     height: 133,
     offsetFX: 1.8,
     offsetFY: -1.5,
+    url: '/AstrArk',
     src: '/about/ecoanimations/planet_aa.png',
     getLogo: (fn, className) => (
       <S3Image
@@ -40,12 +42,13 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
   },
   /* Mini Games */
   {
-    top: 320,
-    left: 1168,
+    top: 300,
+    left: 1305,
     width: 61,
     height: 60,
     offsetFX: -3,
     offsetFY: 1.7,
+    url: '/minigames',
     src: '/about/ecoanimations/planet_other.png',
     getLogo: (fn, className) => (
       <div className={cn(['flex items-center gap-x-3 w-max', className])}>
@@ -55,7 +58,25 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
       </div>
     ),
   },
-  /* Badge System */
+  /* Flaming Pets */
+  {
+    top: 360,
+    left: 1062,
+    width: 87,
+    height: 86,
+    offsetFX: -2,
+    offsetFY: 1.7,
+    src: '/about/ecoanimations/planet_badge.png',
+    getLogo: (fn, className) => (
+      <div className={cn(['flex flex-col items-center gap-y-1 w-max', className])}>
+        <S3Image className="object-contain w-24" src="/about/ecoanimations/flaming_pets.png" />
+
+        <div>Flaming Pets</div>
+      </div>
+    ),
+  },
+
+  /* Loyalty Program */
   {
     top: 404,
     left: 437,
@@ -63,32 +84,29 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     height: 33,
     offsetFX: -2.4,
     offsetFY: 1.4,
+    url: '/LoyaltyProgram/intro',
     src: '/about/ecoanimations/planet_hceb.png',
-    label: 'Badge System',
+    getLogo: (fn, className) => (
+      <span className={className}>
+        Loyalty Program
+        <br />
+        (Moon Beams)
+      </span>
+    ),
   },
-  /** Moon Beam Points */
+  /** Badge & Identity SBT' */
   {
     top: 485,
-    left: 604,
+    left: 750,
     width: 38,
     height: 37,
     offsetFX: 2.2,
     offsetFY: -1.6,
-    src: '/about/ecoanimations/planet_badge.png',
-    label: 'Moon Beam Points',
-  },
-  /* Identity SBT */
-  {
-    top: 550,
-    left: 762,
-    width: 43,
-    height: 42,
-    offsetFX: -2,
-    offsetFY: 1.7,
+    url: '/Profile/MyBadges',
     src: '/about/ecoanimations/planet_mb.png',
-    label: 'Identity SBT',
+    label: 'Badge & Identity SBT',
   },
-  /* Identity Data Layer */
+  /* AI Automatic Game Dev Tool */
   {
     top: 568,
     left: 982,
@@ -97,9 +115,9 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: 1.8,
     offsetFY: 1.6,
     src: '/about/ecoanimations/planet_vcm.png',
-    label: 'Identity Data Layer',
+    label: 'AI Automatic Game Dev Tool',
   },
-  /* Value Capture Tools */
+  /* AI Agent */
   {
     top: 610,
     left: 1282,
@@ -108,7 +126,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: 1.8,
     offsetFY: 1.6,
     src: '/about/ecoanimations/planet_cdk.png',
-    label: 'Value Capture Tools',
+    label: 'AI Agent',
   },
   /* Integrated Wallets */
   {
@@ -172,9 +190,9 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFX: -2.3,
     offsetFY: 2.3,
     isSrcText: true,
-    src: 'Data & Operations',
+    src: 'AI-Powered Neural Network',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
+      <div className={cn(['!-right-[5.75rem] text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
     ),
   },
   /* OPS & Identity Layer */
@@ -188,7 +206,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Moonveil L2 Chain',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>Infra Layer</div>
+      <div className={cn(['!-right-14 text-3xl text-basic-yellow text-right', className])}>Infra Layer</div>
     ),
   },
 ];
@@ -272,7 +290,9 @@ export default function About() {
         </div>
 
         {Planets.map((planet, index) => (
-          <Planet key={index} {...planet} />
+          <Link key={index} href={planet.url || ''}>
+            <Planet {...planet} />
+          </Link>
         ))}
       </div>
     </div>
