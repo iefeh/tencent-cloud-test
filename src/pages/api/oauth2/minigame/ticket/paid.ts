@@ -99,7 +99,7 @@ export async function buyTicket(clientId: string, txHash: string) {
 
 
 async function getPurchaseTicketEvnet(game: any, txHash: string) {
-    let receipt = await getTokenTransactionReceiptByHash(game, txHash, 30, 1000);
+    let receipt = await getTokenTransactionReceiptByHash(game.chain_id, txHash, 30, 1000);
     if (!receipt || receipt.status !== 1) {
         return null;
     }
@@ -127,8 +127,8 @@ async function getPurchaseTicketEvnet(game: any, txHash: string) {
     };
 }
 
-async function getTokenTransactionReceiptByHash(game: any, txHash: string, maxWaitTimeSeconds: number, checkIntervalMillis: number = 5000) {
-    const provider = new ethers.JsonRpcProvider(WALLECT_NETWORKS[game.chain_id].rpcUrls[0]);
+export async function getTokenTransactionReceiptByHash(chainId: string, txHash: string, maxWaitTimeSeconds: number, checkIntervalMillis: number = 5000) {
+    const provider = new ethers.JsonRpcProvider(WALLECT_NETWORKS[chainId].rpcUrls[0]);
 
     // 每隔5秒检查一次交易是否存在
     const maxAttempts = Math.ceil(maxWaitTimeSeconds * 1000 / checkIntervalMillis);

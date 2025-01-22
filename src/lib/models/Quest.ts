@@ -66,7 +66,9 @@ export interface IQuest extends Document {
     // 删除时间
     deleted_time: number,
     // 指定用户数组,仅数组内用户可见
-    visible_user_ids?: string[]
+    visible_user_ids?: string[],
+    //任务ID的keccack256 hash，链上交互领取门票的任务需要此字段
+    quest_id_hash?:string
 }
 
 const QuestSchema = new Schema<IQuest>({
@@ -100,7 +102,8 @@ const QuestSchema = new Schema<IQuest>({
     created_time: { type: Number },
     updated_time: { type: Number },
     deleted_time: { type: Number },
-    visible_user_ids: { type: [String] }
+    visible_user_ids: { type: [String] },
+    quest_id_hash: { type: String },
 });
 // 任务唯一索引
 QuestSchema.index({ id: 1 }, { unique: true });

@@ -60,6 +60,8 @@ export enum QuestType {
   FollowOnTwitterNew = 'follow_on_twitter_new',
   // 加入 Telegram 群组
   JoinTelegramGroup = 'join_telegram_group',
+  // 通过链上交互领取免费门票
+  ClaimFreeTicket = 'claim_free_ticket'
 }
 
 // 任务类型与对应拥有的(外部)指标，某些内部的特征指标未列到下面(如Metric.WalletTokenValueLastCalcTime)
@@ -371,4 +373,21 @@ export type BadgeReward = {
   badge_id: string;
   // 奖励的徽章等级
   lv?: number;
+};
+
+export enum RepeatPeriod {
+  Daily = 'daily',
+  Weekly = 'weekly',
+  Monthly = 'monthly'
+}
+
+
+// 持有NFT
+export type ClaimFreeTicket = {
+  // 对应游戏ID
+  game_id: string;
+  // 任务重复周期的标识符，可选daily\weekly\monthly
+  repeat_identifier?: RepeatPeriod;
+  // 奖励的门票数量
+  ticket_amount?: number;
 };

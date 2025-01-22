@@ -24,7 +24,7 @@ const defaultErrorResponse = response.success({
 })
 
 router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse, 15000)).post(async (req, res) => {
-    const { quest_id } = req.body;
+    const { quest_id,tx_hash } = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
         return;
@@ -69,6 +69,12 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             }));
             return;
         }
+        
+        if(tx_hash){// 如果有tx_hash则进行缓存
+            const txHashCachedKey = `tx_hash_cached_key:${userId},${quest.id}`
+            await redis.setex(txHashCachedKey, 10 * 60, tx_hash);// 缓存10分钟
+        }
+
         // 钱包资产任务需要额外检查CD
         if (quest.type == QuestType.ConnectWallet) {
             const verifiable = await checkWalletVerificationCDForIP(req, res);
