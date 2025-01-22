@@ -54,7 +54,7 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     if (!targetChain) {
         throw new Error(`lottery pool ${lottery_pool_id} chain id not found.`);
     }
-    const lotteryCtrt = await findLotteryContract(pool.chain_id);
+    const lotteryCtrt = await findLotteryContract(targetChain);
     if (!lotteryCtrt) {
         throw new Error(`lottery contract not found for chain ${targetChain}.`);
     }
@@ -62,6 +62,7 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     const request = new UserLotteryRequest({
         user_id: userId,
         request_id: ethers.id(`${userWallet.wallet_addr}:${lottery_pool_id}:${Date.now()}`),
+        chain_id: targetChain,
         lottery_pool_id: lottery_pool_id,
         draw_count: draw_count,
         lottery_ticket_cost: lottery_ticket_cost,
