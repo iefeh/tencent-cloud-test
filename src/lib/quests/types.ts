@@ -386,6 +386,10 @@ export enum RepeatPeriod {
 export type ClaimFreeTicket = {
   // 对应游戏ID
   game_id: string;
+  // 链id
+  chain_id: string;
+  // 合约地址
+  contract_address: string;
   // 任务重复周期的标识符，可选daily\weekly\monthly
   repeat_identifier?: RepeatPeriod;
   // 奖励的门票数量

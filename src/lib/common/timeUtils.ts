@@ -1,5 +1,6 @@
 import moment from "moment";
 import { RepeatPeriod } from "../quests/types";
+import { format } from "date-fns";
 
 export function getWeekNumber(date: Date): number {
   const tempDate = date;
@@ -50,11 +51,11 @@ export function getISOFullDateTimeString(date: Date): string {
 export function getRepeatPeriodIdentifier(period: RepeatPeriod) {
   switch (period) {
     case RepeatPeriod.Daily:
-      return getISOFullDateTimeString(new Date())
+      return format(Date.now(), 'yyyy-MM-dd');
     case RepeatPeriod.Weekly:
-      return getISOYearWeekString(new Date())
+      return format(Date.now(), 'yyyy-ww');
     case RepeatPeriod.Monthly:
-      return getISOMonthDayTimeString(new Date())
+      return format(Date.now(), 'yyyy-MM');
     default:
       return undefined;
   }

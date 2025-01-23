@@ -15,6 +15,7 @@ import { redis } from "@/lib/redis/client";
 import MiniGameDetail from "@/lib/models/MiniGameDetail";
 import { ticketRemain } from "./mine";
 import { WALLECT_NETWORKS } from "@/constant/mint";
+import BlockChain from "@/lib/models/BlockChain";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
@@ -128,7 +129,8 @@ async function getPurchaseTicketEvnet(game: any, txHash: string) {
 }
 
 export async function getTokenTransactionReceiptByHash(chainId: string, txHash: string, maxWaitTimeSeconds: number, checkIntervalMillis: number = 5000) {
-    const provider = new ethers.JsonRpcProvider(WALLECT_NETWORKS[chainId].rpcUrls[0]);
+    const chainInfo = await BlockChain.findOne({ chain_id: chainId });
+    const provider = new ethers.JsonRpcProvider(chainInfo.private_rpc_url);
 
     // 每隔5秒检查一次交易是否存在
     const maxAttempts = Math.ceil(maxWaitTimeSeconds * 1000 / checkIntervalMillis);

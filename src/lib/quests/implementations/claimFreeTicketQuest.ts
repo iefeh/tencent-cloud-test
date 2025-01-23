@@ -53,7 +53,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
       };
     }
 
-    let receipt = await getTokenTransactionReceiptByHash(process.env.CLAIM_FREE_TICKET_CHAIN!, txHash, 30, 1000)
+    let receipt = await getTokenTransactionReceiptByHash(questProp.chain_id, txHash, 30, 1000)
 
     if (!receipt || receipt.status !== 1) {
       return {
@@ -64,7 +64,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
 
     // 使用事件签名的哈希值来过滤日志
     const eventSignature = ethers.id("ClaimFreeTicket(bytes32,address)");
-    const ticketContractAddress = process.env.CLAIM_FREE_TICKET_CONTRACT_ADDRESS!;
+    const ticketContractAddress = questProp.contract_address;
     let logs: ethers.Log[] = receipt.logs.filter(log => log.address.toLowerCase() === ticketContractAddress.toLowerCase() && log.topics[0] === eventSignature);
     if (logs.length === 0) {
       return {
@@ -114,12 +114,12 @@ export class ClaimFreeTicketQuest extends QuestBase {
       };
     }
 
-
     const questProp = this.quest.properties as ClaimFreeTicket;
     let achievedQuestId = this.quest.id;
     if (questProp.repeat_identifier) {
       const identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier);
       achievedQuestId = `${achievedQuestId},${identifier}`;
+      this.quest.id = achievedQuestId;
     }
     const taint = `${userId},${achievedQuestId}`;
     const rewardDelta = await this.checkUserRewardDelta(userId);
@@ -145,7 +145,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
       tickets.push(ticket);
     }
 
-    const result = await this.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
+    const result = await super.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
       try {
         await GameTicket.insertMany(tickets, { session: session });
       } catch (error: any) {

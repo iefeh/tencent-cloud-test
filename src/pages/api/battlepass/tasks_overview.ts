@@ -76,7 +76,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
               let: { quest_id: '$id' },
               pipeline: [
                 {
-                  $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM-dd')}`] }] }, { $eq: ['$quest_id', '$$quest_id'] }] }] } },
+                  $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [ { $eq: ['$quest_id', '$$quest_id'] }] }, { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM-dd')}`] }] },{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-ww')}`] }] },{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM')}`] }] },] } },
                 },
                 {
                   $project: {
@@ -119,6 +119,7 @@ export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> 
     }
   ];
 
+  console.log(JSON.stringify(pipeline))
   const result = await QuestClassification.aggregate(pipeline);
 
   return result;
