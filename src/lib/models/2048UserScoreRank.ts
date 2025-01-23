@@ -26,7 +26,7 @@ export async function get2048Leaderboard(userId: string | undefined, lbId: strin
     // 查询排行榜信息
     const pipeline: PipelineStage[] = [
         {
-            $match: { leaderboard_id: lbId }
+            $match: { leaderboard_id: lbId, deleted_time: null  }
         },
         {
             $project: { _id: 0, __v: 0, leaderboard_id: 0 }
