@@ -53,6 +53,7 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   }
   res.json(response.success({ 
     lottery_pool_id: lotteryPool.lottery_pool_id,
+    chain_id: lotteryPool.chain_id,
     icon_url: lotteryPool.icon_url,
     icon_frame_level: lotteryPool.icon_frame_level,
     name: lotteryPool.name,
