@@ -78,6 +78,9 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
 // URL是用户完成任务的地址，prepare标识任务可以通过上报完成
 function maskQuestProperty(quests: any[]) {
   for (let quest of quests) {
+    if (quest.type == QuestType.ClaimFreeTicket) {
+      continue;
+    }
     // 如果quest.properties不存在，则初始化为一个空对象
     if (!quest.properties) {
       quest.properties = {};
@@ -150,27 +153,11 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
     return;
   }
   // 检查任务完成标识
-  const dateStamp = format(Date.now(), 'yyyy-MM-dd');
-  let questIds = quests.map((quest) => quest.id);
-  questIds = questIds.concat(
-    quests.filter((q) => q.type === QuestType.ThinkingDataQuery).map((quest) => `${quest.id},${dateStamp}`),
-  ); // 添加2048每日任务完成记录查询
-  const achievedQuests = await QuestAchievement.find(
-    {
-      user_id: userId,
-      quest_id: { $in: questIds },
-    },
-    { _id: 0, quest_id: 1 },
-  );
-  const userQuests = new Map<string, boolean>(achievedQuests.map((quest) => [quest.quest_id, true]));
   quests.forEach((quest) => {
     if (quest.achieved) {
       return;
     }
-    quest.achieved = userQuests.has(quest.id);
-    if (!quest.achieved && quest.type === QuestType.ThinkingDataQuery) {
-      quest.achieved = userQuests.has(`${quest.id},${dateStamp}`);
-    }
+    quest.achieved = quest.achievements && quest.achievements.length > 0;
   });
   // 手动检查特殊任务类型完成标识.
   for (const quest of quests) {
