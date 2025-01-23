@@ -127,7 +127,7 @@ export async function paginationQuests(pageNum: number, pageSize: number, catego
             pipeline: [
                 {
                     // $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $eq: ['$quest_id', '$$quest_id'] }] } },
-                    $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [ { $eq: ['$quest_id', '$$quest_id'] }] }, { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM-dd')}`] }] },{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-ww')}`] }] },{ $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM')}`] }] },] } },
+                    $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', '$$quest_id'] }, { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM-dd')}`] }] }, , { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-ww')}`] }] }, { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM')}`] }] }] }] } },
                 },
                 {
                     $project: {
