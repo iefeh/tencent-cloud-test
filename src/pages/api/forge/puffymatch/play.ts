@@ -8,18 +8,23 @@ import { errorInterceptor } from '@/lib/middleware/error';
 import * as response from '@/lib/response/response';
 import * as Sentry from '@sentry/nextjs';
 
-import { queryUserId, checkUserQuestFromThinkingData } from '@/lib/freyr/userQuery';
+import { queryUserId, checkUserQuestFromThinkingData, convertErrorResponse } from '@/lib/freyr/userQuery';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor()).post(async (req, res) => {
-  const { email, twitter, start_time, end_time } = req.body;
+  const { email, twitter, discord, address, start_time, end_time } = req.body;
+  const startTime = Number(start_time);
+  const endTime = Number(end_time);
+  if ((!email && !twitter && !discord && !address) || !startTime || !endTime) {
+    return res.json(response.success({ error: convertErrorResponse(response.invalidParams()) }));
+  }
 
   try {
-    const startDate = new Date(Number(start_time)).toISOString().slice(0, 10);
-    const endDate = new Date(Number(end_time) + 86400000).toISOString().slice(0, 10);
-    const userId = await queryUserId(String(email), String(twitter), '', '');
+    const startDate = new Date(startTime).toISOString().slice(0, 10);
+    const endDate = new Date(endTime + 86400000).toISOString().slice(0, 10);
+    const userId = await queryUserId(email, twitter, discord, address);
     if (!userId) {
-      return res.json(response.success({ error: response.notFound() }));
+      return res.json(response.success({ error: convertErrorResponse(response.notFound()) }));
     }
 
     const sql = `SELECT COUNT(*)>=1,COUNT(*) ,1 from ta.v_event_14 WHERE ("$part_date" BETWEEN '${startDate}' AND '${endDate}') AND "#event_name" = 'game_end' AND "account" = '${userId}'`;
@@ -27,7 +32,7 @@ router.use(errorInterceptor()).post(async (req, res) => {
     const result = await checkUserQuestFromThinkingData(sql);
     if (!result || !result[1]) {
       // 本API在内部报错时直接返回false而不是500
-      return res.json(response.success({ error: response.serverError() }));
+      return res.json(response.success({ error: convertErrorResponse(response.serverError()) }));
     }
 
     const s = result[1][0];
@@ -40,7 +45,7 @@ router.use(errorInterceptor()).post(async (req, res) => {
   } catch (error) {
     logger.error(error);
     Sentry.captureException(error);
-    return res.json(response.success({ error: response.serverError() }));
+    return res.json(response.success({ error: convertErrorResponse(response.serverError()) }));
   }
 });
 
