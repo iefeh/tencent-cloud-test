@@ -101,7 +101,7 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
   }
   // 获取用户已经校验的任务
   // let questIds = quests.map((quest) => quest.id);
-  let questIds = quests.map((quest) => quest.achievements ? quest.achievements[0].quest_id : quest.id);
+  let questIds = quests.map((quest) => quest.achievements && quest.achievements.length > 0 ? quest.achievements[0].quest_id : quest.id);
   const verifiedQuests = await UserMoonBeamAudit.find(
     {
       user_id: userId,
