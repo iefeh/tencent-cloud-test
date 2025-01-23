@@ -16,6 +16,7 @@ import LGButton from '@/pages/components/common/buttons/LGButton';
 import BindTipsModal from '@/components/common/modal/BindTipsModal';
 import ConnectNoticeModal from '@/components/common/modal/ConnectNoticeModal';
 import DiscordMsgModal from '@/components/common/modal/DiscordMsgModal';
+import useClaimMore from '@/hooks/quests/useClaimMore';
 
 interface Props {
   classNames?: {
@@ -84,6 +85,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
   } = useConnect(connectType, () => {
     updateTask();
   });
+  const { canClaimMore, onGetFreeTicket } = useClaimMore(task);
 
   async function updateTask() {
     try {
@@ -146,7 +148,18 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
     try {
       setVerifiable(false);
       const api = verified ? reverifyTaskAPI : verifyTaskAPI;
-      const res = await api({ quest_id: task.id });
+      const params: any = { quest_id: task.id };
+      if (canClaimMore) {
+        const hash = await onGetFreeTicket();
+        if (!hash) {
+          setVerifiable(true);
+          setVerifyLoading(false);
+          return;
+        }
+
+        params.tx_hash = hash;
+      }
+      const res = await api(params);
 
       if (!res.verified) {
         if (res.require_authorization) {

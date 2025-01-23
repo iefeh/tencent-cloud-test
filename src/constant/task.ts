@@ -32,6 +32,8 @@ export const enum QuestType {
   ThinkingDataQuery = 'thinking_data_query',
   Claim2048Ticket = 'claim_2048_ticket',
   ViewWebsite = 'view_website',
+  // 通过链上交互领取免费门票
+  ClaimFreeTicket = 'claim_free_ticket'
 }
 
 export const enum QuestRewardType {

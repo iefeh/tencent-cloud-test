@@ -7,6 +7,8 @@ export interface TaskProperties {
   is_prepared?: boolean;
   last_verified_time?: number;
   can_reverify_after?: number;
+  chain_id?: string;
+  contract_address?: string;
 }
 
 export interface RaffleReward {
@@ -90,6 +92,7 @@ export interface TaskListItem {
     verified?: string;
   };
   finish_type?: 'least';
+  quest_id_hash?: string;
 }
 
 export interface TaskListResDto {
@@ -110,7 +113,7 @@ interface VerifyTaskResDTO {
   tip?: string;
 }
 
-export function verifyTaskAPI(data: { quest_id: string }): Promise<VerifyTaskResDTO> {
+export function verifyTaskAPI(data: { quest_id: string; tx_hash?: string }): Promise<VerifyTaskResDTO> {
   return http.post('/api/quests/verify', JSON.stringify(data));
 }
 

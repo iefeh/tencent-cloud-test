@@ -89,4 +89,16 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
     rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
     blockExplorerUrls: ['https://sepolia.etherscan.io/'],
   },
+  // More Test
+  1093502521: {
+    chainId: parseChainIdToHex('1093502521'),
+    chainName: 'MoonVeil Testnet',
+    nativeCurrency: {
+      name: 'More',
+      symbol: 'More',
+      decimals: 18,
+    },
+    rpcUrls: ['https://moonveil-testnet-rpc.eu-north-2.gateway.fm'],
+    blockExplorerUrls: ['https://moonveil-testnet-blockscout.eu-north-2.gateway.fm/'],
+  },
 };
