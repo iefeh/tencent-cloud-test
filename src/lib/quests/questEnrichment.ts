@@ -100,11 +100,8 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
     return;
   }
   // 获取用户已经校验的任务
-  const dateStamp = format(Date.now(), 'yyyy-MM-dd');
-  let questIds = quests.map((quest) => quest.id);
-  questIds = questIds.concat(
-    quests.filter((q) => q.type === QuestType.ThinkingDataQuery).map((quest) => `${quest.id},${dateStamp}`),
-  ); // 添加2048每日任务完成记录查询
+  // let questIds = quests.map((quest) => quest.id);
+  let questIds = quests.map((quest) => quest.achievements && quest.achievements.length > 0 ? quest.achievements[0].quest_id : quest.id);
   const verifiedQuests = await UserMoonBeamAudit.find(
     {
       user_id: userId,
@@ -121,11 +118,6 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
   quests.forEach(async (quest) => {
     // 添加任务校验标识
     quest.verified = verified.has(quest.id);
-    if (!quest.verified) {
-      if (quest.type === QuestType.ThinkingDataQuery) {
-        quest.verified = verified.has(`${quest.id},${dateStamp}`);
-      }
-    }
     // 添加禁止verify标识
     quest.verify_disabled = false;
     // 若已校验，则不再需要判断是否需要启用禁用verify.
