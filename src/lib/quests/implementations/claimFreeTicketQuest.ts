@@ -143,7 +143,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
 
     const result = await super.saveUserReward(userId, taint, rewardDelta, null, async (session) => {
       try {
-        await GameTicket.insertMany(tickets, { session: session });
+        await GameTicket.insertMany(tickets);
       } catch (error: any) {
         if (error.code !== 11000) {
           logger.warn(error);
