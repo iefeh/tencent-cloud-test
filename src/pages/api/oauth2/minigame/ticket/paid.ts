@@ -143,7 +143,6 @@ export async function getTokenTransactionReceiptByHash(chainId: string, txHash: 
         }
         attempts++;
         await new Promise(resolve => setTimeout(resolve, checkIntervalMillis)); // 等待5秒再检查
-        console.log(attempts);
     }
 
     return null; // 超出最大等待时间后返回null

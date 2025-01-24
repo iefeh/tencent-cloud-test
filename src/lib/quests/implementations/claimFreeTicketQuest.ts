@@ -52,7 +52,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
     let identifier: string | undefined;
     if (questProp.repeat_identifier) {
       const block = await receipt.getBlock();
-      identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier, block.timestamp);
+      identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier, block.timestamp * 1000);
     }
 
     let achievedQuestId = this.quest.id;
