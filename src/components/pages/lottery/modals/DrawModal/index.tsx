@@ -59,26 +59,33 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
       mb_cost: needMbs,
     };
 
-    const permitRes = await queryDrawPermitAPI(data);
-    if (!permitRes) {
-      setLoading(false);
-      return;
+    let res: any;
+
+    if (item?.chain_id) {
+      const permitRes = await queryDrawPermitAPI(data);
+      if (!permitRes) {
+        setLoading(false);
+        return;
+      }
+
+      const txRes = await onTransaction({
+        config: {
+          chainId: permitRes.chain_id,
+          contractAddress: permitRes.contract_address,
+        },
+        params: permitRes.permit,
+      });
+
+      if (!txRes) {
+        setLoading(false);
+        return;
+      }
+
+      res = await drawReportAPI({ tx_hash: txRes.blockHash, chain_id: permitRes.chain_id });
+    } else {
+      res = await drawAPI(data);
     }
 
-    const txRes = await onTransaction({
-      config: {
-        chainId: permitRes.chain_id,
-        contractAddress: permitRes.contract_address,
-      },
-      params: permitRes.permit,
-    });
-
-    if (!txRes) {
-      setLoading(false);
-      return;
-    }
-
-    const res = await drawReportAPI({ tx_hash: txRes.blockHash, chain_id: permitRes.chain_id });
     if (!!res?.verified) {
       toast.success(res.message);
       onDrawed?.(res);
