@@ -1,6 +1,6 @@
 {
   "functions": {
-    "/api/quests/verify.ts": {
+    "src/pages/api/quests/verify.ts": {
       "maxDuration": 60
     }
   }
