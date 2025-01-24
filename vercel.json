@@ -2,6 +2,9 @@
   "functions": {
     "src/pages/api/quests/verify.ts": {
       "maxDuration": 60
+    },
+    "src/pages/api/quests/verify": {
+      "maxDuration": 60
     }
   }
 }
