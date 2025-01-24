@@ -48,14 +48,14 @@ export function getISOFullDateTimeString(date: Date): string {
   return now.format("YYYY-MM-DD");
 }
 
-export function getRepeatPeriodIdentifier(period: RepeatPeriod) {
+export function getRepeatPeriodIdentifier(period: RepeatPeriod,date: number) {
   switch (period) {
     case RepeatPeriod.Daily:
-      return format(Date.now(), 'yyyy-MM-dd');
+      return format(date, 'yyyy-MM-dd');
     case RepeatPeriod.Weekly:
-      return format(Date.now(), 'yyyy-ww');
+      return format(date, 'yyyy-ww');
     case RepeatPeriod.Monthly:
-      return format(Date.now(), 'yyyy-MM');
+      return format(date, 'yyyy-MM');
     default:
       return undefined;
   }

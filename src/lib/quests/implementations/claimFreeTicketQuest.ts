@@ -12,6 +12,7 @@ import QuestAchievement from '@/lib/models/QuestAchievement';
 import logger from '@/lib/logger/winstonLogger';
 import MiniGameDetail from '@/lib/models/MiniGameDetail';
 import GameTicket from '@/lib/models/GameTicket';
+import { format } from 'date-fns';
 
 export class ClaimFreeTicketQuest extends QuestBase {
 
@@ -30,20 +31,6 @@ export class ClaimFreeTicketQuest extends QuestBase {
       };
     }
 
-    let achievedQuestId = this.quest.id;
-    if (questProp.repeat_identifier) {
-      const identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier);
-      achievedQuestId = `${achievedQuestId},${identifier}`
-    }
-    // 检查是否已完成
-    const achievement = await QuestAchievement.findOne({ user_id: userId, quest_id: achievedQuestId });
-    if (achievement) {
-      return {
-        claimable: false,
-        tip: 'You have completed this quest.',
-      };
-    }
-
     const txHashCachedKey = `tx_hash_cached_key:${userId},${this.quest.id}`
     const txHash = await redis.get(txHashCachedKey);
     if (!txHash) {
@@ -59,6 +46,25 @@ export class ClaimFreeTicketQuest extends QuestBase {
       return {
         claimable: false,
         tip: `The transaction hash is incorrect.`,
+      };
+    }
+
+    let identifier: string | undefined;
+    if (questProp.repeat_identifier) {
+      const block = await receipt.getBlock();
+      identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier, block.timestamp);
+    }
+
+    let achievedQuestId = this.quest.id;
+    if (identifier) {
+      achievedQuestId = `${achievedQuestId},${identifier}`
+    }
+    // 检查是否已完成
+    const achievement = await QuestAchievement.findOne({ user_id: userId, quest_id: achievedQuestId });
+    if (achievement) {
+      return {
+        claimable: false,
+        tip: 'You have completed this quest.',
       };
     }
 
@@ -90,17 +96,8 @@ export class ClaimFreeTicketQuest extends QuestBase {
     return {
       claimable: claimable,
       tip: claimable ? undefined : `The transaction hash does not match the user.`,
+      extra: identifier
     };
-  }
-
-  async addUserAchievement<T>(userId: string, verified: boolean, extraTxOps: (session: any) => Promise<T> = () => Promise.resolve(<T>{})): Promise<void> {
-    const questProp = this.quest.properties as ClaimFreeTicket;
-    if (questProp.repeat_identifier) {
-      const identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier);
-      this.quest.id = `${this.quest.id},${identifier}`;// 将标识符添加到ID中
-    }
-
-    await super.addUserAchievement(userId, verified);
   }
 
   async claimReward(userId: string): Promise<claimRewardResult> {
@@ -116,9 +113,8 @@ export class ClaimFreeTicketQuest extends QuestBase {
 
     const questProp = this.quest.properties as ClaimFreeTicket;
     let achievedQuestId = this.quest.id;
-    if (questProp.repeat_identifier) {
-      const identifier = getRepeatPeriodIdentifier(questProp.repeat_identifier);
-      achievedQuestId = `${achievedQuestId},${identifier}`;
+    if (claimableResult.extra) {
+      achievedQuestId = `${achievedQuestId},${claimableResult.extra}`;
       this.quest.id = achievedQuestId;
     }
     const taint = `${userId},${achievedQuestId}`;
@@ -155,7 +151,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
         }
       }
     });
-    
+
     if (result.duplicated) {
       return {
         verified: false,
