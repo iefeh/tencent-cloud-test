@@ -129,6 +129,8 @@ export class ClaimFreeTicketQuest extends QuestBase {
 
     // 生成门票
     const detail = await MiniGameDetail.findOne({ client_id: questProp.game_id });
+    const txHashCachedKey = `tx_hash_cached_key:${userId},${this.quest.id}`
+    const txHash = await redis.get(txHashCachedKey);
     let tickets: any[] = [];
     for (let i = 0; i < (questProp.ticket_amount ? questProp.ticket_amount : 1); i++) {
       const ticket = new GameTicket();
@@ -138,6 +140,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
       ticket.game_id = questProp.game_id;
       ticket.created_at = Date.now();
       ticket.expired_at = detail.ticket_expired_at;
+      ticket.taint = `${txHash},${i}`;
       tickets.push(ticket);
     }
 
