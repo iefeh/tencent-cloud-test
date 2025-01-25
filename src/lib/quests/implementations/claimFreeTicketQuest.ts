@@ -111,13 +111,6 @@ export class ClaimFreeTicketQuest extends QuestBase {
       };
     }
 
-    const questProp = this.quest.properties as ClaimFreeTicket;
-    let achievedQuestId = this.quest.id;
-    if (claimableResult.extra) {
-      achievedQuestId = `${achievedQuestId},${claimableResult.extra}`;
-      this.quest.id = achievedQuestId;
-    }
-    const taint = `${userId},${achievedQuestId}`;
     const rewardDelta = await this.checkUserRewardDelta(userId);
     if (!rewardDelta) {
       logger.warn(`user ${userId} quest ${this.quest.id} reward amount zero`);
@@ -128,10 +121,18 @@ export class ClaimFreeTicketQuest extends QuestBase {
     }
 
     // 生成门票
-    const detail = await MiniGameDetail.findOne({ client_id: questProp.game_id });
+    const questProp = this.quest.properties as ClaimFreeTicket;
     const txHashCachedKey = `tx_hash_cached_key:${userId},${this.quest.id}`
     const txHash = await redis.get(txHashCachedKey);
+    let achievedQuestId = this.quest.id;
+    if (claimableResult.extra) {
+      achievedQuestId = `${achievedQuestId},${claimableResult.extra}`;
+      this.quest.id = achievedQuestId;
+    }
+    const taint = `${userId},${achievedQuestId}`;
+
     let tickets: any[] = [];
+    const detail = await MiniGameDetail.findOne({ client_id: questProp.game_id });
     for (let i = 0; i < (questProp.ticket_amount ? questProp.ticket_amount : 1); i++) {
       const ticket = new GameTicket();
       ticket.pass_id = ethers.id(`${userId}-${achievedQuestId}-${i}`);
