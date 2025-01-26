@@ -16,6 +16,12 @@ export enum CallbackTaskType {
   FORGE_MATCH_SHUFFLE = 'forge_match_shuffle',
   // 消消乐玩游戏任务
   FORGE_MATCH_PLAY = 'forge_match_play',
+  // AA游戏局数任务
+  ASTRARK_MATCH_PLAY = 'astrark_match_play',
+  // 2048游戏局数任务
+  PUFFY_2048_MATCH_PLAY = 'puffy_2048_match_play',
+  // 矿工游戏局数任务
+  MINER_MATCH_PLAY = 'miner_match_play',
 }
 
 export interface ICallbackTaskOverview extends Document {
