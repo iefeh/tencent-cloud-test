@@ -24,7 +24,7 @@ const defaultErrorResponse = response.success({
 })
 
 router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutInterceptor(defaultErrorResponse, 15000)).post(async (req, res) => {
-    const { quest_id,tx_hash } = req.body;
+    const { quest_id, tx_hash } = req.body;
     if (!quest_id) {
         res.json(response.invalidParams());
         return;
@@ -69,10 +69,10 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
             }));
             return;
         }
-        
-        if(tx_hash){// 如果有tx_hash则进行缓存
+
+        if (tx_hash) {// 如果有tx_hash则进行缓存
             const txHashCachedKey = `tx_hash_cached_key:${userId},${quest.id}`
-            await redis.setex(txHashCachedKey, 2 * interval, tx_hash);// 缓存60s
+            await redis.setex(txHashCachedKey, 2 * 60 * 60, tx_hash);// 缓存两小时
         }
 
         // 钱包资产任务需要额外检查CD

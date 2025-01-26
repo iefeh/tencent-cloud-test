@@ -23,6 +23,7 @@ import TwitterTopicTweet from '../models/TwitterTopicTweet';
 import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
 import UserNodeEligibility from '../models/UserNodeEligibility';
+import { redis } from '../redis/client';
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -48,6 +49,11 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
   maskQuestProperty(quests);
 
   for (let quest of quests) {
+    if (quest.type == QuestType.ClaimFreeTicket) {
+      const txHashCachedKey = `tx_hash_cached_key:${userId},${quest.id}`;
+      const tx_hash = await redis.get(txHashCachedKey);
+      quest.tx_commited = !!tx_hash;
+    }
     if (quest.type != QuestType.ConnectWallet || !quest.verified) {
       continue;
     }
@@ -113,7 +119,7 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
       corr_id: 1,
     },
   );
-  const verified = new Map<string, boolean>(verifiedQuests.map((q) => [(q.corr_id as string).substring(0,36), true]));
+  const verified = new Map<string, boolean>(verifiedQuests.map((q) => [(q.corr_id as string).substring(0, 36), true]));
 
   quests.forEach(async (quest) => {
     // 添加任务校验标识
