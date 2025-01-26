@@ -17,7 +17,7 @@ export default function useClaimMore(task: TaskListItem) {
       params: [task.quest_id_hash],
     });
 
-    const hash = res?.blockHash || '';
+    const hash = res?.hash || '';
     if (hash) {
       toast.success('The transaction has been successful. Please verify the task after 1 minute.');
     }
