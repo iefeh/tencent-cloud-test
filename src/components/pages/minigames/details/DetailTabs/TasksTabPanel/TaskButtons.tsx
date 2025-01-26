@@ -149,7 +149,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
       setVerifiable(false);
       const api = verified ? reverifyTaskAPI : verifyTaskAPI;
       const params: any = { quest_id: task.id };
-      if (canClaimMore) {
+      if (canClaimMore && !task.tx_commited) {
         const hash = await onGetFreeTicket();
         if (!hash) {
           setVerifiable(true);
@@ -158,6 +158,7 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
         }
 
         params.tx_hash = hash;
+        updateTask();
       }
       const res = await api(params);
 

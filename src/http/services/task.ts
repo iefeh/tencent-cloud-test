@@ -93,6 +93,7 @@ export interface TaskListItem {
   };
   finish_type?: 'least';
   quest_id_hash?: string;
+  tx_commited?: boolean;
 }
 
 export interface TaskListResDto {

@@ -2,6 +2,7 @@ import { TaskListItem } from '@/http/services/task';
 import useTransaction from '../wallet/useTransaction';
 import gamePaymentABI from '@/http/abi/gamePayment.json';
 import { QuestType } from '@/constant/task';
+import { toast } from 'react-toastify';
 
 export default function useClaimMore(task: TaskListItem) {
   const canClaimMore = task.type === QuestType.ClaimFreeTicket;
@@ -16,7 +17,11 @@ export default function useClaimMore(task: TaskListItem) {
       params: [task.quest_id_hash],
     });
 
-    return res?.blockHash || '';
+    const hash = res?.blockHash || '';
+    if (hash) {
+      toast.success('The transaction has been successful. Please verify the task after 1 minute.');
+    }
+    return hash;
   };
 
   return { canClaimMore, onGetFreeTicket };
