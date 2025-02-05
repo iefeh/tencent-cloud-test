@@ -165,7 +165,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
     return {
       verified: result.done,
       claimed_amount: result.done ? rewardDelta : undefined,
-      tip: result.done ? result.tip ? result.tip : `You have claimed ${rewardDelta} MB.` : result.tip ? result.tip : 'Server Internal Error',
+      tip: result.done ? result.tip ? result.tip : `You have claimed ${rewardDelta} MB and ${tickets.length} ticket(s).` : result.tip ? result.tip : 'Server Internal Error',
     };
   }
 }
