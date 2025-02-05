@@ -40,7 +40,7 @@ export class ClaimFreeTicketQuest extends QuestBase {
       };
     }
 
-    let receipt = await getTokenTransactionReceiptByHash(questProp.chain_id, txHash, 30, 1000)
+    let receipt = await getTokenTransactionReceiptByHash(questProp.chain_id, txHash, 10, 3000)
 
     if (!receipt || receipt.status !== 1) {
       return {

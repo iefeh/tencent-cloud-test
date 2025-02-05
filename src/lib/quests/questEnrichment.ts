@@ -49,11 +49,6 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
   maskQuestProperty(quests);
 
   for (let quest of quests) {
-    if (quest.type == QuestType.ClaimFreeTicket) {
-      const txHashCachedKey = `tx_hash_cached_key:${userId},${quest.id}`;
-      const tx_hash = await redis.get(txHashCachedKey);
-      quest.tx_commited = !!tx_hash;
-    }
     if (quest.type != QuestType.ConnectWallet || !quest.verified) {
       continue;
     }

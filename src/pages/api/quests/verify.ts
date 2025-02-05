@@ -72,7 +72,7 @@ router.use(errorInterceptor(defaultErrorResponse), mustAuthInterceptor, timeoutI
 
         if (tx_hash) {// 如果有tx_hash则进行缓存
             const txHashCachedKey = `tx_hash_cached_key:${userId},${quest.id}`
-            await redis.setex(txHashCachedKey, 2 * 60 * 60, tx_hash);// 缓存两小时
+            await redis.setex(txHashCachedKey, 30, tx_hash);// 缓存30s
         }
 
         // 钱包资产任务需要额外检查CD
