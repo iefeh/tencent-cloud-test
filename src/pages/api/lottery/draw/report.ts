@@ -54,10 +54,6 @@ router.post(async (req, res) => {
 			return res.json(response.success(history));
 		}
 		const userId = request.user_id;
-		const canDraw = await verifyLotteryQualification(request.lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost, userId);
-		if (!canDraw.verified) {
-			return res.json(response.invalidParams(canDraw));
-		}
 		// - 执行抽奖(可以考虑抽奖那边也基于请求id添加唯一索引，避免发生对相同请求进行二次抽奖的情况)
 		let drawResult = await draw(userId, request.lottery_pool_id, request.draw_count, request.lottery_ticket_cost, request.mb_cost, reqId);
 		if (drawResult.verified) {
