@@ -81,7 +81,7 @@ const DrawModal: FC<Props & ItemProps<Lottery.Pool>> = ({
         return;
       }
 
-      res = await drawReportAPI({ tx_hash: txRes.blockHash, chain_id: permitRes.chain_id });
+      res = await drawReportAPI({ tx_hash: txRes.hash, chain_id: permitRes.chain_id });
     } else {
       res = await drawAPI(data);
     }
