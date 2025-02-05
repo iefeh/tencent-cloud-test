@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 export default function useClaimMore(task: TaskListItem) {
   const canClaimMore = task.type === QuestType.ClaimFreeTicket;
-  const { onTransaction } = useTransaction({ abi: gamePaymentABI, method: 'claimFreeTicket' });
+  const { onTransaction, getTransaction } = useTransaction({ abi: gamePaymentABI, method: 'claimFreeTicket' });
 
   const onGetFreeTicket = async () => {
     const res = await onTransaction({
@@ -18,9 +18,16 @@ export default function useClaimMore(task: TaskListItem) {
     });
 
     const hash = res?.hash || '';
-    if (hash) {
-      toast.success('The transaction has been successful. Please verify the task after 1 minute.');
+
+    try {
+      const info = await getTransaction(hash);
+      console.log('transaction info', info);
+    } catch (error) {
+      console.log('getTransaction error:', error);
+      toast.error('Network error, please try again later.');
+      return null;
     }
+
     return hash;
   };
 
