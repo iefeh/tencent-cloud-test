@@ -84,7 +84,7 @@ const MoreLinks = () => {
 
 export const TGLinks = ({isInFooter}: {isInFooter?: boolean}) => {
   const moreMedias = [
-    { img: Telegram, link: MediaLinks.TWITTER, label: 'English' },
+    { img: Telegram, link: MediaLinks.TELEGRAM, label: 'English' },
     { img: Telegram, link: MediaLinks.TG_KR, label: 'Korean' },
     { img: Telegram, link: MediaLinks.TG_RN, label: 'Russian' },
   ];
