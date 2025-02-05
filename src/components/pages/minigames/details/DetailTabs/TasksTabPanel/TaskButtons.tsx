@@ -158,7 +158,6 @@ const TaskButtons: FC<Props> = ({ task, onUpdate, classNames }) => {
         }
 
         params.tx_hash = hash;
-        updateTask();
       }
       const res = await api(params);
 
