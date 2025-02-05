@@ -7,7 +7,7 @@ export const MediaLinks = {
   MEDIUM: 'https://medium.com/@Moonveil_Studio',
   DISCORD: 'https://discord.gg/moonveil',
   YOUTUBE: 'https://www.youtube.com/channel/UCFtFhgsjtdSgXarKvSYpz3A',
-  TELEGRAM: 'https://t.me/+QrAsqR3uDhE5NjY5',
+  TELEGRAM: 'https://t.me/+YQU_ahvjN4U3ZWEx',
   TG_KR: 'https://t.me/MoonveilKorea',
   TG_RN: 'https://t.me/moonveil_workshop'
 }
