@@ -5,7 +5,6 @@ import { createRouter } from 'next-connect';
 import { WALLECT_NETWORKS } from '@/constant/mint';
 import { AuthorizationType } from '@/lib/authorization/types';
 import logger from '@/lib/logger/winstonLogger';
-import { verifyLotteryQualification } from '@/lib/lottery/lottery';
 import { UserContextRequest } from '@/lib/middleware/auth';
 import UserLotteryDrawHistory from '@/lib/models/UserLotteryDrawHistory';
 import { incrementUserNonce } from '@/lib/models/UserLotteryNonce';
