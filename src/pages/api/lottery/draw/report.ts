@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import { createRouter } from 'next-connect';
 
 import { WALLECT_NETWORKS } from '@/constant/mint';
+import { AuthorizationType } from '@/lib/authorization/types';
 import logger from '@/lib/logger/winstonLogger';
 import { verifyLotteryQualification } from '@/lib/lottery/lottery';
 import { UserContextRequest } from '@/lib/middleware/auth';
@@ -50,8 +51,8 @@ router.post(async (req, res) => {
 			return res.json(response.invalidParams({ message: "Cannot find the lottery request."}));
 		}
 		if (request.tx_hash) {
-			const history = await UserLotteryDrawHistory.findOne({ chain_request_id: reqId });
-			return res.json(response.success(history));
+			const drawResult = await getDrawHistory(reqId);
+			return res.json(response.success(drawResult));
 		}
 		const userId = request.user_id;
 		// - 执行抽奖(可以考虑抽奖那边也基于请求id添加唯一索引，避免发生对相同请求进行二次抽奖的情况)
@@ -64,14 +65,28 @@ router.post(async (req, res) => {
 			return res.json(response.success(drawResult));
 		}
 		else if (drawResult.duplicated) {
-			const history = await UserLotteryDrawHistory.findOne({ chain_request_id: reqId });
-			return res.json(response.success(history));
+			const drawResult = await getDrawHistory(reqId);
+			return res.json(response.success(drawResult));
 		}
 		else {
 			return res.json(response.serverError(drawResult));
 		}
 	} 
 });
+
+async function getDrawHistory(reqId: string) {
+	const history = await UserLotteryDrawHistory.findOne({ chain_request_id: reqId });
+	return {
+		verified: true,
+		duplicated: false,
+		message: "Congratulations on winning the following rewards!",
+		lottery_pool_id: history.lottery_pool_id,
+		available_draw_time: 0,
+		draw_id: history.draw_id,
+		rewards: history.rewards,
+		require_authorization: history.need_verify_twitter? AuthorizationType.Twitter : undefined
+	};
+}
 
 // this will run if none of the above matches
 router.all((req, res) => {
