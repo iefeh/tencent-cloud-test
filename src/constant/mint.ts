@@ -92,10 +92,10 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
   // More Test
   1093502521: {
     chainId: parseChainIdToHex('1093502521'),
-    chainName: 'MoonVeil Testnet',
+    chainName: 'Moonveil Testnet',
     nativeCurrency: {
-      name: 'More',
-      symbol: 'More',
+      name: 'MORE',
+      symbol: 'MORE',
       decimals: 18,
     },
     rpcUrls: ['https://moonveil-testnet-rpc.eu-north-2.gateway.fm'],
