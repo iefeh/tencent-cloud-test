@@ -311,6 +311,7 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
         break;
       case QuestType.ConnectWallet:
       case QuestType.HoldNFT:
+      case QuestType.ClaimFreeTicket:
         quest.authorization = AuthorizationType.Wallet;
         quest.user_authorized = false;
         break;
