@@ -19,7 +19,7 @@ export default function MinigamesSlide(props: Props) {
     >
       <Image
         className="object-cover"
-        src="https://d3dhz6pjw7pz9d.cloudfront.net/home/bg_home_swiper_minihub.png"
+        src="https://cdn.moonveil.gg/home/bg_home_swiper_minigames.png"
         alt=""
         fill
         sizes="100%"
