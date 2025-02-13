@@ -1,5 +1,4 @@
 import CircularLoading from '@/pages/components/common/CircularLoading';
-import Image from 'next/image';
 import { FC, useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import { FreeMode, Navigation } from 'swiper/modules';
@@ -10,6 +9,7 @@ import styles from './index.module.css';
 import { useInviteStore } from '@/store/Invite';
 import { observer } from 'mobx-react-lite';
 import arrowImg from 'img/astrark/arrow.png';
+import S3Image from '@/components/common/medias/S3Image';
 
 const MBProgress: FC = () => {
   const { milestone, loading } = useInviteStore();
@@ -84,7 +84,7 @@ const MBProgress: FC = () => {
               <SwiperSlide key={index} className="!h-auto">
                 <div className="flex flex-col items-center max-w-[6rem]">
                   <div className="w-24 h-24 relative">
-                    <Image className="object-contain bg-black" src={item.image_url} alt="" fill sizes="100%" />
+                    <S3Image className="object-contain bg-black" src={item.image_url} fill />
                   </div>
 
                   <div className="uppercase text-basic-yellow font-semakin text-lg mt-4 flex-1 text-center">
@@ -113,16 +113,16 @@ const MBProgress: FC = () => {
 
             <div
               ref={navigationPrevRef}
-              className="absolute left-0 top-1/2 -translate-y-1/2 rotate-90 cursor-pointer z-10"
+              className="absolute left-0 top-1/2 -translate-y-1/2 rotate-90 cursor-pointer z-10 w-[3.125rem] h-7 [&.swiper-button-disabled]:grayscale"
             >
-              <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
+              <S3Image src={arrowImg} fill />
             </div>
 
             <div
               ref={navigationNextRef}
-              className="absolute right-0 top-1/2 -translate-y-1/2 -rotate-90 cursor-pointer z-10"
+              className="absolute right-0 top-1/2 -translate-y-1/2 -rotate-90 cursor-pointer z-10 w-[3.125rem] h-7"
             >
-              <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
+              <S3Image src={arrowImg} fill />
             </div>
           </Swiper>
         ) : (
