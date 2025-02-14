@@ -98,7 +98,7 @@ export const WALLECT_NETWORKS: { [key: string]: NetworkInfo } = {
       symbol: 'MORE',
       decimals: 18,
     },
-    rpcUrls: ['https://moonveil-testnet-rpc.eu-north-2.gateway.fm'],
-    blockExplorerUrls: ['https://moonveil-testnet-blockscout.eu-north-2.gateway.fm/'],
+    rpcUrls: ['https://rpc.testnet.moonveil.gg/'],
+    blockExplorerUrls: ['https://blockscout.testnet.moonveil.gg/'],
   },
 };
