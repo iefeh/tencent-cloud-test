@@ -149,7 +149,7 @@ const Header = () => {
 
   return (
     <section className="header fixed left-0 top-0 w-full flex justify-between items-center z-50 pt-4 pl-9 pr-4">
-      <div className="flex-[1]">
+      <div className="flex-shrink-0">
         <Link href="/" className="inline-block">
           <Image className="w-[135px] h-[80px]" src={logo} alt="Logo" />
         </Link>
@@ -157,9 +157,9 @@ const Header = () => {
 
       {/* <Entry2048 /> */}
 
-      <div className="font-semakin flex items-center max-lg:hidden">{DropMenu}</div>
+      <div className="font-semakin flex justify-center items-center max-lg:hidden flex-1">{DropMenu}</div>
 
-      <div className="flex items-center flex-1 justify-end">
+      <div className="flex items-center justify-end">
         {/* <Link
           className={cn([isMobile && 'absolute right-0 top-28 z-0', listOpen && 'hidden'])}
           href={process.env.NEXT_PUBLIC_URL_NODE_SALE!}

@@ -1,5 +1,5 @@
-import { useUserContext } from "@/store/User";
-import { useState } from "react";
+import { useUserContext } from '@/store/User';
+import { useState } from 'react';
 
 export default function useNavMenus() {
   const { hasNewPool } = useUserContext();
@@ -195,6 +195,21 @@ export default function useNavMenus() {
           //   name: 'Staking',
           //   route: '',
           // },
+        ],
+      },
+      {
+        name: 'L2 Chain',
+        children: [
+          {
+            name: 'Moonveil Testnet',
+            route: process.env.NEXT_PUBLIC_URL_MV_TESTNET,
+            children: [
+              {
+                name: 'Faucet',
+                route: process.env.NEXT_PUBLIC_URL_MV_FAUCET,
+              },
+            ],
+          },
         ],
       },
     ];
