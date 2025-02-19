@@ -5,7 +5,7 @@ import EntertainmentSlide from '../slides/EntertainmentSlide';
 import LoyaltyProgramSlide from '../slides/LoyaltyProgramSlide';
 import InviteNewSlide from '../slides/InviteNewSlide';
 import YellowCircle from '@/components/common/YellowCircle';
-import { useState, useRef, memo, FC, useMemo } from 'react';
+import { useState, memo, FC } from 'react';
 import arrowImg from 'img/astrark/arrow.png';
 import Image from 'next/image';
 import BadgeSlide from '../slides/BadgeSlide';
@@ -40,9 +40,6 @@ const SildeItem = memo(function SlideCom({ idx, needAni }: { idx: number; needAn
 export default function SwiperScreen() {
   const [needAnis, setNeedAnis] = useState([true, ...Array(slides.length).fill(false)]);
 
-  const navigationPrevRef = useRef(null);
-  const navigationNextRef = useRef(null);
-
   function calcDelay(index: number) {
     const realIndex = (index + slides.length) % slides.length;
     const delay = slides[realIndex].hasVideo ? 15000 : 5000;
@@ -73,8 +70,8 @@ export default function SwiperScreen() {
           setNeedAnis(list);
         }}
         navigation={{
-          prevEl: navigationPrevRef.current,
-          nextEl: navigationNextRef.current,
+          prevEl: '.home-swiper-navi-prev',
+          nextEl: '.home-swiper-navi-next',
         }}
         pagination={{
           el: '.home-swiper-pagination',
@@ -96,10 +93,10 @@ export default function SwiperScreen() {
         ))}
 
         <div className="home-swiper-pagination text-white z-10 font-decima flex"></div>
-        <div ref={navigationPrevRef} className="home-swiper-navi home-swiper-navi-prev">
+        <div className="home-swiper-navi home-swiper-navi-prev">
           <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
         </div>
-        <div ref={navigationNextRef} className="home-swiper-navi home-swiper-navi-next">
+        <div className="home-swiper-navi home-swiper-navi-next">
           <Image className="w-[3.125rem] h-7" src={arrowImg} alt="" />
         </div>
       </Swiper>
