@@ -32,7 +32,7 @@ export const menuItemComp = (child: RouteMenu) => {
     <MenuItem key={child.name} disabled={child.disabled}>
       <Link
         className={cn([
-          'font-poppins relative',
+          'font-poppins relative w-full px-20 py-[0.375rem]',
           child.disabled ? 'text-[#666]' : 'hover:text-basic-yellow',
           child.actived && 'text-basic-yellow',
         ])}
@@ -92,7 +92,7 @@ export default function HeaderDropdownMenu(props: Props) {
       {mainContent}
 
       <ControlledMenu
-        className={cn(['pt-[1.4375rem] px-[2.625rem] pb-7', styles.dropdownMenu])}
+        className={cn(['pb-7', styles.dropdownMenu])}
         {...menuState}
         anchorRef={menuRef}
         theming="dark"
