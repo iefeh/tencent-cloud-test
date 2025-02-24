@@ -29,6 +29,7 @@ const NoviceNoticeModal: FC = () => {
       classNames={{ header: 'p-0', closeButton: 'z-10', body: '26.25rem', footer: '!justify-center mb-4' }}
       hideCloseButton
       isDismissable={false}
+      placement='center'
       {...disclosure}
     >
       <ModalContent>

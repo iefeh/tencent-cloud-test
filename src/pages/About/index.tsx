@@ -6,6 +6,7 @@ import S3Image from '@/components/common/medias/S3Image';
 import Planet, { type PlanetProps } from '@/components/pages/about/Planet';
 import useShake from '@/hooks/useShake';
 import Link from '@/components/link';
+import MobilePlanet from '@/components/pages/about/MobilePlanet';
 
 const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
   /* Bushwhack */
@@ -18,8 +19,8 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFY: 1.2,
     url: '/Bushwhack',
     src: '/about/ecoanimations/planet_br.png',
-    getLogo: (fn) => (
-      <S3Image src="/about/ecoanimations/logo_br.png" style={{ width: fn(154, 96), aspectRatio: '154/37' }} />
+    getLogo: (fn, className) => (
+      <S3Image className={className} src="/about/ecoanimations/logo_br.png" style={{ width: fn(154, 96), aspectRatio: '154/37' }} />
     ),
   },
   /* AstrArk */
@@ -34,7 +35,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     src: '/about/ecoanimations/planet_aa.png',
     getLogo: (fn, className) => (
       <S3Image
-        className={cn(['object-contain top-5', className])}
+        className={cn(['object-contain md:top-5', className])}
         src="/about/ecoanimations/logo_aa.png"
         style={{ width: fn(255, 147), aspectRatio: '255/55' }}
       />
@@ -68,7 +69,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     offsetFY: 1.7,
     src: '/about/ecoanimations/planet_badge.png',
     getLogo: (fn, className) => (
-      <div className={cn(['flex flex-col items-center gap-y-1 w-max', className])}>
+      <div className={cn(['flex md:flex-col items-center gap-x-2 gap-y-1 w-max', className])}>
         <S3Image className="object-contain w-24" src="/about/ecoanimations/flaming_pets.png" />
 
         <div>Flaming Pets</div>
@@ -178,7 +179,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Top Quality Games',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-14 text-3xl text-basic-yellow', className])}>Product Layer</div>
+      <div className={cn(['md:!-right-14 text-3xl text-basic-yellow', className])}>Product Layer</div>
     ),
   },
   /* OPS & Identity Layer */
@@ -192,7 +193,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'AI-Powered Neural Network',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-[5.75rem] text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
+      <div className={cn(['md:!-right-[5.75rem] text-3xl text-basic-yellow', className])}>OPS & Identity Layer</div>
     ),
   },
   /* OPS & Identity Layer */
@@ -206,7 +207,7 @@ const Planets: (PlanetProps & { offsetFX?: number; offsetFY?: number })[] = [
     isSrcText: true,
     src: 'Moonveil L2 Chain',
     getLogo: (fn, className) => (
-      <div className={cn(['!-right-14 text-3xl text-basic-yellow text-right', className])}>Infra Layer</div>
+      <div className={cn(['md:!-right-14 text-3xl text-basic-yellow text-right', className])}>Infra Layer</div>
     ),
   },
 ];
@@ -251,16 +252,9 @@ export default function About() {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center select-none">
-      <div
-        className={cn([
-          'planet-container',
-          'aspect-[1920/1080] relative',
-          // isWidthMore ? 'h-full' : 'w-full',
-          'w-full',
-        ])}
-      >
+      <div className="planet-container aspect-[1920/1080] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full">
         <Video
-          className="w-full h-full"
+          className="absolute inset-0"
           options={{
             controls: false,
             bigPlayButton: false,
@@ -288,10 +282,21 @@ export default function About() {
             src="/about/ecoanimations/nebula_tr.png"
           />
         </div>
+      </div>
 
+      <div
+        className={cn([
+          'planet-container',
+          'md:aspect-[1920/1080] relative',
+          // isWidthMore ? 'h-full' : 'w-full',
+          'w-full max-h-full overflow-auto py-32 px-12',
+        ])}
+      >
         {Planets.map((planet, index) => (
-          <Link key={index} href={planet.url || ''}>
-            <Planet {...planet} />
+          <Link key={index} href={planet.url || ''} className="w-full md:w-[unset]">
+            <Planet className="hidden md:block" {...planet} />
+
+            <MobilePlanet className="md:hidden" {...planet} />
           </Link>
         ))}
       </div>
