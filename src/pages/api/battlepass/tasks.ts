@@ -8,6 +8,7 @@ import { enrichUserQuests } from "@/lib/quests/questEnrichment";
 import { getMaxLevelBadge } from "@/pages/api/badges/display";
 import { getCurrentBattleSeason, getUserBattlePass } from "@/lib/battlepass/battlepass";
 import { errorInterceptor } from '@/lib/middleware/error';
+import { format } from "date-fns";
 
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -125,7 +126,8 @@ export async function paginationQuests(pageNum: number, pageSize: number, catego
             let: { quest_id: '$id' },
             pipeline: [
                 {
-                    $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $eq: ['$quest_id', '$$quest_id'] }] } },
+                    // $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $eq: ['$quest_id', '$$quest_id'] }] } },
+                    $match: { $expr: { $and: [{ $eq: ['$user_id', userId] }, { $or: [{ $eq: ['$quest_id', '$$quest_id'] }, { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM-dd')}`] }] }, , { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-ww')}`] }] }, { $eq: ['$quest_id', { $concat: [{ $toString: "$$quest_id" }, `,${format(Date.now(), 'yyyy-MM')}`] }] }] }] } },
                 },
                 {
                     $project: {

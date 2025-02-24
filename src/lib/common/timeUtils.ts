@@ -1,4 +1,6 @@
 import moment from "moment";
+import { RepeatPeriod } from "../quests/types";
+import { format } from "date-fns";
 
 export function getWeekNumber(date: Date): number {
   const tempDate = date;
@@ -7,7 +9,7 @@ export function getWeekNumber(date: Date): number {
   const firstThursday = tempDate.valueOf();
   tempDate.setMonth(0, 1);
   if (tempDate.getDay() !== 4) {
-      tempDate.setMonth(0, 1 + ((4 - tempDate.getDay()) + 7) % 7);
+    tempDate.setMonth(0, 1 + ((4 - tempDate.getDay()) + 7) % 7);
   }
   return 1 + Math.ceil((firstThursday - tempDate.valueOf()) / (7 * 24 * 60 * 60 * 1000));
 }
@@ -22,7 +24,7 @@ export function getFirstDayOfNextWeek(date: Date): number {
 export function getFirstDayOfNextMonth(date: Date): number {
   const currentMonth = date.getMonth();
   let firstDayOfNextMonth = new Date(date.getTime());
-  firstDayOfNextMonth.setMonth(currentMonth === 11 ? 0: currentMonth + 1, 1);
+  firstDayOfNextMonth.setMonth(currentMonth === 11 ? 0 : currentMonth + 1, 1);
   if (currentMonth === 11) {
     let nextYear = date.getFullYear() + 1;
     firstDayOfNextMonth.setFullYear(nextYear);
@@ -44,4 +46,17 @@ export function getISOMonthDayTimeString(date: Date): string {
 export function getISOFullDateTimeString(date: Date): string {
   const now = moment(date);
   return now.format("YYYY-MM-DD");
+}
+
+export function getRepeatPeriodIdentifier(period: RepeatPeriod,date: number) {
+  switch (period) {
+    case RepeatPeriod.Daily:
+      return format(date, 'yyyy-MM-dd');
+    case RepeatPeriod.Weekly:
+      return format(date, 'yyyy-ww');
+    case RepeatPeriod.Monthly:
+      return format(date, 'yyyy-MM');
+    default:
+      return undefined;
+  }
 }

@@ -12,6 +12,7 @@ export interface IGameTicket extends Document {
     consumed_at: number,
     created_at: number,
     expired_at: number,
+    taint?: string
 }
 
 const GameTicketSchema = new Schema<IGameTicket>({
@@ -25,6 +26,7 @@ const GameTicketSchema = new Schema<IGameTicket>({
     consumed_at: { type: Number, default: null },
     created_at: { type: Number, required: true },
     expired_at: { type: Number, required: true },
+    taint: { type: String },
 });
 
 

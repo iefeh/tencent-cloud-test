@@ -166,6 +166,10 @@ class TransactionProvider {
       return null;
     }
   };
+
+  getTranssaction(hash: string) {
+    return this.bp.getTransaction(hash);
+  }
 }
 
 export default TransactionProvider;

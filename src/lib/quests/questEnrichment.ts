@@ -23,6 +23,7 @@ import TwitterTopicTweet from '../models/TwitterTopicTweet';
 import UserTwitter from '../models/UserTwitter';
 import { enrichTasksProgress } from './taskEnrichment';
 import UserNodeEligibility from '../models/UserNodeEligibility';
+import { redis } from '../redis/client';
 
 // 增强用户的quests，场景：用户任务列表
 export async function enrichUserQuests(userId: string, quests: any[]) {
@@ -78,6 +79,9 @@ export async function enrichQuestCustomProperty(userId: string, quests: any[]) {
 // URL是用户完成任务的地址，prepare标识任务可以通过上报完成
 function maskQuestProperty(quests: any[]) {
   for (let quest of quests) {
+    if (quest.type == QuestType.ClaimFreeTicket) {
+      continue;
+    }
     // 如果quest.properties不存在，则初始化为一个空对象
     if (!quest.properties) {
       quest.properties = {};
@@ -97,11 +101,8 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
     return;
   }
   // 获取用户已经校验的任务
-  const dateStamp = format(Date.now(), 'yyyy-MM-dd');
-  let questIds = quests.map((quest) => quest.id);
-  questIds = questIds.concat(
-    quests.filter((q) => q.type === QuestType.ThinkingDataQuery).map((quest) => `${quest.id},${dateStamp}`),
-  ); // 添加2048每日任务完成记录查询
+  // let questIds = quests.map((quest) => quest.id);
+  let questIds = quests.map((quest) => quest.achievements && quest.achievements.length > 0 ? quest.achievements[0].quest_id : quest.id);
   const verifiedQuests = await UserMoonBeamAudit.find(
     {
       user_id: userId,
@@ -113,16 +114,11 @@ async function enrichQuestVerification(userId: string, quests: any[]) {
       corr_id: 1,
     },
   );
-  const verified = new Map<string, boolean>(verifiedQuests.map((q) => [q.corr_id, true]));
+  const verified = new Map<string, boolean>(verifiedQuests.map((q) => [(q.corr_id as string).substring(0, 36), true]));
 
   quests.forEach(async (quest) => {
     // 添加任务校验标识
     quest.verified = verified.has(quest.id);
-    if (!quest.verified) {
-      if (quest.type === QuestType.ThinkingDataQuery) {
-        quest.verified = verified.has(`${quest.id},${dateStamp}`);
-      }
-    }
     // 添加禁止verify标识
     quest.verify_disabled = false;
     // 若已校验，则不再需要判断是否需要启用禁用verify.
@@ -150,27 +146,11 @@ async function enrichQuestAchievement(userId: string, quests: any[]) {
     return;
   }
   // 检查任务完成标识
-  const dateStamp = format(Date.now(), 'yyyy-MM-dd');
-  let questIds = quests.map((quest) => quest.id);
-  questIds = questIds.concat(
-    quests.filter((q) => q.type === QuestType.ThinkingDataQuery).map((quest) => `${quest.id},${dateStamp}`),
-  ); // 添加2048每日任务完成记录查询
-  const achievedQuests = await QuestAchievement.find(
-    {
-      user_id: userId,
-      quest_id: { $in: questIds },
-    },
-    { _id: 0, quest_id: 1 },
-  );
-  const userQuests = new Map<string, boolean>(achievedQuests.map((quest) => [quest.quest_id, true]));
   quests.forEach((quest) => {
     if (quest.achieved) {
       return;
     }
-    quest.achieved = userQuests.has(quest.id);
-    if (!quest.achieved && quest.type === QuestType.ThinkingDataQuery) {
-      quest.achieved = userQuests.has(`${quest.id},${dateStamp}`);
-    }
+    quest.achieved = quest.achievements && quest.achievements.length > 0;
   });
   // 手动检查特殊任务类型完成标识.
   for (const quest of quests) {
@@ -331,6 +311,7 @@ export async function enrichQuestAuthorization(userId: string, quests: any[]) {
         break;
       case QuestType.ConnectWallet:
       case QuestType.HoldNFT:
+      case QuestType.ClaimFreeTicket:
         quest.authorization = AuthorizationType.Wallet;
         quest.user_authorized = false;
         break;
