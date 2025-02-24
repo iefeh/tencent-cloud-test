@@ -69,7 +69,7 @@ export default function HeaderDropdownMenu(props: Props) {
       {item.render?.(item.name) || (
         <div
           className={cn([
-            'transition-all duration-300 border-b-2 border-transparent hover:border-basic-yellow hover:text-basic-yellow relative',
+            'transition-all duration-300 border-b-2 border-transparent hover:border-basic-yellow hover:text-basic-yellow relative whitespace-nowrap',
             isActive && 'text-basic-yellow border-basic-yellow',
           ])}
         >

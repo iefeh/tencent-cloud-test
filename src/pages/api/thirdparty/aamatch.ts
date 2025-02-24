@@ -27,7 +27,7 @@ router.use(errorInterceptor()).post(async (req, res) => {
       return res.json(response.success({ error: convertErrorResponse(response.notFound()) }));
     }
 
-    const sql = `SELECT COUNT(*)>=1,COUNT(*) ,1 from ta.v_event_14 WHERE ("$part_date" BETWEEN '${startDate}' AND '${endDate}') AND "#event_name" = 'use_item' AND "item_id" = 'shuffle' AND "account" = '${userId}'`;
+    const sql = `SELECT  count("#event_name") >= 10,count("#event_name"),10 FROM  ta.v_event_9 WHERE ("$part_date" BETWEEN '${startDate}' AND '${endDate}') AND "#event_name" = 'pvp_end' AND "account" = '${userId}'`;
 
     const result = await checkUserQuestFromThinkingData(sql);
     if (!result || !result[1]) {
@@ -39,7 +39,7 @@ router.use(errorInterceptor()).post(async (req, res) => {
     const achieved = s === 'true';
 
     // upsert CallbackTaskOverview
-    await upsertCallbackTaskOverview(userId, CallbackTaskType.FORGE_MATCH_SHUFFLE, achieved);
+    await upsertCallbackTaskOverview(userId, CallbackTaskType.ASTRARK_MATCH_PLAY, achieved);
 
     return res.json(response.success({ result: { achieved: achieved } }));
   } catch (error) {

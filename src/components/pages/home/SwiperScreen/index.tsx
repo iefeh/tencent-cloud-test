@@ -18,12 +18,14 @@ import Game2048Slide from '../slides/Game2048Slide';
 import type { HomeSlide } from '@/types/lottery';
 import { AutoplayOptions } from 'swiper/types';
 import AstrArkMarchingTestSlide from '../slides/AstrArkMarchingTestSlide';
+import TestnetSlide from '../slides/TestnetSlide';
 
 const slides: (FC<{ needAni?: boolean }> & HomeSlide)[] = [
   // GameMinerSlide,
   // AstrArkMarchingTestSlide,
   // NodeSlide,
   LoyaltyProgramSlide,
+  TestnetSlide,
   // Game2048Slide,
   MinigamesSlide,
   // LotterySlide,

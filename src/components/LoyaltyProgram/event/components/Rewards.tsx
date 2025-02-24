@@ -11,6 +11,7 @@ import { Tooltip, cn } from '@nextui-org/react';
 import { AcceleratorProps, AcceleratorType, EVENT_REWARD_TYPE } from '@/constant/task';
 import notifyIcon from 'img/icon/icon_notify.png';
 import Link from 'next/link';
+import S3Image from '@/components/common/medias/S3Image';
 
 interface Props {
   item?: FullEventItem;
@@ -66,10 +67,9 @@ export default function Rewards(props: Props) {
       <div className="font-semakin text-xl text-basic-yellow">Rewards</div>
 
       <div className="border-1 border-basic-gray rounded-[0.625rem] overflow-hidden mt-[1.625rem]">
-        <Image
+        <S3Image
           className="w-[25.625rem] h-[25.625rem] object-contain"
           src={item?.rewards?.[0]?.image_medium || rewardImg}
-          alt=""
           width={410}
           height={410}
         />

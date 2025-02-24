@@ -1,11 +1,11 @@
 import { Tab, Tabs, cn } from '@nextui-org/react';
 import { FC, Fragment } from 'react';
 import { useInviteStore } from '@/store/Invite';
-import Image from 'next/image';
 import arrowIcon from 'img/profile/badges/icon_arrow.png';
 import helpIcon from 'img/profile/badges/icon_help.png';
 import { observer } from 'mobx-react-lite';
 import { isMobile } from 'react-device-detect';
+import S3Image from '@/components/common/medias/S3Image';
 
 const RewardHistory: FC = () => {
   const { milestone } = useInviteStore();
@@ -50,12 +50,9 @@ const RewardHistory: FC = () => {
                   <span className="text-basic-yellow">{item.description}</span> and receive extra Moon Beams.
                 </div>
                 <div className={cn(['flex flex-col items-center text-center pt-8 pb-4', isMobile ? 'px-4' : 'px-12'])}>
-                  <Image
+                  <S3Image
                     className={cn(['w-60 h-60 object-contain', bigSerie.obtained || 'grayscale opacity-50'])}
                     src={bigSerie.image_url || helpIcon}
-                    alt=""
-                    width={300}
-                    height={300}
                   />
 
                   <div
@@ -82,19 +79,16 @@ const RewardHistory: FC = () => {
                     {(item.series || []).map((child, childIndex) => (
                       <Fragment key={childIndex}>
                         {childIndex > 0 && item.series?.[childIndex - 1] && (
-                          <Image className="w-[0.875rem] h-4 mt-7 mx-1" src={arrowIcon} alt="" width={28} height={32} />
+                          <S3Image className="w-[0.875rem] h-4 mt-7 mx-1" src={arrowIcon} />
                         )}
 
                         <div className="flex flex-col items-center">
-                          <Image
+                          <S3Image
                             className={cn([
                               'w-[4.375rem] h-[4.375rem] object-contain',
                               child.obtained && childIndex === bigIndex && 'border-1 border-basic-yellow rounded-base',
                             ])}
                             src={child.icon_url}
-                            alt=""
-                            width={70}
-                            height={70}
                           />
 
                           <p

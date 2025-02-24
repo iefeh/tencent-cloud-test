@@ -6,25 +6,28 @@ import UserWallet from '@/lib/models/UserWallet';
 import User from '@/lib/models/User';
 import axios from 'axios';
 const { parse } = require('csv-parse/sync');
+import * as response from '@/lib/response/response';
 
 export async function queryUserId(email: string, twitter: string, discord: string, address: string) {
   try {
     // Find by email
-    const user = await User.findOne({ email: email, deleted_time: null });
-    if (!!user) {
-      return user.user_id;
-    }
+    if (!!email && email !== '') {
+      const user = await User.findOne({ email: email, deleted_time: null });
+      if (!!user) {
+        return user.user_id;
+      }
 
-    // Email might occur in Google
-    const userGoogle = await UserGoogle.findOne({ email: email, deleted_time: null });
-    if (!!userGoogle) {
-      return userGoogle.user_id;
-    }
+      // Email might occur in Google
+      const userGoogle = await UserGoogle.findOne({ email: email, deleted_time: null });
+      if (!!userGoogle) {
+        return userGoogle.user_id;
+      }
 
-    // Email might occur in Apple
-    const userApple = await UserApple.findOne({ apple_id: email, deleted_time: null });
-    if (!!userApple) {
-      return userApple.user_id;
+      // Email might occur in Apple
+      const userApple = await UserApple.findOne({ apple_id: email, deleted_time: null });
+      if (!!userApple) {
+        return userApple.user_id;
+      }
     }
 
     // If has twitter id, query user by twitter
@@ -91,4 +94,16 @@ export async function checkUserQuestFromThinkingData(sql: string): Promise<any> 
     console.error('Error:', error);
     return false;
   }
+}
+
+interface APIResponse {
+  code: number;
+  message: string;
+}
+
+export function convertErrorResponse(response: response.ResponseData<any>): APIResponse {
+  return {
+    code: response.code,
+    message: response.msg,
+  };
 }
