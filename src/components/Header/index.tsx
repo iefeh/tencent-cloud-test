@@ -59,7 +59,7 @@ const MoreLinks = () => {
       </div>
 
       <ControlledMenu
-        className="pt-[1.4375rem] px-[2.625rem] pb-7"
+        className="pb-7"
         {...hoverProps}
         {...menuState}
         anchorRef={menuRef}
@@ -100,7 +100,7 @@ export const TGLinks = ({isInFooter}: {isInFooter?: boolean}) => {
       </div>
 
       <ControlledMenu
-        className="pt-[1.4375rem] px-[2.625rem] pb-7"
+        className="pb-7"
         {...hoverProps}
         {...menuState}
         anchorRef={menuRef}

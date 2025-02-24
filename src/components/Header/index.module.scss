@@ -3,10 +3,17 @@
   background: #1a1917;
   border-radius: px2rem(10);
   .itemWarpper {
-    padding: px2rem(42);
+    padding-top: px2rem(42);
+    padding-bottom: px2rem(42);
     font-size: px2rem(20);
     font-weight: 500;
     color: #fff;
+
+    :global {
+      .szh-menu__item {
+        padding: 0!important;
+      }
+    }
 
     &:not(:last-child) {
       border-right: 1px solid rgba(255, 255, 255, 0.02);
@@ -29,8 +36,9 @@
 
     .threeLevelItem {
       color: #999;
+      width: 100%;
       font-size: px2rem(14);
-      min-width: px2rem(320);
+      min-width: px2rem(362);
       font-weight: 400;
       > li {
         background: transparent !important;
