@@ -32,7 +32,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
       content: seasonalCampaignsContent,
     },
     {
-      key: 'P2A AstrArk',
+      key: 'AstrArk',
       render: (label: string) => (
         <div className="flex items-center">
           <S3Image className="object-contain w-6 h-6 mr-2 rounded-md" src="/icons/icon_astrark_ultra.png" />
@@ -43,7 +43,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
       content: aaContent,
     },
     {
-      key: 'P2A Puffy Miner',
+      key: 'Puffy Miner',
       render: (label: string) => (
         <div className="flex items-center">
           <S3Image className="object-contain w-8 h-7 mr-1 rounded-md" src="/minigames/icons/icon_miner.png" />
@@ -54,7 +54,7 @@ export default function TaskTabs({ defaultCategory }: Props) {
       content: minerContent,
     },
     {
-      key: 'P2A Puffy 2048',
+      key: 'Puffy 2048',
       render: (label: string) => (
         <div className="flex items-center">
           <S3Image
