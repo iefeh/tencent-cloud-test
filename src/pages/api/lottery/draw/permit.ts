@@ -54,7 +54,7 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     if (!targetChain) {
         throw new Error(`lottery pool ${lottery_pool_id} chain id not found.`);
     }
-    const lotteryCtrt = await findLotteryContract(pool.chain_id);
+    const lotteryCtrt = await findLotteryContract(targetChain);
     if (!lotteryCtrt) {
         throw new Error(`lottery contract not found for chain ${targetChain}.`);
     }
@@ -62,12 +62,14 @@ async function try2GetLotteryPermit(res: any, userId: string, lottery_pool_id: s
     const request = new UserLotteryRequest({
         user_id: userId,
         request_id: ethers.id(`${userWallet.wallet_addr}:${lottery_pool_id}:${Date.now()}`),
+        chain_id: targetChain,
         lottery_pool_id: lottery_pool_id,
         draw_count: draw_count,
         lottery_ticket_cost: lottery_ticket_cost,
         mb_cost: mb_cost,
         created_time: Date.now(),
     });
+
     await request.save();
     const permit = await constructLotteryPermit(request, lotteryCtrt, userWallet.wallet_addr);
     return res.json(response.success({
@@ -99,14 +101,14 @@ async function constructLotteryPermit(request: IUserLotteryRequest, lotteryCtrt:
     // 获取用户抽奖随机数
     const nonce = await getUserNonce(request.user_id);
     const domain = {
-        name: "MoonveilLottery",
+        name: "Lottery",
         version: "1",
         chainId: Number(lotteryCtrt.chain_id),
         verifyingContract: ethers.getAddress(lotteryCtrt.address),
     };
     // 构建并签名抽奖许可
     const types = {
-        MintPermit: [
+        DrawPermit: [
             {name: "reqId", type: "bytes32"},
             {name: "claimer", type: "address"},
             {name: "nonce", type: "uint256"},
@@ -114,13 +116,12 @@ async function constructLotteryPermit(request: IUserLotteryRequest, lotteryCtrt:
             {name: "expiredTime", type: "uint128"},
         ],
     };
-    const expiredTime = Math.floor(Date.now() / 1000 + 10 * 60 * 60);
     const lotteryPermit: any = {
         reqId: request.request_id,
-        claimer: claimer,
+        claimer: ethers.getAddress(claimer),
         nonce: nonce,
         seed: Date.now() + Math.floor(Math.random() * 1000000),
-        expiredTime: expiredTime,
+        expiredTime: Math.floor(Date.now() / 1000 + 10 * 60 * 60),
     };
     const signer = new ethers.Wallet(process.env.DEVELOPER_PRIVATE_KEY!, null);
     lotteryPermit.signature = await signer.signTypedData(domain, types, lotteryPermit);

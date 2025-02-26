@@ -5,6 +5,7 @@ import type { LotteryRequirementDTO } from '@/http/services/lottery';
 
 declare namespace Lottery {
   interface Pool<T = RewardItem> {
+    chain_id?: string;
     lottery_pool_id: string;
     start_time: number;
     end_time: number;
@@ -72,7 +73,7 @@ declare namespace Lottery {
     draw_id: string;
     lottery_pool_id: string;
     rewards: RewardItem[];
-    success?: boolean;
+    verified?: boolean;
     message?: string;
   }
 

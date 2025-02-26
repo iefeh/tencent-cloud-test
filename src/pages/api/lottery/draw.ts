@@ -121,15 +121,6 @@ export async function draw(userId: string, lotteryPoolId: string, drawCount: num
         duplicated: false,
         message: "Please provide chain request id for lottery pool with chain verification."
       };
-    } else {
-      const request = await UserLotteryRequest.findOne({ request_id: chainRequestId });
-      if (!request) {
-        return {
-          verified: false,
-          duplicated: false,
-          message: "Cannot find the lottery request."
-        };
-      }
     }
   }
   // 1-3抽和4-10抽奖池和中奖几率不同所以要分别计算

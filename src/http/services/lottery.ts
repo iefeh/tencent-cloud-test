@@ -96,3 +96,19 @@ export function claimPremiumTicketsAPI(data: { lottery_pool_id: string }): Promi
 export function queryHasNewPoolAPI(): Promise<{ new_eligible_pool_exists: boolean }> {
   return http.get('/api/users/new_eligible_lotterypool');
 }
+
+export type DrawPermit = any;
+
+export interface DrawPermitResDTO {
+  chain_id: string;
+  contract_address: `0x${string}`;
+  permit: DrawPermit;
+}
+
+export function queryDrawPermitAPI(data: Partial<Lottery.DrawDTO>): Promise<DrawPermitResDTO> {
+  return http.post('/api/lottery/draw/permit', JSON.stringify(data));
+}
+
+export function drawReportAPI(data: { tx_hash: string; chain_id: string }): Promise<Lottery.RewardResDTO> {
+  return http.post('/api/lottery/draw/report', JSON.stringify(data));
+}
