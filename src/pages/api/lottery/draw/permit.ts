@@ -123,7 +123,7 @@ async function constructLotteryPermit(request: IUserLotteryRequest, lotteryCtrt:
         seed: Date.now() + Math.floor(Math.random() * 1000000),
         expiredTime: Math.floor(Date.now() / 1000 + 10 * 60 * 60),
     };
-    const signer = new ethers.Wallet(process.env.DEVELOPER_PRIVATE_KEY!, null);
+    const signer = new ethers.Wallet(process.env.TESTNET_DEVELOPER_PRIVATE_KEY!, null);
     lotteryPermit.signature = await signer.signTypedData(domain, types, lotteryPermit);
     return lotteryPermit;
 }
