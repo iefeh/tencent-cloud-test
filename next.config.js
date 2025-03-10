@@ -107,8 +107,8 @@ module.exports = async () => {
   const loadValueFromSSM = async (name) => {
     const ssm = new SSMClient({
       region: "ap-southeast-1", credentials: {
-        accessKeyId: process.env.AWS_PARAM_ACCESS_KEY_ID,   // 从环境变量获取凭证
-        secretAccessKey: process.env.AWS_PARAM_SECRET_ACCESS_KEY
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,   // 从环境变量获取凭证
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
       }
     });
     const input = {
