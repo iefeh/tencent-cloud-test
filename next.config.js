@@ -101,8 +101,8 @@ module.exports = withSentryConfig(
   },
 );
 
+
 module.exports = async () => {
-  // dotenv.config();
 
   const loadValueFromSSM = async (name) => {
     const ssm = new SSMClient({
@@ -124,7 +124,7 @@ module.exports = async () => {
     .filter(([_, value]) => value && value.startsWith('ssm:')) // 只筛选值以 `ssm:` 开头的变量
     .map(([key, value]) => ({
       envKey: key,
-      ssmKey: value.replace(/^ssm:/, process.env.NODE_ENV == 'production' ? '/prod/' : '/dev/') // 去掉 `ssm:` 前缀，获取真实 SSM 参数名
+      ssmKey: value.replace(/^ssm:/, process.env.ENV == 'production' ? '/prod/' : '/dev/') // 去掉 `ssm:` 前缀，获取真实 SSM 参数名
     }));
 
   if (ssmKeys.length === 0) return;
@@ -134,7 +134,7 @@ module.exports = async () => {
       const ssmValue = await loadValueFromSSM(item.ssmKey);
       process.env[item.envKey] = ssmValue;
     } catch (error) {
-      console.error("Load Parameter Fail:", item.envKey, process.env[item.envKey], error)
+      console.error("Load Parameter Fail:", item.envKey, item.ssmKey, error)
     }
   }
 
