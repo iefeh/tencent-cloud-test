@@ -129,7 +129,7 @@ module.exports = async () => {
     }));
 
   if (ssmKeys.length === 0) return;
-  // console.log(process.env.AWS_PARAM_ACCESS_KEY_ID);
+  console.log(process.env.AWS_APP_DEPLOY_ACCESS_KEY_ID);
   // console.log(process.env.AWS_PARAM_ACCESS_KEY_ID);
   for (let item of ssmKeys) {
     try {
