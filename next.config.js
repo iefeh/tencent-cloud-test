@@ -102,9 +102,6 @@ module.exports = withSentryConfig(
 );
 
 module.exports = async () => {
-
-  console.log("load ssm");
-
   // dotenv.config();
 
   const loadValueFromSSM = async (name) => {
@@ -140,8 +137,6 @@ module.exports = async () => {
       console.error("Load Parameter Fail:", item.envKey, process.env[item.envKey], error)
     }
   }
-  console.log("load ssm finish")
-  return {}
-  // return { env: process.env }
-  // return process.env;
+
+  return {};
 }
