@@ -1,4 +1,5 @@
 const path = require('path');
+const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -99,3 +100,48 @@ module.exports = withSentryConfig(
     automaticVercelMonitors: true,
   },
 );
+
+module.exports = async () => {
+
+  console.log("load ssm");
+
+  // dotenv.config();
+
+  const loadValueFromSSM = async (name) => {
+    const ssm = new SSMClient({
+      region: "ap-southeast-1", credentials: {
+        accessKeyId: process.env.AWS_PARAM_ACCESS_KEY_ID,   // 从环境变量获取凭证
+        secretAccessKey: process.env.AWS_PARAM_SECRET_ACCESS_KEY
+      }
+    });
+    const input = {
+      Name: name,
+      // WithDecryption: true,
+    };
+    const command = new GetParameterCommand(input);
+    const result = await ssm.send(command);
+    return result.Parameter.Value;
+  };
+
+  const ssmKeys = Object.entries(process.env)
+    .filter(([_, value]) => value && value.startsWith('ssm:')) // 只筛选值以 `ssm:` 开头的变量
+    .map(([key, value]) => ({
+      envKey: key,
+      ssmKey: value.replace(/^ssm:/, process.env.NODE_ENV == 'production' ? '/prod/' : '/dev/') // 去掉 `ssm:` 前缀，获取真实 SSM 参数名
+    }));
+
+  if (ssmKeys.length === 0) return;
+
+  for (let item of ssmKeys) {
+    try {
+      const ssmValue = await loadValueFromSSM(item.ssmKey);
+      process.env[item.envKey] = ssmValue;
+    } catch (error) {
+      console.error("Load Parameter Fail:", item.envKey, process.env[item.envKey], error)
+    }
+  }
+  console.log("load ssm finish")
+  return {}
+  // return { env: process.env }
+  // return process.env;
+}
