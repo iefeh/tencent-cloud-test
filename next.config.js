@@ -1,4 +1,5 @@
 const path = require('path');
+const dotenv = require('dotenv')
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
 
 /** @type {import('next').NextConfig} */
@@ -103,6 +104,8 @@ module.exports = withSentryConfig(
 
 
 module.exports = async () => {
+
+  dotenv.config();
 
   const loadValueFromSSM = async (name) => {
     const ssm = new SSMClient({
