@@ -128,7 +128,7 @@ module.exports = async () => {
     }));
 
   if (ssmKeys.length === 0) return;
-
+  console.log(process.env.AWS_ACCESS_KEY_ID)
   for (let item of ssmKeys) {
     try {
       const ssmValue = await loadValueFromSSM(item.ssmKey);
