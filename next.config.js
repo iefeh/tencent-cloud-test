@@ -106,7 +106,7 @@ module.exports = withSentryConfig(
 module.exports = async () => {
 
   dotenv.config();
-
+  console.log(process.env.AWS_PARAM_ACCESS_KEY_ID)
   const loadValueFromSSM = async (name) => {
     const ssm = new SSMClient({
       region: "ap-southeast-1"
