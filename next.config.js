@@ -1,5 +1,4 @@
 const path = require('path');
-const dotenv = require('dotenv')
 const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
 
 /** @type {import('next').NextConfig} */
@@ -56,9 +55,56 @@ const nextConfig = {
     includePaths: [path.join(__dirname, 'styles')],
     prependData: `@import "@/styles/global.scss";`
   },
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
 };
 
-module.exports = nextConfig;
+// module.exports = nextConfig;
+
+module.exports = async () => {
+
+  const loadValueFromSSM = async (name) => {
+    const ssm = new SSMClient({
+      region: "ap-southeast-1"
+      , credentials: {
+        accessKeyId: process.env.AWS_PARAM_ACCESS_KEY_ID,   // 从环境变量获取凭证
+        secretAccessKey: process.env.AWS_PARAM_SECRET_ACCESS_KEY
+      }
+    });
+    const input = {
+      Name: name,
+      // WithDecryption: true,
+    };
+    const command = new GetParameterCommand(input);
+    const result = await ssm.send(command);
+    return result.Parameter.Value;
+  };
+
+  const ssmKeys = Object.entries(process.env)
+    .filter(([_, value]) => value && value.startsWith('ssm:')) // 只筛选值以 `ssm:` 开头的变量
+    .map(([key, value]) => ({
+      envKey: key,
+      ssmKey: value.replace(/^ssm:/, process.env.ENV == 'production' ? '/prod/' : '/dev/') // 去掉 `ssm:` 前缀，获取真实 SSM 参数名
+    }));
+
+  if (ssmKeys.length === 0) return nextConfig;
+
+  for (let item of ssmKeys) {
+    try {
+      const ssmValue = await loadValueFromSSM(item.ssmKey);
+      process.env[item.envKey] = ssmValue;
+    } catch (error) {
+      console.error("Load Parameter Fail:", item.envKey, item.ssmKey, error)
+      return nextConfig;
+    }
+  }
+
+  return nextConfig;
+}
+
 
 // Injected content via Sentry wizard below
 
@@ -101,55 +147,3 @@ module.exports = withSentryConfig(
     automaticVercelMonitors: true,
   },
 );
-
-
-module.exports = async () => {
-
-  dotenv.config();
-  console.log(process.env.AWS_PARAM_ACCESS_KEY_ID)
-  const loadValueFromSSM = async (name) => {
-    const ssm = new SSMClient({
-      region: "ap-southeast-1"
-      , credentials: {
-        accessKeyId: process.env.AWS_PARAM_ACCESS_KEY_ID,   // 从环境变量获取凭证
-        secretAccessKey: process.env.AWS_PARAM_SECRET_ACCESS_KEY
-      }
-    });
-    const input = {
-      Name: name,
-      // WithDecryption: true,
-    };
-    const command = new GetParameterCommand(input);
-    const result = await ssm.send(command);
-    return result.Parameter.Value;
-  };
-
-  const ssmKeys = Object.entries(process.env)
-    .filter(([_, value]) => value && value.startsWith('ssm:')) // 只筛选值以 `ssm:` 开头的变量
-    .map(([key, value]) => ({
-      envKey: key,
-      ssmKey: value.replace(/^ssm:/, process.env.ENV == 'production' ? '/prod/' : '/dev/') // 去掉 `ssm:` 前缀，获取真实 SSM 参数名
-    }));
-
-  if (ssmKeys.length === 0) return;
-
-  for (let item of ssmKeys) {
-    try {
-      const ssmValue = await loadValueFromSSM(item.ssmKey);
-      process.env[item.envKey] = ssmValue;
-    } catch (error) {
-      console.error("Load Parameter Fail:", item.envKey, item.ssmKey, error)
-      return {};
-    }
-  }
-
-  return {};
-}
-
-module.exports = {
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
-  },
-}
