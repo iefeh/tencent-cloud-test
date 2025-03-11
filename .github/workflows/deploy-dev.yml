@@ -47,17 +47,16 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        with: 
-          AWS_PARAM_ACCESS_KEY_ID: ${{ secrets.AWS_APP_DEPLOY_ACCESS_KEY_ID }}
-          AWS_PARAM_SECRET_ACCESS_KEY: ${{ secrets.AWS_APP_DEPLOY_ACCESS_KEY_SECRET }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          AWS_PARAM_ACCESS_KEY_ID: ${{ secrets.AWS_APP_DEPLOY_ACCESS_KEY_ID }}
+          AWS_PARAM_SECRET_ACCESS_KEY: ${{ secrets.AWS_APP_DEPLOY_ACCESS_KEY_SECRET }}
         run: |
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build --build-arg AWS_PARAM_ACCESS_KEY_ID=$AWS_PARAM_ACCESS_KEY_ID --build-arg AWS_PARAM_SECRET_ACCESS_KEY=$AWS_PARAM_SECRET_ACCESS_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
