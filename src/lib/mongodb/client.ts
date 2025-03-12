@@ -1,4 +1,4 @@
-import mongoose, {Connection} from 'mongoose'
+import mongoose, { Connection } from 'mongoose'
 
 export function isDuplicateKeyError(error: any): boolean {
     return error && error.code == 11000
@@ -19,7 +19,8 @@ if (!cached) {
 function connectToDatabase(uri: string): Connection {
     let cached = global.mongooseConnections[uri];
     if (!cached) {
-        cached = global.mongooseConnections[uri] = {conn: mongoose.createConnection(uri, {autoIndex: false,})};
+        console.log(`[MongoDB] - Connect to ${uri.substring(uri.length - 5)}`)
+        cached = global.mongooseConnections[uri] = { conn: mongoose.createConnection(uri, { autoIndex: false, }) };
     }
     return cached.conn;
 }
