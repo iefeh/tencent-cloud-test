@@ -27,7 +27,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    # if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true }}
     environment: development
 
     steps:
