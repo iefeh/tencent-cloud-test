@@ -2,11 +2,11 @@ name: Deploy - dev
 on:
   push:
     branches:
-      - feat/container # 推送分支时触发部署
+      - dev-deploy # 推送分支时触发部署
   pull_request:
     types: [closed]
     branches:
-      - feat/container # pr关闭时触发部署
+      - dev-deploy # pr关闭时触发部署
 
 env:
   AWS_REGION: ap-southeast-1 # set this to your preferred AWS region, e.g. us-west-1
