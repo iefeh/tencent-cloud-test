@@ -3,7 +3,7 @@ import {NextApiResponse} from "next";
 import * as Sentry from "@sentry/nextjs";
 import * as response from "@/lib/response/response";
 
-export const timeoutInterceptor = (resp: any = response.serverError(), timeout: number = 10000) => {
+export const timeoutInterceptor = (resp: any = response.serverError(), timeout: number = 15000) => {
     return (req: UserContextRequest, res: NextApiResponse, next: () => void) => {
         const timeoutId = setTimeout(() => {
             if (!res.headersSent) {
