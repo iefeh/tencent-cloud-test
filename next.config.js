@@ -14,6 +14,23 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/(.*)', // 匹配所有路由
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*', // 允许所有域名访问
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS', // 允许的 HTTP 方法
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization', // 允许的请求头
+          },
+        ],
+      }
     ];
   },
   reactStrictMode: true,
