@@ -15,7 +15,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/api/:path*', // 匹配所有路由
+        source: '/:path*', // 匹配所有路由
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
