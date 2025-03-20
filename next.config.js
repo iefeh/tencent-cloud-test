@@ -29,6 +29,10 @@ const nextConfig = {
             key: 'Access-Control-Allow-Headers',
             value: 'Content-Type, Authorization', // 允许的请求头
           },
+          {
+            key: 'Access-Control-Max-Age',
+            value: '3600'
+          }
         ],
       }
     ];
