@@ -317,7 +317,7 @@ async function redeemGameTicketReward(userId: string, cdk: string, session: any,
   let tickets: any[] = [];
   for (let i = 0; i < reward.amount; i++) {
     const ticket = new GameTicket();
-    ticket.pass_id = `CDK-${ethers.id(`${userId}-${cdk}-${i}`)}`;
+    ticket.pass_id = `CDK-${ethers.id(`${userId}-${cdk}-${reward.game_id}-${i}`)}`;
     ticket.user_id = userId;
     ticket.game_id = reward.game_id;
     ticket.created_at = Date.now();
