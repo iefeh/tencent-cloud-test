@@ -9,7 +9,7 @@ on:
       - 'deploy-dev' # pr关闭时触发部署
 
 env:
-  ECR_AWS_REGION: ap-southeast-1 # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REGION: ap-southeast-1 # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: moonveil-site-dev # set this to your Amazon ECR repository name
   ECS_SERVICE: moonveil-site-dev # set this to your Amazon ECS service name
   ECS_CLUSTER: MoonveilEntertainmentDev # set this to your Amazon ECS cluster name
@@ -39,7 +39,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_APP_DEPLOY_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_APP_DEPLOY_ACCESS_KEY_SECRET }}
-          aws-region: ${{ env.ECR_AWS_REGION }}
+          aws-region: ${{ env.ECR_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
