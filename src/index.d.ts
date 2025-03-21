@@ -15,10 +15,10 @@ interface PageQueryDto {
   page_size: number;
 }
 
-interface PageResDTO<T> {
+interface PageResDTO<T = any> {
   total: number;
-  page_num: string;
-  page_size: string;
+  page_num: string | number;
+  page_size: string | number;
   [key: string]: T[] | null;
 }
 
