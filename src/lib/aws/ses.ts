@@ -4,10 +4,10 @@ import * as sgMail from '@sendgrid/mail';
 import {generateCaptchaEmailHTML} from "@/lib/templates/email";
 
 export const sesClient = new SESClient({
-    region: process.env.AWS_REGION as string,
+    region: process.env.PROJECT_AWS_REGION as string,
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string
+        accessKeyId: process.env.PROJECT_AWS_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.PROJECT_AWS_SECRET_ACCESS_KEY as string
     }
 });
 
