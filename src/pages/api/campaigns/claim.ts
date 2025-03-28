@@ -454,6 +454,9 @@ async function constructCDKNotificatoin(userId: string, campaign: ICampaign) {
 //获得用户赛季
 // this will run if none of the above matches
 router.all((req, res) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end(); // 预检请求返回 204，避免 GET 触发错误
+  }
   res.status(405).json({
     error: 'Method not allowed',
   });

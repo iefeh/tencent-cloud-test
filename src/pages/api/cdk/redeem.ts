@@ -317,7 +317,7 @@ async function redeemGameTicketReward(userId: string, cdk: string, session: any,
   let tickets: any[] = [];
   for (let i = 0; i < reward.amount; i++) {
     const ticket = new GameTicket();
-    ticket.pass_id = `CDK-${ethers.id(`${userId}-${cdk}-${i}`)}`;
+    ticket.pass_id = `CDK-${ethers.id(`${userId}-${cdk}-${reward.game_id}-${i}`)}`;
     ticket.user_id = userId;
     ticket.game_id = reward.game_id;
     ticket.created_at = Date.now();
@@ -330,6 +330,9 @@ async function redeemGameTicketReward(userId: string, cdk: string, session: any,
 
 // this will run if none of the above matches
 router.all((req, res) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end(); // 预检请求返回 204，避免 GET 触发错误
+  }
   res.status(405).json({
     error: 'Method not allowed',
   });

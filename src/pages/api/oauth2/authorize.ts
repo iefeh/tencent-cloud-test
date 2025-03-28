@@ -18,11 +18,11 @@ router.use(dynamicCors).get(async (req, res) => {
   try {
     const { error, client } = await checkAuthParams(req);
     if (error) {
-      landing_url = appendQueryParamsToUrl('/oauth', {
+      landing_url = appendQueryParamsToUrl(process.env.FRONT_OAUTH_ROUTER!, {
         error: error,
       });
     } else {
-      landing_url = appendQueryParamsToUrl('/oauth', {
+      landing_url = appendQueryParamsToUrl(process.env.FRONT_OAUTH_ROUTER!, {
         ...req.query,
         client_name: client?.name,
         icon_url: client?.iconURL,
@@ -30,7 +30,7 @@ router.use(dynamicCors).get(async (req, res) => {
     }
     res.redirect(landing_url);
   } catch (error: any) {
-    landing_url = appendQueryParamsToUrl('/oauth', {
+    landing_url = appendQueryParamsToUrl(process.env.FRONT_OAUTH_ROUTER!, {
       error: error.message,
     });
     res.redirect(landing_url);
@@ -101,6 +101,9 @@ router.use(mustAuthInterceptor).post(async (req, res) => {
 
 // this will run if none of the above matches
 router.all((req, res) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end(); // 预检请求返回 204，避免 GET 触发错误
+  }
   res.status(405).json({
     error: 'Method not allowed',
   });

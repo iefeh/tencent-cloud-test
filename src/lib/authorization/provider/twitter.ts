@@ -105,6 +105,7 @@ export class TwitterAuthFlow extends AuthFlowBase {
         'https://api.twitter.com/2/users/me?expansions=pinned_tweet_id&user.fields=created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url,protected,public_metrics,url,username,verified',
       );
     const connection = data.data;
+    console.log("twitter_response",JSON.stringify(connection))
     // 保存用户授权token
     const now = Date.now();
     const userTokenUpdates = {
