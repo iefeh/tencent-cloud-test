@@ -2,7 +2,7 @@ import { Document, Schema, models } from 'mongoose';
 import connectToMongoDbDev from '@/lib/mongodb/client';
 
 // 主页banner
-export interface IHomeBanner extends Document, HomePage.BannerItem {
+export interface IHomeBanner extends Document {
   // Banner是否激活，不展示未激活
   active: boolean;
   // Banner排序，按升序排列 /
@@ -14,26 +14,10 @@ export interface IHomeBanner extends Document, HomePage.BannerItem {
 }
 
 const HomeBannerSchema = new Schema<IHomeBanner>({
-  name: { type: String },
-  url: { type: String },
-  url_target: { type: String },
-  mask: { type: Number },
-  source_url: { type: String },
-  source_fit: { type: String },
-  has_card: { type: Boolean },
-  card_class: { type: String },
-  title: { type: String },
-  subtitle: { type: String },
-  btn_label: { type: String },
-  btn_url: { type: String },
-  logo: { type: String },
-  need_auth: { type: Boolean },
-  vertical: { type: Object },
   active: { type: Boolean, default: false },
   order: { type: Number },
   start_time: { type: Number },
-  end_time: { type: Number },
-  extra_content: { type: String },
+  end_time: { type: Number }
 });
 
 // 使用既有模型或者新建模型
