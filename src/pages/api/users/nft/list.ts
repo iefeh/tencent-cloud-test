@@ -13,10 +13,12 @@ import logger from "@/lib/logger/winstonLogger";
 import Contract, { ContractCategory, IContract } from "@/lib/models/Contract";
 import Mint from "@/lib/models/Mint";
 import Badges from "@/lib/models/Badge";
+import { redis } from "@/lib/redis/client";
+import badge from "../../minigame/badge";
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
 
-router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor(response.serverError(), 20000)).get(async (req, res) => {
+router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor(response.serverError(), 30000)).get(async (req, res) => {
     const userId = req.userId!;
     const { category, page_num, page_size } = req.query;
     if (!category || !page_num || !page_size) {
@@ -25,25 +27,25 @@ router.use(errorInterceptor(), mustAuthInterceptor, timeoutInterceptor(response.
     }
     const pageNum = Number(page_num);
     const pageSize = Number(page_size);
+
     // 查询目标合约类型
-    const contracts = await Contract.find({ category: category });
+    const contracts: any = await queryContracts(category)
     if (!contracts || contracts.length == 0) {
         logger.warn(`Contract not found: ${category}`);
         res.json(response.invalidParams());
-        return
+        return;
     }
-    // 查询用户的托管钱包
-    const user = await User.findOne({ user_id: userId }, { _id: 0, wallet_addr: 1 });
-    if (!user) {
+
+    // 查询用户的particle钱包和绑定的钱包
+    const wallets = await queryWallets(userId)
+    if (!wallets) {
         logger.error(`User not found: ${userId}`);
         res.json(response.serverError());
         return
     }
-    // 检查用户当前绑定的钱包
-    const wallet = await UserWallet.findOne({ user_id: userId, deleted_time: null }, { _id: 0, wallet_addr: 1 });
-    const wallets = [user.particle?.evm_wallet, wallet?.wallet_addr];
+
     // 检查用户的NFT
-    const pagination = await paginationWalletNFTs(contracts, wallets, pageNum, pageSize);
+    const pagination = await paginationWalletNFTs(contracts, wallets as string[], pageNum, pageSize);
     if (pagination.total == 0 || pagination.nfts.length == 0) {
         // 当前没有匹配的数据
         return res.json(response.success({
@@ -174,6 +176,8 @@ async function paginationWalletNFTs(contracts: IContract[], wallets: string[], p
     return { total: results[0].metadata[0].total, nfts: results[0].data }
 }
 
+let idBadgeMap: Map<string, any>;
+let badgeCachedTime: number = 0;
 export async function enrichSBTMetadata(contracts: IContract[], nfts: any[]): Promise<void> {
     for (let nft of nfts) {
         // 检查NFT的实际状态，如果NFT存在locked_as则需要修正当前的状态
@@ -190,9 +194,13 @@ export async function enrichSBTMetadata(contracts: IContract[], nfts: any[]): Pr
     // 根据交易HASH查询MINT信息
     const txHashes = nfts.map(n => n.transaction_id);
     const mints = await Mint.find({ transaction_hash: { $in: txHashes } });
-    const badgesIds = mints.map(m => m.source_id);
-    const badges = await Badges.find({ id: { $in: badgesIds } });
-    const idBadgeMap: Map<string, any> = new Map<string, any>(badges.map(b => [b.id, b]));
+    //查询徽章信息
+    if(!idBadgeMap ||  Date.now() > badgeCachedTime + 90000){
+        let badges = await Badges.find();
+        idBadgeMap = new Map<string, any>(badges.map(b => [b.id, b]));
+        badgeCachedTime = Date.now();
+    }
+
     const hashMintMap: Map<string, any> = new Map<string, any>(mints.map(m => [m.transaction_hash, m]));
 
     for (let nft of nfts) {
@@ -205,6 +213,62 @@ export async function enrichSBTMetadata(contracts: IContract[], nfts: any[]): Pr
         }
         delete nft.token_metadata.attributes;
     }
+}
+
+let contracts: any[];
+let contractsCachedTime: number = 0;
+async function queryContracts(category: any) {
+    if (!contracts || Date.now() > contractsCachedTime + 90000) {
+        contracts = await Contract.find({ category: category });
+        contractsCachedTime = Date.now();
+    }
+
+    return contracts;
+}
+
+async function queryWallets(userId: string) {
+    const pipeline = [
+        {
+            $match: {
+                user_id: userId
+            }
+        },
+        {
+            $lookup: {
+                from: "user_wallets",
+                localField: "user_id",
+                foreignField: "user_id",
+                as: "wallet",
+                pipeline: [
+                    {
+                        $match: {
+                            deleted_time: null
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $unwind: {
+                path: "$wallet",
+                preserveNullAndEmptyArrays: false
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                particle_wallet: "$particle.evm_wallet",
+                user_wallet: "$wallet.wallet_addr"
+            }
+        }
+    ];
+    const userAllWallets = await User.aggregate(pipeline);
+
+    if (!userAllWallets || userAllWallets.length == 0) {
+        return;
+    }
+
+    return [userAllWallets[0]?.particle_wallet, userAllWallets[0]?.user_wallet];
 }
 
 // this will run if none of the above matches
