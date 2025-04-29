@@ -26,7 +26,9 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const seasonId: string = await getCurrentBattleSeasonId();
     let tabs: any[] = ["Referral Program", "Badge", "Special Reward"];
     if (seasonId) {
-        tabs = [`Season ${seasonId}`].concat(tabs)
+        tabs = [`Season ${seasonId}`].concat(tabs);
+    }else{
+        tabs = [`Quest`].concat(tabs);
     }
     
     if (!tab) {
