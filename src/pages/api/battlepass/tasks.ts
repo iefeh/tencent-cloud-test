@@ -29,13 +29,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     const pageSize = Number(page_size);
     const userId = req.userId!;
     //判断用户是否拥有赛季通行证
-    const battlepass = await getUserBattlePass(userId!);
-    if (!battlepass) {
-        res.json(response.invalidParams({
-            msg: "user do not have battle pass."
-        }));
-        return;
-    }
+    await getUserBattlePass(userId!);
+    // const battlepass = await getUserBattlePass(userId!);
+    // if (!battlepass) {
+    //     res.json(response.invalidParams({
+    //         msg: "user do not have battle pass."
+    //     }));
+    //     return;
+    // }
     //查询查询符合要求的活动
     const pagination = await paginationQuests(pageNum, pageSize, String(category), t, userId);
     if (pagination.total == 0 || pagination.quests.length == 0) {
