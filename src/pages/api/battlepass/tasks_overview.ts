@@ -12,11 +12,11 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const userId = req.userId!;
-  const userBattlePass = await getUserBattlePass(userId);
-  if (!userBattlePass) {
-    res.json(response.notFound("Please claim your Season Pass first."));
-    return;
-  }
+  let userBattlePass = await getUserBattlePass(userId);
+  // if (!userBattlePass) {
+  //   res.json(response.notFound("Please claim your Season Pass first."));
+  //   return;
+  // }
   const result = await getUserTasksOverviewRawInfo(userId);
   let achieveCount: number;
   let isNew: boolean;
@@ -36,10 +36,10 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     c.is_new = isNew;
   }
   res.json(response.success({
-    is_premium: userBattlePass.is_premium,
-    premium_type: userBattlePass.premium_type,
-    premium_source: userBattlePass.premium_source,
-    finished_tasks: userBattlePass.finished_tasks,
+    is_premium: userBattlePass ? userBattlePass.is_premium : false,
+    premium_type: userBattlePass ? userBattlePass.premium_type : '-',
+    premium_source: userBattlePass ? userBattlePass.premium_source : '-',
+    finished_tasks: userBattlePass ? userBattlePass.finished_tasks : 0,
     result: result
   }));
 });
