@@ -29,13 +29,14 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     const pageSize = Number(page_size);
     const userId = req.userId!;
     //判断用户是否拥有赛季通行证
-    const battlepass = await getUserBattlePass(userId!);
-    if (!battlepass) {
-        res.json(response.invalidParams({
-            msg: "user do not have battle pass."
-        }));
-        return;
-    }
+    await getUserBattlePass(userId!);
+    // const battlepass = await getUserBattlePass(userId!);
+    // if (!battlepass) {
+    //     res.json(response.invalidParams({
+    //         msg: "user do not have battle pass."
+    //     }));
+    //     return;
+    // }
     //查询查询符合要求的活动
     const pagination = await paginationQuests(pageNum, pageSize, String(category), t, userId);
     if (pagination.total == 0 || pagination.quests.length == 0) {
@@ -92,7 +93,10 @@ async function loadBadgeInfo(quests: any[]) {
 
 export async function paginationQuests(pageNum: number, pageSize: number, category: string, tag: string | undefined, userId: string): Promise<{ tags: any[], total: number, quests: any[] }> {
     const skip = (pageNum - 1) * pageSize;
-    const currentSeason = await getCurrentBattleSeason();
+    let currentSeason = await getCurrentBattleSeason();
+    if (!currentSeason) {
+        currentSeason = { start_time: 0, end_time: Number.MAX_VALUE }
+      }
     let aggregateQuery: PipelineStage[] = [];
     const now = Date.now();
     let matchOptions: any = {

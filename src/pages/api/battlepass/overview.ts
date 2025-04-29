@@ -15,7 +15,21 @@ router.use(errorInterceptor(), maybeAuthInterceptor).get(async (req, res) => {
   //获得当前赛季
   const currentSeason = await getCurrentBattleSeason();
   if (!currentSeason) {
-    res.json(response.notFound('season not found.'));
+    res.json(
+      response.success({
+        has_battle_pass: false, //是否拥有赛季通行证
+        is_premium: false, //是否为高阶通行证
+        premium_type: '-',//高阶通证类型
+        premium_source: '-',//高阶通证类型
+        all_requirements: [],
+        max_lv: 0, //用户当前最大等级
+        current_progress: 0,//当前任务进度
+        start_time: '-',
+        end_time: '-',
+        standard_pass: [], //标准通行证
+        premium_pass: [], //高阶通行证
+      }),
+    );
     return;
   }
 

@@ -12,11 +12,11 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 
 router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
   const userId = req.userId!;
-  const userBattlePass = await getUserBattlePass(userId);
-  if (!userBattlePass) {
-    res.json(response.notFound("Please claim your Season Pass first."));
-    return;
-  }
+  let userBattlePass = await getUserBattlePass(userId);
+  // if (!userBattlePass) {
+  //   res.json(response.notFound("Please claim your Season Pass first."));
+  //   return;
+  // }
   const result = await getUserTasksOverviewRawInfo(userId);
   let achieveCount: number;
   let isNew: boolean;
@@ -36,16 +36,19 @@ router.use(errorInterceptor(), mustAuthInterceptor).get(async (req, res) => {
     c.is_new = isNew;
   }
   res.json(response.success({
-    is_premium: userBattlePass.is_premium,
-    premium_type: userBattlePass.premium_type,
-    premium_source: userBattlePass.premium_source,
-    finished_tasks: userBattlePass.finished_tasks,
+    is_premium: userBattlePass ? userBattlePass.is_premium : false,
+    premium_type: userBattlePass ? userBattlePass.premium_type : '-',
+    premium_source: userBattlePass ? userBattlePass.premium_source : '-',
+    finished_tasks: userBattlePass ? userBattlePass.finished_tasks : 0,
     result: result
   }));
 });
 //查询用户任务情况总览，先通过查询分类表获取所有的分类，再分别vlookup quests表和quest_achievements表，获得对应的任务数量和完成情况。
 export async function getUserTasksOverviewRawInfo(userId: string): Promise<any> {
-  const currentSeason = await getCurrentBattleSeason();
+  let currentSeason = await getCurrentBattleSeason();
+  if (!currentSeason) {
+    currentSeason = { start_time: 0, end_time: Number.MAX_VALUE }
+  }
   const now = Date.now();
   const pipeline: PipelineStage[] = [
     {
