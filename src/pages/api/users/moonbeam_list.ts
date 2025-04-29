@@ -24,7 +24,11 @@ router.use(mustAuthInterceptor).get(async (req, res) => {
     const pageSize = Number(page_size);
     // 若当前未传入tab, 则默认查询Season tab.
     const seasonId: string = await getCurrentBattleSeasonId();
-    let tabs: any[] = [`Season ${seasonId}`, "Referral Program", "Badge", "Special Reward"];
+    let tabs: any[] = ["Referral Program", "Badge", "Special Reward"];
+    if (seasonId) {
+        tabs = [`Season ${seasonId}`].concat(tabs)
+    }
+    
     if (!tab) {
         tab = tabs[0];
     }
@@ -239,9 +243,9 @@ async function enrichMbsDetail(tab: string, seasonId: string, mbs: any[]): Promi
 
 // this will run if none of the above matches
 router.all((req, res) => {
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end(); // 预检请求返回 204，避免 GET 触发错误
-  }
+    if (req.method === 'OPTIONS') {
+        return res.status(204).end(); // 预检请求返回 204，避免 GET 触发错误
+    }
     res.status(405).json({
         error: "Method not allowed",
     });
