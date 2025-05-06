@@ -36,6 +36,13 @@ export enum ResponseCode {
   ERROR_AUTHORIZATION_CODE_EXPIRED = -26,
   ERROR_SIWA_EXPIRED = -27,
   ERROR_USER_BANNED = -28,
+  ERROR_USER_WALLET_NOT_IN_CORRECT_NETWORK = -29,
+  ERROR_AIRDROP_NOT_IN_CLAIM_STAGE = -30,
+  ERROR_TRANSACTION_FAILED = -31,
+  ERROR_AIRDROP_ALREADY_CLAIMED = -32,
+  ERROR_AIRDROP_USER_NOT_ELIGIBLE = -33,
+  ERROR_AIRDROP_USER_CLAIMING = -34,
+  ERROR_CANNOT_UNBIND_WALLET_DURING_AIRDROP = -35,
   // 添加对应的响应码
 }
 
@@ -95,6 +102,21 @@ const ResponseMessages = {
   // 用户被封禁
   [ResponseCode.ERROR_USER_BANNED]:
     'Your account has been suspended due to violation of game rules.\nWe have zero tolerance for cheating to maintain a fair gaming environment.\nPlease contact customer service if you wish to appeal.',
+  // 用户钱包不在正确的网络
+  [ResponseCode.ERROR_USER_WALLET_NOT_IN_CORRECT_NETWORK]:
+    'Your wallet is not in the correct network, please bind a wallet address that is in the correct network.',
+  // Airdrop不在可领取阶段
+  [ResponseCode.ERROR_AIRDROP_NOT_IN_CLAIM_STAGE]: 'The airdrop is not able to claim right now.',
+  // 发放至钱包失败
+  [ResponseCode.ERROR_TRANSACTION_FAILED]: 'Transaction failed',
+  // 用户已经领取Airdrop
+  [ResponseCode.ERROR_AIRDROP_ALREADY_CLAIMED]: 'You have already claimed your airdrop assets.',
+  // 用户没有资格领取Airdrop
+  [ResponseCode.ERROR_AIRDROP_USER_NOT_ELIGIBLE]: 'You are not eligible to claim airdrop.',
+  // 用户正在领取Airdrop中
+  [ResponseCode.ERROR_AIRDROP_USER_CLAIMING]: 'You airdrop is under claiming process, please wait.',
+  // Airdrop中不可以解绑钱包
+  [ResponseCode.ERROR_CANNOT_UNBIND_WALLET_DURING_AIRDROP]: "You can't unbind your wallet during Airdrop.",
   // 添加响应码对应的msg
 };
 
@@ -138,3 +160,10 @@ export const transactionNotRecongnized = build(ResponseCode.ERROR_TRANSACTION_NO
 export const authorizationCodeExpired = build(ResponseCode.ERROR_AUTHORIZATION_CODE_EXPIRED);
 export const siwaExpired = build(ResponseCode.ERROR_SIWA_EXPIRED);
 export const userBanned = build(ResponseCode.ERROR_USER_BANNED);
+export const userWalletNotInCorrectNetwork = build(ResponseCode.ERROR_USER_WALLET_NOT_IN_CORRECT_NETWORK);
+export const airdropNotInClaimStage = build(ResponseCode.ERROR_AIRDROP_NOT_IN_CLAIM_STAGE);
+export const transactionFailed = build(ResponseCode.ERROR_TRANSACTION_FAILED);
+export const airdropAlreadyClaimed = build(ResponseCode.ERROR_AIRDROP_ALREADY_CLAIMED);
+export const airdropUserNotEligible = build(ResponseCode.ERROR_AIRDROP_USER_NOT_ELIGIBLE);
+export const airdropUserClaiming = build(ResponseCode.ERROR_AIRDROP_USER_CLAIMING);
+export const cannotUnbindWalletDuringAirdrop = build(ResponseCode.ERROR_CANNOT_UNBIND_WALLET_DURING_AIRDROP);

@@ -11,6 +11,8 @@ export enum ContractCategory {
     GAME_PAYMENT = 'GAME_PAYMENT',
     // 通用抽奖合约
     LOTTERY = 'LOTTERY',
+    // 空投合约
+    AIRDROP = 'AIRDROP',
 }
 
 // 子类型
@@ -57,4 +59,9 @@ export default Contract;
 // 查询指定链的抽奖合约
 export async function findLotteryContract(chain_id: string): Promise<IContract | null> {
     return Contract.findOne({chain_id, category: ContractCategory.LOTTERY});
+}
+
+// 查询指定链的空投合约
+export async function findAirdropContract(chain_id: string): Promise<IContract | null> {
+    return Contract.findOne({chain_id, category: ContractCategory.AIRDROP});
 }

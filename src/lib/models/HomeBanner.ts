@@ -23,4 +23,5 @@ const HomeBannerSchema = new Schema<IHomeBanner>({
 // 使用既有模型或者新建模型
 const connection = connectToMongoDbDev();
 const HomeBanner = models.HomeBanner || connection.model<IHomeBanner>('HomeBanner', HomeBannerSchema, 'home_banners');
+
 export default HomeBanner;

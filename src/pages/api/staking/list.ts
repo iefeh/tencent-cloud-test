@@ -1,11 +1,10 @@
 import type { NextApiResponse } from 'next';
-import { escapeRegExp } from 'lodash';
 import { FilterQuery, PipelineStage } from 'mongoose';
 import { createRouter } from 'next-connect';
 
 import { UserContextRequest } from '@/lib/middleware/auth';
 import { errorInterceptor } from '@/lib/middleware/error';
-import News from '@/lib/models/News';
+import StakingEvent from '@/lib/models/StakingEvent';
 import * as response from '@/lib/response/response';
 
 const router = createRouter<UserContextRequest, NextApiResponse>();
@@ -13,60 +12,46 @@ const router = createRouter<UserContextRequest, NextApiResponse>();
 router.use(errorInterceptor()).get(async (req, res) => {
     const page_num = +(req.query.page_num || 0);
     const page_size = +(req.query.page_size || 0);
-    const { title, type, tags } = req.query;
+    const start_time = +(req.query.start_time || 0);
+    const end_time = +(req.query.end_time || 0);
+    const { wallet_addr, type } = req.query;
 
-    if (!page_num || !page_size) {
+    if (!page_num || !page_size || !wallet_addr) {
         return res.json(response.invalidParams({ message: 'Required parameter is missing.' }));
     }
 
-    if (!!title && typeof title !== 'string') {
-        return res.json(response.invalidParams({ messsage: 'Unsupported parameter of "title".' }));
-    }
-
-    if (!!type && typeof type !== 'string') {
-        return res.json(response.invalidParams({ messsage: 'Unsupported parameter of "type".' }));
-    }
-
-    if (!!tags && !(tags instanceof Array) && typeof tags !== 'string') {
-        return res.json(response.invalidParams({ messsage: 'Unsupported parameter of "tags".' }));
-    }
-
-    const data = await queryPaginatedNews(page_num, page_size, type, title, tags);
+    const data = await queryPaginatedStakingEvents(page_num, page_size, wallet_addr as string, type as string, start_time, end_time);
     return res.json(response.success(data));
 });
 
-async function queryPaginatedNews(pageNum: number, pageSize: number, type: string | null = null, title?: string, tags?: string | string[]): Promise<PageResDTO> {
+async function queryPaginatedStakingEvents(pageNum: number, pageSize: number, wallet_addr: string, type?: string, start_time?: number, end_time?: number): Promise<PageResDTO> {
     const skip = (pageNum - 1) * pageSize;
-    const $match: FilterQuery<any> = { deleted_time: null, is_published: true };
+    const $match: FilterQuery<any> = { user: wallet_addr };
 
     if (!!type) {
         $match.type = type;
     }
-    if (!!title) {
-        $match.title = { $regex: escapeRegExp(title) }
+    if (!!start_time && !!end_time) {
+        $match.tx_time = { $gte: start_time, $lte: end_time };
     };
-    if (!!tags && tags?.length > 0) {
-        $match.tags = { $all: tags instanceof Array ? tags : [tags] };
-    }
-
     const aggregateQuery: PipelineStage[] = [
         {
             $match,
         },
         {
             $sort: {
-                published_time: -1
+                tx_time: -1
             }
         },
         {
             $project: {
                 _id: 0,
-                id: 1,
+                tx_hash: 1,
                 type: 1,
-                tags: 1,
-                cover_url: 1,
-                title: 1,
-                summary: 1,
+                user: 1,
+                amount: 1,
+                reward_amount: 1,
+                tx_time: 1,
             },
         },
         {
@@ -77,7 +62,7 @@ async function queryPaginatedNews(pageNum: number, pageSize: number, type: strin
         },
     ];
 
-    const results = await News.aggregate(aggregateQuery);
+    const results = await StakingEvent.aggregate(aggregateQuery);
 
     const res = { total: 0, page_num: pageNum, page_size: pageSize, data: [] } as unknown as PageResDTO;
     if (results[0].metadata.length == 0) return res;

@@ -13,7 +13,6 @@ export const queryBanner = async () => {
   console.log('queryBanner start:', now);
   if (now - homeBannerRefreshTime < 60 * 1000) return banner;
 
-  console.log('queryBanner find start:', now);
   try {
     const items = await HomeBanner.find(
       { active: true, start_time: { $lte: now }, end_time: { $gte: now } },
@@ -22,7 +21,7 @@ export const queryBanner = async () => {
     )
       .lean()
       .exec();
-    console.log('queryBanner find end:', Date.now() - now);
+
     banner = items;
     homeBannerRefreshTime = now;
     return banner;
