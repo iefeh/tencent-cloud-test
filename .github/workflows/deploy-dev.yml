@@ -25,6 +25,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
+  TKE_REGISTRY_URL: moonveil-entertainment.tencentcloudcr.com
   TKE_IMAGE_URL: moonveil-entertainment.tencentcloudcr.com/moonveil/moonveil-site-backend
   TKE_REGION: ap-singapore
   TKE_CLUSTER_ID: cls-ehosfv20
@@ -51,7 +52,8 @@ jobs:
 
     - name: Login TKE Registry
       run: |
-        echo "${{ secrets.TKE_REGISTRY_PASSWORD }}" | docker login --username "${{ secrets.TENCENT_CLOUD_ACCOUNT_ID }}" --password-stdin  ${TKE_IMAGE_URL}
+        echo "${{ secrets.TKE_REGISTRY_PASSWORD }}" | docker login ${TKE_REGISTRY_URL} --username "${{ secrets.TENCENT_CLOUD_ACCOUNT_ID }}" --password-stdin
+
 
     # Push the Docker image to TKE Registry
     - name: Publish
