@@ -52,7 +52,7 @@ jobs:
 
     - name: Login TKE Registry
       run: |
-        docker login ${TKE_REGISTRY_URL} --username "${{ secrets.TENCENT_CLOUD_ACCOUNT_ID }}" --password "${{ secrets.TKE_REGISTRY_PASSWORD }}"
+        echo "${{ secrets.TKE_REGISTRY_PASSWORD }}" | docker login ${TKE_REGISTRY_URL} --username "${{ secrets.TENCENT_CLOUD_ACCOUNT_ID }}" --password-stdin
 
     # Push the Docker image to TKE Registry
     - name: Publish
