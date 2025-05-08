@@ -30,7 +30,7 @@ env:
   TKE_REGION: ap-singapore
   TKE_CLUSTER_ID: cls-ehosfv20
   DEPLOYMENT_NAME: moonveil-site-backend-dev
-  NAMESPACE: dev
+  NAMESPACE: default
 
 # permissions:
 #   contents: read
