@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: moonveil-site-backend-dev
   labels:
     k8s-app: moonveil-site-backend-dev
     qcloud-app: moonveil-site-backend-dev
