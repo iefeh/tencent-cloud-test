@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: moonveil-site-backend-dev
+    qcloud-app: moonveil-site-backend-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: moonveil-site-backend-dev
+      qcloud-app: moonveil-site-backend-dev
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: moonveil-site-backend-dev
+        qcloud-app: moonveil-site-backend-dev
+    spec:
+      containers:
+      - env:
+        - name: ENV
+          value: development
+        image: moonveil-entertainment.tencentcloudcr.com/moonveil/moonveil-site-backend
+        imagePullPolicy: Always
+        name: moonveil-site-backend-dev
+        ports:
+        - containerPort: 3000
+          name: 3000-tcp
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: moonveil
