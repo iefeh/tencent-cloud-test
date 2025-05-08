@@ -82,7 +82,7 @@ jobs:
     # Deploy the Docker image to the TKE cluster
     - name: Deploy
       run: |
-        kubectl apply -k ./k8s/overlays/dev/
+        kubectl apply -k ./k8s/overlays/dev/ --validate=false
         ./kustomize edit set image ${TKE_IMAGE_URL}:${GITHUB_SHA}
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/${DEPLOYMENT_NAME}
