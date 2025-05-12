@@ -39,3 +39,13 @@ spec:
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: moonveil
+  containers:
+    name: moonveil-site-backend-dev
+    image: moonveil-entertainment.tencentcloudcr.com/moonveil/moonveil-site-backend
+    env: 
+      name: MONGODB_URI
+      valueFrom:
+        secretKeyRef:
+          name: mongo
+          key: backend-username
+          namespace: default
