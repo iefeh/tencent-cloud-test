@@ -71,6 +71,8 @@ jobs:
 
     - name: Deploy
       run: |
-        kubectl config use-context ${TKE_CLUSTER_ID}-context-default
-        kubectl -n ${NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${TKE_IMAGE_URL}:${GITHUB_SHA}
+        kubectl apply -f k8s/deployment-dev.yaml
         kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=90s
+        # kubectl config use-context ${TKE_CLUSTER_ID}-context-default
+        # kubectl -n ${NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${TKE_IMAGE_URL}:${GITHUB_SHA}
+        # kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=90s
