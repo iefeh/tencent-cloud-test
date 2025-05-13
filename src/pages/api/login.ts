@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from 'next'
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-    res.status(200).json({message: process.env.MONGODB_URI}) 
+    res.status(200).json({message: process.env.MONGODB_URI,2048: process.env.MONGODB_URI_2048}) 
 }
