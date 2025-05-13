@@ -32,7 +32,7 @@ spec:
               key: MONGODB_URI_2048
               name: mongo
               optional: false
-        image: moonveil-entertainment.tencentcloudcr.com/moonveil/moonveil-site-backend
+        image: moonveil-entertainment.tencentcloudcr.com/moonveil/moonveil-site-backend:latest
         imagePullPolicy: Always
         name: moonveil-site-backend-dev
         ports:
