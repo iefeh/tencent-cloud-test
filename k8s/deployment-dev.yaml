@@ -26,6 +26,12 @@ spec:
               key: MONGODB_URI
               name: mongo
               optional: false
+        - name: MONGODB_URI_2048
+          valueFrom:
+            secretKeyRef:
+              key: MONGODB_URI_2048
+              name: mongo
+              optional: false
         image: moonveil-entertainment.tencentcloudcr.com/moonveil/moonveil-site-backend:${GITHUB_SHA}
         imagePullPolicy: Always
         name: moonveil-site-backend-dev
