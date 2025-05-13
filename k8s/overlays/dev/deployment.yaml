@@ -47,5 +47,5 @@ spec:
       valueFrom:
         secretKeyRef:
           name: mongo
-          key: backend-username
+          key: MONGODB_URI
           namespace: default
