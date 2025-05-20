@@ -75,7 +75,7 @@ jobs:
         export GITHUB_SHA=${{ github.sha }}
         envsubst < deployment-dev.yaml > deployment-dev-processed.yaml
         kubectl apply -f deployment-dev-processed.yaml
-        kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=90s
+        kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=120s
         # kubectl config use-context ${TKE_CLUSTER_ID}-context-default
         # kubectl -n ${NAMESPACE} set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${TKE_IMAGE_URL}:${GITHUB_SHA}
-        # kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=90s
+        # kubectl -n ${NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=120s
