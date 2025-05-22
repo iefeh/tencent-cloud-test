@@ -60,4 +60,4 @@ spec:
             memory: 256Mi
       dnsPolicy: ClusterFirst
       imagePullSecrets:
-      - name: moonveil
+      - name: moonveil-image-pull
